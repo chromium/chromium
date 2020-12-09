@@ -299,7 +299,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
     }
 
     @Test
-    public void testUpdateHistogramNameProvider() {
+    public void testHistogramNameProvider_UpdateProvider() {
         // Update the names for mHistogramNameProvider and test if the old hists are not recorded.
         String newHistogramForEnterprise = "another.histogram.enterprise";
         String newHistogramForPolicy = "another.histogram.policy";
@@ -321,6 +321,20 @@ public class SkipTosDialogPolicyListenerUnitTest {
                         HIST_POLICY_LOAD_LISTENER_AVAILABLE));
         Assert.assertEquals("New Histogram for Policy should be recorded.", 1,
                 RecordHistogram.getHistogramTotalCountForTesting(newHistogramForPolicy));
+    }
+
+    @Test
+    public void testHistogramNameProvider_NoProvider() {
+        buildNewSkipTosDialogPolicyListenerWithHistogram(false);
+
+        setDeviceFullyManaged(true);
+        Assert.assertEquals("No histogram for EnterpriseInfo should not be recorded.", 0,
+                RecordHistogram.getHistogramTotalCountForTesting(HIST_IS_DEVICE_OWNED_DETECTED));
+
+        mPolicyLoadListenerCallback.onResult(true);
+        Assert.assertEquals("No histogram for Policy should not be recorded.", 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        HIST_POLICY_LOAD_LISTENER_AVAILABLE));
     }
 
     private void assertTosDialogEnabled() {
@@ -365,8 +379,12 @@ public class SkipTosDialogPolicyListenerUnitTest {
     }
 
     private void buildNewSkipTosDialogPolicyListener() {
-        mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
-                mMockPolicyLoadListener, mMockEnterpriseInfo, mHistogramNameProvider);
+        buildNewSkipTosDialogPolicyListenerWithHistogram(true);
+    }
+
+    private void buildNewSkipTosDialogPolicyListenerWithHistogram(boolean reportHistogram) {
+        mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(mMockPolicyLoadListener,
+                mMockEnterpriseInfo, reportHistogram ? mHistogramNameProvider : null);
         mSkipTosDialogPolicyListener.onAvailable(mTosDialogCallback);
     }
 

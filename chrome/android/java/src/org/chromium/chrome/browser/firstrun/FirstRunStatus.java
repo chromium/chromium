@@ -16,9 +16,6 @@ public class FirstRunStatus {
     // Whether the first run flow is triggered in the current browser session.
     private static boolean sFirstRunTriggered;
 
-    // Whether the first run flow should be skipped for the current browser session.
-    private static boolean sEphemeralSkipFirstRun;
-
     /** @param triggered whether the first run flow is triggered in the current browser session. */
     public static void setFirstRunTriggered(boolean triggered) {
         sFirstRunTriggered = triggered;
@@ -27,23 +24,6 @@ public class FirstRunStatus {
     /** @return whether first run flow is triggered in the current browser session. */
     public static boolean isFirstRunTriggered() {
         return sFirstRunTriggered;
-    }
-
-    /**
-     * @param skip Whether the first run flow should be skipped for the current session for app
-     *             entry points that allow for this (e.g. CCTs via Enterprise policy). Not saved to
-     *             durable storage, and will be erased when the process is restarted.
-     */
-    public static void setEphemeralSkipFirstRun(boolean skip) {
-        sEphemeralSkipFirstRun = skip;
-    }
-
-    /**
-     * @return Whether the first run flow should be skipped for the current session for app entry
-     *         points that allow for this.
-     */
-    public static boolean isEphemeralSkipFirstRun() {
-        return sEphemeralSkipFirstRun;
     }
 
     /**
@@ -101,5 +81,29 @@ public class FirstRunStatus {
     public static boolean getLightweightFirstRunFlowComplete() {
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE, false);
+    }
+
+    /**
+     * Sets the "First Run Experience is skipped by policy" preference. The value of this shared
+     * preference is used to speed up the decision if first run is needed during start up.
+     *
+     * This shared preference could be updated from "true" to "false" if policy is ever unset, but
+     * not vise versa. Thus, its value could be stale and cannot used to determine if the FRE was
+     * actually shown in current session.
+     *
+     * @param isSkipped Whether the lightweight First Run Experience flow is skipped by policy.
+     */
+    public static void setFirstRunSkippedByPolicy(boolean isSkipped) {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.FIRST_RUN_SKIPPED_BY_POLICY, isSkipped);
+    }
+
+    /**
+     * @return Whether the First Run Experience is skipped by policy.
+     * @see #setFirstRunSkippedByPolicy
+     * */
+    public static boolean isFirstRunSkippedByPolicy() {
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.FIRST_RUN_SKIPPED_BY_POLICY, false);
     }
 }

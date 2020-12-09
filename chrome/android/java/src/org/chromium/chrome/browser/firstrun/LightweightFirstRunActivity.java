@@ -257,7 +257,7 @@ public class LightweightFirstRunActivity
         mPrivacyDisclaimer.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
 
         mExitFreRunnable = () -> {
-            FirstRunStatus.setEphemeralSkipFirstRun(true);
+            FirstRunStatus.setFirstRunSkippedByPolicy(true);
             exitLightweightFirstRun();
             mExitFreRunnable = null;
         };

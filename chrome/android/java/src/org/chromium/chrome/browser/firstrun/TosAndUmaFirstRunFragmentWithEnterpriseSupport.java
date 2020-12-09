@@ -172,8 +172,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     }
 
     private void exitCctFirstRun(boolean shiftA11yFocus) {
-        // TODO(crbug.com/1108582): Save a shared pref indicating Enterprise CCT FRE is complete,
-        //  and skip waiting for future cold starts.
         Log.d(TAG, "TosAndUmaFirstRunFragmentWithEnterpriseSupport finished.");
         mPrivacyDisclaimer.setVisibility(View.VISIBLE);
 

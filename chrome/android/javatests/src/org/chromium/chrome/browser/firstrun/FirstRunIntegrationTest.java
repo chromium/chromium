@@ -36,8 +36,10 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -90,6 +92,7 @@ public class FirstRunIntegrationTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        FirstRunStatus.setFirstRunSkippedByPolicy(false);
         FirstRunActivity.setObserverForTest(mTestObserver);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(true);
 
@@ -104,6 +107,7 @@ public class FirstRunIntegrationTest {
 
     @After
     public void tearDown() {
+        FirstRunStatus.setFirstRunSkippedByPolicy(false);
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
         ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(false);
         EnterpriseInfo.setInstanceForTest(null);
@@ -311,7 +315,26 @@ public class FirstRunIntegrationTest {
                 PrivacyPreferencesManagerImpl.getInstance()
                         .isUsageAndCrashReportingPermittedByUser());
         Assert.assertTrue(
-                "FRE should be skipped for CCT.", FirstRunStatus.isEphemeralSkipFirstRun());
+                "FRE should be skipped for CCT.", FirstRunStatus.isFirstRunSkippedByPolicy());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunSkippedSharedPreferenceRefresh() {
+        // Set first run was previous skipped by policy in shared preference, then refresh shared
+        // preference value, since there's no policy set in this test case.
+        FirstRunStatus.setFirstRunSkippedByPolicy(true);
+
+        DeferredStartupHandler.setExpectingActivityStartupForTesting();
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, "about:blank");
+        mContext.startActivity(intent);
+        CustomTabActivity activity = waitForActivity(CustomTabActivity.class);
+        CriteriaHelper.pollUiThread(() -> activity.didFinishNativeInitialization());
+
+        Assert.assertTrue("Deferred startup never completed",
+                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
+                        ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
+        CriteriaHelper.pollUiThread(() -> FirstRunStatus.isFirstRunSkippedByPolicy());
     }
 
     @Test
@@ -333,7 +356,7 @@ public class FirstRunIntegrationTest {
         // A page skip should happen, while we are still staying at FRE.
         mTestObserver.jumpToPageCallback.waitForCallback("Welcome page should be skipped.", 0);
         Assert.assertFalse(
-                "FRE should not be skipped for CCT.", FirstRunStatus.isEphemeralSkipFirstRun());
+                "FRE should not be skipped for CCT.", FirstRunStatus.isFirstRunSkippedByPolicy());
         Assert.assertFalse(
                 "FreActivity should still be alive.", freActivity.isActivityFinishingOrDestroyed());
     }

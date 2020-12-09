@@ -26,7 +26,7 @@ import org.chromium.components.policy.PolicyService;
  *  - Supplies [True] if the ToS dialog is not enabled by policy while device is fully managed;
  *  - Supplies [False] otherwise.
  */
-final class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
+class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     /**
      * Interface that provides histogram to be recorded when signals are available in this listener.
      */
@@ -56,8 +56,9 @@ final class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     private final CallbackController mCallbackController;
     private final OneshotSupplierImpl<Boolean> mSkipTosDialogPolicySupplier;
     private final PolicyLoadListener mPolicyLoadListener;
-    private final HistogramNameProvider mHistNameProvider;
     private final long mObjectCreatedTimeMs;
+
+    private final @Nullable HistogramNameProvider mHistNameProvider;
 
     /**
      * The value of whether the ToS dialog is enabled on the device. If the value is false, it means
@@ -80,14 +81,14 @@ final class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
      */
     public SkipTosDialogPolicyListener(FirstRunAppRestrictionInfo firstRunAppRestrictionInfo,
             OneshotSupplier<PolicyService> policyServiceSupplier, EnterpriseInfo enterpriseInfo,
-            HistogramNameProvider histogramNameProvider) {
+            @Nullable HistogramNameProvider histogramNameProvider) {
         this(new PolicyLoadListener(firstRunAppRestrictionInfo, policyServiceSupplier),
                 enterpriseInfo, histogramNameProvider);
     }
 
     @VisibleForTesting
     SkipTosDialogPolicyListener(PolicyLoadListener policyLoadListener,
-            EnterpriseInfo enterpriseInfo, HistogramNameProvider histogramNameProvider) {
+            EnterpriseInfo enterpriseInfo, @Nullable HistogramNameProvider histogramNameProvider) {
         mObjectCreatedTimeMs = SystemClock.elapsedRealtime();
         mSkipTosDialogPolicySupplier = new OneshotSupplierImpl<>();
         mCallbackController = new CallbackController();
@@ -135,11 +136,13 @@ final class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
             mTosDialogEnabled = true;
         } else {
             mTosDialogEnabled = FirstRunUtils.isCctTosDialogEnabled();
-            String histogramOnPolicyLoaded =
-                    mHistNameProvider.getOnPolicyAvailableTimeHistogramName();
-            assert !TextUtils.isEmpty(histogramOnPolicyLoaded);
-            RecordHistogram.recordTimesHistogram(
-                    histogramOnPolicyLoaded, SystemClock.elapsedRealtime() - mObjectCreatedTimeMs);
+            if (mHistNameProvider != null) {
+                String histogramOnPolicyLoaded =
+                        mHistNameProvider.getOnPolicyAvailableTimeHistogramName();
+                assert !TextUtils.isEmpty(histogramOnPolicyLoaded);
+                RecordHistogram.recordTimesHistogram(histogramOnPolicyLoaded,
+                        SystemClock.elapsedRealtime() - mObjectCreatedTimeMs);
+            }
         }
 
         setSupplierIfDecidable();
@@ -149,11 +152,13 @@ final class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
         if (mIsDeviceOwned != null) return;
 
         mIsDeviceOwned = ownedState != null && ownedState.mDeviceOwned;
-        String histogramOnEnterpriseInfoLoaded =
-                mHistNameProvider.getOnDeviceOwnedDetectedTimeHistogramName();
-        assert !TextUtils.isEmpty(histogramOnEnterpriseInfoLoaded);
-        RecordHistogram.recordTimesHistogram(histogramOnEnterpriseInfoLoaded,
-                SystemClock.elapsedRealtime() - mObjectCreatedTimeMs);
+        if (mHistNameProvider != null) {
+            String histogramOnEnterpriseInfoLoaded =
+                    mHistNameProvider.getOnDeviceOwnedDetectedTimeHistogramName();
+            assert !TextUtils.isEmpty(histogramOnEnterpriseInfoLoaded);
+            RecordHistogram.recordTimesHistogram(histogramOnEnterpriseInfoLoaded,
+                    SystemClock.elapsedRealtime() - mObjectCreatedTimeMs);
+        }
 
         setSupplierIfDecidable();
     }

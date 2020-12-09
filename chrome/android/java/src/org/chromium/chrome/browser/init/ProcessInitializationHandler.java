@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.firstrun.ForcedSigninProcessor;
+import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
@@ -439,6 +440,8 @@ public class ProcessInitializationHandler {
                 () -> EnterpriseInfo.getInstance().logDeviceEnterpriseInfo());
         deferredStartupHandler.addDeferredTask(
                 () -> VideoTutorialShareHelper.saveUrlsToSharedPrefs());
+        deferredStartupHandler.addDeferredTask(
+                () -> TosDialogBehaviorSharedPrefInvalidator.refreshSharedPreferenceIfTosSkipped());
     }
 
     private void initChannelsAsync() {

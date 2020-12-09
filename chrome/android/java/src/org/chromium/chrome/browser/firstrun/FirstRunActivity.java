@@ -451,7 +451,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void exitFirstRun() {
         // This is important because the first run, when completed, will re-launch the original
         // intent. The re-launched intent will still need to know to avoid the FRE.
-        FirstRunStatus.setEphemeralSkipFirstRun(true);
+        FirstRunStatus.setFirstRunSkippedByPolicy(true);
 
         // This pref is written to have a value of true during the FRE's startup. If the user
         // presses the accept ToS button, this pref's value is overridden with their choice.
