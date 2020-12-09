@@ -31,6 +31,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/trees/layer_tree_host.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"

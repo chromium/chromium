@@ -275,7 +275,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       web_view_, this, nullptr, base::UnguessableToken::Create(), nullptr);
   // The created WebFrameWidget is owned by the |web_frame|.
-  WebFrameWidget::CreateForMainFrame(
+  WebFrameWidget* widget = WebFrameWidget::CreateForMainFrame(
       this, web_frame,
       blink::CrossVariantMojoAssociatedRemote<
           blink::mojom::FrameWidgetHostInterfaceBase>(),
@@ -284,6 +284,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
       blink_widget_host_receiver_.BindNewEndpointAndPassDedicatedRemote(),
       blink_widget_.BindNewEndpointAndPassDedicatedReceiver(),
       viz::FrameSinkId());
+  widget->DisableDragAndDrop();
 
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call
@@ -310,15 +311,6 @@ void WebViewPlugin::WebViewHelper::SetToolTipText(
     plugin_->container_->GetElement().SetAttribute(
         "title", WebString::FromUTF16(tooltip_text));
   }
-}
-
-bool WebViewPlugin::WebViewHelper::InterceptStartDragging(const WebDragData&,
-                                                          DragOperationsMask,
-                                                          const SkBitmap&,
-                                                          const gfx::Point&) {
-  // Immediately stop dragging.
-  frame_->FrameWidget()->DragSourceSystemDragEnded();
-  return true;
 }
 
 void WebViewPlugin::WebViewHelper::DidInvalidateRect(const WebRect& rect) {

@@ -31,36 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_CLIENT_H_
 
-#include <memory>
-#include <vector>
-
-#include "base/callback.h"
-#include "base/i18n/rtl.h"
-#include "base/time/time.h"
-#include "build/buildflag.h"
-#include "cc/trees/layer_tree_host.h"
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/common/input/web_coalesced_input_event.h"
-#include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/common/widget/device_emulation_params.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
-#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-forward.h"
-#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_text_input_type.h"
-#include "third_party/blink/public/platform/web_touch_action.h"
-
-class SkBitmap;
-
-namespace gfx {
-class Point;
-}
-
 namespace blink {
-class WebDragData;
 
 class WebWidgetClient {
  public:
@@ -69,15 +40,6 @@ class WebWidgetClient {
   // Called to request a BeginMainFrame from the compositor. This is only
   // called for widget's WebView's that do not composite.
   virtual void ScheduleNonCompositedAnimation() {}
-
-  // Called when a drag-and-drop operation should begin. Returns whether the
-  // call has been handled.
-  virtual bool InterceptStartDragging(const WebDragData&,
-                                      DragOperationsMask,
-                                      const SkBitmap& drag_image,
-                                      const gfx::Point& drag_image_offset) {
-    return false;
-  }
 
 };
 

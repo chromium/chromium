@@ -1146,8 +1146,8 @@ void WebFrameWidgetImpl::StartDragging(const WebDragData& drag_data,
                                        const SkBitmap& drag_image,
                                        const gfx::Point& drag_image_offset) {
   doing_drag_and_drop_ = true;
-  if (Client()->InterceptStartDragging(drag_data, operations_allowed,
-                                       drag_image, drag_image_offset)) {
+  if (drag_and_drop_disabled_) {
+    DragSourceSystemDragEnded();
     return;
   }
 
@@ -1253,6 +1253,10 @@ WebFrameWidgetImpl::GetActiveWebInputMethodController() const {
   WebLocalFrameImpl* local_frame =
       WebLocalFrameImpl::FromFrame(FocusedLocalFrameInWidget());
   return local_frame ? local_frame->GetInputMethodController() : nullptr;
+}
+
+void WebFrameWidgetImpl::DisableDragAndDrop() {
+  drag_and_drop_disabled_ = true;
 }
 
 gfx::PointF WebFrameWidgetImpl::ViewportToRootFrame(

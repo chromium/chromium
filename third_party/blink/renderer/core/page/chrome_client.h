@@ -32,6 +32,7 @@
 #include "cc/input/overscroll_behavior.h"
 #include "cc/paint/paint_image.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
+#include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy_features.h"

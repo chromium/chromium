@@ -144,6 +144,7 @@ specific_include_rules = {
     ],
     "data_object_item.cc" : [ "+ui/gfx/codec" ],
     "chrome_client.h" : [
+        "+components/viz/common/delegated_ink_metadata.h",
         "+components/viz/common/surfaces/frame_sink_id.h",
     ],
     "clipboard_utilities.cc" : [ "+net/base/escape.h" ],

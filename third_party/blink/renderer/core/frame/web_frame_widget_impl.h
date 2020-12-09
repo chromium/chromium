@@ -281,6 +281,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void UpdateCompositorScrollState(
       const cc::CompositorCommitData& commit_data) override;
   WebInputMethodController* GetActiveWebInputMethodController() const override;
+  void DisableDragAndDrop() override;
   WebLocalFrameImpl* FocusedWebLocalFrameInWidget() const override;
   bool ScrollFocusedEditableElementIntoView() override;
   void ApplyViewportChangesForTesting(
@@ -934,6 +935,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // keyPress events to be suppressed if the associated keyDown event was
   // handled.
   bool suppress_next_keypress_event_ = false;
+
+  // Whether drag and drop is supported by this widget. When disabled
+  // any drag operation that is started will be canceled immediately.
+  bool drag_and_drop_disabled_ = false;
 
   // This struct contains data that is only valid for child local root widgets.
   // You should use `child_data()` to access it.

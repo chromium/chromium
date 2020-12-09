@@ -178,10 +178,6 @@ class WebViewPlugin : public blink::WebPlugin,
     void DidInvalidateRect(const blink::WebRect&) override;
 
     // WebWidgetClient methods:
-    bool InterceptStartDragging(const blink::WebDragData&,
-                                blink::DragOperationsMask,
-                                const SkBitmap&,
-                                const gfx::Point&) override;
     void ScheduleNonCompositedAnimation() override;
 
     // WebLocalFrameClient methods:

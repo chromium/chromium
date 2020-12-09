@@ -133,6 +133,10 @@ class WebFrameWidget : public WebWidget {
   // ended.
   virtual void DragSourceSystemDragEnded() = 0;
 
+  // Disables Drag and drop on this widget. Any drag activity will be
+  // immediately canceled.
+  virtual void DisableDragAndDrop() = 0;
+
   // Sets the inherited effective touch action on an out-of-process iframe.
   virtual void SetInheritedEffectiveTouchAction(WebTouchAction) {}
 

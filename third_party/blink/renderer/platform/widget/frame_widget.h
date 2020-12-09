@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 
+#include "cc/input/layer_selection_bound.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
@@ -19,6 +20,8 @@
 
 namespace cc {
 class AnimationHost;
+enum class EventListenerClass;
+enum class EventListenerProperties;
 class Layer;
 class LayerTreeSettings;
 class PaintImage;
@@ -29,6 +32,7 @@ class Cursor;
 }  // namespace ui
 
 namespace blink {
+struct ScreenInfo;
 
 // In interface exposed within Blink from local root frames that provides
 // local-root specific things related to compositing and input. This
@@ -123,7 +127,7 @@ class PLATFORM_EXPORT FrameWidget {
   // ScrollableArea identified by |scrollable_area_element_id| by the given
   // delta + granularity.
   virtual void InjectGestureScrollEvent(
-      WebGestureDevice device,
+      mojom::blink::GestureDevice device,
       const gfx::Vector2dF& delta,
       ui::ScrollGranularity granularity,
       cc::ElementId scrollable_area_element_id,
