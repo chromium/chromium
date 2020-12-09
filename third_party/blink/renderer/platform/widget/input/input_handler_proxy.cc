@@ -896,7 +896,6 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
     DCHECK(wheel_event.phase != WebMouseWheelEvent::kPhaseNone ||
            wheel_event.momentum_phase != WebMouseWheelEvent::kPhaseNone);
 
-    DCHECK(mouse_wheel_result_.has_value());
     // TODO(bokan): This should never happen but after changing
     // mouse_event_result_ to a base::Optional, crashes indicate that it does
     // so |if| maintains prior behavior. https://crbug.com/1069760.
