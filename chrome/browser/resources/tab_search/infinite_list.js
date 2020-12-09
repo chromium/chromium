@@ -23,6 +23,7 @@ import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {afterNextRender, DomRepeat, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @type {number} */
@@ -125,7 +126,14 @@ export class InfiniteList extends PolymerElement {
         this.domRepeat_.items.length,
         Math.min(idx + this.chunkItemCount, this.items.length));
     if (newItems.length > 0) {
+      const startTime = performance.now();
       this.domRepeat_.push('items', ...newItems);
+      listenOnce(this, 'dom-change', () => {
+        afterNextRender(this, () => {
+          performance.mark(`infinite_list_updated:${
+              performance.now() - startTime}:benchmark_value`);
+        });
+      });
     }
   }
 
