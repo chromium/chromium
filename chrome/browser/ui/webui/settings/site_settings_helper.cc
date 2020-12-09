@@ -398,7 +398,7 @@ base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type) {
 
   NOTREACHED() << static_cast<int32_t>(type)
                << " is not a recognized content settings type.";
-  return std::string();
+  return base::StringPiece();
 }
 
 std::vector<ContentSettingsType> ContentSettingsTypesFromGroupNames(
