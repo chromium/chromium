@@ -15,12 +15,14 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/optional.h"
+#include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/arc/arc_features.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/user_manager/user_manager.h"
@@ -44,6 +46,8 @@ constexpr char kAvailabilityInstalled[] = "installed";
 constexpr char kAvailabilityOfficiallySupported[] = "officially-supported";
 constexpr char kAlwaysStartWithNoPlayStore[] =
     "always-start-with-no-play-store";
+
+constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 
 void SetArcCpuRestrictionCallback(
     login_manager::ContainerCpuRestrictionState state,
@@ -108,6 +112,36 @@ void SetArcContainerCpuRestriction(CpuRestrictionState cpu_restriction_state) {
   }
   chromeos::SessionManagerClient::Get()->SetArcCpuRestriction(
       state, base::BindOnce(SetArcCpuRestrictionCallback, state));
+}
+
+// Decodes a job name that may have "_2d" e.g. |kArcCreateDataJobName|
+// and returns a decoded string.
+std::string DecodeJobName(const std::string& raw_job_name) {
+  constexpr const char* kFind = "_2d";
+  std::string decoded(raw_job_name);
+  base::ReplaceSubstringsAfterOffset(&decoded, 0, kFind, "-");
+  return decoded;
+}
+
+// Called when the Upstart operation started in ConfigureUpstartJobs is
+// done. Handles the fatal error (if any) and then starts the next job.
+void OnConfigureUpstartJobs(std::deque<JobDesc> jobs,
+                            chromeos::VoidDBusMethodCallback callback,
+                            bool result) {
+  const std::string job_name = DecodeJobName(jobs.front().job_name);
+  const bool is_start = (jobs.front().operation == UpstartOperation::JOB_START);
+
+  if (!result && is_start) {
+    LOG(ERROR) << "Failed to start " << job_name;
+    // TODO(yusukes): Record UMA for this case.
+    std::move(callback).Run(false);
+    return;
+  }
+
+  VLOG(1) << job_name
+          << (is_start ? " started" : (result ? " stopped " : " not running?"));
+  jobs.pop_front();
+  ConfigureUpstartJobs(std::move(jobs), std::move(callback));
 }
 
 }  // namespace
@@ -345,6 +379,62 @@ bool GenerateFirstStageFstab(const base::FilePath& combined_property_file_name,
       fstab_path,
       base::StringPrintf(kFirstStageFstabTemplate,
                          combined_property_file_name.value().c_str()));
+}
+
+int GetSystemPropertyInt(const std::string& property) {
+  std::string output;
+  if (!base::GetAppOutput({kCrosSystemPath, property}, &output))
+    return -1;
+  int output_int;
+  return base::StringToInt(output, &output_int) ? output_int : -1;
+}
+
+JobDesc::JobDesc(const std::string& job_name,
+                 UpstartOperation operation,
+                 const std::vector<std::string>& environment)
+    : job_name(job_name), operation(operation), environment(environment) {}
+
+JobDesc::~JobDesc() = default;
+
+JobDesc::JobDesc(const JobDesc& other) = default;
+
+void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
+                          chromeos::VoidDBusMethodCallback callback) {
+  if (jobs.empty()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  if (jobs.front().operation == UpstartOperation::JOB_STOP_AND_START) {
+    // Expand the restart operation into two, stop and start.
+    jobs.front().operation = UpstartOperation::JOB_START;
+    jobs.push_front({jobs.front().job_name, UpstartOperation::JOB_STOP,
+                     jobs.front().environment});
+  }
+
+  const auto& job_name = jobs.front().job_name;
+  const auto& operation = jobs.front().operation;
+  const auto& environment = jobs.front().environment;
+
+  VLOG(1) << (operation == UpstartOperation::JOB_START ? "Starting "
+                                                       : "Stopping ")
+          << DecodeJobName(job_name);
+
+  auto wrapped_callback = base::BindOnce(&OnConfigureUpstartJobs,
+                                         std::move(jobs), std::move(callback));
+  switch (operation) {
+    case UpstartOperation::JOB_START:
+      chromeos::UpstartClient::Get()->StartJob(job_name, environment,
+                                               std::move(wrapped_callback));
+      break;
+    case UpstartOperation::JOB_STOP:
+      chromeos::UpstartClient::Get()->StopJob(job_name, environment,
+                                              std::move(wrapped_callback));
+      break;
+    case UpstartOperation::JOB_STOP_AND_START:
+      NOTREACHED();
+      break;
+  }
 }
 
 }  // namespace arc

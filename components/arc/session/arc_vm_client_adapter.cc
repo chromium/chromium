@@ -48,7 +48,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/upstart/upstart_client.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_util.h"
@@ -71,7 +70,6 @@ constexpr char kArcVmPostLoginServicesJobName[] =
 constexpr char kArcVmPostVmStartServicesJobName[] =
     "arcvm_2dpost_2dvm_2dstart_2dservices";
 
-constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 constexpr const char kArcVmBootNotificationServerSocketPath[] =
     "/run/arcvm_boot_notification_server/host.socket";
 
@@ -290,16 +288,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   return request;
 }
 
-// Gets a system property managed by crossystem. This function can be called
-// only with base::MayBlock().
-int GetSystemPropertyInt(const std::string& property) {
-  std::string output;
-  if (!base::GetAppOutput({kCrosSystemPath, property}, &output))
-    return -1;
-  int output_int;
-  return base::StringToInt(output, &output_int) ? output_int : -1;
-}
-
 const sockaddr_un* GetArcVmBootNotificationServerAddress() {
   static struct sockaddr_un address {
     .sun_family = AF_UNIX,
@@ -377,98 +365,6 @@ bool SendUpgradePropsToArcVmBootNotificationServer(
     return false;
   }
   return true;
-}
-
-// Decodes a job name that may have "_2d" e.g. |kArcCreateDataJobName|
-// and returns a decoded string.
-std::string DecodeJobName(const std::string& raw_job_name) {
-  constexpr const char* kFind = "_2d";
-  std::string decoded(raw_job_name);
-  base::ReplaceSubstringsAfterOffset(&decoded, 0, kFind, "-");
-  return decoded;
-}
-
-enum class UpstartOperation {
-  JOB_START = 0,
-  JOB_STOP,
-  // This sends STOP D-Bus message, then sends START. Unlike 'initctl restart',
-  // this starts the job even when the job hasn't been started yet (and
-  // therefore the stop operation fails.)
-  JOB_STOP_AND_START,
-};
-
-struct JobDesc {
-  std::string job_name;
-  UpstartOperation operation;
-  std::vector<std::string> environment;
-};
-
-void OnConfigureUpstartJobs(std::deque<JobDesc> jobs,
-                            chromeos::VoidDBusMethodCallback callback,
-                            bool result);
-
-// Starts or stops a job in |jobs| one by one. If starting a job fails, the
-// whole operation is aborted and the |callback| is immediately called with
-// false. Errors on stopping a job is just ignored with some logs. Once all jobs
-// are successfully processed, |callback| is called with true.
-void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
-                          chromeos::VoidDBusMethodCallback callback) {
-  if (jobs.empty()) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-  if (jobs.front().operation == UpstartOperation::JOB_STOP_AND_START) {
-    // Expand the restart operation into two, stop and start.
-    jobs.front().operation = UpstartOperation::JOB_START;
-    jobs.push_front({jobs.front().job_name, UpstartOperation::JOB_STOP,
-                     jobs.front().environment});
-  }
-
-  const auto& job_name = jobs.front().job_name;
-  const auto& operation = jobs.front().operation;
-  const auto& environment = jobs.front().environment;
-
-  VLOG(1) << (operation == UpstartOperation::JOB_START ? "Starting "
-                                                       : "Stopping ")
-          << DecodeJobName(job_name);
-
-  auto wrapped_callback = base::BindOnce(&OnConfigureUpstartJobs,
-                                         std::move(jobs), std::move(callback));
-  switch (operation) {
-    case UpstartOperation::JOB_START:
-      chromeos::UpstartClient::Get()->StartJob(job_name, environment,
-                                               std::move(wrapped_callback));
-      break;
-    case UpstartOperation::JOB_STOP:
-      chromeos::UpstartClient::Get()->StopJob(job_name, environment,
-                                              std::move(wrapped_callback));
-      break;
-    case UpstartOperation::JOB_STOP_AND_START:
-      NOTREACHED();
-      break;
-  }
-}
-
-// Called when the Upstart operation started in ConfigureUpstartJobs is
-// done. Handles the fatal error (if any) and then starts the next job.
-void OnConfigureUpstartJobs(std::deque<JobDesc> jobs,
-                            chromeos::VoidDBusMethodCallback callback,
-                            bool result) {
-  const std::string job_name = DecodeJobName(jobs.front().job_name);
-  const bool is_start = (jobs.front().operation == UpstartOperation::JOB_START);
-
-  if (!result && is_start) {
-    LOG(ERROR) << "Failed to start " << job_name;
-    // TODO(yusukes): Record UMA for this case.
-    std::move(callback).Run(false);
-    return;
-  }
-
-  VLOG(1) << job_name
-          << (is_start ? " started" : (result ? " stopped " : " not running?"));
-  jobs.pop_front();
-  ConfigureUpstartJobs(std::move(jobs), std::move(callback));
 }
 
 // Returns true if the daemon for adb-over-usb should be started on the device.
