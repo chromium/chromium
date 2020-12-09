@@ -413,6 +413,7 @@ ci.builder(
     properties = {
         "avd_configs": [
             "tools/android/avd/proto/creation/generic_android23.textpb",
+            "tools/android/avd/proto/creation/generic_android27.textpb",
             "tools/android/avd/proto/creation/generic_android28.textpb",
             "tools/android/avd/proto/creation/generic_android29.textpb",
             "tools/android/avd/proto/creation/generic_android30.textpb",
