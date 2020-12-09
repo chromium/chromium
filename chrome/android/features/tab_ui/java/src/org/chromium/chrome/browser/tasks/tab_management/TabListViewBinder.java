@@ -41,10 +41,14 @@ class TabListViewBinder {
             faviconView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
             faviconView.setImageDrawable(favicon);
         } else if (TabProperties.TAB_CLOSED_LISTENER == propertyKey) {
-            fastView.findViewById(R.id.end_button).setOnClickListener(v -> {
-                int tabId = model.get(TabProperties.TAB_ID);
-                model.get(TabProperties.TAB_CLOSED_LISTENER).run(tabId);
-            });
+            if (model.get(TabProperties.TAB_CLOSED_LISTENER) == null) {
+                fastView.findViewById(R.id.end_button).setOnClickListener(null);
+            } else {
+                fastView.findViewById(R.id.end_button).setOnClickListener(v -> {
+                    int tabId = model.get(TabProperties.TAB_ID);
+                    model.get(TabProperties.TAB_CLOSED_LISTENER).run(tabId);
+                });
+            }
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             int selectedTabBackground =
                     model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
@@ -67,10 +71,14 @@ class TabListViewBinder {
                 view.setForeground(model.get(TabProperties.IS_SELECTED) ? drawable : null);
             }
         } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
-            view.setOnClickListener(v -> {
-                int tabId = model.get(TabProperties.TAB_ID);
-                model.get(TabProperties.TAB_SELECTED_LISTENER).run(tabId);
-            });
+            if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
+                view.setOnClickListener(null);
+            } else {
+                view.setOnClickListener(v -> {
+                    int tabId = model.get(TabProperties.TAB_ID);
+                    model.get(TabProperties.TAB_SELECTED_LISTENER).run(tabId);
+                });
+            }
         } else if (TabProperties.URL_DOMAIN == propertyKey) {
             String domain = model.get(TabProperties.URL_DOMAIN);
             ((TextView) fastView.findViewById(R.id.description)).setText(domain);

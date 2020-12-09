@@ -85,6 +85,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     private PropertyModel mSelectableModel;
     private PropertyModelChangeProcessor mSelectableMCP;
 
+    private ViewGroup mTabListView;
     private ViewGroup mSelectableTabListView;
 
     @Mock
@@ -160,11 +161,14 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
                     R.layout.selectable_tab_grid_card_item, null);
             mSelectableTabListView = (ViewGroup) getActivity().getLayoutInflater().inflate(
                     R.layout.selectable_tab_list_card_item, null);
+            mTabListView = (ViewGroup) getActivity().getLayoutInflater().inflate(
+                    R.layout.closable_tab_list_card_item, null);
 
             view.addView(mTabGridView);
             view.addView(mTabStripView);
             view.addView(mSelectableTabGridView);
             view.addView(mSelectableTabListView);
+            view.addView(mTabListView);
         });
 
         SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
@@ -198,6 +202,8 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
                     mSelectableModel, mSelectableTabGridView, TabGridViewBinder::bindSelectableTab);
             PropertyModelChangeProcessor.create(mSelectableModel, mSelectableTabListView,
                     TabListViewBinder::bindSelectableListTab);
+            PropertyModelChangeProcessor.create(
+                    mGridModel, mTabListView, TabListViewBinder::bindListTab);
         });
         mMocker.mock(LevelDBPersistedTabDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
         doNothing()
@@ -456,18 +462,42 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         Assert.assertFalse(mSelectClicked.get());
         mTabGridView.performClick();
         Assert.assertTrue(mSelectClicked.get());
-        mSelectClicked.set(false);
         int firstSelectId = mSelectTabId.get();
         Assert.assertEquals(TAB1_ID, firstSelectId);
+        mSelectClicked.set(false);
+        mSelectTabId.set(Tab.INVALID_TAB_ID);
+
+        Assert.assertFalse(mSelectClicked.get());
+        mTabListView.performClick();
+        Assert.assertTrue(mSelectClicked.get());
+        firstSelectId = mSelectTabId.get();
+        Assert.assertEquals(TAB1_ID, firstSelectId);
+        mSelectClicked.set(false);
 
         mGridModel.set(TabProperties.TAB_ID, TAB2_ID);
         mTabGridView.performClick();
         Assert.assertTrue(mSelectClicked.get());
-        mSelectClicked.set(false);
         int secondSelectId = mSelectTabId.get();
         // When TAB_ID in PropertyModel is updated, binder should select tab with updated tab ID.
         Assert.assertEquals(TAB2_ID, secondSelectId);
         Assert.assertNotEquals(firstSelectId, secondSelectId);
+        mSelectClicked.set(false);
+        mSelectTabId.set(Tab.INVALID_TAB_ID);
+
+        Assert.assertFalse(mSelectClicked.get());
+        mTabListView.performClick();
+        Assert.assertTrue(mSelectClicked.get());
+        secondSelectId = mSelectTabId.get();
+        Assert.assertEquals(TAB2_ID, secondSelectId);
+        Assert.assertNotEquals(firstSelectId, secondSelectId);
+        mSelectClicked.set(false);
+
+        mGridModel.set(TabProperties.TAB_SELECTED_LISTENER, null);
+        mTabGridView.performClick();
+        Assert.assertFalse(mSelectClicked.get());
+        mTabListView.performClick();
+        Assert.assertFalse(mSelectClicked.get());
+        mSelectClicked.set(false);
 
         ImageButton button = mTabStripView.findViewById(R.id.tab_strip_item_button);
         mStripModel.set(TabProperties.IS_SELECTED, false);
@@ -494,27 +524,50 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     @MediumTest
     @UiThreadTest
     public void testClickToClose() {
-        ImageView actionButton = mTabGridView.findViewById(R.id.action_button);
+        ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
+        ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
         ImageButton button = mTabStripView.findViewById(R.id.tab_strip_item_button);
 
         Assert.assertFalse(mCloseClicked.get());
-        actionButton.performClick();
+        gridActionButton.performClick();
         Assert.assertTrue(mCloseClicked.get());
-        mCloseClicked.set(false);
         int firstCloseId = mCloseTabId.get();
         Assert.assertEquals(TAB1_ID, firstCloseId);
 
+        mCloseClicked.set(false);
+        mCloseTabId.set(Tab.INVALID_TAB_ID);
+
+        Assert.assertFalse(mCloseClicked.get());
+        listActionButton.performClick();
+        Assert.assertTrue(mCloseClicked.get());
+        firstCloseId = mCloseTabId.get();
+        Assert.assertEquals(TAB1_ID, firstCloseId);
+
+        mCloseClicked.set(false);
+
         mGridModel.set(TabProperties.TAB_ID, TAB2_ID);
-        actionButton.performClick();
+        gridActionButton.performClick();
         Assert.assertTrue(mCloseClicked.get());
         mCloseClicked.set(false);
         int secondClosed = mCloseTabId.get();
+
+        mCloseClicked.set(false);
+        mCloseTabId.set(Tab.INVALID_TAB_ID);
+
+        Assert.assertFalse(mCloseClicked.get());
+        listActionButton.performClick();
+        Assert.assertTrue(mCloseClicked.get());
+        secondClosed = mCloseTabId.get();
         // When TAB_ID in PropertyModel is updated, binder should close tab with updated tab ID.
         Assert.assertEquals(TAB2_ID, secondClosed);
         Assert.assertNotEquals(firstCloseId, secondClosed);
 
+        mCloseClicked.set(false);
+
         mGridModel.set(TabProperties.TAB_CLOSED_LISTENER, null);
-        actionButton.performClick();
+        gridActionButton.performClick();
+        Assert.assertFalse(mCloseClicked.get());
+        listActionButton.performClick();
         Assert.assertFalse(mCloseClicked.get());
 
         mStripModel.set(TabProperties.IS_SELECTED, true);
