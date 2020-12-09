@@ -427,15 +427,15 @@ void DaemonProcessWin::ConfigureHostLogging() {
   if (logging_reg_key.HasValue(kLogToFileRegistryValue)) {
     DWORD enabled = 0;
     result = logging_reg_key.ReadValueDW(kLogToFileRegistryValue, &enabled);
-    if (result == ERROR_SUCCESS) {
+    if (result != ERROR_SUCCESS) {
+      ::SetLastError(result);
+      PLOG(ERROR) << "Failed to read HKLM\\" << kLoggingRegistryKeyName << "\\"
+                  << kLogToFileRegistryValue;
+    } else if (enabled) {
       auto file_logger = HostEventFileLogger::Create();
       if (file_logger) {
         loggers.push_back(std::move(file_logger));
       }
-    } else {
-      ::SetLastError(result);
-      PLOG(ERROR) << "Failed to read HKLM\\" << kLoggingRegistryKeyName << "\\"
-                  << kLogToFileRegistryValue;
     }
   }
 
@@ -443,15 +443,15 @@ void DaemonProcessWin::ConfigureHostLogging() {
   if (logging_reg_key.HasValue(kLogToEventLogRegistryValue)) {
     DWORD enabled = 0;
     result = logging_reg_key.ReadValueDW(kLogToEventLogRegistryValue, &enabled);
-    if (result == ERROR_SUCCESS) {
+    if (result != ERROR_SUCCESS) {
+      ::SetLastError(result);
+      PLOG(ERROR) << "Failed to read HKLM\\" << kLoggingRegistryKeyName << "\\"
+                  << kLogToEventLogRegistryValue;
+    } else if (enabled) {
       auto event_logger = HostEventWindowsEventLogger::Create();
       if (event_logger) {
         loggers.push_back(std::move(event_logger));
       }
-    } else {
-      ::SetLastError(result);
-      PLOG(ERROR) << "Failed to read HKLM\\" << kLoggingRegistryKeyName << "\\"
-                  << kLogToEventLogRegistryValue;
     }
   }
 
