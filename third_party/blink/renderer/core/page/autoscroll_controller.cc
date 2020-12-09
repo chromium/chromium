@@ -29,11 +29,13 @@
 
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/input/scroll_manager.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -250,7 +252,16 @@ void AutoscrollController::HandleMouseMoveForMiddleClickAutoscroll(
   if (!MiddleClickAutoscrollInProgress())
     return;
 
-  if (!autoscroll_layout_object_->CanBeScrolledAndHasScrollableArea()) {
+  bool horizontal_autoscroll_possible =
+      horizontal_autoscroll_layout_box_ &&
+      horizontal_autoscroll_layout_box_->GetNode();
+  bool vertical_autoscroll_possible =
+      vertical_autoscroll_layout_box_ &&
+      vertical_autoscroll_layout_box_->GetNode();
+  if (horizontal_autoscroll_possible &&
+      !horizontal_autoscroll_layout_box_->CanBeScrolledAndHasScrollableArea() &&
+      vertical_autoscroll_possible &&
+      !vertical_autoscroll_layout_box_->CanBeScrolledAndHasScrollableArea()) {
     StopMiddleClickAutoscroll(frame);
     return;
   }
@@ -277,11 +288,17 @@ void AutoscrollController::HandleMouseMoveForMiddleClickAutoscroll(
       pow(fabs(distance.Height()), kExponent) * kMultiplier * y_signum);
 
   bool can_scroll_vertically =
-      CanScrollDirection(autoscroll_layout_object_, frame->GetPage(),
-                         ScrollOrientation::kVerticalScroll);
+      vertical_autoscroll_possible
+          ? CanScrollDirection(vertical_autoscroll_layout_box_,
+                               frame->GetPage(),
+                               ScrollOrientation::kVerticalScroll)
+          : false;
   bool can_scroll_horizontally =
-      CanScrollDirection(autoscroll_layout_object_, frame->GetPage(),
-                         ScrollOrientation::kHorizontalScroll);
+      horizontal_autoscroll_possible
+          ? CanScrollDirection(horizontal_autoscroll_layout_box_,
+                               frame->GetPage(),
+                               ScrollOrientation::kHorizontalScroll)
+          : false;
 
   if (velocity != last_velocity_) {
     last_velocity_ = velocity;
@@ -338,17 +355,68 @@ void AutoscrollController::StartMiddleClickAutoscroll(
   if (autoscroll_type_ != kNoAutoscroll)
     return;
 
-  autoscroll_layout_object_ = scrollable;
   autoscroll_type_ = kAutoscrollForMiddleClick;
   middle_click_mode_ = kMiddleClickInitial;
   middle_click_autoscroll_start_pos_global_ = position_global;
 
-  bool can_scroll_vertically =
-      CanScrollDirection(autoscroll_layout_object_, frame->GetPage(),
-                         ScrollOrientation::kVerticalScroll);
-  bool can_scroll_horizontally =
-      CanScrollDirection(autoscroll_layout_object_, frame->GetPage(),
-                         ScrollOrientation::kHorizontalScroll);
+  bool can_scroll_vertically = false;
+  bool can_scroll_horizontally = false;
+
+  // Scroll propagation can be prevented in either direction independently.
+  // We check whether autoscroll can be prevented in either direction after
+  // checking whether the layout box can be scrolled. If propagation is not
+  // allowed, we do not perform further checks for whether parents can be
+  // scrolled in that direction.
+  bool can_propagate_vertically = true;
+  bool can_propagate_horizontally = true;
+
+  LayoutObject* layout_object = scrollable->GetNode()->GetLayoutObject();
+
+  while (layout_object && !(can_scroll_horizontally && can_scroll_vertically)) {
+    LayoutBox* layout_box;
+
+    if (layout_object->IsBox()) {
+      layout_box = To<LayoutBox>(layout_object);
+      // Check whether the layout box can be scrolled and has horizontal
+      // scrollable area.
+      if (can_propagate_vertically &&
+          CanScrollDirection(layout_box, frame->GetPage(),
+                             ScrollOrientation::kVerticalScroll) &&
+          !vertical_autoscroll_layout_box_) {
+        vertical_autoscroll_layout_box_ = layout_box;
+        can_scroll_vertically = true;
+      }
+      // Check whether the layout box can be scrolled and has vertical
+      // scrollable area.
+      if (can_propagate_horizontally &&
+          CanScrollDirection(layout_box, frame->GetPage(),
+                             ScrollOrientation::kHorizontalScroll) &&
+          !horizontal_autoscroll_layout_box_) {
+        horizontal_autoscroll_layout_box_ = layout_box;
+        can_scroll_horizontally = true;
+      }
+    }
+
+    can_propagate_vertically = ScrollManager::CanPropagate(
+        layout_box, ScrollPropagationDirection::kVertical);
+    can_propagate_horizontally = ScrollManager::CanPropagate(
+        layout_box, ScrollPropagationDirection::kHorizontal);
+
+    // Exit loop if we can't propagate to the parent in any direction or if
+    // layout boxes have been found for both directions.
+    if ((!can_propagate_vertically && !can_propagate_horizontally) ||
+        (can_scroll_horizontally && can_scroll_vertically))
+      break;
+
+    if (!layout_object->Parent() &&
+        layout_object->GetNode() == layout_object->GetDocument() &&
+        layout_object->GetDocument().LocalOwner()) {
+      layout_object =
+          layout_object->GetDocument().LocalOwner()->GetLayoutObject();
+    } else {
+      layout_object = layout_object->Parent();
+    }
+  }
 
   UseCounter::Count(frame->GetDocument(),
                     WebFeature::kMiddleClickAutoscrollStart);

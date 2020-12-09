@@ -182,4 +182,102 @@ TEST_F(AutoscrollControllerTest, StopAutoscrollOnResize) {
   EXPECT_TRUE(controller.IsAutoscrolling());
 }
 
+// Ensure that middle click autoscroll is not propagated in a direction when
+// propagation is not allowed.
+TEST_F(AutoscrollControllerTest, AutoscrollIsNotPropagated) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          #scrollable {
+            width: 820px;
+            height: 620px;
+            overflow: auto;
+            overscroll-behavior: contain;
+          }
+          #inner {
+            width: 2500px;
+            background-color: aqua;
+            height: 100px;
+          }
+        </style>
+      </head>
+      <body style='width: 3000px; height: 3000px;'>
+        <div id="scrollable">
+          <div id="inner"></div>
+        </div>
+      </body>
+    </html>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  AutoscrollController& controller = GetAutoscrollController();
+
+  EXPECT_FALSE(controller.IsAutoscrolling());
+
+  LocalFrame* frame = GetDocument().GetFrame();
+  LayoutBox* scrollable =
+      GetDocument().getElementById("scrollable")->GetLayoutBox();
+
+  controller.StartMiddleClickAutoscroll(
+      frame, scrollable, FloatPoint(15.0, 15.0), FloatPoint(15.0, 15.0));
+
+  EXPECT_TRUE(controller.IsAutoscrolling());
+  EXPECT_TRUE(controller.horizontal_autoscroll_layout_box_);
+  EXPECT_FALSE(controller.vertical_autoscroll_layout_box_);
+}
+
+// Ensure that middle click autoscroll is propagated in a direction when
+// overscroll-behavior is set to auto for a that direction.
+TEST_F(AutoscrollControllerTest, AutoscrollIsPropagatedInYDirection) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          #scrollable {
+            width: 820px;
+            height: 620px;
+            overflow: auto;
+            overscroll-behavior-x: contain;
+          }
+          #inner {
+            width: 1000px;
+            background-color: aqua;
+            height: 100px;
+          }
+        </style>
+      </head>
+      <body style='width: 3000px; height: 3000px;'>
+        <div id="scrollable">
+          <div id="inner"></div>
+        </div>
+      </body>
+    </html>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  AutoscrollController& controller = GetAutoscrollController();
+
+  EXPECT_FALSE(controller.IsAutoscrolling());
+
+  LocalFrame* frame = GetDocument().GetFrame();
+  LayoutBox* scrollable =
+      GetDocument().getElementById("scrollable")->GetLayoutBox();
+
+  controller.StartMiddleClickAutoscroll(
+      frame, scrollable, FloatPoint(15.0, 15.0), FloatPoint(15.0, 15.0));
+
+  EXPECT_TRUE(controller.IsAutoscrolling());
+  EXPECT_TRUE(controller.vertical_autoscroll_layout_box_);
+  EXPECT_TRUE(controller.horizontal_autoscroll_layout_box_);
+}
+
 }  // namespace blink

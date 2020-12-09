@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src='../../resources/gesture-util.js'></script>
+<style>
+
+body {
+  height: 2000px;
+  width: 2000px;
+  background: repeating-linear-gradient(
+    45deg,
+    #606dbc,
+    #606dbc 40px,
+    #465298 40px,
+    #465298 80px
+  ) local;
+}
+
+#scroller {
+  width: 90px;
+  border: 2px solid black;
+  height: 90px;
+  position: absolute;
+  top: 50px;
+  overflow: auto;
+  background: repeating-linear-gradient(
+    135deg,
+    #bc6d60,
+    #bc6d60 40px,
+    #985246 40px,
+    #985246 80px
+  ) local;
+}
+
+#contents {
+  height: 200px;
+}
+
+</style>
+
+<div id="scroller">
+	<div id="contents"></div>
+</div>
+
+<script>
+
+var scroller = document.getElementById('scroller');
+
+promise_test(async () => {
+  assert_equals(scroller.scrollTop, 0);
+  await waitForCompositorCommit();
+  await mouseClickOn(12, 60, 1);
+  await mouseMoveTo(12, 260);
+  await mouseClickOn(12, 260, 1);
+  await waitFor(() => {
+    return scroller.scrollTop > 0;
+  }, "failed to scroll scroller vertically");
+}, "Middle click autoscroll should scroll child if child delta can be consumed.");
+
+promise_test(async () => {
+  assert_equals(document.scrollingElement.scrollLeft, 0)
+  await waitForCompositorCommit();
+  await mouseClickOn(12, 60, 1);
+  await mouseMoveTo(212, 60);
+  await mouseClickOn(212, 60, 1);
+  await waitFor(() => {
+    return document.scrollingElement.scrollLeft > 0;
+  }, "failed to scroll document body horizontally");
+}, "Middle click autoscroll should scroll parent if child delta can not be consumed.");
+
+</script>
