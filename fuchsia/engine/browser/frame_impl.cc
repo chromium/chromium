@@ -36,7 +36,6 @@
 #include "content/public/common/was_activated_option.mojom.h"
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/message_port.h"
-#include "fuchsia/cast_streaming/public/cast_streaming.h"
 #include "fuchsia/engine/browser/accessibility_bridge.h"
 #include "fuchsia/engine/browser/cast_streaming_session_client.h"
 #include "fuchsia/engine/browser/context_impl.h"
@@ -518,12 +517,12 @@ bool FrameImpl::MaybeHandleCastStreamingMessage(
   if (!IsCastStreamingEnabled())
     return false;
 
-  if (!cast_streaming::IsCastStreamingAppOrigin(*origin))
+  if (!IsCastStreamingAppOrigin(*origin))
     return false;
 
   fuchsia::web::Frame_PostMessage_Result result;
   if (cast_streaming_session_client_ ||
-      !cast_streaming::IsValidCastStreamingMessage(*message)) {
+      !IsValidCastStreamingMessage(*message)) {
     // The Cast Streaming MessagePort should only be set once and |message|
     // should be a valid Cast Streaming Message.
     result.set_err(fuchsia::web::FrameError::INVALID_ORIGIN);

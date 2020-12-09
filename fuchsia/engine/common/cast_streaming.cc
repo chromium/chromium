@@ -5,11 +5,15 @@
 #include "fuchsia/engine/common/cast_streaming.h"
 
 #include "base/command_line.h"
+#include "base/strings/string_piece.h"
 #include "fuchsia/engine/switches.h"
 #include "url/gurl.h"
 
 namespace {
+
 constexpr char kCastStreamingReceiverUrl[] = "data:cast_streaming_receiver";
+constexpr char kCastStreamingMessagePortOrigin[] = "cast-streaming:receiver";
+
 }  // namespace
 
 bool IsCastStreamingEnabled() {
@@ -21,4 +25,16 @@ bool IsCastStreamingEnabled() {
 
 bool IsCastStreamingMediaSourceUrl(const GURL& url) {
   return url == kCastStreamingReceiverUrl;
+}
+
+bool IsCastStreamingAppOrigin(base::StringPiece origin) {
+  return origin == kCastStreamingMessagePortOrigin;
+}
+
+bool IsValidCastStreamingMessage(const fuchsia::web::WebMessage& message) {
+  // |message| should contain exactly one OutgoingTransferrable, with a single
+  // MessagePort.
+  return message.has_outgoing_transfer() &&
+         message.outgoing_transfer().size() == 1u &&
+         message.outgoing_transfer()[0].is_message_port();
 }
