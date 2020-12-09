@@ -10,7 +10,6 @@ class MetricsUtils {
   /**
    * Records a cancel event if speech was in progress.
    * @param {boolean} speaking Whether speech was in progress
-   * @public
    */
   static recordCancelIfSpeaking(speaking) {
     if (speaking) {
@@ -24,7 +23,6 @@ class MetricsUtils {
    *    that reflects how this event was triggered by the user.
    * @param {PrefsManager} prefsManager A PrefsManager with the users's current
    *    preferences.
-   * @public
    */
   static recordStartEvent(method, prefsManager) {
     chrome.metricsPrivate.recordUserAction(MetricsUtils.START_SPEECH_METRIC);
@@ -50,7 +48,6 @@ class MetricsUtils {
   /**
    * Records a user-requested state change event from a given state.
    * @param {number} changeType
-   * @public
    */
   static recordSelectToSpeakStateChangeEvent(changeType) {
     chrome.metricsPrivate.recordEnumerationValue(

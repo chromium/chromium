@@ -9,9 +9,9 @@ class FocusData {
    * @param {!SAChildNode} focus Must be a child of |group|.
    */
   constructor(group, focus) {
-    /** @public {!SARootNode} */
+    /** @type {!SARootNode} */
     this.group = group;
-    /** @public {!SAChildNode} */
+    /** @type {!SAChildNode} */
     this.focus = focus;
   }
 

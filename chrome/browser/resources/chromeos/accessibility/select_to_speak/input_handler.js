@@ -150,7 +150,6 @@ class InputHandler {
    * forwarded to us from the SelectToSpeakEventHandler so they should
    * be interpreted as global events on the whole screen, not local to
    * any particular window.
-   * @public
    */
   setUpEventListeners() {
     document.addEventListener('keydown', this.onKeyDown_.bind(this));
@@ -168,7 +167,6 @@ class InputHandler {
    * Change whether or not we are tracking the mouse.
    * @param {boolean} tracking True if we should start tracking the mouse, false
    *     otherwise.
-   * @public
    */
   setTrackingMouse(tracking) {
     this.trackingMouse_ = tracking;
@@ -176,7 +174,6 @@ class InputHandler {
 
   /**
    * Gets the rect that has been drawn by clicking and dragging the mouse.
-   * @public
    */
   getMouseRect() {
     return RectUtil.rectFromPoints(
@@ -186,7 +183,6 @@ class InputHandler {
 
   /**
    * Sets the date at which we last wanted the clipboard data to be read.
-   * @public
    */
   onRequestReadClipboardData() {
     this.lastReadClipboardDataTime_ = new Date();
@@ -202,7 +198,6 @@ class InputHandler {
    * @return {boolean} True if the default action should be performed;
    *    we always return false because we don't want any other event
    *    handlers to run.
-   * @public
    */
   onMouseDown_(evt) {
     // If the user hasn't clicked 'search', or if they are currently
@@ -231,7 +226,6 @@ class InputHandler {
    *
    * @param {!Event} evt
    * @return {boolean} True if the default action should be performed.
-   * @public
    */
   onMouseUp_(evt) {
     if (!this.trackingMouse_) {
@@ -258,7 +252,6 @@ class InputHandler {
   /**
    * Visible for testing.
    * @param {!Event} evt
-   * @public
    */
   onKeyDown_(evt) {
     this.keysCurrentlyDown_.add(evt.keyCode);
@@ -281,7 +274,6 @@ class InputHandler {
   /**
    * Visible for testing.
    * @param {!Event} evt
-   * @public
    */
   onKeyUp_(evt) {
     if (evt.keyCode === SelectToSpeak.READ_SELECTION_KEY_CODE) {
