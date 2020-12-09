@@ -2069,7 +2069,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mStartSurfaceSupplier.get().getController().setOverviewState(state);
         }
 
-        if (mOverviewModeController == null || mOverviewModeController.overviewVisible()) return;
+        if (mOverviewModeController == null) return;
+
+        if (mOverviewModeController.overviewVisible()) {
+            if (didFinishNativeInitialization()) {
+                getCompositorViewHolder().hideKeyboard(() -> {});
+            }
+            return;
+        }
 
         Tab currentTab = getActivityTab();
         // If we don't have a current tab, show the overview mode.

@@ -174,7 +174,7 @@ class LocationBarTablet extends LocationBarLayout {
         }
 
         if (mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
-            finishUrlFocusChange(hasFocus);
+            finishUrlFocusChange(hasFocus, /* shouldShowKeyboard= */ hasFocus);
             return;
         }
 
@@ -189,7 +189,7 @@ class LocationBarTablet extends LocationBarLayout {
         mUrlFocusChangeAnimator.addListener(new CancelAwareAnimatorListener() {
             @Override
             public void onEnd(Animator animator) {
-                finishUrlFocusChange(hasFocus);
+                finishUrlFocusChange(hasFocus, /* shouldShowKeyboard= */ hasFocus);
             }
 
             @Override

@@ -14,6 +14,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -166,7 +168,7 @@ public final class ReturnToChromeExperimentsUtil {
     public static boolean willHandleLoadUrlWithPostDataFromStartSurface(String url,
             @PageTransition int transition, @Nullable String postDataType,
             @Nullable byte[] postData, @Nullable Boolean incognito, @Nullable Tab parentTab) {
-        ChromeActivity chromeActivity = getActivityPresentingOverviewWithOmnibox();
+        ChromeActivity chromeActivity = getActivityPresentingOverviewWithOmnibox(url);
         if (chromeActivity == null) return false;
 
         // Create a new unparented tab.
@@ -202,23 +204,19 @@ public final class ReturnToChromeExperimentsUtil {
     }
 
     /**
-     * @return Whether the Tab Switcher is showing the omnibox.
-     */
-    public static boolean isInOverviewWithOmnibox() {
-        return getActivityPresentingOverviewWithOmnibox() != null;
-    }
-
-    /**
+     * @param url The URL to load.
      * @return The ChromeActivity if it is presenting the omnibox on the tab switcher, else null.
      */
-    private static ChromeActivity getActivityPresentingOverviewWithOmnibox() {
+    private static ChromeActivity getActivityPresentingOverviewWithOmnibox(String url) {
         if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) return null;
 
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (!(activity instanceof ChromeActivity)) return null;
 
         ChromeActivity chromeActivity = (ChromeActivity) activity;
-        if (!chromeActivity.isInOverviewMode()) return null;
+
+        assert LibraryLoader.getInstance().isInitialized();
+        if (!chromeActivity.isInOverviewMode() && !UrlUtilities.isNTPUrl(url)) return null;
 
         return chromeActivity;
     }

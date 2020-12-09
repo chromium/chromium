@@ -472,12 +472,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         /**
          * Calls the {@link triggerUrlFocusAnimation()} here if it is skipped in {@link
-         * handleOmniboxInOverviewMode()}. See https://crbug.com/1152306.
+         * handleOmniboxInOverviewMode()}. See https://crbug.com/1152306. Keyboard shouldn't be
+         * shown here.
          */
         if (mPendingTriggerUrlFocusRequest) {
             mPendingTriggerUrlFocusRequest = false;
             triggerUrlFocusAnimation(
-                    getToolbarDataProvider().isInOverviewAndShowingOmnibox() && !urlHasFocus());
+                    getToolbarDataProvider().isInOverviewAndShowingOmnibox() && !urlHasFocus(),
+                    /* shouldShowKeyboard= */ false);
         }
 
         updateVisualsForLocationBarState();
@@ -1860,9 +1862,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         // The URL focusing animator set shouldn't be populated before native initialization. It is
         // possible that this function is called before native initialization when Instant Start
-        // is enabled.
+        // is enabled. Keyboard shouldn't be shown here.
         if (isNativeLibraryReady()) {
-            triggerUrlFocusAnimation(inTabSwitcherMode && !urlHasFocus());
+            triggerUrlFocusAnimation(
+                    inTabSwitcherMode && !urlHasFocus(), /* shouldShowKeyboard= */ false);
         } else {
             mPendingTriggerUrlFocusRequest = true;
         }
@@ -2085,10 +2088,15 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             if (!hasFocus) return;
         }
 
-        triggerUrlFocusAnimation(hasFocus);
+        triggerUrlFocusAnimation(hasFocus, /* shouldShowKeyboard= */ hasFocus);
     }
 
-    private void triggerUrlFocusAnimation(final boolean hasFocus) {
+    /**
+     * @param hasFocus Whether the URL field has gained focus.
+     * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
+     *         as hasFocus by default.
+     */
+    private void triggerUrlFocusAnimation(final boolean hasFocus, boolean shouldShowKeyboard) {
         TraceEvent.begin("ToolbarPhone.triggerUrlFocusAnimation");
         if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
             mUrlFocusLayoutAnimator.cancel();
@@ -2131,7 +2139,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     mLayoutLocationBarInFocusedMode = false;
                     requestLayout();
                 }
-                mLocationBar.getPhoneCoordinator().finishUrlFocusChange(hasFocus);
+                mLocationBar.getPhoneCoordinator().finishUrlFocusChange(
+                        hasFocus, shouldShowKeyboard);
                 mUrlFocusChangeInProgress = false;
 
                 if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) {
@@ -2284,7 +2293,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             if (mTabSwitcherState == STATIC_TAB && previousNtpScrollFraction > 0f) {
                 mUrlFocusChangeFraction =
                         Math.max(previousNtpScrollFraction, mUrlFocusChangeFraction);
-                triggerUrlFocusAnimation(false);
+                triggerUrlFocusAnimation(/* hasFocus= */ false, /* shouldShowKeyboard= */ false);
             }
             requestLayout();
         }

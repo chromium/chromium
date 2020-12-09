@@ -80,9 +80,11 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
      * focus state to the other.
      *
      * @param hasFocus Whether the URL field has gained focus.
+     * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
+     *         as hasFocus by default.
      */
-    public void finishUrlFocusChange(boolean hasFocus) {
-        mLocationBarPhone.finishUrlFocusChange(hasFocus);
+    public void finishUrlFocusChange(boolean hasFocus, boolean shouldShowKeyboard) {
+        mLocationBarPhone.finishUrlFocusChange(hasFocus, shouldShowKeyboard);
     }
 
     /** Sets whether the url bar should be focusable. */
