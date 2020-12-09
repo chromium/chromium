@@ -6,7 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/base64.h"
+#include "base/base64url.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantTriggerScriptBridge_jni.h"
 #include "chrome/browser/android/autofill_assistant/assistant_header_model.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
@@ -54,9 +54,9 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
   } else if (trigger_context->GetBase64TriggerScriptsResponseProto()
                  .has_value()) {
     std::string response;
-    if (!base::Base64Decode(
+    if (!base::Base64UrlDecode(
             trigger_context->GetBase64TriggerScriptsResponseProto().value(),
-            &response)) {
+            base::Base64UrlDecodePolicy::IGNORE_PADDING, &response)) {
       LOG(ERROR) << "Failed to base64-decode trigger scripts response";
       Metrics::RecordLiteScriptFinished(
           ukm::UkmRecorder::Get(), client->GetWebContents(),

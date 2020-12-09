@@ -433,7 +433,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         .build();
         byte[] triggerScriptsResponse = triggerScripts.toByteArray();
         String base64Response = Base64.encodeToString(triggerScriptsResponse, /* offset = */ 0,
-                triggerScriptsResponse.length, Base64.NO_WRAP);
+                triggerScriptsResponse.length, Base64.URL_SAFE | Base64.NO_WRAP);
         Assert.assertEquals(0, base64Response.length() % 4);
         startAutofillAssistantOnTabWithParams(
                 TEST_PAGE_A, Collections.singletonMap("TRIGGER_SCRIPTS_BASE64", base64Response));
