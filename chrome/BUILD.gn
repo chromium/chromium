@@ -488,8 +488,6 @@ if (is_win) {
         rebase_path(inputs[0], root_out_dir),
         "--allow",
         "/usr/lib/libSystem.B.dylib",
-        "--allow",
-        "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
       ]
       deps = [ ":chrome_app" ]
     }
@@ -714,8 +712,6 @@ if (is_win) {
           "/usr/lib/libsandbox.1.dylib",
           "--allow",
           "/usr/lib/libSystem.B.dylib",
-          "--allow",
-          "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
         ]
         deps = [ ":chrome_helper_app_${_helper_target}" ]
       }
