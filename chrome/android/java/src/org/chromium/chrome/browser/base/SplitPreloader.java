@@ -24,9 +24,23 @@ public class SplitPreloader {
     private final SimpleArrayMap<String, PreloadTask> mPreloadTasks = new SimpleArrayMap<>();
     private final Context mContext;
 
-    /** Interface to run code after preload completion. */
+    /**
+     * Interface to run code after preload completion.
+     */
     public interface OnComplete {
-        void run(Context context);
+        /**
+         * Runs immediately on the background thread as soon as the split context is available.
+         * Note that normally runInUiThread() should be used instead because the context parameter
+         * here may have an incorrect ClassLoader due to b/172602571. This method should only be
+         * used for optimizations which need to run as soon as possible, and are safe throw away if
+         * a different ClassLoader ends up being used.
+         */
+        default void runImmediatelyInBackgroundThread(Context unsafeClassLoaderContext) {}
+
+        /**
+         * Guaranteed to run in the UI thread before {@link SplitPreloader#wait(String)} returns.
+         */
+        default void runInUiThread(Context context) {}
     }
 
     private class PreloadTask extends AsyncTask<Void> {
@@ -40,7 +54,10 @@ public class SplitPreloader {
 
         @Override
         protected Void doInBackground() {
-            BundleUtils.createIsolatedSplitContext(mContext, mName);
+            Context context = createSplitContext();
+            if (mOnComplete != null) {
+                mOnComplete.runImmediatelyInBackgroundThread(context);
+            }
             return null;
         }
 
@@ -63,9 +80,16 @@ public class SplitPreloader {
             if (mOnComplete != null) {
                 // Recreate the context here to make sure we have the latest version, in case there
                 // was a race to update the class loader cache, see b/172602571.
-                mOnComplete.run(BundleUtils.createIsolatedSplitContext(mContext, mName));
+                mOnComplete.runInUiThread(createSplitContext());
                 mOnComplete = null;
             }
+        }
+
+        private Context createSplitContext() {
+            if (BundleUtils.isIsolatedSplitInstalled(mContext, mName)) {
+                return BundleUtils.createIsolatedSplitContext(mContext, mName);
+            }
+            return mContext;
         }
     }
 
@@ -75,10 +99,7 @@ public class SplitPreloader {
 
     /** Starts preloading a split context on a background thread. */
     public void preload(String name, OnComplete onComplete) {
-        if (!BundleUtils.isIsolatedSplitInstalled(mContext, name)) {
-            if (onComplete != null) {
-                onComplete.run(mContext);
-            }
+        if (!BundleUtils.isIsolatedSplitInstalled(mContext, name) && onComplete == null) {
             return;
         }
 
