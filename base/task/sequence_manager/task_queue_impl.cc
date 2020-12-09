@@ -1056,7 +1056,8 @@ void TaskQueueImpl::UpdateCrossThreadQueueStateLocked() {
 void TaskQueueImpl::ReclaimMemory(TimeTicks now) {
   if (main_thread_only().delayed_incoming_queue.empty())
     return;
-  main_thread_only().delayed_incoming_queue.SweepCancelledTasks();
+  main_thread_only().delayed_incoming_queue.SweepCancelledTasks(
+      sequence_manager_);
 
   // Also consider shrinking the work queue if it's wasting memory.
   main_thread_only().delayed_work_queue->MaybeShrinkQueue();
@@ -1399,13 +1400,17 @@ void TaskQueueImpl::DelayedIncomingQueue::swap(DelayedIncomingQueue* rhs) {
   std::swap(queue_, rhs->queue_);
 }
 
-void TaskQueueImpl::DelayedIncomingQueue::SweepCancelledTasks() {
+void TaskQueueImpl::DelayedIncomingQueue::SweepCancelledTasks(
+    SequenceManagerImpl* sequence_manager) {
   // Under the hood a std::priority_queue is a heap and usually it's built on
   // top of a std::vector. We poke at that vector directly here to filter out
   // canceled tasks in place.
   bool task_deleted = false;
   auto it = queue_.c.begin();
   while (it != queue_.c.end()) {
+    // TODO(crbug.com/1155905): Remove after figuring out the cause of the
+    // crash.
+    sequence_manager->RecordCrashKeys(*it);
     if (it->task.IsCancelled()) {
       if (it->is_high_res)
         pending_high_res_tasks_--;
