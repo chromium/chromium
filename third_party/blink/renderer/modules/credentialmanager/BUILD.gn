@@ -18,8 +18,6 @@ blink_modules_sources("credentialmanager") {
     "credential_manager_proxy.h",
     "credential_manager_type_converters.cc",
     "credential_manager_type_converters.h",
-    "credential_metrics.cc",
-    "credential_metrics.h",
     "credentials_container.cc",
     "credentials_container.h",
     "federated_credential.cc",

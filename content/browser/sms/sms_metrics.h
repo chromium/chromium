@@ -8,6 +8,7 @@
 #include "content/browser/sms/sms_parser.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/sms/webotp_service_destroyed_reason.h"
+#include "third_party/blink/public/common/sms/webotp_service_outcome.h"
 
 namespace base {
 class TimeDelta;
@@ -34,6 +35,32 @@ void RecordDestroyedReason(blink::WebOTPServiceDestroyedReason reason);
 // Records the status of parsing an incoming SMS when using the WebOTP API.
 void RecordSmsParsingStatus(SmsParsingStatus status, ukm::SourceId source_id);
 
+// Records the result of a call to navigator.credentials.get({otp}) using
+// the same histogram as WebOTPService API to provide continuity with previous
+// iterations of the API.
+void RecordSmsOutcome(blink::WebOTPServiceOutcome outcome,
+                      ukm::SourceId source_id,
+                      ukm::UkmRecorder* ukm_recorder,
+                      bool is_cross_origin_frame);
+
+// Records the time from when the API is called to when the user successfully
+// receives the SMS and presses verify to move on with the verification flow.
+// This uses the same histogram as WebOTPService API to provide continuity with
+// previous iterations of the API.
+void RecordSmsSuccessTime(base::TimeDelta duration,
+                          ukm::SourceId source_id,
+                          ukm::UkmRecorder* ukm_recorder);
+
+// Records the time from when the API is called to when the request is cancelled
+// by the service due to duplicated requests or lack of delegate.
+void RecordSmsCancelTime(base::TimeDelta duration);
+
+// Records the time from when the API is called to when the user dismisses the
+// infobar to abort SMS retrieval. This uses the same histogram as WebOTPService
+// API to provide continuity with previous iterations of the API.
+void RecordSmsUserCancelTime(base::TimeDelta duration,
+                             ukm::SourceId source_id,
+                             ukm::UkmRecorder* ukm_recorder);
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_SMS_SMS_METRICS_H_

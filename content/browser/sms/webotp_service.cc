@@ -32,6 +32,7 @@
 
 using blink::WebOTPServiceDestroyedReason;
 using blink::mojom::SmsStatus;
+using Outcome = blink::WebOTPServiceOutcome;
 
 namespace content {
 
@@ -64,6 +65,20 @@ bool ValidateAndCollectUniqueOrigins(RenderFrameHost* rfh,
     parent = parent->GetParent();
   }
   return true;
+}
+
+bool IsCrossOriginFrame(RenderFrameHost* rfh) {
+  if (!rfh->GetParent())
+    return false;
+  url::Origin current_origin = rfh->GetLastCommittedOrigin();
+  RenderFrameHost* parent = rfh->GetParent();
+  while (parent) {
+    url::Origin parent_origin = parent->GetLastCommittedOrigin();
+    if (!parent_origin.IsSameOriginWith(current_origin))
+      return true;
+    parent = parent->GetParent();
+  }
+  return false;
 }
 
 }  // namespace
@@ -238,23 +253,11 @@ void WebOTPService::NavigationEntryCommitted(
 void WebOTPService::CompleteRequest(blink::mojom::SmsStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  RecordMetrics(status);
   base::Optional<std::string> code = base::nullopt;
   if (status == SmsStatus::kSuccess) {
     DCHECK(one_time_code_);
     code = one_time_code_;
-  }
-
-  // Record ContinueOn timing values only if we are using an asynchronous
-  // consent handler (i.e. showing user prompts).
-  auto* consent_handler = GetConsentHandler();
-  if (consent_handler && consent_handler->is_async()) {
-    if (status == SmsStatus::kSuccess) {
-      DCHECK(!receive_time_.is_null());
-      RecordContinueOnSuccessTime(base::TimeTicks::Now() - receive_time_);
-    } else if (status == SmsStatus::kCancelled) {
-      DCHECK(!receive_time_.is_null());
-      RecordCancelOnSuccessTime(base::TimeTicks::Now() - receive_time_);
-    }
   }
 
   if (callback_) {
@@ -311,6 +314,65 @@ UserConsentHandler* WebOTPService::GetConsentHandler() {
 
 void WebOTPService::SetConsentHandlerForTesting(UserConsentHandler* handler) {
   consent_handler_for_test_ = handler;
+}
+
+void WebOTPService::RecordMetrics(blink::mojom::SmsStatus status) {
+  ukm::SourceId source_id = render_frame_host()->GetPageUkmSourceId();
+  ukm::UkmRecorder* recorder = ukm::UkmRecorder::Get();
+
+  // For privacy, metrics from inner frames are recorded with the top frame's
+  // origin. Given that WebOTP is supported in cross-origin iframes, it's better
+  // to indicate such information in the |Outcome| metrics to understand the
+  // impact and implications. e.g. does user decline more often if the API is
+  // used in an cross-origin iframe.
+  bool is_cross_origin_frame = IsCrossOriginFrame(render_frame_host());
+
+  if (status == SmsStatus::kSuccess) {
+    RecordSmsOutcome(Outcome::kSuccess, source_id, recorder,
+                     is_cross_origin_frame);
+    RecordSmsSuccessTime(base::TimeTicks::Now() - start_time_, source_id,
+                         recorder);
+  } else if (status == SmsStatus::kUnhandledRequest) {
+    RecordSmsOutcome(Outcome::kUnhandledRequest, source_id, recorder,
+                     is_cross_origin_frame);
+  } else if (status == SmsStatus::kAborted) {
+    RecordSmsOutcome(Outcome::kAborted, source_id, recorder,
+                     is_cross_origin_frame);
+  } else if (status == SmsStatus::kCancelled) {
+    RecordSmsOutcome(Outcome::kCancelled, source_id, recorder,
+                     is_cross_origin_frame);
+    RecordSmsCancelTime(base::TimeTicks::Now() - start_time_);
+  } else if (status == SmsStatus::kTimeout) {
+    RecordSmsOutcome(Outcome::kTimeout, source_id, recorder,
+                     is_cross_origin_frame);
+  } else if (status == SmsStatus::kUserCancelled) {
+    RecordSmsOutcome(Outcome::kUserCancelled, source_id, recorder,
+                     is_cross_origin_frame);
+    RecordSmsUserCancelTime(base::TimeTicks::Now() - start_time_, source_id,
+                            recorder);
+  } else if (status == SmsStatus::kBackendNotAvailable) {
+    // Records when the backend is not available AND the request gets cancelled.
+    // i.e. client specifies GmsBackend.VERIFICATION but it's unavailable. If
+    // client specifies GmsBackend.AUTO and the verification backend is not
+    // available, we fall back to the user consent backend and the request will
+    // be handled accordingly. e.g. if the user declined the prompt, we record
+    // it as |kUserCancelled|.
+    RecordSmsOutcome(Outcome::kBackendNotAvailable, source_id, recorder,
+                     is_cross_origin_frame);
+  }
+
+  // Record ContinueOn timing values only if we are using an asynchronous
+  // consent handler (i.e. showing user prompts).
+  auto* consent_handler = GetConsentHandler();
+  if (consent_handler && consent_handler->is_async()) {
+    if (status == SmsStatus::kSuccess) {
+      DCHECK(!receive_time_.is_null());
+      RecordContinueOnSuccessTime(base::TimeTicks::Now() - receive_time_);
+    } else if (status == SmsStatus::kCancelled) {
+      DCHECK(!receive_time_.is_null());
+      RecordCancelOnSuccessTime(base::TimeTicks::Now() - receive_time_);
+    }
+  }
 }
 
 }  // namespace content

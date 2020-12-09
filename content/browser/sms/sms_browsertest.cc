@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Reload) {
 
   ASSERT_FALSE(GetSmsFetcher()->HasSubscribers());
 
-  ExpectNoOutcomeUKM();
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUnhandledRequest);
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Close) {
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Close) {
 
   ASSERT_FALSE(fetcher->HasSubscribers());
 
-  ExpectNoOutcomeUKM();
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUnhandledRequest);
 }
 
 // Disabled test: https://crbug.com/1052385
@@ -652,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsReceivedAfterTabIsClosed) {
   mock_provider_ptr->NotifyReceive(OriginList{url::Origin::Create(url)},
                                    "hello", UserConsent::kObtained);
 
-  ExpectNoOutcomeUKM();
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUnhandledRequest);
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Cancels) {

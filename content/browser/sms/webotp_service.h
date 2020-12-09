@@ -76,6 +76,7 @@ class CONTENT_EXPORT WebOTPService
   void CleanUp();
   UserConsentHandler* CreateConsentHandler(UserConsent);
   UserConsentHandler* GetConsentHandler();
+  void RecordMetrics(blink::mojom::SmsStatus);
 
   // |fetcher_| is safe because all instances of SmsFetcher are owned
   // by the browser context, which transitively (through RenderFrameHost) owns
