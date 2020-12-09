@@ -317,7 +317,7 @@
           Google LLC
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chrome Remote Desktop Host executable. It should be updated every year.">
-          Copyright 2020 Google LLC All Rights Reserved.
+          Copyright 2020 Google LLC. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chrome Remote Desktop.">
           Chrome Remote Desktop Service
