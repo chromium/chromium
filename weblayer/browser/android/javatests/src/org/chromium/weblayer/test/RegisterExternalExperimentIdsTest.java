@@ -49,7 +49,7 @@ public class RegisterExternalExperimentIdsTest {
         mActivityTestRule.navigateAndWait(url);
         String initialValue = testServer.getLastRequest("/ok.html").headerValue("X-Client-Data");
         runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getWebLayer().registerExternalExperimentIDs("Test", new int[] {1});
+            mActivityTestRule.getWebLayer().registerExternalExperimentIDs(new int[] {1});
         });
 
         String url2 = testServer.setResponse("/ok2.html", "<html>ok</html>", null);

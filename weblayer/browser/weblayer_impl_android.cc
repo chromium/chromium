@@ -45,7 +45,6 @@ JNI_WebLayerImpl_GetUserAgentString(JNIEnv* env) {
 
 static void JNI_WebLayerImpl_RegisterExternalExperimentIDs(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jtrial_name,
     const JavaParamRef<jintArray>& jexperiment_ids) {
   std::vector<int> experiment_ids;
   // A null |jexperiment_ids| is the same as an empty list.

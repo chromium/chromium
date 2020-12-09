@@ -585,11 +585,12 @@ public class WebLayer {
      *
      * @since 84
      */
-    public void registerExternalExperimentIDs(
-            @NonNull String trialName, @NonNull int[] experimentIds) {
+    public void registerExternalExperimentIDs(@NonNull int[] experimentIds) {
         ThreadCheck.ensureOnUiThread();
         try {
-            mImpl.registerExternalExperimentIDs(trialName, experimentIds);
+            // First param no longer used. First param was not used in the backend as of 85, and
+            // always supplied as empty as of 89 client.
+            mImpl.registerExternalExperimentIDs("", experimentIds);
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

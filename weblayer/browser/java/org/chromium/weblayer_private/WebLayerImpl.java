@@ -487,7 +487,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     @Override
     public void registerExternalExperimentIDs(String trialName, int[] experimentIDs) {
         StrictModeWorkaround.apply();
-        WebLayerImplJni.get().registerExternalExperimentIDs(trialName, experimentIDs);
+        WebLayerImplJni.get().registerExternalExperimentIDs(experimentIDs);
     }
 
     @Override
@@ -914,7 +914,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         boolean isRemoteDebuggingEnabled();
         void setIsWebViewCompatMode(boolean value);
         String getUserAgentString();
-        void registerExternalExperimentIDs(String trialName, int[] experimentIDs);
+        void registerExternalExperimentIDs(int[] experimentIDs);
         boolean isLocationPermissionManaged(String origin);
     }
 }
