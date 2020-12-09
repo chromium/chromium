@@ -203,7 +203,6 @@ bool PlatformSensorChromeOS::StartSensor(
 void PlatformSensorChromeOS::StopSensor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sensor_device_remote_.reset();
   receiver_.reset();
 }
 

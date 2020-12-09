@@ -179,11 +179,14 @@ TEST_P(PlatformSensorChromeOSOneChannelTest, GetSamples) {
 
   auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
   sensor_->AddClient(client.get());
-  sensor_->StartListening(client.get(),
-                          PlatformSensorConfiguration(
-                              GetSensorMaxAllowedFrequency(GetParam().first)));
+  double frequency = GetSensorMaxAllowedFrequency(GetParam().first);
+  sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
   EXPECT_TRUE(sensor_->IsActiveForTesting());
 
+  WaitForAndCheckReading(client.get());
+
+  sensor_->StopListening(client.get(), PlatformSensorConfiguration(frequency));
+  sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
   WaitForAndCheckReading(client.get());
 
   sensor_device_->ResetObserverRemote(receiver_id_);
@@ -328,11 +331,14 @@ TEST_P(PlatformSensorChromeOSAxesTest, GetSamples) {
 
   auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
   sensor_->AddClient(client.get());
-  sensor_->StartListening(client.get(),
-                          PlatformSensorConfiguration(
-                              GetSensorMaxAllowedFrequency(GetParam().first)));
+  double frequency = GetSensorMaxAllowedFrequency(GetParam().first);
+  sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
   EXPECT_TRUE(sensor_->IsActiveForTesting());
 
+  WaitForAndCheckReading(client.get());
+
+  sensor_->StopListening(client.get(), PlatformSensorConfiguration(frequency));
+  sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
   WaitForAndCheckReading(client.get());
 
   sensor_device_->ResetObserverRemote(receiver_id_);
