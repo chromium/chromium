@@ -211,7 +211,9 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
 
   // Keeps track of frame clients that are awaiting the navigation commit
   // notification. Used for service workers only.
-  base::flat_set<std::string /*client_uuid*/> client_frames_awaiting_commit_;
+  using AwaitingKey =
+      std::pair<int64_t /*version_id*/, std::string /*client_uuid*/>;
+  base::flat_set<AwaitingKey> client_frames_awaiting_commit_;
 
   // Maps each service worker to its clients.
   base::flat_map<

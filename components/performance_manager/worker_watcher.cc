@@ -376,7 +376,9 @@ void WorkerWatcher::OnControlleeAdded(
     case blink::mojom::ServiceWorkerClientType::kWindow: {
       // For window clients, it is necessary to wait until the navigation has
       // committed to a render frame host.
-      bool inserted = client_frames_awaiting_commit_.insert(client_uuid).second;
+      bool inserted = client_frames_awaiting_commit_
+                          .insert(AwaitingKey(version_id, client_uuid))
+                          .second;
       DCHECK(inserted);
       break;
     }
@@ -424,7 +426,8 @@ void WorkerWatcher::OnControlleeRemoved(int64_t version_id,
     return;
 
   // Nothing to do for a frame client whose navigation never committed.
-  size_t removed = client_frames_awaiting_commit_.erase(client_uuid);
+  size_t removed = client_frames_awaiting_commit_.erase(
+      AwaitingKey(version_id, client_uuid));
   if (removed) {
 #if DCHECK_IS_ON()
     // |client_uuid| should not be part of this service worker's clients.
@@ -480,7 +483,8 @@ void WorkerWatcher::OnControlleeNavigationCommitted(
           features::kServiceWorkerRelationshipsInGraph))
     return;
 
-  size_t removed = client_frames_awaiting_commit_.erase(client_uuid);
+  size_t removed = client_frames_awaiting_commit_.erase(
+      AwaitingKey(version_id, client_uuid));
   DCHECK_EQ(removed, 1u);
 
   bool inserted = service_worker_clients_[version_id]
