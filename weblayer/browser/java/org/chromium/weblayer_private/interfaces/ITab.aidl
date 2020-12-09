@@ -6,6 +6,7 @@ package org.chromium.weblayer_private.interfaces;
 
 import java.util.List;
 
+import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
 import org.chromium.weblayer_private.interfaces.IFaviconFetcher;
@@ -81,4 +82,7 @@ interface ITab {
   boolean willAutomaticallyReloadAfterCrash() = 28;
   void setDesktopUserAgentEnabled(in boolean enable) = 29;
   boolean isDesktopUserAgentEnabled() = 30;
+
+  // Added in 89
+  void download(in IContextMenuParams contextMenuParams) = 31;
 }

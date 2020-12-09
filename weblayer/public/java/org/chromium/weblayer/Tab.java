@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
+import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
 import org.chromium.weblayer_private.interfaces.IFullscreenCallbackClient;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountsCallbackClient;
@@ -825,6 +826,33 @@ public class Tab {
         }
     }
 
+    /**
+     * Downloads the item linked to from the context menu. This could be an image/video or link.
+     * This will request the WRITE_EXTERNAL_STORAGE permission if it's not granted to the app.
+     *
+     * @throws IllegalArgumentException if {@link ContextMenuParams.canDownload} is false or if
+     *         the ContextMenuParams object parameter wasn't constructed by WebLayer.
+     *
+     * @since 89
+     */
+    public void download(ContextMenuParams contextMenuParams) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
+        if (!contextMenuParams.canDownload) {
+            throw new IllegalArgumentException("ContextMenuParams not downloadable.");
+        }
+        if (contextMenuParams.mContextMenuParams == null) {
+            throw new IllegalArgumentException("ContextMenuParams not constructed by WebLayer.");
+        }
+
+        try {
+            mImpl.download(contextMenuParams.mContextMenuParams);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     // Called by Browser when removed.
     void onRemovedFromBrowser() {
         if (mDestroyOnRemove) {
@@ -928,6 +956,15 @@ public class Tab {
         @Override
         public void showContextMenu(IObjectWrapper pageUrl, IObjectWrapper linkUrl,
                 IObjectWrapper linkText, IObjectWrapper titleOrAltText, IObjectWrapper srcUrl) {
+            showContextMenu2(
+                    pageUrl, linkUrl, linkText, titleOrAltText, srcUrl, false, false, false, null);
+        }
+
+        @Override
+        public void showContextMenu2(IObjectWrapper pageUrl, IObjectWrapper linkUrl,
+                IObjectWrapper linkText, IObjectWrapper titleOrAltText, IObjectWrapper srcUrl,
+                boolean isImage, boolean isVideo, boolean canDownload,
+                IContextMenuParams contextMenuParams) {
             StrictModeWorkaround.apply();
             String pageUrlString = ObjectWrapper.unwrap(pageUrl, String.class);
             String linkUrlString = ObjectWrapper.unwrap(linkUrl, String.class);
@@ -936,7 +973,8 @@ public class Tab {
                     linkUrlString != null ? Uri.parse(linkUrlString) : null,
                     ObjectWrapper.unwrap(linkText, String.class),
                     ObjectWrapper.unwrap(titleOrAltText, String.class),
-                    srcUrlString != null ? Uri.parse(srcUrlString) : null);
+                    srcUrlString != null ? Uri.parse(srcUrlString) : null, isImage, isVideo,
+                    canDownload, contextMenuParams);
             for (TabCallback callback : mCallbacks) {
                 callback.showContextMenu(params);
             }

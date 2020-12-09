@@ -18,6 +18,7 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/crash/content/browser",
   "+components/crash/core/common",
+  "+components/download/content/public",
   "+components/download/public/common",
   "+components/embedder_support",
   "+components/error_page/content/browser",

@@ -15,6 +15,10 @@ source_set("public") {
     "download_navigation_observer.h",
   ]
 
+  if (is_android) {
+    sources += [ "context_menu_download.h" ]
+  }
+
   public_deps = [ "//base" ]
 
   deps = [

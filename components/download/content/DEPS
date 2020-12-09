@@ -2,6 +2,7 @@ include_rules = [
   "+components/keyed_service",
   "+components/leveldb_proto",
   "+content/public/browser",
+  "+content/public/common",
   "+content/public/test",
   "+base",
   "+net",

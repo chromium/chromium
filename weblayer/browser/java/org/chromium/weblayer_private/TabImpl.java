@@ -4,7 +4,9 @@
 
 package org.chromium.weblayer_private;
 
+import android.Manifest.permission;
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Build;
@@ -36,6 +38,7 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.components.find_in_page.FindInPageBridge;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
@@ -56,6 +59,7 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
 import org.chromium.weblayer_private.interfaces.IFaviconFetcher;
@@ -656,6 +660,31 @@ public final class TabImpl extends ITab.Stub {
         return TabImplJni.get().isDesktopUserAgentEnabled(mNativeTab);
     }
 
+    @Override
+    public void download(IContextMenuParams contextMenuParams) {
+        StrictModeWorkaround.apply();
+        NativeContextMenuParamsHolder nativeContextMenuParamsHolder =
+                (NativeContextMenuParamsHolder) contextMenuParams;
+
+        WindowAndroid window = getBrowser().getWindowAndroid();
+        if (window.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
+            continueDownload(nativeContextMenuParamsHolder);
+            return;
+        }
+
+        String[] requestPermissions = new String[] {permission.WRITE_EXTERNAL_STORAGE};
+        window.requestPermissions(requestPermissions, (permissions, grantResults) -> {
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                continueDownload(nativeContextMenuParamsHolder);
+            }
+        });
+    }
+
+    private void continueDownload(NativeContextMenuParamsHolder nativeContextMenuParamsHolder) {
+        TabImplJni.get().download(
+                mNativeTab, nativeContextMenuParamsHolder.mNativeContextMenuParams);
+    }
+
     public void removeFaviconCallbackProxy(FaviconCallbackProxy proxy) {
         mFaviconCallbackProxies.remove(proxy);
     }
@@ -1048,14 +1077,56 @@ public final class TabImpl extends ITab.Stub {
         return TextUtils.isEmpty(s) ? null : s;
     }
 
+    private static class NativeContextMenuParamsHolder extends IContextMenuParams.Stub {
+        // Note: avoid adding more members since an object with a finalizer will delay GC of any
+        // object it references.
+        private final long mNativeContextMenuParams;
+
+        NativeContextMenuParamsHolder(long nativeContextMenuParams) {
+            mNativeContextMenuParams = nativeContextMenuParams;
+        }
+
+        /**
+         * A finalizer is required to ensure that the native object associated with
+         * this object gets destructed, otherwise there would be a memory leak.
+         *
+         * This is safe because it makes a simple call into C++ code that is both
+         * thread-safe and very fast.
+         *
+         * @see java.lang.Object#finalize()
+         */
+        @Override
+        protected final void finalize() throws Throwable {
+            super.finalize();
+            TabImplJni.get().destroyContextMenuParams(mNativeContextMenuParams);
+        }
+    }
+
     @CalledByNative
-    private void showContextMenu(ContextMenuParams params) throws RemoteException {
+    private void showContextMenu(ContextMenuParams params, long nativeContextMenuParams)
+            throws RemoteException {
         if (WebLayerFactoryImpl.getClientMajorVersion() < 82) return;
-        mClient.showContextMenu(ObjectWrapper.wrap(params.getPageUrl()),
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 89) {
+            mClient.showContextMenu(ObjectWrapper.wrap(params.getPageUrl()),
+                    ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkUrl())),
+                    ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkText())),
+                    ObjectWrapper.wrap(nonEmptyOrNull(params.getTitleText())),
+                    ObjectWrapper.wrap(nonEmptyOrNull(params.getSrcUrl())));
+            return;
+        }
+
+        boolean canDownload =
+                (params.isImage() && UrlUtilities.isDownloadableScheme(params.getSrcUrl()))
+                || (params.isVideo() && UrlUtilities.isDownloadableScheme(params.getSrcUrl())
+                        && params.canSaveMedia())
+                || (params.isAnchor() && UrlUtilities.isDownloadableScheme(params.getLinkUrl()));
+        mClient.showContextMenu2(ObjectWrapper.wrap(params.getPageUrl()),
                 ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkUrl())),
                 ObjectWrapper.wrap(nonEmptyOrNull(params.getLinkText())),
                 ObjectWrapper.wrap(nonEmptyOrNull(params.getTitleText())),
-                ObjectWrapper.wrap(nonEmptyOrNull(params.getSrcUrl())));
+                ObjectWrapper.wrap(nonEmptyOrNull(params.getSrcUrl())), params.isImage(),
+                params.isVideo(), canDownload,
+                new NativeContextMenuParamsHolder(nativeContextMenuParams));
     }
 
     @VisibleForTesting
@@ -1195,5 +1266,7 @@ public final class TabImpl extends ITab.Stub {
         void setTranslateTargetLanguage(long nativeTabImpl, String targetLanguage);
         void setDesktopUserAgentEnabled(long nativeTabImpl, boolean enable);
         boolean isDesktopUserAgentEnabled(long nativeTabImpl);
+        void download(long nativeTabImpl, long nativeContextMenuParams);
+        void destroyContextMenuParams(long contextMenuParams);
     }
 }

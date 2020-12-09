@@ -38,6 +38,7 @@
 #include "components/webrtc/media_stream_devices_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -97,6 +98,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/autofill/android/provider/autofill_provider_android.h"
 #include "components/browser_ui/sms/android/sms_infobar.h"
+#include "components/download/content/public/context_menu_download.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
 #include "components/embedder_support/android/delegate/color_chooser_android.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"  // nogncheck
@@ -260,6 +262,15 @@ static ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
   if (tab)
     return ScopedJavaLocalRef<jobject>(tab->GetJavaTab());
   return nullptr;
+}
+
+static void JNI_TabImpl_DestroyContextMenuParams(
+    JNIEnv* env,
+    jlong native_context_menu_params) {
+  // Note: this runs on the finalizer thread which isn't the UI thread.
+  auto* context_menu_params =
+      reinterpret_cast<content::ContextMenuParams*>(native_context_menu_params);
+  delete context_menu_params;
 }
 
 TabImpl::TabImpl(ProfileImpl* profile,
@@ -548,7 +559,8 @@ void TabImpl::ShowContextMenu(const content::ContextMenuParams& params) {
 #if defined(OS_ANDROID)
   Java_TabImpl_showContextMenu(
       base::android::AttachCurrentThread(), java_impl_,
-      context_menu::BuildJavaContextMenuParams(params));
+      context_menu::BuildJavaContextMenuParams(params),
+      reinterpret_cast<jlong>(new content::ContextMenuParams(params)));
 #endif
 }
 
@@ -837,6 +849,19 @@ jboolean TabImpl::IsDesktopUserAgentEnabled(JNIEnv* env) {
     return false;
 
   return entry->GetIsOverridingUserAgent();
+}
+
+void TabImpl::Download(JNIEnv* env, jlong native_context_menu_params) {
+  auto* context_menu_params =
+      reinterpret_cast<content::ContextMenuParams*>(native_context_menu_params);
+
+  bool is_link = context_menu_params->media_type !=
+                     blink::ContextMenuDataMediaType::kImage &&
+                 context_menu_params->media_type !=
+                     blink::ContextMenuDataMediaType::kVideo;
+
+  download::CreateContextMenuDownload(web_contents_.get(), *context_menu_params,
+                                      std::string(), is_link);
 }
 #endif  // OS_ANDROID
 
