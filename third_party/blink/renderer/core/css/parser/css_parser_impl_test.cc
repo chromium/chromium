@@ -6,10 +6,12 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -223,6 +225,40 @@ TEST(CSSParserImplTest, AtCounterStyleDisabled) {
   CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
                                              test_css_parser_observer);
   EXPECT_EQ(style_sheet->ChildRules().size(), 0u);
+}
+
+TEST(CSSParserImplTest, AtContainerOffsets) {
+  ScopedCSSContainerQueriesForTest scoped_feature(true);
+
+  String sheet_text = "@container (max-width: 100px) { }";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, style_sheet,
+                                             test_css_parser_observer);
+  EXPECT_EQ(style_sheet->ChildRules().size(), 1u);
+  EXPECT_EQ(test_css_parser_observer.rule_type_,
+            StyleRule::RuleType::kContainer);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 11u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 30u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 31u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 32u);
+}
+
+TEST(CSSParserImplTest, AtContainerDisabled) {
+  String rule = "@container (max-width: 100px) { }";
+  {
+    ScopedCSSContainerQueriesForTest scoped_feature(true);
+    Document* document = Document::CreateForTest();
+    EXPECT_TRUE(css_test_helpers::ParseRule(*document, rule));
+  }
+  {
+    ScopedCSSContainerQueriesForTest scoped_feature(false);
+    Document* document = Document::CreateForTest();
+    EXPECT_FALSE(css_test_helpers::ParseRule(*document, rule));
+  }
 }
 
 TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {

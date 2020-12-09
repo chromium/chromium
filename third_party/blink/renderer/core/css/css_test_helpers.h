@@ -45,6 +45,8 @@ class TestStyleSheet {
   Persistent<CSSStyleSheet> style_sheet_;
 };
 
+CSSStyleSheet* CreateStyleSheet(Document& document);
+
 // Create a PropertyRegistration for the given name. The syntax, initial value,
 // and inherited status are all undefined.
 PropertyRegistration* CreatePropertyRegistration(const String& name);

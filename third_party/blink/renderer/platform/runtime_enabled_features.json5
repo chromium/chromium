@@ -463,6 +463,9 @@
       name: "CSSColorSchemeUARendering",
     },
     {
+      name: "CSSContainerQueries",
+    },
+    {
       // The main content-visibility feature.
       // https://drafts.csswg.org/css-contain/#content-visibility
       name: "CSSContentVisibility",

@@ -546,6 +546,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
     DCHECK_LE(allowed_rules, kRegularRules);
 
     switch (id) {
+      case kCSSAtRuleContainer:
+        return ConsumeContainerRule(stream);
       case kCSSAtRuleMedia:
         return ConsumeMediaRule(stream);
       case kCSSAtRuleSupports:
@@ -996,6 +998,40 @@ StyleRuleScrollTimeline* CSSParserImpl::ConsumeScrollTimelineRule(
       name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 
+StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
+    CSSParserTokenStream& stream) {
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream))
+    return nullptr;
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kContainer, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
+  // TODO(crbug.com/1145970): Restrict what is allowed by @container.
+  scoped_refptr<MediaQuerySet> media_queries =
+      MediaQueryParser::ParseMediaQuerySet(prelude,
+                                           context_->GetExecutionContext());
+  if (!media_queries)
+    return nullptr;
+  ContainerQuery* container_query =
+      MakeGarbageCollected<ContainerQuery>(media_queries);
+
+  HeapVector<Member<StyleRuleBase>> rules;
+  ConsumeRuleList(stream, kRegularRuleList,
+                  [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+
+  if (observer_)
+    observer_->EndRuleBody(stream.Offset());
+
+  return MakeGarbageCollected<StyleRuleContainer>(*container_query, rules);
+}
+
 StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
     const CSSParserTokenRange prelude,
     const RangeOffset& prelude_offset,
@@ -1065,6 +1101,7 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
 
   bool use_observer = observer_ && (rule_type == StyleRule::kStyle ||
                                     rule_type == StyleRule::kProperty ||
+                                    rule_type == StyleRule::kContainer ||
                                     rule_type == StyleRule::kCounterStyle ||
                                     rule_type == StyleRule::kScrollTimeline ||
                                     rule_type == StyleRule::kKeyframe);

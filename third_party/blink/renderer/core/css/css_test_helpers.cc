@@ -38,9 +38,7 @@ TestStyleSheet::~TestStyleSheet() = default;
 
 TestStyleSheet::TestStyleSheet() {
   document_ = Document::CreateForTest();
-  TextPosition position;
-  style_sheet_ = CSSStyleSheet::CreateInline(*document_, NullURL(), position,
-                                             UTF8Encoding());
+  style_sheet_ = CreateStyleSheet(*document_);
 }
 
 CSSRuleList* TestStyleSheet::CssRules() {
@@ -65,6 +63,12 @@ void TestStyleSheet::AddCSSRules(const String& css_text, bool is_empty_sheet) {
     ASSERT_GT(style_sheet_->length(), sheet_length);
   else
     ASSERT_EQ(style_sheet_->length(), sheet_length);
+}
+
+CSSStyleSheet* CreateStyleSheet(Document& document) {
+  TextPosition position;
+  return CSSStyleSheet::CreateInline(document, NullURL(), position,
+                                     UTF8Encoding());
 }
 
 PropertyRegistration* CreatePropertyRegistration(const String& name) {

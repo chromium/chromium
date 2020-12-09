@@ -179,6 +179,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kScrollTimeline:
       return Parser::ParseAtScrollTimelineDescriptor(id, range, context);
     case StyleRule::kCharset:
+    case StyleRule::kContainer:
     case StyleRule::kStyle:
     case StyleRule::kImport:
     case StyleRule::kMedia:

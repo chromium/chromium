@@ -24,6 +24,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
@@ -48,6 +49,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kKeyframes,
     kKeyframe,
     kNamespace,
+    kContainer,
     kCounterStyle,
     kScrollTimeline,
     kSupports,
@@ -57,6 +59,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   RuleType GetType() const { return static_cast<RuleType>(type_); }
 
   bool IsCharsetRule() const { return GetType() == kCharset; }
+  bool IsContainerRule() const { return GetType() == kContainer; }
   bool IsCounterStyleRule() const { return GetType() == kCounterStyle; }
   bool IsFontFaceRule() const { return GetType() == kFontFace; }
   bool IsKeyframesRule() const { return GetType() == kKeyframes; }
@@ -317,6 +320,24 @@ class StyleRuleSupports : public StyleRuleCondition {
   bool condition_is_supported_;
 };
 
+class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
+ public:
+  StyleRuleContainer(ContainerQuery&,
+                     HeapVector<Member<StyleRuleBase>>& adopt_rules);
+  StyleRuleContainer(const StyleRuleContainer&);
+
+  ContainerQuery& GetContainerQuery() const { return *container_query_; }
+
+  StyleRuleContainer* Copy() const {
+    return MakeGarbageCollected<StyleRuleContainer>(*this);
+  }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  Member<ContainerQuery> container_query_;
+};
+
 class StyleRuleViewport : public StyleRuleBase {
  public:
   explicit StyleRuleViewport(CSSPropertyValueSet*);
@@ -380,6 +401,14 @@ struct DowncastTraits<StyleRuleScrollTimeline> {
 };
 
 template <>
+struct DowncastTraits<StyleRuleGroup> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsMediaRule() || rule.IsSupportsRule() ||
+           rule.IsContainerRule();
+  }
+};
+
+template <>
 struct DowncastTraits<StyleRuleMedia> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsMediaRule();
@@ -390,6 +419,13 @@ template <>
 struct DowncastTraits<StyleRuleSupports> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsSupportsRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleContainer> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsContainerRule();
   }
 };
 

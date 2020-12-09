@@ -168,6 +168,7 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleProperty* ConsumePropertyRule(CSSParserTokenStream&);
   StyleRuleCounterStyle* ConsumeCounterStyleRule(CSSParserTokenStream&);
   StyleRuleScrollTimeline* ConsumeScrollTimelineRule(CSSParserTokenStream&);
+  StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream&);
 
   StyleRuleKeyframe* ConsumeKeyframeStyleRule(CSSParserTokenRange prelude,
                                               const RangeOffset& prelude_offset,

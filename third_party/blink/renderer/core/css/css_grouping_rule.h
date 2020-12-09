@@ -32,7 +32,7 @@ namespace blink {
 class ExceptionState;
 class CSSRuleList;
 
-class CSSGroupingRule : public CSSRule {
+class CORE_EXPORT CSSGroupingRule : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

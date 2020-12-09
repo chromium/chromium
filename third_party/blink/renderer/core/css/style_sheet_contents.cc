@@ -491,9 +491,10 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
                 .HasFailedOrCanceledSubresources())
           return true;
         break;
+      case StyleRuleBase::kContainer:
       case StyleRuleBase::kMedia:
         if (ChildRulesHaveFailedOrCanceledSubresources(
-                To<StyleRuleMedia>(rule)->ChildRules()))
+                To<StyleRuleGroup>(rule)->ChildRules()))
           return true;
         break;
       case StyleRuleBase::kCharset:
