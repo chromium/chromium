@@ -22,7 +22,8 @@ namespace blink {
 // iterations of the API.
 void RecordSmsOutcome(WebOTPServiceOutcome outcome,
                       ukm::SourceId source_id,
-                      ukm::UkmRecorder* ukm_recorder);
+                      ukm::UkmRecorder* ukm_recorder,
+                      bool is_cross_origin_frame);
 
 // Records the time from when the API is called to when the user successfully
 // receives the SMS and presses verify to move on with the verification flow.

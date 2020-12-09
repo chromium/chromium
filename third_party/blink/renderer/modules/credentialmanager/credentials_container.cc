@@ -647,26 +647,40 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
   ukm::SourceId source_id = window.UkmSourceID();
   ukm::UkmRecorder* recorder = window.UkmRecorder();
 
+  auto* frame = window.GetFrame();
+  // For privacy, metrics from inner frames are recorded with the top frame's
+  // origin. Given that WebOTP is supported in cross-origin iframes, it's better
+  // to indicate such information in the |Outcome| metrics to understand the
+  // impact and implications. e.g. does user decline more often if the API is
+  // used in an cross-origin iframe.
+  // Based on |IsAncestorChainValidForWebOTP| we want to indicate when the frame
+  // is cross-origin. i.e. same-origin iframe should not be a concern.
+  bool is_cross_origin_frame =
+      !frame->IsMainFrame() && !IsSameOriginWithAncestors(frame);
+
   if (status == mojom::blink::SmsStatus::kUnhandledRequest) {
     RecordSmsOutcome(WebOTPServiceOutcome::kUnhandledRequest, source_id,
-                     recorder);
+                     recorder, is_cross_origin_frame);
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "OTP retrieval request not handled."));
     return;
   } else if (status == mojom::blink::SmsStatus::kAborted) {
-    RecordSmsOutcome(WebOTPServiceOutcome::kAborted, source_id, recorder);
+    RecordSmsOutcome(WebOTPServiceOutcome::kAborted, source_id, recorder,
+                     is_cross_origin_frame);
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, "OTP retrieval was aborted."));
     return;
   } else if (status == mojom::blink::SmsStatus::kCancelled) {
-    RecordSmsOutcome(WebOTPServiceOutcome::kCancelled, source_id, recorder);
+    RecordSmsOutcome(WebOTPServiceOutcome::kCancelled, source_id, recorder,
+                     is_cross_origin_frame);
     RecordSmsCancelTime(base::TimeTicks::Now() - start_time);
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, "OTP retrieval was cancelled."));
     return;
   } else if (status == mojom::blink::SmsStatus::kTimeout) {
-    RecordSmsOutcome(WebOTPServiceOutcome::kTimeout, source_id, recorder);
+    RecordSmsOutcome(WebOTPServiceOutcome::kTimeout, source_id, recorder,
+                     is_cross_origin_frame);
     // We do not reject the promise as in other branches because the failure
     // may not belong to the origin that sends the request. e.g. there are two
     // origins A and B in the queue and A aborts the request. The prompt that
@@ -678,7 +692,8 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
     // simultaneously.
     return;
   } else if (status == mojom::blink::SmsStatus::kUserCancelled) {
-    RecordSmsOutcome(WebOTPServiceOutcome::kUserCancelled, source_id, recorder);
+    RecordSmsOutcome(WebOTPServiceOutcome::kUserCancelled, source_id, recorder,
+                     is_cross_origin_frame);
     RecordSmsUserCancelTime(base::TimeTicks::Now() - start_time, source_id,
                             recorder);
     // Similar to kTimeout, the promise is not rejected here.
@@ -691,13 +706,14 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
     // be handled accordingly. e.g. if the user declined the prompt, we record
     // it as |kUserCancelled|.
     RecordSmsOutcome(WebOTPServiceOutcome::kBackendNotAvailable, source_id,
-                     recorder);
+                     recorder, is_cross_origin_frame);
     // Similar to kTimeout, the promise is not rejected here.
     return;
   }
   RecordSmsSuccessTime(base::TimeTicks::Now() - start_time, source_id,
                        recorder);
-  RecordSmsOutcome(WebOTPServiceOutcome::kSuccess, source_id, recorder);
+  RecordSmsOutcome(WebOTPServiceOutcome::kSuccess, source_id, recorder,
+                   is_cross_origin_frame);
   resolver->Resolve(MakeGarbageCollected<OTPCredential>(otp));
 }
 

@@ -12205,6 +12205,11 @@ be describing additional metrics about the same event.
   <summary>
     Records performance metrics for SMSReceiver API.
   </summary>
+  <metric name="IsCrossOriginFrame" enum="Boolean">
+    <summary>
+      Flag indicating whether the report comes from a cross-origin frame or not.
+    </summary>
+  </metric>
   <metric name="Outcome" enum="WebOTPServiceOutcome">
     <summary>
       Records the result of a call to the SmsReceiver API.

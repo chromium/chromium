@@ -25,6 +25,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/sms/webotp_service_outcome.h"
@@ -49,11 +50,6 @@ class SmsBrowserTest : public ContentBrowserTest {
   SmsBrowserTest() = default;
   ~SmsBrowserTest() override = default;
 
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    ContentBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
@@ -77,6 +73,27 @@ class SmsBrowserTest : public ContentBrowserTest {
       }
     }
     FAIL() << "Expected WebOTPServiceOutcome was not recorded";
+  }
+
+  void ExpectOutcomeWithCrossOriginUKM(blink::WebOTPServiceOutcome outcome,
+                                       bool expect_cross_origin) {
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    if (entries.empty())
+      FAIL() << "No WebOTPServiceOutcome was recorded";
+
+    for (const auto* const entry : entries) {
+      const int64_t* metric = ukm_recorder()->GetEntryMetric(entry, "Outcome");
+      if (metric && *metric == static_cast<int>(outcome)) {
+        bool actual_cross_origin =
+            *ukm_recorder()->GetEntryMetric(entry, "IsCrossOriginFrame");
+        if (actual_cross_origin == expect_cross_origin) {
+          SUCCEED();
+          return;
+        }
+      }
+    }
+    FAIL() << "Expected Outcome with cross-origin info was not recorded";
   }
 
   void ExpectTimingUKM(const std::string& metric_name) {
@@ -148,14 +165,14 @@ class SmsBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUpOnMainThread() override {
+    ContentBrowserTest::TearDownOnMainThread();
+
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->StartAcceptingConnections();
-    if (AreDefaultSiteInstancesEnabled()) {
-      // Isolate origins so we are guaranteed that navigations to the sites will
-      // be in a different process.
-      IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
-                               {"a.com", "b.com", "c.com"});
-    }
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    SetupCrossSiteRedirector(&https_server_);
+    net::test_server::RegisterDefaultHandlers(&https_server_);
+    ASSERT_TRUE(https_server_.Start());
+    IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
     cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
@@ -185,6 +202,7 @@ class SmsBrowserTest : public ContentBrowserTest {
   base::OnceClosure dismiss_callback_;
 
   FrameTreeVisualizer visualizer_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 }  // namespace
@@ -1170,22 +1188,22 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordSmsParsedMetrics) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOrigins) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL main_url(
+      https_server_.GetURL("a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
   FrameTreeNode* child = root->child_at(0);
-  GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL b_url(https_server_.GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(child, b_url));
 
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
       "   +--Site B ------- proxies for A\n"
-      "Where A = http://a.com/\n"
-      "      B = http://b.com/",
+      "Where A = https://a.com/\n"
+      "      B = https://b.com/",
       visualizer_.DepictFrameTree(root));
 
   auto* fetcher = SmsFetcher::Get(shell()->web_contents()->GetBrowserContext());
@@ -1197,8 +1215,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOrigins) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, ThreeUniqueOrigins) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
+  GURL main_url(
+      https_server_.GetURL("a.com", "/cross_site_iframe_factory.html?a(b(c))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -1206,16 +1224,16 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, ThreeUniqueOrigins) {
                             ->root();
   FrameTreeNode* child = root->child_at(0);
   FrameTreeNode* grand_child = child->child_at(0);
-  GURL c_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  GURL c_url(https_server_.GetURL("c.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(grand_child, c_url));
 
   EXPECT_EQ(
       " Site A ------------ proxies for B C\n"
       "   +--Site B ------- proxies for A C\n"
       "        +--Site C -- proxies for A B\n"
-      "Where A = http://a.com/\n"
-      "      B = http://b.com/\n"
-      "      C = http://c.com/",
+      "Where A = https://a.com/\n"
+      "      B = https://b.com/\n"
+      "      C = https://c.com/",
       visualizer_.DepictFrameTree(root));
 
   auto* fetcher = SmsFetcher::Get(shell()->web_contents()->GetBrowserContext());
@@ -1227,8 +1245,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, ThreeUniqueOrigins) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOriginsConsecutive) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b(b))"));
+  GURL main_url(
+      https_server_.GetURL("a.com", "/cross_site_iframe_factory.html?a(b(b))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -1236,15 +1254,15 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOriginsConsecutive) {
                             ->root();
   FrameTreeNode* child = root->child_at(0);
   FrameTreeNode* grand_child = child->child_at(0);
-  GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL b_url(https_server_.GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(grand_child, b_url));
 
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
       "   +--Site B ------- proxies for A\n"
       "        +--Site B -- proxies for A\n"
-      "Where A = http://a.com/\n"
-      "      B = http://b.com/",
+      "Where A = https://a.com/\n"
+      "      B = https://b.com/",
       visualizer_.DepictFrameTree(root));
 
   auto* fetcher = SmsFetcher::Get(shell()->web_contents()->GetBrowserContext());
@@ -1256,8 +1274,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOriginsConsecutive) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOriginsInconsecutive) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
+  GURL main_url(
+      https_server_.GetURL("a.com", "/cross_site_iframe_factory.html?a(b(a))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -1265,15 +1283,15 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOriginsInconsecutive) {
                             ->root();
   FrameTreeNode* child = root->child_at(0);
   FrameTreeNode* grand_child = child->child_at(0);
-  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL a_url(https_server_.GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(grand_child, a_url));
 
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
       "   +--Site B ------- proxies for A\n"
       "        +--Site A -- proxies for B\n"
-      "Where A = http://a.com/\n"
-      "      B = http://b.com/",
+      "Where A = https://a.com/\n"
+      "      B = https://b.com/",
       visualizer_.DepictFrameTree(root));
 
   auto* fetcher = SmsFetcher::Get(shell()->web_contents()->GetBrowserContext());
@@ -1282,6 +1300,89 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, TwoUniqueOriginsInconsecutive) {
 
   EXPECT_FALSE(WebOTPService::Create(fetcher, render_frame_host,
                                      service.BindNewPipeAndPassReceiver()));
+}
+
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordOutcomeWithCrossOriginFrame) {
+  GURL main_url(https_server_.GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b{allow-otp-credentials})"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  shell()->web_contents()->SetDelegate(&delegate_);
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
+    mock_provider_ptr->NotifyFailure(FailureType::kPromptCancelled);
+  }));
+
+  // Wait for UKM to be recorded to avoid race condition between outcome
+  // capture and evaluation.
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  GURL b_url(https_server_.GetURL("b.com", "/page_with_webotp.html"));
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, b_url));
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = https://a.com/\n"
+      "      B = https://b.com/",
+      visualizer_.DepictFrameTree(root));
+
+  ukm_loop.Run();
+
+  content::FetchHistogramsFromChildProcesses();
+  ExpectOutcomeWithCrossOriginUKM(blink::WebOTPServiceOutcome::kUserCancelled,
+                                  /* is_cross_origin_frame */ true);
+}
+
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordOutcomeWithSameOriginFrame) {
+  GURL main_url(
+      https_server_.GetURL("a.com", "/cross_site_iframe_factory.html?a(a)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  shell()->web_contents()->SetDelegate(&delegate_);
+  auto provider = std::make_unique<MockSmsProvider>();
+  MockSmsProvider* mock_provider_ptr = provider.get();
+  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
+
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
+    mock_provider_ptr->NotifyFailure(FailureType::kPromptCancelled);
+  }));
+
+  // Wait for UKM to be recorded to avoid race condition between outcome
+  // capture and evaluation.
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  GURL b_url(https_server_.GetURL("a.com", "/page_with_webotp.html"));
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, b_url));
+
+  EXPECT_EQ(
+      " Site A\n"
+      "   +--Site A\n"
+      "Where A = https://a.com/",
+      visualizer_.DepictFrameTree(root));
+
+  ukm_loop.Run();
+
+  content::FetchHistogramsFromChildProcesses();
+  ExpectOutcomeWithCrossOriginUKM(blink::WebOTPServiceOutcome::kUserCancelled,
+                                  /* is_cross_origin_frame */ false);
 }
 
 }  // namespace content

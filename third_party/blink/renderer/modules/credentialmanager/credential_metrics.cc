@@ -12,7 +12,8 @@ namespace blink {
 
 void RecordSmsOutcome(WebOTPServiceOutcome outcome,
                       ukm::SourceId source_id,
-                      ukm::UkmRecorder* ukm_recorder) {
+                      ukm::UkmRecorder* ukm_recorder,
+                      bool is_cross_origin_frame) {
   // In |SmsBrowserTest| we wait for UKM to be recorded to avoid race condition
   // between outcome capture and evaluation. Recording UMA before UKM makes sure
   // that |FetchHistogramsFromChildProcesses| reaches the child processes after
@@ -23,7 +24,8 @@ void RecordSmsOutcome(WebOTPServiceOutcome outcome,
   DCHECK(ukm_recorder);
 
   ukm::builders::SMSReceiver builder(source_id);
-  builder.SetOutcome(static_cast<int>(outcome));
+  builder.SetOutcome(static_cast<int>(outcome))
+      .SetIsCrossOriginFrame(is_cross_origin_frame);
   builder.Record(ukm_recorder);
 }
 
