@@ -1,0 +1,24 @@
+<!doctype html>
+<title>Read from deleted file test</title>
+<script>
+  let test_file;
+
+  async function writeToFile() {
+    if (nativeIO) {
+      test_file = await nativeIO.open('test_file');
+      const writtenBytes = new Uint8Array(new SharedArrayBuffer(4));
+      writtenBytes.set([64, 65, 66, 67]);
+      const writeCount = await test_file.write(writtenBytes, 0);
+      document.location.hash = '#ready';
+      return writeCount == 4;
+    } else {
+      return false;
+    }
+  }
+  async function readFromFile() {
+    const readSharedArrayBuffer = new SharedArrayBuffer(4);
+    const readBytes = new Uint8Array(readSharedArrayBuffer);
+    const readCount = await test_file.read(readBytes, 0);
+    return readCount == 4;
+  }
+</script>

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
@@ -55,12 +56,22 @@ class CONTENT_EXPORT NativeIOContext {
   // |host| must be owned by this context. This method should only be called by
   // NativeIOHost.
   void OnHostReceiverDisconnect(NativeIOHost* host);
- private:
+
   // Computes the path to the directory storing an origin's NativeIO files.
   //
   // Returns an empty path if the origin isn't supported for NativeIO.
   base::FilePath RootPathForOrigin(const url::Origin& origin);
 
+  // Computes the path to the directory storing a profile's NativeIO files.
+  static base::FilePath GetNativeIORootPath(const base::FilePath& profile_root);
+
+  // Transform a base::File::Error into a NativeIOError with default error
+  // message if none is provided.
+  static blink::mojom::NativeIOErrorPtr FileErrorToNativeIOError(
+      base::File::Error file_error,
+      std::string message = "");
+
+ private:
   std::map<url::Origin, std::unique_ptr<NativeIOHost>> hosts_;
 
   // Points to the root directory for NativeIO files.

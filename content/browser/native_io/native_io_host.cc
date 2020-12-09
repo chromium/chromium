@@ -23,7 +23,12 @@
 #include "content/browser/native_io/native_io_file_host.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/common/native_io/native_io_utils.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
+
+using blink::mojom::NativeIOError;
+using blink::mojom::NativeIOErrorPtr;
+using blink::mojom::NativeIOErrorType;
 
 namespace content {
 
@@ -87,14 +92,20 @@ base::File DoOpenFile(const base::FilePath& root_path,
 }
 
 // Performs the file I/O work in DeleteFile().
-bool DoDeleteFile(const base::FilePath& root_path, const std::string& name) {
+NativeIOErrorPtr DoDeleteFile(const base::FilePath& root_path,
+                              const std::string& name) {
   DCHECK(IsValidNativeIOName(name));
 
   // If the origin's directory wasn't created yet, there's nothing to delete.
   if (!base::PathExists(root_path))
-    return true;
+    return NativeIOError::New(NativeIOErrorType::kSuccess, "");
 
-  return base::DeleteFile(GetNativeIOFilePath(root_path, name));
+  bool success = base::DeleteFile(GetNativeIOFilePath(root_path, name));
+  if (!success) {
+    return NativeIOContext::FileErrorToNativeIOError(
+        base::File::GetLastFileError());
+  }
+  return NativeIOError::New(NativeIOErrorType::kSuccess, "");
 }
 
 using GetAllFileNamesResult =
@@ -155,24 +166,31 @@ void DidGetAllFileNames(
 }
 
 // Performs the file I/O work in RenameFile().
-bool DoRenameFile(const base::FilePath& root_path,
-                  const std::string& old_name,
-                  const std::string& new_name) {
+NativeIOErrorPtr DoRenameFile(const base::FilePath& root_path,
+                              const std::string& old_name,
+                              const std::string& new_name) {
   DCHECK(IsValidNativeIOName(old_name));
   DCHECK(IsValidNativeIOName(new_name));
 
+  base::File::Error error = base::File::FILE_OK;
   // If the origin's directory wasn't created yet, there's nothing to rename.
-  if (!base::PathExists(root_path))
-    return false;
+  // This error cannot be used to determine the existence of files outside of
+  // the origin's directory, as |old_name| is a valid NativeIO name.
+  if (!base::PathExists(root_path) ||
+      !base::PathExists(GetNativeIOFilePath(root_path, old_name)))
+    return NativeIOError::New(NativeIOErrorType::kNotFound,
+                              "Source file does not exist");
 
-  // Do not overwrite an existing file.
+  // Do not overwrite an existing file. This error cannot be used to determine
+  // the existence of files outside of the origin's directory, as |new_name| is
+  // a valid NativeIO name.
   if (base::PathExists(GetNativeIOFilePath(root_path, new_name)))
-    return false;
+    return NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
+                              "Target file exists");
 
-  // TODO(rstz): Report error.
-  base::File::Error error;
-  return base::ReplaceFile(GetNativeIOFilePath(root_path, old_name),
-                           GetNativeIOFilePath(root_path, new_name), &error);
+  base::ReplaceFile(GetNativeIOFilePath(root_path, old_name),
+                    GetNativeIOFilePath(root_path, new_name), &error);
+  return NativeIOContext::FileErrorToNativeIOError(error);
 }
 
 }  // namespace
@@ -213,21 +231,27 @@ void NativeIOHost::OpenFile(
 
   if (!IsValidNativeIOName(name)) {
     mojo::ReportBadMessage("Invalid file name");
-    std::move(callback).Run(base::File());
+    std::move(callback).Run(
+        base::File(),
+        NativeIOError::New(NativeIOErrorType::kUnknown, "Invalid file name"));
     return;
   }
 
   if (open_file_hosts_.find(name) != open_file_hosts_.end()) {
-    // TODO(pwnall): Report that the file is locked.
-    std::move(callback).Run(base::File());
+    std::move(callback).Run(
+        base::File(),
+        NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
+                           "File is open"));
     return;
   }
 
   auto insert_result = io_pending_files_.insert(name);
   bool insert_success = insert_result.second;
   if (!insert_success) {
-    // TODO(pwnall): Report that the file is locked.
-    std::move(callback).Run(base::File());
+    std::move(callback).Run(
+        base::File(),
+        NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
+                           "Operation pending on file"));
     return;
   }
 
@@ -243,21 +267,23 @@ void NativeIOHost::DeleteFile(const std::string& name,
 
   if (!IsValidNativeIOName(name)) {
     mojo::ReportBadMessage("Invalid file name");
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        NativeIOError::New(NativeIOErrorType::kUnknown, "Invalid file name"));
     return;
   }
 
   if (open_file_hosts_.find(name) != open_file_hosts_.end()) {
-    // TODO(pwnall): Report that the file is locked.
-    std::move(callback).Run(false);
+    std::move(callback).Run(NativeIOError::New(
+        NativeIOErrorType::kNoModificationAllowed, "File is open"));
     return;
   }
 
   auto insert_result = io_pending_files_.insert(name);
   bool insert_success = insert_result.second;
   if (!insert_success) {
-    // TODO(pwnall): Report that the file is locked.
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
+                           "Operation pending on file"));
     return;
   }
 
@@ -282,26 +308,37 @@ void NativeIOHost::RenameFile(const std::string& old_name,
 
   if (!IsValidNativeIOName(old_name) || !IsValidNativeIOName(new_name)) {
     mojo::ReportBadMessage("Invalid file name");
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        NativeIOError::New(NativeIOErrorType::kUnknown, "Invalid file name"));
     return;
   }
 
   if (open_file_hosts_.find(old_name) != open_file_hosts_.end() ||
       open_file_hosts_.find(new_name) != open_file_hosts_.end()) {
-    // TODO(rstz): Report that the file is locked.
-    std::move(callback).Run(false);
+    std::move(callback).Run(NativeIOError::New(
+        NativeIOErrorType::kNoModificationAllowed, "Source file is open"));
+    return;
+  }
+
+  if (open_file_hosts_.find(old_name) != open_file_hosts_.end()) {
+    std::move(callback).Run(NativeIOError::New(
+        NativeIOErrorType::kNoModificationAllowed, "Target file is open"));
     return;
   }
 
   auto old_iterator_and_success = io_pending_files_.insert(old_name);
   if (!old_iterator_and_success.second) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
+                           "Operation pending on source file"));
     return;
   }
   auto new_iterator_and_success = io_pending_files_.insert(new_name);
   if (!new_iterator_and_success.second) {
     io_pending_files_.erase(old_iterator_and_success.first);
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
+                           "Operation pending on target file"));
     return;
   }
 
@@ -333,8 +370,15 @@ void NativeIOHost::DidOpenFile(
   DCHECK(!open_file_hosts_.count(name));
   io_pending_files_.erase(name);
 
+  base::File::Error open_error = file.error_details();
+
   if (!file.IsValid()) {
-    std::move(callback).Run(std::move(file));
+    // Make sure an error is reported whenever the file is not valid.
+    open_error = open_error != base::File::FILE_OK
+                     ? open_error
+                     : base::File::FILE_ERROR_FAILED;
+    std::move(callback).Run(
+        std::move(file), NativeIOContext::FileErrorToNativeIOError(open_error));
     return;
   }
 
@@ -342,25 +386,26 @@ void NativeIOHost::DidOpenFile(
       {name, std::make_unique<NativeIOFileHost>(std::move(file_host_receiver),
                                                 this, name)});
 
-  std::move(callback).Run(std::move(file));
+  std::move(callback).Run(
+      std::move(file), NativeIOContext::FileErrorToNativeIOError(open_error));
   return;
 }
 
 void NativeIOHost::DidDeleteFile(const std::string& name,
                                  DeleteFileCallback callback,
-                                 bool success) {
+                                 NativeIOErrorPtr delete_error) {
   DCHECK(io_pending_files_.count(name));
   DCHECK(!open_file_hosts_.count(name));
   io_pending_files_.erase(name);
 
-  std::move(callback).Run(success);
+  std::move(callback).Run(std::move(delete_error));
   return;
 }
 
 void NativeIOHost::DidRenameFile(const std::string& old_name,
                                  const std::string& new_name,
                                  RenameFileCallback callback,
-                                 bool success) {
+                                 NativeIOErrorPtr rename_error) {
   DCHECK(io_pending_files_.count(old_name));
   DCHECK(!open_file_hosts_.count(old_name));
   DCHECK(io_pending_files_.count(new_name));
@@ -368,7 +413,7 @@ void NativeIOHost::DidRenameFile(const std::string& old_name,
   io_pending_files_.erase(old_name);
   io_pending_files_.erase(new_name);
 
-  std::move(callback).Run(success);
+  std::move(callback).Run(std::move(rename_error));
   return;
 }
 
