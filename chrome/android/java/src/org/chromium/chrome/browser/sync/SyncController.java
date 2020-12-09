@@ -15,6 +15,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.StopSource;
 
 /**
@@ -162,7 +164,11 @@ public class SyncController
      * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
      */
     public boolean isSyncingUrlsWithKeystorePassphrase() {
-        return mProfileSyncService.isSyncingUrlsWithKeystorePassphrase();
+        return mProfileSyncService.isEngineInitialized()
+                && mProfileSyncService.getPreferredDataTypes().contains(ModelType.TYPED_URLS)
+                && (mProfileSyncService.getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
+                        || mProfileSyncService.getPassphraseType()
+                                == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
     }
 
     /**

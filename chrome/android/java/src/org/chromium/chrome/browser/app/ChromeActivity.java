@@ -134,6 +134,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.SyncController;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -894,9 +895,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (!mStarted) return; // Sync state reporting should work only in started state.
         if (mContextReporter != null || getActivityTab() == null) return;
 
+        final SyncController syncController = SyncController.get();
         final ProfileSyncService syncService = ProfileSyncService.get();
 
-        if (syncService != null && syncService.isSyncingUrlsWithKeystorePassphrase()) {
+        if (syncController != null && syncController.isSyncingUrlsWithKeystorePassphrase()) {
+            assert syncService != null;
             mContextReporter = AppHooks.get().createGsaHelper().getContextReporter(this);
 
             if (mSyncStateChangedListener != null) {
