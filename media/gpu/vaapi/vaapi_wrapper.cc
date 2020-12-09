@@ -429,6 +429,7 @@ const ProfileCodecMap& GetProfileCodecMap() {
         // {AV1PROFILE_PROFILE_HIGH, VAProfileAV1Profile1},
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
           {HEVCPROFILE_MAIN, VAProfileHEVCMain},
+          {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
 #endif
   });
   return *kMediaToVAProfileMap;

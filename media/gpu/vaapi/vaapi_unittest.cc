@@ -49,6 +49,7 @@ base::Optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     {HEVCPROFILE_MAIN, VAProfileHEVCMain},
+    {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
 #endif
   };
   auto it = kProfileMap.find(profile);
@@ -78,6 +79,7 @@ base::Optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     {"VAProfileHEVCMain", VAProfileHEVCMain},
+    {"VAProfileHEVCMain10", VAProfileHEVCMain10},
 #endif
   };
 
