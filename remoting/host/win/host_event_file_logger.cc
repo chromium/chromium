@@ -55,6 +55,11 @@ std::unique_ptr<HostEventLogger> HostEventFileLogger::Create() {
   }
 
   base::FilePath sym_link_path = directory.Append(kLatestLogSymbolicLinkName);
+  // We don't need to check for existence first as DeleteFile() 'succeeds' if
+  // the file doesn't exist.
+  if (!base::DeleteFile(sym_link_path)) {
+    PLOG(WARNING) << "Failed to delete symlink";
+  }
   if (!::CreateSymbolicLink(sym_link_path.value().c_str(),
                             log_file_path.value().c_str(),
                             /*file*/ 0)) {
