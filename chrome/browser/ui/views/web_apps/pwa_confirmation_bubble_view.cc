@@ -8,6 +8,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -187,7 +189,7 @@ void PWAConfirmationBubbleView::WindowClosing() {
         web_app::GenerateAppIdFromURL(web_app_info_->start_url);
     UMA_HISTOGRAM_ENUMERATION("WebApp.InstallIphPromo.Result",
                               web_app::InstallIphResult::kCanceled);
-    web_app::RecordInstallIphIgnored(prefs_, app_id);
+    web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
   }
   if (callback_) {
     DCHECK(web_app_info_);

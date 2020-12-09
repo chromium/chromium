@@ -75,7 +75,9 @@ void RemoveWebAppPref(PrefService* pref_service,
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);
 
-void RecordInstallIphIgnored(PrefService* pref_service, const AppId& app_id);
+void RecordInstallIphIgnored(PrefService* pref_service,
+                             const AppId& app_id,
+                             base::Time time);
 
 void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id);
 

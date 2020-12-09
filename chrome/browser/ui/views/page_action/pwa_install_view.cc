@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,7 +49,8 @@ constexpr base::FeatureParam<ExperimentIcon> kInstallIconParam{
 // Add x_ prefix so the IPH feature engagement tracker can ignore this.
 constexpr base::FeatureParam<int> kIphSiteEngagementThresholdParam{
     &feature_engagement::kIPHDesktopPwaInstallFeature,
-    "x_site_engagement_threshold", 10};
+    "x_site_engagement_threshold",
+    web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold};
 
 }  // namespace
 
@@ -127,8 +129,8 @@ void PwaInstallView::OnIphClosed() {
           ->GetPrefs();
   base::UmaHistogramEnumeration("WebApp.InstallIphPromo.Result",
                                 web_app::InstallIphResult::kIgnored);
-  web_app::RecordInstallIphIgnored(prefs,
-                                   web_app::GenerateAppIdFromURL(start_url));
+  web_app::RecordInstallIphIgnored(
+      prefs, web_app::GenerateAppIdFromURL(start_url), base::Time::Now());
 }
 
 void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {

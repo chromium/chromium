@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -18,15 +19,20 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/install_bounce_metric.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/feature_list.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/webapps/installable/installable_metrics.h"
@@ -88,6 +94,20 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   PwaInstallViewBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    base::FieldTrialParams iph_demo_params;
+    iph_demo_params[feature_engagement::kIPHDemoModeFeatureChoiceParam] =
+        feature_engagement::kIPHDesktopPwaInstallFeature.name;
+    base::test::ScopedFeatureList::FeatureAndParams iph_demo(
+        feature_engagement::kIPHDemoMode, iph_demo_params);
+
+    // kIPHDemoMode will bypass IPH framework's triggering validation so that
+    // we can test PWA specific triggering logic.
+    features_.InitWithFeaturesAndParameters(
+        {{feature_engagement::kIPHDemoMode,
+          {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
+            feature_engagement::kIPHDesktopPwaInstallFeature.name}}},
+         {feature_engagement::kIPHDesktopPwaInstallFeature, {}}},
+        {});
   }
   ~PwaInstallViewBrowserTest() override = default;
 
@@ -262,6 +282,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
  private:
   web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  base::test::ScopedFeatureList features_;
 };
 
 // Tests that the plus icon is not shown when an existing app is installed and
@@ -620,6 +641,45 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   EXPECT_TRUE(base::EqualsASCII(
       banners::AppBannerManager::GetInstallableWebAppName(web_contents_),
       "Manifest listing related chrome app"));
+}
+
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphSiteEngagement) {
+  GURL app_url = GetInstallableAppURL();
+  bool installable = OpenTab(app_url).installable;
+  ASSERT_TRUE(installable);
+
+  FeaturePromoControllerViews* controller =
+      FeaturePromoControllerViews::GetForView(pwa_install_view_);
+  // IPH is not shown when the site is not highly engaged.
+  EXPECT_FALSE(controller->BubbleIsShowing(
+      feature_engagement::kIPHDesktopPwaInstallFeature));
+
+  // Manually set engagement score to be above IPH triggering threshold.
+  SiteEngagementService::Get(profile())->AddPointsForTesting(
+      app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
+  OpenTab(app_url);
+  EXPECT_TRUE(controller->BubbleIsShowing(
+      feature_engagement::kIPHDesktopPwaInstallFeature));
+}
+
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
+  GURL app_url = GetInstallableAppURL();
+  SiteEngagementService::Get(profile())->AddPointsForTesting(
+      app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
+  // Manually set IPH ignored here, because the IPH demo mode only let IPH be
+  // shown once in an user session.
+  web_app::RecordInstallIphIgnored(
+      profile()->GetPrefs(),
+      web_app::GenerateAppIdFromURL(app_banner_manager_->GetManifestStartUrl()),
+      base::Time::Now());
+  bool installable = OpenTab(app_url).installable;
+  ASSERT_TRUE(installable);
+
+  FeaturePromoControllerViews* controller =
+      FeaturePromoControllerViews::GetForView(pwa_install_view_);
+  // IPH is not shown when the IPH is ignored recently.
+  EXPECT_FALSE(controller->BubbleIsShowing(
+      feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
