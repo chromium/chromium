@@ -49,7 +49,8 @@ TEST_F(UsbServiceTest, GetDevices) {
   // The USB service is not available on all platforms.
   if (usb_service_) {
     base::RunLoop loop;
-    usb_service_->GetDevices(base::BindOnce(&OnGetDevices, loop.QuitClosure()));
+    usb_service_->GetDevices(/*allow_restricted_devices=*/true,
+                             base::BindOnce(&OnGetDevices, loop.QuitClosure()));
     loop.Run();
   }
 }
@@ -62,7 +63,8 @@ TEST_F(UsbServiceTest, GetDevicesNewBackend) {
   // The USB service is not available on all platforms.
   if (usb_service_) {
     base::RunLoop loop;
-    usb_service_->GetDevices(base::BindOnce(&OnGetDevices, loop.QuitClosure()));
+    usb_service_->GetDevices(/*allow_restricted_devices=*/true,
+                             base::BindOnce(&OnGetDevices, loop.QuitClosure()));
     loop.Run();
   }
 }

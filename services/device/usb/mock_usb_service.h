@@ -16,8 +16,12 @@ class MockUsbService : public UsbService {
   MockUsbService();
   ~MockUsbService() override;
 
-  void AddDevice(scoped_refptr<UsbDevice> device);
-  void RemoveDevice(scoped_refptr<UsbDevice> device);
+  MOCK_METHOD2(GetDevices, void(bool, GetDevicesCallback));
+
+  void AddDevice(scoped_refptr<UsbDevice> device,
+                 bool is_restricted_device = false);
+  void RemoveDevice(scoped_refptr<UsbDevice> device,
+                    bool is_restricted_device = false);
 };
 
 }  // namespace device

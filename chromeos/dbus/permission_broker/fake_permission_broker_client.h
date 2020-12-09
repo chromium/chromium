@@ -20,6 +20,8 @@ namespace chromeos {
 class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
     : public PermissionBrokerClient {
  public:
+  using ClaimDevicePathCall = std::pair<std::string, uint32_t>;
+
   FakePermissionBrokerClient();
   ~FakePermissionBrokerClient() override;
 
@@ -87,6 +89,8 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
   // Returns true if UDP port is being forwarded.
   bool HasUdpPortForward(uint16_t port, const std::string& interface);
 
+  std::vector<ClaimDevicePathCall> GetAndResetClaimDevicePathLog();
+
  private:
   using RuleSet =
       std::set<std::pair<uint16_t /* port */, std::string /* interface */>>;
@@ -104,6 +108,8 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
 
   RuleSet tcp_deny_rule_set_;
   RuleSet udp_deny_rule_set_;
+
+  std::vector<ClaimDevicePathCall> claim_device_path_log_;
 
   DISALLOW_COPY_AND_ASSIGN(FakePermissionBrokerClient);
 };

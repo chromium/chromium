@@ -46,6 +46,7 @@ class FakeDeviceManagerRemote extends TestBrowserProxy {
       'getSecurityKeyDevice',
       'getDevices',
       'checkAccess',
+      'enumerateDevicesAndSetVmSharingClient',
       'openFileDescriptor',
       'setClient',
     ]);
@@ -87,6 +88,8 @@ class FakeDeviceManagerRemote extends TestBrowserProxy {
   }
 
   async checkAccess() {}
+
+  async enumerateDevicesAndSetVmSharingClient() {}
 
   async openFileDescriptor() {}
 

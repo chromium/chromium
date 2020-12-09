@@ -213,12 +213,14 @@ source_set("tests") {
       "fingerprint/fingerprint_chromeos_unittest.cc",
       "generic_sensor/platform_sensor_chromeos_unittest.cc",
       "generic_sensor/platform_sensor_provider_chromeos_unittest.cc",
+      "usb/usb_service_linux_unittest.cc",
     ]
     deps += [
       "//chromeos/components/sensors:sensors",
       "//chromeos/components/sensors:test_support",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/biod:test_support",
+      "//chromeos/dbus/permission_broker",
       "//chromeos/network:test_support",
       "//services/device/bluetooth:bluetooth_system_tests",
       "//services/device/fingerprint",

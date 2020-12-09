@@ -91,6 +91,7 @@ void FakePermissionBrokerClient::ClaimDevicePath(
     int lifeline_fd,
     OpenPathCallback callback,
     ErrorCallback error_callback) {
+  claim_device_path_log_.emplace_back(path, allowed_interfaces_mask);
   OpenPath(path, std::move(callback), std::move(error_callback));
 }
 
@@ -219,6 +220,13 @@ bool FakePermissionBrokerClient::RequestPortImpl(uint16_t port,
 
   hole_set->insert(rule);
   return true;
+}
+
+std::vector<FakePermissionBrokerClient::ClaimDevicePathCall>
+FakePermissionBrokerClient::GetAndResetClaimDevicePathLog() {
+  std::vector<ClaimDevicePathCall> result;
+  std::swap(result, claim_device_path_log_);
+  return result;
 }
 
 }  // namespace chromeos

@@ -31,16 +31,24 @@ class UsbDeviceLinux : public UsbDevice {
 // UsbDevice implementation:
 #if BUILDFLAG(IS_ASH)
   void CheckUsbAccess(ResultCallback callback) override;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ASH)
   void Open(OpenCallback callback) override;
 
   const std::string& device_path() const { return device_path_; }
 
-  // These functions are used during enumeration only. The values must not
+  // This function is used during enumeration only. The values must not
   // change during the object's lifetime.
   void set_webusb_landing_page(const GURL& url) {
     device_info_->webusb_landing_page = url;
   }
+
+#if BUILDFLAG(IS_ASH)
+  // We allow all interfaces here except mass storage interfaces. This is used
+  // to lock down devices in Open(), although the permission broker may further
+  // restrict access. It is possible to bypass this restriction by using
+  // UsbDeviceManager::OpenFileDescriptor() instead.
+  uint32_t AllowedInterfacesMask();
+#endif  // BUILDFLAG(IS_ASH)
 
  protected:
   friend class UsbServiceLinux;

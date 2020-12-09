@@ -18,6 +18,7 @@
 namespace device {
 
 struct UsbDeviceDescriptor;
+class UsbDevice;
 class UsbDeviceLinux;
 
 class UsbServiceLinux final : public UsbService {
@@ -26,9 +27,12 @@ class UsbServiceLinux final : public UsbService {
   ~UsbServiceLinux() override;
 
   // device::UsbService implementation
-  void GetDevices(GetDevicesCallback callback) override;
+  void GetDevices(bool allow_restricted_devices,
+                  GetDevicesCallback callback) override;
 
  private:
+  friend class UsbServiceLinuxTest;
+
   using DeviceMap =
       std::unordered_map<std::string, scoped_refptr<UsbDeviceLinux>>;
 
@@ -39,6 +43,9 @@ class UsbServiceLinux final : public UsbService {
   void DeviceReady(scoped_refptr<UsbDeviceLinux> device, bool success);
   void OnDeviceRemoved(const std::string& device_path);
   void HelperStarted();
+
+  std::vector<scoped_refptr<UsbDevice>> FilteredDevices();
+  void OnEnumerationReady();
 
   bool enumeration_ready() {
     return helper_started_ && first_enumeration_countdown_ == 0;
@@ -52,6 +59,11 @@ class UsbServiceLinux final : public UsbService {
   bool helper_started_ = false;
   uint32_t first_enumeration_countdown_ = 0;
   std::list<GetDevicesCallback> enumeration_callbacks_;
+#if BUILDFLAG(IS_ASH)
+  // We only need a single callback here as the device manager only supports
+  // having a single VM sharing client.
+  GetDevicesCallback enumeration_callback_for_vm_sharing_;
+#endif  // BUILDFLAG(IS_ASH)
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter> helper_;

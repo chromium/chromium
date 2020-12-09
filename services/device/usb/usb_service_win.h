@@ -31,7 +31,8 @@ class UsbServiceWin final : public DeviceMonitorWin::Observer,
   class BlockingTaskRunnerHelper;
 
   // device::UsbService implementation
-  void GetDevices(GetDevicesCallback callback) override;
+  void GetDevices(bool allow_restricted_devices,
+                  GetDevicesCallback callback) override;
 
   // device::DeviceMonitorWin::Observer implementation
   void OnDeviceAdded(const GUID& class_guid,

@@ -27,7 +27,7 @@
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 
 namespace {
-constexpr uint32_t kAllInterfacesMask = ~0U;
+constexpr int kUsbClassMassStorage = 0x08;
 }  // namespace
 #endif  // BUILDFLAG(IS_ASH)
 
@@ -54,6 +54,15 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_ASH)
+  uint32_t allowed_interfaces_mask = AllowedInterfacesMask();
+
+  if (allowed_interfaces_mask == 0) {
+    LOG(ERROR) << "Tried to open USB device with no allowed interfaces: "
+               << device_path_;
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   // create the pipe used as a lifetime to re-attach the original kernel driver
   // to the USB device in permission_broker.
   base::ScopedFD read_end, write_end;
@@ -65,7 +74,7 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
 
   auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   chromeos::PermissionBrokerClient::Get()->ClaimDevicePath(
-      device_path_, kAllInterfacesMask, read_end.get(),
+      device_path_, allowed_interfaces_mask, read_end.get(),
       base::BindOnce(&UsbDeviceLinux::OnOpenRequestComplete, this,
                      copyable_callback, std::move(write_end)),
       base::BindOnce(&UsbDeviceLinux::OnOpenRequestError, this,
@@ -82,6 +91,28 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
 }
 
 #if BUILDFLAG(IS_ASH)
+
+uint32_t UsbDeviceLinux::AllowedInterfacesMask() {
+  uint32_t result = 0;
+  for (auto& configuration : device_info().configurations) {
+    for (auto& interface : configuration->interfaces) {
+      if (interface->interface_number >= 32) {
+        LOG(ERROR) << "Interface number too high in USB descriptor.";
+        continue;
+      }
+
+      bool has_mass_storage_interface = false;
+      for (auto& alternate : interface->alternates) {
+        has_mass_storage_interface |=
+            alternate->class_code == kUsbClassMassStorage;
+      }
+      if (!has_mass_storage_interface)
+        result |= (1U << interface->interface_number);
+    }
+  }
+
+  return result;
+}
 
 void UsbDeviceLinux::OnOpenRequestComplete(OpenCallback callback,
                                            base::ScopedFD lifeline_fd,

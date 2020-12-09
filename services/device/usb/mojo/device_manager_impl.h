@@ -74,6 +74,10 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
   void CheckAccess(const std::string& guid,
                    CheckAccessCallback callback) override;
 
+  void EnumerateDevicesAndSetVmSharingClient(
+      mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
+      EnumerateDevicesAndSetClientCallback callback) override;
+
   void OpenFileDescriptor(const std::string& guid,
                           uint32_t drop_privileges_mask,
                           mojo::PlatformHandle lifeline_fd,
@@ -94,12 +98,15 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
   void OnGetDevices(
       mojom::UsbEnumerationOptionsPtr options,
       mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
+      bool is_vm_sharing_client,
       GetDevicesCallback callback,
       const std::vector<scoped_refptr<UsbDevice>>& devices);
 
   // UsbService::Observer implementation:
-  void OnDeviceAdded(scoped_refptr<UsbDevice> device) override;
-  void OnDeviceRemoved(scoped_refptr<UsbDevice> device) override;
+  void OnDeviceAdded(scoped_refptr<UsbDevice> device,
+                     bool is_restricted_device) override;
+  void OnDeviceRemoved(scoped_refptr<UsbDevice> device,
+                       bool is_restricted_device) override;
   void WillDestroyUsbService() override;
 
   void MaybeRunDeviceChangesCallback();
@@ -114,6 +121,9 @@ class DeviceManagerImpl : public mojom::UsbDeviceManager,
 
   mojo::ReceiverSet<mojom::UsbDeviceManager> receivers_;
   mojo::AssociatedRemoteSet<mojom::UsbDeviceManagerClient> clients_;
+#if BUILDFLAG(IS_ASH)
+  mojo::AssociatedRemote<mojom::UsbDeviceManagerClient> vm_sharing_client_;
+#endif  // BUILDFLAG(IS_ASH)
 
   base::WeakPtrFactory<DeviceManagerImpl> weak_factory_{this};
 

@@ -455,7 +455,7 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 
   // Listen for added/removed device events.
   DCHECK(!client_receiver_.is_bound());
-  device_manager_->EnumerateDevicesAndSetClient(
+  device_manager_->EnumerateDevicesAndSetVmSharingClient(
       client_receiver_.BindNewEndpointAndPassRemote(),
       base::BindOnce(&CrosUsbDetector::OnListAttachedDevices,
                      weak_ptr_factory_.GetWeakPtr()));
