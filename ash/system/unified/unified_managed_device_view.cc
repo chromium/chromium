@@ -89,7 +89,7 @@ void UnifiedManagedDeviceView::Update() {
   std::string enterprise_domain_manager = model->enterprise_domain_manager();
 
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorSecondary);
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
   if (session->ShouldDisplayManagedUI() || model->active_directory_managed() ||
       !enterprise_domain_manager.empty()) {
     // Show enterpised managed UI.
