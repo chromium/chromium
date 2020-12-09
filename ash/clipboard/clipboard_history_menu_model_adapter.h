@@ -95,6 +95,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   }
 
  private:
+  class ScopedA11yIgnore;
+
   ClipboardHistoryMenuModelAdapter(
       std::unique_ptr<ui::SimpleMenuModel> model,
       base::RepeatingClosure menu_closed_callback,
@@ -146,6 +148,12 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // Resource manager used to fetch image models. Owned by
   // ClipboardHistoryController.
   const ClipboardHistoryResourceManager* const resource_manager_;
+
+  // Indicates the number of item deletion operations in progress. Note that
+  // a `ClipboardHistoryItemView` instance is deleted asynchronously.
+  int item_deletion_in_progress_count_ = 0;
+
+  std::unique_ptr<ScopedA11yIgnore> scoped_ignore_;
 
   // Called when an item view is removed from the root menu.
   base::RepeatingClosure item_removal_callback_for_test_;

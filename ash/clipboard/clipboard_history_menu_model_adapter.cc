@@ -25,6 +25,32 @@
 
 namespace ash {
 
+// ClipboardHistoryMenuModelAdapter::ScopedA11yIgnore --------------------------
+
+// The scoped class to disable a11y for all items views.
+class ClipboardHistoryMenuModelAdapter::ScopedA11yIgnore {
+ public:
+  explicit ScopedA11yIgnore(
+      ClipboardHistoryMenuModelAdapter* menu_model_adapter)
+      : menu_model_adapter_(menu_model_adapter) {
+    SetIgnoreA11yForAllItemViews(true);
+  }
+  ~ScopedA11yIgnore() { SetIgnoreA11yForAllItemViews(false); }
+
+ private:
+  void SetIgnoreA11yForAllItemViews(bool ignore) {
+    for (auto& item_view_command_id_pair :
+         menu_model_adapter_->item_views_by_command_id_) {
+      views::View* item_view = item_view_command_id_pair.second;
+      item_view->GetViewAccessibility().OverrideIsIgnored(ignore);
+    }
+  }
+
+  ClipboardHistoryMenuModelAdapter* const menu_model_adapter_;
+};
+
+// ClipboardHistoryMenuModelAdapter --------------------------------------------
+
 // static
 std::unique_ptr<ClipboardHistoryMenuModelAdapter>
 ClipboardHistoryMenuModelAdapter::Create(
@@ -52,8 +78,8 @@ void ClipboardHistoryMenuModelAdapter::Run(
 
   int command_id = ClipboardHistoryUtil::kFirstItemCommandId;
   const auto& items = clipboard_history_->GetItems();
-  // Do not include the final kDeleteCommandId item in histograms, because it is
-  // not shown.
+  // Do not include the final kDeleteCommandId item in histograms, because it
+  // is not shown.
   UMA_HISTOGRAM_COUNTS_100(
       "Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown", items.size());
 
@@ -124,11 +150,18 @@ void ClipboardHistoryMenuModelAdapter::SelectMenuItemWithCommandId(
 
 void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
     int command_id) {
-  // Calculate `new_selected_command_id` before removing
-  // the item specified by `command_id` from data structures because the item to
-  // be removed is needed in calculation.
+  // Calculate `new_selected_command_id` before removing the item specified by
+  // `command_id` from data structures because the item to be removed is
+  // needed in calculation.
   base::Optional<int> new_selected_command_id =
       CalculateSelectedCommandIdAfterDeletion(command_id);
+
+  // Disable a11y for all item views. It ensures that when deleting multiple
+  // item views, only the one finally selected is announced.
+  if (!item_deletion_in_progress_count_) {
+    DCHECK(!scoped_ignore_);
+    scoped_ignore_ = std::make_unique<ScopedA11yIgnore>(this);
+  }
 
   // Update the menu item selection.
   if (new_selected_command_id.has_value()) {
@@ -138,14 +171,40 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
         root_view_);
   }
 
-  auto item_view_to_delete = item_views_by_command_id_.find(command_id);
-  DCHECK(item_view_to_delete != item_views_by_command_id_.cend());
+  auto item_view_to_delete_iter = item_views_by_command_id_.find(command_id);
+  DCHECK(item_view_to_delete_iter != item_views_by_command_id_.cend());
 
-  // Disable views to be removed in order to prevent them from handling events.
+  views::View* item_view_to_delete = item_view_to_delete_iter->second;
+
+  // Configure `item_view_to_delete` to serve a11y features.
+  views::ViewAccessibility& view_accessibility =
+      item_view_to_delete->GetViewAccessibility();
+
+  // Polish the a11y announcement for deletion operation.
+  view_accessibility.OverrideDescription(
+      l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_ITEM_DELETION));
+
+  // Enable a11y announcement for the view to be deleted.
+  view_accessibility.OverrideIsIgnored(false);
+
+  // Disabling `item_view_to_delete` is more like implementation details.
+  // So do not expose it to users.
+  view_accessibility.OverrideViewEnablingState(true);
+
+  // Specify `item_view_to_delete`'s position in the set. Without calling
+  // `OverridePosInSet()`, the menu's size after deletion may be announced.
+  const int pos_in_set = std::distance(item_views_by_command_id_.begin(),
+                                       item_view_to_delete_iter) +
+                         1;
+  view_accessibility.OverridePosInSet(pos_in_set,
+                                      item_views_by_command_id_.size());
+
+  // Disable views to be removed in order to prevent them from handling
+  // events.
   root_view_->GetMenuItemByID(command_id)->SetEnabled(false);
-  item_view_to_delete->second->SetEnabled(false);
+  item_view_to_delete->SetEnabled(false);
 
-  item_views_by_command_id_.erase(item_view_to_delete);
+  item_views_by_command_id_.erase(item_view_to_delete_iter);
 
   auto item_to_delete = item_snapshots_.find(command_id);
   DCHECK(item_to_delete != item_snapshots_.end());
@@ -153,6 +212,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
 
   // The current selected menu item may be accessed after item deletion. So
   // postpone the menu item deletion.
+  ++item_deletion_in_progress_count_;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHistoryMenuModelAdapter::RemoveItemView,
@@ -247,8 +307,8 @@ void ClipboardHistoryMenuModelAdapter::AdvancePseudoFocusFromSelectedItem(
 
   // Advancing pseudo focus should precede the item selection. Because when an
   // item view is selected, the selected view does not overwrite its pseudo
-  // focus if its pseudo focus is non-empty. It can ensure that the pseudo focus
-  // and the corresponding UI appearance update only once.
+  // focus if its pseudo focus is non-empty. It can ensure that the pseudo
+  // focus and the corresponding UI appearance update only once.
   next_focused_view->AdvancePseudoFocus(reverse);
   SelectMenuItemWithCommandId(next_selected_item_command);
 }
@@ -284,6 +344,13 @@ void ClipboardHistoryMenuModelAdapter::RemoveItemView(int command_id) {
   model_->RemoveItemAt(model_->GetIndexOfCommandId(command_id));
   root_view_->RemoveMenuItem(root_view_->GetMenuItemByID(command_id));
   root_view_->ChildrenChanged();
+
+  --item_deletion_in_progress_count_;
+  // Re-enable a11y for all item views when item deletion finally completes.
+  if (!item_deletion_in_progress_count_) {
+    DCHECK(scoped_ignore_);
+    scoped_ignore_.reset();
+  }
 
   // `ChildrenChanged()` clears the selection. So restore the selection.
   if (original_selected_command_id.has_value())

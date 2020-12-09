@@ -1075,6 +1075,9 @@ need to be translated for each locale.-->
       <message name="IDS_CLIPBOARD_HISTORY_DELETE_BUTTON" desc="Accessibility name of the button which functions to delete a clipboard history menu entry">
         Remove from clipboard.
       </message>
+      <message name="IDS_CLIPBOARD_HISTORY_ITEM_DELETION" desc="Accessibility text when a clipboard history menu entry is deleted">
+        Removed.
+      </message>
 
       <!-- Strings describing the touch calibration UX -->
       <message name="IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL" desc="A message to notify the user about using the escape key to exit the calibration mode.">
