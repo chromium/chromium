@@ -133,10 +133,6 @@ try_.list_view(
 )
 
 try_.list_view(
-    name = "tryserver.chromium.codesearch",
-)
-
-try_.list_view(
     name = "tryserver.chromium.dawn",
     branch_selector = branches.STANDARD_MILESTONE,
 )

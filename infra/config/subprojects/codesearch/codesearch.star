@@ -23,6 +23,7 @@ luci.bucket(
     ],
 )
 
+try_.defaults.add_to_list_view.set(True)
 try_.defaults.bucket.set("codesearch")
 try_.defaults.build_numbers.set(True)
 try_.defaults.builder_group.set("tryserver.chromium.codesearch")
@@ -45,6 +46,10 @@ try_.defaults.caches.set([
         path = "win_toolchain",
     ),
 ])
+
+try_.list_view(
+    name = "tryserver.chromium.codesearch",
+)
 
 try_.builder(
     name = "gen-android-try",

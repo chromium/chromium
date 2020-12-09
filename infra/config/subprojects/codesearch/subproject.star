@@ -3,4 +3,3 @@
 # found in the LICENSE file.
 
 exec("./codesearch.star")
-exec("./consoles/luci.chromium.codesearch.star")
