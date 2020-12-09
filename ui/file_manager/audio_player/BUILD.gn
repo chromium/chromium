@@ -1,0 +1,50 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generated_static_grdp = "$target_gen_dir/static_resources.grdp"
+
+generate_grd("build_static_grdp") {
+  out_grd = generated_static_grdp
+  grd_prefix = "audio_player"
+
+  resource_path_prefix = "audio_player"
+
+  input_files_base_dir = rebase_path(".", "//")
+
+  input_files = [
+    # Images:
+    "assets/100/player_button_next.png",
+    "assets/100/player_button_pause.png",
+    "assets/100/player_button_playlist.png",
+    "assets/100/player_button_play.png",
+    "assets/100/player_button_previous.png",
+    "assets/100/player_button_repeat_one.png",
+    "assets/100/player_button_repeat.png",
+    "assets/100/player_button_shuffle.png",
+    "assets/100/player_button_volume_muted.png",
+    "assets/100/player_button_volume.png",
+    "assets/100/player_cover_close.png",
+    "assets/100/player_cover_open.png",
+    "assets/100/player_no_artwork.png",
+    "assets/100/playlist_now_playing.png",
+    "assets/100/playlist_play.png",
+    "assets/200/player_button_next.png",
+    "assets/200/player_button_pause.png",
+    "assets/200/player_button_playlist.png",
+    "assets/200/player_button_play.png",
+    "assets/200/player_button_previous.png",
+    "assets/200/player_button_repeat_one.png",
+    "assets/200/player_button_repeat.png",
+    "assets/200/player_button_shuffle.png",
+    "assets/200/player_button_volume_muted.png",
+    "assets/200/player_button_volume.png",
+    "assets/200/player_cover_close.png",
+    "assets/200/player_cover_open.png",
+    "assets/200/player_no_artwork.png",
+    "assets/200/playlist_now_playing.png",
+    "assets/200/playlist_play.png",
+  ]
+}

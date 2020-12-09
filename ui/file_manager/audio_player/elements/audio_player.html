@@ -11,7 +11,31 @@
 
 <dom-module id="audio-player">
   <template>
-    <link rel="stylesheet" href="elements/audio_player.css">
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: space-between;
+      }
+
+      track-info-panel {
+        flex-grow: 0;
+        flex-shrink: 0;
+      }
+
+      track-list {
+        flex-grow: 1;
+        flex-shrink: 1;
+        overflow-x: hidden;
+        overflow-y: scroll;
+      }
+
+      control-panel {
+        height: 96px;
+        flex-shrink: 0;
+      }
+    </style>
     <track-info-panel id="trackInfo" expanded="{{trackInfoExpanded}}"
         aria-expand-artwork-label="[[ariaExpandArtworkLabel]]">
     </track-info-panel>

@@ -219,10 +219,14 @@ generate_grd("build_grd") {
     "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
   ]
 
-  grdp_files = [ "$target_gen_dir/file_manager/static_resources.grdp" ]
+  grdp_files = [
+    "$target_gen_dir/audio_player/static_resources.grdp",
+    "$target_gen_dir/file_manager/static_resources.grdp",
+  ]
 
   deps = [
     "file_manager:build_static_grdp",
+    "audio_player:build_static_grdp",
     "//ui/file_manager/audio_player/js:build",
     "//ui/file_manager/audio_player/js:build_background",
     "//ui/file_manager/audio_player/js:build_worker",
