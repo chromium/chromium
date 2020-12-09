@@ -50,6 +50,8 @@ const bool PlatformStyle::kUseRipples = true;
 const bool PlatformStyle::kTextfieldScrollsToStartOnFocusChange = false;
 const bool PlatformStyle::kTextfieldUsesDragCursorWhenDraggable = true;
 const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = false;
+const View::FocusBehavior PlatformStyle::kDefaultFocusBehavior =
+    View::FocusBehavior::ALWAYS;
 
 // Linux clips bubble windows that extend outside their parent window
 // bounds.
@@ -81,11 +83,6 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const base::string16& text,
   size_t previous_grapheme_index =
       gfx::UTF16OffsetToIndex(text, cursor_position, -1);
   return gfx::Range(cursor_position, previous_grapheme_index);
-}
-
-// static
-View::FocusBehavior PlatformStyle::DefaultFocusBehavior() {
-  return View::FocusBehavior::ALWAYS;
 }
 
 #endif  // OS_APPLE

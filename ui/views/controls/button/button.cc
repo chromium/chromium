@@ -591,7 +591,7 @@ Button::Button(PressedCallback callback)
     : AnimationDelegateViews(this),
       callback_(std::move(callback)),
       ink_drop_base_color_(gfx::kPlaceholderColor) {
-  SetFocusBehavior(PlatformStyle::DefaultFocusBehavior());
+  SetFocusBehavior(PlatformStyle::kDefaultFocusBehavior);
   SetProperty(kIsButtonProperty, true);
   hover_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
   SetInstallFocusRingOnFocus(true);

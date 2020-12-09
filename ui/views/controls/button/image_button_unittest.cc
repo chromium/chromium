@@ -43,7 +43,7 @@ using ImageButtonTest = ViewsTestBase;
 TEST_F(ImageButtonTest, FocusBehavior) {
   ImageButton button;
 
-  EXPECT_EQ(PlatformStyle::DefaultFocusBehavior(), button.GetFocusBehavior());
+  EXPECT_EQ(PlatformStyle::kDefaultFocusBehavior, button.GetFocusBehavior());
 }
 
 TEST_F(ImageButtonTest, Basics) {

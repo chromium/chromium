@@ -377,7 +377,7 @@ in system settings needs to be enabled to have navigation of all controls on the
 screen.
 
 To comply with Mac’s behavior, Chrome sets
-[DefaultFocusBehavior() ](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/style/platform_style_mac.mm;l=86)in
+[kDefaultFocusBehavior](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/style/platform_style.h?q=kDefaultFocusBehavior) in
 the platform style to ACCESSIBLE_ONLY on Mac as opposed to ALWAYS on other
 platforms. Controls that are
 [marked](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/toolbar/toolbar_button.cc;drc=93819857a690b79b1524052513747846c068ca90;l=104)

@@ -143,7 +143,7 @@ class LabelButtonTest : public test::WidgetTest {
 };
 
 TEST_F(LabelButtonTest, FocusBehavior) {
-  EXPECT_EQ(PlatformStyle::DefaultFocusBehavior(), button_->GetFocusBehavior());
+  EXPECT_EQ(PlatformStyle::kDefaultFocusBehavior, button_->GetFocusBehavior());
 }
 
 TEST_F(LabelButtonTest, Init) {

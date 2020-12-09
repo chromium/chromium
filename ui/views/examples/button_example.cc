@@ -127,7 +127,7 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
       label_button->IsAccessibilityFocusable()
           ? label_button->SetFocusBehavior(View::FocusBehavior::NEVER)
           : label_button->SetFocusBehavior(
-                PlatformStyle::DefaultFocusBehavior());
+                PlatformStyle::kDefaultFocusBehavior);
     }
   } else if (event.IsAltDown()) {
     label_button->SetIsDefault(!label_button->GetIsDefault());
