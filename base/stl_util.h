@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/template_util.h"
@@ -50,38 +51,6 @@ template <typename Iter>
 constexpr bool IsRandomAccessIter =
     std::is_same<typename std::iterator_traits<Iter>::iterator_category,
                  std::random_access_iterator_tag>::value;
-
-// Utility type traits used for specializing base::Contains() below.
-template <typename Container, typename Element, typename = void>
-struct HasFindWithNpos : std::false_type {};
-
-template <typename Container, typename Element>
-struct HasFindWithNpos<
-    Container,
-    Element,
-    void_t<decltype(std::declval<const Container&>().find(
-                        std::declval<const Element&>()) != Container::npos)>>
-    : std::true_type {};
-
-template <typename Container, typename Element, typename = void>
-struct HasFindWithEnd : std::false_type {};
-
-template <typename Container, typename Element>
-struct HasFindWithEnd<Container,
-                      Element,
-                      void_t<decltype(std::declval<const Container&>().find(
-                                          std::declval<const Element&>()) !=
-                                      std::declval<const Container&>().end())>>
-    : std::true_type {};
-
-template <typename Container, typename Element, typename = void>
-struct HasContains : std::false_type {};
-
-template <typename Container, typename Element>
-struct HasContains<Container,
-                   Element,
-                   void_t<decltype(std::declval<const Container&>().contains(
-                       std::declval<const Element&>()))>> : std::true_type {};
 
 }  // namespace internal
 
@@ -217,51 +186,6 @@ typename std::iterator_traits<
     typename Container::const_iterator>::difference_type
 STLCount(const Container& container, const T& val) {
   return std::count(container.begin(), container.end(), val);
-}
-
-// General purpose implementation to check if |container| contains |value|.
-template <typename Container,
-          typename Value,
-          std::enable_if_t<
-              !internal::HasFindWithNpos<Container, Value>::value &&
-              !internal::HasFindWithEnd<Container, Value>::value &&
-              !internal::HasContains<Container, Value>::value>* = nullptr>
-bool Contains(const Container& container, const Value& value) {
-  using std::begin;
-  using std::end;
-  return std::find(begin(container), end(container), value) != end(container);
-}
-
-// Specialized Contains() implementation for when |container| has a find()
-// member function and a static npos member, but no contains() member function.
-template <typename Container,
-          typename Value,
-          std::enable_if_t<internal::HasFindWithNpos<Container, Value>::value &&
-                           !internal::HasContains<Container, Value>::value>* =
-              nullptr>
-bool Contains(const Container& container, const Value& value) {
-  return container.find(value) != Container::npos;
-}
-
-// Specialized Contains() implementation for when |container| has a find()
-// and end() member function, but no contains() member function.
-template <typename Container,
-          typename Value,
-          std::enable_if_t<internal::HasFindWithEnd<Container, Value>::value &&
-                           !internal::HasContains<Container, Value>::value>* =
-              nullptr>
-bool Contains(const Container& container, const Value& value) {
-  return container.find(value) != container.end();
-}
-
-// Specialized Contains() implementation for when |container| has a contains()
-// member function.
-template <
-    typename Container,
-    typename Value,
-    std::enable_if_t<internal::HasContains<Container, Value>::value>* = nullptr>
-bool Contains(const Container& container, const Value& value) {
-  return container.contains(value);
 }
 
 // O(1) implementation of const casting an iterator for any sequence,
