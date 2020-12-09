@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #include "components/ukm/ios/features.h"
+#include "components/ukm/ios/ukm_reporting_ios_util.h"
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/browser/application_context.h"
@@ -155,6 +156,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 + (void)logLaunchMetricsWithStartupInformation:
             (id<StartupInformation>)startupInformation
                                connectedScenes:(NSArray<SceneState*>*)scenes {
+  RecordAndResetUkmLogSizeOnSuccessCounter();
+
   int numTabs = 0;
   int numNTPTabs = 0;
   for (SceneState* scene in scenes) {

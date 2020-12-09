@@ -70,6 +70,9 @@ static_library("ukm") {
     "//components/variations",
     "//url",
   ]
+  if (is_ios) {
+    deps += [ "//components/ukm/ios:ukm_reporting_ios_util" ]
+  }
 }
 
 # Helper library for observing signals that we need to clear any local data.

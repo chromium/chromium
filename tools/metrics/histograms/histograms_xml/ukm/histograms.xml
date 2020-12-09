@@ -134,6 +134,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UKM.IOSLog.OnSuccess" units="records"
+    expires_after="2021-04-11">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <summary>
+    Number of times when UKM.LogSize.OnSuccess was recorded on iOS. Recorded
+    when the app transitions to the foreground. This histogram should help to
+    figure out the root cause of crbug.com/1154678 (Data loss on UMA in iOS). If
+    total count of UKM.IOSLog.OnSuccess is greater than number of
+    UKM.LogSize.OnSuccess records, then data loss is caused by failure to write
+    the histogram to the disk on background thread. Otherwise (if total sum of
+    UKM.IOSLog.OnSuccess is equal to total count of UKM.LogSize.OnSuccess
+    records) then there is actually no data loss and app simply gets terminated
+    in a short window between UKM reached the server and the API call which
+    records the data.
+  </summary>
+</histogram>
+
 <histogram name="UKM.LogSize.OnSuccess" units="KB" expires_after="2021-04-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
