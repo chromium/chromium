@@ -784,7 +784,6 @@
 <translation id="1854180393107901205">Διακοπή μετάδοσης</translation>
 <translation id="1856715684130786728">Προσθήκη τοποθεσίας…</translation>
 <translation id="1858585891038687145">Να θεωρείται αξιόπιστο αυτό το πιστοποιητικό για τον προσδιορισμό κατασκευαστών λογισμικού</translation>
-<translation id="1860346308203060432">Προβολή ορατότητας συσκευής</translation>
 <translation id="1861262398884155592">Αυτός ο φάκελος είναι άδειος</translation>
 <translation id="1863182668524159459">Δεν βρέθηκαν σειριακές θύρες</translation>
 <translation id="1863316578636157783">Η επέκταση "<ph name="EXTENSION_NAME" />" απενεργοποιήθηκε επειδή περιέχει κακόβουλο πρόγραμμα.</translation>
@@ -2147,6 +2146,7 @@
 <translation id="3441653493275994384">Έλεγχος</translation>
 <translation id="3441663102605358937">Συνδεθείτε ξανά στον λογαριασμό <ph name="ACCOUNT" /> για να τον επαληθεύσετε</translation>
 <translation id="3445047461171030979">Γρήγορες απαντήσεις Βοηθού Google</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> λεπτά</translation>
 <translation id="3445925074670675829">Συσκευή USB-C</translation>
 <translation id="3446274660183028131">Εκκινήστε το Parallels Desktop για να εγκαταστήσετε τα Windows.</translation>
 <translation id="344630545793878684">Ανάγνωση των δεδομένων σας σε ορισμένους ιστότοπους</translation>
@@ -2321,7 +2321,6 @@
 <translation id="3635353578505343390">Αποστολή σχολίων στην Google</translation>
 <translation id="3635960017746711110">Προτιμήσεις USB Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - Απομένει <ph name="TIME" /></translation>
-<translation id="3637682276779847508">Η κάρτα SIM θα απενεργοποιηθεί οριστικά αν δεν καταφέρετε να πληκτρολογήσετε το σωστό κλειδί ξεκλειδώματος PIN.</translation>
 <translation id="3639220004740062347">Έξοδος από τη Λειτουργία ανάγνωσης</translation>
 <translation id="3640214691812501263">Προσθήκη "<ph name="EXTENSION_NAME" />" για <ph name="USER_NAME" />;</translation>
 <translation id="3640613767643722554">Εκπαιδεύστε τον Βοηθό ώστε να αναγνωρίζει τη φωνή σας</translation>
@@ -3482,7 +3481,6 @@
 <translation id="5017828934289857214">Υπενθύμιση αργότερα</translation>
 <translation id="5018207570537526145">Άνοιγμα ιστοτόπου επεκτάσεων</translation>
 <translation id="5018526990965779848">Αποστολή δεδομένων χρήσης και διαγνωστικών. Συμβάλετε στη βελτίωση της εμπειρίας Android με αυτόματη αποστολή διαγνωστικών δεδομένων και δεδομένων συσκευής και χρήσης εφαρμογών στην Google. Με αυτόν τον τρόπο βελτιώνεται η σταθερότητα του συστήματος και των εφαρμογών και παρέχονται επιπλέον βελτιώσεις. Επίσης, ορισμένα συγκεντρωτικά δεδομένα θα συμβάλλουν στη βελτίωση των εφαρμογών Google και θα χρησιμοποιηθούν από συνεργάτες της Google, όπως τους προγραμματιστές Android, προκειμένου να βελτιώσουν τις εφαρμογές και τα προϊόντα τους. Εάν η ρύθμιση της πρόσθετης Δραστηριότητας ιστού και εφαρμογών είναι ενεργοποιημένη, αυτά τα δεδομένα μπορεί να αποθηκευτούν στον Λογαριασμό σας Google.</translation>
-<translation id="5019392775062123007">Ορατή σε κοντινές συσκευές ως <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Δεν ενημερώθηκε ακόμη</translation>
 <translation id="5026806129670917316">Ενεργοποίηση Wi-Fi</translation>
 <translation id="5026874946691314267">Να μην εμφανιστεί ξανά</translation>
@@ -3718,7 +3716,6 @@
 <translation id="5301954838959518834">OK, το κατάλαβα</translation>
 <translation id="5302048478445481009">Γλώσσα</translation>
 <translation id="5302932258331363306">Εμφάνιση αντικαταστάσεων</translation>
-<translation id="5304276686222516262">Δεν είναι δυνατή η λήψη της λίστας επαφών. Ελέγξτε τη σύνδεση δικτύου σας ή &lt;a href="#" id="tryAgainLink"&gt;δοκιμάστε ξανά&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Η διαχείριση αυτού του λογαριασμού πραγματοποιείται από τον τομέα <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Δεν υπάρχει εγκατεστημένο</translation>
 <translation id="5307030433605830021">Η πηγή δεν υποστηρίζεται</translation>
@@ -4075,7 +4072,6 @@
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Ορισμός του Chrome ως προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="5711983031544731014">Το ξεκλείδωμα δεν είναι δυνατό. Πληκτρολογήστε τον κωδικό πρόσβασής σας.</translation>
-<translation id="5713723565110096165">Εσφαλμένο PIN. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="5715711091495208045">Μεσάζων προσθηκών: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Προεπιλεγμένες μηχανές αναζήτησης</translation>
 <translation id="5720705177508910913">Τρέχων χρήστης</translation>
@@ -4327,7 +4323,6 @@
 <translation id="6011074160056912900">Δίκτυο ethernet</translation>
 <translation id="6011193465932186973">Δακτυλικά αποτυπώματα</translation>
 <translation id="6011449291337289699">Εκκαθάριση δεδομένων ιστότοπου</translation>
-<translation id="6015266928248016057">Μη έγκυρος κωδικός PUK. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="6015796118275082299">Έτος</translation>
 <translation id="6016178549409952427">Πλοήγηση σε επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Επιβεβαιώστε τη λειτουργία Powerwash με επιστροφή σε προηγούμενη έκδοση</translation>
@@ -5052,6 +5047,7 @@
 <translation id="6856459657722366306">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="6856623341093082836">Ρύθμιση και προσαρμογή ακρίβειας οθόνης αφής</translation>
 <translation id="6857699260879628349">Λήψη πληροφοριών διαμόρφωσης</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> δ.</translation>
 <translation id="6860097299815761905">Ρυθμίσεις διακομιστή μεσολάβησης...</translation>
 <translation id="686022878923628150">Να απαγορεύεται στους ιστοτόπους η σύνδεση σε συσκευές MIDI</translation>
 <translation id="6860427144121307915">Άνοιγμα σε καρτέλα</translation>
@@ -6362,7 +6358,6 @@
 <translation id="8339059274628563283">Τοπικά αποθηκευμένα δεδομένα στο <ph name="SITE" /></translation>
 <translation id="833986336429795709">Για να ανοίξετε αυτόν τον σύνδεσμο, επιλέξτε μια εφαρμογή</translation>
 <translation id="8342861492835240085">Επιλέξτε μια συλλογή</translation>
-<translation id="834290227245955730">Μη έγκυρο PIN. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="8347227221149377169">Εργασίες εκτύπωσης</translation>
 <translation id="8350789879725387295">Εργαλεία γραφίδας στη θέση αγκύρωσης</translation>
 <translation id="8351316842353540018">Να εμφανίζονται πάντα οι επιλογές προσβασιμότητας</translation>
@@ -6485,7 +6480,6 @@
 <translation id="8497219075884839166">Βοηθητικά προγράμματα των Windows</translation>
 <translation id="8498214519255567734">Διευκολύνετε τη θέαση της οθόνης ή την ανάγνωση σε συνθήκες χαμηλού φωτισμού</translation>
 <translation id="8498395510292172881">Συνέχιση ανάγνωσης στο Chrome</translation>
-<translation id="8500234928660943538">Εσφαλμένος κωδικός PUK. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="8502536196501630039">Για να χρησιμοποιήσετε εφαρμογές από το Google Play, πρέπει πρώτα να κάνετε επαναφορά στις εφαρμογές σας. Ορισμένα δεδομένα μπορεί να έχουν χαθεί.</translation>
 <translation id="850314194061055138">εκ νέου χρήση της κάμερας</translation>
 <translation id="8503813439785031346">Όνομα χρήστη</translation>

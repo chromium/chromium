@@ -273,6 +273,7 @@
 <translation id="1302139669997477151">ការថតអេក្រង់ត្រូវបានទប់ស្កាត់</translation>
 <translation id="1302227299132585524">អនុញ្ញាត​ JavaScript ពី​ព្រឹត្តិការណ៍ Apple</translation>
 <translation id="1303101771013849280">ឯកសារ HTML ចំណាំ</translation>
+<translation id="1303178898338186101">មិនអាចភ្ជាប់​ជាមួយ Google Play បានទេ។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="1303671224831497365">រកមិនឃើញឧបករណ៍ប៊្លូធូសទេ</translation>
 <translation id="130491383855577612">បានជំនួស​កម្មវិធី និង​ឯកសារ Linux ដោយ​ជោគជ័យ​ហើយ</translation>
 <translation id="1306606229401759371">ប្ដូរ​ការកំណត់</translation>
@@ -783,7 +784,6 @@
 <translation id="1854180393107901205">បញ្ឈប់ការខាស</translation>
 <translation id="1856715684130786728">បន្ថែមទីតាំង...</translation>
 <translation id="1858585891038687145">ជឿទុកចិត្តលើវិញ្ញាបនបត្រនេះដើម្បីសម្គាល់អ្នកផលិតកម្មវិធី</translation>
-<translation id="1860346308203060432">មើលលទ្ធភាព​មើលឃើញឧបករណ៍</translation>
 <translation id="1861262398884155592">ថត​នេះ​ទទេ</translation>
 <translation id="1863182668524159459">រក​មិនឃើញ​រន្ធ​ស៊េរី​ទេ</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" ត្រូវបានបិទ ដោយសារ​វាមាន​កម្មវិធី​គ្រោះថ្នាក់</translation>
@@ -2139,12 +2139,14 @@
 <translation id="343578350365773421">អស់ក្រដាស</translation>
 <translation id="3435896845095436175">បើកដំណើរការ</translation>
 <translation id="3438633801274389918">និនចា</translation>
+<translation id="3438643033528947620">មិនអាចភ្ជាប់​ជាមួយសេវាកម្ម Google បានទេ។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="3439153939049640737">អនុញ្ញាត <ph name="HOST" /> ឲ្យចូលប្រើម៉ៃក្រូហ្វូនរបស់អ្នកជានិច្ច</translation>
 <translation id="3439970425423980614">កំពុងបើក PDF នៅក្នុងពិនិត្យមើល</translation>
 <translation id="3440663250074896476">សកម្មភាពច្រើនទៀតសម្រាប់ <ph name="BOOKMARK_NAME" /></translation>
 <translation id="3441653493275994384">អេក្រង់</translation>
 <translation id="3441663102605358937">ចូល <ph name="ACCOUNT" /> ម្ដងទៀត ដើម្បី​ផ្ទៀងផ្ទាត់​គណនីនេះ</translation>
 <translation id="3445047461171030979">ចម្លើយ​រហ័សរបស់ Google ជំនួយការ</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> នាទី</translation>
 <translation id="3445925074670675829">ឧបករណ៍ USB-C</translation>
 <translation id="3446274660183028131">សូមចាប់ផ្ដើម Parallels Desktop ដើម្បីដំឡើង Windows។</translation>
 <translation id="344630545793878684">អានទិន្នន័យរបស់អ្នកនៅលើគេហទំព័រមួយចំនួន</translation>
@@ -2319,7 +2321,6 @@
 <translation id="3635353578505343390">ផ្ញើ​មតិ​កែលម្អ​ទៅ Google</translation>
 <translation id="3635960017746711110">ចំណូលចិត្ត USB របស់ Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - នៅសល់ <ph name="TIME" /></translation>
-<translation id="3637682276779847508">ស៊ីមកាត​របស់អ្នក​នឹងត្រូវបានបិទ​ជា​អចិន្ត្រៃយ៍ ប្រសិនបើ​អ្នកមិនអាច​បញ្ចូល​កូដ PIN ដោះសោ​ដែល​ត្រឹមត្រូវ​បាននោះ​ទេ។</translation>
 <translation id="3639220004740062347">ចាកចេញពីមុខងារអាន</translation>
 <translation id="3640214691812501263">បន្ថែម "<ph name="EXTENSION_NAME" />" សម្រាប់ <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">បង្រៀន​ជំនួយការ​របស់អ្នក​ឱ្យស្គាល់​សំឡេងរបស់អ្នក</translation>
@@ -3333,6 +3334,7 @@
 <translation id="4848518990323155912">បើកដំណើរការចាក់សោស៊ីមកាត (តម្រូវឲ្យកូដ PIN ប្រើទិន្នន័យចល័ត)</translation>
 <translation id="4849286518551984791">ម៉ោងសកល (UTC/GMT)</translation>
 <translation id="4849517651082200438">កុំតំឡើង</translation>
+<translation id="485053257961878904">មិនអាចរៀបចំ​ការធ្វើសមកាលកម្ម​ការជូនដំណឹងបានទេ</translation>
 <translation id="4850886885716139402">មើល</translation>
 <translation id="485088796993065002">គេហទំព័រអាចចាក់សំឡេង ដើម្បីផ្ដល់សំឡេងសម្រាប់តន្ត្រី វីដេអូ និងមេឌៀផ្សេងទៀត</translation>
 <translation id="4853020600495124913">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
@@ -3420,6 +3422,7 @@
 <translation id="4932733599132424254">កាលបរិច្ឆេទ</translation>
 <translation id="4933484234309072027">បានបង្កប់នៅលើ <ph name="URL" /></translation>
 <translation id="493571969993549666">បន្ថែមអ្នកប្រើដែលបានចាត់</translation>
+<translation id="4936042273057045735">មិនអាចធ្វើសមកាលកម្ម​ការជូនដំណឹងសម្រាប់ទូរសព្ទ​នៅក្នុងកម្រងព័ត៌មាន​ការងារបានទេ</translation>
 <translation id="4939805055470675027">មិន​អាច​​ភ្ជាប់ <ph name="CARRIER_NAME" /> បាន​ទេ</translation>
 <translation id="4940364377601827259">មាន​ម៉ាស៊ីន​បោះពុម្ព​ <ph name="PRINTER_COUNT" /> សម្រាប់​រក្សាទុក​។</translation>
 <translation id="4940845626435830013">បម្រុងទុក​ទំហំ​ថាស</translation>
@@ -3478,7 +3481,6 @@
 <translation id="5017828934289857214">រំលឹក​ខ្ញុំ​ពេលក្រោយ</translation>
 <translation id="5018207570537526145">បើក​គេហទំព័រ​កម្ម​វិធី​បន្ថែម</translation>
 <translation id="5018526990965779848">បញ្ជូន​ទិន្នន័យនៃការ​ប្រើប្រាស់ និង​ការវិភាគ។ ជួយ​ធ្វើ​ឱ្យ​បទពិសោធន៍​ប្រើប្រាស់ Android របស់អ្នក​ប្រសើរ​ឡើង ដោយ​បញ្ជូន​ទិន្នន័យ​នៃការ​វិភាគ ​​ឧបករណ៍ និង​ការប្រើប្រាស់កម្មវិធី​ទៅ Google ដោយ​ស្វ័យប្រវត្តិ។ ការធ្វើ​បែបនេះ​នឹងជួយ​ដល់ស្ថិរភាព​កម្មវិធី និង​ប្រព័ន្ធ ព្រមទាំង​ការកែលម្អ​ផ្សេងទៀត។ ទិន្នន័យ​ប្រមូលបាន​មួយចំនួន​ក៏នឹង​ជួយដល់​កម្មវិធី និង​ដៃគូ Google ដូចជា​អ្នកអភិវឌ្ឍន៍ Android ផងដែរ។ ប្រសិនបើ​ការកំណត់​សកម្មភាព​កម្មវិធី និង​គេហទំព័រ​បន្ថែម​របស់អ្នក​ត្រូវបាន​បើក នោះទិន្នន័យនេះ​អាចត្រូវ​បានរក្សាទុក​ទៅក្នុង​គណនី Google របស់អ្នក។</translation>
-<translation id="5019392775062123007">អាចមើលឃើញដោយឧបករណ៍នៅជិតជា <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">មិនទាន់​បានធ្វើបច្ចុប្បន្នភាព​នៅឡើយទេ</translation>
 <translation id="5026806129670917316">បើក Wi-Fi</translation>
 <translation id="5026874946691314267">កុំបង្ហាញម្តងទៀត</translation>
@@ -3714,7 +3716,6 @@
 <translation id="5301954838959518834">យល់ព្រម ខ្ញុំយល់ហើយ</translation>
 <translation id="5302048478445481009">ភាសា</translation>
 <translation id="5302932258331363306">បង្ហាញ​ការជំនួស</translation>
-<translation id="5304276686222516262">មិនអាច​ទាញយក​បញ្ជីទំនាក់ទំនង​បានទេ។ សូម​ពិនិត្យមើល​ការតភ្ជាប់បណ្ដាញ​របស់អ្នក ឬ&lt;a href="#" id="tryAgainLink"&gt;ព្យាយាម​ម្ដងទៀត&lt;/a&gt;។</translation>
 <translation id="5305145881844743843">គណនីនេះស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">គ្មានអ្វីត្រូវបានតំឡើងទេ</translation>
 <translation id="5307030433605830021">មិនស្គាល់​ប្រភព​ទេ</translation>
@@ -4070,7 +4071,6 @@
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">កំណត់ Chrome ជាកម្មវិធីរុករកតាមអ៊ីនធឺណិត​លំនាំដើម​របស់អ្នក</translation>
 <translation id="5711983031544731014">មិនអាចដោះសោបានទេ។ បញ្ចូលពាក្យសម្ងាត់របស់អ្នក។</translation>
-<translation id="5713723565110096165">កូដ PIN មិនត្រឹមត្រូវទេ។ ការសាកល្បងឡើងវិញ​នៅសល់៖ <ph name="RETRIES" />។</translation>
 <translation id="5715711091495208045">អន្តរការរីកម្មវិធីជំនួយ៖ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ម៉ាស៊ីនគ្រប៉គ្រងលំនាំដើម</translation>
 <translation id="5720705177508910913">អ្នកប្រើបច្ចុប្បន្ន</translation>
@@ -4322,7 +4322,6 @@
 <translation id="6011074160056912900">បណ្ដាញ​អ៊ីសឺរណិត</translation>
 <translation id="6011193465932186973">ស្នាម​ម្រាមដៃ</translation>
 <translation id="6011449291337289699">ជម្រះទិន្នន័យគេហទំព័រ</translation>
-<translation id="6015266928248016057">PUK មិនត្រឹមត្រូវ។ ការសាកល្បងឡើងវិញ​នៅសល់៖ <ph name="RETRIES" />។</translation>
 <translation id="6015796118275082299">ឆ្នាំ</translation>
 <translation id="6016178549409952427">ទៅកាន់ខ្លឹមសារបន្ថែម <ph name="CURRENT_ELEMENT" /> ក្នុងចំណោម <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">អះអាង Powerwash ជាមួយការត្រលប់ទៅកំណែមុន</translation>
@@ -4733,6 +4732,7 @@
 <translation id="6474498546677193336">មិនអាច​ឈប់ចែករំលែក​បានទេ ដោយសារ​កម្មវិធីកំពុង​ប្រើថតនេះ។ ថតនេះនឹង​ឈប់ចែករំលែក នៅពេល Linux បិទ​លើកក្រោយ។</translation>
 <translation id="6474884162850599008">ផ្តាច់គណនី Google Drive</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> ចង់ចែករំលែកមាតិកានៅលើអេក្រង់របស់អ្នក។ ជ្រើសរើសអ្វីដែលអ្នកចង់ចែករំលែក។</translation>
+<translation id="6477822444490674459">មិនអាចធ្វើសមកាលកម្ម​ការជូនដំណឹងសម្រាប់ទូរសព្ទ​នៅក្នុងកម្រងព័ត៌មាន​ការងារបានទេ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">រក្សាឯកសារគ្រោះថ្នាក់ឬ?</translation>
 <translation id="6480327114083866287">ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">បើក​ការទាញយក</translation>
@@ -5046,9 +5046,11 @@
 <translation id="6856459657722366306">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ព័ត៌មានលម្អិត</translation>
 <translation id="6856623341093082836">រៀបចំ និង​កែ​សម្រួល​កម្រិត​ពណ៌​ដែល​ត្រឹមត្រូវ​សម្រាប់​អេក្រង់​ចុច​របស់​អ្នក</translation>
 <translation id="6857699260879628349">ទទួលព័ត៌មាន​អំពី​ការកំណត់​រចនាសម្ព័ន្ធ</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> វិនាទី</translation>
 <translation id="6860097299815761905">ការកំណត់ប្រូកស៊ី...</translation>
 <translation id="686022878923628150">ទប់​ស្កាត់​គេហទំព័រ​មិន​ឱ្យ​ភ្ជាប់​ជាមួយ​ឧបករណ៍ MIDI</translation>
 <translation id="6860427144121307915">បើកនៅក្នុងផ្ទាំង</translation>
+<translation id="6862729829592030773"><ph name="MANAGER" /> តម្រូវឱ្យអ្នកបម្រុងទុក​ទិន្នន័យរបស់អ្នក និងបញ្ជូន <ph name="DEVICE_TYPE" /> នេះត្រឡប់ទៅវិញ​ក្នុងរយៈពេល 1 សប្ដាហ៍។ <ph name="LINK_BEGIN" />សូមមើល​ព័ត៌មានលម្អិត<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">លុបពាក្យសម្ងាត់ឬ?</translation>
 <translation id="6865313869410766144">បំពេញទិន្នន័យបែបបទស្វ័យប្រវត្តិ</translation>
 <translation id="6865598234501509159">ទំព័រ​មិនមែនជា​ភាសា<ph name="LANGUAGE" />ទេ</translation>
@@ -5132,6 +5134,7 @@
 <translation id="696103774840402661">ឯកសារ និងទិន្នន័យមូលដ្ឋាន​ទាំងអស់សម្រាប់អ្នកប្រើប្រាស់ទាំងអស់នៅលើ <ph name="DEVICE_TYPE" /> នេះត្រូវបានលុបជាអចិន្ត្រៃយ៍។</translation>
 <translation id="6964390816189577014">វីរៈបុរស</translation>
 <translation id="6964760285928603117">លុបចេញ​ពីក្រុម</translation>
+<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> តម្រូវឱ្យអ្នកបម្រុងទុក​ទិន្នន័យរបស់អ្នក និងបញ្ជូន <ph name="DEVICE_TYPE" /> នេះត្រឡប់ទៅវិញនៅថ្ងៃនេះ។ <ph name="LINK_BEGIN" />សូមមើលព័ត៌មានលម្អិត<ph name="LINK_END" />}other{<ph name="MANAGER" /> តម្រូវឱ្យអ្នកបម្រុងទុក​ទិន្នន័យរបស់អ្នក និងបញ្ជូន <ph name="DEVICE_TYPE" /> នេះត្រឡប់ទៅវិញក្នុងរយៈពេល {NUM_DAYS} ថ្ងៃ។ <ph name="LINK_BEGIN" />សូមមើលព័ត៌មានលម្អិត<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">យល់ព្រម</translation>
 <translation id="6965648386495488594">រន្ធ</translation>
 <translation id="6965978654500191972">ឧបករណ៍</translation>
@@ -5221,6 +5224,7 @@
 <translation id="7051943809462976355">កំពុងស្វែងរកកណ្តុរ...</translation>
 <translation id="7052237160939977163">ផ្ញើទិន្នន័យតាមដានប្រតិបត្តិការ</translation>
 <translation id="7053983685419859001">ទប់ស្កាត់</translation>
+<translation id="705508001219706572">ដើម្បីត្រឡប់មក​ទីនេះវិញឱ្យបានរហ័ស សូមដំឡើង <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">​បាន​ទប់ស្កាត់​ការបញ្ជូន​បន្ត៖</translation>
 <translation id="7055451306017383754">មិនអាច​ឈប់ចែករំលែក​បានទេ ដោយសារ​កម្មវិធីកំពុង​ប្រើថតនេះ។ ថតនេះនឹង​ឈប់ចែករំលែក នៅពេល Parallels Desktop បិទ​លើកក្រោយ។</translation>
 <translation id="7056526158851679338">តាមដានឧបករណ៍</translation>
@@ -6352,7 +6356,6 @@
 <translation id="8339059274628563283"><ph name="SITE" /> បានផ្ទុកទិន្នន័យជាមូលដ្ឋាន</translation>
 <translation id="833986336429795709">ដើម្បីបើក​តំណនេះ សូម​ជ្រើសរើស​កម្មវិធីមួយ</translation>
 <translation id="8342861492835240085">ជ្រើសរើស​​​បណ្ដុំ</translation>
-<translation id="834290227245955730">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ។ ការសាកល្បងឡើងវិញ​នៅសល់៖ <ph name="RETRIES" />។</translation>
 <translation id="8347227221149377169">ការងារ​បោះពុម្ព</translation>
 <translation id="8350789879725387295">ឧបករណ៍​របស់ប៊ិក​នៅក្នុង​របារឧបករណ៍</translation>
 <translation id="8351316842353540018">បង្ហាញ​ជម្រើសភាពងាយស្រួល​ជានិច្ច</translation>
@@ -6475,7 +6478,6 @@
 <translation id="8497219075884839166">ការប្រើប្រាស់​វិនដូ</translation>
 <translation id="8498214519255567734">វាធ្វើ​ឲ្យមាន​ភាពងាយស្រួល​ជាងមុន​ក្នុងការ​មើលអេក្រង់​របស់អ្នក ឬ​អាននៅ​កន្លែងដែល​មាន​ពន្លឺតិច</translation>
 <translation id="8498395510292172881">បន្ត​អាន​នៅក្នុង Chrome</translation>
-<translation id="8500234928660943538">PUK មិនត្រឹមត្រូវ។ ការសាកល្បងឡើងវិញ​នៅសល់៖ <ph name="RETRIES" />។</translation>
 <translation id="8502536196501630039">ដើម្បី​ប្រើ​កម្មវិធីពី Google Play អ្នកត្រូវស្ដារកម្មវិធី​របស់អ្នក​ជាមុនសិន។ ទិន្នន័យ​មួយចំនួន​អាចនឹង​​បាត់បង់។</translation>
 <translation id="850314194061055138">ប្រើកាមេរ៉ាម្ដងទៀត</translation>
 <translation id="8503813439785031346">ឈ្មោះអ្នកប្រើ</translation>

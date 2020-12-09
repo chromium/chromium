@@ -135,6 +135,7 @@
 <translation id="2208323208084708176">Рэжым адзінага працоўнага стала</translation>
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222338659135520253">Трэба выканаць уваход</translation>
+<translation id="2222841058024245321">Працоўны стол 7</translation>
 <translation id="225680501294068881">Ідзе пошук прылад…</translation>
 <translation id="2268130516524549846">Bluetooth выключаны</translation>
 <translation id="2268813581635650749">Выйсці адусюль</translation>
@@ -182,6 +183,7 @@
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2658778018866295321">Націснуць і перацягнуць</translation>
 <translation id="2678852583403169292">Меню функцыі "Чытаць уголас"</translation>
+<translation id="2689613560355655046">Працоўны стол 8</translation>
 <translation id="2700493154570097719">Наладзьце клавіятуру</translation>
 <translation id="2704781753052663061">Падключыцца да іншых сетак Wi-Fi</translation>
 <translation id="2705001408393684014">Уключыць або выключыць мікрафон. <ph name="STATE_TEXT" /></translation>
@@ -374,6 +376,7 @@
 <translation id="4389184120735010762">Вы націснулі спалучэнне клавіш для прыстыкаванай лупы. Уключыць яе?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />: выключана.</translation>
 <translation id="4421231901400348175">Абагульванне кантролю над экранам з карыстальнікам <ph name="HELPER_NAME" /> праз Аддаленую дапамогу.</translation>
+<translation id="4424159417645388645">Працоўны стол 5</translation>
 <translation id="4427613789487709312">Стандартная (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Гучнасць</translation>
 <translation id="4450893287417543264">Больш не паказваць</translation>
@@ -511,7 +514,6 @@
 <translation id="5691772641933328258">Адбітак пальца не распазнаны</translation>
 <translation id="5710450975648804523">Рэжым "Не турбаваць" уключаны</translation>
 <translation id="573413375004481890">Гэта прылада не можа падтрымліваць усе вашы дысплэі, таму адзін з іх быў адключаны</translation>
-<translation id="5740328398383587084">Абагульванне паблізу</translation>
 <translation id="574392208103952083">Сярэдні</translation>
 <translation id="5744083938413354016">Перацягванне дотыкам</translation>
 <translation id="5745612484876805746">Начная падсветка ўключаецца аўтаматычна пасля захаду сонца</translation>
@@ -649,6 +651,7 @@
 <translation id="698231206551913481">Пры выдаленні карыстальніка будуць выдалены ўсе звязаныя з ім файлы і лакальныя даныя.</translation>
 <translation id="7007983414944123363">Пароль або PIN-код спраўдзіць не ўдалося. Паўтарыце спробу.</translation>
 <translation id="7015766095477679451">Можна будзе прадоўжыць у <ph name="COME_BACK_TIME" />.</translation>
+<translation id="70168403932084660">Працоўны стол 6</translation>
 <translation id="7025533177575372252">Падключыце прыладу "<ph name="DEVICE_NAME" />" да тэлефона</translation>
 <translation id="7026338066939101231">Паменшыць</translation>
 <translation id="7029814467594812963">Завяршыць сеанс</translation>

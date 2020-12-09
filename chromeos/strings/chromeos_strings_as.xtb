@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
 <translation id="1979103255016296513">পাছৱর্ড সলনি কৰাৰ সময় উকলিছে</translation>
 <translation id="1980044825731880088">চিপিইউৰ গতি</translation>
+<translation id="2008685064673031089">প্ৰাইম সন্ধান</translation>
 <translation id="2080070583977670716">অধিক ছেটিং</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">পাছ কৰিছে</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> টা প্ৰয়াস বাকী আছে</translation>
 <translation id="2391082728065870591">মতামত বিষয়ক ৰিপ’ৰ্টটো পঠিয়াওক</translation>
+<translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
 <translation id="2461822463642141190">বৰ্তমান</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
@@ -52,12 +54,14 @@
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
+<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />এমএ</translation>
 <translation id="3069085583900247081">পৰীক্ষা বিফল হৈছে</translation>
 <translation id="3083667275341675831">সংযোগ সম্পৰ্কীয় ডায়গন’ষ্টিক্স</translation>
 <translation id="3091839911843451378">বিফল হৈছে - বন্ধ হৈছে</translation>
+<translation id="3102119246920354026">কেশ্ব</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
 <translation id="3199982728237701504">নথি ফীডাৰ (দুফাল থকা)</translation>
@@ -111,11 +115,14 @@
 <translation id="4832079907277790330">Files এপ্‌টোত ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="4848429997038228357">চলি আছে</translation>
 <translation id="4890353053343094602">তৎক্ষণাত নতুন এটা বাছনি কৰক</translation>
+<translation id="4891842000192098784">চাপ</translation>
 <translation id="4917889632206600977">বন্ধ হৈছে - কাগজ শেষ হৈছে</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ হৈছে।</translation>
 <translation id="4932733599132424254">তাৰিখ</translation>
+<translation id="498186245079027698">স্কেনাৰটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক। স্কেন কৰা ফাইল ছেভ কৰিবলৈ পৰ্যাপ্ত পৰিমাণে স্থানীয় খালী ঠাই থকাটো নিশ্চিত কৰক।</translation>
 <translation id="4985509611418653372">চলাওক</translation>
 <translation id="500920857929044050">পৰীক্ষা কৰা বন্ধ কৰক</translation>
+<translation id="5154917547274118687">মেম’ৰি</translation>
 <translation id="5168185087976003268">বেটাৰীৰ অৱস্থা</translation>
 <translation id="520299634122159966">কোনো স্কেনাৰ নাই</translation>
 <translation id="5212543919916444558">আপোনাক সহায় কৰিব পৰাকৈ মই আপোনাৰ স্ক্ৰীণত একো বিচাৰি পোৱা নাই।
@@ -136,6 +143,7 @@
 <translation id="5551702563755460533">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="5635169860413004179">ৰিপ’ৰ্ট চাওক</translation>
 <translation id="5719918614880940190">এইটোৱে চিপিইউৰ ব্যৱহাৰ জোখে আৰু ই সকলো মুখ্য বস্তুৰ একত্ৰীকৰণ</translation>
+<translation id="5781694279199921985">ছেশ্বনৰ লগ ছেভ কৰক</translation>
 <translation id="5797428682393400134">সফল</translation>
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
@@ -172,6 +180,8 @@
 <translation id="6766275201586212568">DNSৰ সমাধান বিফল হৈছে</translation>
 <translation id="6768237774506518020">DNSৰ সমাধান বিফল হোৱাৰ হাৰ উচ্চ</translation>
 <translation id="6839141349259399400">স্কেনাৰৰ সৈতে সংযোগ কৰিব পৰা নাই নেকি?</translation>
+<translation id="6853312040151791195">চাৰ্জ খৰচ হোৱাৰ হাৰ</translation>
+<translation id="6898743098396957679">স্কেনিং সম্পূৰ্ণ কৰিব পৰা নগ’ল</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="714876143603641390">LAN সংযোগ</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -184,12 +194,15 @@
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7690294790491645610">নতুন পাছৱর্ড নিশ্চিত কৰক</translation>
+<translation id="773153675489693198">চক্ৰৰ গণনা</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7855434858642800953">স্কেন কৰা ফাইল ছেভ কৰা হ'ল!</translation>
 <translation id="7928373994957558460">ফাইলৰ অৱস্থান দেখুৱাওক</translation>
 <translation id="7936303884198020182">ড’মেইন নাম থকা কোনো ছাৰ্ভাৰ পোৱা নগ'ল</translation>
+<translation id="7960831585769876809">তাপমান</translation>
 <translation id="8041089156583427627">মতামত পঠিয়াওক</translation>
+<translation id="8075838845814659848">বাকী থকা চাৰ্জ</translation>
 <translation id="808894953321890993">পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">আপোনাৰ নথিখন স্কেনাৰটোত ৰাখক আৰু আৰম্ভ কৰিবলৈ <ph name="SPAN_BEGIN" />স্কেন কৰক<ph name="SPAN_END" /> বাছনি কৰক</translation>
@@ -217,11 +230,12 @@
 <translation id="8919837981463578619">বিফল হৈছে - ট্ৰে’ উপলব্ধ নহয়</translation>
 <translation id="8928727111548978589">বিফল হৈছে - কাগজ শেষ হৈছে</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> টা প্ৰয়াস বাকী আছে</translation>
+<translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>
 <translation id="8970109610781093811">পুনৰ চলাওক</translation>
 <translation id="9088306295921699330">এতিয়ালৈকে কৰা ব্যৱহাৰৰ পৰিমাণ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />ৰ টিকেট ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে</translation>
 <translation id="9111102763498581341">আনলক</translation>
 <translation id="9149391708638971077">মেম’ৰি পৰীক্ষা চলাওক</translation>
-<translation id="982713511914535780">ডিচাৰ্জ পৰীক্ষা চলাওক</translation>
+<translation id="982713511914535780">ডিচচাৰ্জ পৰীক্ষা চলাওক</translation>
 </translationbundle>

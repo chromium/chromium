@@ -151,6 +151,7 @@
 <translation id="5307600278924710095">कृपया '<ph name="ATSIGN" />' मागुन येणारा भाग एंटर करा. '<ph name="INVALIDADDRESS" />' अपूर्ण आहे.</translation>
 <translation id="5334352251556557839">मीडिया प्ले करता आला नाही.</translation>
 <translation id="537648784377940524">आधीची तारीख (<ph name="MIN_DATE_OR_TIME" />) नंतरच्या तारखेपूर्वी (<ph name="MAX_DATE_OR_TIME" />) येणे आवश्यक आहे.</translation>
+<translation id="5378437566635403538">विस्तार केला, डायलॉग उघडला.</translation>
 <translation id="5406322316791861025">आकृती</translation>
 <translation id="5425179576310518467">सध्याची तारीख</translation>
 <translation id="5453733299334684579">ट्री आयटम</translation>
@@ -167,6 +168,7 @@
 <translation id="5677946354068040947">अधिक पर्याय</translation>
 <translation id="576709008726043716">परिचय</translation>
 <translation id="57838592816432529">म्यूट करा</translation>
+<translation id="5787939484346677755">विस्तार केला, ऑटोकंप्लीट पर्याय उपलब्ध.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="588258955323874662">क्षेत्रे</translation>
 <translation id="5888666972993069672">आता <ph name="DEVICE_FRIENDLY_NAME" /> वर कास्ट करत आहे</translation>
@@ -180,6 +182,7 @@
 <translation id="6023896073578205740">सूची बॉक्स</translation>
 <translation id="6150588977291308318">ग्रंथसूची</translation>
 <translation id="6164829606128959761">मीटर</translation>
+<translation id="6165053282446038410">विस्तार केला, <ph name="COUNT" /> ऑटोकंप्लीट पर्याय उपलब्ध.</translation>
 <translation id="6166809985690652833">अंतिम शब्द</translation>
 <translation id="6209276755895393898">असे असल्याचे दिसत आहे: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">सध्याचे पेज</translation>
@@ -214,12 +217,14 @@
 <translation id="693476918119313863">हेडर</translation>
 <translation id="6941933287844615239">मीडिया डाउनलोड करा</translation>
 <translation id="6981594929165378967">घालणे</translation>
+<translation id="698788488269350478">विस्तार केला.</translation>
 <translation id="6989848892321993519">कृपया हा मजकूर <ph name="MIN_CHARACTERS" /> वर्ण किंवा त्यापेक्षा अधिक मोठा करा (तुम्ही सध्‍या 1 वर्ण वापरत आहात).</translation>
 <translation id="7034405885550056553">सूचना</translation>
 <translation id="709897737746224366">कृपया विनंती केलेले स्वरूपन जुळवा.</translation>
 <translation id="7102274145889307184">सध्याचे स्थान</translation>
 <translation id="7118469954320184356">कोणतेही वर्णन उपलब्ध नाही.</translation>
 <translation id="7139483182332611405">प्रस्तावना</translation>
+<translation id="7198226213493847604">मेनू पॉप अप बटण</translation>
 <translation id="7214187073215825913">आशयाची माहिती</translation>
 <translation id="7238347055216017155">महत्त्व</translation>
 <translation id="7263440858009898357">कृपया सूचीमधील आयटम निवडा.</translation>
@@ -287,6 +292,7 @@
 <translation id="8808573423886751634">प्रकरण</translation>
 <translation id="8845239796550121995">आता तुमच्या टिव्हीवर कास्ट करत आहे</translation>
 <translation id="8851136666856101339">मुख्य</translation>
+<translation id="8861621546968757188">डायलॉग पॉप अप बटण</translation>
 <translation id="8875657656876809964">व्हिडिओ प्लेबॅक एरर</translation>
 <translation id="8889402386540077796">रंगछटा</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

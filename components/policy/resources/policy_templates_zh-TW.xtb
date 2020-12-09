@@ -176,6 +176,7 @@
 <translation id="1257550411839719984">設定預設的下載目錄</translation>
 <translation id="1265053460044691532">限制透過 SAML 驗證的使用者可離線登入的時間</translation>
 <translation id="127264587838521316">啟用 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求</translation>
+<translation id="1274997165432133392">Cookie 和其他網站資料</translation>
 <translation id="127699919157094139">這項政策會停止 Google 代管的同步處理服務在 <ph name="PRODUCT_NAME" /> 上同步處理資料，並禁止使用者變更這項設定。
 
       如果你啟用這項設定，使用者就無法在 <ph name="PRODUCT_NAME" /> 中變更或覆寫這項設定。
@@ -220,6 +221,15 @@
 <translation id="1327466551276625742">離線時啟用網路設定提示</translation>
 <translation id="1330145147221172764">啟用螢幕小鍵盤</translation>
 <translation id="13356285923490863">政策名稱</translation>
+<translation id="1338603603553894503">指定在瀏覽器啟動時要啟用、停用或強制顯示資料夾挑選器。
+
+      根據預設，系統在以下情況不會顯示資料夾挑選器：瀏覽器於啟動時採用訪客或無痕模式、已透過指令列指定資料夾目錄和/或網址、使用者明確要求開啟某個應用程式、瀏覽器由原生通知啟動、目前只有一個資料夾，或是 ForceBrowserSignin 的設定為 True。
+
+      如果選取了「Enabled」(0) 或不設定這項政策，系統預設會在啟動時顯示資料夾挑選器，但使用者可予以啟用/停用。
+
+      如果選取了「Disabled」(1)，系統一律不會顯示資料夾挑選器，使用者也無法變更這項設定。
+
+      如果選取了「Forced」(2)，使用者將無法隱藏資料夾挑選器。即使只有一個資料夾，系統也會顯示資料夾挑選器。</translation>
 <translation id="1339174690935954950">禁止使用者提出意見回饋</translation>
 <translation id="1347198119056266798">這項政策已遭淘汰，請改用 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> 和 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />。如果設定 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />、<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> 或 <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> 政策 (已淘汰)，系統會忽略這項政策。
 
@@ -323,6 +333,7 @@
       注意：請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
 <translation id="1488406778491620405">「<ph name="PRODUCT_NAME" />」無障礙功能可讓螢幕閱讀器的視障使用者取得無標籤網路圖片的說明。啟用這項功能的使用者將可使用去識別化的 Google 服務，針對未加上標籤的網路圖片取得自動產生的說明。啟用這項功能後，系統會將圖片內容傳送給 Google 伺服器以產生說明內容。系統不會傳送 Cookie 或其他使用者資料，且 Google 不會儲存或記錄任何圖片內容。如果將這項政策設為 True，「<ph name="PRODUCT_NAME" />」功能即會啟用，不過這項設定只會影響螢幕閱讀器或其他類似輔助技術的使用者。如果將這項政策設為 False，使用者將無法啟用這項功能。設好這項政策後，使用者即無法變更或覆寫設定。</translation>
 <translation id="1502843533062797703">啟用禁止第三方軟體置入可執行程式碼的政策</translation>
+<translation id="1506017854924185821">是否要在啟動時顯示資料夾挑選器</translation>
 <translation id="1509692106376861764">我們已於 <ph name="PRODUCT_NAME" /> 版本 29 中移除這項政策。</translation>
 <translation id="1514888685242892912">啟用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">啟用浮動式無障礙選單</translation>
@@ -908,6 +919,13 @@
 <translation id="2448315169529769573">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果將這項政策設為停用，系統會停用指標和診斷資料的報告功能。
 
        如果未設定這項政策，系統會在未受管理的裝置上，將指標和診斷資料的報告功能保持停用，而在受管理的裝置上則保持啟用。</translation>
+<translation id="2449263772062368618">設定在瀏覽器關閉時要刪除的瀏覽資料類型清單。
+      可用的資料類型有瀏覽記錄 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下載記錄 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、快取內容<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自動填入內容 (<ph name="DATA_TYPE_AUTOFILL" />)、密碼 (<ph name="DATA_TYPE_PASSWORD" />)、網站設定 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和代管的應用程式資料 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。
+      這項政策的優先順序低於 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
+      如要使用這項政策，必須將 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策設為 True，否則系統會予以忽略。
+      如果是在平台層級設定這項政策，必須在平台層級停用同步功能。
+      如果是在使用者層級設定這項政策，則必須為該使用者停用同步功能，這樣這項政策才會生效。
+      </translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>
 <translation id="2463034609187171371">在傳輸層安全標準 (TLS) 中啟用 DHE 加密套件</translation>
@@ -1142,6 +1160,7 @@
       如果將這項政策設為停用，電源尖峰轉移功能將保持在關閉狀態。
 
       如果不設定這項政策，電源尖峰轉移功能會預設為關閉。使用者無法變更這項設定。</translation>
+<translation id="2784880732336446591">在結束時清除瀏覽資料</translation>
 <translation id="2787173078141616821">回報 Android 狀態的相關資訊</translation>
 <translation id="2787774054174244402">如果將這項政策設為 True，使用者無法將內容寫入外部儲存裝置。
 
@@ -1752,6 +1771,7 @@
       如要進一步瞭解 <ph name="CORS" />，請前往：<ph name="CORS_HELP_URL" />。
 
       請注意，我們之前宣布將在 <ph name="PRODUCT_NAME" /> 第 82 版中移除這項政策，但改為在第 84 版中移除。</translation>
+<translation id="3606571057705314194">在啟動時停用資料夾挑選器</translation>
 <translation id="3627678165642179114">啟用或停用拼字檢查網路服務</translation>
 <translation id="3628480121685794414">啟用單面列印</translation>
 <translation id="3643284063603988867">啟用「記住密碼」功能</translation>
@@ -1851,6 +1871,7 @@
       如果停用這項設定，使用者將無法透過 Smart Lock 登入帳戶。
 
       如未設定這項政策，在預設情況下，受企業管理的使用者將無法使用 Smart Lock 登入功能，其他一般的使用者則可使用這項登入功能。</translation>
+<translation id="3796527892245558832">在啟動時顯示資料夾挑選器</translation>
 <translation id="3803171355925844705">不允許任何網站載入複合型內容</translation>
 <translation id="3808945828600697669">指定停用的外掛程式清單</translation>
 <translation id="3810642039169532482">在登入畫面上啟用語音輸入無障礙功能。
@@ -2108,6 +2129,7 @@
       如果不設定這項政策或設為空白，系統就會使用預設的「新分頁」。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
+<translation id="4165986682804962316">網站設定</translation>
 <translation id="4166174702671320480">如果將這項政策設為啟用，只要政策來自不可部分完成的群組，而且來源與該群組中最高優先權項目不同，即會遭到忽略。
 
       如果將這項政策設為停用，政策就不會因為來源而遭到忽略。政策只會在發生衝突或沒有最高優先權的情況下遭到忽略。
@@ -2413,6 +2435,7 @@
       如果停用這項政策或不予設定，則無法同時在多個網站中進行瀏覽及開啟新視窗/分頁。</translation>
 <translation id="4680961954980851756">啟用自動填入</translation>
 <translation id="4693779768620889402">可支援擴充功能的目的地</translation>
+<translation id="4699172675775169585">快取的圖片和檔案</translation>
 <translation id="4699592681017489215">這項政策會設定可用於停用 DNS 攔截檢查功能的本機切換按鈕。這些檢查機制會嘗試偵測瀏覽器是否透過 Proxy，將使用者重新導向未知的主機名稱。
 
       在企業環境中，由於網路設定並沒有不確定性，所以可能不需要使用這種偵測機制，因為這項功能會在啟動裝置和每次變更 DNS 設定時產生一些 DNS 和 HTTP 流量。
@@ -2776,6 +2799,7 @@
 
       如果將這項政策設為 False 或不設定，系統會停用整合桌面，且使用者無法啟用這項功能。</translation>
 <translation id="5255162913209987122">建議使用</translation>
+<translation id="5257395339965216304">代管的應用程式資料</translation>
 <translation id="5264066441613395613">你可以透過這項政策，設定 Chrome 和 ARC 應用程式的 Proxy 設定，系統會忽略所有從指令列所指定的 Proxy 相關選項。
 
        如果不設定這項政策，使用者將可選擇要使用的 Proxy 設定。
@@ -3421,6 +3445,7 @@
       如果將這項政策設為 0，就會停用本機帳戶密碼變更功能。
 
       注意：如果用戶端長時間處於離線狀態，即使已經過了指定天數，密碼也可能不會變更。</translation>
+<translation id="6280973140313576289">在啟動時強制顯示資料夾挑選器</translation>
 <translation id="6281043242780654992">設定內建訊息傳遞政策。如要允許列入黑名單的內建訊息傳遞主機，必須將其加入許可清單。</translation>
 <translation id="6282524907402492171">顯示 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="6282799760374509080">允許或拒絕擷取音訊</translation>
@@ -3579,6 +3604,14 @@
 <translation id="6506486086262398387">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />的網路檔案共用功能會在必要時對 SMB 共用檔案使用 NTLM 驗證機制。如果設為停用，將會關閉 SMB 共用檔案的 NTLM 驗證機制。
 
       如果不設定這項政策，系統預設會為受管理的使用者停用此機制，其他使用者則會設為啟用。</translation>
+<translation id="6513080278353546913">設定 <ph name="PRODUCT_NAME" /> 的瀏覽資料生命週期。
+      這項政策可控管所選瀏覽資料的留存時間。
+      可用的資料類型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
+      針對所選類型的資料，Chrome 會定期移除存放時間超過 <ph name="TIME_TO_LIVE_IN_HOURS" /> 的資料。由於 Chrome 每隔一段時間才會刪除資料，有些資料可能會留存較久，但存放時間絕不會超過預計時間長度 (<ph name="TIME_TO_LIVE_IN_HOURS" />) 的兩倍。
+      如要使用這項政策，必須將 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策設為 True，否則系統會予以忽略。
+      如果是在平台層級設定這項政策，必須在平台層級停用同步功能。
+      如果是在使用者層級設定這項政策，則必須為該使用者停用同步功能，這樣這項政策才會生效。
+      </translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> 圖片</translation>
 <translation id="6518102411616460786">等待目標版本跟上版本降級</translation>
 <translation id="6520802717075138474">第一次執行時從預設瀏覽器匯入搜尋引擎</translation>
@@ -4046,6 +4079,7 @@
 <translation id="7101550508196914704">不在書籤列中顯示應用程式捷徑</translation>
 <translation id="7126716959063786004">允許在工作管理員中結束處理程序</translation>
 <translation id="7127892035367404455">復原至目標版本</translation>
+<translation id="7127980134843952133">下載記錄</translation>
 <translation id="7129052644387688634">你可以透過這項政策設定網址模式清單，用於指定無法顯示通知的網站。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_JAVA_SCRIPT_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -5109,6 +5143,7 @@
       如果未設定這項政策，Chrome 會使用其平台專屬的預設目錄。
 
       注意：如要查看可使用的變數清單，請前往 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。</translation>
+<translation id="877557628527387598">密碼登入資料</translation>
 <translation id="8777369558049831576">在外部通訊協定對話方塊中顯示「一律開啟」核取方塊。</translation>
 <translation id="8786409859071107656">如果將這項政策設為啟用，系統會啟用 USB 電力共享電源管理政策。
 
@@ -5163,6 +5198,11 @@
 <translation id="8854571659927427063">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入書籤。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何書籤。
 
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，來勾選或取消勾選書籤的核取方塊。</translation>
+<translation id="8855986672497556389">警告：<ph name="PRODUCT_NAME" /> 將從第 91 版開始 (推出時間約為 2021 年五月)，停止支援隱藏傳輸層安全標準 (TLS) 1.0/1.1 警告的功能，屆時這項政策也會停止運作。
+
+      如果將這項政策設為有效值，<ph name="PRODUCT_NAME" /> 只會使用指定版本以上的 SSL/TLS 版本。系統會忽略無法辨識的值。
+
+      如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會針對 TLS 1.0 和 TLS 1.1 顯示錯誤訊息，但使用者可略過該訊息。</translation>
 <translation id="8858642179038618439">強制採用 YouTube 安全模式</translation>
 <translation id="8860342862142842017">不針對列出的 subjectPublicKeyInfo 雜湊強制執行憑證透明化政策</translation>
 <translation id="8864975621965365890">瀏覽使用 <ph name="PRODUCT_FRAME_NAME" />轉譯的網站時，隱藏停止支援提示。</translation>

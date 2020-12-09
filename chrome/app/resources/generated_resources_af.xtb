@@ -784,7 +784,6 @@
 <translation id="1854180393107901205">Hou op uitsaai</translation>
 <translation id="1856715684130786728">Voeg ligging by …</translation>
 <translation id="1858585891038687145">Vertrou hierdie sertifikaat om sagtewaremakers te identifiseer</translation>
-<translation id="1860346308203060432">Bekyk toestelsigbaarheid</translation>
 <translation id="1861262398884155592">Hierdie vouer is leeg</translation>
 <translation id="1863182668524159459">Geen reekspoorte is gevind nie</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" is gedeaktiveer omdat dit wanware bevat</translation>
@@ -2147,6 +2146,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3441653493275994384">Skerm</translation>
 <translation id="3441663102605358937">Meld weer by <ph name="ACCOUNT" /> aan om hierdie rekening te verifieer</translation>
 <translation id="3445047461171030979">Vinnige antwoorde in Google Assistent</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB C-toestel</translation>
 <translation id="3446274660183028131">Begin Parallels Desktop om Windows te installeer.</translation>
 <translation id="344630545793878684">Lees jou data op 'n aantal webwerwe</translation>
@@ -2321,7 +2321,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3635353578505343390">Stuur terugvoer na Google</translation>
 <translation id="3635960017746711110">USB-voorkeure in Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – <ph name="TIME" /> oor</translation>
-<translation id="3637682276779847508">Jou SIM-kaart sal permanent gedeaktiveer word as jy nie die korrekte PIN-ontsluitingsleutel kan invoer nie.</translation>
 <translation id="3639220004740062347">Verlaat lesermodus</translation>
 <translation id="3640214691812501263">Voeg "<ph name="EXTENSION_NAME" />" vir <ph name="USER_NAME" /> by?</translation>
 <translation id="3640613767643722554">Leer jou Assistent om jou stem te herken</translation>
@@ -3482,7 +3481,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5017828934289857214">Herinner my later</translation>
 <translation id="5018207570537526145">Maak uitbreidingwebwerf oop</translation>
 <translation id="5018526990965779848">Stuur gebruik- en diagnostiese data. Help om jou Android-ervaring beter te maak deur diagnostiese, toestel- en programgebruikdata outomaties na Google toe te stuur. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As jou bykomende Web- en Programaktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word.</translation>
-<translation id="5019392775062123007">Sigbaar as <ph name="DEVICE_NAME" /> vir toestelle naby aan jou</translation>
 <translation id="5021750053540820849">Nog nie opgedateer nie</translation>
 <translation id="5026806129670917316">Skakel Wi-Fi aan</translation>
 <translation id="5026874946691314267">Moet dit nie weer wys nie</translation>
@@ -3718,7 +3716,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5301954838959518834">OK, het dit</translation>
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5302932258331363306">Wys plaasvervangers</translation>
-<translation id="5304276686222516262">Kan nie kontaklys aflaai nie. Gaan asseblief jou netwerkverbinding na of &lt;a href="#" id="tryAgainLink"&gt;probeer weer&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Hierdie rekening word bestuur deur <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Niks geïnstalleer nie</translation>
 <translation id="5307030433605830021">Bron word nie gesteun nie</translation>
@@ -4074,7 +4071,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5708171344853220004">Microsoft-hoofnaam</translation>
 <translation id="5709557627224531708">Stel Chrome as jou verstekblaaier</translation>
 <translation id="5711983031544731014">Kan nie ontsluit nie. Voer jou wagwoord in.</translation>
-<translation id="5713723565110096165">Verkeerde PIN. Herprobeerslae oor: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Inpropagent: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Versteksoekenjins</translation>
 <translation id="5720705177508910913">Huidige gebruiker</translation>
@@ -4326,7 +4322,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6011074160056912900">Ethernet-netwerk</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
 <translation id="6011449291337289699">Vee werfdata uit</translation>
-<translation id="6015266928248016057">Ongeldige PUK. Herprobeerslae oor: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Jaar</translation>
 <translation id="6016178549409952427">Navigeer na ekstra inhoud <ph name="CURRENT_ELEMENT" /> van <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bevestig Powerwash met terugkeer na vorige weergawe</translation>
@@ -5051,6 +5046,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6856459657722366306">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, besonderhede</translation>
 <translation id="6856623341093082836">Stel jou raakskerm op en verstel die akkuraatheid daarvan</translation>
 <translation id="6857699260879628349">Kry opstellinginligting</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6860097299815761905">Instaanbedienerinstellings …</translation>
 <translation id="686022878923628150">Keer dat werwe aan MIDI-toestelle koppel</translation>
 <translation id="6860427144121307915">Maak in 'n oortjie oop</translation>
@@ -6360,7 +6356,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8339059274628563283"><ph name="SITE" /> se data wat plaaslik geberg is</translation>
 <translation id="833986336429795709">Kies 'n program om hierdie skakel oop te maak</translation>
 <translation id="8342861492835240085">Kies 'n versameling</translation>
-<translation id="834290227245955730">Ongeldige PIN. Herprobeerslae oor: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="8350789879725387295">Stilusnutsgoed in dok</translation>
 <translation id="8351316842353540018">Wys altyd a11y-opsies</translation>
@@ -6483,7 +6478,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8497219075884839166">Windows-nutsgoed</translation>
 <translation id="8498214519255567734">Maak dit makliker om in dowwe lig na jou skerm te kyk of dit te lees</translation>
 <translation id="8498395510292172881">Gaan voort om in Chrome te lees</translation>
-<translation id="8500234928660943538">Verkeerde PUK. Herprobeerslae oor: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Jy moet eers jou programme teruglaai voordat jy programme van Google Play af kan gebruik. Van die data is dalk weg.</translation>
 <translation id="850314194061055138">gebruik kamera weer</translation>
 <translation id="8503813439785031346">Gebruikernaam</translation>

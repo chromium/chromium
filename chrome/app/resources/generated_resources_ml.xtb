@@ -273,6 +273,7 @@
 <translation id="1302139669997477151">സ്ക്രീൻഷോട്ട് ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="1302227299132585524">Apple ഇവന്‍റുകളിൽ നിന്നുള്ള JavaScript അനുവദിക്കുക</translation>
 <translation id="1303101771013849280">ബുക്ക്‌മാർക്കുകളുടെ HTML ഫയൽ</translation>
+<translation id="1303178898338186101">Google Play-യിലേക്ക് കണക്‌റ്റ് ചെയ്യാനായില്ല. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="1303671224831497365">Bluetooth ഉപകരണങ്ങളൊന്നും കണ്ടില്ല</translation>
 <translation id="130491383855577612">Linux ആപ്പുകളും ഫയലുകളും വിജയകരമായി മാറ്റിസ്ഥാപിച്ചു</translation>
 <translation id="1306606229401759371">ക്രമീകരണങ്ങൾ മാറ്റുക</translation>
@@ -780,7 +781,6 @@
 <translation id="1854180393107901205">കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="1856715684130786728">ലൊക്കേഷൻ ചേർക്കുക...</translation>
 <translation id="1858585891038687145">സോഫ്‌റ്റ്‌വെയർ നിർമ്മാതാക്കളെ തിരിച്ചറിയുന്നതിന് ഈ സർട്ടിഫിക്കറ്റിനെ വിശ്വസിക്കുക</translation>
-<translation id="1860346308203060432">ഉപകരണ ദൃശ്യപരത കാണുക</translation>
 <translation id="1861262398884155592">ഈ ഫോൾഡറിൽ ഒന്നുമില്ല</translation>
 <translation id="1863182668524159459">സീരിയൽ പോർട്ടുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="1863316578636157783">മാൽവേർ അടങ്ങിയിരിക്കുന്നതിനാൽ "<ph name="EXTENSION_NAME" />" എന്നതിനെ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
@@ -2136,12 +2136,14 @@
 <translation id="343578350365773421">പേപ്പറില്ല</translation>
 <translation id="3435896845095436175">തയ്യാറാക്കുക</translation>
 <translation id="3438633801274389918">നിൻജ</translation>
+<translation id="3438643033528947620">Google സേവനങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്യാനായില്ല. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> എന്നതിനെ നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യാൻ എപ്പോഴും അനുവദിക്കുക</translation>
 <translation id="3439970425423980614">PDF പ്രിവ്യുവിൽ തുറക്കുന്നു</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="3441653493275994384">സ്ക്രീന്‍‌</translation>
 <translation id="3441663102605358937">ഈ അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കാൻ <ph name="ACCOUNT" /> എന്നതിലേക്ക് വീണ്ടും സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3445047461171030979">Google Assistant ദ്രുത ഉത്തരങ്ങൾ</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> മി.</translation>
 <translation id="3445925074670675829">USB-C ഉപകരണം</translation>
 <translation id="3446274660183028131">Windows ഇൻസ്‌റ്റാൾ ചെയ്യാൻ Parallels Desktop ലോഞ്ച് ചെയ്യുക.</translation>
 <translation id="344630545793878684">നിരവധി വെബ്‌സൈറ്റുകളിലെ നിങ്ങളുടെ വിവരം വായിക്കുക</translation>
@@ -2316,7 +2318,6 @@
 <translation id="3635353578505343390">Google-ലേക്ക് ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="3635960017746711110">Crostini USB മുൻഗണനകൾ</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ശേഷിക്കുന്നു</translation>
-<translation id="3637682276779847508">ശരിയായ പിൻ അണ്‍ലോക്ക് കീ നല്‍കാന്‍ നിങ്ങള്‍ക്ക് കഴിഞ്ഞില്ലെങ്കിൽ സിം കാര്‍ഡ് ശാശ്വതമായി പ്രവർത്തനരഹിതമാക്കും.</translation>
 <translation id="3639220004740062347">റീഡർ മോഡിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> എന്നയാൾക്കായി "<ph name="EXTENSION_NAME" />" ചേർക്കണോ?</translation>
 <translation id="3640613767643722554">നിങ്ങളുടെ ശബ്‌ദം തിരിച്ചറിയാൻ അസിസ്‌റ്റൻ്റിനെ പഠിപ്പിക്കുക</translation>
@@ -3329,6 +3330,7 @@
 <translation id="4848518990323155912">സിം കാർഡ് ലോക്കിംഗ് പ്രവർത്തനക്ഷമമാക്കുക (മൊബൈല്‍ ഡാറ്റ ഉപയോഗിക്കാൻ പിൻ നമ്പർ ആവശ്യമാണ്)</translation>
 <translation id="4849286518551984791">കോർഡിനേറ്റഡ് യൂണിവേഴ്‌സൽ ടൈം (UTC/GMT)</translation>
 <translation id="4849517651082200438">ഇൻസ്റ്റാൾ ചെയ്യരുത്</translation>
+<translation id="485053257961878904">അറിയിപ്പ് സമന്വയിപ്പിക്കൽ സജ്ജീകരിക്കാനായില്ല</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="485088796993065002">സംഗീതം, വീഡിയോകൾ, മറ്റ് മീഡിയ എന്നിവയ്‌ക്ക് ഓഡിയോ നൽകുന്നതിന് സൈറ്റുകൾ ശബ്‌ദം പ്ലേ ചെയ്‌തേക്കാം</translation>
 <translation id="4853020600495124913">&amp;പുതിയ വിന്‍‌ഡോയില്‍‌ തുറക്കുക</translation>
@@ -3416,6 +3418,7 @@
 <translation id="4932733599132424254">തീയതി</translation>
 <translation id="4933484234309072027"><ph name="URL" /> ല്‍ ഉള്‍‌ച്ചേര്‍‌ത്തു</translation>
 <translation id="493571969993549666">മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവിനെ ചേർക്കുക</translation>
+<translation id="4936042273057045735">ഔദ്യോഗിക പ്രൊഫൈൽ ഉള്ള ഫോണുകൾ അറിയിപ്പ് സമന്വയിപ്പിക്കലിനെ പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="4939805055470675027"><ph name="CARRIER_NAME" /> എന്നതിലേക്ക് കണക്‌റ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="4940364377601827259">സംരക്ഷിക്കുന്നതിനായി <ph name="PRINTER_COUNT" /> പ്രിന്ററുകൾ ലഭ്യമാണ്.</translation>
 <translation id="4940845626435830013">ഡിസ്ക്കിൽ ഇടം നീക്കി വയ്ക്കുക</translation>
@@ -3474,7 +3477,6 @@
 <translation id="5017828934289857214">പിന്നീട് ഓർമ്മിപ്പിക്കുക</translation>
 <translation id="5018207570537526145">വിപുലീകരണ വെബ്‌സൈറ്റ് തുറക്കുക</translation>
 <translation id="5018526990965779848">ഉപയോഗവും പ്രശ്‌നനിർണ്ണയവുമായി ബന്ധപ്പെട്ട ഡാറ്റ അയയ്ക്കുക. പ്രശ്‌നനിർണ്ണയം, ഉപകരണം, ആപ്പ് ഉപയോഗം എന്നിവയുമായി ബന്ധപ്പെട്ട ഡാറ്റ സ്വയമേവ Google-ന് അയച്ച്, നിങ്ങളുടെ Android അനുഭവം മെച്ചപ്പെടുത്താൻ സഹായിക്കുക. സിസ്‌റ്റം, ആപ്പ് സ്ഥിരത, മറ്റ് മെച്ചപ്പെടുത്തലുകൾ എന്നിവയ്ക്ക് ഇത് സഹായിക്കും. ചില സംഗ്രഹ ഡാറ്റ, Google ആപ്പുകളെയും Android ഡെവലപ്പർമാരെപ്പോലുള്ള പങ്കാളികളെയും സഹായിക്കുകയും ചെയ്യും. നിങ്ങളുടെ അധിക വെബ്, ആപ്പ് പ്രവർത്തനം ക്രമീകരണം ഓണാക്കിയിട്ടുണ്ടെങ്കിൽ, ഈ ഡാറ്റ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കപ്പെട്ടേക്കാം.</translation>
-<translation id="5019392775062123007">സമീപമുള്ള ഉപകരണങ്ങൾക്ക് <ph name="DEVICE_NAME" /> ആയി ദൃശ്യമാണ്</translation>
 <translation id="5021750053540820849">ഇതുവരെ അപ്ഡേറ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="5026806129670917316">വൈഫൈ ഓണാക്കുക</translation>
 <translation id="5026874946691314267">ഇത് വീണ്ടും ദൃശ്യമാക്കരുത്</translation>
@@ -3710,7 +3712,6 @@
 <translation id="5301954838959518834">മനസ്സിലായി</translation>
 <translation id="5302048478445481009">ഭാഷ</translation>
 <translation id="5302932258331363306">പകരമുള്ളവ കാണിക്കുക</translation>
-<translation id="5304276686222516262">കോൺടാക്‌റ്റ് ലിസ്‌റ്റ് ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിക്കുക, അല്ലെങ്കിൽ &lt;a href="#" id="tryAgainLink"&gt;വീണ്ടും ശ്രമിക്കുക&lt;/a&gt;.</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ആണ് ഈ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="5305688511332277257">ഒന്നും ഇന്‍സ്റ്റാള്‍ ചെയ്തിട്ടില്ല</translation>
 <translation id="5307030433605830021">ഉറവിടം അനുയോജ്യമല്ല</translation>
@@ -4067,7 +4068,6 @@
 <translation id="5708171344853220004">Microsoft പ്രിന്‍‌സിപ്പല്‍‌ നാമം</translation>
 <translation id="5709557627224531708">Chrome-നെ നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുക</translation>
 <translation id="5711983031544731014">അൺലോക്ക് ചെയ്യാനായില്ല. നിങ്ങളുടെ പാസ്‌വേഡ് നൽകുക.</translation>
-<translation id="5713723565110096165">പിൻ തെറ്റാണ്. ശേഷിക്കുന്ന ശ്രമങ്ങൾ: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">പ്ലഗിൻ ബ്രോക്കർ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ഡിഫോൾട്ട് തിരയൽ യന്ത്രങ്ങൾ</translation>
 <translation id="5720705177508910913">നിലവിലെ ഉപയോക്താവ്</translation>
@@ -4319,7 +4319,6 @@
 <translation id="6011074160056912900">എതെർനെറ്റ് നെറ്റ്‌വർക്ക്</translation>
 <translation id="6011193465932186973">ഫിംഗർപ്രിന്റ്</translation>
 <translation id="6011449291337289699">സൈറ്റ് ഡാറ്റ മായ്‌ക്കുക</translation>
-<translation id="6015266928248016057">PUK അസാധുവാണ്. ശേഷിക്കുന്ന ശ്രമങ്ങൾ: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">വര്‍ഷം</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />-ൽ <ph name="CURRENT_ELEMENT" />-ാമത്തെ അധിക ഉള്ളടക്കത്തിലേക്ക് നാവിഗേറ്റ് ചെയ്യുക</translation>
 <translation id="6016551720757758985">മുൻ പതിപ്പിലേക്ക് പോകുന്നതിലൂടെ പവർവാഷ് സ്ഥിരീകരിക്കുക</translation>
@@ -4731,6 +4730,7 @@
 <translation id="6474498546677193336">ഒരു ആപ്പ് ഈ ഫോൾഡർ ഉപയോഗിക്കുന്നതിനാൽ പങ്കിടല്‍ മാറ്റാനായില്ല. Linux അടുത്ത തവണ ഷട്ട് ഡൗൺ ചെയ്യുമ്പോൾ ഫോൾഡർ പങ്കിടുന്നത് മാറ്റും.</translation>
 <translation id="6474884162850599008">Google ഡ്രൈവ് അക്കൗണ്ട് വിച്ഛേദിക്കുക</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> നിങ്ങളുടെ സ്‌‌ക്രീനിലെ ഉള്ളടക്കം പങ്കിടാൻ താൽപ്പര്യപ്പെടുന്നു. പങ്കിടാൻ താൽപ്പര്യപ്പെടുന്നത് തിരഞ്ഞെടുക്കുക.</translation>
+<translation id="6477822444490674459">ഔദ്യോഗിക പ്രൊഫൈൽ ഉള്ള ഫോണുകൾ അറിയിപ്പ് സമന്വയിപ്പിക്കലിനെ പിന്തുണയ്ക്കുന്നില്ല. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">അപകടകരമായ ഫയൽ സൂക്ഷിക്കണോ?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="6483485061007832714">ഡൗൺലോഡ് തുറക്കുക</translation>
@@ -5044,9 +5044,11 @@
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="6856623341093082836">നിങ്ങളുടെ ടച്ച്‌സ്‌ക്രീനിന്റെ കൃത്യത സജ്ജമാക്കി, ക്രമീകരിക്കുക</translation>
 <translation id="6857699260879628349">കോൺഫിഗറേഷൻ വിവരം നേടുക</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">പ്രോക്സി ക്രമീകരണങ്ങള്‍...</translation>
 <translation id="686022878923628150">MIDI ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="6860427144121307915">ടാബിൽ തുറക്കുക</translation>
+<translation id="6862729829592030773">നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഒരാഴ്‌ചയ്ക്കുള്ളിൽ ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു.<ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">പാസ്‌വേഡ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="6865313869410766144">ഓട്ടോഫിൽ ഫോം ഡാറ്റ</translation>
 <translation id="6865598234501509159"><ph name="LANGUAGE" /> ഭാഷയിൽ പേജ് ലഭ്യമല്ല</translation>
@@ -5130,6 +5132,7 @@
 <translation id="696103774840402661">ഈ <ph name="DEVICE_TYPE" /> എന്നതിലെ എല്ലാ ഉപയോക്താക്കളുടെയും എല്ലാ ഫയലുകളും ലോക്കൽ ഡാറ്റയും ശാശ്വതമായി ഇല്ലാതാക്കി.</translation>
 <translation id="6964390816189577014">ഹീറോ</translation>
 <translation id="6964760285928603117">ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
+<translation id="6964828938462185925">{NUM_DAYS,plural, =1{നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഇന്ന് തന്നെ ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു.<ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" />}other{നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് {NUM_DAYS} ദിവസത്തിനുള്ളിൽ ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു.<ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6965648386495488594">പോര്‍ട്ട്</translation>
 <translation id="6965978654500191972">ഉപകരണം</translation>
@@ -5219,6 +5222,7 @@
 <translation id="7051943809462976355">മൗസിനായി തിരയുന്നു...</translation>
 <translation id="7052237160939977163">പ്രകടന ട്രെയിസ് ഡാറ്റ അയയ്‌ക്കുക</translation>
 <translation id="7053983685419859001">തടയുക</translation>
+<translation id="705508001219706572">ഇവിടേക്ക് വേഗത്തിൽ മടങ്ങിയെത്താൻ, <ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="7055152154916055070">റീഡയറക്‌റ്റ് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="7055451306017383754">ഒരു ആപ്പ് ഈ ഫോൾഡർ ഉപയോഗിക്കുന്നതിനാൽ പങ്കിടൽ മാറ്റാനായില്ല. Parallels Desktop അടുത്ത തവണ ഷട്ട് ഡൗൺ ചെയ്യുമ്പോൾ ഫോൾഡർ പങ്കിടൽ മാറ്റും.</translation>
 <translation id="7056526158851679338">&amp;ഉപകരണങ്ങൾ പരിശോധിക്കുക</translation>
@@ -6351,7 +6355,6 @@
 <translation id="8339059274628563283"><ph name="SITE" />, പ്രാദേശികമായി സൂക്ഷിച്ച വിവരം</translation>
 <translation id="833986336429795709">ഈ ലിങ്ക് തുറക്കാൻ ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8342861492835240085">ഒരു ശേഖരം തിരഞ്ഞെടുക്കുക</translation>
-<translation id="834290227245955730">പിൻ അസാധുവാണ്. ശേഷിക്കുന്ന ശ്രമങ്ങൾ: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">പ്രിന്റ് ജോലികൾ</translation>
 <translation id="8350789879725387295">ഡോക്കിലെ സ്റ്റൈലസ് ടൂളുകൾ</translation>
 <translation id="8351316842353540018">a11y ഓപ്‌ഷനുകൾ എല്ലായ്‌പ്പോഴും കാണിക്കുക</translation>
@@ -6474,7 +6477,6 @@
 <translation id="8497219075884839166">Windows യൂട്ടിലിറ്റികൾ</translation>
 <translation id="8498214519255567734">മങ്ങിയ വെളിച്ചത്തിൽ സ്‌ക്രീൻ നോക്കുന്നതോ വായിക്കുന്നതോ എളുപ്പമാക്കുക</translation>
 <translation id="8498395510292172881">Chrome-ൽ വായന തുടരുക</translation>
-<translation id="8500234928660943538">PUK തെറ്റാണ്. ശേഷിക്കുന്ന ശ്രമങ്ങൾ: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Google Play-യിൽ നിന്ന് ആപ്പുകൾ ഉപയോഗിക്കാൻ, ആദ്യം നിങ്ങളുടെ ആപ്പുകൾ പുനഃസ്ഥാപിക്കണം. ചില ഡാറ്റ നഷ്‌ടപ്പെട്ടേക്കാം.</translation>
 <translation id="850314194061055138">ക്യാമറ വീണ്ടും ഉപയോഗിക്കുക</translation>
 <translation id="8503813439785031346">ഉപയോക്തൃനാമം</translation>

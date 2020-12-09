@@ -781,7 +781,6 @@
 <translation id="1854180393107901205">Stopp castingen</translation>
 <translation id="1856715684130786728">Legg til plassering</translation>
 <translation id="1858585891038687145">Stol på dette sertifikatet for identifisering av programvareprodusenter.</translation>
-<translation id="1860346308203060432">Se enhetens synlighet</translation>
 <translation id="1861262398884155592">Denne mappen er tom</translation>
 <translation id="1863182668524159459">Fant ingen serielle porter</translation>
 <translation id="1863316578636157783">«<ph name="EXTENSION_NAME" />» er deaktivert fordi den inneholder skadelig programvare</translation>
@@ -2144,6 +2143,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3441653493275994384">Skjerm</translation>
 <translation id="3441663102605358937">Logg på <ph name="ACCOUNT" /> på nytt for å verifisere denne kontoen</translation>
 <translation id="3445047461171030979">Google Assistent-hurtigsvar</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3446274660183028131">Start Parallels Desktop for å installere Windows.</translation>
 <translation id="344630545793878684">Lesing av dataene dine på en rekke nettsteder</translation>
@@ -2318,7 +2318,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3635353578505343390">Send tilbakemelding til Google</translation>
 <translation id="3635960017746711110">USB-innstillinger for Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> til batteriet er tomt</translation>
-<translation id="3637682276779847508">SIM-kortet ditt blir deaktivert permanent hvis du ikke angir riktig PUK-kode.</translation>
 <translation id="3639220004740062347">Avslutt lesermodus</translation>
 <translation id="3640214691812501263">Vil du legge til «<ph name="EXTENSION_NAME" />» for <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Lær assistenten å gjenkjenne stemmen din</translation>
@@ -3477,7 +3476,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5017828934289857214">Påminn meg senere</translation>
 <translation id="5018207570537526145">Åpne nettstedet for utvidelsen</translation>
 <translation id="5018526990965779848">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen din bedre ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
-<translation id="5019392775062123007">Synlig som <ph name="DEVICE_NAME" /> for enheter i nærheten</translation>
 <translation id="5021750053540820849">Ikke oppdatert ennå</translation>
 <translation id="5026806129670917316">Slå på Wi-Fi</translation>
 <translation id="5026874946691314267">Ikke vis dette igjen.</translation>
@@ -3713,7 +3711,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5301954838959518834">Greit</translation>
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5302932258331363306">Vis erstatninger</translation>
-<translation id="5304276686222516262">Kunne ikke laste ned kontaktlisten. Sjekk nettverkstilkoblingen, eller &lt;a href="#" id="tryAgainLink"&gt;prøv på nytt&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Denne kontoen administreres av <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Ingen installert</translation>
 <translation id="5307030433605830021">Kilden støttes ikke</translation>
@@ -4069,7 +4066,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5708171344853220004">Microsoft hovednavn</translation>
 <translation id="5709557627224531708">Angi Chrome som standardnettleser</translation>
 <translation id="5711983031544731014">Kan ikke låse opp. Skriv inn passordet ditt.</translation>
-<translation id="5713723565110096165">Feil PIN-kode. Gjenværende forsøk: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Programtilleggsmegler: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standard søkemotorer</translation>
 <translation id="5720705177508910913">Gjeldende bruker</translation>
@@ -4321,7 +4317,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6011074160056912900">Ethernet-nettverk</translation>
 <translation id="6011193465932186973">Fingeravtrykk</translation>
 <translation id="6011449291337289699">Fjern nettstedsdata</translation>
-<translation id="6015266928248016057">Ugyldig PUK-kode. Gjenværende forsøk: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6016178549409952427">Gå til ekstra innhold <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bekreft kjøring av Powerwash, som tilbakestiller enheten til forrige versjon</translation>
@@ -5046,6 +5041,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6856459657722366306">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
 <translation id="6856623341093082836">Konfigurer og juster nøyaktigheten til berøringsskjermen din</translation>
 <translation id="6857699260879628349">Få informasjon om oppsett</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Innstillinger for proxy-tjener</translation>
 <translation id="686022878923628150">Blokkér nettsteder fra å koble til MIDI-enheter</translation>
 <translation id="6860427144121307915">Åpne i en fane</translation>
@@ -6356,7 +6352,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8339059274628563283">Data lagret lokalt på <ph name="SITE" /></translation>
 <translation id="833986336429795709">For å åpne denne linken, velg en app</translation>
 <translation id="8342861492835240085">Velg en samling</translation>
-<translation id="834290227245955730">Ugyldig PIN-kode. Gjenværende forsøk: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8350789879725387295">Pekepennverktøy i Dock</translation>
 <translation id="8351316842353540018">Vis alltid a11y-alternativer</translation>
@@ -6479,7 +6474,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8497219075884839166">Windows Verktøy</translation>
 <translation id="8498214519255567734">Gjør det lettere å se på skjermen og lese i svakt lys</translation>
 <translation id="8498395510292172881">Forsett å lese i Chrome</translation>
-<translation id="8500234928660943538">Feil PUK-kode. Gjenværende forsøk: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">For å bruke apper fra Google Play må du først gjenopprette appene dine. Noe data kan ha gått tapt.</translation>
 <translation id="850314194061055138">Bruk kameraet igjen</translation>
 <translation id="8503813439785031346">Brukernavn</translation>

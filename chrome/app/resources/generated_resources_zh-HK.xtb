@@ -273,6 +273,7 @@
 <translation id="1302139669997477151">已封鎖螢幕截圖功能</translation>
 <translation id="1302227299132585524">允許 Apple 事件中的 JavaScript</translation>
 <translation id="1303101771013849280">將 HTML 檔案加入書籤</translation>
+<translation id="1303178898338186101">無法連線至 Google Play。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="1303671224831497365">找不到藍牙裝置</translation>
 <translation id="130491383855577612">已成功取代 Linux 應用程式和檔案</translation>
 <translation id="1306606229401759371">變更設定</translation>
@@ -783,7 +784,6 @@
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置…</translation>
 <translation id="1858585891038687145">信任這個用於識別軟件製造商的憑證</translation>
-<translation id="1860346308203060432">查看裝置分享設定</translation>
 <translation id="1861262398884155592">此資料夾中沒有內容</translation>
 <translation id="1863182668524159459">找不到序列連接埠</translation>
 <translation id="1863316578636157783">由於「<ph name="EXTENSION_NAME" />」含有惡意軟件，因此已被停用</translation>
@@ -2138,12 +2138,14 @@
 <translation id="343578350365773421">紙張用完</translation>
 <translation id="3435896845095436175">啟用</translation>
 <translation id="3438633801274389918">忍者</translation>
+<translation id="3438643033528947620">無法連線至 Google 服務。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3439153939049640737">永遠允許 <ph name="HOST" /> 存取您的麥克風</translation>
 <translation id="3439970425423980614">正在預覽中開啟 PDF</translation>
 <translation id="3440663250074896476">顯示可以對 <ph name="BOOKMARK_NAME" /> 執行嘅更多操作</translation>
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3441663102605358937">請再次登入 <ph name="ACCOUNT" /> 以驗證此帳戶</translation>
 <translation id="3445047461171030979">「Google 助理」快速解答</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3446274660183028131">請啟動 Parallels Desktop 以安裝 Windows。</translation>
 <translation id="344630545793878684">讀取您在部分網站上的資料</translation>
@@ -2318,7 +2320,6 @@
 <translation id="3635353578505343390">傳送意見給 Google</translation>
 <translation id="3635960017746711110">Crostini 的 USB 偏好設定</translation>
 <translation id="3636766455281737684">電力剩餘 <ph name="PERCENTAGE" />% - <ph name="TIME" /></translation>
-<translation id="3637682276779847508">如果無法輸入正確的 PIN 解鎖金鑰，您的 SIM 卡將會永久停用。</translation>
 <translation id="3639220004740062347">離開閱讀器模式</translation>
 <translation id="3640214691812501263">要為<ph name="USER_NAME" />新增「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="3640613767643722554">教導「Google 助理」識別您的聲音</translation>
@@ -3332,6 +3333,7 @@
 <translation id="4848518990323155912">啟用 SIM 卡鎖定功能 (必須輸入 PIN 才能使用流動數據)</translation>
 <translation id="4849286518551984791">世界標準時間 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不要安裝</translation>
+<translation id="485053257961878904">無法設定通知同步功能</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="485088796993065002">網站可播放音效以提供音樂、影片和其他媒體的音訊</translation>
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
@@ -3419,6 +3421,7 @@
 <translation id="4932733599132424254">日期</translation>
 <translation id="4933484234309072027">嵌入至 <ph name="URL" /></translation>
 <translation id="493571969993549666">新增受監管使用者</translation>
+<translation id="4936042273057045735">設有工作設定檔的手機不支援通知同步功能</translation>
 <translation id="4939805055470675027">無法連接 <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 部可以儲存嘅打印機。</translation>
 <translation id="4940845626435830013">預留磁碟空間大細</translation>
@@ -3477,7 +3480,6 @@
 <translation id="5017828934289857214">稍後提醒我</translation>
 <translation id="5018207570537526145">開啟擴充程式網站</translation>
 <translation id="5018526990965779848">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您的 Android 使用體驗。這可協助改善系統及應用程式的穩定性及其他功能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。</translation>
-<translation id="5019392775062123007">以「<ph name="DEVICE_NAME" />」向附近的裝置顯示</translation>
 <translation id="5021750053540820849">尚未更新</translation>
 <translation id="5026806129670917316">開啟 Wi-Fi</translation>
 <translation id="5026874946691314267">不要再顯示這則通知</translation>
@@ -3713,7 +3715,6 @@
 <translation id="5301954838959518834">好，我知道了</translation>
 <translation id="5302048478445481009">語言</translation>
 <translation id="5302932258331363306">顯示替代項目</translation>
-<translation id="5304276686222516262">無法下載通訊錄。請檢查網絡連線，或&lt;a href="#" id="tryAgainLink"&gt;再試一次&lt;/a&gt;。</translation>
 <translation id="5305145881844743843">此帳戶是由 <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> 管理</translation>
 <translation id="5305688511332277257">未安裝任何憑證</translation>
 <translation id="5307030433605830021">不支援的來源</translation>
@@ -4069,7 +4070,6 @@
 <translation id="5708171344853220004">Microsoft 主要名稱</translation>
 <translation id="5709557627224531708">將 Chrome 設為預設瀏覽器</translation>
 <translation id="5711983031544731014">無法解鎖，請輸入您的密碼。</translation>
-<translation id="5713723565110096165">PIN 不正確。剩餘重試次數：<ph name="RETRIES" /> 次。</translation>
 <translation id="5715711091495208045">外掛程式代理組件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">預設搜尋引擎</translation>
 <translation id="5720705177508910913">目前使用者</translation>
@@ -4321,7 +4321,6 @@
 <translation id="6011074160056912900">以太網絡</translation>
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011449291337289699">清除網站資料</translation>
-<translation id="6015266928248016057">PUK 無效。剩餘重試次數：<ph name="RETRIES" /> 次。</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6016178549409952427">導覽第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="6016551720757758985">確認執行 Powerwash 以重設為上個版本</translation>
@@ -4732,6 +4731,7 @@
 <translation id="6474498546677193336">某個應用程式正在使用此資料夾，因此無法取消分享。系統會在下次關閉 Linux 時取消分享此資料夾。</translation>
 <translation id="6474884162850599008">中斷 Google Drive 帳戶連線</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> 要求分享您的螢幕內容。請選擇要分享的內容。</translation>
+<translation id="6477822444490674459">設有工作設定檔的手機不支援通知同步功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">要保留不安全的檔案嗎？</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6483485061007832714">開啟下載檔案</translation>
@@ -5045,9 +5045,11 @@
 <translation id="6856459657722366306">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳情</translation>
 <translation id="6856623341093082836">設定和調整觸控螢幕的準確度</translation>
 <translation id="6857699260879628349">取得設定資料</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">Proxy 設定…</translation>
 <translation id="686022878923628150">禁止網站連接 MIDI 裝置</translation>
 <translation id="6860427144121307915">在分頁中開啟</translation>
+<translation id="6862729829592030773"><ph name="MANAGER" /> 要求您備份資料，並在 1 星期內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">要刪除密碼嗎？</translation>
 <translation id="6865313869410766144">自動填入表格數據</translation>
 <translation id="6865598234501509159">網頁原文不是<ph name="LANGUAGE" /></translation>
@@ -5131,6 +5133,7 @@
 <translation id="696103774840402661">已永久刪除此 <ph name="DEVICE_TYPE" /> 上所有使用者的所有檔案和本機資料。</translation>
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
+<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您備份資料，並在今天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求您備份資料，並在 {NUM_DAYS} 天內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6965648386495488594">連接埠</translation>
 <translation id="6965978654500191972">裝置</translation>
@@ -5220,6 +5223,7 @@
 <translation id="7051943809462976355">正在搜尋滑鼠…</translation>
 <translation id="7052237160939977163">傳送效能追蹤數據</translation>
 <translation id="7053983685419859001">封鎖</translation>
+<translation id="705508001219706572">如要快速返回此處，請安裝「<ph name="APP_NAME" />」</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
 <translation id="7055451306017383754">某個應用程式正在使用此資料夾，因此無法取消分享。系統會在下次關閉 Parallels Desktop 時取消分享此資料夾。</translation>
 <translation id="7056526158851679338">檢查裝置(&amp;I)</translation>
@@ -6351,7 +6355,6 @@
 <translation id="8339059274628563283"><ph name="SITE" /> 儲存在本機上的資料</translation>
 <translation id="833986336429795709">如要開啟此連結，請選擇應用程式</translation>
 <translation id="8342861492835240085">選取相片集</translation>
-<translation id="834290227245955730">PIN 無效。剩餘重試次數：<ph name="RETRIES" /> 次。</translation>
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8350789879725387295">Dock 中的觸控筆工具</translation>
 <translation id="8351316842353540018">一律顯示無障礙功能選項</translation>
@@ -6474,7 +6477,6 @@
 <translation id="8497219075884839166">Windows 公用處理程序</translation>
 <translation id="8498214519255567734">讓您在光線昏暗的環境下輕易觀看螢幕內容或閱讀</translation>
 <translation id="8498395510292172881">在 Chrome 中繼續閱讀</translation>
-<translation id="8500234928660943538">PUK 不正確。剩餘重試次數：<ph name="RETRIES" /> 次。</translation>
 <translation id="8502536196501630039">如要使用從 Google Play 下載的應用程式，請先還原您的應用程式。此操作可能會導致部分資料遺失。</translation>
 <translation id="850314194061055138">再次使用相機</translation>
 <translation id="8503813439785031346">使用者名稱</translation>

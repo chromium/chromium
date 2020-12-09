@@ -785,7 +785,6 @@
 <translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1856715684130786728">Додај локација...</translation>
 <translation id="1858585891038687145">Имајте доверба во сертификатов за идентификување на производителите на софтвер</translation>
-<translation id="1860346308203060432">Прикажи ја видливоста на уредот</translation>
 <translation id="1861262398884155592">Папкава е празна</translation>
 <translation id="1863182668524159459">Не се најдени сериски порти</translation>
 <translation id="1863316578636157783">„<ph name="EXTENSION_NAME" />“ е оневозможена бидејќи содржи злонамерен софтвер</translation>
@@ -2148,6 +2147,7 @@
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3441663102605358937">Најавете се на <ph name="ACCOUNT" /> повторно за да ја потврдите сметкава</translation>
 <translation id="3445047461171030979">Брзи одговори од „Помошникот на Google“</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">USB-Ц уред</translation>
 <translation id="3446274660183028131">Стартувајте Parallels Desktop за да инсталирате Windows.</translation>
 <translation id="344630545793878684">Читајте ги вашите податоци на голем број веб-локации</translation>
@@ -2322,7 +2322,6 @@
 <translation id="3635353578505343390">Испратете повратни информации до Google</translation>
 <translation id="3635960017746711110">Поставки за USB за Crostini</translation>
 <translation id="3636766455281737684">Останати се <ph name="PERCENTAGE" />% - <ph name="TIME" /></translation>
-<translation id="3637682276779847508">SIM-картичката ќе биде трајно оневозможена ако не може да го внесете точниот клуч (PUK) за отклучување на PIN-кодот.</translation>
 <translation id="3639220004740062347">Излезете од режим на читач</translation>
 <translation id="3640214691812501263">Да се додаде „<ph name="EXTENSION_NAME" />" за <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Научете го вашиот „Помошник“ да ви го препознава гласот</translation>
@@ -3483,7 +3482,6 @@
 <translation id="5017828934289857214">Потсети ме подоцна</translation>
 <translation id="5018207570537526145">Отвори веб-сајт со екстензии</translation>
 <translation id="5018526990965779848">Испраќајте податоци за користење и дијагностика. Помогнете ни да го подобриме вашето доживување на Android со автоматско испраќање дијагностички и податоци за користењето на уредот и апликациите до Google. Податоциве ќе ни помогнат околу стабилноста на системот и апликациите и за други подобрувања. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“, податоциве може да се зачувуваат во вашата сметка на Google.</translation>
-<translation id="5019392775062123007">Видлив за уредите во близина како <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Сѐ уште не е ажурирана</translation>
 <translation id="5026806129670917316">Вклучи Wi-Fi</translation>
 <translation id="5026874946691314267">Не покажувај го ова повторно</translation>
@@ -3719,7 +3717,6 @@
 <translation id="5301954838959518834">Добро, сфатив</translation>
 <translation id="5302048478445481009">Јазик</translation>
 <translation id="5302932258331363306">Прикажи ги замените</translation>
-<translation id="5304276686222516262">Не може да се преземе списокот со контакти. Проверете ја мрежната врска или &lt;a href="#" id="tryAgainLink"&gt;обидете се повторно&lt;/a&gt;.</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> управува со сметкава</translation>
 <translation id="5305688511332277257">Нема инсталирано</translation>
 <translation id="5307030433605830021">Изворот не е поддржан</translation>
@@ -4074,7 +4071,6 @@
 <translation id="5708171344853220004">Главно име на Microsoft</translation>
 <translation id="5709557627224531708">Поставете го Chrome за ваш стандарден прелистувач</translation>
 <translation id="5711983031544731014">Не може да се отклучи. Внесете ја лозинката.</translation>
-<translation id="5713723565110096165">Погрешен PIN. Преостанати обиди: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Посредник со приклучоци: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Стандардни пребарувачи</translation>
 <translation id="5720705177508910913">Тековен корисник</translation>
@@ -4326,7 +4322,6 @@
 <translation id="6011074160056912900">Етернет-мрежа</translation>
 <translation id="6011193465932186973">Отпечаток</translation>
 <translation id="6011449291337289699">Избришете ги сите податоци</translation>
-<translation id="6015266928248016057">Погрешен PUK. Преостанати обиди: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6016178549409952427">Одете на дополнителните содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Потврди фабричко ресетирање со враќање на претходната верзија</translation>
@@ -5051,6 +5046,7 @@
 <translation id="6856459657722366306">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="6856623341093082836">Поставете и приспособете ја прецизноста на екранот на допир</translation>
 <translation id="6857699260879628349">Добијте информации за конфигурацијата</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="6860097299815761905">Поставки на прокси…</translation>
 <translation id="686022878923628150">Не дозволувај сајтовите да се поврзуваат со MIDI-уредите</translation>
 <translation id="6860427144121307915">Отвори во картичка</translation>
@@ -6363,7 +6359,6 @@
 <translation id="8339059274628563283">Локално складирани податоци на <ph name="SITE" /></translation>
 <translation id="833986336429795709">Изберете апликација за да го отворите линков</translation>
 <translation id="8342861492835240085">Изберете колекција</translation>
-<translation id="834290227245955730">Погрешен PIN. Преостанати обиди: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Налози за печатење</translation>
 <translation id="8350789879725387295">Алатката пенкало на док</translation>
 <translation id="8351316842353540018">Секогаш прикажувај ги опциите за пристапност</translation>
@@ -6486,7 +6481,6 @@
 <translation id="8497219075884839166">Услуги на Windows</translation>
 <translation id="8498214519255567734">Го олеснува гледањето во екранот или читањето при слаба светлина</translation>
 <translation id="8498395510292172881">Продолжете со читање во Chrome</translation>
-<translation id="8500234928660943538">Погрешен PUK. Преостанати обиди: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">За да ги користите апликациите од Google Play, мора прво да ги вратите вашите апликации. Дел од податоците можеби се загубени.</translation>
 <translation id="850314194061055138">користи ја камерата повторно</translation>
 <translation id="8503813439785031346">Корисничко име</translation>

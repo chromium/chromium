@@ -784,7 +784,6 @@
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1856715684130786728">Add location...</translation>
 <translation id="1858585891038687145">Trust this certificate for identifying software makers</translation>
-<translation id="1860346308203060432">View device visibility</translation>
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1863182668524159459">No serial ports found</translation>
 <translation id="1863316578636157783">'<ph name="EXTENSION_NAME" />' has been disabled because it contains malware</translation>
@@ -2147,6 +2146,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3441653493275994384">Screen</translation>
 <translation id="3441663102605358937">Sign in to <ph name="ACCOUNT" /> again to verify this account</translation>
 <translation id="3445047461171030979">Google Assistant quick answers</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C device</translation>
 <translation id="3446274660183028131">Please launch Parallels Desktop to install Windows.</translation>
 <translation id="344630545793878684">Read your data on a number of websites</translation>
@@ -2321,7 +2321,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3635353578505343390">Send feedback to Google</translation>
 <translation id="3635960017746711110">Crostini USB preferences</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> left</translation>
-<translation id="3637682276779847508">Your SIM card will be permanently disabled if you cannot enter the correct PIN Unlock Key.</translation>
 <translation id="3639220004740062347">Exit Reader Mode</translation>
 <translation id="3640214691812501263">Add "<ph name="EXTENSION_NAME" />" for <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Teach your Assistant to recognise your voice</translation>
@@ -3482,7 +3481,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5017828934289857214">Remind me later</translation>
 <translation id="5018207570537526145">Open extension website</translation>
 <translation id="5018526990965779848">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
-<translation id="5019392775062123007">Visible to nearby devices as <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Not updated yet</translation>
 <translation id="5026806129670917316">Turn on Wi-Fi</translation>
 <translation id="5026874946691314267">Don't show this again</translation>
@@ -3718,7 +3716,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5301954838959518834">OK, got it</translation>
 <translation id="5302048478445481009">Language</translation>
 <translation id="5302932258331363306">Show Substitutions</translation>
-<translation id="5304276686222516262">Unable to download contact list. Please check your network connection, or &lt;a href="#" id="tryAgainLink"&gt;try again&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">This account is managed by <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">None installed</translation>
 <translation id="5307030433605830021">Source not supported</translation>
@@ -4074,7 +4071,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Set Chrome as your default browser</translation>
 <translation id="5711983031544731014">Unable to unlock. Enter your password.</translation>
-<translation id="5713723565110096165">Incorrect PIN. Retries left: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Default search engines</translation>
 <translation id="5720705177508910913">Current user</translation>
@@ -4326,7 +4322,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6011074160056912900">Ethernet network</translation>
 <translation id="6011193465932186973">Fingerprint</translation>
 <translation id="6011449291337289699">Clear site data</translation>
-<translation id="6015266928248016057">Invalid PUK. Retries left: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Year</translation>
 <translation id="6016178549409952427">Navigate to extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirm Powerwash with return to previous version</translation>
@@ -5051,6 +5046,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6856459657722366306">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="6856623341093082836">Set up and adjust the accuracy of your touchscreen</translation>
 <translation id="6857699260879628349">Get configuration info</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">Proxy settings...</translation>
 <translation id="686022878923628150">Block sites from connecting to MIDI devices</translation>
 <translation id="6860427144121307915">Open in a Tab</translation>
@@ -6361,7 +6357,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8339059274628563283"><ph name="SITE" /> locally stored data</translation>
 <translation id="833986336429795709">To open this link, choose an app</translation>
 <translation id="8342861492835240085">Select a collection</translation>
-<translation id="834290227245955730">Invalid PIN. Retries left: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8350789879725387295">Stylus tools in dock</translation>
 <translation id="8351316842353540018">Always show a11y options</translation>
@@ -6484,7 +6479,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8497219075884839166">Windows Utilities</translation>
 <translation id="8498214519255567734">Make it easier to look at your screen or read in dim light</translation>
 <translation id="8498395510292172881">Continue reading in Chrome</translation>
-<translation id="8500234928660943538">Incorrect PUK. Retries left: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">To use apps from Google Play, you must first restore your apps. Some data may have been lost.</translation>
 <translation id="850314194061055138">use camera again</translation>
 <translation id="8503813439785031346">Username</translation>

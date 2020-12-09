@@ -759,6 +759,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3996311196211510766">O sitio <ph name="ORIGIN" /> solicitou que se aplicase unha política de orixe
     a todas as solicitudes que reciba, pero actualmente non se pode aplicar esta política.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} páxina}other{Documento PDF con {COUNT} páxinas}}</translation>
+<translation id="4023431997072828269">Dado que estás a piques de enviar este formulario a través dunha conexión non segura, a túa información será visible para outras persoas.</translation>
 <translation id="4030383055268325496">&amp;Desfacer a acción de engadir</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -857,6 +858,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4318566738941496689">O nome e o enderezo de rede do teu dispositivo</translation>
 <translation id="4325863107915753736">Non se puido atopar o artigo</translation>
 <translation id="4326324639298822553">Comproba a data de caducidade e téntao de novo</translation>
+<translation id="4329871760342656885">Produciuse un erro de análise da política: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Amontoador 5</translation>
 <translation id="4331708818696583467">Non seguro</translation>
 <translation id="4340982228985273705">Non se detectou que unha empresa xestione este ordenador, polo que a política só pode instalar automaticamente extensións aloxadas en Chrome Webstore. O URL de actualización de Chrome Webstore é <ph name="CWS_UPDATE_URL" />.</translation>

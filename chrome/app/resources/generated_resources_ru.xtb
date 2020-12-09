@@ -786,7 +786,6 @@
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
 <translation id="1856715684130786728">Добавить папку...</translation>
 <translation id="1858585891038687145">Доверять этому сертификату при идентификации производителей ПО</translation>
-<translation id="1860346308203060432">Посмотреть</translation>
 <translation id="1861262398884155592">Папка пуста</translation>
 <translation id="1863182668524159459">Последовательные порты не найдены.</translation>
 <translation id="1863316578636157783">Расширение "<ph name="EXTENSION_NAME" />" отключено, поскольку оно содержит вредоносное ПО.</translation>
@@ -1579,7 +1578,7 @@
 <translation id="2770465223704140727">Удалить из списка</translation>
 <translation id="2770690685823456775">Экспортируйте пароли в другую папку.</translation>
 <translation id="2770929488047004208">Разрешение монитора</translation>
-<translation id="2770954829020464827">Во время демонстрации экрана содержание уведомлений скрыто.</translation>
+<translation id="2770954829020464827">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>
 <translation id="2771268254788431918">Мобильный Интернет включен</translation>
 <translation id="2771816809568414714">Сыр</translation>
 <translation id="2772936498786524345">Ниндзя</translation>
@@ -2148,6 +2147,7 @@
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3441663102605358937">Войдите в аккаунт <ph name="ACCOUNT" /> ещё раз, чтобы подтвердить его</translation>
 <translation id="3445047461171030979">Быстрые ответы Google Ассистента</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
 <translation id="3446274660183028131">Чтобы установить Windows, запустите Parallels Desktop.</translation>
 <translation id="344630545793878684">Просмотр данных на нескольких сайтах</translation>
@@ -2322,7 +2322,6 @@
 <translation id="3635353578505343390">Отправка отзыва в Google</translation>
 <translation id="3635960017746711110">Настройки USB в Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% (ещё <ph name="TIME" />)</translation>
-<translation id="3637682276779847508">Если вы введете неправильный PUK-код, SIM-карта будет окончательно заблокирована.</translation>
 <translation id="3639220004740062347">Выйти из режима чтения</translation>
 <translation id="3640214691812501263">Добавить расширение "<ph name="EXTENSION_NAME" />" для пользователя <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Научите Ассистента узнавать ваш голос</translation>
@@ -3483,7 +3482,6 @@
 <translation id="5017828934289857214">Напомнить позже</translation>
 <translation id="5018207570537526145">Перейти на сайт разработчика</translation>
 <translation id="5018526990965779848">Отправка данных об использовании и диагностике. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Эти сведения помогут нам повысить стабильность приложений и внести другие улучшения. Некоторые агрегированные данные пригодятся партнерам Google, например разработчикам Android. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в вашем аккаунте.</translation>
-<translation id="5019392775062123007"><ph name="DEVICE_NAME" />: видно устройствам поблизости</translation>
 <translation id="5021750053540820849">Ещё не обновлено</translation>
 <translation id="5026806129670917316">Включить Wi-Fi</translation>
 <translation id="5026874946691314267">Больше не показывать это сообщение</translation>
@@ -3719,7 +3717,6 @@
 <translation id="5301954838959518834">ОК</translation>
 <translation id="5302048478445481009">Язык</translation>
 <translation id="5302932258331363306">Показать замены</translation>
-<translation id="5304276686222516262">Не удалось скачать список контактов. Проверьте подключение к Интернету или &lt;a href="#" id="tryAgainLink"&gt;повторите попытку&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Этим аккаунтом управляет администратор домена <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />.</translation>
 <translation id="5305688511332277257">Не установлено</translation>
 <translation id="5307030433605830021">Источник не поддерживается</translation>
@@ -4075,7 +4072,6 @@
 <translation id="5708171344853220004">Имя участника Microsoft</translation>
 <translation id="5709557627224531708">Сделайте Google Chrome браузером по умолчанию</translation>
 <translation id="5711983031544731014">Невозможно разблокировать. Введите пароль.</translation>
-<translation id="5713723565110096165">Неверный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Посредник: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Поисковая система по умолчанию</translation>
 <translation id="5720705177508910913">Текущий пользователь</translation>
@@ -4327,7 +4323,6 @@
 <translation id="6011074160056912900">Сеть Ethernet</translation>
 <translation id="6011193465932186973">Отпечатки пальцев</translation>
 <translation id="6011449291337289699">Удаление данных сайтов</translation>
-<translation id="6015266928248016057">Недействительный PUK-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6016178549409952427">Перейти к дополнительному контенту на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Подтверждение Powerwash и возврата к предыдущей версии</translation>
@@ -5052,6 +5047,7 @@
 <translation id="6856459657722366306">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", оператор – <ph name="NETWORK_PROVIDER_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="6856623341093082836">Настроить точность сенсорного экрана</translation>
 <translation id="6857699260879628349">Получите сведения о конфигурации</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="6860097299815761905">Настройки прокси-сервера...</translation>
 <translation id="686022878923628150">Запретить сайтам подключаться к MIDI-устройствам</translation>
 <translation id="6860427144121307915">Открыть в новой вкладке</translation>
@@ -5776,7 +5772,7 @@
 <translation id="7691077781194517083">Не удалось сбросить настройки электронного ключа. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="7691698019618282776">Обновить Crostini</translation>
 <translation id="7696063401938172191">На устройстве <ph name="PHONE_NAME" />:</translation>
-<translation id="7697166915480294040">Во время демонстрации экрана содержание уведомлений скрыто.</translation>
+<translation id="7697166915480294040">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>
 <translation id="7697598343108519171">Использовать камеру для сканирования QR-кода</translation>
 <translation id="7699968112832915395">Не удалось добавить аккаунт</translation>
 <translation id="7701040980221191251">Нет</translation>
@@ -6361,7 +6357,6 @@
 <translation id="8339059274628563283">Локальные данные сайта <ph name="SITE" /></translation>
 <translation id="833986336429795709">Чтобы открыть ссылку, выберите приложение</translation>
 <translation id="8342861492835240085">Выберите коллекцию</translation>
-<translation id="834290227245955730">Недействительный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8350789879725387295">Инструменты стилуса на панели Dock</translation>
 <translation id="8351316842353540018">Всегда показывать специальные возможности</translation>
@@ -6484,7 +6479,6 @@
 <translation id="8497219075884839166">Утилиты Windows</translation>
 <translation id="8498214519255567734">Этот режим помогает снизить напряжение глаз при тусклом свете</translation>
 <translation id="8498395510292172881">Продолжить чтение в Chrome</translation>
-<translation id="8500234928660943538">Неверный PUK-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Чтобы использовать приложения из Google Play, сначала восстановите свои приложения. Некоторые данные могли быть потеряны.</translation>
 <translation id="850314194061055138">использовать камеру ещё раз</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>

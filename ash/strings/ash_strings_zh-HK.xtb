@@ -135,6 +135,7 @@
 <translation id="2208323208084708176">統一桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222338659135520253">必須登入</translation>
+<translation id="2222841058024245321">桌面 7</translation>
 <translation id="225680501294068881">正在掃描裝置…</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
@@ -182,6 +183,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">按一下並拖曳</translation>
 <translation id="2678852583403169292">選取以朗讀選單</translation>
+<translation id="2689613560355655046">桌面 8</translation>
 <translation id="2700493154570097719">設定鍵盤</translation>
 <translation id="2704781753052663061">加入其他 Wi-Fi 網絡</translation>
 <translation id="2705001408393684014">切換去咪高風。<ph name="STATE_TEXT" /></translation>
@@ -374,6 +376,7 @@
 <translation id="4389184120735010762">您已按下固定放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4421231901400348175">透過「遠端協助」與 <ph name="HELPER_NAME" /> 共用螢幕控制權。</translation>
+<translation id="4424159417645388645">桌面 5</translation>
 <translation id="4427613789487709312">預設值 (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4450893287417543264">不要再顯示</translation>
@@ -511,7 +514,6 @@
 <translation id="5691772641933328258">識別唔到指紋</translation>
 <translation id="5710450975648804523">「請勿騷擾」模式已開啟</translation>
 <translation id="573413375004481890">此裝置無法支援所有顯示屏，因此已取消連接其中一個</translation>
-<translation id="5740328398383587084">咫尺共享</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5744083938413354016">按住拖曳</translation>
 <translation id="5745612484876805746">「夜燈模式」會在日落時自動開啟</translation>
@@ -649,6 +651,7 @@
 <translation id="698231206551913481">移除這位使用者後，系統便會永久刪除所有與該使用者相關的檔案和本機數據。</translation>
 <translation id="7007983414944123363">系統無法驗證您的 PIN 或密碼。請再試一次。</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> 後才可使用。</translation>
+<translation id="70168403932084660">桌面 6</translation>
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結至您的手機</translation>
 <translation id="7026338066939101231">減少</translation>
 <translation id="7029814467594812963">結束工作階段</translation>

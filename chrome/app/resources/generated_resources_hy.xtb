@@ -786,7 +786,6 @@
 <translation id="1854180393107901205">Դադարեցնել հեռարձակումը</translation>
 <translation id="1856715684130786728">Ավելացնել գրացուցակ…</translation>
 <translation id="1858585891038687145">Վստահել այս հավաստագրին ծրագրակազմ արտադրողների նույնականացման համար</translation>
-<translation id="1860346308203060432">Տեսնել սարքի տեսանելիությունը</translation>
 <translation id="1861262398884155592">Այս պանակը դատարկ է</translation>
 <translation id="1863182668524159459">Հաջորդական միացքներ չեն գտնվել</translation>
 <translation id="1863316578636157783">«<ph name="EXTENSION_NAME" />» ընդլայնումն անջատվել է, քանի որ վնասաբեր ծրագիր է պարունակում։</translation>
@@ -2149,6 +2148,7 @@
 <translation id="3441653493275994384">Էկրան</translation>
 <translation id="3441663102605358937">Այս հաշիվը հաստատելու համար նորից մուտք գործեք <ph name="ACCOUNT" /></translation>
 <translation id="3445047461171030979">Google Օգնականի արագ պատասխաններ</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> րոպե</translation>
 <translation id="3445925074670675829">USB-C սարք</translation>
 <translation id="3446274660183028131">Windows-ը տեղադրելու համար գործարկեք Parallels Desktop-ը։</translation>
 <translation id="344630545793878684">Կարդալ ձեր տվյալները մի շարք կայքերում</translation>
@@ -2323,7 +2323,6 @@
 <translation id="3635353578505343390">Հետադարձ կապ Google-ի հետ</translation>
 <translation id="3635960017746711110">USB-ի կարգավորումներ Crostini-ում</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - մնացել է <ph name="TIME" /></translation>
-<translation id="3637682276779847508">Եթե չմուտքագրեք ճիշտ PUK կոդը, ձեր SIM քարտը մշտապես կկասեցվի:</translation>
 <translation id="3639220004740062347">Դուրս գալ ընթերցման ռեժիմից</translation>
 <translation id="3640214691812501263">Ավելացնե՞լ «<ph name="EXTENSION_NAME" />» ընդլայնումը <ph name="USER_NAME" />-ի համար:</translation>
 <translation id="3640613767643722554">Սովորեցրեք Օգնականին ճանաչել ձեր ձայնը</translation>
@@ -3485,7 +3484,6 @@
 <translation id="5017828934289857214">Հիշեցնել ինձ ավելի ուշ</translation>
 <translation id="5018207570537526145">Բացել ընդլայնման կայքը</translation>
 <translation id="5018526990965779848">Օգտագործման և ախտորոշման տվյալների ուղարկում։ Օգնեք բարելավել Android-ի աշխատանքը՝ Google-ին ավտոմատ ուղարկելով ախտորոշիչ, ինչպես նաև սարքի ու հավելվածի օգտագործման մասին տվյալներ։ Դա կօգնի բարելավել համակարգի ու հավելվածների աշխատանքի կայունությունը։ Հավաքված տեղեկությունների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Եթե միացնեք Վեբ որոնման և հավելվածների լրացուցիչ պատմությունը, այս տվյալները կպահվեն ձեր Google հաշվում։</translation>
-<translation id="5019392775062123007">Մոտակա սարքերին տեսանելի է որպես <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Չի թարմացվել</translation>
 <translation id="5026806129670917316">Միացնել Wi-Fi-ը</translation>
 <translation id="5026874946691314267">Այլևս ցույց չտալ</translation>
@@ -3723,7 +3721,6 @@
 <translation id="5301954838959518834">Պարզ է</translation>
 <translation id="5302048478445481009">Լեզու</translation>
 <translation id="5302932258331363306">Ցուցադրել փոխարինողներին</translation>
-<translation id="5304276686222516262">Չհաջողվեց ներբեռնել կոնտակտների ցանկը։ Ստուգեք կապը կամ &lt;a href="#" id="tryAgainLink"&gt;նորից փորձեք&lt;/a&gt;։</translation>
 <translation id="5305145881844743843">Այս հաշիվը կառավարվում է <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> տիրույթի կողմից</translation>
 <translation id="5305688511332277257">Տեղադրված չկա</translation>
 <translation id="5307030433605830021">Աղբյուրը չի աջակցվում</translation>
@@ -4078,7 +4075,6 @@
 <translation id="5708171344853220004">Microsoft-ի մասնակցի անունը</translation>
 <translation id="5709557627224531708">Դարձրեք Chrome-ը կանխադրված դիտարկիչ</translation>
 <translation id="5711983031544731014">Հնարավոր չէ ապակողպել: Մուտքագրեք ձեր գաղտնաբառը:</translation>
-<translation id="5713723565110096165">PIN կոդը սխալ է: Մնաց <ph name="RETRIES" /> փորձ:</translation>
 <translation id="5715711091495208045">Փլագինի միջնորդ՝ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Կանխադրված որոնման համակարգեր</translation>
 <translation id="5720705177508910913">ընթացիկ օգտատիրոջը</translation>
@@ -4330,7 +4326,6 @@
 <translation id="6011074160056912900">Ethernet ցանց</translation>
 <translation id="6011193465932186973">Մատնահետք</translation>
 <translation id="6011449291337289699">Մաքրել կայքի տվյալները</translation>
-<translation id="6015266928248016057">Անվավեր PUK: Մնաց <ph name="RETRIES" /> փորձ:</translation>
 <translation id="6015796118275082299">Տարի</translation>
 <translation id="6016178549409952427">Անցնել լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="6016551720757758985">Հաստատեք Powerwash-ը՝ նախկին տարբերակին վերադարձով</translation>
@@ -5055,6 +5050,7 @@
 <translation id="6856459657722366306">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մանրամասներ</translation>
 <translation id="6856623341093082836">Կարգավորել հպէկրանի ճշգրտությունը</translation>
 <translation id="6857699260879628349">Ստացեք տեղեկություններ կազմաձևման մասին</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> վ</translation>
 <translation id="6860097299815761905">Պրոքսի-սերվերի կարգավորումներ…</translation>
 <translation id="686022878923628150">Արգելել կայքերին միանալ MIDI սարքերին</translation>
 <translation id="6860427144121307915">Բացել ներդիրով</translation>
@@ -6363,7 +6359,6 @@
 <translation id="8339059274628563283"><ph name="SITE" />-ի՝ սարքում պահված տվյալները</translation>
 <translation id="833986336429795709">Հղումը բացելու համար ընտրեք հավելված</translation>
 <translation id="8342861492835240085">Ընտրել հավաքածու</translation>
-<translation id="834290227245955730">Անվավեր PIN: Մնաց <ph name="RETRIES" /> փորձ:</translation>
 <translation id="8347227221149377169">Տպելու առաջադրանքներ</translation>
 <translation id="8350789879725387295">Ստիլուսի գործիքներ դոկ-կայանում</translation>
 <translation id="8351316842353540018">Միշտ ցույց տալ հատուկ գործառույթները</translation>
@@ -6486,7 +6481,6 @@
 <translation id="8497219075884839166">Windows-ի օժանդակ ծրագրեր</translation>
 <translation id="8498214519255567734">Թույլ է տալիս ավելի հանգիստ նայել էկրանին և կարդալ թույլ լուսավորության պայմաններում</translation>
 <translation id="8498395510292172881">Շարունակեք կարդալ Chrome-ում</translation>
-<translation id="8500234928660943538">PUK կոդը սխալ է: Մնաց <ph name="RETRIES" /> փորձ:</translation>
 <translation id="8502536196501630039">Google Play-ից հավելվածներ օգտագործելու համար նախ պետք է վերականգնեք ձեր հավելվածները: Որոշ տվյալներ հնարավոր է չպահպանվեն:</translation>
 <translation id="850314194061055138">նորից օգտագործել տեսախցիկը</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>

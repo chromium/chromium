@@ -783,7 +783,6 @@
 <translation id="1854180393107901205">Zaustavi prebacivanje</translation>
 <translation id="1856715684130786728">Dodaj lokaciju...</translation>
 <translation id="1858585891038687145">Ovaj sertifikat je pouzdan za identifikaciju proizvođača softvera</translation>
-<translation id="1860346308203060432">Prikaži vidljivost uređaja</translation>
 <translation id="1861262398884155592">Ovaj direktorijum je prazan</translation>
 <translation id="1863182668524159459">Nismo pronašli nijedan serijski port</translation>
 <translation id="1863316578636157783">Dodatak <ph name="EXTENSION_NAME" /> je onemogućen jer sadrži malver</translation>
@@ -2146,6 +2145,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3441663102605358937">Ponovo se prijavite na <ph name="ACCOUNT" /> da biste verifikovali ovaj nalog</translation>
 <translation id="3445047461171030979">Brzi odgovori Google pomoćnika</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Uređaj sa USB priključkom tipa C</translation>
 <translation id="3446274660183028131">Pokrenite Parallels Desktop da biste instalirali Windows.</translation>
 <translation id="344630545793878684">Čitanje vaših podataka na više veb-sajtova</translation>
@@ -2320,7 +2320,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3635353578505343390">Pošaljite povratne informacije Google-u</translation>
 <translation id="3635960017746711110">Podešavanja USB-a za Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – preostalo je <ph name="TIME" /></translation>
-<translation id="3637682276779847508">SIM kartica će biti trajno onemogućena ako ne unesete ispravnu šifru za otključavanje PIN-a.</translation>
 <translation id="3639220004740062347">Izađi iz režima čitača</translation>
 <translation id="3640214691812501263">Dodaj „<ph name="EXTENSION_NAME" />“ za korisnika <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Naučite Pomoćnik da vam prepozna glas</translation>
@@ -3481,7 +3480,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5017828934289857214">Podseti me kasnije</translation>
 <translation id="5018207570537526145">Otvori veb-sajta dodatka</translation>
 <translation id="5018526990965779848">Šaljite podatke o korišćenju i dijagnostičke podatke. Pomozite nam da vam pružimo bolji doživljaj Android-a tako što ćete automatski slati podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To doprinosi održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu.</translation>
-<translation id="5019392775062123007">Vidljivo uređajima u blizini kao <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Još nije ažurirano</translation>
 <translation id="5026806129670917316">Uključite WiFi</translation>
 <translation id="5026874946691314267">Ne prikazuj ovo ponovo</translation>
@@ -3717,7 +3715,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5301954838959518834">Važi</translation>
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5302932258331363306">Prikaži zamene</translation>
-<translation id="5304276686222516262">Preuzimanje liste kontakata nije uspelo. Proverite mrežnu vezu ili &lt;a href="#" id="tryAgainLink"&gt;probajte ponovo&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Ovim nalogom upravlja <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Ništa nije instalirano</translation>
 <translation id="5307030433605830021">Izvor nije podržan</translation>
@@ -4074,7 +4071,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5708171344853220004">Microsoft glavno ime</translation>
 <translation id="5709557627224531708">Podesite Chrome kao podrazumevani pregledač</translation>
 <translation id="5711983031544731014">Otključavanje nije moguće. Unesite lozinku.</translation>
-<translation id="5713723565110096165">Netačan PIN. Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Posrednik dodatne komponente: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Podrazumevani pretraživači</translation>
 <translation id="5720705177508910913">Trenutni korisnik</translation>
@@ -4326,7 +4322,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6011074160056912900">Eternet mreža</translation>
 <translation id="6011193465932186973">Digitalni otisak</translation>
 <translation id="6011449291337289699">Obrišite podatke sajta</translation>
-<translation id="6015266928248016057">Nevažeći PUK. Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Godina</translation>
 <translation id="6016178549409952427">Idi u <ph name="CURRENT_ELEMENT" />. element dodatnog sadržaja od <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Potvrđivanje Powerwash-a uz vraćanje na prethodnu verziju</translation>
@@ -5051,6 +5046,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="6856623341093082836">Podesite i prilagodite preciznost dodirnog ekrana</translation>
 <translation id="6857699260879628349">Dobijte informacije o konfiguraciji</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Podešavanja proksija...</translation>
 <translation id="686022878923628150">Onemogući sajtovima da se povezuju sa MIDI uređajima</translation>
 <translation id="6860427144121307915">Otvori na kartici</translation>
@@ -6361,7 +6357,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8339059274628563283">Lokalno sačuvani podaci sa sajta <ph name="SITE" /></translation>
 <translation id="833986336429795709">Izaberite aplikaciju da biste otvorili ovaj link</translation>
 <translation id="8342861492835240085">Izaberite kolekciju</translation>
-<translation id="834290227245955730">Nevažeći PIN. Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="8350789879725387295">Alatke za pisaljku na polici</translation>
 <translation id="8351316842353540018">Uvek prikazuj opcije pristupačnosti</translation>
@@ -6484,7 +6479,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8497219075884839166">Windows uslužni programi</translation>
 <translation id="8498214519255567734">Omogućava da lakše pregledate sadržaj ekrana ili da čitate pri prigušenom svetlu</translation>
 <translation id="8498395510292172881">Nastavite da čitate u Chrome-u</translation>
-<translation id="8500234928660943538">Netačan PUK. Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Da biste koristili aplikacije sa Google Play-a, prvo morate da vratite aplikacije. Neki podaci su možda izgubljeni.</translation>
 <translation id="850314194061055138">opet koristi kameru</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>

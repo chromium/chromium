@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">அச்சிடப்பட்டது</translation>
 <translation id="1979103255016296513">கடவுச்சொல்லை மாற்ற வேண்டும்</translation>
 <translation id="1980044825731880088">CPU வேகம்</translation>
+<translation id="2008685064673031089">முதன்மைத் தேடல்</translation>
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">அச்சுப் பணியை ரத்துசெய்</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">வெற்றி</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> முயற்சிகள் மீதமுள்ளன</translation>
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
+<translation id="2446553403094072641">ஃப்லோட்டிங் பாயிண்ட் துல்லியத்தன்மை</translation>
 <translation id="2461822463642141190">தற்போதைய மின் உபயோகம்</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">சரி</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
+<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> வெளியானது.</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான கோப்புறையைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Files ஆப்ஸில் கோப்புறையைத் தேர்ந்தெடு...</translation>
 <translation id="4848429997038228357">நடைபெறுவது</translation>
 <translation id="4890353053343094602">புதிய கடவுச்சொல்லை உடனே தேர்ந்தெடுக்கவும்</translation>
+<translation id="4891842000192098784">ஸ்டிரெஸ்</translation>
 <translation id="4917889632206600977">காகிதம் தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் செய்யப்பட்டது.</translation>
 <translation id="4932733599132424254">தேதி</translation>
+<translation id="498186245079027698">ஸ்கேனரைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும். ஸ்கேன் செய்யப்பட்ட கோப்புகளைச் சேமிப்பதற்குப் போதுமான சேமிப்பிடம் இருப்பதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4985509611418653372">இயக்கு</translation>
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
 <translation id="5154917547274118687">நினைவகம்</translation>
@@ -138,6 +143,7 @@
 <translation id="5551702563755460533">உதவி மையத்தில் மேலும் அறிக</translation>
 <translation id="5635169860413004179">அறிக்கையைக் காட்டு</translation>
 <translation id="5719918614880940190">இது CPU பயன்பாட்டையும் அனைத்துக் கோர்களின் ஒருங்கிணைத்தலையும் அளவிடுகிறது</translation>
+<translation id="5781694279199921985">அமர்வுப் பதிவைச் சேமி</translation>
 <translation id="5797428682393400134">நிறைவடைந்தது</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
@@ -151,7 +157,7 @@
 <translation id="6104112872696127344">ஸ்கேன் செய்வது ரத்துசெய்யப்பட்டது</translation>
 <translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6108689792487843350">கேட்வேயை அணுக முடியவில்லை</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" />GHz/<ph name="MAX" />GHz</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" />GHz / <ph name="MAX" />GHz</translation>
 <translation id="6146993107019042706">நிறைவுசெய்ய புதிய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
@@ -174,6 +180,8 @@
 <translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் தோல்வி அடைந்தது</translation>
 <translation id="6768237774506518020">DNS ரெசல்யூஷன் தோல்வி விகிதம் அதிகமாக உள்ளது</translation>
 <translation id="6839141349259399400">ஸ்கேனர்களுடன் இணைக்க முடியவில்லையா?</translation>
+<translation id="6853312040151791195">வெளியேற்ற விகிதம்</translation>
+<translation id="6898743098396957679">ஸ்கேனிங்கை நிறைவுசெய்ய முடியவில்லை</translation>
 <translation id="7028979494427204405">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட பயனரின் செயல்பாடு அனைத்திற்குமான அணுகலும் இதற்கு உள்ளது.</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>
 <translation id="7162487448488904999">கேலரி</translation>
@@ -186,12 +194,15 @@
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
+<translation id="773153675489693198">சுழற்சியின் எண்ணிக்கை</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> சோதனை</translation>
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7855434858642800953">ஸ்கேன் செய்யப்பட்ட கோப்பு சேமிக்கப்பட்டது!</translation>
 <translation id="7928373994957558460">கோப்பின் இடத்தைக் காட்டு</translation>
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
+<translation id="7960831585769876809">வெப்பநிலை</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
+<translation id="8075838845814659848">மீதமுள்ள சார்ஜ்</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">ஸ்கேன் செய்ய, ஸ்கேனரில் ஆவணத்தை வைத்துவிட்டு <ph name="SPAN_BEGIN" />ஸ்கேன் செய்<ph name="SPAN_END" /> என்பதைத் தேர்ந்தெடுக்கவும்</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">பிரிண்டரில் டிரே இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="8928727111548978589">காகிதம் இல்லாததால் அச்சிட முடியவில்லை</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> முயற்சிகள் மீதமுள்ளன</translation>
+<translation id="8968751544471797276">சார்ஜிங் விகிதம்</translation>
 <translation id="8970109610781093811">மீண்டும் இயக்கு</translation>
 <translation id="9088306295921699330">தற்போதைய உபயோகம்</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>

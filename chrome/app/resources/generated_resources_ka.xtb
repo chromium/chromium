@@ -273,6 +273,7 @@
 <translation id="1302139669997477151">ეკრანის ანაბეჭდების გაკეთება დაბლოკილია</translation>
 <translation id="1302227299132585524">Apple-ის მოვლენებიდან JavaScript-ის დაშვება</translation>
 <translation id="1303101771013849280">სანიშნეების HTML ფაილი</translation>
+<translation id="1303178898338186101">Google Play-თან დაკავშირება ვერ მოხერხდა. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="1303671224831497365">Bluetooth მოწყობილობები ვერ მოიძებნა</translation>
 <translation id="130491383855577612">Linux აპები და ფაილები წარმატებით ჩანაცვლდა</translation>
 <translation id="1306606229401759371">პარამეტრების შეცვლა</translation>
@@ -783,7 +784,6 @@
 <translation id="1854180393107901205">ტრანსლირების შეწყვეტა</translation>
 <translation id="1856715684130786728">დაამატეთ ადგილმდებარეობა…</translation>
 <translation id="1858585891038687145">ამ სერტიფიკატისთვის პროგრამული უზრუნველყოფის შემქმნელების ამოცნობის მინდობა</translation>
-<translation id="1860346308203060432">მოწყობილობის ხილვადობის ნახვა</translation>
 <translation id="1861262398884155592">ეს საქაღალდე ცარიელია</translation>
 <translation id="1863182668524159459">თანმიმდევრული პორტები ვერ მოიძებნა</translation>
 <translation id="1863316578636157783">„<ph name="EXTENSION_NAME" />“ გათიშულია, რადგან მავნე პროგრამას შეიცავს</translation>
@@ -2138,12 +2138,14 @@
 <translation id="343578350365773421">ქაღალდი ამოიწურა</translation>
 <translation id="3435896845095436175">ჩართვა</translation>
 <translation id="3438633801274389918">ნინძა</translation>
+<translation id="3438643033528947620">Google სერვისებთან დაკავშირება ვერ მოხერხდა. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">ყოველთვის მიეცი ნება <ph name="HOST" />-ს, მიიღოს წვდომა მიკროფონზე</translation>
 <translation id="3439970425423980614">PDF-ის გახსნა წინასწარ ხედში</translation>
 <translation id="3440663250074896476">სხვა ქმედებები „<ph name="BOOKMARK_NAME" />“-სთვის</translation>
 <translation id="3441653493275994384">ეკრანი</translation>
 <translation id="3441663102605358937">ამ ანგარიშის დასადასტურებლად ხელახლა შედით <ph name="ACCOUNT" />-ში</translation>
 <translation id="3445047461171030979">Google ასისტენტის სწრაფი პასუხები</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> წთ</translation>
 <translation id="3445925074670675829">USB-C მოწყობილობა</translation>
 <translation id="3446274660183028131">Windows-ის ინსტალაციისთვის გაუშვით Parallels Desktop.</translation>
 <translation id="344630545793878684">წაიკითხეთ თქვენი მონაცემები რამდენიმე ვებსაიტზე</translation>
@@ -2318,7 +2320,6 @@
 <translation id="3635353578505343390">გამოხმაურების გაგზავნა Google-ში</translation>
 <translation id="3635960017746711110">Crostini-ს USB-ის პარამეტრები</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% — დარჩენილია <ph name="TIME" /></translation>
-<translation id="3637682276779847508">თქვენი SIM ბარათი სამუდამოდ დაიბლოკება, თუ PIN-კოდის განბლოკვის სწორ გასაღებს არ შეიყვანთ.</translation>
 <translation id="3639220004740062347">წამკითხველის რეჟიმიდან გასვლა</translation>
 <translation id="3640214691812501263">გსურთ, დაამატოთ „<ph name="EXTENSION_NAME" />“ <ph name="USER_NAME" />-სთვის?</translation>
 <translation id="3640613767643722554">ასწავლეთ ასისტენტს თქვენი ხმის ამოცნობა</translation>
@@ -3332,6 +3333,7 @@
 <translation id="4848518990323155912">SIM ბარათის დაბლოკვის ჩართვა (მობილური ინტერნეტის გამოსაყენებლად PIN-კოდის მოთხოვნა)</translation>
 <translation id="4849286518551984791">საერთაშორისო კოორდინირებული დრო (UTC/GMT)</translation>
 <translation id="4849517651082200438">არ დააინსტალიროთ</translation>
+<translation id="485053257961878904">შეტყობინებების სინქრონიზაციის დაყენება ვერ მოხერხდა</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
 <translation id="485088796993065002">საიტებს ხმის დაკვრა შეუძლია მუსიკის, ვიდეოებისა და სხვა მედიაფაილების გასახმოვანებლად</translation>
 <translation id="4853020600495124913">&amp;ახალ ფანჯარაში გახსნა</translation>
@@ -3419,6 +3421,7 @@
 <translation id="4932733599132424254">თარიღი</translation>
 <translation id="4933484234309072027"><ph name="URL" />-ზე ჩაშენებული</translation>
 <translation id="493571969993549666">კონტროლის ქვეშ მყოფი მომხმარებლის დამატება</translation>
+<translation id="4936042273057045735">შეტყობინებების სინქრონიზაცია მხარდაუჭერელია ტელეფონებზე, რომლებზეც სამსახურის პროფილია</translation>
 <translation id="4939805055470675027"><ph name="CARRIER_NAME" />-თან დაკავშირება ვერ მოხერხდა</translation>
 <translation id="4940364377601827259">შესანახად ხელმისაწვდომია <ph name="PRINTER_COUNT" /> პრინტერი.</translation>
 <translation id="4940845626435830013">დისკის ზომის დარეზერვება</translation>
@@ -3477,7 +3480,6 @@
 <translation id="5017828934289857214">მოგვიანებით შეხსენება</translation>
 <translation id="5018207570537526145">გაფართოების ვებსაიტის გახსნა</translation>
 <translation id="5018526990965779848">გამოყენებისა და დიაგნოსტიკის მონაცემების გაგზავნა. ხელი შეუწყვეთ Android-ის გაუმჯობესებას დიაგნოსტიკისა და მოწყობილობის/აპების გამოყენების მონაცემების ავტომატურად გაგზავნით Google-ში. აღნიშნული მონაცემები დაგვეხმარება სისტემის/აპების სტაბილურობისა და სხვა ფუნქციების გაუმჯობესებაში. გარდა ამისა, გაერთიანებული მონაცემების ნაწილი ხელს შეუწყობს Google აპებსა და პარტნიორებს, მაგალითად, Android-ის დეველოპერებს. თუ ჩართული გაქვთ ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს თქვენს Google ანგარიშში.</translation>
-<translation id="5019392775062123007">ახლომახლო მოწყობილობებისთვის ხილულია, როგორც <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">ჯერ არ განახლებულა</translation>
 <translation id="5026806129670917316">Wi-Fi-ს ჩართვა</translation>
 <translation id="5026874946691314267">აღარ მაჩვენო ეს</translation>
@@ -3713,7 +3715,6 @@
 <translation id="5301954838959518834">კარგი, გასაგებია</translation>
 <translation id="5302048478445481009">ენა</translation>
 <translation id="5302932258331363306">ჩანაცვლებების ჩვენება</translation>
-<translation id="5304276686222516262">კონტაქტების სია ვერ ჩამოიტვირთა. შეამოწმეთ კავშირი ქსელთან ან &lt;a href="#" id="tryAgainLink"&gt;ცადეთ ხელახლა&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">ამ ანგარიშს მართავს <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">არცერთი არ არის დაინსტალირებული</translation>
 <translation id="5307030433605830021">წყარო მხარდაუჭერელია</translation>
@@ -4068,7 +4069,6 @@
 <translation id="5708171344853220004">Microsoft-ის მონაწილის სახელი</translation>
 <translation id="5709557627224531708">დააყენეთ Chrome ნაგულისხმევ ბრაუზერად</translation>
 <translation id="5711983031544731014">განბლოკვა შეუძლებელია. შეიყვანეთ პაროლი.</translation>
-<translation id="5713723565110096165">PIN-კოდი არასწორია. გამეორებების დარჩენილი რაოდენობა: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">დანამატის ბროკერი: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ნაგულისხმევი საძიებო სისტემები</translation>
 <translation id="5720705177508910913">მიმდინარე მომხმარებელი</translation>
@@ -4320,7 +4320,6 @@
 <translation id="6011074160056912900">Ethernet ქსელი</translation>
 <translation id="6011193465932186973">თითის ანაბეჭდი</translation>
 <translation id="6011449291337289699">საიტის მონაცემების გასუფთავება</translation>
-<translation id="6015266928248016057">PUK-კოდი არასწორია. გამეორებების დარჩენილი რაოდენობა: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">წელი</translation>
 <translation id="6016178549409952427">დამატებით კონტენტზე <ph name="CURRENT_ELEMENT" /> / <ph name="TOTAL_ELEMENTS" />-დან გადასვლა</translation>
 <translation id="6016551720757758985">Powerwash-ის განხორციელება დაადასტურეთ თავდაპირველ ვერსიაზე დაბრუნებით</translation>
@@ -4731,6 +4730,7 @@
 <translation id="6474498546677193336">გაზიარების გაუქმება ვერ მოხერხდა, ვინაიდან ამ საქაღალდეს ერთ-ერთი აპლიკაცია იყენებს. ამ საქაღალდის გაზიარება გაუქმდება Linux-ის მომდევნო გათიშვისას.</translation>
 <translation id="6474884162850599008">Google Drive ანგარიშთან კავშირის გაწყვეტა</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" />-ს სურს, გააზიაროს თქვენი ეკრანის შიგთავსი. აირჩიეთ, რისი გაზიარება გსურთ.</translation>
+<translation id="6477822444490674459">შეტყობინებების სინქრონიზაცია მხარდაუჭერელია ტელეფონებზე, რომლებზეც სამსახურის პროფილია. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">გსურთ სახიფათო ფაილის შენარჩუნება?</translation>
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
 <translation id="6483485061007832714">ჩამოტვირთვის გახსნა</translation>
@@ -5044,9 +5044,11 @@
 <translation id="6856459657722366306">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="6856623341093082836">თქვენი სენსორული ეკრანის დაყენება და სიზუსტის დარეგულირება</translation>
 <translation id="6857699260879628349">კონფიგურაციის ინფორმაციის მიღება</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> წმ</translation>
 <translation id="6860097299815761905">პროქსის პარამეტრები…</translation>
 <translation id="686022878923628150">საიტებისთვის MIDI-მოწყობილობებთან დაკავშირების დაბლოკვა</translation>
 <translation id="6860427144121307915">გახსნა ჩანართზე</translation>
+<translation id="6862729829592030773"><ph name="MANAGER" /> ითხოვს თქვენი მონაცემების სარეზერვო ასლების შექმნას და ამ <ph name="DEVICE_TYPE" />-ის დაბრუნებას 1 კვირის განმავლობაში. <ph name="LINK_BEGIN" />დეტალურად<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">გსურთ პაროლის წაშლა?</translation>
 <translation id="6865313869410766144">ფორმათა მონაცემების ავტომატური შევსება</translation>
 <translation id="6865598234501509159">არ არის <ph name="LANGUAGE" /> გვერდი</translation>
@@ -5130,6 +5132,7 @@
 <translation id="696103774840402661">ამ <ph name="DEVICE_TYPE" />-ზე შენახული ყველა მომხმარებლის ყველა ფაილი და ადგილობრივი მონაცემი სამუდამოდ წაიშალა.</translation>
 <translation id="6964390816189577014">გმირი</translation>
 <translation id="6964760285928603117">ჯგუფიდან ამოშლა</translation>
+<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> დღესვე ითხოვს თქვენი მონაცემების სარეზერვო ასლების შექმნას და ამ <ph name="DEVICE_TYPE" />-ის დაბრუნებას. <ph name="LINK_BEGIN" />დეტალურად<ph name="LINK_END" />}other{<ph name="MANAGER" /> {NUM_DAYS} დღის განმავლობაში ითხოვს თქვენი მონაცემების სარეზერვო ასლების შექმნას და ამ <ph name="DEVICE_TYPE" />-ის დაბრუნებას. <ph name="LINK_BEGIN" />დეტალურად<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">კარგი</translation>
 <translation id="6965648386495488594">პორტი</translation>
 <translation id="6965978654500191972">მოწყობილობა</translation>
@@ -5219,6 +5222,7 @@
 <translation id="7051943809462976355">მაუსის ძებნა…</translation>
 <translation id="7052237160939977163">ეფექტურობის ტრასირების მონაცემების გაგზავნა</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
+<translation id="705508001219706572">აქ უფრო სწრაფად რომ დაბრუნდეთ ხოლმე, დააინსტალირეთ <ph name="APP_NAME" /></translation>
 <translation id="7055152154916055070">გადამისამართება დაიბლოკა:</translation>
 <translation id="7055451306017383754">გაზიარების გაუქმება ვერ მოხერხდა, ვინაიდან ამ საქაღალდეს ერთ-ერთი აპლიკაცია იყენებს. ამ საქაღალდის გაზიარება გაუქმდება Parallels Desktop-ის მომდევნო გათიშვისას.</translation>
 <translation id="7056526158851679338">მოწყობილობების შ&amp;ემოწმება</translation>
@@ -6349,7 +6353,6 @@
 <translation id="8339059274628563283"><ph name="SITE" />-ის ადგილობრივად შენახული მონაცემები</translation>
 <translation id="833986336429795709">აირჩიეთ აპი ამ ბმულის გასახსნელად</translation>
 <translation id="8342861492835240085">აირჩიეთ კოლექცია</translation>
-<translation id="834290227245955730">PIN-კოდი არასწორია. გამეორებების დარჩენილი რაოდენობა: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">ბეჭდვის დავალებები</translation>
 <translation id="8350789879725387295">სტილუსის ხელსაწყოები სამაგრში</translation>
 <translation id="8351316842353540018">a11y-ის ვარიანტების ყოველთვის ჩვენება</translation>
@@ -6472,7 +6475,6 @@
 <translation id="8497219075884839166">Windows-ის უტილიტები</translation>
 <translation id="8498214519255567734">გაიმარტივეთ ეკრანზე კითხვა ან მისი ყურება მკრთალი განათების პირობებში</translation>
 <translation id="8498395510292172881">კითხვის გაგრძელება Chrome-ში</translation>
-<translation id="8500234928660943538">PUK-კოდი არასწორია. გამეორებების დარჩენილი რაოდენობა: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Google Play-ში არსებული აპების გამოსაყენებლად, პირველ რიგში, საჭიროა თქვენი აპის აღდგენა. ზოგიერთი მონაცემი შეიძლებოდა დაკარგულიყო.</translation>
 <translation id="850314194061055138">კამერის ხელახლა გამოყენება</translation>
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>

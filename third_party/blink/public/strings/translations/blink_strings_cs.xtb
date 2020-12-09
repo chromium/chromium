@@ -182,7 +182,7 @@
 <translation id="6023896073578205740">seznam</translation>
 <translation id="6150588977291308318">bibliografie</translation>
 <translation id="6164829606128959761">měřič</translation>
-<translation id="6165053282446038410">rozbaleno, <ph name="COUNT" /> jsou k dispozici možnosti automatického dokončení.</translation>
+<translation id="6165053282446038410">rozbaleno, jsou k dispozici možnosti automatického dokončení (<ph name="COUNT" />).</translation>
 <translation id="6166809985690652833">doslov</translation>
 <translation id="6209276755895393898">Vypadá jako: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">aktuální stránka</translation>

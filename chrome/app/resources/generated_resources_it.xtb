@@ -784,7 +784,6 @@
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
 <translation id="1856715684130786728">Aggiungi posizione...</translation>
 <translation id="1858585891038687145">Considera attendibile questo certificato per l'identificazione dei creatori di software</translation>
-<translation id="1860346308203060432">Visualizza visibilità del dispositivo</translation>
 <translation id="1861262398884155592">Questa cartella è vuota</translation>
 <translation id="1863182668524159459">Nessuna porta seriale trovata</translation>
 <translation id="1863316578636157783">L'estensione "<ph name="EXTENSION_NAME" />" è stata disattivata perché contiene malware</translation>
@@ -1945,7 +1944,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3201422919974259695">I dispositivi USB disponibili vengono indicati qui.</translation>
 <translation id="3202131003361292969">Percorso</translation>
 <translation id="3202173864863109533">L'audio di questa scheda sta per essere disattivato.</translation>
-<translation id="3202218848974251205">La Privacy Sandbox</translation>
+<translation id="3202218848974251205">Privacy Sandbox</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3208703785962634733">Non confermato</translation>
@@ -2146,6 +2145,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3441653493275994384">Schermo</translation>
 <translation id="3441663102605358937">Accedi di nuovo all'account <ph name="ACCOUNT" /> per effettuare la verifica</translation>
 <translation id="3445047461171030979">Risposte rapide dell'Assistente Google</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Avvia Parallels Desktop per installare Windows.</translation>
 <translation id="344630545793878684">Lettura dei dati su una serie di siti web</translation>
@@ -2320,7 +2320,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3635353578505343390">Invia feedback a Google</translation>
 <translation id="3635960017746711110">Preferenze USB su Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> rimanenti</translation>
-<translation id="3637682276779847508">La scheda SIM verrà definitivamente disabilitata se non sei in grado di inserire il codice di sblocco PIN corretto.</translation>
 <translation id="3639220004740062347">Esci dalla modalità Reader</translation>
 <translation id="3640214691812501263">Aggiungere "<ph name="EXTENSION_NAME" />" per <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Insegna all'assistente a riconoscere la tua voce</translation>
@@ -3481,7 +3480,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5017828934289857214">Ricordamelo dopo</translation>
 <translation id="5018207570537526145">Apri sito web dell'estensione</translation>
 <translation id="5018526990965779848">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
-<translation id="5019392775062123007">Visibile ai dispositivi nelle vicinanze come <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Non ancora aggiornato</translation>
 <translation id="5026806129670917316">Attiva Wi-Fi</translation>
 <translation id="5026874946691314267">Non visualizzare più</translation>
@@ -3717,7 +3715,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Lingua</translation>
 <translation id="5302932258331363306">Mostra sostituzioni</translation>
-<translation id="5304276686222516262">Impossibile scaricare l'elenco contatti. Controlla la connessione di rete o &lt;a href="#" id="tryAgainLink"&gt;riprova&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Questo account è gestito da <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Nessuno installato</translation>
 <translation id="5307030433605830021">Fonte non supportata</translation>
@@ -4073,7 +4070,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5708171344853220004">Nome entità Microsoft</translation>
 <translation id="5709557627224531708">Imposta Chrome come browser predefinito</translation>
 <translation id="5711983031544731014">Impossibile sbloccare. Inserisci la password.</translation>
-<translation id="5713723565110096165">PIN errato. Tentativi ancora disponibili: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motori di ricerca predefiniti</translation>
 <translation id="5720705177508910913">Utente corrente</translation>
@@ -4325,7 +4321,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6011074160056912900">Rete Ethernet</translation>
 <translation id="6011193465932186973">Impronta digitale</translation>
 <translation id="6011449291337289699">Cancella i dati del sito</translation>
-<translation id="6015266928248016057">PUK non valido. Tentativi ancora disponibili: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Anno</translation>
 <translation id="6016178549409952427">Vai ai contenuti aggiuntivi <ph name="CURRENT_ELEMENT" /> di <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Se confermi il Powerwash viene ripristinata la versione precedente</translation>
@@ -5050,6 +5045,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6856459657722366306">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="6856623341093082836">Configura e regola la precisione del touchscreen</translation>
 <translation id="6857699260879628349">Ricevi informazioni sulla configurazione</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">Impostazioni proxy...</translation>
 <translation id="686022878923628150">Impedisci ai siti di connettersi ai dispositivi MIDI</translation>
 <translation id="6860427144121307915">Apri in una scheda</translation>
@@ -6359,7 +6355,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8339059274628563283">Dati memorizzati di <ph name="SITE" /></translation>
 <translation id="833986336429795709">Scegli un'app per aprire il link</translation>
 <translation id="8342861492835240085">Seleziona una raccolta</translation>
-<translation id="834290227245955730">PIN non valido. Tentativi ancora disponibili: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="8350789879725387295">Strumenti stilo nel dock</translation>
 <translation id="8351316842353540018">Mostrare sempre le impostazioni di accessibilità</translation>
@@ -6482,7 +6477,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8497219075884839166">Utilità Windows</translation>
 <translation id="8498214519255567734">Potrai guardare lo schermo senza sforzare la vista o leggere in condizioni di luce attenuata</translation>
 <translation id="8498395510292172881">Continua a leggere in Chrome</translation>
-<translation id="8500234928660943538">PUK errato. Tentativi ancora disponibili: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Per utilizzare le app di Google Play, è prima necessario ripristinare le app. Alcuni dati potrebbero essere andati persi.</translation>
 <translation id="850314194061055138">utilizza di nuovo la fotocamera</translation>
 <translation id="8503813439785031346">Nome utente</translation>

@@ -151,7 +151,7 @@
 <translation id="5307600278924710095">「<ph name="ATSIGN" />」の前の文字列を入力してください。「<ph name="INVALIDADDRESS" />」は完全なメール アドレスではありません。</translation>
 <translation id="5334352251556557839">メディアを再生できません。</translation>
 <translation id="537648784377940524">最小の日付（<ph name="MIN_DATE_OR_TIME" />）には、最大の日付（<ph name="MAX_DATE_OR_TIME" />）より前の日付を指定してください。</translation>
-<translation id="5378437566635403538">要素が展開表示されています。ダイアログが開いています。</translation>
+<translation id="5378437566635403538">展開表示されています。ダイアログが開いています。</translation>
 <translation id="5406322316791861025">図</translation>
 <translation id="5425179576310518467">現在の日付</translation>
 <translation id="5453733299334684579">ツリー項目</translation>
@@ -168,7 +168,7 @@
 <translation id="5677946354068040947">その他のオプション</translation>
 <translation id="576709008726043716">序論</translation>
 <translation id="57838592816432529">ミュート</translation>
-<translation id="5787939484346677755">要素が展開表示されています。オートコンプリート候補があります。</translation>
+<translation id="5787939484346677755">展開表示されています。オートコンプリート候補があります。</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="588258955323874662">全画面表示</translation>
 <translation id="5888666972993069672">現在 <ph name="DEVICE_FRIENDLY_NAME" /> にキャストしています</translation>
@@ -182,7 +182,7 @@
 <translation id="6023896073578205740">リストボックス</translation>
 <translation id="6150588977291308318">参考文献</translation>
 <translation id="6164829606128959761">メーター</translation>
-<translation id="6165053282446038410">要素が展開表示されています。<ph name="COUNT" /> 件のオートコンプリート候補があります。</translation>
+<translation id="6165053282446038410">展開表示されています。<ph name="COUNT" /> 件のオートコンプリート候補があります。</translation>
 <translation id="6166809985690652833">後書き</translation>
 <translation id="6209276755895393898"><ph name="DESCRIPTION" /> の画像のようです</translation>
 <translation id="6212595056017402527">現在のページ</translation>
@@ -217,7 +217,7 @@
 <translation id="693476918119313863">ヘッダー</translation>
 <translation id="6941933287844615239">メディアをダウンロード</translation>
 <translation id="6981594929165378967">挿入</translation>
-<translation id="698788488269350478">要素が展開表示されています。</translation>
+<translation id="698788488269350478">展開表示されています。</translation>
 <translation id="6989848892321993519">このテキストは <ph name="MIN_CHARACTERS" /> 文字以上で指定してください（現在 1 文字で指定されています）。</translation>
 <translation id="7034405885550056553">提案</translation>
 <translation id="709897737746224366">指定されている形式で入力してください。</translation>

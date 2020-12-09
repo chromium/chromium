@@ -135,6 +135,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2208323208084708176">Vienots darbvirsmas režīms</translation>
 <translation id="2220572644011485463">PIN vai parole</translation>
 <translation id="2222338659135520253">Nepieciešama pierakstīšanās</translation>
+<translation id="2222841058024245321">7. darbvieta</translation>
 <translation id="225680501294068881">Notiek ierīču meklēšana...</translation>
 <translation id="2268130516524549846">Bluetooth atspējots</translation>
 <translation id="2268813581635650749">Izrakstīt visus</translation>
@@ -182,6 +183,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2658778018866295321">Noklikšķiniet un velciet</translation>
 <translation id="2678852583403169292">Funkcijas “Atlasīt, lai izrunātu” izvēlne</translation>
+<translation id="2689613560355655046">8. darbvieta</translation>
 <translation id="2700493154570097719">Iestatiet savu tastatūru</translation>
 <translation id="2704781753052663061">Pievienoties citiem Wi-Fi tīkliem</translation>
 <translation id="2705001408393684014">Pārslēgt mikrofonu. <ph name="STATE_TEXT" /></translation>
@@ -374,6 +376,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4389184120735010762">Jūs nospiedāt dokotās lupas īsinājumtaustiņu. Vai vēlaties to ieslēgt?</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> ir izslēgta.</translation>
 <translation id="4421231901400348175">Ekrāna pārvaldības koplietošana ar <ph name="HELPER_NAME" />, izmantojot attālo palīdzību.</translation>
+<translation id="4424159417645388645">5. darbvieta</translation>
 <translation id="4427613789487709312">Noklusējums (reiz <ph name="RATE" />)</translation>
 <translation id="4430019312045809116">Skaļums</translation>
 <translation id="4450893287417543264">Vairs nerādīt</translation>
@@ -511,7 +514,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5691772641933328258">Pirksta nospiedums netika atpazīts</translation>
 <translation id="5710450975648804523">Režīms “Netraucēt” ir ieslēgts</translation>
 <translation id="573413375004481890">Šajā ierīcē nevarēja atbalstīt visus jūsu displejus, tādējādi tika pārtraukts savienojums ar vienu no tiem.</translation>
-<translation id="5740328398383587084">Kopīgošana tuvumā</translation>
 <translation id="574392208103952083">Vidējs</translation>
 <translation id="5744083938413354016">Vilkšana pieskaroties</translation>
 <translation id="5745612484876805746">Nakts režīms tiek automātiski ieslēgts saulrietā.</translation>
@@ -649,6 +651,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="698231206551913481">Visi faili un lokālie dati, kas ir saistīti ar šo lietotāju, tiks neatgriezeniski dzēsti, tiklīdz šis lietotājs tiks noņemts.</translation>
 <translation id="7007983414944123363">Nevarēja verificēt jūsu PIN vai paroli. Mēģiniet vēlreiz.</translation>
 <translation id="7015766095477679451">Atgriezieties plkst. <ph name="COME_BACK_TIME" />.</translation>
+<translation id="70168403932084660">6. darbvieta</translation>
 <translation id="7025533177575372252">Savienojiet ierīci <ph name="DEVICE_NAME" /> ar tālruni</translation>
 <translation id="7026338066939101231">Samazināt</translation>
 <translation id="7029814467594812963">Iziet no sesijas</translation>

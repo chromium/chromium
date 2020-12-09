@@ -784,7 +784,6 @@
 <translation id="1854180393107901205">Sluta casta</translation>
 <translation id="1856715684130786728">Lägg till plats ...</translation>
 <translation id="1858585891038687145">Lita på det här certifikatet för identifiering av programskapare</translation>
-<translation id="1860346308203060432">Visa enhetens synlighet</translation>
 <translation id="1861262398884155592">Mappen är tom</translation>
 <translation id="1863182668524159459">Ingen serieport hittades.</translation>
 <translation id="1863316578636157783"><ph name="EXTENSION_NAME" /> har inaktiverats eftersom det innehåller skadlig programvara</translation>
@@ -2147,6 +2146,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3441653493275994384">Skärm</translation>
 <translation id="3441663102605358937">Logga in på <ph name="ACCOUNT" /> igen för att verifiera kontot</translation>
 <translation id="3445047461171030979">Snabba svar från Google Assistent</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3446274660183028131">Starta Parallels Desktop om du vill installera Windows.</translation>
 <translation id="344630545793878684">Läsa din data på ett antal webbplatser</translation>
@@ -2321,7 +2321,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3635353578505343390">Skicka feedback till Google</translation>
 <translation id="3635960017746711110">USB-inställningar för Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> kvar</translation>
-<translation id="3637682276779847508">SIM-kortet inaktiveras permanent om du inte anger korrekt upplåsningskod för pinkoden.</translation>
 <translation id="3639220004740062347">Avsluta läsarläget</translation>
 <translation id="3640214691812501263">Vill du lägga till <ph name="EXTENSION_NAME" /> för <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Lär assistenten att känna igen din röst</translation>
@@ -3482,7 +3481,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5017828934289857214">Påminn mig senare</translation>
 <translation id="5018207570537526145">Öppna webbplatsen för tillägget</translation>
 <translation id="5018526990965779848">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot.</translation>
-<translation id="5019392775062123007">Synlig för enheter i närheten som <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Har inte uppdaterats ännu</translation>
 <translation id="5026806129670917316">Aktivera Wi-Fi</translation>
 <translation id="5026874946691314267">Visa inte detta igen</translation>
@@ -3718,7 +3716,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5301954838959518834">Ok, jag förstår</translation>
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5302932258331363306">Visa ersättningar</translation>
-<translation id="5304276686222516262">Det gick inte att ladda ned kontaktlistan. Kontrollera nätverksanslutningen eller &lt;a href="#" id="tryAgainLink"&gt;försök igen&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Det här kontot hanteras av <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Ingen installerad</translation>
 <translation id="5307030433605830021">Källan stöds inte</translation>
@@ -4074,7 +4071,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5708171344853220004">Huvudnamn för Microsoft</translation>
 <translation id="5709557627224531708">Ange Chrome som standardwebbläsare</translation>
 <translation id="5711983031544731014">Det går inte att låsa upp. Ange ditt lösenord.</translation>
-<translation id="5713723565110096165">Fel pinkod. Återstående försök: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Agent för pluginprogram: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standardsökmotorer</translation>
 <translation id="5720705177508910913">Aktuell användare</translation>
@@ -4326,7 +4322,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6011074160056912900">Ethernet-nätverk</translation>
 <translation id="6011193465932186973">Fingeravtryck</translation>
 <translation id="6011449291337289699">Rensa webbplatsdata</translation>
-<translation id="6015266928248016057">Ogiltig PUK-kod. Återstående försök: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6016178549409952427">Navigera till extrainnehåll <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bekräfta återställningen till den tidigare versionen med Powerwash</translation>
@@ -5051,6 +5046,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6856459657722366306">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="6856623341093082836">Konfigurera pekskärmen och ställ in hur känslig den ska vara</translation>
 <translation id="6857699260879628349">Få konfigurationsinformation</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Proxyinställningar...</translation>
 <translation id="686022878923628150">Förhindra att webbplatser ansluter till MIDI-enheter</translation>
 <translation id="6860427144121307915">Öppna i en flik</translation>
@@ -6361,7 +6357,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8339059274628563283">Lokalt lagrad data för <ph name="SITE" /></translation>
 <translation id="833986336429795709">Välj en app för att öppna länken</translation>
 <translation id="8342861492835240085">Välj en samling</translation>
-<translation id="834290227245955730">Ogiltig pinkod Återstående försök: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="8350789879725387295">Dockade verktyg för e-penna</translation>
 <translation id="8351316842353540018">Visa alltid tillgänglighetsalternativen</translation>
@@ -6484,7 +6479,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8497219075884839166">Fönsterverktyg</translation>
 <translation id="8498214519255567734">Gör det behagligare för ögonen att titta på skärmen eller läsa i svag belysning</translation>
 <translation id="8498395510292172881">Fortsätt läsa i Chrome</translation>
-<translation id="8500234928660943538">Fel PUK-kod. Återstående försök: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Om du vill använda appar från Google Play måste du först återställa apparna. En del data kan ha gått förlorad.</translation>
 <translation id="850314194061055138">använd kameran igen</translation>
 <translation id="8503813439785031346">Användarnamn</translation>

@@ -128,7 +128,7 @@
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
 Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
-<translation id="5264277876637023664">CPU-test uitvoeren</translation>
+<translation id="5264277876637023664">CPU-test doen</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Routines opnieuw uitvoeren</translation>
 <translation id="5317780077021120954">Opslaan</translation>
@@ -236,6 +236,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
-<translation id="9149391708638971077">Geheugentest uitvoeren</translation>
-<translation id="982713511914535780">Ontlaadtest uitvoeren</translation>
+<translation id="9149391708638971077">Geheugentest doen</translation>
+<translation id="982713511914535780">Ontlaadtest doen</translation>
 </translationbundle>

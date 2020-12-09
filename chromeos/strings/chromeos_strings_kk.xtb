@@ -30,7 +30,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS түрлендіргіші бар</translation>
 <translation id="1743558184855585519">Батарея шегіне жеткенде, толықтай отырды дегенді білдіреді.</translation>
-<translation id="1792647875738159689">Сканерлеуді тоқтату</translation>
+<translation id="1792647875738159689">Сканерлеу тоқтатылуда</translation>
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
 <translation id="1930797645656624981">Chrome OS енгізу әдісі қызметі</translation>
 <translation id="1947737735496445907">Басып шығарылған</translation>
@@ -88,7 +88,7 @@
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
 <translation id="4145784616224233563">HTTP брандмауэрі</translation>
-<translation id="4170700058716978431">СӘТСІЗ АЯҚТАЛДЫ.</translation>
+<translation id="4170700058716978431">СӘТСІЗ АЯҚТАЛДЫ</translation>
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
@@ -143,7 +143,7 @@
 <translation id="5635169860413004179">Есепті көру</translation>
 <translation id="5719918614880940190">Бұл орталық процессорды қолдану трафигін есептейді және ол – барлық ядролар жинағы.</translation>
 <translation id="5781694279199921985">Сеанс журналын сақтау</translation>
-<translation id="5797428682393400134">СӘТТІ АЯҚТАЛДЫ.</translation>
+<translation id="5797428682393400134">СӘТТІ АЯҚТАЛДЫ</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5931523347251946569">Файл табылмады.</translation>
@@ -156,7 +156,7 @@
 <translation id="6104112872696127344">Сканерлеу тоқтатылды.</translation>
 <translation id="6106186594183574873">Аяқтау үшін ескі құпия сөзді енгізіңіз.</translation>
 <translation id="6108689792487843350">Шлюзбен байланыс орнату мүмкін емес.</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" />ГГц / <ph name="MAX" />ГГц</translation>
+<translation id="6114428539405324828"><ph name="CURRENT" />ГГц/<ph name="MAX" />ГГц</translation>
 <translation id="6146993107019042706">Аяқтау үшін жаңа құпия сөзді енгізіңіз.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Толығырақ</translation>

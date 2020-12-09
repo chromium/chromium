@@ -160,6 +160,8 @@
 <translation id="5430073640787465221">Tu archivo de preferencias está dañado o no es válido. Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="556024056938947818">Google Chrome está intentando mostrar contraseñas.</translation>
 <translation id="5566025111015594046">Google Chrome (tráfico mDNS entrante)</translation>
+<translation id="5655746611259367388">Puedes administrar esta y otras Cuentas de Google que hayas agregado para <ph name="USER_NAME" /> desde un solo lugar en <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />.
+          Es posible que se apliquen a todas las cuentas los permisos que otorgaste a las apps de Google Play y a los sitios web que visitaste en el navegador Chrome.</translation>
 <translation id="5657226924540934362">Si no ves una opción de configuración en esta página, consulta la <ph name="LINK_BEGIN" />
       configuración del Sistema operativo Chrome<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Chrome bloqueó <ph name="FILE_NAME" /> porque es posible que sea un archivo peligroso.</translation>
@@ -170,7 +172,7 @@
 <translation id="573759479754913123">Acerca del sistema operativo Chrome</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" />: Google Chrome Canary</translation>
 <translation id="5804318322022881572">No se pudo iniciar Chrome. Vuelve a intentarlo.</translation>
-<translation id="5851757216820085940">Si tienes varias Cuentas de Google, podrás agregarlas a tu <ph name="DEVICE_TYPE" />. Tus cuentas estarán disponibles para usar en el navegador Chrome y Play Store, además de los servicios como Gmail, Drive y YouTube.<ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="5851757216820085940">Si tienes varias Cuentas de Google, podrás agregarlas a tu <ph name="DEVICE_TYPE" />. Tus cuentas estarán disponibles para usar en el navegador Chrome y Play Store, además de los servicios como Gmail, Drive y YouTube. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome está intentando editar contraseñas.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" />: Acceso a la red</translation>
@@ -189,7 +191,7 @@
 <translation id="6368958679917195344">Chrome OS es posible gracias al <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Versión para desarrolladores de Google Chrome</translation>
 <translation id="6566149418543181476">Actualizando Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6568793831116033768">Chrome OS</translation>
+<translation id="6568793831116033768">Sistema de Chrome OS</translation>
 <translation id="6650333065969705433">Si quieres usar Rosetta para reproducir contenido multimedia protegido, deberás reiniciar Chrome.</translation>
 <translation id="6676384891291319759">Acceder a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se ejecute en segundo plano</translation>
@@ -272,7 +274,7 @@
 <translation id="8907709077090383765">Si quieres habilitar Chrome para que reproduzca contenido multimedia protegido, deberás instalar Rosetta. ¿Quieres instalar este software ahora?</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número de <ph name="ORIGIN" /> a tu teléfono Android, accede a Chrome en ambos dispositivos.</translation>
-<translation id="8986207147630327271">Estás agregando un perfil de trabajo a este navegador y dándole a tu administrador el control únicamente solo del perfil de trabajo.</translation>
+<translation id="8986207147630327271">Estás agregando un perfil de trabajo a este navegador y dándole a tu administrador el control únicamente del perfil de trabajo.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible hace # días}}</translation>
 <translation id="9026991721384951619">El Sistema operativo Chrome no pudo sincronizar los datos porque la información de acceso de la cuenta está desactualizada.</translation>
 <translation id="9067395829937117663">Para usar Google Chrome, se requiere Windows 7 o versiones posteriores.</translation>

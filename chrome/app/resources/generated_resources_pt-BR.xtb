@@ -785,7 +785,6 @@
 <translation id="1854180393107901205">Parar transmissão</translation>
 <translation id="1856715684130786728">Adicionar local...</translation>
 <translation id="1858585891038687145">Confiar neste certificado para a identificação de criadores do software</translation>
-<translation id="1860346308203060432">Ver visibilidade do dispositivo</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1863182668524159459">Nenhuma porta serial encontrada</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" foi desativada porque contém malware</translation>
@@ -2149,6 +2148,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3441653493275994384">Tela</translation>
 <translation id="3441663102605358937">Faça login em <ph name="ACCOUNT" /> novamente para verificar essa conta</translation>
 <translation id="3445047461171030979">Respostas rápidas do Google Assistente</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> minutos</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Inicie o Parallels Desktop para instalar o Windows.</translation>
 <translation id="344630545793878684">Leia seus dados em uma série de websites</translation>
@@ -2323,7 +2323,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3635353578505343390">Enviar feedback para o Google</translation>
 <translation id="3635960017746711110">Preferências de USB do Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> restantes</translation>
-<translation id="3637682276779847508">Seu chip será permanentemente desativado se você não informar a chave correta de desbloqueio por PIN.</translation>
 <translation id="3639220004740062347">Sair do modo leitor</translation>
 <translation id="3640214691812501263">Adicionar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Ensine o Assistente a reconhecer sua voz</translation>
@@ -3484,7 +3483,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5017828934289857214">Lembrar mais tarde</translation>
 <translation id="5018207570537526145">Abrir o site da extensão</translation>
 <translation id="5018526990965779848">Envie dados de uso e diagnóstico. Ajude a melhorar sua experiência com o Android enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google.</translation>
-<translation id="5019392775062123007">Visível para dispositivos próximos como <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Ainda não atualizada</translation>
 <translation id="5026806129670917316">Ativar o Wi-Fi</translation>
 <translation id="5026874946691314267">Não mostrar isto novamente</translation>
@@ -3720,7 +3718,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5301954838959518834">Ok, entendi</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5302932258331363306">Mostrar substituições</translation>
-<translation id="5304276686222516262">Não foi possível fazer o download da lista de contatos. Verifique sua conexão de rede ou &lt;a href="#" id="tryAgainLink"&gt;tente novamente&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Esta conta é gerenciada por <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Nenhum instalado</translation>
 <translation id="5307030433605830021">Fonte incompatível</translation>
@@ -4077,7 +4074,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5708171344853220004">Nome principal da Microsoft</translation>
 <translation id="5709557627224531708">Definir o Chrome como seu navegador padrão</translation>
 <translation id="5711983031544731014">Não foi possível realizar o desbloqueio. Insira sua senha.</translation>
-<translation id="5713723565110096165">PIN incorreto. Tentativas restantes: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Agente do plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mecanismos de pesquisa padrão</translation>
 <translation id="5720705177508910913">Usuário atual</translation>
@@ -4329,7 +4325,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6011074160056912900">Rede Ethernet</translation>
 <translation id="6011193465932186973">Impressão digital</translation>
 <translation id="6011449291337289699">Limpar dados de sites</translation>
-<translation id="6015266928248016057">PUK inválida. Tentativas restantes: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6016178549409952427">Navegar para o conteúdo extra <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmar powerwash com retorno à versão anterior</translation>
@@ -5055,6 +5050,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6856459657722366306">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="6856623341093082836">Configurar e ajustar a precisão da touchscreen</translation>
 <translation id="6857699260879628349">Receber informações de configuração</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> segundos</translation>
 <translation id="6860097299815761905">Configurações de proxy...</translation>
 <translation id="686022878923628150">Impedir que sites se conectem a dispositivos MIDI</translation>
 <translation id="6860427144121307915">Abrir em uma guia</translation>
@@ -5299,7 +5295,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7121362699166175603">Limpa o histórico e os preenchimentos automáticos na barra de endereço. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Modo de desenvolvedor</translation>
 <translation id="7121728544325372695">Traços inteligentes</translation>
-<translation id="7122353087820324370">As configurações de apps e do sistema operacional não são sincronizadas nas contas secundárias.</translation>
+<translation id="7122353087820324370">As configurações de apps e dos sistemas operacionais do Chrome e do Chromium não são sincronizadas em contas secundárias.</translation>
 <translation id="7123030151043029868">Permitir o download automático de vários arquivos</translation>
 <translation id="7123360114020465152">Não é mais compatível</translation>
 <translation id="7125148293026877011">Excluir Crostini</translation>
@@ -6365,7 +6361,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8339059274628563283">Dados armazenados localmente do <ph name="SITE" /></translation>
 <translation id="833986336429795709">Para abrir este link, escolha um app</translation>
 <translation id="8342861492835240085">Selecione uma coleção</translation>
-<translation id="834290227245955730">PIN inválido. Tentativas restantes: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Trabalhos de impressão</translation>
 <translation id="8350789879725387295">Ferramentas da stylus na base</translation>
 <translation id="8351316842353540018">Sempre mostrar opções de acessibilidade</translation>
@@ -6488,7 +6483,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8497219075884839166">Utilitários do Windows</translation>
 <translation id="8498214519255567734">Facilita olhar para a tela ou ler com pouca luz</translation>
 <translation id="8498395510292172881">Continuar lendo no Chrome</translation>
-<translation id="8500234928660943538">PUK incorreta. Tentativas restantes: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Para usar apps do Google Play, primeiro você precisa restaurar seus apps. Alguns dados podem ter sido perdidos.</translation>
 <translation id="850314194061055138">usar a câmera novamente</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>

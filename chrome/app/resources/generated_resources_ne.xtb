@@ -776,7 +776,6 @@
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
 <translation id="1856715684130786728">स्थान थप्नुहोस्...</translation>
 <translation id="1858585891038687145">सफ्टवेयर निर्माताहरूको पहिचान गर्न यस प्रमाणपत्रमाथि विश्वास गर्नुहोस्</translation>
-<translation id="1860346308203060432">यन्त्रको भिजिबिलिटी हेर्नुहोस्</translation>
 <translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
 <translation id="1863182668524159459">कुनै पनि सिरियल पोर्ट फेला परेन</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" मा मालवेयर भएका कारण यो एक्सटेन्सनलाई असक्षम पारिएको छ</translation>
@@ -2137,6 +2136,7 @@
 <translation id="3441653493275994384">स्क्रिन</translation>
 <translation id="3441663102605358937">यो खाता पुष्टि गर्न <ph name="ACCOUNT" /> मा फेरि साइन इन गर्नुहोस्</translation>
 <translation id="3445047461171030979">Google सहायकका द्रुत जवाफहरू</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="3445925074670675829">USB-C यन्त्र</translation>
 <translation id="3446274660183028131">कृपया Windows इन्स्टल गर्न Parallels Desktop खोल्नुहोस्।</translation>
 <translation id="344630545793878684">विभिन्न वेबसाइटहरूमा तपाईँको डेटा पढ्नुहोस्</translation>
@@ -2309,7 +2309,6 @@
 <translation id="3635353578505343390">Google लाई प्रतिक्रिया पठाउनुहोस्</translation>
 <translation id="3635960017746711110">Crostini मा USB सम्बन्धी प्राथमिकताहरू</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> बायाँ</translation>
-<translation id="3637682276779847508">तपाईंले PIN अनलक गर्ने सही कुञ्जी प्रविष्ट गर्न सक्नुभएन भने तपाईंको SIM कार्डलाई सदाका लागि असक्षम पारिनेछ।</translation>
 <translation id="3639220004740062347">पाठक मोडबाट बाहिर निस्कनुहोस्</translation>
 <translation id="3640214691812501263">"<ph name="USER_NAME" />" का लागि <ph name="EXTENSION_NAME" /> थप्ने हो?</translation>
 <translation id="3640613767643722554">आफ्नो सहायकलाई तपाईंको आवाज पहिचान गर्न सिकाउनुहोस्</translation>
@@ -3464,7 +3463,6 @@
 <translation id="5017828934289857214">मलाई पछि स्मरण गराइयोस्</translation>
 <translation id="5018207570537526145">विस्तारको वेबसाइट खोल्नुहोस्</translation>
 <translation id="5018526990965779848">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। निदान, यन्त्र र एपको प्रयोगसम्बन्धी डेटा स्वतः Google लाई पठाएर आफ्नो Android सम्बन्धी अनुभवमा सुधार ल्याउन मद्दत गर्नुहोस्। यसले प्रणाली तथा एपको स्थिरता र अन्य कुराहरूमा सुधार ल्याउन मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छन्। तपाईंको खातामा अतिरिक्त वेब तथा एपसम्बन्धी गतिविधिको सेटिङ सक्रिय गरिएको छ भने यो डेटा तपाईंको Google खातामा सुरक्षित गरिन सक्छ।</translation>
-<translation id="5019392775062123007">यो यन्त्र नजिकैका यन्त्रहरूमा <ph name="DEVICE_NAME" /> का रूपमा देखिन्छ</translation>
 <translation id="5021750053540820849">अझैसम्म अद्यावधिक गरिएको छैन</translation>
 <translation id="5026806129670917316">Wi-Fi सक्रिय गर्नुहोस्</translation>
 <translation id="5026874946691314267">यो पुनः नदेखाउनुहोस्</translation>
@@ -3699,7 +3697,6 @@
 <translation id="5301954838959518834">ठिक छ, बुझेँ</translation>
 <translation id="5302048478445481009">भाषा</translation>
 <translation id="5302932258331363306">प्रतिस्थापनहरू देखाउनुहोस्</translation>
-<translation id="5304276686222516262">सम्पर्क ठेगानाको सूची डाउनलोड गर्न सकिएन। कृपया इन्टरनेट कनेक्सन जाँच गर्नुहोस् वा &lt;a href="#" id="tryAgainLink"&gt;फेरि प्रयास गर्नुहोस्&lt;/a&gt;।</translation>
 <translation id="5305688511332277257">कुनै स्थापित छैन</translation>
 <translation id="5307030433605830021">स्रोत समर्थित छैन</translation>
 <translation id="5308380583665731573">जडान गर्नुहोस्</translation>
@@ -4053,7 +4050,6 @@
 <translation id="5708171344853220004">Microsoft</translation>
 <translation id="5709557627224531708">Chrome लाई आफ्नो पूर्वनिर्धारित ब्राउजरका रूपमा सेट गर्नुहोस्</translation>
 <translation id="5711983031544731014">अनलक गर्न सकिएन। आप्नो पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
-<translation id="5713723565110096165">PIN मिलेन। बाँकी प्रयास: <ph name="RETRIES" />।</translation>
 <translation id="5715711091495208045">प्लगइन ब्रोकर: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">पूर्वनिर्धारित खोज इन्जिनहरू</translation>
 <translation id="5720705177508910913">हालको प्रयोगकर्ता</translation>
@@ -4303,7 +4299,6 @@
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="6011193465932186973">फिंगरप्रिन्ट</translation>
 <translation id="6011449291337289699">साइट सम्बन्धी डेटा खाली गर्नुहोस्</translation>
-<translation id="6015266928248016057">अमान्य PUK। बाँकी प्रयास: <ph name="RETRIES" />।</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्रीमा जानुहोस्</translation>
 <translation id="6016551720757758985">अघिल्लो संस्करणमा फिर्तीसँग Powerwash पुष्टि गर्नुहोस्</translation>
@@ -5024,6 +5019,7 @@
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="6856623341093082836">आफ्नो टचस्क्रिनको सटीकता सेटअप र समायोजन गर्नुहोस्</translation>
 <translation id="6857699260879628349">कन्फिगुरेसनसम्बन्धी जानकारी प्राप्त गर्नुहोस्</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
 <translation id="6860097299815761905">प्रोक्सी सेटिङहरू...</translation>
 <translation id="686022878923628150">साइटहरूलाई MIDI यन्त्रहरूमा कनेक्ट हुन नदिनुहोस्</translation>
 <translation id="6860427144121307915">ट्याबमा खोल्नुहोस्</translation>
@@ -6325,7 +6321,6 @@
 <translation id="8339059274628563283"><ph name="SITE" /> को स्थानीय रूपमा भण्डारण गरिएको डेटा</translation>
 <translation id="833986336429795709">यो लिंक खोल्न, कुनै एप छनौट गर्नुहोस्</translation>
 <translation id="8342861492835240085">सङ्ग्रह चयन गर्नुहोस्</translation>
-<translation id="834290227245955730">अमान्य PIN। बाँकी प्रयास: <ph name="RETRIES" />।</translation>
 <translation id="8347227221149377169">प्रिन्टसम्बन्धी कार्यहरू</translation>
 <translation id="8350789879725387295">डकमा स्टाइलसका उपकरणहरू देखाइयोस्</translation>
 <translation id="8351316842353540018">सधैँ पहुँचसम्बन्धी विकल्पहरू देखाइयोस्</translation>
@@ -6448,7 +6443,6 @@
 <translation id="8497219075884839166">विन्डोका उपयोगिताहरू</translation>
 <translation id="8498214519255567734">आफ्नो स्क्रिनमा हेर्न अझ सजिलो बनाउनुहोस् वा मधुरो प्रकाशमा पढ्नुहोस्</translation>
 <translation id="8498395510292172881">Chrome मा पढिरहनुहोस्</translation>
-<translation id="8500234928660943538">PUK मिलेन। बाँकी प्रयास: <ph name="RETRIES" />।</translation>
 <translation id="8502536196501630039">Google Play का एपहरू प्रयोग गर्न तपाईंले अनिवार्य रूपमा सर्वप्रथम आफ्ना एपहरू रिसेट गर्नु पर्छ । केही डेटा हराएको हुन सक्छ।</translation>
 <translation id="850314194061055138">क्यामेरा फेरि प्रयोग गर्नुहोस्</translation>
 <translation id="8503813439785031346">एक-पटके पाठ सन्देश</translation>

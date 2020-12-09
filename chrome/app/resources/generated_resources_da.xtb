@@ -785,7 +785,6 @@
 <translation id="1854180393107901205">Stop cast</translation>
 <translation id="1856715684130786728">Tilføj placering...</translation>
 <translation id="1858585891038687145">Hav tillid til dette certifikat i forbindelse med identifikation af softwareproducenter</translation>
-<translation id="1860346308203060432">Se enhedens synlighed</translation>
 <translation id="1861262398884155592">Denne mappe er tom</translation>
 <translation id="1863182668524159459">Der blev ikke fundet nogen serieporte</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" er blevet deaktiveret, da den indeholder malware</translation>
@@ -2148,6 +2147,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3441653493275994384">Skærm</translation>
 <translation id="3441663102605358937">Log ind på <ph name="ACCOUNT" /> igen for at bekræfte denne konto</translation>
 <translation id="3445047461171030979">Hurtige svar i Google Assistent</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-enhed</translation>
 <translation id="3446274660183028131">Start Parallels Desktop for at installere Windows.</translation>
 <translation id="344630545793878684">Læs dine data på en række websites</translation>
@@ -2322,7 +2322,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3635353578505343390">Send feedback til Google</translation>
 <translation id="3635960017746711110">Præferencer for USB i Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> tilbage</translation>
-<translation id="3637682276779847508">Dit SIM-kort deaktiveres permanent, hvis du ikke kan angive den korrekte nøgle til oplåsning af pinkode.</translation>
 <translation id="3639220004740062347">Afslut Læser-tilstand</translation>
 <translation id="3640214691812501263">Vil du tilføje "<ph name="EXTENSION_NAME" />" for <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Lær din assistent at genkende din stemme</translation>
@@ -3483,7 +3482,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5017828934289857214">Påmind mig senere</translation>
 <translation id="5018207570537526145">Åbn udvidelsens website</translation>
 <translation id="5018526990965779848">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre din Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto.</translation>
-<translation id="5019392775062123007">Synlig som <ph name="DEVICE_NAME" /> for enheder i nærheden</translation>
 <translation id="5021750053540820849">Endnu ikke opdateret</translation>
 <translation id="5026806129670917316">Aktivér Wi-Fi</translation>
 <translation id="5026874946691314267">Vis ikke denne notifikation igen</translation>
@@ -3719,7 +3717,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5301954838959518834">OK, det er forstået</translation>
 <translation id="5302048478445481009">Sprog</translation>
 <translation id="5302932258331363306">Vis erstatninger</translation>
-<translation id="5304276686222516262">Listen over kontakter kunne ikke downloades. Tjek din netværksforbindelse, eller &lt;a href="#" id="tryAgainLink"&gt;prøv igen&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Denne konto administreres af <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Ingen installeret</translation>
 <translation id="5307030433605830021">Kilden understøttes ikke</translation>
@@ -4075,7 +4072,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5708171344853220004">Microsoft-hovednavn</translation>
 <translation id="5709557627224531708">Angiv Chrome som din standardbrowser</translation>
 <translation id="5711983031544731014">Enheden kan ikke låses op. Angiv din adgangskode.</translation>
-<translation id="5713723565110096165">Pinkoden er forkert. Antal resterende forsøg: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Pluginmægler: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standardsøgemaskiner</translation>
 <translation id="5720705177508910913">Aktuel bruger</translation>
@@ -4327,7 +4323,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6011074160056912900">Ethernet-netværk</translation>
 <translation id="6011193465932186973">Fingeraftryk</translation>
 <translation id="6011449291337289699">Ryd websitedata</translation>
-<translation id="6015266928248016057">PUK-koden er ugyldig. Antal resterende forsøg: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6016178549409952427">Gå til yderligere indhold <ph name="CURRENT_ELEMENT" /> ud af <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bekræft Powerwash med nulstilling til forrige version</translation>
@@ -5053,6 +5048,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6856459657722366306">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
 <translation id="6856623341093082836">Konfigurer og juster nøjagtigheden af din touchskærm</translation>
 <translation id="6857699260879628349">Hent konfigurationsoplysninger</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6860097299815761905">Indstillinger for proxy...</translation>
 <translation id="686022878923628150">Bloker websites, så de ikke kan oprette forbindelse til MIDI-enheder</translation>
 <translation id="6860427144121307915">Åbn på en fane</translation>
@@ -6362,7 +6358,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8339059274628563283">Data fra <ph name="SITE" />, der er gemt lokalt</translation>
 <translation id="833986336429795709">Vælg en app for at åbne dette link</translation>
 <translation id="8342861492835240085">Vælg en samling</translation>
-<translation id="834290227245955730">Pinkoden er ugyldig. Antal resterende forsøg: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
 <translation id="8350789879725387295">Fastgjorte styluspenværktøjer</translation>
 <translation id="8351316842353540018">Vis altid a11y-muligheder</translation>
@@ -6485,7 +6480,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8497219075884839166">Windows-værktøjer</translation>
 <translation id="8498214519255567734">Gør din skærm mere behagelig at læse eller se på i svag belysning</translation>
 <translation id="8498395510292172881">Fortsæt læsningen i Chrome</translation>
-<translation id="8500234928660943538">PUK-koden er forkert. Antal resterende forsøg: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Hvis du vil bruge apps fra Google Play, skal du først gendanne dine apps. Nogle data kan være gået tabt.</translation>
 <translation id="850314194061055138">brug kamera igen</translation>
 <translation id="8503813439785031346">Brugernavn</translation>

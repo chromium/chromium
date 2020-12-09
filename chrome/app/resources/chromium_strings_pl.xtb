@@ -163,7 +163,7 @@
 <translation id="6403826409255603130">Chromium to przeglądarka obsługująca strony i aplikacje z szybkością błyskawicy. Jest szybka, stabilna i łatwa w użyciu. Bezpiecznie przeglądaj internet dzięki wbudowanej w Chromium ochronie przed złośliwym oprogramowaniem i phishingiem.</translation>
 <translation id="6434250628340475518">System operacyjny Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium uruchomi się ponownie za sekundę}few{Chromium uruchomi się ponownie za # sekundy}many{Chromium uruchomi się ponownie za # sekund}other{Chromium uruchomi się ponownie za # sekundy}}</translation>
-<translation id="6464340581899189425">Jeśli masz wiele kont Google, możesz je dodać na swoim urządzeniu (<ph name="DEVICE_TYPE" />). Będą one dostępne w przeglądarce Chromium i Sklepie Play, a także w usługach Google takich jak Gmail, Dysk czy YouTube.<ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
+<translation id="6464340581899189425">Jeśli masz wiele kont Google, możesz je dodać na swoim urządzeniu (<ph name="DEVICE_TYPE" />). Będą one dostępne w przeglądarce Chromium i Sklepie Play, a także w usługach Google takich jak Gmail, Dysk czy YouTube. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6475912303565314141">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium.</translation>
 <translation id="6510925080656968729">Odinstaluj Chromium</translation>
 <translation id="6570579332384693436">Aby naprawić błędy pisowni, Chromium wysyła tekst wpisany w polach tekstowych do Google</translation>

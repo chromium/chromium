@@ -135,6 +135,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2208323208084708176">Chế độ màn hình đồng nhất</translation>
 <translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
 <translation id="2222338659135520253">Cần đăng nhập</translation>
+<translation id="2222841058024245321">Không gian làm việc 7</translation>
 <translation id="225680501294068881">Đang quét tìm thiết bị...</translation>
 <translation id="2268130516524549846">Đã tắt bluetooth</translation>
 <translation id="2268813581635650749">Đăng xuất tất cả</translation>
@@ -182,6 +183,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2658778018866295321">Nhấp và kéo</translation>
 <translation id="2678852583403169292">Trình đơn Chọn để nói</translation>
+<translation id="2689613560355655046">Không gian làm việc 8</translation>
 <translation id="2700493154570097719">Đặt bàn phím</translation>
 <translation id="2704781753052663061">Dùng các mạng Wi-Fi khác</translation>
 <translation id="2705001408393684014">Bật tắt micrô. <ph name="STATE_TEXT" /></translation>
@@ -374,6 +376,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4389184120735010762">Bạn đã nhấn phím tắt của tính năng phóng to ở vị trí cố định. Bạn có muốn bật tính năng này không?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> đang tắt.</translation>
 <translation id="4421231901400348175">Chia sẻ quyền kiểm soát màn hình của bạn với <ph name="HELPER_NAME" /> qua Trợ giúp từ xa.</translation>
+<translation id="4424159417645388645">Không gian làm việc 5</translation>
 <translation id="4427613789487709312">Mặc định (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Âm lượng</translation>
 <translation id="4450893287417543264">Không hiển thị lại</translation>
@@ -511,7 +514,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5691772641933328258">Không nhận dạng được vân tay</translation>
 <translation id="5710450975648804523">Chế độ Không làm phiền đang bật</translation>
 <translation id="573413375004481890">Thiết bị này không thể hỗ trợ tất cả màn hình của bạn nên một màn hình đã bị ngắt kết nối</translation>
-<translation id="5740328398383587084">Chia sẻ lân cận</translation>
 <translation id="574392208103952083">Trung bình</translation>
 <translation id="5744083938413354016">Kéo nhấn</translation>
 <translation id="5745612484876805746">Chế độ Ánh sáng đêm sẽ tự động bật khi trời tối</translation>
@@ -649,6 +651,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="698231206551913481">Tất cả các tệp và dữ liệu cục bộ liên quan tới người dùng này sẽ bị xóa vĩnh viễn sau khi người dùng này bị xóa.</translation>
 <translation id="7007983414944123363">Hệ thống chưa xác minh được mã PIN hoặc mật khẩu của bạn. Hãy thử lại.</translation>
 <translation id="7015766095477679451">Quay lại lúc <ph name="COME_BACK_TIME" />.</translation>
+<translation id="70168403932084660">Không gian làm việc 6</translation>
 <translation id="7025533177575372252">Kết nối <ph name="DEVICE_NAME" /> với điện thoại của bạn</translation>
 <translation id="7026338066939101231">Giảm dần</translation>
 <translation id="7029814467594812963">Thoát khỏi phiên</translation>

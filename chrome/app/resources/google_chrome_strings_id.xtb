@@ -172,7 +172,7 @@
 <translation id="573759479754913123">Tentang Chrome OS</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Tidak dapat meluncurkan Chrome. Harap coba lagi.</translation>
-<translation id="5851757216820085940">Jika memiliki beberapa Akun Google, Anda dapat menambahkannya ke <ph name="DEVICE_TYPE" />. Akun Anda akan tersedia di browser Chrome dan Play Store, serta berbagai layanan seperti Gmail, Drive, dan YouTube.<ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="5851757216820085940">Jika memiliki beberapa Akun Google, Anda dapat menambahkannya ke <ph name="DEVICE_TYPE" />. Akun Anda akan tersedia di browser Chrome dan Play Store, serta berbagai layanan seperti Gmail, Drive, dan YouTube. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5867197326698922595">Google Chrome mencoba mengedit sandi.</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Login Jaringan</translation>
@@ -255,7 +255,7 @@
 <translation id="8498858610309223613">Update keamanan khusus untuk Google Chrome baru saja diterapkan. Mulai ulang Google Chrome sekarang dan kami akan memulihkan tab Anda.</translation>
 <translation id="8521348052903287641">Inbound rule untuk Google Chrome Dev guna mengizinkan traffic mDNS.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8550334526674375523">Profil kerja ini sepenuhnya dipisahkan dari profil pribadi Anda.</translation>
+<translation id="8550334526674375523">Profil kerja ini sama sekali terpisah dari profil pribadi Anda.</translation>
 <translation id="8556340503434111824">Tersedia versi Google Chrome yang baru, dan versi ini lebih cepat dari sebelumnya.</translation>
 <translation id="861359755029082151">Rosetta memungkinkan Chrome memutar media yang dilindungi di halaman ini.</translation>
 <translation id="8614913330719544658">Google Chrome tidak merespons. Luncurkan ulang sekarang?</translation>

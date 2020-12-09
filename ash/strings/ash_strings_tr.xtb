@@ -135,6 +135,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2208323208084708176">Birleştirilmiş masaüstü modu</translation>
 <translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2222338659135520253">Oturum açılması gerekiyor</translation>
+<translation id="2222841058024245321">Masa 7</translation>
 <translation id="225680501294068881">Cihazlar taranıyor...</translation>
 <translation id="2268130516524549846">Bluetooth devre dışı</translation>
 <translation id="2268813581635650749">Tüm oturumları kapat</translation>
@@ -182,6 +183,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2658778018866295321">Tıkla ve sürükle</translation>
 <translation id="2678852583403169292">Seç ve Dinle menüsü</translation>
+<translation id="2689613560355655046">Masa 8</translation>
 <translation id="2700493154570097719">Klavyenizi ayarlayın</translation>
 <translation id="2704781753052663061">Başka kablosuz ağlara katıl</translation>
 <translation id="2705001408393684014">Mikrofonu aç/kapat. <ph name="STATE_TEXT" /></translation>
@@ -374,6 +376,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4389184120735010762">Yerleştirilmiş büyüteç klavye kısayoluna bastınız. Bu özelliği açmak istiyor musunuz?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> özelliği kapalı.</translation>
 <translation id="4421231901400348175">Ekranınızın kontrolü, Uzaktan Yardım kullanılarak <ph name="HELPER_NAME" /> ile paylaşılıyor.</translation>
+<translation id="4424159417645388645">Masa 5</translation>
 <translation id="4427613789487709312">Varsayılan (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Ses</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
@@ -511,7 +514,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5691772641933328258">Parmak izi tanınmadı</translation>
 <translation id="5710450975648804523">Rahatsız Etmeyin modu açık</translation>
 <translation id="573413375004481890">Bu cihaz tüm ekranlarınızı destekleyemediği için bir tanesinin bağlantısı kesildi</translation>
-<translation id="5740328398383587084">Yakındakilerle Paylaş</translation>
 <translation id="574392208103952083">Orta</translation>
 <translation id="5744083938413354016">Dokunarak sürükleme</translation>
 <translation id="5745612484876805746">Gece Işığı güneş battığında otomatik olarak açılır</translation>
@@ -650,6 +652,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="698231206551913481">Bu kullanıcıyla ilişkilendirilen tüm dosyalar ve yerel veriler, bu kullanıcı kaldırıldıktan sonra kalıcı olarak silinir.</translation>
 <translation id="7007983414944123363">PIN'iniz veya şifreniz doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="7015766095477679451">Saat <ph name="COME_BACK_TIME" /> olduğunda geri gelin.</translation>
+<translation id="70168403932084660">Masa 6</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> cihazınızı telefonunuza bağlayın</translation>
 <translation id="7026338066939101231">Azalt</translation>
 <translation id="7029814467594812963">Oturumdan çık</translation>

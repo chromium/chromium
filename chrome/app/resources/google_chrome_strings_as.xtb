@@ -168,6 +168,8 @@
 Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্ধাৰ কৰিবলৈ সক্ষম নহ'ল।</translation>
 <translation id="556024056938947818">Google Chromeএ পাছৱর্ডসমূহ দেখুৱাবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5655746611259367388">আপুনি এইটো আৰু <ph name="USER_NAME" />ৰ বাবে যোগ দিয়া অন্য Google একাউণ্টসমূহ <ph name="LINK_BEGIN" />ছেটিঙ<ph name="LINK_END" />ত একে ঠাইৰ পৰাই পৰিচালনা কৰিব পাৰে।
+          Chrome ব্ৰাউজাৰত ৱেবছাইট আৰু Google Playৰ এপ্‌সমূহত আপুনি প্ৰদান কৰা অনুমতিসমূহ আটাইবোৰ একাউণ্টত প্ৰযোজ্য হ’ব পাৰে।</translation>
 <translation id="5657226924540934362">এই পৃষ্ঠাখনত যদি কোনোটো ছেটিং দেখা পোৱা নাযায়, তেন্তে আপোনাৰ <ph name="LINK_BEGIN" />
     Chrome ব্ৰাউজাৰৰ ছেটিংসমূহ<ph name="LINK_END" />ত চাওক</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ক্ষতিকাৰক হ'ব পাৰে বাবে Chromiumএ ইয়াক অৱৰোধ কৰিছে</translation>

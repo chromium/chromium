@@ -273,6 +273,7 @@
 <translation id="1302139669997477151">స్క్రీన్‌షాట్ బ్లాక్ చేయబడింది</translation>
 <translation id="1302227299132585524">Apple ఈవెంట్‌ల నుండి JavaScriptని అనుమతించు</translation>
 <translation id="1303101771013849280">HTML ఫైల్‌ని బుక్‌మార్క్ చేస్తుంది</translation>
+<translation id="1303178898338186101">Google Playను చేరుకోవడం సాధ్యపడలేదు. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="1303671224831497365">బ్లూటూత్ పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="130491383855577612">Linux యాప్‌లు, ఫైల్‌లు విజయంతంగా భర్తీ చేయబడ్డాయి</translation>
 <translation id="1306606229401759371">సెట్టింగ్‌లను మార్చు</translation>
@@ -783,7 +784,6 @@
 <translation id="1854180393107901205">ప్రసారాన్ని ఆపివేయి</translation>
 <translation id="1856715684130786728">స్థానాన్ని జోడించు...</translation>
 <translation id="1858585891038687145">సాఫ్ట్‌వేర్ రూపకర్తలను గుర్తించడం కోసం ఈ ప్రమాణపత్రాన్ని విశ్వసిస్తుంది</translation>
-<translation id="1860346308203060432">పరికరం విజిబిలిటీని చూడండి</translation>
 <translation id="1861262398884155592">ఈ ఫోల్డర్ ఖాళీగా ఉంది</translation>
 <translation id="1863182668524159459">సీరియల్ పోర్ట్‌లు కనుగొనబడలేదు</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />"లో మాల్‌వేర్ ఉంది అందువల్లే డిజేబుల్ చేయబడింది</translation>
@@ -2138,12 +2138,14 @@
 <translation id="343578350365773421">కాగితం లేదు</translation>
 <translation id="3435896845095436175">ప్రారంభించండి</translation>
 <translation id="3438633801274389918">నింజా</translation>
+<translation id="3438643033528947620">Google సర్వీస్‌లతో కనెక్ట్ చేయడం సాధ్యం కాలేదు. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">మీ మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి <ph name="HOST" />ని ఎల్లప్పుడూ అనుమతించండి</translation>
 <translation id="3439970425423980614">PDFను ప్రివ్యూలో తెరుస్తోంది</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="3441653493275994384">స్క్రీన్</translation>
 <translation id="3441663102605358937">ఈ ఖాతాను వెరిఫై చేయడానికి, <ph name="ACCOUNT" />కు మళ్లీ సైన్ ఇన్ చేయండి</translation>
 <translation id="3445047461171030979">Google Assistant త్వరిత సమాధానాలు</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> నిమి</translation>
 <translation id="3445925074670675829">USB-C పరికరం</translation>
 <translation id="3446274660183028131">Windowsను ఇన్‌స్టాల్ చేయడానికి, దయచేసి parallels desktopను ప్రారంభించండి.</translation>
 <translation id="344630545793878684">అనేక వెబ్‌సైట్‌ల్లోని మీ డేటాను చదవండి</translation>
@@ -2318,7 +2320,6 @@
 <translation id="3635353578505343390">Googleకు ఫీడ్‌బ్యాక్‌ పంపండి</translation>
 <translation id="3635960017746711110">Crostini USB ప్రాధాన్యతలు</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> మిగిలి ఉంది</translation>
-<translation id="3637682276779847508">మీరు సరైన PIN అన్‌లాక్ కీని నమోదు చేయకపోతే, మీ SIM కార్డ్ శాశ్వతంగా నిలిపివేయబడుతుంది.</translation>
 <translation id="3639220004740062347">రీడర్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> కోసం "<ph name="EXTENSION_NAME" />"ని జోడించాలా?</translation>
 <translation id="3640613767643722554">మీ వాయిస్‌ను గుర్తించేలా అసిస్టెంట్‌కు తగిన శిక్షణ ఇవ్వండి</translation>
@@ -3329,6 +3330,7 @@
 <translation id="4848518990323155912">SIM కార్డ్ లాకింగ్‌ను ప్రారంభించు (మొబైల్ డేటాను వినియోగించడానికి PIN అవసరం)</translation>
 <translation id="4849286518551984791">నిర్దేశాంక విశ్వవ్యాప్త సమయం (UTC/GMT)</translation>
 <translation id="4849517651082200438">ఇన్‌స్టాల్ చేయ‌వ‌ద్దు</translation>
+<translation id="485053257961878904">నోటిఫికేషన్‌లను సింక్ చేయడాన్ని సెటప్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="4850886885716139402">వీక్షణ</translation>
 <translation id="485088796993065002">మ్యూజిక్, వీడియో, ఇతర మీడియాకు ఆడియోను అందించడానికి సైట్‌లు శబ్దాన్ని ప్లే చేయవచ్చు</translation>
 <translation id="4853020600495124913">&amp;కొత్త విండోలో తెరువు</translation>
@@ -3416,6 +3418,7 @@
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="4933484234309072027"><ph name="URL" />లో పొందుపరచబడింది</translation>
 <translation id="493571969993549666">పర్యవేక్షించబడే వినియోగదారును జోడించు</translation>
+<translation id="4936042273057045735">వర్క్ ప్రొఫైల్ ఉన్న ఫోన్‌లలో నోటిఫికేషన్ సింకింగ్‌కు సపోర్ట్ ఉండదు</translation>
 <translation id="4939805055470675027"><ph name="CARRIER_NAME" />కు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="4940364377601827259">సేవ్ చేయాల్సిన <ph name="PRINTER_COUNT" /> ప్రింటర్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="4940845626435830013">డిస్క్ పరిమాణాన్ని రిజర్వ్ చేయండి</translation>
@@ -3474,7 +3477,6 @@
 <translation id="5017828934289857214">నాకు తర్వాత గుర్తు చేయి</translation>
 <translation id="5018207570537526145">ఎక్స్‌టెన్ష‌న్‌ వెబ్‌సైట్‌ను తెరవండి</translation>
 <translation id="5018526990965779848">వినియోగం &amp; విశ్లేషణల డేటాను పంపండి. సమస్య విశ్లేషణ, పరికరం, యాప్ వినియోగ డేటాను Googleకు ఆటోమేటిక్‌గా పంపడం ద్వారా మీ Android అనుభవాన్ని మెరుగుపరచడంలో సహాయపడండి. ఇది సిస్టమ్, యాప్ స్థిరత్వానికి, అలాగే ఇతర మెరుగుదలలకు సహాయపడుతుంది. కొంత ఏకీకృత డేటా కూడా Google యాప్‌లకు, Android డెవలపర్‌ల లాంటి భాగస్వాములకు సహాయపడుతుంది. మీ అదనపు వెబ్ &amp; యాప్ కార్యకలాపం సెట్టింగ్‌ను ఆన్ చేసినట్లయితే, ఈ డేటా మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు.</translation>
-<translation id="5019392775062123007"><ph name="DEVICE_NAME" />గా సమీపంలోని పరికరాలకు కనిపిస్తుంది</translation>
 <translation id="5021750053540820849">ఇంకా అప్‌డేట్ చేయలేదు</translation>
 <translation id="5026806129670917316">Wi‑Fiని ఆన్ చేయండి</translation>
 <translation id="5026874946691314267">దీన్ని మళ్లీ చూపవద్దు</translation>
@@ -3710,7 +3712,6 @@
 <translation id="5301954838959518834">సరే, అర్థమైంది</translation>
 <translation id="5302048478445481009">భాష</translation>
 <translation id="5302932258331363306">ప్రత్యామ్నాయాలను చూపు</translation>
-<translation id="5304276686222516262">కాంటాక్ట్ లిస్ట్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. దయచేసి మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేయండి, లేదా &lt;a href="#" id="tryAgainLink"&gt;మళ్లీ ట్రై చేయండి&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">ఈ ఖాతాను <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="5305688511332277257">ఏవి వ్యవస్థాపించబడలేదు</translation>
 <translation id="5307030433605830021">మూలాధారానికి మద్దతు లేదు</translation>
@@ -4065,7 +4066,6 @@
 <translation id="5708171344853220004">Microsoft ప్రధాన పేరు</translation>
 <translation id="5709557627224531708">Chromeని మీ డిఫాల్ట్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="5711983031544731014">అన్‌లాక్ చేయడం సాధ్యపడలేదు. మీ పాస్‌వర్డ్‌ను నమోదు చేయండి.</translation>
-<translation id="5713723565110096165">పిన్ తప్పు. మిగిలి ఉన్న పునఃప్రయత్నాల సంఖ్య: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">ప్లగ్ఇన్‌ బ్రోకర్: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">డిఫాల్ట్ శోధన ఇంజిన్‌లు</translation>
 <translation id="5720705177508910913">ప్రస్తుత వినియోగదారు</translation>
@@ -4317,7 +4317,6 @@
 <translation id="6011074160056912900">ఈథర్‌నెట్ నెట్‌వర్క్</translation>
 <translation id="6011193465932186973">వేలిముద్ర</translation>
 <translation id="6011449291337289699">సైట్ డేటాను తీసివేయండి</translation>
-<translation id="6015266928248016057">PUK చెల్లదు. మిగిలి ఉన్న పునఃప్రయత్నాల సంఖ్య: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">సంవత్సరం</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్‌కు నావిగేట్ చేయండి</translation>
 <translation id="6016551720757758985">మునుపటి వెర్షన్‌కు తిరిగి మార్చేలా చేసే పవర్‌వాష్‌ను నిర్ధారించండి</translation>
@@ -4728,6 +4727,7 @@
 <translation id="6474498546677193336">ఒక యాప్ ఈ ఫోల్డర్‌ను ఉపయోగిస్తోంది కాబట్టి షేరింగ్‌ను తీసివేయలేకపోయాము. Linux మళ్లీ షట్ డౌన్ అయినప్పుడు ఫోల్డర్ షేరింగ్ తీసివేయబడుతుంది.</translation>
 <translation id="6474884162850599008">Google డిస్క్ ఖాతాను డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> మీ స్క్రీన్‌పై ఉన్న కంటెంట్‌లను షేర్ చేయాలనుకుంటోంది. మీరు ఏవేవి షేర్ చేయాలనుకుంటున్నారో ఎంచుకోండి.</translation>
+<translation id="6477822444490674459">వర్క్ ప్రొఫైల్ ఉన్న ఫోన్‌లలో నోటిఫికేషన్ సింకింగ్‌కు సపోర్ట్ ఉండదు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">అపాయకరమైన ఫైల్‌ను ఉంచాలా?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది</translation>
 <translation id="6483485061007832714">డౌన్‌లోడ్ చేసినది తెరువు</translation>
@@ -5041,9 +5041,11 @@
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="6856623341093082836">మీ టచ్‌స్క్రీన్ ఖచ్చితత్వాన్ని సెటప్ చేసి సర్దుబాటు చేయండి</translation>
 <translation id="6857699260879628349">కాన్ఫిగరేషన్ సమాచారాన్ని పొందండి</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> సెక</translation>
 <translation id="6860097299815761905">ప్రాక్సీ సెట్టింగ్‌లు...</translation>
 <translation id="686022878923628150">MIDI పరికరాలకు కనెక్ట్ చేయనివ్వకుండా సైట్‌లను బ్లాక్ చేయండి</translation>
 <translation id="6860427144121307915">ట్యాబ్‌లో తెరువు</translation>
+<translation id="6862729829592030773">మీ డేటాను బ్యాకప్ చేసి, <ph name="DEVICE_TYPE" />ను తిరిగి <ph name="MANAGER" />కు 1 వారంలోగా అందించాలి.<ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">పాస్‌వర్డ్‌ను తొలగించాలా?</translation>
 <translation id="6865313869410766144">ఆటో-ఫిల్ ఫారమ్ డేటా</translation>
 <translation id="6865598234501509159">పేజీ <ph name="LANGUAGE" />లో లేదు</translation>
@@ -5127,6 +5129,7 @@
 <translation id="696103774840402661">ఈ <ph name="DEVICE_TYPE" />లో యూజర్‌లందరికీ సంబంధించిన అన్ని ఫైల్‌లు, లోకల్ డేటా శాశ్వతంగా తొలగించబడ్డాయి.</translation>
 <translation id="6964390816189577014">వీరుడు</translation>
 <translation id="6964760285928603117">గుంపు నుండి తీసివేయి</translation>
+<translation id="6964828938462185925">{NUM_DAYS,plural, =1{మీ డేటాను బ్యాకప్ చేసి, <ph name="DEVICE_TYPE" />ను తిరిగి <ph name="MANAGER" />కు ఈరోజే తిరిగి ఇవ్వాల్సి ఉంటుంది.<ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}other{మీ డేటాను బ్యాకప్ చేసి, <ph name="DEVICE_TYPE" />ను తిరిగి <ph name="MANAGER" />కు {NUM_DAYS}లోపు తిరిగి ఇవ్వాల్సి ఉంటుంది.<ph name="LINK_BEGIN" />వివరాలను చూడండి<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6965648386495488594">పోర్ట్</translation>
 <translation id="6965978654500191972">పరికరం</translation>
@@ -5216,6 +5219,7 @@
 <translation id="7051943809462976355">మౌస్ కోసం వెతుకుతోంది...</translation>
 <translation id="7052237160939977163">పనితీరు గుర్తింపు డేటాను పంపు</translation>
 <translation id="7053983685419859001">నిరోధించు</translation>
+<translation id="705508001219706572">ఇక్కడికి త్వరగా తిరిగి రావడానికి, <ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="7055152154916055070">మళ్లింపు బ్లాక్ చేయబడింది:</translation>
 <translation id="7055451306017383754">ఒక యాప్ ఈ ఫోల్డర్‌ను ఉపయోగిస్తుంది కాబట్టి షేరింగ్‌ను తీసివేయడం సాధ్యపడలేదు. Parallels Desktop మళ్లీ షట్ డౌన్ అయినప్పుడు ఫోల్డర్ షేరింగ్ తీసివేయబడుతుంది.</translation>
 <translation id="7056526158851679338">&amp;పరికరాలను పర్యవేక్షించు</translation>
@@ -6342,7 +6346,6 @@
 <translation id="8339059274628563283"><ph name="SITE" /> స్థానికంగా నిల్వ చేసిన డేటా</translation>
 <translation id="833986336429795709">ఈ లింక్‌ను తెరవడానికి, ఒక యాప్‌ను ఎంచుకోండి</translation>
 <translation id="8342861492835240085">సేకరణను ఎంచుకోండి</translation>
-<translation id="834290227245955730">పిన్ చెల్లదు. మిగిలి ఉన్న పునఃప్రయత్నాల సంఖ్య: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="8350789879725387295">డాక్‌లో స్టైలస్ టూల్స్</translation>
 <translation id="8351316842353540018">ఎల్లప్పుడూ a11y ఆప్షన్‌లను చూపించు</translation>
@@ -6465,7 +6468,6 @@
 <translation id="8497219075884839166">Windows వినియోగాలు</translation>
 <translation id="8498214519255567734">కాంతి తక్కువగా ఉన్నప్పుడు మీ స్క్రీన్‌ని చూడటం లేదా చదవడాన్ని సులభతరం చేస్తుంది</translation>
 <translation id="8498395510292172881">Chromeలో చదవడం కొనసాగించండి</translation>
-<translation id="8500234928660943538">PUK తప్పు. మిగిలి ఉన్న పునఃప్రయత్నాల సంఖ్య: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Google Play నుండి యాప్‌లను ఉపయోగించడానికి, మీరు మొదట మీ యాప్‌లను పునరుద్ధరించాలి. ఆ యాప్‌లు కొంత డేటాను కోల్పోయి ఉండవచ్చు.</translation>
 <translation id="850314194061055138">కెమెరాను మళ్లీ ఉపయోగించండి</translation>
 <translation id="8503813439785031346">యూజర్‌పేరు</translation>

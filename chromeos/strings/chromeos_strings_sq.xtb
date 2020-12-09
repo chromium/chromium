@@ -36,6 +36,7 @@
 <translation id="1947737735496445907">Printuar</translation>
 <translation id="1979103255016296513">Afati i ndryshimit të fjalëkalimit ka kaluar</translation>
 <translation id="1980044825731880088">Shpejtësia e njësisë CPU</translation>
+<translation id="2008685064673031089">Kërkimi kryesor</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
@@ -44,6 +45,7 @@
 <translation id="2364498172489649528">Kaloi</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> përpjekje të mbetura</translation>
 <translation id="2391082728065870591">Dërgo raportin e komenteve</translation>
+<translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
 <translation id="2461822463642141190">Rryma</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Skano</translation>
@@ -52,6 +54,7 @@
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
+<translation id="2878387241690264070">U shkarkua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
 <translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -112,9 +115,11 @@
 <translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
 <translation id="4848429997038228357">NË EKZEKUTIM</translation>
 <translation id="4890353053343094602">Zgjidh një të re menjëherë</translation>
+<translation id="4891842000192098784">Tensioni</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
 <translation id="4921665434385737356">U karikua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
 <translation id="500920857929044050">Ndalo testin</translation>
 <translation id="5154917547274118687">Memoria</translation>
@@ -137,6 +142,7 @@
 <translation id="5551702563755460533">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="5635169860413004179">Shiko raportin</translation>
 <translation id="5719918614880940190">Kjo mat përdorimin e CPU-së dhe është një përmbledhje e të gjitha të dhënave kryesore</translation>
+<translation id="5781694279199921985">Ruaj evidencën e sesionit</translation>
 <translation id="5797428682393400134">ME SUKSES</translation>
 <translation id="5832805196449965646">Shto person</translation>
 <translation id="5895138241574237353">Rinis</translation>
@@ -173,6 +179,8 @@
 <translation id="6766275201586212568">Rezolucione të dështuara të DNS-së</translation>
 <translation id="6768237774506518020">Normë e lartë e rezolucioneve të dështuara të DNS-së</translation>
 <translation id="6839141349259399400">Nuk mund të lidhesh me skanerët?</translation>
+<translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
+<translation id="6898743098396957679">Skanimi nuk mund të përfundohej</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="714876143603641390">Lidhshmëria e LAN-it</translation>
 <translation id="7162487448488904999">Galeria</translation>
@@ -185,12 +193,15 @@
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
+<translation id="773153675489693198">Numri i cikleve</translation>
 <translation id="7732651821766520760">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7855434858642800953">Skedari i skanuar u ruajt!</translation>
 <translation id="7928373994957558460">Shfaq vendndodhjen e skedarit</translation>
 <translation id="7936303884198020182">Nuk u gjetën serverë DNS</translation>
+<translation id="7960831585769876809">Temperatura</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
+<translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">Vendose dokumentin tënd në skaner dhe zgjidh <ph name="SPAN_BEGIN" />Skano<ph name="SPAN_END" /> për të filluar</translation>
@@ -218,6 +229,7 @@
 <translation id="8919837981463578619">Dështoi - Tabakaja mungon</translation>
 <translation id="8928727111548978589">Dështoi - Nuk ka letër</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> përpjekje të mbetura</translation>
+<translation id="8968751544471797276">Shpejtësia e karikimit</translation>
 <translation id="8970109610781093811">Ekzekuto përsëri</translation>
 <translation id="9088306295921699330">Përdorimi aktual</translation>
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>

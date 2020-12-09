@@ -273,6 +273,7 @@
 <translation id="1302139669997477151">スクリーンショットはブロックされています</translation>
 <translation id="1302227299132585524">Apple Events からの JavaScript を許可</translation>
 <translation id="1303101771013849280">HTML ファイルをブックマークに登録</translation>
+<translation id="1303178898338186101">Google Play に接続できませんでした。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="1303671224831497365">Bluetooth デバイスが見つかりませんでした</translation>
 <translation id="130491383855577612">Linux のアプリとファイルが正常に置き換えられました</translation>
 <translation id="1306606229401759371">設定を変更</translation>
@@ -635,7 +636,7 @@
 <translation id="1688935057616748272">文字を入力してください</translation>
 <translation id="168991973552362966">近くのプリンタを追加</translation>
 <translation id="1689945336726856614">URL をコピー(&amp;U)</translation>
-<translation id="1690248886740053041">モバイル ネットワークに接続できません。技術サポートについては、ご利用の携帯通信会社にお問い合わせください。</translation>
+<translation id="1690248886740053041">モバイル ネットワークに接続できません。テクニカル サポートについては、ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="1692115862433274081">別のアカウントを使用</translation>
 <translation id="1692118695553449118">同期は有効です</translation>
 <translation id="1692210323591458290">暗い紫</translation>
@@ -783,7 +784,6 @@
 <translation id="1854180393107901205">キャストを停止</translation>
 <translation id="1856715684130786728">位置情報を追加...</translation>
 <translation id="1858585891038687145">ソフトウェア作成元の識別でこの証明書を信頼します</translation>
-<translation id="1860346308203060432">デバイスの公開設定を表示</translation>
 <translation id="1861262398884155592">このフォルダは空です</translation>
 <translation id="1863182668524159459">シリアルポートが見つかりません</translation>
 <translation id="1863316578636157783">「<ph name="EXTENSION_NAME" />」はマルウェアが含まれるため無効になっています</translation>
@@ -1577,7 +1577,7 @@
 <translation id="2770465223704140727">リストから削除</translation>
 <translation id="2770690685823456775">パスワードを別のフォルダにエクスポートしてください</translation>
 <translation id="2770929488047004208">モニターの解像度</translation>
-<translation id="2770954829020464827">画面の共有中は詳細を表示しません</translation>
+<translation id="2770954829020464827">画面の共有中は詳細が表示されません</translation>
 <translation id="2771268254788431918">モバイルデータ有効</translation>
 <translation id="2771816809568414714">チーズ</translation>
 <translation id="2772936498786524345">スニーキー</translation>
@@ -2139,12 +2139,14 @@
 <translation id="343578350365773421">用紙がありません</translation>
 <translation id="3435896845095436175">有効にする</translation>
 <translation id="3438633801274389918">忍者</translation>
+<translation id="3438643033528947620">Google サービスに接続できませんでした。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> によるマイクへのアクセスを常に許可する</translation>
 <translation id="3439970425423980614">PDF をプレビューしています</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> に対するその他の操作</translation>
 <translation id="3441653493275994384">画面</translation>
 <translation id="3441663102605358937">もう一度 <ph name="ACCOUNT" /> にログインしてこのアカウントの確認を行ってください</translation>
 <translation id="3445047461171030979">Google アシスタントのクイック アンサー</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
 <translation id="3446274660183028131">Windows をインストールするには Parallels Desktop を起動してください。</translation>
 <translation id="344630545793878684">多数のウェブサイトでのユーザーデータの読み取り</translation>
@@ -2319,7 +2321,6 @@
 <translation id="3635353578505343390">Google にフィードバックを送信</translation>
 <translation id="3635960017746711110">Crostini の USB 設定</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - 残り <ph name="TIME" /></translation>
-<translation id="3637682276779847508">正しい PIN ロック解除キーを入力できない場合、SIM カードは永久的に無効になります。</translation>
 <translation id="3639220004740062347">リーダーモードを終了</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> さんのアイテムとして「<ph name="EXTENSION_NAME" />」を追加しますか？</translation>
 <translation id="3640613767643722554">アシスタントに声を認識させましょう</translation>
@@ -3333,6 +3334,7 @@
 <translation id="4848518990323155912">SIM カードのロックを有効にする（モバイルデータの使用には PIN 入力が必要）</translation>
 <translation id="4849286518551984791">協定世界時（UTC / GMT）</translation>
 <translation id="4849517651082200438">インストールしない</translation>
+<translation id="485053257961878904">通知の同期を設定できませんでした</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="485088796993065002">音楽や動画などのメディアの音声を再生するサイトもあります。</translation>
 <translation id="4853020600495124913">新しいウィンドウで開く(&amp;N)</translation>
@@ -3420,6 +3422,7 @@
 <translation id="4932733599132424254">日付</translation>
 <translation id="4933484234309072027"><ph name="URL" /> に埋め込まれたページ</translation>
 <translation id="493571969993549666">監視対象ユーザーを追加</translation>
+<translation id="4936042273057045735">通知の同期は、仕事用プロファイルが設定されているスマートフォンには対応していません</translation>
 <translation id="4939805055470675027"><ph name="CARRIER_NAME" /> に接続できませんでした</translation>
 <translation id="4940364377601827259">保存できるプリンタが <ph name="PRINTER_COUNT" /> 件あります。</translation>
 <translation id="4940845626435830013">ディスクサイズを予約</translation>
@@ -3478,7 +3481,6 @@
 <translation id="5017828934289857214">後で通知する</translation>
 <translation id="5018207570537526145">拡張機能のウェブサイトを開く</translation>
 <translation id="5018526990965779848">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
-<translation id="5019392775062123007">付近のデバイスに「<ph name="DEVICE_NAME" />」として表示されています</translation>
 <translation id="5021750053540820849">まだ更新されていません</translation>
 <translation id="5026806129670917316">Wi-Fi をオンにする</translation>
 <translation id="5026874946691314267">今後このメッセージを表示しない</translation>
@@ -3714,7 +3716,6 @@
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">言語</translation>
 <translation id="5302932258331363306">置換するテキストを表示</translation>
-<translation id="5304276686222516262">連絡先リストをダウンロードできませんでした。ネットワーク接続を確認するか、&lt;a href="#" id="tryAgainLink"&gt;もう一度お試しください&lt;/a&gt;。</translation>
 <translation id="5305145881844743843">このアカウントは <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> によって管理されています</translation>
 <translation id="5305688511332277257">インストールされていません</translation>
 <translation id="5307030433605830021">サポートされていないソースです</translation>
@@ -4070,7 +4071,6 @@
 <translation id="5708171344853220004">Microsoft プリンシパル名</translation>
 <translation id="5709557627224531708">Chrome を既定のブラウザに設定する</translation>
 <translation id="5711983031544731014">ロックを解除できません。パスワードを入力してください。</translation>
-<translation id="5713723565110096165">PIN が正しくありません。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="5715711091495208045">プラグイン ブローカー: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">既定の検索エンジン</translation>
 <translation id="5720705177508910913">現在のユーザー</translation>
@@ -4322,7 +4322,6 @@
 <translation id="6011074160056912900">イーサネット ネットワーク</translation>
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011449291337289699">サイトデータの削除</translation>
-<translation id="6015266928248016057">無効な PUK です。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6016178549409952427">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目に移動します</translation>
 <translation id="6016551720757758985">Powerwash を実行して以前のバージョンに戻すことを確認</translation>
@@ -4733,6 +4732,7 @@
 <translation id="6474498546677193336">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Linux をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="6474884162850599008">Google ドライブ アカウントを切断する</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" /> が画面コンテンツの共有をリクエストしています。共有する部分を選択してください。</translation>
+<translation id="6477822444490674459">通知の同期は、仕事用プロファイルが設定されているスマートフォンには対応していません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">危険なファイルを保存しますか？</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> によって管理されています</translation>
 <translation id="6483485061007832714">ダウンロードしたファイルを開く</translation>
@@ -5046,9 +5046,11 @@
 <translation id="6856459657722366306"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="6856623341093082836">タッチスクリーンをを設定し、精度を調整します</translation>
 <translation id="6857699260879628349">設定情報を取得</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">プロキシの設定...</translation>
 <translation id="686022878923628150">サイトが MIDI デバイスに接続できないようにする</translation>
 <translation id="6860427144121307915">タブで開く</translation>
+<translation id="6862729829592030773"><ph name="MANAGER" /> が、データをバックアップして、1 週間以内にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">パスワードを削除しますか？</translation>
 <translation id="6865313869410766144">自動入力フォームのデータ</translation>
 <translation id="6865598234501509159"><ph name="LANGUAGE" />のページではない場合</translation>
@@ -5132,6 +5134,7 @@
 <translation id="696103774840402661">この <ph name="DEVICE_TYPE" /> にあるすべてのユーザーのファイルとローカルデータをすべて完全に削除しました。</translation>
 <translation id="6964390816189577014">ヒーロー</translation>
 <translation id="6964760285928603117">グループから削除</translation>
+<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}other{<ph name="MANAGER" /> が、データをバックアップして、{NUM_DAYS} 日以内にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965648386495488594">ポート</translation>
 <translation id="6965978654500191972">デバイス</translation>
@@ -5221,6 +5224,7 @@
 <translation id="7051943809462976355">マウスを探しています...</translation>
 <translation id="7052237160939977163">パフォーマンス追跡データを送信する</translation>
 <translation id="7053983685419859001">ブロック</translation>
+<translation id="705508001219706572">このページにすぐにアクセスできるようにするには、<ph name="APP_NAME" /> をインストールしてください</translation>
 <translation id="7055152154916055070">リダイレクトがブロックされました</translation>
 <translation id="7055451306017383754">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Parallels Desktop をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="7056526158851679338">デバイスを検証(&amp;I)</translation>
@@ -5287,7 +5291,7 @@
 <translation id="7121362699166175603">アドレスバーの履歴とオートコンプリートを削除します。お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="7121438501124788993">デベロッパー モード</translation>
 <translation id="7121728544325372695">スマート ダッシュ</translation>
-<translation id="7122353087820324370">アプリと OS の設定は予備のアカウントには同期されません。</translation>
+<translation id="7122353087820324370">アプリと Chrome OS の設定は予備のアカウントには同期されません。</translation>
 <translation id="7123030151043029868">複数のファイルの自動ダウンロードを許可するサイト</translation>
 <translation id="7123360114020465152">サポートが終了しています</translation>
 <translation id="7125148293026877011">Crostini を削除</translation>
@@ -5767,7 +5771,7 @@
 <translation id="7691077781194517083">このセキュリティ キーをリセットできません。エラー <ph name="ERROR_CODE" />。</translation>
 <translation id="7691698019618282776">Crostini のアップグレード</translation>
 <translation id="7696063401938172191">「<ph name="PHONE_NAME" />」で次の操作を行います。</translation>
-<translation id="7697166915480294040">画面の共有中は詳細を表示しません</translation>
+<translation id="7697166915480294040">画面の共有中は詳細が表示されません</translation>
 <translation id="7697598343108519171">カメラを使用して QR コードをスキャンする</translation>
 <translation id="7699968112832915395">アカウントを追加できません</translation>
 <translation id="7701040980221191251">なし</translation>
@@ -6353,7 +6357,6 @@
 <translation id="8339059274628563283"><ph name="SITE" /> によりデータがローカルに保存されました</translation>
 <translation id="833986336429795709">このリンクを開くにはアプリを選択します</translation>
 <translation id="8342861492835240085">コレクションを選択</translation>
-<translation id="834290227245955730">無効な PIN です。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="8350789879725387295">Dock のタッチペン ツール</translation>
 <translation id="8351316842353540018">ユーザー補助設定オプションを常に表示する</translation>
@@ -6476,7 +6479,6 @@
 <translation id="8497219075884839166">Windows ユーティリティ</translation>
 <translation id="8498214519255567734">薄明かりの下でも画面を見やすくします</translation>
 <translation id="8498395510292172881">Chrome で続きを読む</translation>
-<translation id="8500234928660943538">PUK が正しくありません。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8502536196501630039">Google Play のアプリを使用するには、まずアプリを復元する必要があります。一部のデータは失われている可能性があります。</translation>
 <translation id="850314194061055138">もう一度カメラを使用する</translation>
 <translation id="8503813439785031346">ユーザー名</translation>

@@ -784,7 +784,6 @@
 <translation id="1854180393107901205">Casten stoppen</translation>
 <translation id="1856715684130786728">Locatie toevoegen...</translation>
 <translation id="1858585891038687145">Dit certificaat vertrouwen voor het identificeren van softwareontwikkelaars</translation>
-<translation id="1860346308203060432">Zichtbaarheid van apparaat bekijken</translation>
 <translation id="1861262398884155592">Deze map is leeg</translation>
 <translation id="1863182668524159459">Geen seriële poorten gevonden</translation>
 <translation id="1863316578636157783"><ph name="EXTENSION_NAME" /> is uitgeschakeld omdat deze extensie malware bevat</translation>
@@ -2147,6 +2146,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3441653493275994384">Beeldscherm</translation>
 <translation id="3441663102605358937">Log opnieuw in op <ph name="ACCOUNT" /> om dit account te verifiëren</translation>
 <translation id="3445047461171030979">Snelle antwoorden van de Google Assistent</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-apparaat</translation>
 <translation id="3446274660183028131">Start Parallels Desktop om Windows te installeren.</translation>
 <translation id="344630545793878684">Je gegevens voor een aantal websites lezen</translation>
@@ -2321,7 +2321,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3635353578505343390">Feedback sturen naar Google</translation>
 <translation id="3635960017746711110">USB-voorkeuren voor Crostini</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> resterend</translation>
-<translation id="3637682276779847508">Je simkaart wordt permanent uitgeschakeld als je geen correcte pukcode kunt opgeven.</translation>
 <translation id="3639220004740062347">Lezermodus afsluiten</translation>
 <translation id="3640214691812501263">'<ph name="EXTENSION_NAME" />' toevoegen voor <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Train de Assistent om je stem te herkennen</translation>
@@ -3482,7 +3481,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5017828934289857214">Later herinneren</translation>
 <translation id="5018207570537526145">Website voor extensie openen</translation>
 <translation id="5018526990965779848">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt ingeschakeld, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
-<translation id="5019392775062123007">Zichtbaar voor apparaten in de buurt als <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Nog niet geüpdatet</translation>
 <translation id="5026806129670917316">Wifi inschakelen</translation>
 <translation id="5026874946691314267">Dit bericht niet meer weergeven</translation>
@@ -3718,7 +3716,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5301954838959518834">OK, begrepen</translation>
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5302932258331363306">Vervangingen weergeven</translation>
-<translation id="5304276686222516262">Kan contactenlijst niet downloaden. Check de netwerkverbinding of &lt;a href="#" id="tryAgainLink"&gt;probeer het opnieuw&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Account wordt beheerd door <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5305688511332277257">Geen certificaten geïnstalleerd</translation>
 <translation id="5307030433605830021">Bron niet ondersteund</translation>
@@ -4074,7 +4071,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5708171344853220004">Principal-naam van Microsoft</translation>
 <translation id="5709557627224531708">Chrome instellen als je standaardbrowser</translation>
 <translation id="5711983031544731014">Kan niet ontgrendelen. Geef je wachtwoord op.</translation>
-<translation id="5713723565110096165">Onjuiste pincode. Resterende pogingen: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Plug-inbroker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standaardzoekmachines</translation>
 <translation id="5720705177508910913">Huidige gebruiker</translation>
@@ -4326,7 +4322,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6011074160056912900">Ethernet-netwerk</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
 <translation id="6011449291337289699">Sitegegevens wissen</translation>
-<translation id="6015266928248016057">Ongeldige pukcode. Resterende pogingen: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Jaar</translation>
 <translation id="6016178549409952427">Navigeren naar extra content <ph name="CURRENT_ELEMENT" /> van <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Powerwash bevestigen met herstel van eerdere versie</translation>
@@ -5051,6 +5046,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6856459657722366306">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="6856623341093082836">De nauwkeurigheid van het touchscreen instellen en aanpassen</translation>
 <translation id="6857699260879628349">Configuratiegegevens ophalen</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Proxyinstellingen...</translation>
 <translation id="686022878923628150">Voorkomen dat sites verbinding maken met MIDI-apparaten</translation>
 <translation id="6860427144121307915">Openen in een tabblad</translation>
@@ -5295,7 +5291,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7121362699166175603">Hiermee worden de geschiedenis en automatische aanvullingen voor de adresbalk gewist. Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7121438501124788993">Ontwikkelaarsmodus</translation>
 <translation id="7121728544325372695">Slimme streepjes</translation>
-<translation id="7122353087820324370">Apps en OS-instellingen worden niet gesynchroniseerd met secundaire accounts.</translation>
+<translation id="7122353087820324370">Apps en Chrome OS-instellingen worden niet gesynchroniseerd met secundaire accounts.</translation>
 <translation id="7123030151043029868">Toestemming om automatisch meerdere bestanden te downloaden</translation>
 <translation id="7123360114020465152">Niet meer ondersteund</translation>
 <translation id="7125148293026877011">Crostini verwijderen</translation>
@@ -6360,7 +6356,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8339059274628563283">Lokaal opgeslagen gegevens voor <ph name="SITE" /></translation>
 <translation id="833986336429795709">Kies een app om deze link te openen</translation>
 <translation id="8342861492835240085">Een verzameling selecteren</translation>
-<translation id="834290227245955730">Ongeldige pincode. Resterende pogingen: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="8350789879725387295">Stylustools in dock</translation>
 <translation id="8351316842353540018">Altijd A11y-opties weergeven</translation>
@@ -6483,7 +6478,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8497219075884839166">Windows-hulpprogramma's</translation>
 <translation id="8498214519255567734">Hiermee kun je je scherm beter zien en lezen bij weinig licht</translation>
 <translation id="8498395510292172881">Verder lezen in Chrome</translation>
-<translation id="8500234928660943538">Onjuiste pukcode. Resterende pogingen: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Als je apps van Google Play wilt gebruiken, moet je eerst je apps herstellen. Sommige gegevens zijn mogelijk verloren gegaan.</translation>
 <translation id="850314194061055138">camera opnieuw gebruiken</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>

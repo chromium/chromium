@@ -83,11 +83,11 @@
 <translation id="1099282607296956954">Site-isolatie inschakelen voor elke site</translation>
 <translation id="1117535567637097036">De protocolhandlers die via dit beleid zijn ingesteld, worden niet gebruikt bij de verwerking van Android-intenties.</translation>
 <translation id="1118093128235245168">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een aangesloten USB-apparaat</translation>
-<translation id="1133814529606590009">Als je het beleid inschakelt, wordt geanonimiseerde gegevensverzameling met URL-sleutel altijd actief. Hiermee worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsen te verbeteren.
+<translation id="1133814529606590009">Als je het beleid inschakelt, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief. Hiermee worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsen te verbeteren.
 
-      Als je het beleid uitschakelt, wordt geanonimiseerde gegevensverzameling met URL-sleutel niet ingeschakeld.
+      Als je het beleid uitschakelt, wordt de geanonimiseerde gegevensverzameling met URL-sleutel niet ingeschakeld.
 
-      Als je het beleid instelt, kunnen gebruikers het niet aanpassen. Als je het beleid niet instelt, is geanonimiseerde gegevensverzameling met URL-sleutel aanvankelijk ingeschakeld, maar kunnen gebruikers dit aanpassen.</translation>
+      Als je het beleid instelt, kunnen gebruikers het niet aanpassen. Als je het beleid niet instelt, is de geanonimiseerde gegevensverzameling met URL-sleutel aanvankelijk actief, maar kunnen gebruikers dit aanpassen.</translation>
 <translation id="1138294736309071213">Dit beleid is alleen ingeschakeld in de winkelmodus.
 
       Bepaalt de periode waarna de schermbeveiliging wordt weergegeven in het inlogvenster voor apparaten in de winkelmodus.
@@ -185,11 +185,11 @@
       Als je dit beleid niet instelt, kan de gebruiker zelf besluiten Google Sync wel of niet te gebruiken.
 
       Als je Google Sync volledig wilt uitschakelen, kun je de Google Sync-service het beste uitschakelen in de Google Beheerdersconsole.</translation>
-<translation id="128059397544257017">Als je het beleid inschakelt en <ph name="CHROME_CLEANUP_NAME" /> ongewenste software detecteert, kan dit beleid (in overeenstemming met het beleid ingesteld door <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />) over de scan rapporteren aan Google. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen. De resultaten worden naar Google gestuurd.
+<translation id="128059397544257017">Als je het beleid inschakelt en <ph name="CHROME_CLEANUP_NAME" /> ongewenste software detecteert, kan dit beleid (in overeenstemming met het beleid ingesteld door <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />) de resultaten van de scan sturen naar Google. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen. De resultaten worden naar Google gestuurd.
 
-      Als je het beleid uitschakelt en <ph name="CHROME_CLEANUP_NAME" /> ongewenste software detecteert, wordt er niet gerapporteerd aan Google over de scan, ongeacht de waarde van <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen. De resultaten worden niet aan Google gerapporteerd.
+      Als je het beleid uitschakelt en <ph name="CHROME_CLEANUP_NAME" /> ongewenste software detecteert, worden de resultaten van de scan niet naar Google gestuurd, ongeacht de waarde van <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen. De resultaten worden niet naar Google gestuurd.
 
-      Als je het beleid niet instelt, kan <ph name="CHROME_CLEANUP_NAME" /> (in overeenstemming met het beleid ingesteld door <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />) over scans op ongewenste software rapporteren aan Google. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen en de resultaten willen delen met Google om bij te dragen aan de toekomstige detectie van ongewenste software. Deze resultaten bevatten metadata van bestanden, automatisch geïnstalleerde extensies en registersleutels zoals beschreven in de whitepaper over het privacybeleid voor Chrome.
+      Als je het beleid niet instelt, kan <ph name="CHROME_CLEANUP_NAME" /> (in overeenstemming met het beleid ingesteld door <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />) de resultaten van scans op ongewenste software sturen naar Google. <ph name="CHROME_CLEANUP_NAME" /> vraagt gebruikers of ze willen opschonen en de resultaten willen delen met Google om bij te dragen aan de toekomstige detectie van ongewenste software. Deze resultaten bevatten metadata van bestanden, automatisch geïnstalleerde extensies en registersleutels zoals beschreven in de whitepaper over het Privacybeleid van Chrome.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1290634681382861275">Beheert diverse instellingen, waaronder USB, Bluetooth, vernieuwingsinterval voor beleid, ontwikkelaarsmodus en meer.</translation>
@@ -3538,7 +3538,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 
       Als je het beleid uitschakelt, wordt de achtergrondmodus uitgeschakeld.
 
-Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserinstellingen. Als het niet instelt, is de achtergrondmodus aanvankelijk uitgeschakeld, maar kunnen gebruikers dit aanpassen.</translation>
+Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserinstellingen. Als je het niet instelt, is de achtergrondmodus aanvankelijk uitgeschakeld, maar kunnen gebruikers dit aanpassen.</translation>
 <translation id="6353890097388312479">Als je het beleid instelt op All (0) of niet instelt, kunnen gebruikers vertrouwensinstellingen bewerken voor alle CA-certificaten, door de gebruiker geïmporteerde certificaten verwijderen en certificaten importeren met Certificaatbeheer. Als je het beleid instelt op UserOnly (1), kunnen gebruikers alleen door de gebruiker geïmporteerde certificaten beheren, maar niet de vertrouwensinstellingen van ingebouwde certificaten wijzigen. Als je het beleid instelt op None (2), kunnen gebruikers CA-certificaten bekijken (maar niet beheren).</translation>
 <translation id="6362856770865555544">Als je het beleid inschakelt of niet instelt, wordt WPAD-optimalisatie (Web Proxy Auto-Discovery) ingeschakeld in <ph name="PRODUCT_NAME" />.
 

@@ -273,6 +273,7 @@
 <translation id="1302139669997477151">스크린샷이 차단됨</translation>
 <translation id="1302227299132585524">Apple Events의 자바스크립트 허용</translation>
 <translation id="1303101771013849280">HTML 파일 북마크하기</translation>
+<translation id="1303178898338186101">Google Play에 접속할 수 없습니다. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="1303671224831497365">블루투스 기기를 찾을 수 없습니다.</translation>
 <translation id="130491383855577612">Linux 앱 및 파일이 성공적으로 대체되었습니다.</translation>
 <translation id="1306606229401759371">설정 변경</translation>
@@ -783,7 +784,6 @@
 <translation id="1854180393107901205">전송 중지</translation>
 <translation id="1856715684130786728">위치 추가...</translation>
 <translation id="1858585891038687145">소프트웨어 제작자를 식별하기 위해 이 인증서 신뢰</translation>
-<translation id="1860346308203060432">기기 공개 범위 보기</translation>
 <translation id="1861262398884155592">폴더가 비어 있습니다.</translation>
 <translation id="1863182668524159459">직렬 포트를 찾을 수 없음</translation>
 <translation id="1863316578636157783">‘<ph name="EXTENSION_NAME" />’ 확장 프로그램에 멀웨어가 포함되어 있어 사용 중지되었습니다.</translation>
@@ -2139,12 +2139,14 @@
 <translation id="343578350365773421">용지 부족</translation>
 <translation id="3435896845095436175">사용</translation>
 <translation id="3438633801274389918">닌자</translation>
+<translation id="3438643033528947620">Google 서비스에 연결할 수 없습니다. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="3439153939049640737"><ph name="HOST" />에서 마이크에 액세스하도록 항상 허용</translation>
 <translation id="3439970425423980614">미리보기에서 PDF 여는 중</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" />의 작업 메뉴 더보기</translation>
 <translation id="3441653493275994384">화면</translation>
 <translation id="3441663102605358937">계정을 인증하려면 <ph name="ACCOUNT" />에 다시 로그인하세요.</translation>
 <translation id="3445047461171030979">Google 어시스턴트 빠른 답변</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
 <translation id="344630545793878684">다수의 웹사이트에서 데이터 읽기</translation>
@@ -2319,7 +2321,6 @@
 <translation id="3635353578505343390">Google에 의견 보내기</translation>
 <translation id="3635960017746711110">Crostini USB 환경설정</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> 남음</translation>
-<translation id="3637682276779847508">정확한 PIN 잠금 해제 키를 입력하지 않으면 SIM 카드가 영구적으로 사용 중지됩니다.</translation>
 <translation id="3639220004740062347">읽기 모드 종료</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" />님에 대하여 '<ph name="EXTENSION_NAME" />'을(를) 추가할까요?</translation>
 <translation id="3640613767643722554">어시스턴트가 내 음성을 인식하도록 학습시키기</translation>
@@ -3331,6 +3332,7 @@
 <translation id="4848518990323155912">SIM 카드 잠금 사용(모바일 데이터를 사용하려면 PIN 필요)</translation>
 <translation id="4849286518551984791">협정세계시(UTC/GMT)</translation>
 <translation id="4849517651082200438">설치 안함</translation>
+<translation id="485053257961878904">알림 동기화를 설정할 수 없음</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="485088796993065002">사이트에서는 음악, 동영상, 기타 미디어의 오디오를 제공하기 위해 소리를 재생할 수 있습니다.</translation>
 <translation id="4853020600495124913">새 창에서 열기(&amp;N)</translation>
@@ -3418,6 +3420,7 @@
 <translation id="4932733599132424254">날짜</translation>
 <translation id="4933484234309072027"><ph name="URL" />에 삽입됨</translation>
 <translation id="493571969993549666">관리 대상 사용자 추가</translation>
+<translation id="4936042273057045735">직장 프로필을 사용하는 경우 휴대전화에서 알림 동기화가 지원되지 않습니다.</translation>
 <translation id="4939805055470675027"><ph name="CARRIER_NAME" />에 연결할 수 없음</translation>
 <translation id="4940364377601827259">저장할 수 있는 프린터가 <ph name="PRINTER_COUNT" />대 있습니다.</translation>
 <translation id="4940845626435830013">디스크 용량 예약</translation>
@@ -3476,7 +3479,6 @@
 <translation id="5017828934289857214">나중에 알림</translation>
 <translation id="5018207570537526145">확장 프로그램 웹사이트 열기</translation>
 <translation id="5018526990965779848">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
-<translation id="5019392775062123007">주변 기기에 표시되는 이름: <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">아직 업데이트되지 않음</translation>
 <translation id="5026806129670917316">Wi-Fi 사용</translation>
 <translation id="5026874946691314267">이 메시지를 다시 표시하지 않음</translation>
@@ -3712,7 +3714,6 @@
 <translation id="5301954838959518834">확인</translation>
 <translation id="5302048478445481009">언어</translation>
 <translation id="5302932258331363306">텍스트 대치</translation>
-<translation id="5304276686222516262">연락처 목록을 다운로드할 수 없습니다. 네트워크 연결을 확인하거나 &lt;a href="#" id="tryAgainLink"&gt;다시 시도하세요&lt;/a&gt;.</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />에서 관리하는 계정</translation>
 <translation id="5305688511332277257">설치된 인증서 없음</translation>
 <translation id="5307030433605830021">지원되지 않는 소스</translation>
@@ -4068,7 +4069,6 @@
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Chrome을 기본 브라우저로 설정</translation>
 <translation id="5711983031544731014">잠금 해제할 수 없습니다. 비밀번호를 입력하세요.</translation>
-<translation id="5713723565110096165">잘못된 PIN입니다. 남은 재시도 횟수는 <ph name="RETRIES" />회입니다.</translation>
 <translation id="5715711091495208045">플러그인 중개인: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">기본 검색엔진</translation>
 <translation id="5720705177508910913">현재 사용자</translation>
@@ -4320,7 +4320,6 @@
 <translation id="6011074160056912900">이더넷 네트워크</translation>
 <translation id="6011193465932186973">지문</translation>
 <translation id="6011449291337289699">사이트 데이터 삭제</translation>
-<translation id="6015266928248016057">잘못된 PUK입니다. 남은 재시도 횟수는 <ph name="RETRIES" />회입니다.</translation>
 <translation id="6015796118275082299">연도</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠로 이동</translation>
 <translation id="6016551720757758985">이전 버전으로 돌아가서 Powerwash 확인</translation>
@@ -4731,6 +4730,7 @@
 <translation id="6474498546677193336">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Linux가 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="6474884162850599008">Google 드라이브 계정 연결 해제</translation>
 <translation id="6475697075626596525"><ph name="APP_NAME" />에서 내 화면의 콘텐츠를 공유하려고 합니다. 공유할 항목을 선택하세요.</translation>
+<translation id="6477822444490674459">직장 프로필을 사용하는 경우 휴대전화에서 알림 동기화가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">위험한 파일을 보관하시겠습니까?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>
 <translation id="6483485061007832714">다운로드된 파일 열기</translation>
@@ -5044,9 +5044,11 @@
 <translation id="6856459657722366306">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="6856623341093082836">터치스크린 설정 및 정확도 조정</translation>
 <translation id="6857699260879628349">구성 정보 가져오기</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" />초</translation>
 <translation id="6860097299815761905">프록시 설정...</translation>
 <translation id="686022878923628150">사이트에서 MIDI 기기에 연결하지 못하도록 차단</translation>
 <translation id="6860427144121307915">탭에서 열기</translation>
+<translation id="6862729829592030773"><ph name="MANAGER" />에서 데이터를 백업하고 일주일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" /></translation>
 <translation id="686366188661646310">비밀번호를 삭제하시겠습니까?</translation>
 <translation id="6865313869410766144">양식 데이터 자동 완성</translation>
 <translation id="6865598234501509159">페이지 언어가 <ph name="LANGUAGE" />가 아님</translation>
@@ -5130,6 +5132,7 @@
 <translation id="696103774840402661">이 <ph name="DEVICE_TYPE" /> 기기 내 모든 사용자의 파일 및 로컬 데이터가 영구적으로 삭제되었습니다.</translation>
 <translation id="6964390816189577014">영웅</translation>
 <translation id="6964760285928603117">그룹에서 삭제</translation>
+<translation id="6964828938462185925">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 데이터를 백업하고 오늘 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" />}other{<ph name="MANAGER" />에서 데이터를 백업하고 {NUM_DAYS}일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" />}}</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6965648386495488594">포트</translation>
 <translation id="6965978654500191972">기기</translation>
@@ -5219,6 +5222,7 @@
 <translation id="7051943809462976355">마우스 검색 중...</translation>
 <translation id="7052237160939977163">성능 추적 데이터 전송</translation>
 <translation id="7053983685419859001">차단</translation>
+<translation id="705508001219706572">이곳으로 빠르게 이동하려면 <ph name="APP_NAME" /> 앱을 설치하세요.</translation>
 <translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
 <translation id="7055451306017383754">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Parallels Desktop이 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="7056526158851679338">기기 검사(&amp;I)</translation>
@@ -6351,7 +6355,6 @@
 <translation id="8339059274628563283"><ph name="SITE" />에 로컬 저장된 데이터</translation>
 <translation id="833986336429795709">이 링크를 열려면 앱을 선택하세요.</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
-<translation id="834290227245955730">잘못된 PIN입니다. 남은 재시도 횟수는 <ph name="RETRIES" />회입니다.</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8350789879725387295">도크에 스타일러스 도구 표시</translation>
 <translation id="8351316842353540018">항상 접근성 옵션 표시</translation>
@@ -6474,7 +6477,6 @@
 <translation id="8497219075884839166">Windows 유틸리티</translation>
 <translation id="8498214519255567734">어두운 곳에서 화면을 보거나 읽기 편하도록 설정합니다.</translation>
 <translation id="8498395510292172881">Chrome에서 계속 읽기</translation>
-<translation id="8500234928660943538">잘못된 PUK입니다. 남은 재시도 횟수는 <ph name="RETRIES" />회입니다.</translation>
 <translation id="8502536196501630039">Google Play의 앱을 사용하려면 먼저 앱을 복원해야 합니다. 일부 데이터가 삭제되었을 수 있습니다.</translation>
 <translation id="850314194061055138">다시 카메라 사용</translation>
 <translation id="8503813439785031346">사용자이름</translation>

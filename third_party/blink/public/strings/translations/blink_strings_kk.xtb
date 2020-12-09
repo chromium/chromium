@@ -182,7 +182,7 @@
 <translation id="6023896073578205740">тізім терезесі</translation>
 <translation id="6150588977291308318">пайдаланылған әдебиеттер</translation>
 <translation id="6164829606128959761">өлшегіш құрал</translation>
-<translation id="6165053282446038410">жайылды, <ph name="COUNT" /> автоматты толтыру опциялары қолжетімді.</translation>
+<translation id="6165053282446038410">жайылды, <ph name="COUNT" /> автоматты толтыру опциясы қолжетімді.</translation>
 <translation id="6166809985690652833">соңғы сөз</translation>
 <translation id="6209276755895393898">Сурет сипаттамасы: <ph name="DESCRIPTION" /></translation>
 <translation id="6212595056017402527">ағымдағы бет</translation>
@@ -224,7 +224,7 @@
 <translation id="7102274145889307184">ағымдағы орын</translation>
 <translation id="7118469954320184356">Сипаттамасы жоқ.</translation>
 <translation id="7139483182332611405">алғысөз</translation>
-<translation id="7198226213493847604">мәзір терезесі түймесі</translation>
+<translation id="7198226213493847604">мәзірді ашатын қалқымалы түйме</translation>
 <translation id="7214187073215825913">мазмұн туралы ақпарат</translation>
 <translation id="7238347055216017155">бөлектеу</translation>
 <translation id="7263440858009898357">Тізімдегі элементті таңдаңыз.</translation>
@@ -292,7 +292,7 @@
 <translation id="8808573423886751634">тарау</translation>
 <translation id="8845239796550121995">Қазір теледидарға трансляциялануда</translation>
 <translation id="8851136666856101339">басты</translation>
-<translation id="8861621546968757188">диалогтік терезе түймесі</translation>
+<translation id="8861621546968757188">диалогтік терезені ашатын қалқымалы түйме</translation>
 <translation id="8875657656876809964">Бейне ойнату қатесі</translation>
 <translation id="8889402386540077796">Реңкі</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>

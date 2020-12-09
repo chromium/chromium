@@ -777,7 +777,6 @@
 <translation id="1854180393107901205">କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1856715684130786728">ଲୋକେସନ୍ ଯୋଗ କରନ୍ତୁ...</translation>
 <translation id="1858585891038687145">ସଫ୍ଟୱେୟାର୍ ନିର୍ମାତା ଚିହ୍ନଟ କରିବା ପାଇଁ ଏହି ସାର୍ଟିଫିକେଟ୍ ଉପରେ ବିଶ୍ଵାସ ରଖନ୍ତୁ</translation>
-<translation id="1860346308203060432">ଡିଭାଇସର ଭିଜିବିଲିଟୀ ଦେଖନ୍ତୁ</translation>
 <translation id="1861262398884155592">ଏହି ଫୋଲ୍ଡର୍‌ ଖାଲି ଅଟେ</translation>
 <translation id="1863182668524159459">କୌଣସି କ୍ରମିକ ପୋର୍ଟଗୁଡ଼ିକ ମିଳିଲା ନାହିଁ</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />"ରେ ମାଲୱେର୍ ଥିବା ଯୋଗୁଁ ଏହା ଅକ୍ଷମ ହୋଇଯାଇଛି</translation>
@@ -2137,6 +2136,7 @@
 <translation id="3441653493275994384">ସ୍କ୍ରିନ୍</translation>
 <translation id="3441663102605358937">ଏହି ଆକାଉଣ୍ଟକୁ ଯାଞ୍ଚ କରିବାକୁ <ph name="ACCOUNT" />ରେ ପୁଣି ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="3445047461171030979">Google Assistant ଦ୍ରୁତ ଉତ୍ତରଗୁଡ଼ିକ</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> ମିନିଟ୍</translation>
 <translation id="3445925074670675829">USB-C ଡିଭାଇସ୍</translation>
 <translation id="3446274660183028131">ଦୟାକରି Windows ଇନଷ୍ଟଲ୍ କରିବାକୁ Parallels Desktop ଲଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="344630545793878684">ଅନେକଗୁଡ଼ିଏ ୱେବ୍‌ସାଇଟ୍‌ରେ ଆପଣଙ୍କର ଡାଟା ପଢ଼ନ୍ତୁ</translation>
@@ -2311,7 +2311,6 @@
 <translation id="3635353578505343390">Googleକୁ ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="3635960017746711110">Crostini USB ପସନ୍ଦଗୁଡ଼ିକ</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ବାକି ଅଛି</translation>
-<translation id="3637682276779847508">ଯଦି ଆପଣ ସଠିକ୍ PIN ଅନ୍‌ଲକ୍ କୀ' ପ୍ରଦାନ ନକରିବେ, ତେବେ ଆପଣଙ୍କ SIM କାର୍ଡ ସ୍ଥାୟୀ ରୂପେ ବନ୍ଦ ହୋଇଯିବ।</translation>
 <translation id="3639220004740062347">ରିଡର୍ ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> ପାଇଁ <ph name="EXTENSION_NAME" /> ଯୋଗ କରିବେ?</translation>
 <translation id="3640613767643722554">ଆପଣଙ୍କର ସ୍ୱରକୁ ଚିହ୍ନଟ କରିବା ସକାଶେ ଆପଣଙ୍କର ଆସିଷ୍ଟାଣ୍ଟ୍‌କୁ ଶିକ୍ଷା ଦିଅନ୍ତୁ</translation>
@@ -3466,7 +3465,6 @@
 <translation id="5017828934289857214">ମୋତେ ପରେ ରିମାଇଣ୍ଡ କରନ୍ତୁ</translation>
 <translation id="5018207570537526145">ସଂପ୍ରସାରଣ ୱେବ୍‍ସାଇଟ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="5018526990965779848">ବ୍ୟବହାର ଏବଂ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ ଡାଟା ପଠାନ୍ତୁ। Googleକୁ ସ୍ଵଚାଳିତ ଭାବେ ଡାଏଗ୍ନୋଷ୍ଟିକ୍, ଡିଭାଇସ୍ ଓ ଆପ୍ ବ୍ୟବହାର ଡାଟା ପଠାଇ ଆପଣଙ୍କର Android ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ। ସିଷ୍ଟମ୍ ଓ ଆପର ସ୍ଥିରତା ଏବଂ ଅନ୍ୟ ଉନ୍ନତିଗୁଡ଼ିକରେ ଏହା ସାହାଯ୍ୟ କରିବ। କିଛି ଏକତ୍ରିତ ଡାଟା Google ଆପ୍ ଓ Android ଡେଭଲପର୍ ପରି ଏହାର ପାର୍ଟନରଗୁଡ଼ିକୁ ମଧ୍ୟ ସାହାଯ୍ୟ କରିବ। ଯଦି ଆପଣଙ୍କର ଅତିରିକ୍ତ ୱେବ୍ ଓ ଆପ୍ କାର୍ଯ୍ୟକଳାପ ସେଟିଂ ଚାଲୁ ଅଛି, ତେବେ ଏହି ଡାଟା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ ହୋଇପାରେ।</translation>
-<translation id="5019392775062123007">ଆଖପାଖର ଡିଭାଇସଗୁଡ଼ିକୁ <ph name="DEVICE_NAME" /> ଭାବରେ ଦୃଶ୍ୟମାନ ହେବ</translation>
 <translation id="5021750053540820849">ଏପର୍ଯ୍ୟନ୍ତ ସୁଦ୍ଧା ଅପ୍‌ଡେଟ୍ କରାଯାଇ ନାହିଁ</translation>
 <translation id="5026806129670917316">ୱାଇ-ଫାଇ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5026874946691314267">ଏହା ପୁଣି ଦେଖାନ୍ତୁ ନାହିଁ</translation>
@@ -3702,7 +3700,6 @@
 <translation id="5301954838959518834">ଠିକ୍ ଅଛି, ବୁଝିଗଲି</translation>
 <translation id="5302048478445481009">ଭାଷା</translation>
 <translation id="5302932258331363306">ପ୍ରତିସ୍ଥାପନଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
-<translation id="5304276686222516262">ଯୋଗାଯୋଗ ତାଲିକା ଡାଉନଲୋଡ୍ କରିବାକୁ ଅସମର୍ଥ। ଦୟାକରି ଆପଣଙ୍କ ନେଟୱାର୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା &lt;a href="#" id="tryAgainLink"&gt;ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ&lt;/a&gt;।</translation>
 <translation id="5305145881844743843">ଏହି ଆକାଉଣ୍ଟ <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ଦ୍ଵାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="5305688511332277257">କିଛି ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇନାହିଁ</translation>
 <translation id="5307030433605830021">ଅସମର୍ଥିତ ଉତ୍ସ</translation>
@@ -4057,7 +4054,6 @@
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Chromeକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌ ଭାବେ ସେଟ୍‌ କରନ୍ତୁ।</translation>
 <translation id="5711983031544731014">ଅନ୍‌ଲକ୍ କରିବାରେ ଅକ୍ଷମ। ନିଜର ପାସ୍‌ୱାର୍ଡ ଲେଖନ୍ତୁ।</translation>
-<translation id="5713723565110096165">ଭୁଲ PIN। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ ବାକି ଅଛି: <ph name="RETRIES" /> ଥର।</translation>
 <translation id="5715711091495208045">ପ୍ଲଗ୍‍ଇନ୍ ବ୍ରୋକର୍: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ଡିଫଲ୍ଟ ସନ୍ଧାନ ଇଞ୍ଜିନ୍</translation>
 <translation id="5720705177508910913">ବର୍ତ୍ତମାନର ଉପଯୋଗକର୍ତ୍ତା</translation>
@@ -4084,7 +4080,7 @@
 <translation id="5740820643029013514">ନୀରବ ମେସେଜିଂ ବ୍ୟବହାର କରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="574104302965107104">ଡିସପ୍ଲେ ମିରରିଂ</translation>
 <translation id="574209121243317957">ସ୍ୱରର ଉଚ୍ଚତା</translation>
-<translation id="5742505912938664543">ଆପଣ ଯେତେବେଳେ ଏଠାରେ ଏକ ଦ୍ୱିତୀୟ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତି, ସେତେବେଳେ ଆପଣ ସେହି ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରି ୱେବ୍ ବ୍ରାଉଜ୍ କରିପାରନ୍ତି, ଆପଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରିପାରନ୍ତି, ଆପଣଙ୍କ Gmail ଏବଂ ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରନ୍ତି।</translation>
+<translation id="5742505912938664543">ଆପଣ ଯେତେବେଳେ ଏଠାରେ ଏକ ଦ୍ୱିତୀୟ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତି, ସେତେବେଳେ ଆପଣ ସେହି ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରି ୱେବ୍ ବ୍ରାଉଜ୍, ଆପଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍, ଆପଣଙ୍କ Gmail ଏବଂ ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରନ୍ତି।</translation>
 <translation id="5746169159649715125">PDF ଭାବରେ ସେଭ୍‍ କରନ୍ତୁ</translation>
 <translation id="5747552184818312860">ସମୟସୀମା ସମାପ୍ତ ହେବ</translation>
 <translation id="5747785204778348146">ଡେଭଲପର୍ - ଅସ୍ଥିର</translation>
@@ -4309,7 +4305,6 @@
 <translation id="6011074160056912900">ଇଥର୍‌ନେଟ୍ ନେଟ୍‍ୱାର୍କ</translation>
 <translation id="6011193465932186973">ଟିପ ଚିହ୍ନ</translation>
 <translation id="6011449291337289699">ସାଇଟ୍‍ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
-<translation id="6015266928248016057">ଅବୈଧ PUK। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ ବାକି ଅଛି: <ph name="RETRIES" /> ଥର।</translation>
 <translation id="6015796118275082299">ବର୍ଷ</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />ଟିରୁ <ph name="CURRENT_ELEMENT" />ଟି ଅତିରିକ୍ତ ବିଷୟବସ୍ତୁକୁ ନାଭିଗେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6016551720757758985">ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ଫେରିଆସିବା ସହିତ Powerwashକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -5035,6 +5030,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6856459657722366306"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
 <translation id="6856623341093082836">ଆପଣଙ୍କ ଟଚ୍‍ସ୍କ୍ରିନ୍‍ର ସଠିକତା ସେଟ୍ ଅପ୍ କରନ୍ତୁ ଏବଂ ଆଡ୍‍ଜଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6857699260879628349">କନଫ୍ୟୁଗରେସନ୍ ସୂଚନା ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> ସେ</translation>
 <translation id="6860097299815761905">ପ୍ରୋକ୍ସି ସେଟିଂ</translation>
 <translation id="686022878923628150">ସାଇଟଗୁଡ଼ିକୁ MIDI ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ କରିବାରୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="6860427144121307915">ଏକ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
@@ -6337,7 +6333,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8339059274628563283"><ph name="SITE" /> ସ୍ଥାନୀୟ ଭାବେ ଷ୍ଟୋର୍ କରିଥିବା ଡାଟା</translation>
 <translation id="833986336429795709">ଏହି ଲିଙ୍କ୍‌କୁ ଖୋଲିବା ପାଇଁ, ଏକ ଆପ୍ ବାଛନ୍ତୁ</translation>
 <translation id="8342861492835240085">ଏକ ସଂଗ୍ରହ ବାଛନ୍ତୁ</translation>
-<translation id="834290227245955730">ଅବୈଧ PIN। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ ବାକି ଅଛି: <ph name="RETRIES" /> ଥର।</translation>
 <translation id="8347227221149377169">ପ୍ରିଣ୍ଟ ଜବ୍</translation>
 <translation id="8350789879725387295">ଡକରେ ଷ୍ଟାଇଲସ୍ ଟୁଲଗୁଡ଼ିକ</translation>
 <translation id="8351316842353540018">a11y ବିକଳ୍ପଗୁଡ଼ିକ ସର୍ବଦା ଦେଖାନ୍ତୁ</translation>
@@ -6460,7 +6455,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8497219075884839166">Windows ଉପଯୋଗିତା</translation>
 <translation id="8498214519255567734">ନିଜ ସ୍କ୍ରିନ୍‌କୁ ଦେଖିବା କିମ୍ବା କମ୍ ଆଲୋକରେ ପଢିବାକୁ ସହଜ କରନ୍ତୁ</translation>
 <translation id="8498395510292172881">Chromeରେ ପଢ଼ିବା ଜାରି ରଖନ୍ତୁ</translation>
-<translation id="8500234928660943538">ଭୁଲ PUK. ପୁଣି ଚେଷ୍ଟା କରିବାକୁ ବାକି ଅଛି: <ph name="RETRIES" /> ଥର।</translation>
 <translation id="8502536196501630039">Google Playରୁ ଆପ୍ସ ବ୍ୟବହାର କରିବା ପାଇଁ, ଆପଣ ପ୍ରଥମେ ଆପଣଙ୍କର ଆପ୍‌ଗୁଡ଼ିକୁ ରିଷ୍ଟୋର୍ କରନ୍ତୁ। କିଛି ଡାଟା ହୁଏତ ହରାଇବାକୁ ପଡ଼ିବ।</translation>
 <translation id="850314194061055138">ପୁଣି କ୍ୟାମେରା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>

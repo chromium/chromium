@@ -782,7 +782,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1854180393107901205">Zatrzymaj przesyłanie</translation>
 <translation id="1856715684130786728">Dodaj lokalizację...</translation>
 <translation id="1858585891038687145">Ufaj temu certyfikatowi przy identyfikowaniu producentów oprogramowania</translation>
-<translation id="1860346308203060432">Widoczność urządzenia</translation>
 <translation id="1861262398884155592">Ten folder jest pusty</translation>
 <translation id="1863182668524159459">Nie znaleziono portów szeregowych</translation>
 <translation id="1863316578636157783">Rozszerzenie „<ph name="EXTENSION_NAME" />” zostało wyłączone, bo zawiera złośliwe oprogramowanie</translation>
@@ -2145,6 +2144,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3441663102605358937">Ponownie zaloguj się na konto <ph name="ACCOUNT" />, by je zweryfikować</translation>
 <translation id="3445047461171030979">Krótkie odpowiedzi Asystenta Google</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Urządzenie USB-C</translation>
 <translation id="3446274660183028131">Włącz aplikację Parallels Desktop, by zainstalować system Windows.</translation>
 <translation id="344630545793878684">Odczyt Twoich danych na kilku stronach internetowych</translation>
@@ -2319,7 +2319,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3635353578505343390">Prześlij opinię do Google</translation>
 <translation id="3635960017746711110">Ustawienia Crostini dotyczące USB</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – pozostało <ph name="TIME" /></translation>
-<translation id="3637682276779847508">Jeśli nie wpiszesz prawidłowego klucza odblokowującego kod PIN, karta SIM zostanie trwale wyłączona.</translation>
 <translation id="3639220004740062347">Zamknij tryb czytnika</translation>
 <translation id="3640214691812501263">Dodać „<ph name="EXTENSION_NAME" />” dla: <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Naucz Asystenta rozpoznawać Twój głos</translation>
@@ -3480,7 +3479,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5017828934289857214">Przypomnij mi później</translation>
 <translation id="5018207570537526145">Otwórz stronę rozszerzeń</translation>
 <translation id="5018526990965779848">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
-<translation id="5019392775062123007">Widoczne dla urządzeń w pobliżu jako <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Jeszcze nie zaktualizowano</translation>
 <translation id="5026806129670917316">Włączanie sieci Wi-Fi</translation>
 <translation id="5026874946691314267">Nie pokazuj więcej tego komunikatu</translation>
@@ -3716,7 +3714,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5301954838959518834">Rozumiem</translation>
 <translation id="5302048478445481009">Język</translation>
 <translation id="5302932258331363306">Pokaż zamienniki</translation>
-<translation id="5304276686222516262">Nie udało się pobrać listy kontaktów. Sprawdź połączenie sieciowe lub &lt;a href="#" id="tryAgainLink"&gt;spróbuj ponownie&lt;/a&gt;.</translation>
 <translation id="5305145881844743843">Kontem zarządza <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />.</translation>
 <translation id="5305688511332277257">Brak zainstalowanych</translation>
 <translation id="5307030433605830021">Źródło nie jest obsługiwane</translation>
@@ -4072,7 +4069,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5708171344853220004">Nazwa główna firmy Microsoft</translation>
 <translation id="5709557627224531708">Ustaw Chrome jako domyślną przeglądarkę</translation>
 <translation id="5711983031544731014">Nie można odblokować. Wpisz hasło.</translation>
-<translation id="5713723565110096165">Nieprawidłowy kod PIN. Pozostała liczba prób: <ph name="RETRIES" />.</translation>
 <translation id="5715711091495208045">Broker wtyczek: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Domyślne wyszukiwarki</translation>
 <translation id="5720705177508910913">Bieżący użytkownik</translation>
@@ -4324,7 +4320,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6011074160056912900">Sieć Ethernet</translation>
 <translation id="6011193465932186973">Odcisk palca</translation>
 <translation id="6011449291337289699">Wyczyść dane witryny</translation>
-<translation id="6015266928248016057">Nieprawidłowy PUK. Pozostała liczba prób: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Rok</translation>
 <translation id="6016178549409952427">Przejdź do dodatkowego elementu zawartości (<ph name="CURRENT_ELEMENT" /> z <ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="6016551720757758985">Potwierdzanie wykonania funkcji Powerwash z przywróceniem poprzedniej wersji</translation>
@@ -4440,7 +4435,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6129953537138746214">Spacja</translation>
 <translation id="6130692320435119637">Dodaj Wi-Fi</translation>
 <translation id="6136114942382973861">Zamknij pasek pobranych plików</translation>
-<translation id="6136287496450963112">Klucz bezpieczeństwa nie jest chroniony kodem PIN. Aby zarządzać odciskami palca, najpierw utwórz kod PIN.</translation>
+<translation id="6136287496450963112">Klucz bezpieczeństwa nie jest chroniony kodem PIN. Aby zarządzać odciskami palców, najpierw utwórz kod PIN.</translation>
 <translation id="6137767437444130246">Certyfikat użytkownika</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA z SHA-384</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, brak sieci</translation>
@@ -4620,7 +4615,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6331566915566907158">Pomóż w ulepszaniu funkcji i działania Chrome OS</translation>
 <translation id="6331818708794917058">Strony mogą prosić o zgodę na połączenie z urządzeniami MIDI</translation>
 <translation id="6333064448949140209">Plik zostanie wysłany do Google w celu debugowania</translation>
-<translation id="6334444530352320327">Twoje aplikacje i ustawienia systemu operacyjnego będą synchronizowane na Chromebookach, na których zalogujesz się na swoje konto.<ph name="LINK_BEGIN" />Ustawienia synchronizacji<ph name="LINK_END" /></translation>
+<translation id="6334444530352320327">Twoje aplikacje i ustawienia systemu operacyjnego będą synchronizowane na Chromebookach, na których zalogujesz się na swoje konto. <ph name="LINK_BEGIN" />Ustawienia synchronizacji<ph name="LINK_END" /></translation>
 <translation id="6338981933082930623">Wszystkie strony mogą wyświetlać wszystkie reklamy</translation>
 <translation id="6339668969738228384">Utwórz nowy profil dla adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340017061976355871">Nie udało połączyć się z serwerem. Sprawdź połączenie sieciowe i spróbuj ponownie. Jeśli problem nie zniknie, uruchom ponownie Chromebooka.</translation>
@@ -5049,6 +5044,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6856459657722366306">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="6856623341093082836">Skonfiguruj i dostosuj precyzję ekranu dotykowego</translation>
 <translation id="6857699260879628349">Uzyskaj dane do konfiguracji</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Ustawienia serwera proxy...</translation>
 <translation id="686022878923628150">Nie zezwalaj stronom na łączenie się z urządzeniami MIDI</translation>
 <translation id="6860427144121307915">Otwórz na karcie</translation>
@@ -6359,7 +6355,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8339059274628563283">Lokalnie zapisane dane z <ph name="SITE" /></translation>
 <translation id="833986336429795709">Aby otworzyć ten link, wybierz aplikację</translation>
 <translation id="8342861492835240085">Wybierz kolekcję</translation>
-<translation id="834290227245955730">Nieprawidłowy kod PIN. Pozostała liczba prób: <ph name="RETRIES" />.</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
 <translation id="8350789879725387295">Narzędzia rysika w docku</translation>
 <translation id="8351316842353540018">Zawsze pokazuj opcje ułatwień dostępu</translation>
@@ -6482,7 +6477,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8497219075884839166">Narzędzia Windows</translation>
 <translation id="8498214519255567734">Dzięki tej funkcji oczy mniej się męczą podczas patrzenia na ekran lub czytania przy słabym oświetleniu</translation>
 <translation id="8498395510292172881">Czytaj dalej w Chrome</translation>
-<translation id="8500234928660943538">Nieprawidłowy PUK. Pozostała liczba prób: <ph name="RETRIES" />.</translation>
 <translation id="8502536196501630039">Aby używać aplikacji z Google Play, musisz najpierw przywrócić swoje aplikacje. Niektóre dane mogły zostać utracone.</translation>
 <translation id="850314194061055138">użyj ponownie aparatu</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>

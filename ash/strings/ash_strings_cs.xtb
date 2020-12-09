@@ -135,6 +135,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2208323208084708176">Jednotný režim klasické plochy</translation>
 <translation id="2220572644011485463">PIN nebo heslo</translation>
 <translation id="2222338659135520253">Je vyžadováno přihlášení</translation>
+<translation id="2222841058024245321">Plocha 7</translation>
 <translation id="225680501294068881">Vyhledávání zařízení…</translation>
 <translation id="2268130516524549846">Rozhraní Bluetooth deaktivováno</translation>
 <translation id="2268813581635650749">Odhlásit vše</translation>
@@ -182,6 +183,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2658778018866295321">Kliknout a přetáhnout</translation>
 <translation id="2678852583403169292">Nabídka Poslech vybraného textu</translation>
+<translation id="2689613560355655046">Plocha 8</translation>
 <translation id="2700493154570097719">Nastavit klávesnici</translation>
 <translation id="2704781753052663061">Připojit se k dalším sítím Wi-Fi</translation>
 <translation id="2705001408393684014">Přepnout mikrofon. <ph name="STATE_TEXT" /></translation>
@@ -374,7 +376,8 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4389184120735010762">Stiskli jste klávesovou zkratku pro zabudovanou lupu. Chcete ji zapnout?</translation>
 <translation id="4412944820643904175">Funkce <ph name="FEATURE_NAME" /> je vypnutá.</translation>
 <translation id="4421231901400348175">Ovládání obrazovky je prostřednictvím Vzdálené pomoci sdíleno s uživatelem <ph name="HELPER_NAME" />.</translation>
-<translation id="4427613789487709312">Výchozí (<ph name="RATE" />x)</translation>
+<translation id="4424159417645388645">Plocha 5</translation>
+<translation id="4427613789487709312">Výchozí (<ph name="RATE" />×)</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
 <translation id="445864333228800152">Dobrý večer,</translation>
@@ -511,7 +514,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5691772641933328258">Otisk prstu nebyl rozpoznán</translation>
 <translation id="5710450975648804523">Režim Nerušit je zapnutý</translation>
 <translation id="573413375004481890">Toto zařízení nemohlo podporovat všechny vaše obrazovky, jedna proto byla odpojena</translation>
-<translation id="5740328398383587084">Sdílení nablízko</translation>
 <translation id="574392208103952083">Střední</translation>
 <translation id="5744083938413354016">Přetažení klepnutím</translation>
 <translation id="5745612484876805746">Noční režim se zapíná automaticky za soumraku</translation>
@@ -649,6 +651,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="698231206551913481">Po odebrání tohoto uživatele budou trvale smazány všechny soubory a místní data, která jsou k němu přiřazena.</translation>
 <translation id="7007983414944123363">Váš PIN nebo heslo se nepodařilo ověřit. Zkuste to znovu.</translation>
 <translation id="7015766095477679451">Vraťte se v <ph name="COME_BACK_TIME" />.</translation>
+<translation id="70168403932084660">Plocha 6</translation>
 <translation id="7025533177575372252">Propojte zařízení <ph name="DEVICE_NAME" /> s telefonem</translation>
 <translation id="7026338066939101231">Snížit</translation>
 <translation id="7029814467594812963">Ukončit relaci</translation>
