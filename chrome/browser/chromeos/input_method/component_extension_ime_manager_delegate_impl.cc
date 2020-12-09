@@ -163,12 +163,8 @@ void OnFilePathChecked(Profile* profile,
 ComponentExtensionIMEManagerDelegateImpl::
     ComponentExtensionIMEManagerDelegateImpl() {
   ReadComponentExtensionsInfo(&component_extension_list_);
-
-  for (const auto& input_method : input_method::kInputMethods) {
-    if (input_method.is_login_keyboard) {
-      login_layout_set_.insert(input_method.xkb_layout_id);
-    }
-  }
+  login_layout_set_.insert(std::begin(input_method::kLoginXkbLayoutIds),
+                           std::end(input_method::kLoginXkbLayoutIds));
 }
 
 ComponentExtensionIMEManagerDelegateImpl::
