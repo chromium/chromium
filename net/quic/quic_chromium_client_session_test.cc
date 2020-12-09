@@ -941,7 +941,7 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionCloseBeforeStreamRequest) {
   CompleteCryptoHandshake();
 
   // Send a ping so that client has outgoing traffic before receiving packets.
-  session_->SendPing();
+  session_->connection()->SendPing();
 
   // Pump the message loop to read the connection close packet.
   base::RunLoop().RunUntilIdle();
@@ -1024,7 +1024,7 @@ TEST_P(QuicChromiumClientSessionTest, ConnectionCloseWithPendingStreamRequest) {
   CompleteCryptoHandshake();
 
   // Send a ping so that client has outgoing traffic before receiving packets.
-  session_->SendPing();
+  session_->connection()->SendPing();
 
   // Open the maximum number of streams so that a subsequent request
   // can not proceed immediately.
@@ -2037,7 +2037,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
   CompleteCryptoHandshake();
 
   if (!VersionUsesHttp3(version_.transport_version))
-    session_->SendPing();
+    session_->connection()->SendPing();
   MockWrite writes[] = {
       MockWrite(SYNCHRONOUS, client_ping->data(), client_ping->length(), 1)};
   MockRead new_reads[] = {
@@ -2147,7 +2147,7 @@ TEST_P(QuicChromiumClientSessionTest, RetransmittableOnWireTimeout) {
 
   // Send PING, which will be ACKed by the server. After the ACK, there will be
   // no retransmittable packets on the wire, so the alarm should be set.
-  session_->SendPing();
+  session_->connection()->SendPing();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(alarm->IsSet());
   EXPECT_EQ(
@@ -2446,7 +2446,7 @@ TEST_P(QuicChromiumClientSessionTest, WriteErrorAfterHandshakeConfirmed) {
   CompleteCryptoHandshake();
 
   // Send a ping so that client has outgoing traffic before receiving packets.
-  session_->SendPing();
+  session_->connection()->SendPing();
 
   // Verify error count is properly recorded.
   EXPECT_EQ(1u, connectivity_monitor_->GetCountForWriteErrorCode(

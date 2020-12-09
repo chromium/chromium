@@ -357,7 +357,7 @@ void MockCryptoClientStream::SetConfigNegotiated() {
     config.SetStatelessResetTokenToSend(
         quic::QuicUtils::GenerateStatelessResetToken(connection_id));
   }
-  if (session()->version().AuthenticatesHandshakeConnectionIds()) {
+  if (session()->version().UsesTls()) {
     if (session()->perspective() == Perspective::IS_CLIENT) {
       config.SetOriginalConnectionIdToSend(
           session()->connection()->connection_id());

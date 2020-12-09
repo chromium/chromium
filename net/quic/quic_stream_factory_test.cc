@@ -3781,7 +3781,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkDisconnected(
                                     callback_.callback()));
 
   if (async_write_before)
-    session->SendPing();
+    session->connection()->SendPing();
 
   // Set up second socket data provider that is used after migration.
   // The response to the earlier request is read on this new socket.
@@ -4304,7 +4304,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
                                     callback_.callback()));
 
   if (async_write_before)
-    session->SendPing();
+    session->connection()->SendPing();
 
   EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
   // Cause the connection to report path degrading to the session.
