@@ -410,6 +410,8 @@ const char* const ALL_ATTRIBUTES[] = {
     "selection_end",
     "localized_extended_role",
     "inner_html",
+    "ia2_table_cell_column_index",
+    "ia2_table_cell_row_index",
 };
 
 void AccessibilityTreeFormatterWin::AddProperties(
@@ -768,6 +770,16 @@ void AccessibilityTreeFormatterWin::AddIA2TableCellProperties(
   Microsoft::WRL::ComPtr<IAccessibleTableCell> ia2cell;
   if (S_OK != QueryIAccessibleTableCell(node.Get(), &ia2cell))
     return;  // No IA2Text, we are finished with this node.
+
+  LONG column_index;
+  if (SUCCEEDED(ia2cell->get_columnIndex(&column_index))) {
+    dict->SetInteger("ia2_table_cell_column_index", column_index);
+  }
+
+  LONG row_index;
+  if (SUCCEEDED(ia2cell->get_rowIndex(&row_index))) {
+    dict->SetInteger("ia2_table_cell_row_index", row_index);
+  }
 
   LONG n_row_header_cells;
   IUnknown** row_headers;
