@@ -1437,6 +1437,63 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateBufferScale) {
   EXPECT_EQ(gfx::Rect(0, 0, 1600, 1200), window_->GetBounds());
 }
 
+TEST_P(WaylandWindowTest, AuxiliaryWindowUpdateBufferScale) {
+  VerifyAndClearExpectations();
+
+  // Creating an output with scale 1.
+  wl::TestOutput* output1 = server_.CreateAndInitializeOutput();
+  output1->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  output1->SetScale(1);
+  Sync();
+
+  // Creating an output with scale 2.
+  wl::TestOutput* output2 = server_.CreateAndInitializeOutput();
+  output2->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  output2->SetScale(2);
+  Sync();
+
+  // Send the window to |output1|.
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+  wl_surface_send_enter(surface->resource(), output1->resource());
+  Sync();
+
+  // Creating a tooltip on |window_|.
+  window_->SetPointerFocus(true);
+  gfx::Rect subsurface_bounds(15, 15, 10, 10);
+  std::unique_ptr<WaylandWindow> auxiliary_window =
+      CreateWaylandWindowWithParams(PlatformWindowType::kTooltip,
+                                    gfx::kNullAcceleratedWidget,
+                                    subsurface_bounds, &delegate_);
+  EXPECT_TRUE(auxiliary_window);
+
+  auxiliary_window->Show(false);
+
+  // |auxiliary_window| should inherit its buffer scale from the focused window.
+  EXPECT_EQ(1, auxiliary_window->buffer_scale());
+  EXPECT_EQ(subsurface_bounds, auxiliary_window->GetBounds());
+  auxiliary_window->Hide();
+
+  // Send the window to |output2|.
+  wl_surface_send_enter(surface->resource(), output2->resource());
+  wl_surface_send_leave(surface->resource(), output1->resource());
+  Sync();
+
+  EXPECT_EQ(2, window_->buffer_scale());
+  auxiliary_window->Show(false);
+
+  // |auxiliary_window|'s scale and bounds must change whenever its parents
+  // scale is changed.
+  EXPECT_EQ(2, window_->buffer_scale());
+  EXPECT_EQ(2, auxiliary_window->buffer_scale());
+  EXPECT_EQ(gfx::ScaleToRoundedRect(subsurface_bounds, 2),
+            auxiliary_window->GetBounds());
+
+  auxiliary_window->Hide();
+  window_->SetPointerFocus(false);
+}
+
 // Tests WaylandWindow repositions menu windows to be relative to parent window
 // in a right way.
 TEST_P(WaylandWindowTest, AdjustPopupBounds) {
@@ -1662,23 +1719,16 @@ TEST_P(WaylandWindowTest, OnCloseRequest) {
 TEST_P(WaylandWindowTest, AuxiliaryWindowSimpleParent) {
   VerifyAndClearExpectations();
 
-  std::unique_ptr<WaylandWindow> second_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
-      gfx::Rect(0, 0, 640, 480), &delegate_);
-  EXPECT_TRUE(second_window);
-
-  // Test case 1: if the subsurface is provided with a parent widget, it must
-  // always use that as a parent.
+  // Auxiliary window must ignore the parent provided by aura and should always
+  // use focused window instead.
   gfx::Rect subsurface_bounds(gfx::Point(15, 15), gfx::Size(10, 10));
   std::unique_ptr<WaylandWindow> auxiliary_window =
       CreateWaylandWindowWithParams(PlatformWindowType::kTooltip,
-                                    window_->GetWidget(), subsurface_bounds,
-                                    &delegate_);
+                                    gfx::kNullAcceleratedWidget,
+                                    subsurface_bounds, &delegate_);
   EXPECT_TRUE(auxiliary_window);
 
-  // The subsurface mustn't take the focused window as a parent, but use the
-  // provided one.
-  second_window->SetPointerFocus(true);
+  window_->SetPointerFocus(true);
   auxiliary_window->Show(false);
 
   Sync();
@@ -1698,47 +1748,7 @@ TEST_P(WaylandWindowTest, AuxiliaryWindowSimpleParent) {
           ->resource();
   EXPECT_EQ(parent_resource, test_subsurface->parent_resource());
 
-  // Test case 2: the subsurface must use the focused window as its parent.
-  auxiliary_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kTooltip, gfx::kNullAcceleratedWidget,
-      subsurface_bounds, &delegate_);
-  EXPECT_TRUE(auxiliary_window);
-
-  // The tooltip must take the focused window.
-  second_window->SetPointerFocus(true);
-  auxiliary_window->Show(false);
-
-  Sync();
-
-  // Get new surface after recreating the WaylandAuxiliaryWindow.
-  mock_surface_subsurface = server_.GetObject<wl::MockSurface>(
-      auxiliary_window->root_surface()->GetSurfaceId());
-  test_subsurface = mock_surface_subsurface->sub_surface();
-
-  auto* second_parent_resource =
-      server_
-          .GetObject<wl::MockSurface>(
-              second_window->root_surface()->GetSurfaceId())
-          ->resource();
-  EXPECT_EQ(second_parent_resource, test_subsurface->parent_resource());
-
   auxiliary_window->Hide();
-
-  Sync();
-
-  // The subsurface must take the focused window.
-  second_window->SetPointerFocus(false);
-  window_->SetPointerFocus(true);
-  auxiliary_window->Show(false);
-
-  Sync();
-
-  // The subsurface is invalidated on each Hide call.
-  test_subsurface = mock_surface_subsurface->sub_surface();
-
-  // The |window_|'s resource must be the parent resource.
-  EXPECT_EQ(parent_resource, test_subsurface->parent_resource());
-
   window_->SetPointerFocus(false);
 }
 
@@ -1897,6 +1907,7 @@ TEST_P(WaylandWindowTest, AuxiliaryWindowNestedParent) {
   EXPECT_TRUE(menu_window);
 
   VerifyAndClearExpectations();
+  menu_window->SetPointerFocus(true);
 
   gfx::Rect subsurface_bounds(gfx::Point(15, 15), gfx::Size(10, 10));
   std::unique_ptr<WaylandWindow> auxiliary_window =
@@ -1906,8 +1917,6 @@ TEST_P(WaylandWindowTest, AuxiliaryWindowNestedParent) {
   EXPECT_TRUE(auxiliary_window);
 
   VerifyAndClearExpectations();
-
-  menu_window->SetPointerFocus(true);
 
   auxiliary_window->Show(false);
 

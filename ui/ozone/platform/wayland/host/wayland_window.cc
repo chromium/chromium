@@ -418,7 +418,7 @@ void WaylandWindow::AddEnteredOutputId(struct wl_output* output) {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
-  if (wl::IsMenuType(type()))
+  if (wl::IsMenuType(type()) || type() == ui::PlatformWindowType::kTooltip)
     return;
 
   const uint32_t entered_output_id =

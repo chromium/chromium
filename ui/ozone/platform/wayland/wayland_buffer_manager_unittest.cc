@@ -933,6 +933,8 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
       DCHECK(mock_surface->xdg_surface());
       ActivateSurface(mock_surface->xdg_surface());
     } else {
+      // WaylandAuxiliaryWindow uses the focused window as a parent.
+      window_->SetPointerFocus(true);
       // See the comment near Show() call above.
       temp_window->Show(false);
     }
@@ -943,6 +945,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
 
     Sync();
 
+    window_->SetPointerFocus(false);
     temp_window.reset();
     DestroyBufferAndSetTerminateExpectation(widget, kDmabufBufferId,
                                             false /*fail*/);

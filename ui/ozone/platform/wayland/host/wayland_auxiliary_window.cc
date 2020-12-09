@@ -46,7 +46,7 @@ void WaylandAuxiliaryWindow::SetBounds(const gfx::Rect& bounds) {
   auto old_bounds = GetBounds();
   WaylandWindow::SetBounds(bounds);
 
-  if (old_bounds == bounds || !parent_window())
+  if (old_bounds == bounds || !parent_window() || !subsurface_)
     return;
 
   auto subsurface_bounds_dip =
@@ -58,22 +58,11 @@ void WaylandAuxiliaryWindow::SetBounds(const gfx::Rect& bounds) {
 }
 
 void WaylandAuxiliaryWindow::CreateSubsurface() {
-  auto* parent = parent_window();
-  if (!parent) {
-    // wl_subsurface can be used for several purposes: tooltips and drag arrow
-    // windows. If we are in a drag process, use the entered window. Otherwise,
-    // it must be a tooltip.
-    if (connection()->IsDragInProgress()) {
-      parent = connection()->data_drag_controller()->entered_window();
-      set_parent_window(parent);
-    } else {
-      // If Aura does not not provide a reference parent window, needed by
-      // Wayland, we get the current focused window to place and show the
-      // tooltips.
-      parent =
-          connection()->wayland_window_manager()->GetCurrentFocusedWindow();
-    }
-  }
+  auto* parent = FindParentWindow();
+  set_parent_window(parent);
+
+  // We need to make sure that buffer scale matches the parent window.
+  UpdateBufferScale(true);
 
   // Tooltip and drag arrow creation is an async operation. By the time Aura
   // actually creates them, it is possible that the user has already moved the
@@ -101,14 +90,30 @@ void WaylandAuxiliaryWindow::CreateSubsurface() {
   connection()->wayland_window_manager()->NotifyWindowConfigured(this);
 }
 
+WaylandWindow* WaylandAuxiliaryWindow::FindParentWindow() {
+  // wl_subsurface can be used for several purposes: tooltips and drag arrow
+  // windows. If we are in a drag process, use the entered window. Otherwise,
+  // it must be a tooltip.
+  if (connection()->IsDragInProgress())
+    return connection()->data_drag_controller()->entered_window();
+
+  // We get the current focused window to place and show the
+  // tooltips.
+  return connection()->wayland_window_manager()->GetCurrentFocusedWindow();
+}
+
 bool WaylandAuxiliaryWindow::OnInitialize(
     PlatformWindowInitProperties properties) {
   DCHECK(!parent_window());
 
   // If we do not have parent window provided, we must always use a focused
   // window or a window that entered drag whenever the subsurface is created.
-  if (properties.parent_widget == gfx::kNullAcceleratedWidget)
+  if (properties.parent_widget == gfx::kNullAcceleratedWidget) {
+    // Need to set the possible parent window here, so the initial scale will be
+    // calculated correctly.
+    set_parent_window(FindParentWindow());
     return true;
+  }
 
   set_parent_window(
       connection()->wayland_window_manager()->FindParentForNewWindow(
