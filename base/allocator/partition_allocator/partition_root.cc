@@ -614,6 +614,12 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
 
   {
     ScopedGuard guard{lock_};
+    // Avoid purging if there is PCScan task currently scheduled. Since pcscan
+    // takes snapshot of all allocated pages, decommitting pages here (even
+    // under the lock) is racy.
+    // TODO(bikineev): Consider rescheduling the purging after PCScan.
+    if (PCScan::Instance().IsInProgress())
+      return;
     if (flags & PartitionPurgeDecommitEmptySlotSpans)
       DecommitEmptySlotSpans();
     if (flags & PartitionPurgeDiscardUnusedSystemPages) {
