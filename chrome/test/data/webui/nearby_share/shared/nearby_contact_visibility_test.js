@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+// #import 'chrome://nearby/strings.m.js';
 // #import 'chrome://nearby/shared/nearby_contact_visibility.m.js';
 // #import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.m.js';
 // #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
