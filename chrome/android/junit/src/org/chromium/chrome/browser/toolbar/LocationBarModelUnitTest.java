@@ -22,9 +22,11 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -75,19 +77,36 @@ public class LocationBarModelUnitTest {
         CustomTabIncognitoManager.setCustomTabIncognitoManagerUsedForTesting(null);
     }
 
+    public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
+            new LocationBarModel.OfflineStatus() {
+                @Override
+                public boolean isShowingTrustedOfflinePage(WebContents webContents) {
+                    return true;
+                }
+
+                @Override
+                public boolean isOfflinePage(Tab tab) {
+                    return true;
+                }
+            };
+
+    // clang-format off
     private static class TestIncognitoLocationBarModel extends LocationBarModel {
         public TestIncognitoLocationBarModel(Tab tab) {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY);
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY, url -> url,
+                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS);
             setTab(tab, /*incognito=*/true);
         }
     }
 
     private static class TestRegularLocationBarModel extends LocationBarModel {
         public TestRegularLocationBarModel(Tab tab) {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY);
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY, url -> url,
+                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS);
             setTab(tab, /*incognito=*/false);
         }
     }
+    // clang-format on
 
     @Test
     @MediumTest

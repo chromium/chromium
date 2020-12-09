@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -65,6 +67,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
@@ -359,7 +362,20 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
         NewTabPageDelegate ntpDelegate = createNewTabPageDelegate(toolbarLayout);
-        mLocationBarModel = new LocationBarModel(activity, ntpDelegate);
+        mLocationBarModel = new LocationBarModel(activity, ntpDelegate,
+                DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
+                IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid,
+                new LocationBarModel.OfflineStatus() {
+                    @Override
+                    public boolean isShowingTrustedOfflinePage(WebContents webContents) {
+                        return OfflinePageUtils.isShowingTrustedOfflinePage(webContents);
+                    }
+
+                    @Override
+                    public boolean isOfflinePage(Tab tab) {
+                        return OfflinePageUtils.isOfflinePage(tab);
+                    }
+                });
         mControlContainer = controlContainer;
         assert mControlContainer != null;
 

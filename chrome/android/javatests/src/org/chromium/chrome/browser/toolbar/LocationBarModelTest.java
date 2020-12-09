@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -227,7 +228,9 @@ public class LocationBarModelTest {
         private String mUrl;
 
         public TestLocationBarModel() {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY);
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
+                    DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
+                    window -> null, new LocationBarModel.OfflineStatus() {});
             initializeWithNative();
 
             Tab tab = new MockTab(0, false) {

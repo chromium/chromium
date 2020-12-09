@@ -8,9 +8,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/TrustedCdn_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
+#include "chrome/browser/tab/jni_headers/TrustedCdn_jni.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

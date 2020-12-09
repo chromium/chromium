@@ -22,6 +22,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabViewManager.java",
     "java/src/org/chromium/chrome/browser/tab/TabViewProvider.java",
     "java/src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroid.java",
+    "java/src/org/chromium/chrome/browser/tab/TabWebContentsUserData.java",
+    "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
     "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabData.java",
@@ -61,6 +63,8 @@ android_library("java") {
     "//components/find_in_page/android:java",
     "//components/navigation_interception/android:navigation_interception_java",
     "//components/payments/content/android:java",
+    "//components/security_state/content/android:java",
+    "//components/security_state/core:security_state_enums_java",
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
@@ -76,6 +80,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedTabDataStorage.java",
   ]

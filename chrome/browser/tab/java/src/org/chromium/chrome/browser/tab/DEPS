@@ -14,6 +14,7 @@ include_rules = [
   "+components/external_intents/android/java",
   "+components/find_in_page/android/java",
   "+components/navigation_interception/android/java",
+  "+components/security_state/content/android/java",
   "+content/public/android/java/src/org/chromium/content_public",
   "+ui/android/java/src/org/chromium/ui/base",
   "+ui/android/java/src/org/chromium/ui/util",

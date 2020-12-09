@@ -38,13 +38,11 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
-import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -134,6 +132,14 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         if (!mIntentDataProvider.isInfoPage()) FirstRunSignInProcessor.start(this);
 
         mConnection.showSignInToastIfNecessary(mSession, getIntent());
+
+        new CustomTabTrustedCdnPublisherUrlVisibility(
+                getWindowAndroid(), getLifecycleDispatcher(), () -> {
+                    String urlPackage = mConnection.getTrustedCdnPublisherUrlPackage();
+                    return urlPackage != null
+                            && urlPackage.equals(
+                                    mConnection.getClientPackageNameForSession(mSession));
+                });
 
         super.finishNativeInitialization();
 
@@ -273,19 +279,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         }
 
         return super.requiresFirstRunToBeCompleted(intent);
-    }
-
-    @Override
-    public boolean canShowTrustedCdnPublisherUrl() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)) {
-            return false;
-        }
-
-        if (Previews.isPreview(mTabProvider.getTab())) return false;
-
-        String publisherUrlPackage = mConnection.getTrustedCdnPublisherUrlPackage();
-        return publisherUrlPackage != null
-                && publisherUrlPackage.equals(mConnection.getClientPackageNameForSession(mSession));
     }
 
     /**

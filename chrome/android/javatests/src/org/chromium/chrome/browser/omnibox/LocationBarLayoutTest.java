@@ -41,6 +41,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -53,6 +54,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -81,6 +83,18 @@ public class LocationBarLayoutTest {
 
     private TestLocationBarModel mTestLocationBarModel;
 
+    public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
+            new LocationBarModel.OfflineStatus() {
+                @Override
+                public boolean isShowingTrustedOfflinePage(WebContents webContents) {
+                    return false;
+                }
+
+                @Override
+                public boolean isOfflinePage(Tab tab) {
+                    return false;
+                }
+            };
     private class TestLocationBarModel extends LocationBarModel {
         private String mCurrentUrl;
         private String mEditingText;
@@ -88,7 +102,9 @@ public class LocationBarLayoutTest {
         private Integer mSecurityLevel;
 
         public TestLocationBarModel() {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY);
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
+                    DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
+                    window -> null, OFFLINE_STATUS);
             initializeWithNative();
         }
 

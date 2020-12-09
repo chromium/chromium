@@ -1029,13 +1029,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * @return Whether the given activity can show the publisher URL from a trusted CDN.
-     */
-    public boolean canShowTrustedCdnPublisherUrl() {
-        return false;
-    }
-
-    /**
      * Actions that may be run at some point after startup. Place tasks that are not critical to the
      * startup path here.  This method will be called automatically.
      */
