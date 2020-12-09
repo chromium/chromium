@@ -307,6 +307,11 @@ careful of here is that everything happens on the correct thread/sequence. Many
 Browser-process objects have specific expectations, and will end up with very
 different behaviour if they are created or used from the wrong context.
 
+If your test case requires the existence of a `RenderFrameHost` and similar
+structures, see `content/test/fuzzer/presentation_service_mojolpm_fuzzer.cc`
+for a fuzzer which already sets them up (in particular, inheritance from
+`RenderViewHostTestHarness`).
+
 **The most important thing to be careful of here is that everything happens on
 the correct thread/sequence. Many Browser-process objects have specific
 expectations, and will end up with very different behaviour if they are created
