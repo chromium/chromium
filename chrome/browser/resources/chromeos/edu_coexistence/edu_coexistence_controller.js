@@ -153,6 +153,8 @@ export class EduCoexistenceController extends PostMessageAPIServer {
         'saveGuestFlowState', this.saveGuestFlowState_.bind(this));
     this.registerMethod(
         'fetchGuestFlowState', this.fetchGuestFlowState_.bind(this));
+    this.registerMethod(
+        'getEduAccountEmail', this.getEduAccountEmail_.bind(this));
 
     // Add listeners for Authenticator.
     this.addAuthExtHostListeners_();
@@ -265,6 +267,15 @@ export class EduCoexistenceController extends PostMessageAPIServer {
    */
   fetchGuestFlowState_(unused) {
     return {'state': this.guestFlowState_};
+  }
+
+  /**
+   * @param {!Array} unused Placeholder unused empty parameter.
+   * @return {!String}  The edu-account email that is being added to the device.
+   */
+  getEduAccountEmail_(unused) {
+    console.assert(this.userInfo_);
+    return this.userInfo_.email;
   }
 
   /**
