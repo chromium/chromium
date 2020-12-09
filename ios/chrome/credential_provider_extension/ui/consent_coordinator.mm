@@ -102,7 +102,7 @@
           if (self.isInitialConfigurationRequest) {
             [self.context completeExtensionConfigurationRequest];
           } else {
-            [self stop];
+            [self.delegate consentCoordinatorDidAcceptConsent:self];
           }
         }
       }

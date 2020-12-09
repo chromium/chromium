@@ -24,8 +24,9 @@
 #error "This file requires ARC support."
 #endif
 
-@interface CredentialListCoordinator () <CredentialListUIHandler,
-                                         ConfirmationAlertActionHandler,
+@interface CredentialListCoordinator () <ConfirmationAlertActionHandler,
+                                         ConsentCoordinatorDelegate,
+                                         CredentialListUIHandler,
                                          CredentialDetailsConsumerDelegate>
 
 // Base view controller from where |viewController| is presented.
@@ -95,7 +96,6 @@
   [self.baseViewController presentViewController:self.viewController
                                         animated:NO
                                       completion:nil];
-  [self.mediator fetchCredentials];
 
   NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
   BOOL isConsentGiven =
@@ -106,7 +106,10 @@
                               context:self.context
               reauthenticationHandler:self.reauthenticationHandler
         isInitialConfigurationRequest:NO];
+    self.consentCoordinator.delegate = self;
     [self.consentCoordinator start];
+  } else {
+    [self.mediator fetchCredentials];
   }
 }
 
@@ -116,6 +119,14 @@
                          completion:nil];
   self.viewController = nil;
   self.mediator = nil;
+}
+
+#pragma mark - ConsentCoordinatorDelegate
+
+- (void)consentCoordinatorDidAcceptConsent:
+    (ConsentCoordinator*)consentCoordinator {
+  [consentCoordinator stop];
+  [self.mediator fetchCredentials];
 }
 
 #pragma mark - CredentialListUIHandler

@@ -7,11 +7,23 @@
 
 #import <Foundation/Foundation.h>
 
-@class UIViewController;
 @class ASCredentialProviderExtensionContext;
+@class ConsentCoordinator;
 @class ReauthenticationHandler;
+@class UIViewController;
+
+@protocol ConsentCoordinatorDelegate <NSObject>
+
+// Called when the user accepts the consent shown by this coordinator.
+- (void)consentCoordinatorDidAcceptConsent:
+    (ConsentCoordinator*)consentCoordinator;
+
+@end
 
 @interface ConsentCoordinator : NSObject
+
+// Delegate to handle the coordinator.
+@property(nonatomic, weak) id<ConsentCoordinatorDelegate> delegate;
 
 // Default initializer. When the coordinator is started it will present on
 // |baseViewController|.
