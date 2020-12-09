@@ -206,7 +206,8 @@ CookieManager::CookieManager()
     : allow_file_scheme_cookies_(kDefaultFileSchemeAllowed),
       cookie_store_created_(false),
       workaround_http_secure_cookies_(
-          !base::android::BuildInfo::GetInstance()->targets_at_least_r()),
+          base::android::BuildInfo::GetInstance()->target_sdk_version() <
+          base::android::SDK_VERSION_R),
       cookie_store_client_thread_("CookieMonsterClient"),
       cookie_store_backend_thread_("CookieMonsterBackend"),
       setting_new_mojo_cookie_manager_(false) {

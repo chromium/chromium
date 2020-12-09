@@ -124,9 +124,13 @@ class BASE_EXPORT BuildInfo {
     return sdk_int_;
   }
 
-  bool is_at_least_q() const { return is_at_least_q_; }
-
-  bool targets_at_least_r() const { return targets_at_least_r_; }
+  // Returns the targetSdkVersion of the currently running app. If called from a
+  // library, this returns the embedding app's targetSdkVersion.
+  //
+  // This can only be compared to finalized SDK versions, never against
+  // pre-release Android versions. For pre-release Android versions, see the
+  // targetsAtLeast*() methods in BuildInfo.java.
+  int target_sdk_version() const { return target_sdk_version_; }
 
   bool is_debug_android() const { return is_debug_android_; }
 
@@ -162,8 +166,7 @@ class BASE_EXPORT BuildInfo {
   const char* const resources_version_;
   // Not needed by breakpad.
   const std::string extracted_file_suffix_;
-  const bool is_at_least_q_;
-  const bool targets_at_least_r_;
+  const int target_sdk_version_;
   const bool is_debug_android_;
 
   DISALLOW_COPY_AND_ASSIGN(BuildInfo);
