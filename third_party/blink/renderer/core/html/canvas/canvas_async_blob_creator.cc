@@ -150,7 +150,6 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     ToBlobFunctionType function_type,
     base::TimeTicks start_time,
     ExecutionContext* context,
-    UkmParameters ukm_params,
     const IdentifiableToken& input_digest,
     ScriptPromiseResolver* resolver)
     : CanvasAsyncBlobCreator(image,
@@ -159,7 +158,6 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
                              nullptr,
                              start_time,
                              context,
-                             ukm_params,
                              input_digest,
                              resolver) {}
 
@@ -170,7 +168,6 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     V8BlobCallback* callback,
     base::TimeTicks start_time,
     ExecutionContext* context,
-    UkmParameters ukm_params,
     const IdentifiableToken& input_digest,
     ScriptPromiseResolver* resolver)
     : fail_encoder_initialization_for_test_(false),
@@ -181,9 +178,8 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
       function_type_(function_type),
       start_time_(start_time),
       static_bitmap_image_loaded_(false),
-      callback_(callback),
-      ukm_params_(ukm_params),
       input_digest_(input_digest),
+      callback_(callback),
       script_promise_resolver_(resolver) {
   DCHECK(image);
   DCHECK(context);
@@ -494,7 +490,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult() {
 
     // TODO(crbug.com/1143737) WrapPersistent(this) stores more data than is
     // needed by the function. It would be good to find a way to wrap only the
-    // objects needed (image_, ukm_params_, input_digest_)
+    // objects needed (image_, ukm_source_id_, input_digest_, context_)
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(
             FROM_HERE,
@@ -512,13 +508,13 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
       ImageDataBuffer::Create(image_);
 
   if (data_buffer) {
-    blink::IdentifiabilityMetricBuilder(ukm_params_.source_id)
+    blink::IdentifiabilityMetricBuilder(context_->UkmSourceID())
         .Set(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::kCanvasReadback,
                  input_digest_),
              blink::IdentifiabilityDigestOfBytes(base::make_span(
                  data_buffer->Pixels(), data_buffer->ComputeByteSize())))
-        .Record(ukm_params_.ukm_recorder);
+        .Record(context_->UkmRecorder());
   }
 
   // Avoid unwanted retention, see dispose().

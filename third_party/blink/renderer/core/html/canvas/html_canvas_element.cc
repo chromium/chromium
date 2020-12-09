@@ -120,8 +120,7 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
       ExecutionContextLifecycleObserver(GetExecutionContext()),
       PageVisibilityObserver(document.GetPage()),
       CanvasRenderingContextHost(
-          CanvasRenderingContextHost::HostType::kCanvasHost,
-          {document.UkmRecorder(), document.UkmSourceID()}),
+          CanvasRenderingContextHost::HostType::kCanvasHost),
       size_(kDefaultCanvasWidth, kDefaultCanvasHeight),
       context_creation_was_blocked_(false),
       ignore_reset_(false),
@@ -287,12 +286,13 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
 
   if (IdentifiabilityStudySettings::Get()->ShouldSample(
           IdentifiableSurface::Type::kCanvasRenderingContext)) {
-    IdentifiabilityMetricBuilder(ukm_params_.source_id)
+    auto* context = GetExecutionContext();
+    IdentifiabilityMetricBuilder(context->UkmSourceID())
         .Set(IdentifiableSurface::FromTypeAndToken(
                  IdentifiableSurface::Type::kCanvasRenderingContext,
                  CanvasRenderingContext::ContextTypeFromId(type)),
              !!result)
-        .Record(ukm_params_.ukm_recorder);
+        .Record(context->UkmRecorder());
   }
 
   if (ContentsCcLayer() != old_contents_cc_layer)
@@ -867,6 +867,11 @@ bool HTMLCanvasElement::IsPrinting() const {
   return GetDocument().BeforePrintingOrPrinting();
 }
 
+UkmParameters HTMLCanvasElement::GetUkmParameters() {
+  auto* context = GetExecutionContext();
+  return {context->UkmRecorder(), context->UkmSourceID()};
+}
+
 void HTMLCanvasElement::SetSurfaceSize(const IntSize& size) {
   size_ = size;
   did_fail_to_create_resource_provider_ = false;
@@ -1037,7 +1042,6 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
         image_bitmap, options,
         CanvasAsyncBlobCreator::kHTMLCanvasToBlobCallback, callback, start_time,
         GetExecutionContext(),
-        UkmParameters{GetDocument().UkmRecorder(), GetDocument().UkmSourceID()},
         IdentifiabilityStudySettings::Get()->IsTypeAllowed(
             IdentifiableSurface::Type::kCanvasReadback)
             ? IdentifiabilityInputDigest(context_)

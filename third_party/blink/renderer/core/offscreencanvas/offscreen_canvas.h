@@ -123,6 +123,7 @@ class CORE_EXPORT OffscreenCanvas final
               const SkIRect& damage_rect) override;
   bool ShouldAccelerate2dContext() const override;
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;
+  UkmParameters GetUkmParameters() override;
 
   // Partial CanvasResourceHost implementation
   void NotifyGpuContextLost() override {}

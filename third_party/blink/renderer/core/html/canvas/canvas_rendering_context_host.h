@@ -40,7 +40,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
     kCanvasHost,
     kOffscreenCanvasHost,
   };
-  CanvasRenderingContextHost(HostType host_type, UkmParameters ukm_params);
+  explicit CanvasRenderingContextHost(HostType host_type);
 
   void RecordCanvasSizeToUMA(const IntSize&);
 
@@ -81,6 +81,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   virtual void Commit(scoped_refptr<CanvasResource> canvas_resource,
                       const SkIRect& damage_rect);
 
+  virtual UkmParameters GetUkmParameters() = 0;
+
   // For deferred canvases this will have the side effect of drawing recorded
   // commands in order to finalize the frame.
   ScriptPromise convertToBlob(ScriptState*,
@@ -108,13 +110,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;
 
-  const UkmParameters GetUkmParameters() { return ukm_params_; }
-  void SetUkmRecorderForTesting(ukm::UkmRecorder* test_ukm_recorder) {
-    ukm_params_.ukm_recorder = test_ukm_recorder;
-  }
-
  protected:
-  ~CanvasRenderingContextHost() override {}
+  ~CanvasRenderingContextHost() override = default;
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage(const IntSize&) const;
 
@@ -130,7 +127,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   bool did_fail_to_create_resource_provider_ = false;
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = kNone;
-  UkmParameters ukm_params_;
 };
 
 }  // namespace blink

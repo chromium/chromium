@@ -36,7 +36,6 @@ class MockCanvasAsyncBlobCreator : public CanvasAsyncBlobCreator {
             nullptr,
             base::TimeTicks(),
             document->GetExecutionContext(),
-            UkmParameters{document->UkmRecorder(), document->UkmSourceID()},
             0,
             nullptr) {
     if (fail_encoder_initialization)
@@ -300,8 +299,7 @@ TEST_F(CanvasAsyncBlobCreatorTest, ColorManagedConvertToBlob) {
                   source_bitmap_image, options,
                   CanvasAsyncBlobCreator::ToBlobFunctionType::
                       kHTMLCanvasConvertToBlobPromise,
-                  base::TimeTicks(), GetFrame().DomWindow(),
-                  UkmParameters{UkmRecorder(), 0}, 0, nullptr);
+                  base::TimeTicks(), GetFrame().DomWindow(), 0, nullptr);
           ASSERT_TRUE(async_blob_creator->EncodeImageForConvertToBlobTest());
 
           sk_sp<SkData> sk_data = SkData::MakeWithCopy(
