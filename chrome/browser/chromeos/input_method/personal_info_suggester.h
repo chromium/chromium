@@ -51,8 +51,7 @@ class PersonalInfoSuggester : public Suggester {
   // Suggester overrides:
   void OnFocus(int context_id) override;
   void OnBlur() override;
-  SuggestionStatus HandleKeyEvent(
-      const InputMethodEngineBase::KeyboardEvent& event) override;
+  SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool Suggest(const base::string16& text) override;
   // index defaults to 0 as not required for this suggester.
   bool AcceptSuggestion(size_t index = 0) override;

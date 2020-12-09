@@ -25,7 +25,6 @@ namespace chromeos {
 namespace {
 
 const char kMaxTextBeforeCursorLength = 50;
-const char kKeydown[] = "keydown";
 
 const char* kAllowedDomainsForPersonalInfoSuggester[] = {
     "discord.com",      "messenger.com",       "web.whatsapp.com",
@@ -309,8 +308,7 @@ void AssistiveSuggester::OnBlur() {
   emoji_suggester_.OnBlur();
 }
 
-bool AssistiveSuggester::OnKeyEvent(
-    const InputMethodEngineBase::KeyboardEvent& event) {
+bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
   if (context_id_ == -1)
     return false;
 
@@ -318,7 +316,7 @@ bool AssistiveSuggester::OnKeyEvent(
   // surrounding text change, which is triggered by a keydown event. As a
   // result, the next key event after suggesting would be a keyup event of the
   // same key, and that event is meaningless to us.
-  if (IsSuggestionShown() && event.type == kKeydown) {
+  if (IsSuggestionShown() && event.type() == ui::ET_KEY_PRESSED) {
     SuggestionStatus status = current_suggester_->HandleKeyEvent(event);
     switch (status) {
       case SuggestionStatus::kAccept:

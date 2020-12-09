@@ -11,6 +11,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_keymap.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -29,8 +31,9 @@ constexpr base::TimeDelta kStateUpdateTimeout = base::TimeDelta::FromSeconds(1);
 
 // Characters which should be sent as a KeyEvent and attributes of generated
 // KeyEvent.
-constexpr std::tuple<char, ui::KeyboardCode, const char*>
-    kControlCharToKeyEvent[] = {{'\n', ui::VKEY_RETURN, "Enter"}};
+constexpr std::tuple<char, ui::KeyboardCode, ui::DomCode, ui::DomKey>
+    kControlCharToKeyEvent[] = {
+        {'\n', ui::VKEY_RETURN, ui::DomCode::ENTER, ui::DomKey::ENTER}};
 
 bool IsControlChar(const base::string16& text) {
   const std::string str = base::UTF16ToUTF8(text);
@@ -53,6 +56,14 @@ ui::TextInputClient* GetTextInputClient() {
   ui::TextInputClient* client = handler->GetInputMethod()->GetTextInputClient();
   DCHECK(client);
   return client;
+}
+
+ui::KeyEvent CreateKeyEvent(ui::EventType type,
+                            ui::KeyboardCode key_code,
+                            ui::DomCode code,
+                            ui::DomKey key) {
+  return ui::KeyEvent(type, key_code, code, ui::EF_NONE, key,
+                      ui::EventTimeForNow());
 }
 
 }  // namespace
@@ -256,22 +267,8 @@ void InputConnectionImpl::SetSelection(const gfx::Range& new_selection_range) {
 void InputConnectionImpl::SendKeyEvent(
     std::unique_ptr<ui::KeyEvent> key_event) {
   DCHECK(key_event);
-  chromeos::InputMethodEngine::KeyboardEvent event;
-  if (key_event->type() == ui::ET_KEY_PRESSED)
-    event.type = "keydown";
-  else
-    event.type = "keyup";
-
-  event.key = key_event->GetCodeString();
-  event.code = ui::KeyboardCodeToDomKeycode(key_event->key_code());
-  event.key_code = key_event->key_code();
-  event.alt_key = key_event->IsAltDown();
-  event.ctrl_key = key_event->IsControlDown();
-  event.shift_key = key_event->IsShiftDown();
-  event.caps_lock = key_event->IsCapsLockOn();
-
   std::string error;
-  if (!ime_engine_->SendKeyEvents(input_context_id_, {event}, &error)) {
+  if (!ime_engine_->SendKeyEvents(input_context_id_, {*key_event}, &error)) {
     LOG(ERROR) << error;
   }
 }
@@ -325,12 +322,12 @@ void InputConnectionImpl::SendControlKeyEvent(const base::string16& text) {
 
   for (const auto& t : kControlCharToKeyEvent) {
     if (std::get<0>(t) == str[0]) {
-      chromeos::InputMethodEngine::KeyboardEvent press;
-      press.type = "keydown";
-      press.key_code = std::get<1>(t);
-      press.key = press.code = std::get<2>(t);
-      chromeos::InputMethodEngine::KeyboardEvent release(press);
-      release.type = "keyup";
+      ui::KeyEvent press = CreateKeyEvent(ui::ET_KEY_PRESSED, std::get<1>(t),
+                                          std::get<2>(t), std::get<3>(t));
+
+      ui::KeyEvent release = CreateKeyEvent(ui::ET_KEY_RELEASED, std::get<1>(t),
+                                            std::get<2>(t), std::get<3>(t));
+
       std::string error;
       if (!ime_engine_->SendKeyEvents(input_context_id_, {press, release},
                                       &error)) {

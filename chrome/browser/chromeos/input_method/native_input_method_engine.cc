@@ -21,6 +21,7 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace chromeos {
 
@@ -58,14 +59,13 @@ std::string NormalizeString(const std::string& str) {
   return normalized_str;
 }
 
-ime::mojom::ModifierStatePtr ModifierStateFromEvent(
-    const InputMethodEngineBase::KeyboardEvent& event) {
+ime::mojom::ModifierStatePtr ModifierStateFromEvent(const ui::KeyEvent& event) {
   auto modifier_state = ime::mojom::ModifierState::New();
-  modifier_state->alt = event.alt_key;
-  modifier_state->alt_graph = event.altgr_key;
-  modifier_state->caps_lock = event.caps_lock;
-  modifier_state->control = event.ctrl_key;
-  modifier_state->shift = event.shift_key;
+  modifier_state->alt = event.flags() & ui::EF_ALT_DOWN;
+  modifier_state->alt_graph = event.flags() & ui::EF_ALTGR_DOWN;
+  modifier_state->caps_lock = event.flags() & ui::EF_CAPS_LOCK_ON;
+  modifier_state->control = event.flags() & ui::EF_CONTROL_DOWN;
+  modifier_state->shift = event.flags() & ui::EF_SHIFT_DOWN;
   return modifier_state;
 }
 
@@ -253,7 +253,7 @@ void NativeInputMethodEngine::ImeObserver::OnBlur(int context_id) {
 
 void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
     const std::string& engine_id,
-    const InputMethodEngineBase::KeyboardEvent& event,
+    const ui::KeyEvent& event,
     ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     if (assistive_suggester_->OnKeyEvent(event)) {
@@ -266,9 +266,11 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
     return;
   }
   auto key_event = ime::mojom::PhysicalKeyEvent::New(
-      event.type == "keydown" ? ime::mojom::KeyEventType::kKeyDown
-                              : ime::mojom::KeyEventType::kKeyUp,
-      event.code, event.key, ModifierStateFromEvent(event));
+      event.type() == ui::ET_KEY_PRESSED ? ime::mojom::KeyEventType::kKeyDown
+                                         : ime::mojom::KeyEventType::kKeyUp,
+      ui::KeycodeConverter::DomCodeToCodeString(event.code()),
+      ui::KeycodeConverter::DomKeyToKeyString(event.GetDomKey()),
+      ModifierStateFromEvent(event));
 
   if (ShouldUseRuleBasedMojoEngine(engine_id) && remote_to_engine_.is_bound()) {
     remote_to_engine_->ProcessKeypressForRulebased(

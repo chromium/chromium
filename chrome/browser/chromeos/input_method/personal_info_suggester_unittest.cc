@@ -22,6 +22,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
 namespace {
@@ -158,10 +160,10 @@ class PersonalInfoSuggesterTest : public testing::Test {
     chrome_keyboard_controller_client_->set_keyboard_visible_for_test(false);
   }
 
-  void SendKeyboardEvent(const std::string& code) {
-    InputMethodEngineBase::KeyboardEvent event;
-    event.code = code;
-    suggester_->HandleKeyEvent(event);
+  void SendKeyboardEvent(const ui::DomCode& code) {
+    suggester_->HandleKeyEvent(
+        ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
+                     ui::DomKey::NONE, ui::EventTimeForNow()));
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -196,11 +198,11 @@ TEST_F(PersonalInfoSuggesterTest, SuggestEmail) {
 
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
   suggestion_handler_->VerifySuggestion(email_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("My email is: "));
   suggestion_handler_->VerifySuggestion(email_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("hi, my email: "));
   suggestion_handler_->VerifySuggestion(email_, 0);
@@ -277,15 +279,15 @@ TEST_F(PersonalInfoSuggesterTest, SuggestNames) {
 
   suggester_->Suggest(base::UTF8ToUTF16("my first name is "));
   suggestion_handler_->VerifySuggestion(first_name_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("my last name is: "));
   suggestion_handler_->VerifySuggestion(last_name_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("my name is "));
   suggestion_handler_->VerifySuggestion(full_name_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("Hmm... my FULL name: "));
   suggestion_handler_->VerifySuggestion(full_name_, 0);
@@ -365,19 +367,19 @@ TEST_F(PersonalInfoSuggesterTest, SuggestAddress) {
 
   suggester_->Suggest(base::UTF8ToUTF16("my address is "));
   suggestion_handler_->VerifySuggestion(address_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("our address is: "));
   suggestion_handler_->VerifySuggestion(address_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("my shipping address: "));
   suggestion_handler_->VerifySuggestion(address_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("our billing address is "));
   suggestion_handler_->VerifySuggestion(address_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("my current address: "));
   suggestion_handler_->VerifySuggestion(address_, 0);
@@ -453,19 +455,19 @@ TEST_F(PersonalInfoSuggesterTest, SuggestPhoneNumber) {
 
   suggester_->Suggest(base::UTF8ToUTF16("my phone number is "));
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("my number is "));
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("my mobile number is: "));
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("my number: "));
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
 
   suggester_->Suggest(base::UTF8ToUTF16("my telephone number is "));
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
@@ -523,8 +525,8 @@ TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithDownEnter) {
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
-  SendKeyboardEvent("ArrowDown");
-  SendKeyboardEvent("Enter");
+  SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
+  SendKeyboardEvent(ui::DomCode::ENTER);
 
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
   EXPECT_TRUE(suggestion_handler_->IsSuggestionAccepted());
@@ -542,8 +544,8 @@ TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithUpEnter) {
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
-  SendKeyboardEvent("ArrowUp");
-  SendKeyboardEvent("Enter");
+  SendKeyboardEvent(ui::DomCode::ARROW_UP);
+  SendKeyboardEvent(ui::DomCode::ENTER);
 
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
   EXPECT_TRUE(suggestion_handler_->IsSuggestionAccepted());
@@ -561,7 +563,7 @@ TEST_F(PersonalInfoSuggesterTest, DismissSuggestion) {
   personal_data_->AddProfile(autofill_profile);
 
   suggester_->Suggest(base::UTF8ToUTF16("my name is "));
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
   suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
   EXPECT_FALSE(suggestion_handler_->IsSuggestionAccepted());
 }
@@ -598,8 +600,8 @@ TEST_F(PersonalInfoSuggesterTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5000));
   tts_handler_->VerifyAnnouncement("");
 
-  SendKeyboardEvent("ArrowDown");
-  SendKeyboardEvent("Enter");
+  SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
+  SendKeyboardEvent(ui::DomCode::ENTER);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5000));
   tts_handler_->VerifyAnnouncement("");
 }
@@ -622,8 +624,8 @@ TEST_F(PersonalInfoSuggesterTest, AnnounceSpokenFeedbackWhenChromeVoxIsOn) {
   tts_handler_->VerifyAnnouncement(
       "Personal info suggested. Press down arrow to access; escape to ignore.");
 
-  SendKeyboardEvent("ArrowDown");
-  SendKeyboardEvent("Enter");
+  SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
+  SendKeyboardEvent(ui::DomCode::ENTER);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
   tts_handler_->VerifyAnnouncement("Suggestion inserted.");
 
@@ -631,7 +633,7 @@ TEST_F(PersonalInfoSuggesterTest, AnnounceSpokenFeedbackWhenChromeVoxIsOn) {
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1500));
   tts_handler_->VerifyAnnouncement(
       "Personal info suggested. Press down arrow to access; escape to ignore.");
-  SendKeyboardEvent("Escape");
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(200));
   tts_handler_->VerifyAnnouncement("Suggestion dismissed.");
 }
@@ -644,8 +646,8 @@ TEST_F(PersonalInfoSuggesterTest, DoNotShowAnnotationAfterMaxAcceptanceCount) {
 
   for (int i = 0; i < kMaxAcceptanceCount; i++) {
     suggester_->Suggest(base::UTF8ToUTF16("my email is "));
-    SendKeyboardEvent("ArrowDown");
-    SendKeyboardEvent("Enter");
+    SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
+    SendKeyboardEvent(ui::DomCode::ENTER);
     suggestion_handler_->VerifyShowAnnotation(true);
   }
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
@@ -665,7 +667,7 @@ TEST_F(PersonalInfoSuggesterTest, ShowSettingLink) {
   for (int i = 0; i < kMaxShowSettingCount; i++) {
     suggester_->Suggest(base::UTF8ToUTF16("my email is "));
     // Dismiss suggestion.
-    SendKeyboardEvent("Escape");
+    SendKeyboardEvent(ui::DomCode::ESCAPE);
     suggestion_handler_->VerifyShowSettingLink(true);
   }
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
@@ -684,8 +686,8 @@ TEST_F(PersonalInfoSuggesterTest, DoNotShowSettingLinkAfterAcceptance) {
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
   suggestion_handler_->VerifyShowSettingLink(true);
   // Accept suggestion.
-  SendKeyboardEvent("ArrowDown");
-  SendKeyboardEvent("Enter");
+  SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
+  SendKeyboardEvent(ui::DomCode::ENTER);
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
   suggestion_handler_->VerifyShowSettingLink(false);
 }
@@ -703,9 +705,9 @@ TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithDownDownEnter) {
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
-  SendKeyboardEvent("ArrowDown");
-  SendKeyboardEvent("ArrowDown");
-  SendKeyboardEvent("Enter");
+  SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
+  SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
+  SendKeyboardEvent(ui::DomCode::ENTER);
 
   suggestion_handler_->VerifyButtonClicked(
       ui::ime::ButtonId::kSmartInputsSettingLink);
@@ -724,8 +726,8 @@ TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithUpEnter) {
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
-  SendKeyboardEvent("ArrowUp");
-  SendKeyboardEvent("Enter");
+  SendKeyboardEvent(ui::DomCode::ARROW_UP);
+  SendKeyboardEvent(ui::DomCode::ENTER);
 
   suggestion_handler_->VerifyButtonClicked(
       ui::ime::ButtonId::kSmartInputsSettingLink);
@@ -745,9 +747,9 @@ TEST_F(PersonalInfoSuggesterTest, RecordsTimeToAccept) {
 
   EXPECT_TRUE(suggester_->Suggest(base::UTF8ToUTF16("my email is ")));
 
-  // Press "ArrowDown" to choose and accept the suggestion.
-  SendKeyboardEvent("ArrowDown");
-  SendKeyboardEvent("Enter");
+  // Press ui::DomCode::ARROW_DOWN to choose and accept the suggestion.
+  SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
+  SendKeyboardEvent(ui::DomCode::ENTER);
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToAccept.PersonalInfo", 1);
 }
@@ -765,8 +767,8 @@ TEST_F(PersonalInfoSuggesterTest, RecordsTimeToDismiss) {
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
   EXPECT_TRUE(suggester_->Suggest(base::UTF8ToUTF16("my email is ")));
-  // Press "Escape" to dismiss.
-  SendKeyboardEvent("Escape");
+  // Press ui::DomCode::ESCAPE to dismiss.
+  SendKeyboardEvent(ui::DomCode::ESCAPE);
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToDismiss.PersonalInfo", 1);
 }

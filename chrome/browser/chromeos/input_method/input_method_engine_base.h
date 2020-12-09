@@ -19,6 +19,7 @@
 #include "ui/base/ime/chromeos/ime_engine_handler_interface.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/events/event.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -36,23 +37,6 @@ namespace chromeos {
 class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
                               public ProfileObserver {
  public:
-  struct KeyboardEvent {
-    KeyboardEvent();
-    KeyboardEvent(const KeyboardEvent& other);
-    virtual ~KeyboardEvent();
-
-    std::string type;
-    std::string key;
-    std::string code;
-    int key_code;  // only used by on-screen keyboards.
-    std::string extension_id;
-    bool alt_key = false;
-    bool altgr_key = false;
-    bool ctrl_key = false;
-    bool shift_key = false;
-    bool caps_lock = false;
-  };
-
   enum SegmentStyle {
     SEGMENT_STYLE_UNDERLINE,
     SEGMENT_STYLE_DOUBLE_UNDERLINE,
@@ -88,7 +72,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
     // Called when the user pressed a key with a text field focused.
     virtual void OnKeyEvent(
         const std::string& engine_id,
-        const InputMethodEngineBase::KeyboardEvent& event,
+        const ui::KeyEvent& event,
         ui::IMEEngineHandlerInterface::KeyEventDoneCallback key_data) = 0;
 
     // Called when Chrome terminates on-going text input session.
@@ -190,7 +174,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
   // Send the sequence of key events.
   bool SendKeyEvents(int context_id,
-                     const std::vector<KeyboardEvent>& events,
+                     const std::vector<ui::KeyEvent>& events,
                      std::string* error);
 
   // Set the current composition and associated properties.
@@ -310,8 +294,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   void DeleteSurroundingTextToInputContext(int offset, size_t number_of_chars);
 
   // Sends the key event to the window tree host.
-  virtual bool SendKeyEvent(const ui::KeyEvent& ui_event,
-                            std::string* error) = 0;
+  virtual bool SendKeyEvent(const ui::KeyEvent& event, std::string* error) = 0;
 
   // Used to verify that a key event is valid before precessing it in the
   // current context.
@@ -356,8 +339,6 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   bool handling_key_event_;
 
  private:
-  ui::KeyEvent ConvertKeyboardEventToUIKeyEvent(const KeyboardEvent& event);
-
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::Value input_method_settings_snapshot_;

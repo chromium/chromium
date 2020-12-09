@@ -38,102 +38,11 @@ const char kErrorNotActive[] = "IME is not active.";
 const char kErrorWrongContext[] = "Context is not active.";
 const char kErrorInvalidValue[] = "Argument '%s' with value '%d' is not valid.";
 
-std::string GetKeyFromEvent(const ui::KeyEvent& event) {
-  const std::string code = event.GetCodeString();
-  if (base::StartsWith(code, "Control", base::CompareCase::SENSITIVE))
-    return "Ctrl";
-  if (base::StartsWith(code, "Shift", base::CompareCase::SENSITIVE))
-    return "Shift";
-  if (base::StartsWith(code, "Alt", base::CompareCase::SENSITIVE))
-    return "Alt";
-  if (base::StartsWith(code, "Arrow", base::CompareCase::SENSITIVE))
-    return code.substr(5);
-  if (code == "Escape")
-    return "Esc";
-  if (code == "Backspace" || code == "Tab" || code == "Enter" ||
-      code == "CapsLock" || code == "Power")
-    return code;
-  // Cases for media keys.
-  switch (event.key_code()) {
-    case ui::VKEY_BROWSER_BACK:
-    case ui::VKEY_F1:
-      return "HistoryBack";
-    case ui::VKEY_BROWSER_FORWARD:
-    case ui::VKEY_F2:
-      return "HistoryForward";
-    case ui::VKEY_BROWSER_REFRESH:
-    case ui::VKEY_F3:
-      return "BrowserRefresh";
-    case ui::VKEY_MEDIA_LAUNCH_APP2:
-    case ui::VKEY_F4:
-      return "ChromeOSFullscreen";
-    case ui::VKEY_MEDIA_LAUNCH_APP1:
-    case ui::VKEY_F5:
-      return "ChromeOSSwitchWindow";
-    case ui::VKEY_BRIGHTNESS_DOWN:
-    case ui::VKEY_F6:
-      return "BrightnessDown";
-    case ui::VKEY_BRIGHTNESS_UP:
-    case ui::VKEY_F7:
-      return "BrightnessUp";
-    case ui::VKEY_VOLUME_MUTE:
-    case ui::VKEY_F8:
-      return "AudioVolumeMute";
-    case ui::VKEY_VOLUME_DOWN:
-    case ui::VKEY_F9:
-      return "AudioVolumeDown";
-    case ui::VKEY_VOLUME_UP:
-    case ui::VKEY_F10:
-      return "AudioVolumeUp";
-    default:
-      break;
-  }
-  uint16_t ch = 0;
-  // Ctrl+? cases, gets key value for Ctrl is not down.
-  if (event.flags() & ui::EF_CONTROL_DOWN) {
-    ui::KeyEvent event_no_ctrl(event.type(), event.key_code(),
-                               event.flags() ^ ui::EF_CONTROL_DOWN);
-    ch = event_no_ctrl.GetCharacter();
-  } else {
-    ch = event.GetCharacter();
-  }
-  return base::UTF16ToUTF8(base::string16(1, ch));
-}
-
-void GetExtensionKeyboardEventFromKeyEvent(
-    const ui::KeyEvent& event,
-    InputMethodEngineBase::KeyboardEvent* ext_event) {
-  DCHECK(event.type() == ui::ET_KEY_RELEASED ||
-         event.type() == ui::ET_KEY_PRESSED);
-  DCHECK(ext_event);
-  ext_event->type = (event.type() == ui::ET_KEY_RELEASED) ? "keyup" : "keydown";
-
-  if (event.code() == ui::DomCode::NONE) {
-    ext_event->code = ui::KeyboardCodeToDomKeycode(event.key_code());
-  } else {
-    ext_event->code = event.GetCodeString();
-  }
-  ext_event->key_code = static_cast<int>(event.key_code());
-  ext_event->alt_key = event.IsAltDown();
-  ext_event->altgr_key = event.IsAltGrDown();
-  ext_event->ctrl_key = event.IsControlDown();
-  ext_event->shift_key = event.IsShiftDown();
-  ext_event->caps_lock = event.IsCapsLockOn();
-  ext_event->key = GetKeyFromEvent(event);
-}
-
 bool IsUint32Value(int i) {
   return 0 <= i && i <= std::numeric_limits<uint32_t>::max();
 }
 
 }  // namespace
-
-InputMethodEngineBase::KeyboardEvent::KeyboardEvent() = default;
-
-InputMethodEngineBase::KeyboardEvent::KeyboardEvent(
-    const KeyboardEvent& other) = default;
-
-InputMethodEngineBase::KeyboardEvent::~KeyboardEvent() = default;
 
 InputMethodEngineBase::InputMethodEngineBase()
     : current_input_type_(ui::TEXT_INPUT_TYPE_NONE),
@@ -262,21 +171,12 @@ void InputMethodEngineBase::ProcessKeyEvent(const ui::KeyEvent& key_event,
     return;
   }
 
-  KeyboardEvent ext_event;
-  GetExtensionKeyboardEventFromKeyEvent(key_event, &ext_event);
-
-  // If the given key event is from VK, it means the key event was simulated.
-  // Sets the |extension_id| value so that the IME extension can ignore it.
-  auto* properties = key_event.properties();
-  if (properties && properties->find(ui::kPropertyFromVK) != properties->end())
-    ext_event.extension_id = extension_id_;
-
   // Should not pass key event in password field.
   if (current_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD) {
     // Bind the start time to the callback so that we can calculate the latency
     // when the callback is called.
     observer_->OnKeyEvent(
-        active_component_id_, ext_event,
+        active_component_id_, key_event,
         base::BindOnce(
             [](base::Time start, int context_id, int* context_id_ptr,
                KeyEventDoneCallback callback, bool handled) {
@@ -386,28 +286,9 @@ bool InputMethodEngineBase::DeleteSurroundingText(int context_id,
   return true;
 }
 
-ui::KeyEvent InputMethodEngineBase::ConvertKeyboardEventToUIKeyEvent(
-    const KeyboardEvent& event) {
-  const ui::EventType type =
-      (event.type == "keyup") ? ui::ET_KEY_RELEASED : ui::ET_KEY_PRESSED;
-  auto key_code = static_cast<ui::KeyboardCode>(event.key_code);
-
-  int flags = ui::EF_NONE;
-  flags |= event.alt_key ? ui::EF_ALT_DOWN : ui::EF_NONE;
-  flags |= event.altgr_key ? ui::EF_ALTGR_DOWN : ui::EF_NONE;
-  flags |= event.ctrl_key ? ui::EF_CONTROL_DOWN : ui::EF_NONE;
-  flags |= event.shift_key ? ui::EF_SHIFT_DOWN : ui::EF_NONE;
-  flags |= event.caps_lock ? ui::EF_CAPS_LOCK_ON : ui::EF_NONE;
-
-  return ui::KeyEvent(type, key_code,
-                      ui::KeycodeConverter::CodeStringToDomCode(event.code),
-                      flags, ui::KeycodeConverter::KeyStringToDomKey(event.key),
-                      ui::EventTimeForNow());
-}
-
 bool InputMethodEngineBase::SendKeyEvents(
     int context_id,
-    const std::vector<KeyboardEvent>& events,
+    const std::vector<ui::KeyEvent>& events,
     std::string* error) {
   if (!IsActive()) {
     *error = kErrorNotActive;
@@ -423,7 +304,7 @@ bool InputMethodEngineBase::SendKeyEvents(
   }
 
   for (const auto& event : events) {
-    if (!SendKeyEvent(ConvertKeyboardEventToUIKeyEvent(event), error))
+    if (!SendKeyEvent(event, error))
       return false;
   }
   return true;

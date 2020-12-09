@@ -30,8 +30,7 @@ class EmojiSuggester : public Suggester {
   // Suggester overrides:
   void OnFocus(int context_id) override;
   void OnBlur() override;
-  SuggestionStatus HandleKeyEvent(
-      const InputMethodEngineBase::KeyboardEvent& event) override;
+  SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
   bool Suggest(const base::string16& text) override;
   bool AcceptSuggestion(size_t index) override;
   void DismissSuggestion() override;

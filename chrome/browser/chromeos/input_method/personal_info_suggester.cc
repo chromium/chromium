@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/input_method/personal_info_suggester.h"
-#include "chrome/browser/chromeos/extensions/input_method_api.h"
-#include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,7 +12,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/extensions/input_method_api.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
+#include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -25,6 +25,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
 
@@ -186,22 +187,24 @@ void PersonalInfoSuggester::OnBlur() {
 }
 
 SuggestionStatus PersonalInfoSuggester::HandleKeyEvent(
-    const InputMethodEngineBase::KeyboardEvent& event) {
+    const ui::KeyEvent& event) {
   if (!suggestion_shown_)
     return SuggestionStatus::kNotHandled;
 
-  if (event.code == "Escape") {
+  if (event.code() == ui::DomCode::ESCAPE) {
     DismissSuggestion();
     return SuggestionStatus::kDismiss;
   }
   if (highlighted_index_ == kNoneHighlighted && buttons_.size() > 0) {
-    if (event.code == "ArrowDown" || event.code == "ArrowUp") {
-      highlighted_index_ = event.code == "ArrowDown" ? 0 : buttons_.size() - 1;
+    if (event.code() == ui::DomCode::ARROW_DOWN ||
+        event.code() == ui::DomCode::ARROW_UP) {
+      highlighted_index_ =
+          event.code() == ui::DomCode::ARROW_DOWN ? 0 : buttons_.size() - 1;
       SetButtonHighlighted(buttons_[highlighted_index_], true);
       return SuggestionStatus::kBrowsing;
     }
   } else {
-    if (event.code == "Enter") {
+    if (event.code() == ui::DomCode::ENTER) {
       switch (buttons_[highlighted_index_].id) {
         case ui::ime::ButtonId::kSuggestion:
           AcceptSuggestion();
@@ -212,9 +215,10 @@ SuggestionStatus PersonalInfoSuggester::HandleKeyEvent(
         default:
           break;
       }
-    } else if (event.code == "ArrowUp" || event.code == "ArrowDown") {
+    } else if (event.code() == ui::DomCode::ARROW_UP ||
+               event.code() == ui::DomCode::ARROW_DOWN) {
       SetButtonHighlighted(buttons_[highlighted_index_], false);
-      if (event.code == "ArrowUp") {
+      if (event.code() == ui::DomCode::ARROW_UP) {
         highlighted_index_ =
             (highlighted_index_ + buttons_.size() - 1) % buttons_.size();
       } else {

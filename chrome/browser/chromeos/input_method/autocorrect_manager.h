@@ -32,7 +32,7 @@ class AutocorrectManager {
 
   // To hide the underline after enough keypresses, this class intercepts
   // keystrokes. Returns whether the keypress has now been handled.
-  bool OnKeyEvent(const InputMethodEngineBase::KeyboardEvent& event);
+  bool OnKeyEvent(const ui::KeyEvent& event);
 
   // Indicates a new text field is focused, used to save context ID.
   void OnFocus(int context_id);

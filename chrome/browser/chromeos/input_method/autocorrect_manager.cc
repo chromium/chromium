@@ -12,6 +12,7 @@
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
 namespace {
@@ -56,12 +57,11 @@ void AutocorrectManager::HandleAutocorrect(gfx::Range autocorrect_range,
   autocorrect_time_ = base::TimeTicks::Now();
 }
 
-bool AutocorrectManager::OnKeyEvent(
-    const InputMethodEngineBase::KeyboardEvent& event) {
-  if (event.type != "keydown") {
+bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
+  if (event.type() != ui::ET_KEY_PRESSED) {
     return false;
   }
-  if (event.code == "ArrowUp" && window_visible) {
+  if (event.code() == ui::DomCode::ARROW_UP && window_visible) {
     std::string error;
     auto button = ui::ime::AssistiveWindowButton();
     button.id = ui::ime::ButtonId::kUndo;
@@ -74,7 +74,8 @@ bool AutocorrectManager::OnKeyEvent(
     button_highlighted = true;
     return true;
   }
-  if (event.code == "Enter" && window_visible && button_highlighted) {
+  if (event.code() == ui::DomCode::ENTER && window_visible &&
+      button_highlighted) {
     UndoAutocorrect();
     return true;
   }

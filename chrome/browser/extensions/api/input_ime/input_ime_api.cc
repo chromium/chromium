@@ -12,6 +12,10 @@
 #include "extensions/browser/extension_registry.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_keymap.h"
+#include "ui/base/ime/constants.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace input_ime = extensions::api::input_ime;
 namespace KeyEventHandled = extensions::api::input_ime::KeyEventHandled;
@@ -33,6 +37,96 @@ InputMethodEngineBase* GetEngineIfActive(Profile* profile,
   InputMethodEngineBase* engine =
       event_router->GetEngineIfActive(extension_id, error);
   return engine;
+}
+
+std::string GetKeyFromEvent(const ui::KeyEvent& event) {
+  const std::string code = event.GetCodeString();
+  if (base::StartsWith(code, "Control", base::CompareCase::SENSITIVE))
+    return "Ctrl";
+  if (base::StartsWith(code, "Shift", base::CompareCase::SENSITIVE))
+    return "Shift";
+  if (base::StartsWith(code, "Alt", base::CompareCase::SENSITIVE))
+    return "Alt";
+  if (base::StartsWith(code, "Arrow", base::CompareCase::SENSITIVE))
+    return code.substr(5);
+  if (code == "Escape")
+    return "Esc";
+  if (code == "Backspace" || code == "Tab" || code == "Enter" ||
+      code == "CapsLock" || code == "Power")
+    return code;
+  // Cases for media keys.
+  switch (event.key_code()) {
+    case ui::VKEY_BROWSER_BACK:
+    case ui::VKEY_F1:
+      return "HistoryBack";
+    case ui::VKEY_BROWSER_FORWARD:
+    case ui::VKEY_F2:
+      return "HistoryForward";
+    case ui::VKEY_BROWSER_REFRESH:
+    case ui::VKEY_F3:
+      return "BrowserRefresh";
+    case ui::VKEY_MEDIA_LAUNCH_APP2:
+    case ui::VKEY_F4:
+      return "ChromeOSFullscreen";
+    case ui::VKEY_MEDIA_LAUNCH_APP1:
+    case ui::VKEY_F5:
+      return "ChromeOSSwitchWindow";
+    case ui::VKEY_BRIGHTNESS_DOWN:
+    case ui::VKEY_F6:
+      return "BrightnessDown";
+    case ui::VKEY_BRIGHTNESS_UP:
+    case ui::VKEY_F7:
+      return "BrightnessUp";
+    case ui::VKEY_VOLUME_MUTE:
+    case ui::VKEY_F8:
+      return "AudioVolumeMute";
+    case ui::VKEY_VOLUME_DOWN:
+    case ui::VKEY_F9:
+      return "AudioVolumeDown";
+    case ui::VKEY_VOLUME_UP:
+    case ui::VKEY_F10:
+      return "AudioVolumeUp";
+    default:
+      break;
+  }
+  uint16_t ch = 0;
+  // Ctrl+? cases, gets key value for Ctrl is not down.
+  if (event.flags() & ui::EF_CONTROL_DOWN) {
+    ui::KeyEvent event_no_ctrl(event.type(), event.key_code(),
+                               event.flags() ^ ui::EF_CONTROL_DOWN);
+    ch = event_no_ctrl.GetCharacter();
+  } else {
+    ch = event.GetCharacter();
+  }
+  return base::UTF16ToUTF8(base::string16(1, ch));
+}
+
+ui::KeyEvent ConvertKeyboardEventToUIKeyEvent(
+    const input_ime::KeyboardEvent& event) {
+  const ui::EventType type =
+      event.type == input_ime::KEYBOARD_EVENT_TYPE_KEYDOWN
+          ? ui::ET_KEY_PRESSED
+          : ui::ET_KEY_RELEASED;
+
+  const auto key_code = static_cast<ui::KeyboardCode>(
+      event.key_code ? *event.key_code
+                     : ui::DomKeycodeToKeyboardCode(event.code));
+
+  int flags = ui::EF_NONE;
+  flags |= event.alt_key && *event.alt_key ? ui::EF_ALT_DOWN : ui::EF_NONE;
+  flags |=
+      event.altgr_key && *event.altgr_key ? ui::EF_ALTGR_DOWN : ui::EF_NONE;
+  flags |=
+      event.ctrl_key && *event.ctrl_key ? ui::EF_CONTROL_DOWN : ui::EF_NONE;
+  flags |=
+      event.shift_key && *event.shift_key ? ui::EF_SHIFT_DOWN : ui::EF_NONE;
+  flags |=
+      event.caps_lock && *event.caps_lock ? ui::EF_CAPS_LOCK_ON : ui::EF_NONE;
+
+  return ui::KeyEvent(type, key_code,
+                      ui::KeycodeConverter::CodeStringToDomCode(event.code),
+                      flags, ui::KeycodeConverter::KeyStringToDomKey(event.key),
+                      ui::EventTimeForNow());
 }
 
 }  // namespace
@@ -90,7 +184,7 @@ void ImeObserver::OnBlur(int context_id) {
 
 void ImeObserver::OnKeyEvent(
     const std::string& component_id,
-    const InputMethodEngineBase::KeyboardEvent& event,
+    const ui::KeyEvent& event,
     IMEEngineHandlerInterface::KeyEventDoneCallback callback) {
   if (extension_id_.empty())
     return;
@@ -112,25 +206,33 @@ void ImeObserver::OnKeyEvent(
   const std::string request_id =
       engine->AddPendingKeyEvent(component_id, std::move(callback));
 
-  input_ime::KeyboardEvent key_data_value;
-  key_data_value.type = input_ime::ParseKeyboardEventType(event.type);
+  input_ime::KeyboardEvent keyboard_event;
+  keyboard_event.type = (event.type() == ui::ET_KEY_RELEASED)
+                            ? input_ime::KEYBOARD_EVENT_TYPE_KEYUP
+                            : input_ime::KEYBOARD_EVENT_TYPE_KEYDOWN;
+
   // For legacy reasons, we still put a |requestID| into the keyData, even
   // though there is already a |requestID| argument in OnKeyEvent.
-  key_data_value.request_id = std::make_unique<std::string>(request_id);
-  if (!event.extension_id.empty()) {
-    key_data_value.extension_id =
-        std::make_unique<std::string>(event.extension_id);
-  }
-  key_data_value.key = event.key;
-  key_data_value.code = event.code;
-  key_data_value.alt_key = std::make_unique<bool>(event.alt_key);
-  key_data_value.altgr_key = std::make_unique<bool>(event.altgr_key);
-  key_data_value.ctrl_key = std::make_unique<bool>(event.ctrl_key);
-  key_data_value.shift_key = std::make_unique<bool>(event.shift_key);
-  key_data_value.caps_lock = std::make_unique<bool>(event.caps_lock);
+  keyboard_event.request_id = std::make_unique<std::string>(request_id);
+
+  // If the given key event is from VK, it means the key event was simulated.
+  // Sets the |extension_id| value so that the IME extension can ignore it.
+  auto* properties = event.properties();
+  if (properties && properties->find(ui::kPropertyFromVK) != properties->end())
+    keyboard_event.extension_id = std::make_unique<std::string>(extension_id_);
+
+  keyboard_event.key = GetKeyFromEvent(event);
+  keyboard_event.code = event.code() == ui::DomCode::NONE
+                            ? ui::KeyboardCodeToDomKeycode(event.key_code())
+                            : event.GetCodeString();
+  keyboard_event.alt_key = std::make_unique<bool>(event.IsAltDown());
+  keyboard_event.altgr_key = std::make_unique<bool>(event.IsAltGrDown());
+  keyboard_event.ctrl_key = std::make_unique<bool>(event.IsControlDown());
+  keyboard_event.shift_key = std::make_unique<bool>(event.IsShiftDown());
+  keyboard_event.caps_lock = std::make_unique<bool>(event.IsCapsLockOn());
 
   std::unique_ptr<base::ListValue> args(
-      input_ime::OnKeyEvent::Create(component_id, key_data_value, request_id));
+      input_ime::OnKeyEvent::Create(component_id, keyboard_event, request_id));
 
   DispatchEventToExtension(extensions::events::INPUT_IME_ON_KEY_EVENT,
                            input_ime::OnKeyEvent::kEventName, std::move(args));
@@ -412,22 +514,10 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(parent_params);
   const SendKeyEvents::Params::Parameters& params = parent_params->parameters;
 
-  std::vector<InputMethodEngineBase::KeyboardEvent> key_data_out;
+  std::vector<ui::KeyEvent> key_data_out;
   key_data_out.reserve(params.key_data.size());
   for (const auto& key_event : params.key_data) {
-    key_data_out.emplace_back();
-    InputMethodEngineBase::KeyboardEvent& event = key_data_out.back();
-    event.type = input_ime::ToString(key_event.type);
-    event.key = key_event.key;
-    event.code = key_event.code;
-    event.key_code = key_event.key_code.get()
-                         ? *(key_event.key_code)
-                         : ui::DomKeycodeToKeyboardCode(key_event.code);
-    event.alt_key = key_event.alt_key ? *(key_event.alt_key) : false;
-    event.altgr_key = key_event.altgr_key ? *(key_event.altgr_key) : false;
-    event.ctrl_key = key_event.ctrl_key ? *(key_event.ctrl_key) : false;
-    event.shift_key = key_event.shift_key ? *(key_event.shift_key) : false;
-    event.caps_lock = key_event.caps_lock ? *(key_event.caps_lock) : false;
+    key_data_out.emplace_back(ConvertKeyboardEventToUIKeyEvent(key_event));
   }
 
   if (!engine->SendKeyEvents(params.context_id, key_data_out, &error))

@@ -11,8 +11,15 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
+
+ui::KeyEvent CreateKeyEventFromCode(const ui::DomCode& code) {
+  return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
+                      ui::DomKey::NONE, ui::EventTimeForNow());
+}
 
 const char kEmojiData[] = "happy,😀;😃;😄";
 
@@ -115,10 +122,8 @@ class EmojiSuggesterTest : public testing::Test {
     chrome_keyboard_controller_client_->set_keyboard_visible_for_test(false);
   }
 
-  SuggestionStatus Press(const std::string& event_code) {
-    InputMethodEngineBase::KeyboardEvent event;
-    event.code = event_code;
-    return emoji_suggester_->HandleKeyEvent(event);
+  SuggestionStatus Press(ui::DomCode code) {
+    return emoji_suggester_->HandleKeyEvent(CreateKeyEventFromCode(code));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -161,46 +166,39 @@ TEST_F(EmojiSuggesterTest, DoNotShowSuggestionWhenVirtualKeyboardEnabled) {
 
 TEST_F(EmojiSuggesterTest, ReturnkBrowsingWhenPressingDown) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  InputMethodEngineBase::KeyboardEvent event;
-  event.code = "ArrowDown";
+  ui::KeyEvent event = CreateKeyEventFromCode(ui::DomCode::ARROW_DOWN);
   EXPECT_EQ(SuggestionStatus::kBrowsing,
             emoji_suggester_->HandleKeyEvent(event));
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkBrowsingWhenPressingUp) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  InputMethodEngineBase::KeyboardEvent event;
-  event.code = "ArrowUp";
+  ui::KeyEvent event = CreateKeyEventFromCode(ui::DomCode::ARROW_UP);
   EXPECT_EQ(SuggestionStatus::kBrowsing,
             emoji_suggester_->HandleKeyEvent(event));
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkDismissWhenPressingEsc) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  InputMethodEngineBase::KeyboardEvent event;
-  event.code = "Escape";
+  ui::KeyEvent event = CreateKeyEventFromCode(ui::DomCode::ESCAPE);
   EXPECT_EQ(SuggestionStatus::kDismiss,
             emoji_suggester_->HandleKeyEvent(event));
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenValidNumber) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  InputMethodEngineBase::KeyboardEvent event1;
-  event1.code = "ArrowDown";
+  ui::KeyEvent event1 = CreateKeyEventFromCode(ui::DomCode::ARROW_DOWN);
   emoji_suggester_->HandleKeyEvent(event1);
-  InputMethodEngineBase::KeyboardEvent event2;
-  event2.code = "1";
+  ui::KeyEvent event2 = CreateKeyEventFromCode(ui::DomCode::DIGIT1);
   EXPECT_EQ(SuggestionStatus::kNotHandled,
             emoji_suggester_->HandleKeyEvent(event2));
 }
 
 TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenNotANumber) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  InputMethodEngineBase::KeyboardEvent event1;
-  event1.code = "ArrowDown";
+  ui::KeyEvent event1 = CreateKeyEventFromCode(ui::DomCode::ARROW_DOWN);
   emoji_suggester_->HandleKeyEvent(event1);
-  InputMethodEngineBase::KeyboardEvent event2;
-  event2.code = "a";
+  ui::KeyEvent event2 = CreateKeyEventFromCode(ui::DomCode::US_A);
   EXPECT_EQ(SuggestionStatus::kNotHandled,
             emoji_suggester_->HandleKeyEvent(event2));
 }
@@ -208,8 +206,7 @@ TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenNotANumber) {
 TEST_F(EmojiSuggesterTest,
        ReturnkNotHandledWhenPressingEnterAndACandidateHasNotBeenChosen) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  InputMethodEngineBase::KeyboardEvent event;
-  event.code = "Enter";
+  ui::KeyEvent event = CreateKeyEventFromCode(ui::DomCode::ENTER);
   EXPECT_EQ(SuggestionStatus::kNotHandled,
             emoji_suggester_->HandleKeyEvent(event));
 }
@@ -217,19 +214,17 @@ TEST_F(EmojiSuggesterTest,
 TEST_F(EmojiSuggesterTest,
        ReturnkAcceptWhenPressingEnterAndACandidateHasBeenChosenByPressingDown) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  // Press "ArrowDown" to choose a candidate.
-  InputMethodEngineBase::KeyboardEvent event1;
-  event1.code = "ArrowDown";
+  // Press ui::DomCode::ARROW_DOWN to choose a candidate.
+  ui::KeyEvent event1 = CreateKeyEventFromCode(ui::DomCode::ARROW_DOWN);
   emoji_suggester_->HandleKeyEvent(event1);
-  InputMethodEngineBase::KeyboardEvent event2;
-  event2.code = "Enter";
+  ui::KeyEvent event2 = CreateKeyEventFromCode(ui::DomCode::ENTER);
   EXPECT_EQ(SuggestionStatus::kAccept,
             emoji_suggester_->HandleKeyEvent(event2));
 }
 
 TEST_F(EmojiSuggesterTest, HighlightFirstCandidateWhenPressingDown) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  Press("ArrowDown");
+  Press(ui::DomCode::ARROW_DOWN);
   engine_->VerifyCandidateHighlighted(0, true);
 }
 
@@ -237,15 +232,15 @@ TEST_F(EmojiSuggesterTest, HighlightButtonCorrectlyWhenPressingUp) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
 
   // Go into the window.
-  Press("ArrowDown");
+  Press(ui::DomCode::ARROW_DOWN);
 
-  // Press "ArrowUp" to choose learn more button.
-  Press("ArrowUp");
+  // Press ui::DomCode::ARROW_UP to choose learn more button.
+  Press(ui::DomCode::ARROW_UP);
   engine_->VerifyLearnMoreButtonHighlighted(true);
 
-  // Press "ArrowUp" to go through candidates;
+  // Press ui::DomCode::ARROW_UP to go through candidates;
   for (size_t i = emoji_suggester_->GetCandidatesSizeForTesting(); i > 0; i--) {
-    Press("ArrowUp");
+    Press(ui::DomCode::ARROW_UP);
     engine_->VerifyCandidateHighlighted(i - 1, true);
     engine_->VerifyLearnMoreButtonHighlighted(false);
     if (i != emoji_suggester_->GetCandidatesSizeForTesting()) {
@@ -253,17 +248,18 @@ TEST_F(EmojiSuggesterTest, HighlightButtonCorrectlyWhenPressingUp) {
     }
   }
 
-  // Press "ArrowUp" to go to learn more button from first candidate.
-  Press("ArrowUp");
+  // Press ui::DomCode::ARROW_UP to go to learn more button from first
+  // candidate.
+  Press(ui::DomCode::ARROW_UP);
   engine_->VerifyLearnMoreButtonHighlighted(true);
 }
 
 TEST_F(EmojiSuggesterTest, HighlightButtonCorrectlyWhenPressingDown) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
 
-  // Press "ArrowDown" to go through candidates.
+  // Press ui::DomCode::ARROW_DOWN to go through candidates.
   for (size_t i = 0; i < emoji_suggester_->GetCandidatesSizeForTesting(); i++) {
-    Press("ArrowDown");
+    Press(ui::DomCode::ARROW_DOWN);
     engine_->VerifyCandidateHighlighted(i, true);
     engine_->VerifyLearnMoreButtonHighlighted(false);
     if (i != 0) {
@@ -272,13 +268,13 @@ TEST_F(EmojiSuggesterTest, HighlightButtonCorrectlyWhenPressingDown) {
   }
 
   // Go to LearnMore Button
-  Press("ArrowDown");
+  Press(ui::DomCode::ARROW_DOWN);
   engine_->VerifyLearnMoreButtonHighlighted(true);
   engine_->VerifyCandidateHighlighted(
       emoji_suggester_->GetCandidatesSizeForTesting() - 1, false);
 
   // Go to first candidate
-  Press("ArrowDown");
+  Press(ui::DomCode::ARROW_DOWN);
   engine_->VerifyLearnMoreButtonHighlighted(false);
   engine_->VerifyCandidateHighlighted(0, true);
 }
@@ -288,12 +284,12 @@ TEST_F(EmojiSuggesterTest,
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
 
   // Go into the window.
-  Press("ArrowDown");
+  Press(ui::DomCode::ARROW_DOWN);
   // Choose Learn More Button.
-  Press("ArrowUp");
+  Press(ui::DomCode::ARROW_UP);
   engine_->VerifyLearnMoreButtonHighlighted(true);
 
-  EXPECT_EQ(Press("Enter"), SuggestionStatus::kOpenSettings);
+  EXPECT_EQ(Press(ui::DomCode::ENTER), SuggestionStatus::kOpenSettings);
 }
 
 TEST_F(EmojiSuggesterTest, DoesNotShowIndicesWhenFirstSuggesting) {
@@ -304,7 +300,7 @@ TEST_F(EmojiSuggesterTest, DoesNotShowIndicesWhenFirstSuggesting) {
 
 TEST_F(EmojiSuggesterTest, DoesNotShowIndexAfterPressingDown) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  Press("ArrowDown");
+  Press(ui::DomCode::ARROW_DOWN);
 
   engine_->VerifyShowIndices(false);
 }
@@ -319,7 +315,7 @@ TEST_F(EmojiSuggesterTest, DoesNotShowIndicesAfterGettingSuggestionsTwice) {
 TEST_F(EmojiSuggesterTest,
        DoesNotShowIndicesAfterPressingDownThenGetNewSuggestions) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  Press("ArrowDown");
+  Press(ui::DomCode::ARROW_DOWN);
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
 
   engine_->VerifyShowIndices(false);
@@ -329,7 +325,7 @@ TEST_F(EmojiSuggesterTest, ShowSettingLinkCorrectly) {
   for (int i = 0; i < kEmojiSuggesterShowSettingMaxCount; i++) {
     emoji_suggester_->Suggest(base::UTF8ToUTF16("happy "));
     // Dismiss suggestion.
-    Press("Escape");
+    Press(ui::DomCode::ESCAPE);
     engine_->VerifyShowSettingLink(true);
   }
   emoji_suggester_->Suggest(base::UTF8ToUTF16("happy "));
@@ -341,9 +337,9 @@ TEST_F(EmojiSuggesterTest, RecordsTimeToAccept) {
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToAccept.Emoji",
                                     0);
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  // Press "ArrowDown" to choose and accept a candidate.
-  Press("ArrowDown");
-  Press("Enter");
+  // Press ui::DomCode::ARROW_DOWN to choose and accept a candidate.
+  Press(ui::DomCode::ARROW_DOWN);
+  Press(ui::DomCode::ENTER);
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToAccept.Emoji",
                                     1);
 }
@@ -353,8 +349,8 @@ TEST_F(EmojiSuggesterTest, RecordsTimeToDismiss) {
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
                                     0);
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  // Press "Escape" to dismiss.
-  Press("Escape");
+  // Press ui::DomCode::ESCAPE to dismiss.
+  Press(ui::DomCode::ESCAPE);
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
                                     1);
 }

@@ -74,7 +74,7 @@ class NativeInputMethodEngine : public InputMethodEngine {
     void OnBlur(int context_id) override;
     void OnKeyEvent(
         const std::string& engine_id,
-        const InputMethodEngineBase::KeyboardEvent& event,
+        const ui::KeyEvent& event,
         ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override;
     void OnReset(const std::string& engine_id) override;
     void OnDeactivated(const std::string& engine_id) override;

@@ -11,19 +11,17 @@
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
 namespace {
 
 using ::testing::_;
 
-InputMethodEngineBase::KeyboardEvent CreateKeyEvent(std::string key,
-                                                    std::string code) {
-  InputMethodEngineBase::KeyboardEvent event;
-  event.type = "keydown";
-  event.key = std::move(key);
-  event.code = std::move(code);
-  return event;
+ui::KeyEvent CreateKeyEvent(ui::DomKey key, ui::DomCode code) {
+  return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
+                      key, ui::EventTimeForNow());
 }
 
 class MockSuggestionHandler : public SuggestionHandlerInterface {
@@ -92,7 +90,8 @@ TEST(AutocorrectManagerTest, OnKeyEventHidesUnderlineAfterEnoughKeyPresses) {
   AutocorrectManager manager(&mock_suggestion_handler);
   manager.HandleAutocorrect(gfx::Range(0, 3), "teh");
 
-  const auto key_event = CreateKeyEvent("a", "KeyA");
+  const auto key_event =
+      CreateKeyEvent(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A);
   EXPECT_FALSE(manager.OnKeyEvent(key_event));
   EXPECT_FALSE(manager.OnKeyEvent(key_event));
   EXPECT_FALSE(manager.OnKeyEvent(key_event));

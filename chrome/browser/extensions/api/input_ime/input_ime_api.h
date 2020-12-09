@@ -53,7 +53,7 @@ class ImeObserver : public InputMethodEngineBase::Observer {
   void OnBlur(int context_id) override;
   void OnKeyEvent(
       const std::string& component_id,
-      const InputMethodEngineBase::KeyboardEvent& event,
+      const ui::KeyEvent& event,
       IMEEngineHandlerInterface::KeyEventDoneCallback key_data) override;
   void OnReset(const std::string& component_id) override;
   void OnDeactivated(const std::string& component_id) override;

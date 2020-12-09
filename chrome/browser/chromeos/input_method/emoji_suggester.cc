@@ -25,6 +25,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
 
@@ -157,23 +158,24 @@ void EmojiSuggester::OnBlur() {
   context_id_ = -1;
 }
 
-SuggestionStatus EmojiSuggester::HandleKeyEvent(
-    const InputMethodEngineBase::KeyboardEvent& event) {
+SuggestionStatus EmojiSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
   if (!suggestion_shown_)
     return SuggestionStatus::kNotHandled;
 
-  if (event.code == "Escape") {
+  if (event.code() == ui::DomCode::ESCAPE) {
     DismissSuggestion();
     return SuggestionStatus::kDismiss;
   }
   if (highlighted_index_ == kNoneHighlighted && buttons_.size() > 0) {
-    if (event.code == "ArrowDown" || event.code == "ArrowUp") {
-      highlighted_index_ = event.code == "ArrowDown" ? 0 : buttons_.size() - 1;
+    if (event.code() == ui::DomCode::ARROW_DOWN ||
+        event.code() == ui::DomCode::ARROW_UP) {
+      highlighted_index_ =
+          event.code() == ui::DomCode::ARROW_DOWN ? 0 : buttons_.size() - 1;
       SetButtonHighlighted(buttons_[highlighted_index_], true);
       return SuggestionStatus::kBrowsing;
     }
   } else {
-    if (event.code == "Enter") {
+    if (event.code() == ui::DomCode::ENTER) {
       switch (buttons_[highlighted_index_].id) {
         case ui::ime::ButtonId::kSuggestion:
           AcceptSuggestion(highlighted_index_);
@@ -184,9 +186,10 @@ SuggestionStatus EmojiSuggester::HandleKeyEvent(
         default:
           break;
       }
-    } else if (event.code == "ArrowUp" || event.code == "ArrowDown") {
+    } else if (event.code() == ui::DomCode::ARROW_UP ||
+               event.code() == ui::DomCode::ARROW_DOWN) {
       SetButtonHighlighted(buttons_[highlighted_index_], false);
-      if (event.code == "ArrowUp") {
+      if (event.code() == ui::DomCode::ARROW_UP) {
         highlighted_index_ =
             (highlighted_index_ + buttons_.size() - 1) % buttons_.size();
       } else {

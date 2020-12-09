@@ -201,9 +201,10 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
   void OnBlur(int context_id) override { owner_->Blur(); }
   void OnKeyEvent(
       const std::string& engine_id,
-      const chromeos::InputMethodEngineBase::KeyboardEvent& event,
+      const ui::KeyEvent& event,
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback key_data) override {
-    if (event.key_code == ui::VKEY_BROWSER_BACK && event.type == "keydown" &&
+    if (event.key_code() == ui::VKEY_BROWSER_BACK &&
+        event.type() == ui::ET_KEY_PRESSED &&
         owner_->IsVirtualKeyboardShown()) {
       // Back button on the shelf is pressed. We should consume only "keydown"
       // events here to make sure that Android side receives "keyup" events

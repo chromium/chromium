@@ -98,7 +98,7 @@ class TestObserver : public InputMethodEngineBase::Observer {
   void OnBlur(int context_id) override { calls_bitmap_ |= ONBLUR; }
   void OnKeyEvent(
       const std::string& engine_id,
-      const InputMethodEngineBase::KeyboardEvent& event,
+      const ui::KeyEvent& event,
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {
     std::move(callback).Run(/* handled */ true);
   }
