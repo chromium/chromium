@@ -3130,6 +3130,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "keyboard-based-display-arrangement-in-settings",
+    "owners": [ "czajka", "cros-peripherals@google.com"],
+    "expiry_milestone": 94
+  },
+  {
     "name": "lacros-stability",
     "owners": [ "jamescook", "erikchen", "lacros-team@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this

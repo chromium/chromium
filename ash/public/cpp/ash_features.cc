@@ -149,6 +149,10 @@ const base::Feature kTemporaryHoldingSpacePreviews{
 const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kKeyboardBasedDisplayArrangementInSettings{
+    "KeyboardBasedDisplayArrangementInSettings",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsAllowAmbientEQEnabled() {
   return base::FeatureList::IsEnabled(kAllowAmbientEQ);
 }
@@ -188,6 +192,11 @@ bool IsFullRestoreEnabled() {
 bool IsHideArcMediaNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kMediaSessionNotification) &&
          base::FeatureList::IsEnabled(kHideArcMediaNotifications);
+}
+
+bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {
+  return base::FeatureList::IsEnabled(
+      kKeyboardBasedDisplayArrangementInSettings);
 }
 
 bool IsLockScreenNotificationsEnabled() {

@@ -661,6 +661,11 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "allowDisplayAlignmentApi",
       base::FeatureList::IsEnabled(ash::features::kDisplayAlignAssist));
+
+  html_source->AddBoolean(
+      "allowKeyboardBasedDisplayArrangementInSettings",
+      base::FeatureList::IsEnabled(
+          ash::features::kKeyboardBasedDisplayArrangementInSettings));
 }
 
 void AddDeviceStorageStrings(content::WebUIDataSource* html_source,

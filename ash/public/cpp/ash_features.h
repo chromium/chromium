@@ -90,6 +90,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kHideArcMediaNotifications;
 // TODO(chinsenj): Remove this when the feature is fully launched.
 ASH_PUBLIC_EXPORT extern const base::Feature kInteractiveWindowCycleList;
 
+// Enables using arrow keys for display arrangement in display settings page.
+ASH_PUBLIC_EXPORT extern const base::Feature
+    kKeyboardBasedDisplayArrangementInSettings;
+
 // Enables the redesigned managed device info UI in the system tray.
 ASH_PUBLIC_EXPORT extern const base::Feature kManagedDeviceUIRedesign;
 
@@ -220,6 +224,8 @@ ASH_PUBLIC_EXPORT bool IsEnhancedDeskAnimations();
 ASH_PUBLIC_EXPORT bool IsFullRestoreEnabled();
 
 ASH_PUBLIC_EXPORT bool IsHideArcMediaNotificationsEnabled();
+
+ASH_PUBLIC_EXPORT bool IsKeyboardBasedDisplayArrangementInSettingsEnabled();
 
 ASH_PUBLIC_EXPORT bool IsKeyboardShortcutViewerAppEnabled();
 
