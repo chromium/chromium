@@ -26,7 +26,9 @@ declare_args() {
       is_win || is_mac || is_linux || is_chromeos || is_fuchsia
 }
 
-has_platform_accessibility_support =
-    has_native_accessibility || (is_android || !use_aura)
+# Android does have platform accessibility support that's implemented using
+# BrowserAccessibilityManager. But unlike Windows, Mac and Linux it does not use
+# AXPlatformNode to implement a native C++ API, instead it bridges to a Java API.
+has_platform_accessibility_support = has_native_accessibility || is_android
 
 enable_hidpi = is_mac || is_win || is_linux || is_chromeos || is_ios
