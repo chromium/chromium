@@ -30,13 +30,19 @@ class AddressFieldTest : public testing::Test {
 
  protected:
   // Downcast for tests.
+  static std::unique_ptr<AddressField> Parse(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language) {
+    std::unique_ptr<FormField> field =
+        AddressField::Parse(scanner, page_language, nullptr);
+    return std::unique_ptr<AddressField>(
+        static_cast<AddressField*>(field.release()));
+  }
+
   static std::unique_ptr<AddressField> Parse(AutofillScanner* scanner) {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
-    std::unique_ptr<FormField> field =
-        AddressField::Parse(scanner, LanguageCode(""), nullptr);
-    return std::unique_ptr<AddressField>(
-        static_cast<AddressField*>(field.release()));
+    return Parse(scanner, LanguageCode(""));
   }
 
   FieldRendererId MakeFieldRendererId() {
@@ -488,6 +494,43 @@ TEST_F(AddressFieldTest, ParseCountryNameRegion) {
               field_candidates_map_.end());
   EXPECT_EQ(ADDRESS_HOME_COUNTRY,
             field_candidates_map_[country1].BestHeuristicType());
+}
+
+// Tests that city and state fields are classified correctly when their names
+// contain keywords for different types. This is achieved by giving the priority
+// to the label over the name for pages in Turkish.
+TEST_F(AddressFieldTest, ParseTurkishCityStateWithLabelPrecedence) {
+  // TODO(crbug.com/1156315): Remove once launched.
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(
+      features::kAutofillEnableLabelPrecedenceForTurkishAddresses);
+
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.label = ASCIIToUTF16("Il");
+  field.name = ASCIIToUTF16("city");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId state = list_.back()->unique_renderer_id;
+
+  field.label = ASCIIToUTF16("Ilce");
+  field.name = ASCIIToUTF16("county");
+  field.unique_renderer_id = MakeFieldRendererId();
+  list_.push_back(std::make_unique<AutofillField>(field));
+  FieldRendererId city = list_.back()->unique_renderer_id;
+
+  AutofillScanner scanner(list_);
+  field_ = Parse(&scanner, LanguageCode("tr"));
+  ASSERT_NE(nullptr, field_.get());
+  field_->AddClassificationsForTesting(&field_candidates_map_);
+
+  ASSERT_TRUE(field_candidates_map_.find(state) != field_candidates_map_.end());
+  EXPECT_EQ(ADDRESS_HOME_STATE,
+            field_candidates_map_[state].BestHeuristicType());
+
+  ASSERT_TRUE(field_candidates_map_.find(city) != field_candidates_map_.end());
+  EXPECT_EQ(ADDRESS_HOME_CITY, field_candidates_map_[city].BestHeuristicType());
 }
 
 }  // namespace autofill

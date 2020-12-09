@@ -512,24 +512,26 @@ bool AddressField::ParseCityStateCountryZipCode(
   if (maybe_state && maybe_country && !maybe_city && !maybe_zip)
     return SetFieldAndAdvanceCursor(scanner, &country_);
 
-  // Otherwise give the name priority over the label.
-  if (city_result == RESULT_MATCH_NAME)
-    return SetFieldAndAdvanceCursor(scanner, &city_);
-  if (state_result == RESULT_MATCH_NAME)
-    return SetFieldAndAdvanceCursor(scanner, &state_);
-  if (country_result == RESULT_MATCH_NAME)
-    return SetFieldAndAdvanceCursor(scanner, &country_);
-  if (zip_result == RESULT_MATCH_NAME)
-    return ParseZipCode(scanner, page_language);
+  // By default give the name priority over the label.
+  ParseNameLabelResult resultsToMatch[] = {RESULT_MATCH_NAME,
+                                           RESULT_MATCH_LABEL};
+  if (page_language == LanguageCode("tr") &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableLabelPrecedenceForTurkishAddresses)) {
+    // Give the label priority over the name.
+    std::swap(resultsToMatch[0], resultsToMatch[1]);
+  }
 
-  if (city_result == RESULT_MATCH_LABEL)
-    return SetFieldAndAdvanceCursor(scanner, &city_);
-  if (state_result == RESULT_MATCH_LABEL)
-    return SetFieldAndAdvanceCursor(scanner, &state_);
-  if (country_result == RESULT_MATCH_LABEL)
-    return SetFieldAndAdvanceCursor(scanner, &country_);
-  if (zip_result == RESULT_MATCH_LABEL)
-    return ParseZipCode(scanner, page_language);
+  for (auto result : resultsToMatch) {
+    if (city_result == result)
+      return SetFieldAndAdvanceCursor(scanner, &city_);
+    if (state_result == result)
+      return SetFieldAndAdvanceCursor(scanner, &state_);
+    if (country_result == result)
+      return SetFieldAndAdvanceCursor(scanner, &country_);
+    if (zip_result == result)
+      return ParseZipCode(scanner, page_language);
+  }
 
   return false;
 }

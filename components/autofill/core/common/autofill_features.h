@@ -37,6 +37,7 @@ extern const base::Feature
     kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers;
 extern const base::Feature
     kAutofillEnablePasswordInfoBarAccountIndicationFooter;
+extern const base::Feature kAutofillEnableLabelPrecedenceForTurkishAddresses;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInNames;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInAddresses;
 extern const base::Feature kAutofillEnableSupportForMergingSubsetNames;
