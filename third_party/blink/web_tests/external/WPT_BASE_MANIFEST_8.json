@@ -8718,15 +8718,6 @@
      ]
     ]
    },
-   "input-events": {
-    "input-events-cut-paste-manual.html": [
-     "4091c87cdd34720c29578b766b5791f8d68d4982",
-     [
-      null,
-      {}
-     ]
-    ]
-   },
    "mediacapture-depth": {
     "dictionary-manual.https.html": [
      "0a5b824881509baee240f385a9eeaa380a579948",
@@ -45851,24 +45842,22 @@
        ],
        {}
       ]
+     ],
+     "translation-animation-subpixel-offset.html": [
+      "5692a0823289811967e889969603cf8799cf7cf6",
+      [
+       null,
+       [
+        [
+         "/css/css-animations/translation-animation-subpixel-offset-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-backgrounds": {
-     "animations": {
-      "one-element-animation.html": [
-       "581dc79180e94d284ad97b5a1e4ac00466cae681",
-       [
-        null,
-        [
-         [
-          "/css/css-backgrounds/animations/one-element-animation-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ]
-     },
      "background-334.html": [
       "03ee2d3bb251119f55aa194615795563e6ddd350",
       [
@@ -173302,7 +173291,7 @@
       "63d96aaf1ee7d55a1ae74bc697c3686467fb85d0",
       []
      ],
-     "script-src-strict_dynamic_double_policy_honor_source_expressions.html.headers": [
+     "script-src-strict_dynamic_double_policy_honor_source_expressions.sub.html.headers": [
       "5b4078efd377ffdf3db5346a2ae07cdb971e854f",
       []
      ],
@@ -180907,6 +180896,10 @@
      "transform-animation-under-large-scale-ref.html": [
       "14b41366268c3a33f2d49e477bab2d40c6acb432",
       []
+     ],
+     "translation-animation-subpixel-offset-ref.html": [
+      "5fc04d972b41d089b71d0c0baabc0d8e0d28c1d0",
+      []
      ]
     },
     "css-backgrounds": {
@@ -180929,10 +180922,6 @@
       ],
       "box-shadow-interpolation-expected.txt": [
        "83a8d423116f5266eafa670261a1d4d564850a08",
-       []
-      ],
-      "one-element-animation-ref.html": [
-       "eff13ba0d4169384ec7d0efec24975bced509e5f",
        []
       ]
      },
@@ -199544,10 +199533,6 @@
       "ab9d83927458d5b9881b07bc7fd8a1d31e471b33",
       []
      ],
-     "fixed-layout-2-expected.txt": [
-      "0d1a166b392fb87bb6e059be31a442c2f26fe421",
-      []
-     ],
      "fixed-layout-excess-width-distribution-001-expected.txt": [
       "503b52fc1bb0d3e1748d8434fba7ca434d778094",
       []
@@ -213475,7 +213460,7 @@
       []
      ],
      "testdriver.md": [
-      "fd87f355bc3055b97aa876c82ebfe7c7ccdf1816",
+      "931499d7b2d25f040a5b71afea2d1eecfd9dbe9b",
       []
      ],
      "testharness-api.md": [
@@ -220748,6 +220733,10 @@
        ],
        "post-done-to-opener.html": [
         "b47f0f274ef43148d3be418e2c0628a567f1c3c1",
+        []
+       ],
+       "sandbox-javascript-window-open.html": [
+        "909956a54ff52153756f863c3489f4c792b5aaff",
         []
        ]
       },
@@ -233926,6 +233915,10 @@
       "ed125b6e9febcf10d0fe5d2e926f0576c34fc46f",
       []
      ],
+     "delete_all_cookies-expected.txt": [
+      "18d7bf34a0b005273b1b661476d942794ae620bf",
+      []
+     ],
      "file_upload.py": [
       "9c4dd75438454b852a1590018361ee682f1106df",
       []
@@ -241264,6 +241257,10 @@
      []
     ],
     "resources": {
+     "200_empty.asis": [
+      "b5d10bda324528d1d85463b9a15a347f5c1faed9",
+      []
+     ],
      "TAOResponse.py": [
       "908b68861ae8262a18e083b026d14591d1e0206e",
       []
@@ -241726,7 +241723,7 @@
      []
     ],
     "testdriver.js": [
-     "c53b24136c091f05e4ffbe286d060aba0fa66cdf",
+     "f3cee9821e13f9fd75fe37b45794a1318b6f8df0",
      []
     ],
     "testdriver.js.headers": [
@@ -253005,7 +253002,7 @@
         []
        ],
        "actions.py": [
-        "b11d30bb94aa7c2747fcc4dcfb61292f7678e273",
+        "963ed337fde44ecdd47b94b7aa417903e33849ea",
         []
        ],
        "base.py": [
@@ -253029,7 +253026,7 @@
         []
        ],
        "executormarionette.py": [
-        "675f8e0a43291fcbc4f6020eecd642a50bc412cc",
+        "dc9e3e164e40251b9e0b91b900e2ae6651776447",
         []
        ],
        "executoropera.py": [
@@ -253041,7 +253038,7 @@
         []
        ],
        "executorselenium.py": [
-        "ff26351f84ed8d2e00d82d76570208a5947086cc",
+        "0228922134a704afdde5f37e4edec31dc540fc2f",
         []
        ],
        "executorservo.py": [
@@ -253053,7 +253050,7 @@
         []
        ],
        "executorwebdriver.py": [
-        "bad5fd072237bce2b826dde77b413bcabbcca990",
+        "43fc910c5151554df38d2a11608040442754d962",
         []
        ],
        "executorwebkit.py": [
@@ -253065,7 +253062,7 @@
         []
        ],
        "protocol.py": [
-        "bd768b1073c748fdb860745f1bf9442f5b415c3b",
+        "8bdc8b0cbc01cb0ab86396e50e7232368bd08c2b",
         []
        ],
        "pytestrunner": {
@@ -253176,7 +253173,7 @@
        []
       ],
       "testdriver-extra.js": [
-       "9a8b40e0a94d264ef92ddea30dec05cfae37a0b1",
+       "e15652dcdfb4cf4518f4f3cbd49400754d2b8de3",
        []
       ],
       "testdriver-vendor.js": [
@@ -254401,7 +254398,7 @@
    "urlpattern": {
     "resources": {
      "urlpatterntestdata.json": [
-      "9bdf4d281fb3d1a0aad24df23d312a0d7430b368",
+      "66038e03d23bbb14f6d890a02e3e8dbefcb5aefe",
       []
      ]
     }
@@ -282086,7 +282083,7 @@
        {}
       ]
      ],
-     "script-src-strict_dynamic_double_policy_honor_source_expressions.html": [
+     "script-src-strict_dynamic_double_policy_honor_source_expressions.sub.html": [
       "39126de58f545472cf5a2d30dd2658b2a7f35472",
       [
        null,
@@ -300391,7 +300388,7 @@
       ]
      ],
      "fixed-layout-2.html": [
-      "7cb09d4dd04de1da380837b0b4c2e82cc1492f59",
+      "13a4664249f3a758858e190fa9361ffc6b2ed17b",
       [
        null,
        {}
@@ -342725,6 +342722,13 @@
         {}
        ]
       ],
+      "sandbox-javascript-window-open.html": [
+       "fd21e9bb028fc86b6f26bd96b0b7f963cc560cea",
+       [
+        null,
+        {}
+       ]
+      ],
       "sandbox-navigation-timing.tentative.html": [
        "686f1c0c9f6847772edbe2ef070a483db1df3d9d",
        [
@@ -380288,6 +380292,15 @@
        }
       ]
      ],
+     "delete_all_cookies.html": [
+      "14b7d5861b7f60ae329d99b29dbbe12a25cc8c0b",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "file_upload.sub.html": [
       "0490e89c422b851653d760cdb38855b2ce6816a6",
       [
@@ -380385,6 +380398,15 @@
          "/resources/idlharness.js"
         ]
        ]
+      }
+     ]
+    ],
+    "input-events-cut-paste.html": [
+     "f2ca5a0a654f270d33d8662f4e8b25369cd98df7",
+     [
+      null,
+      {
+       "testdriver": true
       }
      ]
     ],
@@ -384191,7 +384213,18 @@
       null,
       {}
      ]
-    ]
+    ],
+    "mse-for-webcodecs": {
+     "tentative": {
+      "mediasource-webcodecs-addsourcebuffer.html": [
+       "a9dd7072b0758d58bac67c13dcb78c76dc6aa669",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
+    }
    },
    "mediacapture-depth": {
     "idlharness.html": [
@@ -388034,7 +388067,7 @@
      ]
     },
     "delete_async_basic.tentative.https.any.js": [
-     "1229ecf0f3db12bd32e50b8490eaeabd7069f1e6",
+     "84da14b005ad0deabad165146e5089315c29417a",
      [
       "native-io/delete_async_basic.tentative.https.any.html",
       {
@@ -388097,7 +388130,7 @@
      ]
     ],
     "delete_sync_basic.tentative.https.any.js": [
-     "8e033bbc42919ad6f733686f55c49d124ca9c440",
+     "55c113acbed4e219a5ccebc0c7b868102f6b6efe",
      [
       "native-io/delete_sync_basic.tentative.https.any.worker.html",
       {
@@ -388542,7 +388575,7 @@
      ]
     ],
     "rename_async_failure_handling.tentative.https.any.js": [
-     "038be88a3af6dc571e003a0edb14fd54362a5ef5",
+     "bff8234f4a58ff343e068f64e97330d03b79bf53",
      [
       "native-io/rename_async_failure_handling.tentative.https.any.html",
       {
@@ -388639,7 +388672,7 @@
      ]
     ],
     "rename_sync_failure_handling.tentative.https.any.js": [
-     "62a3d5b6af8e83ae98f2d26ad8524bf12fa185be",
+     "8097932f23ac7c6b2ef090cfec9d003a25f01d8a",
      [
       "native-io/rename_sync_failure_handling.tentative.https.any.worker.html",
       {
@@ -406201,7 +406234,7 @@
        ]
       ],
       "iframe-inheritance-history-about-srcdoc.html": [
-       "c16ead7b6b976808737945bcc7635d400c70de87",
+       "91ac5fc139e2941f28919f0096ff2d5c3450c2bd",
        [
         null,
         {}
@@ -406916,7 +406949,7 @@
      ]
     ],
     "iframe-failed-commit.html": [
-     "75e19f788efb2ecbccf67c4df02f030e3d9415c7",
+     "bd51d33c80f2f5d0f9ab2d1fc644302747c2979a",
      [
       null,
       {}
@@ -424179,7 +424212,7 @@
    },
    "urlpattern": {
     "urlpattern.https.any.js": [
-     "212352db64dc5cecf2dfe05b9c919d263a47eb0f",
+     "27b03d0ff03261d50721edb7b22b8205e0610238",
      [
       "urlpattern/urlpattern.https.any.html",
       {
