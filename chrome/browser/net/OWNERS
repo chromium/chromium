@@ -2,6 +2,3 @@ file://net/OWNERS
 
 per-file disk_cache_dir_policy_handler*=atwilson@chromium.org
 per-file network_quality*=file://net/nqe/OWNERS
-
-# COMPONENT: Internals>Network
-# TEAM: net-dev@chromium.org

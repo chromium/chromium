@@ -19,5 +19,3 @@ per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 per-file *permission_context*=file://components/permissions/PERMISSIONS_OWNERS
-
-# COMPONENT: Blink>Media
