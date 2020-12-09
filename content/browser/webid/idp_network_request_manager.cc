@@ -34,6 +34,11 @@ constexpr char kIdTokenKey[] = "id_token";
 
 constexpr char kAcceptMimeType[] = "application/json";
 
+// `Sec-` prefix makes this a forbidden header and cannot be added by
+// JavaScript.
+// See https://fetch.spec.whatwg.org/#forbidden-header-name
+constexpr char kSecWebIDHeader[] = "Sec-WebID";
+
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
 constexpr int maxResponseSizeInKiB = 1024;
@@ -83,7 +88,7 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
     const GURL& provider,
     RenderFrameHost* host) {
   // WebID is restricted to secure contexts.
-  if (!network::IsUrlPotentiallyTrustworthy(provider))
+  if (!network::IsOriginPotentiallyTrustworthy(url::Origin::Create(provider)))
     return nullptr;
 
   return std::make_unique<IdpNetworkRequestManager>(provider, host);
@@ -165,6 +170,10 @@ void IdpNetworkRequestManager::SendSigninRequest(
   resource_request->site_for_cookies = site_for_cookies;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kAcceptMimeType);
+  // This header is present mostly for CSRF resistance, but the value could
+  // provide a protocol version. This might change if something more useful
+  // is needed.
+  resource_request->headers.SetHeader(kSecWebIDHeader, "1.0");
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
@@ -187,11 +196,11 @@ void IdpNetworkRequestManager::SendSigninRequest(
 
 void IdpNetworkRequestManager::OnWellKnownLoaded(
     std::unique_ptr<std::string> response_body) {
-  url_loader_.reset();
-
   int response_code = -1;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
+
+  url_loader_.reset();
 
   if (response_code == net::HTTP_NOT_FOUND) {
     std::move(idp_well_known_callback_)
