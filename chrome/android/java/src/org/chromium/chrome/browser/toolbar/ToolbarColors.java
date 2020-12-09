@@ -4,22 +4,17 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -83,32 +78,6 @@ public class ToolbarColors {
     }
 
     /**
-     * @param tab The {@link Tab} on which the toolbar scene layer color is used.
-     * @return The toolbar (or browser controls) color used in the compositor scene layer. Note that
-     *         this is primarily used for compositor animation, and doesn't affect the Android view.
-     */
-    public static @ColorInt int getToolbarSceneLayerBackground(Tab tab) {
-        // On NTP, the toolbar background is tinted as the NTP background color, so return NTP
-        // background color here to make animation smoother.
-        @ColorInt
-        int defaultColor = TabThemeColorHelper.getColor(tab);
-        NativePage nativePage = tab.getNativePage();
-        return nativePage != null ? nativePage.getToolbarSceneLayerBackground(defaultColor)
-                                  : defaultColor;
-    }
-
-    /**
-     * @return Alpha for the textbox given a Tab.
-     */
-    public static float getTextBoxAlphaForToolbarBackground(Tab tab) {
-        float alpha = ColorUtils.shouldUseOpaqueTextboxBackground(TabThemeColorHelper.getColor(tab))
-                ? 1.f
-                : LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA;
-        NativePage nativePage = tab.getNativePage();
-        return nativePage != null ? nativePage.getToolbarTextBoxAlpha(alpha) : alpha;
-    }
-
-    /**
      * Test if the toolbar is using the default color.
      * @param resources The resources to get the toolbar primary color.
      * @param isIncognito Whether to retrieve the default theme color for incognito mode.
@@ -118,30 +87,6 @@ public class ToolbarColors {
     public static boolean isUsingDefaultToolbarColor(
             Resources resources, boolean isIncognito, int color) {
         return color == ChromeColors.getDefaultThemeColor(resources, isIncognito);
-    }
-
-    /**
-     * Returns the icon tint for based on the given parameters. Does not adjust color based on
-     * night mode as this may conflict with toolbar theme colors.
-     * @param useLight Whether or not the icon tint should be light.
-     * @return The {@link ColorRes} for the icon tint of themed toolbar.
-     */
-    public static @ColorRes int getThemedToolbarIconTintRes(boolean useLight) {
-        // Light toolbar theme colors may be used in night mode, so use toolbar_icon_tint_dark which
-        // is not overridden in night- resources.
-        return useLight ? R.color.default_icon_color_light_tint_list
-                        : R.color.toolbar_icon_tint_dark;
-    }
-
-    /**
-     * Returns the icon tint for based on the given parameters. Does not adjust color based on
-     * night mode as this may conflict with toolbar theme colors.
-     * @param context The {@link Context} used to retrieve colors.
-     * @param useLight Whether or not the icon tint should be light.
-     * @return The {@link ColorStateList} for the icon tint of themed toolbar.
-     */
-    public static ColorStateList getThemedToolbarIconTint(Context context, boolean useLight) {
-        return AppCompatResources.getColorStateList(context, getThemedToolbarIconTintRes(useLight));
     }
 
     /**

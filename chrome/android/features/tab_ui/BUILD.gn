@@ -204,6 +204,7 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/android/bottomsheet:java",

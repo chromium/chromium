@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.chrome.browser.theme;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -66,8 +66,8 @@ public abstract class ThemeColorProvider {
     public ThemeColorProvider(Context context) {
         mThemeColorObservers = new ObserverList<ThemeColorObserver>();
         mTintObservers = new ObserverList<TintObserver>();
-        mLightModeTint = ToolbarColors.getThemedToolbarIconTint(context, true);
-        mDarkModeTint = ToolbarColors.getThemedToolbarIconTint(context, false);
+        mLightModeTint = ThemeUtils.getThemedToolbarIconTint(context, true);
+        mDarkModeTint = ThemeUtils.getThemedToolbarIconTint(context, false);
     }
 
     /**

@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
@@ -161,9 +162,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         IntentIgnoringCriterion intentIgnoringCriterion =
                 (intent) -> mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true);
 
-        BaseCustomTabActivityModule baseCustomTabsModule =
-                new BaseCustomTabActivityModule(mIntentDataProvider, getStartupTabPreloader(),
-                        mNightModeStateController, intentIgnoringCriterion);
+        BaseCustomTabActivityModule baseCustomTabsModule = new BaseCustomTabActivityModule(
+                mIntentDataProvider, getStartupTabPreloader(), mNightModeStateController,
+                intentIgnoringCriterion, getTopUiThemeColorProvider());
         BaseCustomTabActivityComponent component =
                 ChromeApplication.getComponent().createBaseCustomTabActivityComponent(
                         commonsModule, baseCustomTabsModule);
@@ -259,6 +260,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private static int getCoreCount() {
         if (sOverrideCoreCountForTesting != null) return sOverrideCoreCountForTesting;
         return Runtime.getRuntime().availableProcessors();
+    }
+
+    /**
+     * @return {@link ThemeColorProvider} for top UI.
+     */
+    private TopUiThemeColorProvider getTopUiThemeColorProvider() {
+        return mRootUiCoordinator.getTopUiThemeColorProvider();
     }
 
     @Override

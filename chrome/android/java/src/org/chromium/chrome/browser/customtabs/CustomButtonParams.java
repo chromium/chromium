@@ -28,7 +28,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.Toast;
@@ -252,7 +252,7 @@ public class CustomButtonParams {
         TintedDrawable drawable =
                 TintedDrawable.constructTintedDrawable(context, R.drawable.ic_share_white_24dp);
         boolean useLightTint = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
-        drawable.setTint(ToolbarColors.getThemedToolbarIconTint(context, useLightTint));
+        drawable.setTint(ThemeUtils.getThemedToolbarIconTint(context, useLightTint));
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
         return new CustomButtonParams(

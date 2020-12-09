@@ -575,13 +575,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mStartSurfaceParentTabSupplier, hadWarmStart());
                 }
             }
+            // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
                     () -> {
                         if (getCompositorViewHolder() == null) return null;
                         return getCompositorViewHolder().getLayerTitleCache();
                     },
-                    mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier);
+                    mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier,
+                    mRootUiCoordinator::getTopUiThemeColorProvider);
+            // clang-format on
             mOverviewModeController = mLayoutManager;
         }
     }
@@ -591,14 +594,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         try (TraceEvent e = TraceEvent.scoped(
                      "ChromeTabbedActivity.setupCompositorContentPreNativeForTablet")) {
-            mLayoutManager =
-                    new LayoutManagerChromeTablet(getCompositorViewHolder(), mContentContainer,
-                            getTabContentManagerSupplier(),
-                            () -> {
-                                if (getCompositorViewHolder() == null) return null;
-                                return getCompositorViewHolder().getLayerTitleCache();
-                            },
-                            mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier);
+            // clang-format off
+            mLayoutManager = new LayoutManagerChromeTablet(getCompositorViewHolder(),
+                    mContentContainer, getTabContentManagerSupplier(),
+                    () -> {
+                        if (getCompositorViewHolder() == null) return null;
+                        return getCompositorViewHolder().getLayerTitleCache();
+                    },
+                    mOverviewModeBehaviorSupplier, mLayoutStateProviderOneshotSupplier,
+                    mRootUiCoordinator::getTopUiThemeColorProvider);
+            // clang-format on
             mOverviewModeController = mLayoutManager;
         }
     }

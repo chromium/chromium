@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     private final Lazy<CompositorViewHolder> mCompositorViewHolder;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
+    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private boolean mInitialized;
 
@@ -43,12 +45,14 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     public CustomTabCompositorContentInitializer(ActivityLifecycleDispatcher lifecycleDispatcher,
             Activity activity, Lazy<CompositorViewHolder> compositorViewHolder,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            CompositorViewHolder.Initializer compositorViewHolderInitializer) {
+            CompositorViewHolder.Initializer compositorViewHolderInitializer,
+            TopUiThemeColorProvider topUiThemeColorProvider) {
         mLifecycleDispatcher = lifecycleDispatcher;
         mActivity = activity;
         mCompositorViewHolder = compositorViewHolder;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
 
         lifecycleDispatcher.register(this);
     }
@@ -68,11 +72,15 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     @Override
     public void onFinishNativeInitialization() {
         ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
-        LayoutManagerImpl layoutDriver = new LayoutManagerImpl(
-                mCompositorViewHolder.get(), contentContainer, mTabContentManagerSupplier, () -> {
+        // clang-format off
+        LayoutManagerImpl layoutDriver = new LayoutManagerImpl(mCompositorViewHolder.get(),
+                contentContainer, mTabContentManagerSupplier,
+                () -> {
                     if (mCompositorViewHolder.get() == null) return null;
                     return mCompositorViewHolder.get().getLayerTitleCache();
-                }, new OneshotSupplierImpl<>());
+                },
+                new OneshotSupplierImpl<>(), () -> mTopUiThemeColorProvider);
+        // clang-format on
 
         mCompositorViewHolderInitializer.initializeCompositorContent(layoutDriver,
                 mActivity.findViewById(org.chromium.chrome.R.id.url_bar), contentContainer,

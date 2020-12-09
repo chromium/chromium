@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -146,7 +146,7 @@ public class TabGroupUiViewBinderTest extends DummyUiActivityTestCase {
     @UiThreadTest
     @SmallTest
     public void testSetTint() {
-        ColorStateList tint = ToolbarColors.getThemedToolbarIconTint(getActivity(), true);
+        ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(getActivity(), true);
         Assert.assertNotEquals(tint, mLeftButton.getImageTintList());
         Assert.assertNotEquals(tint, mRightButton.getImageTintList());
 

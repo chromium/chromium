@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.FeatureStatus;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.ReasonToShow;
 import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;

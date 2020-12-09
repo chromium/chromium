@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceLayout;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -100,6 +101,9 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Mock
     private ActivityTabProvider mTabSupplier;
+
+    @Mock
+    private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private long mLastDownTime;
 
@@ -217,7 +221,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
         mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container, null,
                 tabContentManagerSupplier, null, overviewModeBehaviorSupplier,
-                mLayoutStateProviderSupplier);
+                mLayoutStateProviderSupplier, () -> mTopUiThemeColorProvider);
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;
         CompositorAnimationHandler.setTestingMode(true);

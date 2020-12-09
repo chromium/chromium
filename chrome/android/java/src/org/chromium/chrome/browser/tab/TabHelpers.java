@@ -28,7 +28,6 @@ public final class TabHelpers {
     static void initTabHelpers(Tab tab, Tab parentTab) {
         TabUma.createForTab(tab);
         TabDistillabilityProvider.createForTab(tab);
-        TabThemeColorHelper.createForTab(tab);
         InterceptNavigationDelegateTabHelper.createForTab(tab);
         ContextualSearchTabHelper.createForTab(tab);
         MediaSessionTabHelper.createForTab(tab);

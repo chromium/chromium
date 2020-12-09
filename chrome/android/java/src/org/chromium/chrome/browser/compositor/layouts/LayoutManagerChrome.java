@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
@@ -84,18 +85,24 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * Creates the {@link LayoutManagerChrome} instance.
      * @param host         A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
+     * @param createOverviewLayout Whether overview layout should be created or not.
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
+     * @param layerTitleCacheSupplier Supplier of the {@link LayerTitleCache}.
+     * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
+     * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
+     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerChrome(LayoutManagerHost host, ViewGroup contentContainer,
             boolean createOverviewLayout, @Nullable StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
+            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier,
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
         super(host, contentContainer, tabContentManagerSupplier, layerTitleCacheSupplier,
-                layoutStateProviderOneshotSupplier);
+                layoutStateProviderOneshotSupplier, topUiThemeColorProvider);
         Context context = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
 

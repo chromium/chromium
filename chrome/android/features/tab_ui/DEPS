@@ -6,6 +6,7 @@ include_rules = [
  "+chrome/browser/tabmodel/android/java",
  "+chrome/browser/tabpersistence/android/java",
  "+chrome/browser/ui/android/favicon/java",
+ "+chrome/browser/ui/android/theme/java",
  "+chrome/browser/ui/messages/android/java",
  "+components/browser_ui/styles/android",
  "+components/browser_ui/widget/android",

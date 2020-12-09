@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/browser_ui/styles/android/java",
+  "+content/public/android/java",
+]

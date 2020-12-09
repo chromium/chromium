@@ -17,8 +17,8 @@ import android.widget.FrameLayout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation.OverviewAnimationType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 
 /**
@@ -73,7 +73,7 @@ public class StackViewAnimation {
         // Set up the view hierarchy
         if (view.getParent() != null) ((ViewGroup) view.getParent()).removeView(view);
         ViewGroup bgView = new FrameLayout(view.getContext());
-        bgView.setBackgroundColor(TabThemeColorHelper.getBackgroundColor(tab));
+        bgView.setBackgroundColor(ThemeUtils.getBackgroundColor(tab));
         bgView.addView(view);
         container.addView(
                 bgView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));

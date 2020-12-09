@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
-import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -212,7 +211,7 @@ public class TrustedWebActivityTest {
         ChromeTabUtils.loadUrlOnUiThread(activity.getActivityTab(), pageWithThemeColorCertError);
 
         int defaultColor = TestThreadUtils.runOnUiThreadBlocking(
-                () -> { return TabThemeColorHelper.getDefaultColor(activity.getActivityTab()); });
+                () -> ThemeTestUtils.getDefaultThemeColor(activity.getActivityTab()));
         int expectedColor =
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? defaultColor : Color.BLACK;
         // Use longer-than-default timeout to give page time to finish loading.

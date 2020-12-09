@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -39,16 +40,21 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
+     * @param layerTitleCacheSupplier Supplier of the {@link LayerTitleCache}.
+     * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
+     * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
+     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
+            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier,
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
         super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
                 layerTitleCacheSupplier, overviewModeBehaviorSupplier,
-                layoutStateProviderOneshotSupplier);
+                layoutStateProviderOneshotSupplier, topUiThemeColorProvider);
     }
 
     @Override

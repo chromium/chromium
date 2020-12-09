@@ -49,6 +49,8 @@ import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -193,6 +195,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     private ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
             new ObservableSupplierImpl<>();
 
+    private final TabThemeColorHelper mThemeColorHelper;
+    private int mThemeColor;
+
     /**
      * Creates an instance of a {@link TabImpl}.
      *
@@ -244,6 +249,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             }
         };
         mTabViewManager = new TabViewManagerImpl(this);
+        mThemeColorHelper = new TabThemeColorHelper(
+                this, () -> updateThemeColor(getWebContents().getThemeColor()));
+        mThemeColor = TabState.UNSPECIFIED_THEME_COLOR;
     }
 
     @Override
@@ -408,6 +416,19 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     @Override
     public @TabLaunchType int getLaunchType() {
         return mLaunchType;
+    }
+
+    @Override
+    public int getThemeColor() {
+        return mThemeColor;
+    }
+
+    @Override
+    public boolean isThemingAllowed() {
+        // Do not apply the theme color if there are any security issues on the page.
+        int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(getWebContents());
+        return securityLevel != ConnectionSecurityLevel.DANGEROUS
+                && securityLevel != ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
     }
 
     @Override
@@ -861,22 +882,24 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 CriticalPersistedTabData.from(this).setTimestampMillis(System.currentTimeMillis());
             }
             registerTabSaving();
-            String appId;
-            Boolean hasThemeColor;
-            int themeColor;
+            String appId = null;
+            Boolean hasThemeColor = null;
+            int themeColor = 0;
             if (serializedCriticalPersistedTabData != null && useCriticalPersistedTabData()) {
                 appId = CriticalPersistedTabData.from(this).getOpenerAppId();
                 themeColor = CriticalPersistedTabData.from(this).getThemeColor();
                 hasThemeColor = themeColor != TabState.UNSPECIFIED_THEME_COLOR
                         && ColorUtils.isValidThemeColor(themeColor);
-            } else {
-                appId = tabState != null ? tabState.openerAppId : null;
-                hasThemeColor = tabState != null ? tabState.hasThemeColor() : null;
-                themeColor = tabState != null ? tabState.getThemeColor() : 0;
+            } else if (tabState != null) {
+                appId = tabState.openerAppId;
+                themeColor = tabState.getThemeColor();
+                hasThemeColor = tabState.hasThemeColor();
             }
-            for (TabObserver observer : mObservers) {
-                observer.onInitialized(this, appId, hasThemeColor, themeColor);
+            if (hasThemeColor != null) {
+                updateThemeColor(hasThemeColor ? themeColor : TabState.UNSPECIFIED_THEME_COLOR);
             }
+
+            for (TabObserver observer : mObservers) observer.onInitialized(this, appId);
             TraceEvent.end("Tab.initialize");
         }
     }
@@ -1129,11 +1152,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         for (TabObserver observer : mObservers) observer.onContentChanged(this);
     }
 
-    void notifyThemeColorChanged(int themeColor) {
+    void updateThemeColor(int themeColor) {
+        if (mThemeColor == themeColor) return;
+        mThemeColor = themeColor;
         RewindableIterator<TabObserver> observers = getTabObservers();
-        while (observers.hasNext()) {
-            observers.next().onDidChangeThemeColor(this, themeColor);
-        }
+        while (observers.hasNext()) observers.next().onDidChangeThemeColor(this, themeColor);
     }
 
     void updateTitle() {
@@ -1352,6 +1375,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 mNativePage.getView().addOnAttachStateChangeListener(mAttachStateChangeListener);
             }
             pushNativePageStateToNavigationEntry();
+
+            updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
         });
     }
 

@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/browser/tabmodel",
   "+chrome/browser/thumbnail/generator/android/java",
   "+chrome/browser/ui/android/appmenu/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPropertiesDelegate.java",
+  "+chrome/browser/ui/android/theme/java",
   "+chrome/browser/ui/messages/android/java",
   "+chrome/browser/video_tutorials",
   "+chrome/browser/xsurface/android",

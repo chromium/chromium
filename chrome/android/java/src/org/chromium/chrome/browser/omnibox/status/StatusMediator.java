@@ -9,10 +9,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.View;
+
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.MockedInTests;
@@ -24,7 +26,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -416,7 +418,7 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
         }
 
         @ColorRes
-        int tintColor = ToolbarColors.getThemedToolbarIconTintRes(!mDarkTheme);
+        int tintColor = ThemeUtils.getThemedToolbarIconTintRes(!mDarkTheme);
 
         mModel.set(StatusProperties.SEPARATOR_COLOR_RES, separatorColor);
         mNavigationIconTintRes = tintColor;
@@ -586,7 +588,7 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
             tint = 0;
         } else {
             tint = mDarkTheme ? R.color.default_icon_color_secondary_tint_list
-                              : ToolbarColors.getThemedToolbarIconTintRes(!mDarkTheme);
+                              : ThemeUtils.getThemedToolbarIconTintRes(!mDarkTheme);
         }
 
         return tint;

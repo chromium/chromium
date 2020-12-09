@@ -30,8 +30,8 @@ public class TabStateExtractor {
                 CriticalPersistedTabData.from(tab).getTabLaunchTypeAtCreation();
         // Don't save the actual default theme color because it could change on night mode state
         // changed.
-        tabState.themeColor = TabThemeColorHelper.isUsingColorFromTabContents(tab)
-                ? TabThemeColorHelper.getColor(tab)
+        tabState.themeColor = tab.isThemingAllowed() && !tab.isNativePage()
+                ? tab.getThemeColor()
                 : TabState.UNSPECIFIED_THEME_COLOR;
         tabState.rootId = CriticalPersistedTabData.from(tabImpl).getRootId();
         return tabState;

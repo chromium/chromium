@@ -25,7 +25,7 @@ import org.chromium.url.GURL;
  */
 public class EmptyTabObserver implements TabObserver {
     @Override
-    public void onInitialized(Tab tab, String appId, Boolean hasThemeColor, int themeColor) {}
+    public void onInitialized(Tab tab, String appId) {}
 
     @Override
     public void onShown(Tab tab, @TabSelectionType int type) {}

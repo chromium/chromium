@@ -45,10 +45,10 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
@@ -111,7 +111,7 @@ public class StaticLayoutUnitTest {
 
     private UserDataHost mUserDataHost = new UserDataHost();
     @Mock
-    private TabThemeColorHelper mTabThemeColorHelper;
+    private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private Tab mTab1;
     private Tab mTab2;
@@ -165,15 +165,16 @@ public class StaticLayoutUnitTest {
 
         mStaticLayout = new StaticLayout(mContext, mUpdateHost, mRenderHost, mViewHost,
                 mRequestSupplier, mTabModelSelector, mTabContentManager,
-                mBrowserControlsStateProviderSupplier);
+                mBrowserControlsStateProviderSupplier, () -> mTopUiThemeColorProvider);
         mModel = mStaticLayout.getModelForTesting();
 
         mStaticLayout.setSceneLayerForTesting(mStaticTabSceneLayer);
         mStaticLayout.onFinishNativeInitialization();
 
-        mUserDataHost.setUserData(TabThemeColorHelper.class, mTabThemeColorHelper);
-        doReturn(BACKGROUND_COLOR).when(mTabThemeColorHelper).getBackgroundColor();
-        doReturn(TOOLBAR_BACKGROUND_COLOR).when(mTabThemeColorHelper).getColor();
+        doReturn(BACKGROUND_COLOR).when(mTopUiThemeColorProvider).getBackgroundColor(any());
+        doReturn(TOOLBAR_BACKGROUND_COLOR)
+                .when(mTopUiThemeColorProvider)
+                .getSceneLayerBackground(any());
         mStaticLayout.setTextBoxBackgroundColorForTesting(TEXT_BOX_BACKGROUND_COLOR);
         mStaticLayout.setToolbarTextBoxAlphaForTesting(TEXT_BOX_ALPHA);
 
@@ -186,7 +187,6 @@ public class StaticLayoutUnitTest {
     @After
     public void tearDown() {
         CompositorAnimationHandler.setTestingMode(false);
-        mUserDataHost.removeUserData(TabThemeColorHelper.class);
         mStaticLayout.setSceneLayerForTesting(null);
         mStaticLayout.setTextBoxBackgroundColorForTesting(null);
         mStaticLayout.setToolbarTextBoxAlphaForTesting(null);
@@ -228,6 +228,7 @@ public class StaticLayoutUnitTest {
         doReturn(false).when(tab).isNativePage();
         doReturn(mock(WebContents.class)).when(tab).getWebContents();
         doReturn(true).when(tab).isInitialized();
+        doReturn(TOOLBAR_BACKGROUND_COLOR).when(tab).getThemeColor();
         when(tab.getUserDataHost()).thenReturn(mUserDataHost);
         return tab;
     }
@@ -326,7 +327,7 @@ public class StaticLayoutUnitTest {
         mModel.set(LayoutTab.BACKGROUND_COLOR, Color.WHITE);
 
         // Index 0 is the TabObserver for mTab1.
-        doReturn(Color.RED).when(mTabThemeColorHelper).getBackgroundColor();
+        doReturn(Color.RED).when(mTopUiThemeColorProvider).getBackgroundColor(mTab1);
         mTabObserverCaptor.getAllValues().get(0).onBackgroundColorChanged(mTab1, Color.RED);
 
         assertEquals(Color.RED, mModel.get(LayoutTab.BACKGROUND_COLOR));

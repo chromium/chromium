@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -61,6 +60,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
@@ -177,6 +177,9 @@ public class LayoutManagerImpl implements LayoutManager, LayoutUpdateHost, Layou
     /** The supplier used to supply the LayoutStateProvider. */
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
 
+    /** The supplier of {@link ThemeColorProvider} for top UI. */
+    private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
+
     /** A cache of title textures to use in different layouts. */
     protected Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
 
@@ -260,11 +263,13 @@ public class LayoutManagerImpl implements LayoutManager, LayoutUpdateHost, Layou
      * @param layerTitleCacheSupplier A supplier of the cache of title textures.
      * @param layoutStateProviderOneshotSupplier Supplier used to supply the {@link
      *         LayoutStateProvider}.
+     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerImpl(LayoutManagerHost host, ViewGroup contentContainer,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
-            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
+            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier,
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
         mAndroidViewShownSupplier = new ObservableSupplierImpl<>();
@@ -272,7 +277,7 @@ public class LayoutManagerImpl implements LayoutManager, LayoutUpdateHost, Layou
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mLayoutStateProviderOneshotSupplier = layoutStateProviderOneshotSupplier;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
-
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
         mContext = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
 
@@ -477,7 +482,8 @@ public class LayoutManagerImpl implements LayoutManager, LayoutUpdateHost, Layou
 
         // Build Layouts
         mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
-                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProviderSupplier);
+                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProviderSupplier,
+                mTopUiThemeColorProvider);
 
         // Set up layout parameters
         mStaticLayout.setLayoutHandlesTabLifecycles(true);
@@ -792,16 +798,16 @@ public class LayoutManagerImpl implements LayoutManager, LayoutUpdateHost, Layou
         String url = tab.getUrlString();
         boolean isNativePage = tab.isNativePage()
                 || (url != null && url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX));
-        int themeColor = TabThemeColorHelper.getColor(tab);
 
         boolean canUseLiveTexture = tab.getWebContents() != null && !SadTab.isShowing(tab)
                 && !isNativePage && !tab.isHidden();
 
-        layoutTab.initFromHost(TabThemeColorHelper.getBackgroundColor(tab), shouldStall(tab),
-                canUseLiveTexture, ToolbarColors.getToolbarSceneLayerBackground(tab),
+        TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
+        layoutTab.initFromHost(topUiTheme.getBackgroundColor(tab), shouldStall(tab),
+                canUseLiveTexture, topUiTheme.getSceneLayerBackground(tab),
                 ToolbarColors.getTextBoxColorForToolbarBackground(
-                        mContext.getResources(), tab, themeColor),
-                ToolbarColors.getTextBoxAlphaForToolbarBackground(tab));
+                        mContext.getResources(), tab, topUiTheme.getThemeColor()),
+                topUiTheme.getTextBoxBackgroundAlpha(tab));
 
         mHost.requestRender();
     }

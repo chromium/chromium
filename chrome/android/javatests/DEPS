@@ -14,6 +14,7 @@ include_rules = [
   "+chrome/browser/endpoint_fetcher",
   "+chrome/browser/ui/android/appmenu",
   "-chrome/browser/ui/android/appmenu/internal",
+  "+chrome/browser/ui/android/theme/java",
   "+chrome/browser/ui/messages/android/java",
   "+chrome/browser/signin/services/android/java",
   "+components/autofill/android/java/src/org/chromium/components/autofill",

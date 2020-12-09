@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -168,8 +169,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     public CustomTabToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mDarkModeTint = ToolbarColors.getThemedToolbarIconTint(context, false);
-        mLightModeTint = ToolbarColors.getThemedToolbarIconTint(context, true);
+        mDarkModeTint = ThemeUtils.getThemedToolbarIconTint(context, false);
+        mLightModeTint = ThemeUtils.getThemedToolbarIconTint(context, true);
     }
 
     @Override

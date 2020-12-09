@@ -866,7 +866,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(/* Context */ this),
                     getResources(),
                     /* StatusBarColorProvider */ this, getOverviewModeBehaviorSupplier(),
-                    getLifecycleDispatcher(), getActivityTabProvider());
+                    getLifecycleDispatcher(), getActivityTabProvider(),
+                    mRootUiCoordinator.getTopUiThemeColorProvider());
         }
 
         return mStatusBarColorController;
@@ -1762,6 +1763,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mCompositorViewHolder.setBrowserControlsManager(getBrowserControlsManager());
         mCompositorViewHolder.setUrlBar(urlBar);
         mCompositorViewHolder.setInsetObserverView(getInsetObserverView());
+        mCompositorViewHolder.setTopUiThemeColorProvider(
+                mRootUiCoordinator.getTopUiThemeColorProvider());
         mCompositorViewHolder.onFinishNativeInitialization(getTabModelSelector(), this);
 
         if (controlContainer != null && DeviceClassManager.enableToolbarSwipe()

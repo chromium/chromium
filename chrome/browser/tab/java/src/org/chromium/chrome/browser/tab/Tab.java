@@ -162,6 +162,16 @@ public interface Tab extends TabLifecycle {
     int getLaunchType();
 
     /**
+     * @return The theme color for this tab.
+     */
+    int getThemeColor();
+
+    /**
+     * @return {@code true} if the theme color from contents is valid and can be used for theming.
+     */
+    boolean isThemingAllowed();
+
+    /**
      * @return {@code true} if the Tab is in incognito mode.
      */
     boolean isIncognito();

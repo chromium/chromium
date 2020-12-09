@@ -27,10 +27,11 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
@@ -179,13 +180,15 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param tabSupplier Supplier of the activity tab.
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to access browser
      *                                     controls offsets.
+     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public void initializeWithNative(Runnable layoutUpdater,
             OnClickListener tabSwitcherClickHandler,
             OnLongClickListener tabSwitcherLongClickHandler, OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler,
             LayoutManager layoutManager, ObservableSupplier<Tab> tabSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            TopUiThemeColorProvider topUiThemeColorProvider) {
         assert mTabModelSelectorSupplier.get() != null;
         if (mTabSwitcherModeCoordinatorPhone != null) {
             mTabSwitcherModeCoordinatorPhone.setOnTabSwitcherClickHandler(tabSwitcherClickHandler);
@@ -215,7 +218,8 @@ public class TopToolbarCoordinator implements Toolbar {
         if (DeviceClassManager.enableFullscreen()) {
             mOverlayCoordinator = new TopToolbarOverlayCoordinator(mToolbarLayout.getContext(),
                     layoutManager, mControlContainer::getProgressBarDrawingInfo, tabSupplier,
-                    browserControlsStateProvider, mResourceManagerSupplier);
+                    browserControlsStateProvider, mResourceManagerSupplier,
+                    topUiThemeColorProvider);
             layoutManager.addSceneOverlay(mOverlayCoordinator);
             mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
         }

@@ -80,8 +80,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         mConstraintsChangedCallback = (constraints) -> updateEnabledState();
         mTab.addObserver(new EmptyTabObserver() {
             @Override
-            public void onInitialized(
-                    Tab tab, String appId, @Nullable Boolean hasThemeColor, int themeColor) {
+            public void onInitialized(Tab tab, String appId) {
                 updateVisibilityDelegate();
             }
 

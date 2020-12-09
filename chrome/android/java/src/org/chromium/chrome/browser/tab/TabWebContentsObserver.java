@@ -340,7 +340,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void didChangeThemeColor() {
-            TabThemeColorHelper.get(mTab).updateIfNeeded(true);
+            mTab.updateThemeColor(mTab.getWebContents().getThemeColor());
         }
 
         @Override

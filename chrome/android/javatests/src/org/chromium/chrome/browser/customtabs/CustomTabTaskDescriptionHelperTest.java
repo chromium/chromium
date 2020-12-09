@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -209,7 +208,7 @@ public class CustomTabTaskDescriptionHelperTest {
 
     private int computeDefaultThemeColor(@NonNull ChromeActivity activity) throws Exception {
         return TestThreadUtils.runOnUiThreadBlocking(
-                () -> { return TabThemeColorHelper.getDefaultColor(activity.getActivityTab()); });
+                () -> ThemeTestUtils.getDefaultThemeColor(activity.getActivityTab()));
     }
 
     /**

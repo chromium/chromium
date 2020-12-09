@@ -25,11 +25,8 @@ public interface TabObserver {
      * if not {@code null}, various states that a Tab should restore itself from.
      * @param tab The notifying {@link Tab}.
      * @param appId ID of the external app that opened this tab.
-     * @param hasThemeColor {@code true} if the tab has a theme color set. {@code null}
-     *        if theme color info is not available from TabState.
-     * @param themeColor Theme color.
      */
-    void onInitialized(Tab tab, String appId, @Nullable Boolean hasThemeColor, int themeColor);
+    void onInitialized(Tab tab, String appId);
 
     /**
      * Called when a {@link Tab} is shown.

@@ -62,8 +62,8 @@ import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
@@ -230,6 +230,8 @@ public class CompositorViewHolder extends FrameLayout
      * active gesture, this is null.
      */
     private @Nullable MotionEvent mLastActiveTouchEvent;
+
+    private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     /**
      * This view is created on demand to display debugging information.
@@ -510,6 +512,13 @@ public class CompositorViewHolder extends FrameLayout
             loader.registerResource(
                     R.id.control_container, mControlContainer.getToolbarResourceAdapter());
         }
+    }
+
+    /**
+     * @param themeColorProvider {@link ThemeColorProvider} for top UI part.
+     */
+    public void setTopUiThemeColorProvider(TopUiThemeColorProvider themeColorProvider) {
+        mTopUiThemeColorProvider = themeColorProvider;
     }
 
     /**
@@ -1251,7 +1260,7 @@ public class CompositorViewHolder extends FrameLayout
     public int getBrowserControlsBackgroundColor(Resources res) {
         return mTabVisible == null
                 ? ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary)
-                : ToolbarColors.getToolbarSceneLayerBackground(mTabVisible);
+                : mTopUiThemeColorProvider.getSceneLayerBackground(mTabVisible);
     }
 
     @Override

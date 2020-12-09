@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandlingStr
 import org.chromium.chrome.browser.customtabs.content.DefaultCustomTabIntentHandlingStrategy;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.webapps.WebApkPostShareTargetNavigator;
 
 import dagger.Lazy;
@@ -35,16 +36,19 @@ public class BaseCustomTabActivityModule {
     private final @ActivityType int mActivityType;
     private final CustomTabNightModeStateController mNightModeController;
     private final IntentIgnoringCriterion mIntentIgnoringCriterion;
+    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     public BaseCustomTabActivityModule(BrowserServicesIntentDataProvider intentDataProvider,
             StartupTabPreloader startupTabPreloader,
             CustomTabNightModeStateController nightModeController,
-            IntentIgnoringCriterion intentIgnoringCriterion) {
+            IntentIgnoringCriterion intentIgnoringCriterion,
+            TopUiThemeColorProvider topUiThemeColorProvider) {
         mIntentDataProvider = intentDataProvider;
         mStartupTabPreloader = startupTabPreloader;
         mActivityType = intentDataProvider.getActivityType();
         mNightModeController = nightModeController;
         mIntentIgnoringCriterion = intentIgnoringCriterion;
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
     }
 
     @Provides
@@ -86,6 +90,11 @@ public class BaseCustomTabActivityModule {
     @Provides
     public IntentIgnoringCriterion provideIntentIgnoringCriterion() {
         return mIntentIgnoringCriterion;
+    }
+
+    @Provides
+    public TopUiThemeColorProvider provideTopUiThemeColorProvider() {
+        return mTopUiThemeColorProvider;
     }
 
     @Provides

@@ -21,7 +21,6 @@ chrome_java_resources = [
   "java/res/color/payment_minimal_ui_default_tint.xml",
   "java/res/color/payment_minimal_ui_emphasis_tint.xml",
   "java/res/color/payment_minimal_ui_error_tint.xml",
-  "java/res/color/toolbar_icon_tint_dark.xml",
   "java/res/color/white_mode_tint.xml",
   "java/res/drawable-hdpi/amex_card.png",
   "java/res/drawable-hdpi/badge_update_dark.png",

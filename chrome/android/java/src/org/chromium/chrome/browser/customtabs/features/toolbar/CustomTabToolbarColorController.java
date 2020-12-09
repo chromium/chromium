@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabThemeColorHelper;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.webapps.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebappExtras;
@@ -54,6 +54,7 @@ public class CustomTabToolbarColorController {
     private final ChromeActivity<?> mActivity;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final CustomTabActivityTabProvider mTabProvider;
+    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private ToolbarManager mToolbarManager;
     private boolean mUseTabThemeColor;
@@ -61,11 +62,13 @@ public class CustomTabToolbarColorController {
     @Inject
     public CustomTabToolbarColorController(BrowserServicesIntentDataProvider intentDataProvider,
             ChromeActivity<?> activity, CustomTabActivityTabProvider tabProvider,
-            TabObserverRegistrar tabObserverRegistrar) {
+            TabObserverRegistrar tabObserverRegistrar,
+            TopUiThemeColorProvider topUiThemeColorProvider) {
         mIntentDataProvider = intentDataProvider;
         mActivity = activity;
         mTabProvider = tabProvider;
         mTabObserverRegistrar = tabObserverRegistrar;
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
     }
 
     /**
@@ -165,8 +168,7 @@ public class CustomTabToolbarColorController {
                 mIntentDataProvider, mUseTabThemeColor, tab, () -> Previews.isPreview(tab));
         switch (toolbarColorType) {
             case ToolbarColorType.THEME_COLOR:
-                assert tab != null;
-                return TabThemeColorHelper.getColor(tab);
+                return mTopUiThemeColorProvider.getThemeColor();
             case ToolbarColorType.DEFAULT_COLOR:
                 return getDefaultColor();
             case ToolbarColorType.INTENT_TOOLBAR_COLOR:

@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -498,7 +499,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         if (isIncognito() || needLightIcon) {
             // For a dark theme color, use light icons.
-            return ToolbarColors.getThemedToolbarIconTintRes(true);
+            return ThemeUtils.getThemedToolbarIconTintRes(true);
         }
 
         if (isPreview()) {
@@ -507,7 +508,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             return R.color.locationbar_status_preview_color;
         }
 
-        return ToolbarColors.getThemedToolbarIconTintRes(false);
+        return ThemeUtils.getThemedToolbarIconTintRes(false);
     }
 
     /** @return The formatted URL suitable for editing. */

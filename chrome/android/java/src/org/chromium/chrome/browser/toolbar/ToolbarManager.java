@@ -81,15 +81,16 @@ import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
-import org.chromium.chrome.browser.toolbar.ThemeColorProvider.ThemeColorObserver;
-import org.chromium.chrome.browser.toolbar.ThemeColorProvider.TintObserver;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -147,7 +148,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                                        MenuButtonDelegate, ChromeAccessibilityUtil.Observer {
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final TabCountProvider mTabCountProvider;
-    private final ThemeColorProvider mTabThemeColorProvider;
+    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
     private AppThemeColorProvider mAppThemeColorProvider;
     private SettableThemeColorProvider mCustomTabThemeColorProvider;
     private final TopToolbarCoordinator mToolbar;
@@ -283,7 +284,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param controlContainer The container of the toolbar.
      * @param compositorViewHolder Class that holds a {@link CompositorView}.
      * @param urlFocusChangedCallback The callback to be notified when the URL focus changes.
-     * @param themeColorProvider The ThemeColorProvider object.
+     * @param topUiThemeColorProvider The ThemeColorProvider object for top UI.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param shareDelegateSupplier Supplier for ShareDelegate.
      * @param identityDiscController The controller that coordinates the state of the identity disc
@@ -315,7 +316,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     public ToolbarManager(AppCompatActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
             CompositorViewHolder compositorViewHolder, Callback<Boolean> urlFocusChangedCallback,
-            ThemeColorProvider themeColorProvider, TabObscuringHandler tabObscuringHandler,
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            TabObscuringHandler tabObscuringHandler,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             IdentityDiscController identityDiscController,
             List<ButtonDataProvider> buttonDataProviders, ActivityTabProvider tabProvider,
@@ -389,8 +391,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mIncognitoStateProvider = new IncognitoStateProvider();
         mTabCountProvider = new TabCountProvider();
-        mTabThemeColorProvider = themeColorProvider;
-        mTabThemeColorProvider.addThemeColorObserver(this);
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mTopUiThemeColorProvider.addThemeColorObserver(this);
 
         mAppThemeColorProvider = new AppThemeColorProvider(/* context= */ mActivity);
         // Observe tint changes to update sub-components that rely on the tint (crbug.com/1077684).
@@ -410,7 +412,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         ThemeColorProvider browsingModeThemeColorProvider =
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
                 ? mAppThemeColorProvider
-                : mTabThemeColorProvider;
+                : mTopUiThemeColorProvider;
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
@@ -541,7 +543,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
             @Override
             public void onContentChanged(Tab tab) {
-                if (tab.isNativePage()) TabThemeColorHelper.get(tab).updateIfNeeded(false);
                 checkIfNtpLoaded();
                 mToolbar.onTabContentViewChanged();
                 if (shouldShowCursorInLocationBar()) {
@@ -1024,7 +1025,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mToolbar.initializeWithNative(layoutManager::requestUpdate, tabSwitcherClickHandler,
                 tabSwitcherLongClickHandler, newTabClickHandler, bookmarkClickHandler,
                 customTabsBackClickHandler, layoutManager, mActivityTabSupplier,
-                mBrowserControlsSizer);
+                mBrowserControlsSizer, mTopUiThemeColorProvider);
 
         mToolbar.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
             @Override
@@ -1204,7 +1205,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mBrowserControlsSizer.removeObserver(mBrowserControlsObserver);
         mFullscreenManager.removeObserver(mFullscreenObserver);
 
-        if (mTabThemeColorProvider != null) mTabThemeColorProvider.removeThemeColorObserver(this);
+        if (mTopUiThemeColorProvider != null) {
+            mTopUiThemeColorProvider.removeThemeColorObserver(this);
+        }
+
         if (mAppThemeColorProvider != null) {
             mAppThemeColorProvider.removeTintObserver(this);
             mAppThemeColorProvider.destroy();
@@ -1562,7 +1566,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             int defaultPrimaryColor =
                     ChromeColors.getDefaultThemeColor(mActivity.getResources(), isIncognito);
             int primaryColor =
-                    tab != null ? TabThemeColorHelper.getColor(tab) : defaultPrimaryColor;
+                    tab != null ? mTopUiThemeColorProvider.getThemeColor() : defaultPrimaryColor;
             onThemeColorChanged(primaryColor, false);
 
             onTabOrModelChanged();

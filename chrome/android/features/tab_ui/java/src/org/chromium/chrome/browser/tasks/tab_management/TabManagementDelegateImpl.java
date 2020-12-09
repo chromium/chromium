@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.tasks.TasksSurfaceCoordinator;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestions;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
-import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;

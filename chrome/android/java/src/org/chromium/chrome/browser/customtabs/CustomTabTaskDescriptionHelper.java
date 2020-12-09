@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabThemeColorHelper;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.webapps.WebappExtras;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -47,6 +47,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
     private final CustomTabActivityTabProvider mTabProvider;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
+    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     @Nullable
     private CustomTabTaskDescriptionIconGenerator mIconGenerator;
@@ -73,11 +74,13 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
     public CustomTabTaskDescriptionHelper(ChromeActivity<?> activity,
             CustomTabActivityTabProvider tabProvider, TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            TopUiThemeColorProvider topUiThemeColorProvider) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mTabObserverRegistrar = tabObserverRegistrar;
         mIntentDataProvider = intentDataProvider;
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
 
         activityLifecycleDispatcher.register(this);
     }
@@ -245,10 +248,8 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
      * Computes the theme color for the task description.
      */
     private int computeThemeColor() {
-        Tab currentTab = mTabProvider.getTab();
-        int themeColor = (currentTab == null || TabThemeColorHelper.isDefaultColorUsed(currentTab))
-                ? mDefaultThemeColor
-                : TabThemeColorHelper.getColor(currentTab);
+        Tab tab = mTabProvider.getTab();
+        int themeColor = mTopUiThemeColorProvider.getThemeColorOrFallback(tab, mDefaultThemeColor);
         return ColorUtils.getOpaqueColor(themeColor);
     }
 

@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -60,6 +61,8 @@ public class TopToolbarOverlayMediator {
     /** An observer of the browser controls offsets. */
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
 
+    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
+
     /** The view state for this overlay. */
     private final PropertyModel mModel;
 
@@ -76,12 +79,14 @@ public class TopToolbarOverlayMediator {
             LayoutStateProvider layoutStateProvider,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ObservableSupplier<Tab> tabSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            TopUiThemeColorProvider topUiThemeColorProvider) {
         mContext = context;
         mLayoutStateProvider = layoutStateProvider;
         mProgressInfoCallback = progressInfoCallback;
         mTabSupplier = tabSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
         mModel = model;
         mCallbackController = new CallbackController();
 
@@ -187,7 +192,7 @@ public class TopToolbarOverlayMediator {
     @ColorInt
     private int getToolbarBackgroundColor(Tab tab) {
         if (sToolbarBackgroundColorForTesting != null) return sToolbarBackgroundColorForTesting;
-        return ToolbarColors.getToolbarSceneLayerBackground(tab);
+        return mTopUiThemeColorProvider.getSceneLayerBackground(tab);
     }
 
     /**

@@ -34,14 +34,14 @@ import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.chrome.browser.toolbar.ThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.ThemeColorProvider.ThemeColorObserver;
-import org.chromium.chrome.browser.toolbar.ThemeColorProvider.TintObserver;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
@@ -90,7 +90,7 @@ public abstract class ToolbarLayout
      */
     public ToolbarLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mDefaultTint = ToolbarColors.getThemedToolbarIconTint(getContext(), false);
+        mDefaultTint = ThemeUtils.getThemedToolbarIconTint(getContext(), false);
         mProgressBar = createProgressBar();
 
         addOnLayoutChangeListener(new OnLayoutChangeListener() {

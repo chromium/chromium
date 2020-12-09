@@ -30,7 +30,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
-import org.chromium.chrome.browser.TabThemeColorProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -61,6 +60,7 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
+import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareButtonController;
@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
@@ -141,7 +142,8 @@ public class RootUiCoordinator
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
     /** A means of providing the theme color to different features. */
-    private TabThemeColorProvider mTabThemeColorProvider;
+    private TopUiThemeColorProvider mTopUiThemeColorProvider;
+
     @Nullable
     private Callback<Boolean> mOnOmniboxFocusChangedListener;
     protected ToolbarManager mToolbarManager;
@@ -183,6 +185,8 @@ public class RootUiCoordinator
     // This supplier only ever updated when feature TOOLBAR_IPH_ANDROID is enabled.
     protected OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier = new OneshotSupplierImpl<>();
     protected Supplier<Tab> mStartSurfaceParentTabSupplier;
+    private final ObservableSupplierImpl<Tab> mActivityTabSupplier = new ObservableSupplierImpl<>();
+    private final ActivityTabProvider.ActivityTabTabObserver mTabObserver;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -253,11 +257,28 @@ public class RootUiCoordinator
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
 
         mStartSurfaceParentTabSupplier = startSurfaceParentTabSupplier;
+
+        mTabObserver = new ActivityTabProvider.ActivityTabTabObserver(mActivityTabProvider) {
+            @Override
+            public void onObservingDifferentTab(Tab tab, boolean hint) {
+                mActivityTabSupplier.set(tab);
+            }
+        };
+        mTopUiThemeColorProvider = new TopUiThemeColorProvider(mActivity, mActivityTabSupplier,
+                mActivity::getActivityThemeColor, mActivity::isTablet, Previews::isPreview);
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
     public ToolbarManager getToolbarManager() {
         return mToolbarManager;
+    }
+
+    // TODO(jinsukkim): remove this in favor of wiring it directly.
+    /**
+     * @return {@link ThemeColorProvider} for top UI.
+     */
+    public TopUiThemeColorProvider getTopUiThemeColorProvider() {
+        return mTopUiThemeColorProvider;
     }
 
     @Override
@@ -299,16 +320,19 @@ public class RootUiCoordinator
             mToolbarManager.destroy();
             mToolbarManager = null;
         }
+
         if (mAppMenuCoordinator != null) {
             mAppMenuCoordinator.unregisterAppMenuBlocker(this);
             mAppMenuCoordinator.unregisterAppMenuBlocker(mActivity);
             mAppMenuCoordinator.destroy();
         }
 
-        if (mTabThemeColorProvider != null) {
-            mTabThemeColorProvider.destroy();
-            mTabThemeColorProvider = null;
+        if (mTopUiThemeColorProvider != null) {
+            mTopUiThemeColorProvider.destroy();
+            mTopUiThemeColorProvider = null;
         }
+
+        mTabObserver.destroy();
 
         if (mFindToolbarManager != null) mFindToolbarManager.removeObserver(mFindToolbarObserver);
 
@@ -358,9 +382,6 @@ public class RootUiCoordinator
     @Override
     public void onInflationComplete() {
         mScrimCoordinator = buildScrimWidget();
-
-        mTabThemeColorProvider = new TabThemeColorProvider(mActivity);
-        mTabThemeColorProvider.setActivityTabProvider(mActivity.getActivityTabProvider());
 
         initFindToolbarManager();
         initializeToolbar();
@@ -626,7 +647,7 @@ public class RootUiCoordinator
             mToolbarManager = new ToolbarManager(mActivity, mActivity.getBrowserControlsManager(),
                     mActivity.getFullscreenManager(), toolbarContainer,
                     mActivity.getCompositorViewHolder(), urlFocusChangedCallback,
-                    mTabThemeColorProvider, mTabObscuringHandler, mShareDelegateSupplier,
+                    mTopUiThemeColorProvider, mTabObscuringHandler, mShareDelegateSupplier,
                     mIdentityDiscController, mButtonDataProviders, mActivityTabProvider,
                     mScrimCoordinator, mActionModeControllerCallback, mFindToolbarManager,
                     mProfileSupplier, mBookmarkBridgeSupplier, mCanAnimateBrowserControls,

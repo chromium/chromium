@@ -29,8 +29,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper.MenuButtonState;
-import org.chromium.chrome.browser.toolbar.ThemeColorProvider.TintObserver;
-import org.chromium.chrome.browser.toolbar.ToolbarColors;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
@@ -120,7 +120,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
                 mMenuImageButton.getWidth() - mMenuImageButton.getPaddingRight(),
                 mMenuImageButton.getHeight() - mMenuImageButton.getPaddingBottom());
         mMenuImageButtonAnimationDrawable.setGravity(Gravity.CENTER);
-        int color = ToolbarColors.getThemedToolbarIconTint(getContext(), mUseLightDrawables)
+        int color = ThemeUtils.getThemedToolbarIconTint(getContext(), mUseLightDrawables)
                             .getDefaultColor();
         mMenuImageButtonAnimationDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
 
