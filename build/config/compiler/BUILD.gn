@@ -2187,15 +2187,9 @@ if (is_clang && is_a_target_toolchain) {
     if (is_android || is_chromecast) {
       _clang_sample_profile = "//chrome/android/profiles/afdo.prof"
     } else {
-      # TODO(crbug/1135245): Remove silvermont, airmont and broadwell after
-      # the change atom and bigcore reaches Chrome OS.
-      assert(
-          chromeos_afdo_platform == "silvermont" ||
-              chromeos_afdo_platform == "airmont" ||
-              chromeos_afdo_platform == "broadwell" ||
-              chromeos_afdo_platform == "atom" ||
-              chromeos_afdo_platform == "bigcore",
-          "Only silvermont, airmont and broadwell are valid Chrome OS profiles.")
+      assert(chromeos_afdo_platform == "atom" ||
+                 chromeos_afdo_platform == "bigcore",
+             "Only atom and bigcore are valid Chrome OS profiles.")
       _clang_sample_profile =
           "//chromeos/profiles/${chromeos_afdo_platform}.afdo.prof"
     }
