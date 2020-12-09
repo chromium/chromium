@@ -8,7 +8,7 @@ package org.chromium.chromoting;
  * The Activity for showing the terms of service.
  */
 public class TermsOfServiceActivity extends WebViewActivity {
-    private static final String TOS_URL = "https://policies.google.com/terms";
+    private static final String TOS_URL = "https://policies.google.com/terms/embedded";
 
     public TermsOfServiceActivity() {
         super(R.string.terms_of_service, TOS_URL);

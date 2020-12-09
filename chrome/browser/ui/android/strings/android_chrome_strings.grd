@@ -1549,7 +1549,7 @@ Your Google account may have other forms of browsing history like searches and a
         Google Terms of Service
       </message>
       <message name="IDS_GOOGLE_TERMS_OF_SERVICE_URL" desc="URL for Google terms of service" translateable="false">
-        https://policies.google.com/terms
+        https://policies.google.com/terms/embedded
       </message>
       <message name="IDS_CHROME_ADDITIONAL_TERMS_OF_SERVICE_TITLE" desc="Title for Chrome and Chrome OS addtional terms of service">
         Chrome &amp; Chrome OS Additional Terms of Service
