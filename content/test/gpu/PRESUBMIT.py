@@ -11,6 +11,12 @@ for more details about the presubmit API built into depot_tools.
 def CommonChecks(input_api, output_api):
   results = []
 
+  gpu_env = dict(input_api.environ)
+  gpu_env.update({
+      'PYTHONPATH': input_api.PresubmitLocalPath(),
+      'PYTHONDONTWRITEBYTECODE': '1',
+  })
+
   gpu_tests = [
       input_api.Command(
           name='run_content_test_gpu_unittests',
@@ -24,9 +30,17 @@ def CommonChecks(input_api, output_api):
                             'validate',
                         ],
                         kwargs={},
-                        message=output_api.PresubmitError)
+                        message=output_api.PresubmitError),
   ]
   results.extend(input_api.RunTests(gpu_tests))
+
+  results.extend(
+      input_api.canned_checks.RunUnitTestsInDirectory(
+          input_api,
+          output_api,
+          input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                 'unexpected_passes'), [r'^.+_unittest\.py$'],
+          env=gpu_env))
 
   pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
   results.extend(input_api.RunTests(pylint_checks))
