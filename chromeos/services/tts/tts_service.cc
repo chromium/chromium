@@ -34,7 +34,7 @@ TtsService::~TtsService() = default;
 void TtsService::BindTtsStreamFactory(
     mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
     mojo::PendingRemote<audio::mojom::StreamFactory> factory) {
-  pending_tts_stream_factory_receivers_.push_back(std::move(receiver));
+  pending_tts_stream_factory_receivers_.push(std::move(receiver));
   ProcessPendingTtsStreamFactories();
 
   // TODO(accessibility): make it possible to change this dynamically. Also,
@@ -84,7 +84,12 @@ void TtsService::Play(
 
 void TtsService::AddAudioBuffer(AudioBuffer buf) {
   base::AutoLock al(state_lock_);
-  buffers_.emplace_back(std::move(buf));
+  buffers_.emplace(std::move(buf));
+}
+
+void TtsService::AddExplicitTimepoint(int char_index, base::TimeDelta delay) {
+  base::AutoLock al(state_lock_);
+  timepoints_.push({char_index, delay});
 }
 
 void TtsService::Stop() {
@@ -118,8 +123,6 @@ int TtsService::Render(base::TimeDelta delay,
                        media::AudioBus* dest) {
   size_t frames_in_buf = 0;
   int32_t status = -1;
-  int char_index = -1;
-  bool is_first_buffer = false;
   {
     base::AutoLock al(state_lock_);
     if (buffers_.empty())
@@ -139,24 +142,31 @@ int TtsService::Render(base::TimeDelta delay,
       return 0;
     }
 
-    char_index = buf.char_index;
-    is_first_buffer = buf.is_first_buffer;
-    const float* frames = &buf.frames[0];
+    if (buf.is_first_buffer) {
+      start_playback_time_ = base::Time::Now();
+      tts_event_observer_->OnStart();
+    }
+
+    // Implicit timepoint.
+    if (buf.char_index != -1)
+      tts_event_observer_->OnTimepoint(buf.char_index);
+
+    // Explicit timepoint(s).
+    base::TimeDelta start_to_now = base::Time::Now() - start_playback_time_;
+    while (!timepoints_.empty() && timepoints_.front().second <= start_to_now) {
+      tts_event_observer_->OnTimepoint(timepoints_.front().first);
+      timepoints_.pop();
+    }
+
     frames_in_buf = buf.frames.size();
+    const float* frames = nullptr;
+    if (!buf.frames.empty())
+      frames = &buf.frames[0];
     float* channel = dest->channel(0);
     for (size_t i = 0; i < frames_in_buf; i++)
       channel[i] = frames[i];
-    buffers_.pop_front();
+    buffers_.pop();
   }
-
-  if (is_first_buffer)
-    tts_event_observer_->OnStart();
-
-  if (frames_in_buf == 0)
-    return 0;
-
-  if (char_index != -1)
-    tts_event_observer_->OnTimepoint(char_index);
 
   return frames_in_buf;
 }
@@ -165,8 +175,10 @@ void TtsService::OnRenderError() {}
 
 void TtsService::StopLocked(bool clear_buffers) {
   output_device_->Pause();
-  if (clear_buffers)
-    buffers_.clear();
+  if (clear_buffers) {
+    buffers_ = std::queue<AudioBuffer>();
+    timepoints_ = std::queue<Timepoint>();
+  }
 }
 
 void TtsService::ProcessPendingTtsStreamFactories() {
@@ -175,7 +187,7 @@ void TtsService::ProcessPendingTtsStreamFactories() {
     return;
 
   auto factory = std::move(pending_tts_stream_factory_receivers_.front());
-  pending_tts_stream_factory_receivers_.pop_front();
+  pending_tts_stream_factory_receivers_.pop();
   tts_stream_factory_.Bind(std::move(factory));
 }
 

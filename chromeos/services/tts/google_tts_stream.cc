@@ -147,12 +147,19 @@ void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
   buf.frames.resize(frames_in_buf);
 
   buf.char_index = -1;
-  if (libchrometts_.GoogleTtsGetTimepointsCount() > 0)
-    buf.char_index = libchrometts_.GoogleTtsGetTimepointsCharIndexAtIndex(0);
-
   buf.is_first_buffer = is_first_buffer;
 
   owner_->AddAudioBuffer(std::move(buf));
+
+  for (size_t timepoint_index = 0;
+       timepoint_index < libchrometts_.GoogleTtsGetTimepointsCount();
+       timepoint_index++) {
+    owner_->AddExplicitTimepoint(
+        libchrometts_.GoogleTtsGetTimepointsCharIndexAtIndex(timepoint_index),
+        base::TimeDelta::FromSecondsD(
+            libchrometts_.GoogleTtsGetTimepointsTimeInSecsAtIndex(
+                timepoint_index)));
+  }
 
   if (status <= 0)
     return;

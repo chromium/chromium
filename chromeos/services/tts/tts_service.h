@@ -26,6 +26,8 @@ class TtsService : public mojom::TtsService,
                    public mojom::TtsStreamFactory,
                    public media::AudioRendererSink::RenderCallback {
  public:
+  typedef std::pair<int, base::TimeDelta> Timepoint;
+
   // Helper group of state to pass from main thread to audio thread.
   struct AudioBuffer {
     AudioBuffer();
@@ -47,6 +49,7 @@ class TtsService : public mojom::TtsService,
       base::OnceCallback<void(::mojo::PendingReceiver<mojom::TtsEventObserver>)>
           callback);
   void AddAudioBuffer(AudioBuffer buf);
+  void AddExplicitTimepoint(int char_index, base::TimeDelta delay);
   void Stop();
   void SetVolume(float volume);
   void Pause();
@@ -59,12 +62,11 @@ class TtsService : public mojom::TtsService,
     return &tts_stream_factory_;
   }
 
-  std::deque<mojo::PendingReceiver<mojom::TtsStreamFactory>>&
+  std::queue<mojo::PendingReceiver<mojom::TtsStreamFactory>>&
   pending_tts_stream_factory_receivers_for_testing() {
     return pending_tts_stream_factory_receivers_;
   }
 
- private:
   // mojom::TtsService:
   void BindTtsStreamFactory(
       mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
@@ -82,6 +84,7 @@ class TtsService : public mojom::TtsService,
              media::AudioBus* dest) override;
   void OnRenderError() override;
 
+ private:
   // Handles stopping tts.
   void StopLocked(bool clear_buffers = true)
       EXCLUSIVE_LOCKS_REQUIRED(state_lock_);
@@ -96,7 +99,7 @@ class TtsService : public mojom::TtsService,
   mojo::Receiver<mojom::TtsStreamFactory> tts_stream_factory_;
 
   // A list of pending component extension requesting a tts stream factory.
-  std::deque<mojo::PendingReceiver<mojom::TtsStreamFactory>>
+  std::queue<mojo::PendingReceiver<mojom::TtsStreamFactory>>
       pending_tts_stream_factory_receivers_;
 
   std::unique_ptr<GoogleTtsStream> google_tts_stream_;
@@ -113,7 +116,16 @@ class TtsService : public mojom::TtsService,
   std::unique_ptr<audio::OutputDevice> output_device_;
 
   // The queue of audio buffers to be played by the audio thread.
-  std::deque<AudioBuffer> buffers_ GUARDED_BY(state_lock_);
+  std::queue<AudioBuffer> buffers_ GUARDED_BY(state_lock_);
+
+  // An explicit list of increasing time delta sorted timepoints to be fired
+  // while rendering audio at the specified |delay| from start of audio
+  // playback. An AudioBuffer may contain an implicit timepoint for callers who
+  // specify a character index along with the audio buffer.
+  std::queue<Timepoint> timepoints_ GUARDED_BY(state_lock_);
+
+  // The time at which playback of the current utterance started.
+  base::Time start_playback_time_;
 };
 
 }  // namespace tts
