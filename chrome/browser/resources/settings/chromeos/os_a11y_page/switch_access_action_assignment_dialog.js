@@ -97,7 +97,7 @@ Polymer({
      */
     promptText_: {
       type: String,
-      computed: 'computePromptText_(assignmentState_)',
+      computed: 'computePromptText_(assignmentState_, assignments_)',
     },
 
     /** @private {?SwitchAccessCommand} */
@@ -263,7 +263,7 @@ Polymer({
   },
 
   /** @private */
-  onCancelClick_() {
+  onExitClick_() {
     this.$.switchAccessActionAssignmentDialog.close();
   },
 
@@ -282,10 +282,6 @@ Polymer({
       case SwitchAccessCommand.PREVIOUS:
         this.assignments_ = value.previous;
         break;
-    }
-
-    if (!this.assignments_.length) {
-      this.assignments_ = [this.i18n('noSwitchesAssigned')];
     }
   },
 
@@ -321,10 +317,15 @@ Polymer({
    * @return {string}
    * @private
    */
-  computePromptText_(assignmentState) {
+  computePromptText_(assignmentState, assignments) {
     switch (assignmentState) {
       case AssignmentState.WAIT_FOR_KEY:
-        return this.i18n('switchAccessActionAssignmentDialogWaitForKeyPrompt');
+        if (!assignments.length) {
+          return this.i18n(
+              'switchAccessActionAssignmentDialogWaitForKeyPromptNoSwitches');
+        }
+        return this.i18n(
+            'switchAccessActionAssignmentDialogWaitForKeyPromptAtLeastOneSwitch');
       case AssignmentState.WAIT_FOR_CONFIRMATION:
         return this.i18n(
             'switchAccessActionAssignmentDialogWaitForConfirmationPrompt',
