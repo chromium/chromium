@@ -15,6 +15,7 @@
 
 namespace content {
 
+class FrameTreeNode;
 class PrerenderHost;
 
 // Prerender2:
@@ -44,9 +45,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // Destroys the host registered for `prerendering_url`.
   void AbandonHost(const GURL& prerendering_url);
 
-  // Selects the host for navigation to `url`. Returns nullptr if it's not found
-  // or not ready for activation yet.
-  std::unique_ptr<PrerenderHost> SelectForNavigation(const GURL& url);
+  // Selects the host to activate for a navigation for the given FrameTreeNode.
+  // Returns nullptr if it's not found or not ready for activation yet.
+  std::unique_ptr<PrerenderHost> SelectForNavigation(
+      const GURL& navigation_url,
+      FrameTreeNode& frame_tree_node);
 
   // Returns a prerender host for `prerendering_url`. Returns nullptr if the URL
   // doesn't match any prerender host.

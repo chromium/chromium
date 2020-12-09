@@ -12,6 +12,24 @@ function add_prerender(url) {
   document.head.appendChild(link);
 }
 
+// Creates a new iframe with the URL.
+async function add_iframe(url) {
+  const frame = document.createElement('iframe');
+  frame.src = url;
+  document.body.appendChild(frame);
+  return await new Promise(resolve => {
+    frame.onload = e => resolve('LOADED');
+  });
+}
+
+// Opens a new pop-up window with the URL.
+async function open_window(url) {
+  const win = window.open(url, '_blank');
+  return await new Promise(resolve => {
+    win.onload = e => resolve('LOADED');
+  });
+}
+
 </script>
 </body>
 </html>

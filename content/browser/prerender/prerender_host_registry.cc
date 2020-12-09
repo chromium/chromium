@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "base/stl_util.h"
 #include "content/browser/prerender/prerender_host.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -49,8 +51,27 @@ void PrerenderHostRegistry::AbandonHost(const GURL& prerendering_url) {
 }
 
 std::unique_ptr<PrerenderHost> PrerenderHostRegistry::SelectForNavigation(
-    const GURL& url) {
-  auto found = prerender_host_by_url_.find(url);
+    const GURL& navigation_url,
+    FrameTreeNode& frame_tree_node) {
+  RenderFrameHostImpl* render_frame_host = frame_tree_node.current_frame_host();
+
+  // Disallow activation when the render frame host is for a nested browsing
+  // context (e.g., iframes). This is because nested browsing contexts are
+  // supposed to be created in the parent's browsing context group and can
+  // script with the parent, but prerendered pages are created in new browsing
+  // context groups.
+  if (render_frame_host->GetParent())
+    return nullptr;
+
+  // Disallow activation when other auxiliary browsing contexts (e.g., pop-up
+  // windows) exist in the same browsing context group. This is because these
+  // browsing contexts should be able to script each other, but prerendered
+  // pages are created in new browsing context groups.
+  SiteInstance* site_instance = render_frame_host->GetSiteInstance();
+  if (site_instance->GetRelatedActiveContentsCount() != 1u)
+    return nullptr;
+
+  auto found = prerender_host_by_url_.find(navigation_url);
   if (found == prerender_host_by_url_.end())
     return nullptr;
 
