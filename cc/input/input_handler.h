@@ -272,6 +272,7 @@ class CC_EXPORT InputHandler {
                                  ScrollBeginThreadState scroll_start_state) = 0;
   virtual void RecordScrollEnd(ui::ScrollInputType input_type) = 0;
 
+  virtual PointerResultType HitTest(const gfx::PointF& mouse_position) = 0;
   virtual InputHandlerPointerResult MouseMoveAt(
       const gfx::Point& mouse_position) = 0;
   // TODO(arakeri): Pass in the modifier instead of a bool once the refactor

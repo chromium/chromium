@@ -583,6 +583,14 @@ InputHandlerPointerResult ThreadedInputHandler::MouseMoveAt(
   return result;
 }
 
+PointerResultType ThreadedInputHandler::HitTest(
+    const gfx::PointF& viewport_point) {
+  return compositor_delegate_.GetSettings()
+                 .compositor_threaded_scrollbar_scrolling
+             ? scrollbar_controller_->HitTest(viewport_point)
+             : PointerResultType::kUnhandled;
+}
+
 InputHandlerPointerResult ThreadedInputHandler::MouseDown(
     const gfx::PointF& viewport_point,
     bool shift_modifier) {

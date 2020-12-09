@@ -56,6 +56,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
       ScrollState* scroll_state,
       base::TimeDelta delayed_by = base::TimeDelta()) override;
   void ScrollEnd(bool should_snap = false) override;
+  PointerResultType HitTest(const gfx::PointF& viewport_point) override;
   void RecordScrollBegin(ui::ScrollInputType input_type,
                          ScrollBeginThreadState scroll_start_state) override;
   void RecordScrollEnd(ui::ScrollInputType input_type) override;

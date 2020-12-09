@@ -542,4 +542,65 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyCompositedScrollbarBrowserTest,
   RunScrollbarThumbDragLatencyTest();
 }
 
+IN_PROC_BROWSER_TEST_F(ScrollLatencyCompositedScrollbarBrowserTest,
+                       ScrollbarThumbDragDeviceChange) {
+#if !defined(OS_ANDROID)
+  LoadURL();
+
+  // First, set up a gesture scroll for any device other than a scrollbar.
+  const blink::WebGestureEvent scroll_begin =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
+          0, 0, blink::WebGestureDevice::kTouchpad, 1);
+  GetWidgetHost()->ForwardGestureEvent(scroll_begin);
+
+  const blink::WebGestureEvent scroll_update =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollUpdate(
+          0, -10, 0, blink::WebGestureDevice::kTouchpad);
+  GetWidgetHost()->ForwardGestureEvent(scroll_update);
+
+  // Next, drag the scrollbar thumb. Start with a mousedown.
+  const gfx::PointF scrollbar_thumb(795, 30);
+  blink::WebMouseEvent mouse_down = blink::SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseDown, scrollbar_thumb.x(),
+      scrollbar_thumb.y(), 0);
+  mouse_down.button = blink::WebMouseEvent::Button::kLeft;
+  mouse_down.SetTimeStamp(base::TimeTicks::Now());
+  GetWidgetHost()->ForwardMouseEvent(mouse_down);
+  RunUntilInputProcessed(GetWidgetHost());
+
+  // Followed by a couple of mousemoves.
+  blink::WebMouseEvent mouse_move = blink::SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseMove, scrollbar_thumb.x(),
+      scrollbar_thumb.y() + 10, 0);
+  mouse_move.button = blink::WebMouseEvent::Button::kLeft;
+  mouse_move.SetTimeStamp(base::TimeTicks::Now());
+  GetWidgetHost()->ForwardMouseEvent(mouse_move);
+  RunUntilInputProcessed(GetWidgetHost());
+
+  mouse_move.SetPositionInWidget(scrollbar_thumb.x(), scrollbar_thumb.y() + 20);
+  mouse_move.SetPositionInScreen(scrollbar_thumb.x(), scrollbar_thumb.y() + 20);
+  GetWidgetHost()->ForwardMouseEvent(mouse_move);
+  RunUntilInputProcessed(GetWidgetHost());
+
+  // And end with a mouseup.
+  blink::WebMouseEvent mouse_up = blink::SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseUp, scrollbar_thumb.x(),
+      scrollbar_thumb.y() + 20, 0);
+  mouse_up.button = blink::WebMouseEvent::Button::kLeft;
+  mouse_up.SetTimeStamp(base::TimeTicks::Now());
+  GetWidgetHost()->ForwardMouseEvent(mouse_up);
+  RunUntilInputProcessed(GetWidgetHost());
+  FetchHistogramsFromChildProcesses();
+
+  // Expect to see histograms generated for scroll begin and updates.
+  EXPECT_GT(
+      GetSampleCountForHistogram(
+          "Event.Latency.ScrollBegin.Scrollbar.RendererSwapToBrowserNotified2"),
+      0u);
+  EXPECT_GT(GetSampleCountForHistogram("Event.Latency.ScrollUpdate.Scrollbar."
+                                       "RendererSwapToBrowserNotified2"),
+            0u);
+#endif  // !defined(OS_ANDROID)
+}
+
 }  // namespace content

@@ -50,26 +50,22 @@ ScrollbarLayerImplBase* ScrollbarController::ScrollbarLayer() const {
   return nullptr;
 }
 
-// Performs hit test and prepares scroll deltas that will be used by GSB and
-// GSU.
-InputHandlerPointerResult ScrollbarController::HandlePointerDown(
-    const gfx::PointF position_in_widget,
-    bool jump_key_modifier) {
-  LayerImpl* layer_impl = GetLayerHitByPoint(position_in_widget);
-
+PointerResultType ScrollbarController::HitTest(
+    const gfx::PointF position_in_widget) const {
   // If a non-custom scrollbar layer was not found, we return early as there is
   // no point in setting additional state in the ScrollbarController. Return an
   // empty InputHandlerPointerResult in this case so that when it is bubbled up
   // to InputHandlerProxy::RouteToTypeSpecificHandler, the pointer event gets
   // passed on to the main thread.
+  const LayerImpl* layer_impl = GetLayerHitByPoint(position_in_widget);
   if (!(layer_impl && layer_impl->IsScrollbarLayer()))
-    return InputHandlerPointerResult();
+    return PointerResultType::kUnhandled;
 
   // If the scrollbar layer has faded out (eg: Overlay scrollbars), don't
   // initiate a scroll.
   const ScrollbarLayerImplBase* scrollbar = ToScrollbarLayer(layer_impl);
   if (scrollbar->OverlayScrollbarOpacity() == 0.f)
-    return InputHandlerPointerResult();
+    return PointerResultType::kUnhandled;
 
   // If the scroll_node has a main_thread_scrolling_reason, don't initiate a
   // scroll.
@@ -78,8 +74,23 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
           ->property_trees()
           ->scroll_tree.FindNodeFromElementId(scrollbar->scroll_element_id());
   if (target_node->main_thread_scrolling_reasons)
+    return PointerResultType::kUnhandled;
+
+  return PointerResultType::kScrollbarScroll;
+}
+
+// Performs hit test and prepares scroll deltas that will be used by GSB and
+// GSU.
+InputHandlerPointerResult ScrollbarController::HandlePointerDown(
+    const gfx::PointF position_in_widget,
+    bool jump_key_modifier) {
+  if (HitTest(position_in_widget) != PointerResultType::kScrollbarScroll)
     return InputHandlerPointerResult();
 
+  // TODO(arakeri): GetLayerHitByPoint should ideally be called only once per
+  // pointerdown. This needs to be optimized. See crbug.com/1156922.
+  const ScrollbarLayerImplBase* scrollbar =
+      ToScrollbarLayer(GetLayerHitByPoint(position_in_widget));
   captured_scrollbar_metadata_ = CapturedScrollbarMetadata();
   captured_scrollbar_metadata_->scroll_element_id =
       scrollbar->scroll_element_id();
