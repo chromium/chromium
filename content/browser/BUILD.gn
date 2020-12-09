@@ -1932,6 +1932,7 @@ source_set("browser") {
       "accessibility/accessibility_event_recorder_mac.mm",
       "accessibility/accessibility_tools_utils_mac.h",
       "accessibility/accessibility_tools_utils_mac.mm",
+      "accessibility/accessibility_tree_formatter_mac.h",
       "accessibility/accessibility_tree_formatter_mac.mm",
       "accessibility/accessibility_tree_formatter_utils_mac.h",
       "accessibility/accessibility_tree_formatter_utils_mac.mm",

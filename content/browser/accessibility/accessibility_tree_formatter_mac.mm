@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/accessibility/accessibility_tree_formatter_mac.h"
+
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -15,7 +17,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
-#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 // This file uses the deprecated NSObject accessibility interface.
 // TODO(crbug.com/948844): Migrate to the new NSAccessibility interface.
@@ -34,6 +35,7 @@ using content::a11y::IsBrowserAccessibilityCocoa;
 using content::a11y::LineIndexer;
 using content::a11y::OptionalNSObject;
 using std::string;
+using ui::AXPropertyFilter;
 using ui::AXPropertyNode;
 
 namespace content {
@@ -55,82 +57,6 @@ const char kNULLValue[] = "_const_NULL";
 const char kFailedToParseArgsError[] = "_const_ERROR:FAILED_TO_PARSE_ARGS";
 
 }  // namespace
-
-class AccessibilityTreeFormatterMac : public ui::AXTreeFormatterBase {
- public:
-  explicit AccessibilityTreeFormatterMac();
-  ~AccessibilityTreeFormatterMac() override;
-
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
-  base::Value BuildTreeForSelector(
-      const AXTreeSelector& selector) const override;
-
- protected:
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override;
-
- private:
-  base::Value BuildTreeForAXUIElement(AXUIElementRef node) const;
-
-  void RecursiveBuildTree(const id node,
-                          const LineIndexer* line_indexer,
-                          base::Value* dict) const;
-
-  void AddProperties(const id node,
-                     const LineIndexer* line_indexer,
-                     base::Value* dict) const;
-
-  // Invokes an attributes by a property node.
-  OptionalNSObject InvokeAttributeFor(
-      const BrowserAccessibilityCocoa* cocoa_node,
-      const AXPropertyNode& property_node,
-      const LineIndexer* line_indexer) const;
-
-  base::Value PopulateSize(const BrowserAccessibilityCocoa*) const;
-  base::Value PopulatePosition(const BrowserAccessibilityCocoa*) const;
-  base::Value PopulatePoint(NSPoint) const;
-  base::Value PopulateSize(NSSize) const;
-  base::Value PopulateRect(NSRect) const;
-  base::Value PopulateRange(NSRange) const;
-  base::Value PopulateTextPosition(
-      BrowserAccessibilityPosition::AXPositionInstance::pointer,
-      const LineIndexer*) const;
-  base::Value PopulateTextMarkerRange(id, const LineIndexer*) const;
-  base::Value PopulateObject(id, const LineIndexer* line_indexer) const;
-  base::Value PopulateArray(NSArray*, const LineIndexer* line_indexer) const;
-
-  std::string NodeToLineIndex(id, const LineIndexer*) const;
-
-  std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
-
-  std::string FormatAttributeValue(const base::Value& value) const;
-};
-
-// TODO(crbug.com/1133330): move implementation into
-// content/public/ax_inspect_factory.cc when AccessibilityTreeFormatterMac is
-// relocated under ui/accessibility/platform
-
-// static
-std::unique_ptr<ui::AXTreeFormatter>
-AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateFormatter(kMac);
-}
-
-// static
-std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
-    AXInspectFactory::Type type) {
-  switch (type) {
-    case kBlink:
-      return std::make_unique<AccessibilityTreeFormatterBlink>();
-    case kMac:
-      return std::make_unique<AccessibilityTreeFormatterMac>();
-    default:
-      NOTREACHED() << "Unsupported formatter type " << type;
-  }
-  return nullptr;
-}
 
 AccessibilityTreeFormatterMac::AccessibilityTreeFormatterMac() {}
 

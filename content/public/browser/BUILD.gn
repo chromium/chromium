@@ -514,6 +514,7 @@ source_set("browser_sources") {
 
   if (is_mac) {
     sources += [
+      "ax_inspect_factory_mac.mm",
       "native_event_processor_mac.h",
       "native_event_processor_observer_mac.h",
       "native_event_processor_observer_mac.mm",

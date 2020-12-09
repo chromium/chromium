@@ -1,0 +1,76 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_MAC_H_
+#define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_MAC_H_
+
+#include "content/browser/accessibility/browser_accessibility_cocoa.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
+
+@class BrowserAccessibilityCocoa;
+
+namespace content {
+
+namespace a11y {
+class LineIndexer;
+class OptionalNSObject;
+}
+
+class CONTENT_EXPORT AccessibilityTreeFormatterMac
+    : public ui::AXTreeFormatterBase {
+ public:
+  explicit AccessibilityTreeFormatterMac();
+  ~AccessibilityTreeFormatterMac() override;
+
+  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
+  base::Value BuildTreeForSelector(
+      const AXTreeSelector& selector) const override;
+
+ protected:
+  void AddDefaultFilters(
+      std::vector<ui::AXPropertyFilter>* property_filters) override;
+
+ private:
+  base::Value BuildTreeForAXUIElement(AXUIElementRef node) const;
+
+  void RecursiveBuildTree(const id node,
+                          const a11y::LineIndexer* line_indexer,
+                          base::Value* dict) const;
+
+  void AddProperties(const id node,
+                     const a11y::LineIndexer* line_indexer,
+                     base::Value* dict) const;
+
+  // Invokes an attributes by a property node.
+  a11y::OptionalNSObject InvokeAttributeFor(
+      const BrowserAccessibilityCocoa* cocoa_node,
+      const ui::AXPropertyNode& property_node,
+      const a11y::LineIndexer* line_indexer) const;
+
+  base::Value PopulateSize(const BrowserAccessibilityCocoa*) const;
+  base::Value PopulatePosition(const BrowserAccessibilityCocoa*) const;
+  base::Value PopulatePoint(NSPoint) const;
+  base::Value PopulateSize(NSSize) const;
+  base::Value PopulateRect(NSRect) const;
+  base::Value PopulateRange(NSRange) const;
+  base::Value PopulateTextPosition(
+      BrowserAccessibilityPosition::AXPositionInstance::pointer,
+      const a11y::LineIndexer*) const;
+  base::Value PopulateTextMarkerRange(id, const a11y::LineIndexer*) const;
+  base::Value PopulateObject(id, const a11y::LineIndexer* line_indexer) const;
+  base::Value PopulateArray(NSArray*,
+                            const a11y::LineIndexer* line_indexer) const;
+
+  std::string NodeToLineIndex(id, const a11y::LineIndexer*) const;
+
+  std::string ProcessTreeForOutput(
+      const base::DictionaryValue& node) const override;
+
+  std::string FormatAttributeValue(const base::Value& value) const;
+};
+
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_MAC_H_

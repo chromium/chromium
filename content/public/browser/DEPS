@@ -27,6 +27,9 @@ specific_include_rules = {
     "+content/common/content_constants_internal.h",
     "-content/browser/loader",
   ],
+  ".*\.mm": [
+    "+content/browser",
+  ],
 
   "desktop_capture\.h": [
     # desktop_capture.h creates a DesktopCaptureOptions to share between
