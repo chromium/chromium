@@ -894,16 +894,6 @@ by a child template that "extends" this file.
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- Sync adapter for browser invalidation. -->
-        <service android:name="org.chromium.chrome.browser.invalidation.ChromeBrowserSyncAdapterService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <meta-data android:name="android.content.SyncAdapter"
-                       android:resource="@xml/syncadapter" />
-        </service>
-
         <!-- Broadcast receiver that will be notified of account changes -->
         <receiver android:name="org.chromium.chrome.browser.services.AccountsChangedReceiver"
             android:exported="true">

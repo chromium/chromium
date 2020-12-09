@@ -1136,14 +1136,6 @@
         android:exported="false"
         android:name="org.chromium.chrome.browser.incognito.IncognitoNotificationService">
     </service>  # DIFF-ANCHOR: a651602a
-    <service  # DIFF-ANCHOR: bd027029
-        android:exported="false"
-        android:name="org.chromium.chrome.browser.invalidation.ChromeBrowserSyncAdapterService">
-      <intent-filter>  # DIFF-ANCHOR: 3e31084a
-        <action android:name="android.content.SyncAdapter"/>
-      </intent-filter>  # DIFF-ANCHOR: 3e31084a
-      <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/syncadapter"/>
-    </service>  # DIFF-ANCHOR: bd027029
     <service  # DIFF-ANCHOR: 4f8e62ea
         android:exported="false"
         android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService">

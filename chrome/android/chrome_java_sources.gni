@@ -745,8 +745,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsHandler.java",
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsSettings.java",
   "java/src/org/chromium/chrome/browser/intent/IntentMetadata.java",
-  "java/src/org/chromium/chrome/browser/invalidation/ChromeBrowserSyncAdapter.java",
-  "java/src/org/chromium/chrome/browser/invalidation/ChromeBrowserSyncAdapterServiceImpl.java",
   "java/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunner.java",
   "java/src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManager.java",
   "java/src/org/chromium/chrome/browser/javascript/WebContextFetcher.java",

@@ -1535,7 +1535,6 @@ jinja_template_resources("chrome_public_apk_template_resources") {
     "java/res_template/xml/file_paths.xml",
     "java/res_template/xml/launchershortcuts.xml",
     "java/res_template/xml/searchable.xml",
-    "java/res_template/xml/syncadapter.xml",
   ]
   res_dir = "java/res_template"
   variables = [ "manifest_package=$chrome_public_manifest_package" ]
@@ -2152,7 +2151,6 @@ android_library("base_module_java") {
     "java/src/org/chromium/chrome/browser/download/DownloadBroadcastManager.java",
     "java/src/org/chromium/chrome/browser/download/DownloadForegroundService.java",
     "java/src/org/chromium/chrome/browser/incognito/IncognitoNotificationService.java",
-    "java/src/org/chromium/chrome/browser/invalidation/ChromeBrowserSyncAdapterService.java",
     "java/src/org/chromium/chrome/browser/language/AppLocaleUtils.java",
     "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleController.java",
     "java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationService.java",
