@@ -4,32 +4,47 @@
 
 #include "chrome/browser/reading_list/android/reading_list_notification_client.h"
 
-#include "base/notreached.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
+#include "chrome/browser/reading_list/android/reading_list_notification_service.h"
 
 using ThrottleConfigCallback =
     notifications::NotificationSchedulerClient::ThrottleConfigCallback;
 
-ReadingListNotificationClient::ReadingListNotificationClient() = default;
+ReadingListNotificationClient::ReadingListNotificationClient(
+    ServiceGetter getter)
+    : service_getter_(getter) {}
+
 ReadingListNotificationClient::~ReadingListNotificationClient() = default;
 
 void ReadingListNotificationClient::BeforeShowNotification(
     std::unique_ptr<notifications::NotificationData> notification_data,
     NotificationDataCallback callback) {
-  NOTIMPLEMENTED();
+  DCHECK(notification_data.get());
+  GetNotificationService()->BeforeShowNotification(std::move(notification_data),
+                                                   std::move(callback));
 }
 
 void ReadingListNotificationClient::OnSchedulerInitialized(
     bool success,
     std::set<std::string> guids) {
-  NOTIMPLEMENTED();
+  DCHECK_LE(guids.size(), 1u)
+      << "Only should have at most one reading list notification.";
 }
 
 void ReadingListNotificationClient::OnUserAction(
     const notifications::UserActionData& action_data) {
-  NOTIMPLEMENTED();
+  if (action_data.action_type == notifications::UserActionType::kClick) {
+    GetNotificationService()->OnClick();
+  }
 }
 
 void ReadingListNotificationClient::GetThrottleConfig(
     ThrottleConfigCallback callback) {
-  NOTIMPLEMENTED();
+  // No throttle.
+  std::move(callback).Run(nullptr);
+}
+
+ReadingListNotificationService*
+ReadingListNotificationClient::GetNotificationService() {
+  return service_getter_.Run();
 }

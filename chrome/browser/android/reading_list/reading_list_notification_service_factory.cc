@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/time/default_clock.h"
+#include "chrome/browser/android/reading_list/reading_list_bridge.h"
 #include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,8 +49,12 @@ KeyedService* ReadingListNotificationServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   auto* notification_scheduler =
       NotificationScheduleServiceFactory::GetForKey(profile->GetProfileKey());
-  return new ReadingListNotificationService(reading_list_model,
-                                            notification_scheduler);
+  auto config = std::make_unique<ReadingListNotificationService::Config>();
+  config->notification_show_time = 8;
+  return new ReadingListNotificationServiceImpl(
+      reading_list_model, notification_scheduler,
+      std::make_unique<ReadingListBridge>(), std::move(config),
+      base::DefaultClock::GetInstance());
 }
 
 content::BrowserContext*

@@ -19,6 +19,7 @@ source_set("reading_list") {
     "reading_list_manager_impl.h",
     "reading_list_notification_client.cc",
     "reading_list_notification_client.h",
+    "reading_list_notification_delegate.h",
     "reading_list_notification_service.cc",
     "reading_list_notification_service.h",
   ]
@@ -31,6 +32,8 @@ source_set("reading_list") {
     "//components/bookmarks/browser",
     "//components/keyed_service/core",
     "//components/reading_list/core",
+    "//components/reading_list/features:flags",
+    "//skia",
     "//ui/base:base",
     "//url",
   ]
@@ -38,14 +41,21 @@ source_set("reading_list") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "reading_list_manager_impl_unittest.cc" ]
+  sources = [
+    "reading_list_manager_impl_unittest.cc",
+    "reading_list_notification_client_unittest.cc",
+    "reading_list_notification_service_unittest.cc",
+  ]
   deps = [
     ":android",
     "//base/test:test_support",
+    "//chrome/browser/notifications/scheduler/test:test_support",
     "//components/bookmarks/browser",
     "//components/reading_list/core:core",
+    "//components/reading_list/features:flags",
     "//components/sync",
     "//components/sync:test_support_model",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
   ]

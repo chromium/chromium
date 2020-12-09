@@ -157,9 +157,8 @@ class BackgroundTaskCoordinatorHelper {
     // TODO(xingliu): Remove SchedulerTaskTime.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kNotificationSchedulerImmediateBackgroundTask)) {
-      background_task_->Schedule(
-          base::TimeDelta(),
-          base::TimeDelta() + base::TimeDelta::FromMinutes(1));
+      background_task_->Schedule(base::TimeDelta::FromSeconds(30),
+                                 base::TimeDelta::FromMinutes(1));
       return;
     }
 

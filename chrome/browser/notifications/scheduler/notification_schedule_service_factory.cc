@@ -15,26 +15,29 @@
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client_registrar.h"
 #include "chrome/browser/notifications/scheduler/schedule_service_factory_helper.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "content/public/browser/storage_partition.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/notifications/scheduler/display_agent_android.h"
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_android.h"
 #include "chrome/browser/offline_pages/prefetch/notifications/prefetch_notification_client.h"
 #include "chrome/browser/offline_pages/prefetch/notifications/prefetch_notification_service_factory.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_client.h"
+#include "chrome/browser/reading_list/android/reading_list_notification_service.h"
 #include "chrome/browser/updates/update_notification_client.h"
 #include "chrome/browser/updates/update_notification_service_factory.h"
 #endif  // defined(OS_ANDROID)
 
 namespace {
+
 std::unique_ptr<notifications::NotificationSchedulerClientRegistrar>
 RegisterClients(ProfileKey* key) {
   auto client_registrar =
       std::make_unique<notifications::NotificationSchedulerClientRegistrar>();
-  // TODO(xingliu): Register clients here.
 #if defined(OS_ANDROID)
   // Register UpdateNotificationClient.
   auto update_notification_service_getter =
@@ -57,10 +60,17 @@ RegisterClients(ProfileKey* key) {
       std::move(prefetch_client));
 
   // Register reading list client.
-  auto reading_list_client = std::make_unique<ReadingListNotificationClient>();
-  client_registrar->RegisterClient(
-      notifications::SchedulerClientType::kReadingList,
-      std::move(reading_list_client));
+  if (ReadingListNotificationService::IsEnabled()) {
+    Profile* profile = ProfileManager::GetProfileFromProfileKey(key);
+    auto reading_list_service_getter = base::BindRepeating(
+        &ReadingListNotificationServiceFactory::GetForBrowserContext, profile);
+
+    auto reading_list_client = std::make_unique<ReadingListNotificationClient>(
+        reading_list_service_getter);
+    client_registrar->RegisterClient(
+        notifications::SchedulerClientType::kReadingList,
+        std::move(reading_list_client));
+  }
 
 #endif  // defined(OS_ANDROID)
   return client_registrar;
