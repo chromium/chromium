@@ -244,10 +244,15 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
 
   // Creates a set of factory bundles for scripts and subresources. This must be
   // called after the COEP value for the worker script is known.
-  using CreateFactoryBundlesCallback = base::OnceCallback<void(
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle,
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresouce_bundle)>;
-  void CreateFactoryBundles(CreateFactoryBundlesCallback callback);
+  struct CreateFactoryBundlesResult {
+    CreateFactoryBundlesResult();
+    ~CreateFactoryBundlesResult();
+    CreateFactoryBundlesResult(CreateFactoryBundlesResult&& other);
+
+    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle;
+    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_bundle;
+  };
+  CreateFactoryBundlesResult CreateFactoryBundles();
 
   // Returns the unique token that has been generated to identify this worker
   // instance, and its corresponding GlobalScope in the renderer process. If the
@@ -329,15 +334,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle);
 
   void BindCacheStorageInternal();
-
-  void OnCreatedFactoryBundles(
-      CreateFactoryBundlesCallback callback,
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle,
-      std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresouce_bundle,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter,
-      mojo::PendingReceiver<blink::mojom::ReportingObserver>
-          reporting_observer_receiver);
 
   base::WeakPtr<ServiceWorkerContextCore> context_;
   ServiceWorkerVersion* owner_version_;

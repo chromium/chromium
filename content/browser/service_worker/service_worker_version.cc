@@ -1009,9 +1009,10 @@ void ServiceWorkerVersion::OnMainScriptLoaded() {
   // TODO(https://crbug.com/1039613): Update the loader factories passed to the
   // script loader factory too.
   DCHECK_EQ(NEW, status());
-  embedded_worker_->CreateFactoryBundles(
-      base::BindOnce(&ServiceWorkerVersion::InitializeGlobalScope,
-                     weak_factory_.GetWeakPtr()));
+  EmbeddedWorkerInstance::CreateFactoryBundlesResult result =
+      embedded_worker_->CreateFactoryBundles();
+  InitializeGlobalScope(std::move(result.script_bundle),
+                        std::move(result.subresource_bundle));
 }
 
 void ServiceWorkerVersion::InitializeGlobalScope(
