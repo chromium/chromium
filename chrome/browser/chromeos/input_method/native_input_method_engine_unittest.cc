@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/chromeos/input_method/stub_input_method_engine_observer.h"
-#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/ime/mock_input_channel.h"
@@ -96,14 +96,15 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     ui::IMEBridge::Initialize();
 
     // Needed by NativeInputMethodEngine for the virtual keyboard.
-    keyboard_controller_client_ =
-        ChromeKeyboardControllerClient::CreateForTest();
+    keyboard_controller_client_test_helper_ =
+        ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<ChromeKeyboardControllerClient> keyboard_controller_client_;
+  std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
+      keyboard_controller_client_test_helper_;
 };
 
 TEST_F(NativeInputMethodEngineTest, EnableCallsRightMojoFunctions) {

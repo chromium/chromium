@@ -38,9 +38,14 @@ bool ShouldUseRuleBasedMojoEngine(const std::string& engine_id) {
 }
 
 bool ShouldUseFstMojoEngine(const std::string& engine_id) {
+  // To avoid handling tricky cases where the user types with both the virtual
+  // and the physical keyboard, only run the native code path if the virtual
+  // keyboard is disabled. Otherwise, just let the extension handle any physical
+  // key events.
   return base::FeatureList::IsEnabled(
              chromeos::features::kSystemLatinPhysicalTyping) &&
-         base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE);
+         base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE) &&
+         !ChromeKeyboardControllerClient::Get()->GetKeyboardEnabled();
 }
 
 std::string NormalizeEngineId(const std::string engine_id) {
@@ -132,6 +137,10 @@ void NativeInputMethodEngine::Initialize(
   std::unique_ptr<AutocorrectManager> autocorrect_manager =
       std::make_unique<AutocorrectManager>(this);
   autocorrect_manager_ = autocorrect_manager.get();
+
+  chrome_keyboard_controller_client_observer_.Observe(
+      ChromeKeyboardControllerClient::Get());
+
   // Wrap the given observer in our observer that will decide whether to call
   // Mojo directly or forward to the extension.
   auto native_observer =
@@ -140,6 +149,12 @@ void NativeInputMethodEngine::Initialize(
           std::move(autocorrect_manager));
   InputMethodEngine::Initialize(std::move(native_observer), extension_id,
                                 profile);
+}
+
+void NativeInputMethodEngine::OnKeyboardEnabledChanged(bool enabled) {
+  // Re-activate the engine whenever the virtual keyboard is enabled or disabled
+  // so that the native or extension state is reset correctly.
+  Enable(GetActiveComponentId());
 }
 
 void NativeInputMethodEngine::FlushForTesting() {
@@ -164,10 +179,10 @@ NativeInputMethodEngine::GetNativeObserver() const {
 }
 
 NativeInputMethodEngine::ImeObserver::ImeObserver(
-    std::unique_ptr<InputMethodEngineBase::Observer> base_observer,
+    std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
     std::unique_ptr<AutocorrectManager> autocorrect_manager)
-    : base_observer_(std::move(base_observer)),
+    : ime_base_observer_(std::move(ime_base_observer)),
       receiver_from_engine_(this),
       assistive_suggester_(std::move(assistive_suggester)),
       autocorrect_manager_(std::move(autocorrect_manager)) {}
@@ -210,7 +225,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     ui::SetShowEmojiKeyboardCallback(
         base::BindRepeating(&EmojiPickerDialog::Show));
   }
-  base_observer_->OnActivate(engine_id);
+  ime_base_observer_->OnActivate(engine_id);
 }
 void NativeInputMethodEngine::ImeObserver::ProcessMessage(
     const std::vector<uint8_t>& message,
@@ -234,9 +249,9 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
         context.should_do_learning
             ? ime::mojom::PersonalizationMode::kEnabled
             : ime::mojom::PersonalizationMode::kDisabled));
+  } else {
+    ime_base_observer_->OnFocus(context);
   }
-
-  base_observer_->OnFocus(context);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnBlur(int context_id) {
@@ -246,9 +261,9 @@ void NativeInputMethodEngine::ImeObserver::OnBlur(int context_id) {
   if (active_engine_id_ && ShouldUseFstMojoEngine(*active_engine_id_) &&
       remote_to_engine_.is_bound()) {
     remote_to_engine_->OnBlur();
+  } else {
+    ime_base_observer_->OnBlur(context_id);
   }
-
-  base_observer_->OnBlur(context_id);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
@@ -282,20 +297,20 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
              remote_to_engine_.is_bound()) {
     remote_to_engine_->OnKeyEvent(std::move(key_event), std::move(callback));
   } else {
-    base_observer_->OnKeyEvent(engine_id, event, std::move(callback));
+    ime_base_observer_->OnKeyEvent(engine_id, event, std::move(callback));
   }
 }
 
 void NativeInputMethodEngine::ImeObserver::OnReset(
     const std::string& engine_id) {
-  if (remote_to_engine_.is_bound()) {
-    if (ShouldUseRuleBasedMojoEngine(engine_id)) {
-      remote_to_engine_->ResetForRulebased();
-    } else if (ShouldUseFstMojoEngine(engine_id)) {
-      remote_to_engine_->OnCompositionCanceled();
-    }
+  if (remote_to_engine_.is_bound() && ShouldUseRuleBasedMojoEngine(engine_id)) {
+    remote_to_engine_->ResetForRulebased();
+  } else if (remote_to_engine_.is_bound() &&
+             ShouldUseFstMojoEngine(engine_id)) {
+    remote_to_engine_->OnCompositionCanceled();
+  } else {
+    ime_base_observer_->OnReset(engine_id);
   }
-  base_observer_->OnReset(engine_id);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnDeactivated(
@@ -303,12 +318,12 @@ void NativeInputMethodEngine::ImeObserver::OnDeactivated(
   if (ShouldUseRuleBasedMojoEngine(engine_id)) {
     remote_to_engine_.reset();
   }
-  base_observer_->OnDeactivated(engine_id);
+  ime_base_observer_->OnDeactivated(engine_id);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnCompositionBoundsChanged(
     const std::vector<gfx::Rect>& bounds) {
-  base_observer_->OnCompositionBoundsChanged(bounds);
+  ime_base_observer_->OnCompositionBoundsChanged(bounds);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
@@ -330,16 +345,17 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
     selection->focus = cursor_pos;
     remote_to_engine_->OnSurroundingTextChanged(
         base::UTF16ToUTF8(text), offset_pos, std::move(selection));
+  } else {
+    ime_base_observer_->OnSurroundingTextChanged(engine_id, text, cursor_pos,
+                                                 anchor_pos, offset_pos);
   }
-  base_observer_->OnSurroundingTextChanged(engine_id, text, cursor_pos,
-                                           anchor_pos, offset_pos);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnCandidateClicked(
     const std::string& component_id,
     int candidate_id,
     InputMethodEngineBase::MouseButtonEvent button) {
-  base_observer_->OnCandidateClicked(component_id, candidate_id, button);
+  ime_base_observer_->OnCandidateClicked(component_id, candidate_id, button);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnAssistiveWindowButtonClicked(
@@ -375,7 +391,7 @@ void NativeInputMethodEngine::ImeObserver::OnAssistiveWindowButtonClicked(
       break;
     case ui::ime::ButtonId::kAddToDictionary:
     case ui::ime::ButtonId::kNone:
-      base_observer_->OnAssistiveWindowButtonClicked(button);
+      ime_base_observer_->OnAssistiveWindowButtonClicked(button);
       break;
   }
 }
@@ -383,22 +399,22 @@ void NativeInputMethodEngine::ImeObserver::OnAssistiveWindowButtonClicked(
 void NativeInputMethodEngine::ImeObserver::OnMenuItemActivated(
     const std::string& component_id,
     const std::string& menu_id) {
-  base_observer_->OnMenuItemActivated(component_id, menu_id);
+  ime_base_observer_->OnMenuItemActivated(component_id, menu_id);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnScreenProjectionChanged(
     bool is_projected) {
-  base_observer_->OnScreenProjectionChanged(is_projected);
+  ime_base_observer_->OnScreenProjectionChanged(is_projected);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnSuggestionsChanged(
     const std::vector<std::string>& suggestions) {
-  base_observer_->OnSuggestionsChanged(suggestions);
+  ime_base_observer_->OnSuggestionsChanged(suggestions);
 }
 
 void NativeInputMethodEngine::ImeObserver::OnInputMethodOptionsChanged(
     const std::string& engine_id) {
-  base_observer_->OnInputMethodOptionsChanged(engine_id);
+  ime_base_observer_->OnInputMethodOptionsChanged(engine_id);
 }
 
 void NativeInputMethodEngine::ImeObserver::CommitText(const std::string& text) {

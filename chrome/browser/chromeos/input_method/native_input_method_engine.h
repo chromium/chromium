@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/input_method/assistive_suggester.h"
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -27,7 +29,9 @@ namespace chromeos {
 // be no "ImeObserver" for the native engine either, as it is only used as
 // a way for ExtensionInputMethodEngine to delegate to the extensions code,
 // which is not required for the native engine.
-class NativeInputMethodEngine : public InputMethodEngine {
+class NativeInputMethodEngine
+    : public InputMethodEngine,
+      public ChromeKeyboardControllerClient::Observer {
  public:
   NativeInputMethodEngine();
   ~NativeInputMethodEngine() override;
@@ -36,6 +40,9 @@ class NativeInputMethodEngine : public InputMethodEngine {
   void Initialize(std::unique_ptr<InputMethodEngineBase::Observer> observer,
                   const char* extension_id,
                   Profile* profile) override;
+
+  // ChromeKeyboardControllerClient:
+  void OnKeyboardEnabledChanged(bool enabled) override;
 
   // Flush all relevant Mojo pipes.
   void FlushForTesting();
@@ -60,11 +67,13 @@ class NativeInputMethodEngine : public InputMethodEngine {
   class ImeObserver : public InputMethodEngineBase::Observer,
                       public ime::mojom::InputChannel {
    public:
-    // |base_observer| is to forward events to extension during this migration.
-    // It will be removed when the official extension is completely migrated.
-    ImeObserver(std::unique_ptr<InputMethodEngineBase::Observer> base_observer,
-                std::unique_ptr<AssistiveSuggester> assistive_suggester,
-                std::unique_ptr<AutocorrectManager> autocorrect_manager);
+    // |ime_base_observer| is to forward events to extension during this
+    // migration. It will be removed when the official extension is completely
+    // migrated.
+    ImeObserver(
+        std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
+        std::unique_ptr<AssistiveSuggester> assistive_suggester,
+        std::unique_ptr<AutocorrectManager> autocorrect_manager);
     ~ImeObserver() override;
 
     // InputMethodEngineBase::Observer:
@@ -146,7 +155,7 @@ class NativeInputMethodEngine : public InputMethodEngine {
         ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback,
         ime::mojom::KeypressResponseForRulebasedPtr response);
 
-    std::unique_ptr<InputMethodEngineBase::Observer> base_observer_;
+    std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer_;
     mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
     mojo::Receiver<ime::mojom::InputChannel> receiver_from_engine_;
     mojo::Remote<ime::mojom::InputChannel> remote_to_engine_;
@@ -160,6 +169,9 @@ class NativeInputMethodEngine : public InputMethodEngine {
 
   AssistiveSuggester* assistive_suggester_ = nullptr;
   AutocorrectManager* autocorrect_manager_ = nullptr;
+  base::ScopedObservation<ChromeKeyboardControllerClient,
+                          ChromeKeyboardControllerClient::Observer>
+      chrome_keyboard_controller_client_observer_{this};
 };
 
 }  // namespace chromeos

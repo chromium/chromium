@@ -272,6 +272,10 @@ void ChromeKeyboardControllerClient::OnKeyboardEnabledChanged(bool enabled) {
 
   bool was_enabled = is_keyboard_enabled_;
   is_keyboard_enabled_ = enabled;
+
+  for (auto& observer : observers_)
+    observer.OnKeyboardEnabledChanged(is_keyboard_enabled_);
+
   if (enabled || !was_enabled)
     return;
 
