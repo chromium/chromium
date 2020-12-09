@@ -2310,9 +2310,13 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 - (id)selectedTextMarkerRange {
   if (![self instanceActive])
     return nil;
+  AXPlatformRange ax_range = GetSelectedRange(*_owner);
+  if (ax_range.IsNull())
+    return nil;
+
   // Voiceover expects this range to be backwards in order to read the selected
   // words correctly.
-  return CreateTextMarkerRange(GetSelectedRange(*_owner).AsBackwardRange());
+  return CreateTextMarkerRange(ax_range.AsBackwardRange());
 }
 
 - (NSValue*)size {
