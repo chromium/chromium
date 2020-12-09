@@ -15,6 +15,7 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -61,10 +62,18 @@ const base::FeatureParam<std::string> kAdditionalCommonWords{
 
 // We might not protect a domain whose e2LD is a common word in target embedding
 // based on the TLD that is paired with it.
-const char* kCommonWords[] = {"shop",  "jobs",     "live",   "info",  "study",
-                              "asahi", "weather",  "health", "forum", "radio",
-                              "ideal", "research", "france", "free",  "mobile",
-                              "sky",   "ask"};
+const char* kCommonWords[] = {
+    "shop",      "jobs",      "live",       "info",    "study",   "asahi",
+    "weather",   "health",    "forum",      "radio",   "ideal",   "research",
+    "france",    "free",      "mobile",     "sky",     "ask",     "booking",
+    "canada",    "dating",    "dictionary", "express", "hoteles", "hotels",
+    "investing", "jharkhand", "nifty"};
+
+// These domains are plausible lookalike targets, but they also use common words
+// in their names. Selectively prevent flagging embeddings where the embedder
+// ends in "-DOMAIN.TLD", since these tend to have higher false positive rates.
+const char* kDomainsPermittedInEndEmbeddings[] = {"office.com", "medium.com",
+                                                  "orange.fr"};
 
 // What separators can be used to separate tokens in target embedding spoofs?
 // e.g. www-google.com.example.com uses "-" (www-google) and "." (google.com).
@@ -258,8 +267,9 @@ bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
   return false;
 }
 
-// Returns whether the provided token includes a common word, which is a common
-// indication of a likely false positive.
+// Returns whether the e2LD of the provided domain is a common word (e.g.
+// weather.com, ask.com). Target embeddings of these domains are often false
+// positives (e.g. "super-best-fancy-hotels.com" isn't spoofing "hotels.com").
 bool UsesCommonWord(const DomainInfo& domain) {
   std::vector<std::string> additional_common_words =
       base::SplitString(kAdditionalCommonWords.Get(), ",",
@@ -296,8 +306,36 @@ bool IsEmbeddingItself(const base::span<const base::StringPiece>& domain_labels,
   return false;
 }
 
+// Returns whether |embedded_target| and |embedding_domain| share the same e2LD,
+// (as in, e.g., google.com and google.org, or airbnb.com.br and airbnb.com).
+// Assumes |embedding_domain| is an eTLD+1.
+bool IsCrossTLDMatch(const DomainInfo& embedded_target,
+                     const std::string& embedding_domain) {
+  return (
+      embedded_target.domain_without_registry ==
+      url_formatter::top_domains::HostnameWithoutRegistry(embedding_domain));
+}
+
+// Returns whether |embedded_target| is one of kDomainsPermittedInEndEmbeddings
+// and that |embedding_domain| ends with that domain (e.g. is of the form
+// "*-outlook.com" for each example.com in kDomainsPermittedInEndEmbeddings).
+// (e.g. will return true if |embedded_target| matches "evil-office.com"). Only
+// impacts Target Embedding matches.
+bool EndsWithPermittedDomains(const DomainInfo& embedded_target,
+                              const std::string& embedding_domain) {
+  for (auto* permitted_ending : kDomainsPermittedInEndEmbeddings) {
+    if (embedded_target.domain_and_registry == permitted_ending &&
+        base::EndsWith(embedding_domain,
+                       base::StrCat({"-", permitted_ending}))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // A domain is allowed to be embedded if is embedding itself, if its e2LD is a
-// common word or any valid partial subdomain is allowlisted.
+// common word, any valid partial subdomain is allowlisted, or if it's a
+// cross-TLD match (e.g. google.com vs google.com.mx).
 bool IsAllowedToBeEmbedded(
     const DomainInfo& embedded_target,
     const base::span<const base::StringPiece>& subdomain_span,
@@ -305,7 +343,9 @@ bool IsAllowedToBeEmbedded(
     const std::string& embedding_domain) {
   return UsesCommonWord(embedded_target) ||
          ASubdomainIsAllowlisted(subdomain_span, in_target_allowlist) ||
-         IsEmbeddingItself(subdomain_span, embedding_domain);
+         IsEmbeddingItself(subdomain_span, embedding_domain) ||
+         IsCrossTLDMatch(embedded_target, embedding_domain) ||
+         EndsWithPermittedDomains(embedded_target, embedding_domain);
 }
 
 }  // namespace
