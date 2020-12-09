@@ -114,9 +114,12 @@ namespace {
 
 // These functions convert WebMemory* mojo structs to IDL and JS values.
 WTF::String ConvertScope(WebMemoryAttribution::Scope scope) {
+  using Scope = WebMemoryAttribution::Scope;
   switch (scope) {
-    case WebMemoryAttribution::Scope::kWindow:
+    case Scope::kWindow:
       return "Window";
+    case Scope::kCrossOriginAggregated:
+      return "cross-origin-aggregated";
   }
 }
 

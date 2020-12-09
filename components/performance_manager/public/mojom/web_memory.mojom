@@ -28,18 +28,23 @@ module performance_manager.mojom;
 // Information about ExecutionContext reported in the memory usage breakdown.
 struct WebMemoryAttribution {
   // Specifies the scope (or type) of the context.
-  // The invariant mentioned above ensures that cross-origin contexts have
-  // type kWindow corresponding to iframes and that information is already
-  // known to the calling origin because it created the iframe.
   enum Scope {
+    kCrossOriginAggregated, // Dummy scope for cross-origin iframes.
     kWindow,
     // TODO(1085129): Add worker scopes once they are implemented.
   };
   Scope scope;
   // The current URL of the context. It is null for cross-origin contexts.
+  // This is a string instead of url.mojom.Url because it is only used for
+  // reporting so there's no need to serialize to GURL, which has a lot of
+  // overhead.
   string? url;
-
-  // TODO(1085129): Add src and id fields once they are implemented.
+  // The src attribute of the container. Can be null if the container has no
+  // such attribute.
+  string? src;
+  // The id attribute of the container. Can be null if the container has no
+  // such attribute.
+  string? id;
 };
 
 // Describes a memory region and attributes it to a set of contexts.
