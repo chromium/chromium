@@ -1,7 +1,13 @@
 <!-- TODO(jschettler): Update styling to match the spec. -->
 <style include="scanning-shared scanning-fonts">
   :host {
+    align-items: center;
     display: flex;
+    height: 48px;
+    margin-bottom: 8px;
+    margin-inline-end: 40px;
+    margin-inline-start: 32px;
+    margin-top: 0;
   }
 
   ::slotted([slot=label]),
@@ -10,7 +16,6 @@
     color: var(--scanning-select-text-color);
     display: flex;
     flex-direction: column;
-    min-height: 32px;
   }
 
   ::slotted([slot=label]) {
@@ -18,16 +23,14 @@
     flex-basis: 68px;
     flex-grow: 0;
     flex-shrink: 0;
-    margin-top: 5px;
     padding-inline-end: 20px;
   }
 
   ::slotted([slot=settings]) {
     flex: 1;
-    flex-basis: 192px;
     flex-grow: 0;
     flex-shrink: 0;
-    margin-bottom: 8px;
+    width: 192px;
   }
 </style>
 <slot name="label"></slot>

@@ -1,7 +1,12 @@
 <style include="cr-shared-style scanning-shared scanning-fonts">
-  .title {
+  #appTitle {
     @apply --scanning-section-title-font;
     color: var(--scanning-section-title-text-color);
+    margin-bottom: 16px;
+    margin-inline-end: 0;
+    margin-inline-start: 32px;
+    margin-top: 0;
+    width: 68px;
   }
 
   #moreSettingsButton {
@@ -16,10 +21,13 @@
     display: flex;
     font-weight: unset;
     height: unset;
-    margin: 18px 0px;
+    margin-bottom: 8px;
+    margin-inline-end: 40px;
+    margin-inline-start: 32px;
+    margin-top: 0;
     padding-inline: 0;
     text-transform: none;
-    width: 289px;
+    width: 280px;
   }
 
   #moreSettingsButton:focus {
@@ -38,8 +46,10 @@
   #more-settings-line-separator {
     border-bottom: var(--cr-separator-line);
     margin-bottom: 8px;
-    margin-top: 16px;
-    width: 289px;
+    margin-inline-end: 40px;
+    margin-inline-start: 32px;
+    margin-top: 8px;
+    width: 280px;
   }
 
   #scanningContainer {
@@ -72,7 +82,11 @@
   .scan-button-container {
     display: flex;
     justify-content: flex-end;
-    width: 289px;
+    margin-bottom: 0;
+    margin-inline-end: 40px;
+    margin-inline-start: 32px;
+    margin-top: 32px;
+    width: 280px;
   }
 
   #toast {
