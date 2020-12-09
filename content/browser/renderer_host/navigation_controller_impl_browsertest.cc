@@ -151,11 +151,11 @@ class NavigationControllerBrowserTest
         static_cast<NavigationControllerImpl&>(contents()->GetController());
     TestNavigationObserver form_nav_observer(contents());
     EXPECT_TRUE(ExecJs(contents(),
-                       JsReplace("var form = document.createElement('form');"
-                                 "form.method = 'POST';"
-                                 "form.action = $1;"
-                                 "document.body.appendChild(form);"
-                                 "form.submit();",
+                       JsReplace(R"(var form = document.createElement('form');
+                                 form.method = 'POST';
+                                 form.action = $1;
+                                 document.body.appendChild(form);
+                                 form.submit();)",
                                  form_submit_url)));
     form_nav_observer.Wait();
     EXPECT_EQ(form_submit_url, contents()->GetLastCommittedURL());
@@ -9055,8 +9055,7 @@ class CountRepostFormWarningWebContentsDelegate : public WebContentsDelegate {
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, PostThenReload) {
   NavigationControllerImpl& controller =
       static_cast<NavigationControllerImpl&>(contents()->GetController());
-  std::unique_ptr<CountRepostFormWarningWebContentsDelegate> delegate(
-      new CountRepostFormWarningWebContentsDelegate());
+  auto delegate = std::make_unique<CountRepostFormWarningWebContentsDelegate>();
   contents()->SetDelegate(delegate.get());
   GURL start_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
@@ -9082,8 +9081,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        PostThenReplaceStateThenReload) {
   NavigationControllerImpl& controller =
       static_cast<NavigationControllerImpl&>(contents()->GetController());
-  std::unique_ptr<CountRepostFormWarningWebContentsDelegate> delegate(
-      new CountRepostFormWarningWebContentsDelegate());
+  auto delegate = std::make_unique<CountRepostFormWarningWebContentsDelegate>();
   contents()->SetDelegate(delegate.get());
   GURL start_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
@@ -9123,11 +9121,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       PostThenPushStateThenReload) {
+                       PostThenPushStateThenReloadThenHistory) {
   NavigationControllerImpl& controller =
       static_cast<NavigationControllerImpl&>(contents()->GetController());
-  std::unique_ptr<CountRepostFormWarningWebContentsDelegate> delegate(
-      new CountRepostFormWarningWebContentsDelegate());
+  auto delegate = std::make_unique<CountRepostFormWarningWebContentsDelegate>();
   contents()->SetDelegate(delegate.get());
   GURL start_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
@@ -9138,6 +9135,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   const int kExpectedRepostFormWarningCount = 0;
   EXPECT_EQ(kExpectedRepostFormWarningCount,
             delegate->repost_form_warning_count());
+  EXPECT_EQ("POST", contents()->GetMainFrame()->last_http_method());
 
   // history.pushState() is called, which clears the POST data.
   GURL push_url(embedded_test_server()->GetURL("/title2.html#foo"));
@@ -9148,9 +9146,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(push_url, contents()->GetLastCommittedURL());
     EXPECT_FALSE(controller.GetLastCommittedEntry()->GetHasPostData());
     EXPECT_EQ(-1, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(kExpectedRepostFormWarningCount,
+              delegate->repost_form_warning_count());
+    EXPECT_EQ("GET", contents()->GetMainFrame()->last_http_method());
   }
-  EXPECT_EQ(kExpectedRepostFormWarningCount,
-            delegate->repost_form_warning_count());
 
   // Now reload. pushState overrides the POST, so we should not show a
   // repost warning dialog.
@@ -9161,17 +9160,47 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(push_url, contents()->GetLastCommittedURL());
     EXPECT_FALSE(controller.GetLastCommittedEntry()->GetHasPostData());
     EXPECT_EQ(-1, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(kExpectedRepostFormWarningCount,
+              delegate->repost_form_warning_count());
+    EXPECT_EQ("GET", contents()->GetMainFrame()->last_http_method());
   }
-  EXPECT_EQ(kExpectedRepostFormWarningCount,
-            delegate->repost_form_warning_count());
+
+  // Go back to the first URL. This will be a same document navigation. Even
+  // though the original navigation is a "POST" navigation, the POST data is
+  // already cleared on the renderer side so it will end as a "GET" navigation.
+  {
+    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
+    TestNavigationObserver load_observer(shell()->web_contents());
+    controller.GoBack();
+    load_observer.Wait();
+    EXPECT_EQ(form_submit_url, contents()->GetLastCommittedURL());
+    EXPECT_FALSE(controller.GetLastCommittedEntry()->GetHasPostData());
+    EXPECT_EQ(-1, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(kExpectedRepostFormWarningCount,
+              delegate->repost_form_warning_count());
+    EXPECT_EQ("GET", contents()->GetMainFrame()->last_http_method());
+  }
+
+  // Go forward to the pushState URL. This will be a GET navigation again.
+  {
+    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
+    TestNavigationObserver load_observer(shell()->web_contents());
+    controller.GoForward();
+    load_observer.Wait();
+    EXPECT_EQ(push_url, contents()->GetLastCommittedURL());
+    EXPECT_FALSE(controller.GetLastCommittedEntry()->GetHasPostData());
+    EXPECT_EQ(-1, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(kExpectedRepostFormWarningCount,
+              delegate->repost_form_warning_count());
+    EXPECT_EQ("GET", contents()->GetMainFrame()->last_http_method());
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       PostThenFragmentNavigationThenReload) {
+                       PostThenFragmentNavigationThenReloadThenHistory) {
   NavigationControllerImpl& controller =
       static_cast<NavigationControllerImpl&>(contents()->GetController());
-  std::unique_ptr<CountRepostFormWarningWebContentsDelegate> delegate(
-      new CountRepostFormWarningWebContentsDelegate());
+  auto delegate = std::make_unique<CountRepostFormWarningWebContentsDelegate>();
   contents()->SetDelegate(delegate.get());
   GURL start_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
@@ -9181,7 +9210,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   const int64_t form_post_id = CreateAndSubmitForm(form_submit_url);
   EXPECT_EQ(0, delegate->repost_form_warning_count());
 
-  // Do a fragment navigation. This should preserve the POST data.
+  // Do a renderer-initiated fragment navigation. This should preserve the POST
+  // data.
   GURL fragment_url(embedded_test_server()->GetURL("/title2.html#foo"));
   {
     EXPECT_TRUE(ExecJs(contents(), "location.href = '#foo'"));
@@ -9189,8 +9219,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(fragment_url, contents()->GetLastCommittedURL());
     EXPECT_TRUE(controller.GetLastCommittedEntry()->GetHasPostData());
     EXPECT_EQ(form_post_id, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(0, delegate->repost_form_warning_count());
+    EXPECT_EQ("POST", contents()->GetMainFrame()->last_http_method());
   }
-  EXPECT_EQ(0, delegate->repost_form_warning_count());
 
   // Now reload. Fragment navigation keeps the previous POST data, so we should
   // show a repost warning dialog.
@@ -9201,8 +9232,173 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(fragment_url, contents()->GetLastCommittedURL());
     EXPECT_TRUE(controller.GetLastCommittedEntry()->GetHasPostData());
     EXPECT_EQ(form_post_id, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(1, delegate->repost_form_warning_count());
+    EXPECT_EQ("POST", contents()->GetMainFrame()->last_http_method());
   }
-  EXPECT_EQ(1, delegate->repost_form_warning_count());
+
+  // Go back. This will be a same document navigation. We won't show a repost
+  // warning dialog, but will keep the "POST" method.
+  {
+    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
+    TestNavigationObserver load_observer(shell()->web_contents());
+    controller.GoBack();
+    load_observer.Wait();
+    EXPECT_EQ(form_submit_url, contents()->GetLastCommittedURL());
+    EXPECT_TRUE(controller.GetLastCommittedEntry()->GetHasPostData());
+    EXPECT_EQ(form_post_id, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(1, delegate->repost_form_warning_count());
+    EXPECT_EQ("POST", contents()->GetMainFrame()->last_http_method());
+  }
+
+  // Go forward. This will be a same document navigation. We won't show a repost
+  // warning dialog, but will keep the "POST" method.
+  {
+    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
+    TestNavigationObserver load_observer(shell()->web_contents());
+    controller.GoForward();
+    load_observer.Wait();
+    EXPECT_EQ(fragment_url, contents()->GetLastCommittedURL());
+    EXPECT_TRUE(controller.GetLastCommittedEntry()->GetHasPostData());
+    EXPECT_EQ(form_post_id, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(1, delegate->repost_form_warning_count());
+    EXPECT_EQ("POST", contents()->GetMainFrame()->last_http_method());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       PostThenBrowserInitiatedFragmentNavigationThenReload) {
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  auto delegate = std::make_unique<CountRepostFormWarningWebContentsDelegate>();
+  contents()->SetDelegate(delegate.get());
+  GURL start_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  // Create a form in the page then submit it to create a POST request.
+  GURL form_submit_url(embedded_test_server()->GetURL("/title2.html"));
+  const int64_t form_post_id = CreateAndSubmitForm(form_submit_url);
+  EXPECT_EQ(0, delegate->repost_form_warning_count());
+
+  // Do a browser-initiated fragment navigation. This should preserve the POST
+  // data.
+  GURL fragment_url(embedded_test_server()->GetURL("/title2.html#foo"));
+  {
+    EXPECT_TRUE(NavigateToURL(shell(), fragment_url));
+    EXPECT_EQ(fragment_url, contents()->GetLastCommittedURL());
+    EXPECT_TRUE(controller.GetLastCommittedEntry()->GetHasPostData());
+    EXPECT_EQ(form_post_id, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(0, delegate->repost_form_warning_count());
+    EXPECT_EQ("POST", contents()->GetMainFrame()->last_http_method());
+  }
+
+  // Now reload. Fragment navigation keeps the previous POST data, so we should
+  // show a repost warning dialog.
+  {
+    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
+    controller.Reload(ReloadType::NORMAL, true /* check_for_repost */);
+    EXPECT_TRUE(WaitForLoadStop(contents()));
+    EXPECT_EQ(fragment_url, contents()->GetLastCommittedURL());
+    EXPECT_TRUE(controller.GetLastCommittedEntry()->GetHasPostData());
+    EXPECT_EQ(form_post_id, controller.GetLastCommittedEntry()->GetPostID());
+    EXPECT_EQ(1, delegate->repost_form_warning_count());
+    EXPECT_EQ("POST", contents()->GetMainFrame()->last_http_method());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, PostSubframe) {
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  auto delegate = std::make_unique<CountRepostFormWarningWebContentsDelegate>();
+  contents()->SetDelegate(delegate.get());
+  // 1) Load a page with an iframe.
+  GURL start_url(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html"));
+  GURL iframe_start_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  FrameTreeNode* iframe = root->child_at(0);
+  EXPECT_EQ(iframe_start_url,
+            iframe->current_frame_host()->GetLastCommittedURL());
+
+  // 2) Create a form in the main frame which submits to the iframe to the same
+  // URL with an anchor link, but it will be a cross-document navigation due to
+  // the POST data.
+  GURL form_submit_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html#foo"));
+  {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    EXPECT_TRUE(
+        ExecJs(root, JsReplace(R"(var form = document.createElement('form');
+                               form.method = 'POST';
+                               form.action = $1;
+                               form.target = 'simple_iframe';
+                               document.body.appendChild(form);
+                               form.submit();)",
+                               form_submit_url)));
+    capturer.Wait();
+    EXPECT_EQ(form_submit_url,
+              iframe->current_frame_host()->GetLastCommittedURL());
+    EXPECT_EQ(0, delegate->repost_form_warning_count());
+    EXPECT_EQ("POST", iframe->current_frame_host()->last_http_method());
+
+    // The last committed entry refers to the main frame, so no POST data there.
+    EXPECT_EQ("GET", root->current_frame_host()->last_http_method());
+    EXPECT_FALSE(controller.GetLastCommittedEntry()->GetHasPostData());
+    EXPECT_EQ(-1, controller.GetLastCommittedEntry()->GetPostID());
+  }
+  const int64_t form_post_id = iframe->current_frame_host()->last_post_id();
+
+  // 3) Do a same-document navigation in the iframe. POST ID on the iframe
+  // should be retained.
+  GURL fragment_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html#bar"));
+  {
+    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
+    EXPECT_TRUE(ExecJs(iframe, "location.href = '#bar'"));
+    EXPECT_TRUE(WaitForLoadStop(contents()));
+
+    EXPECT_EQ(fragment_url,
+              iframe->current_frame_host()->GetLastCommittedURL());
+    EXPECT_EQ(0, delegate->repost_form_warning_count());
+    EXPECT_EQ("POST", iframe->current_frame_host()->last_http_method());
+    EXPECT_EQ(form_post_id, iframe->current_frame_host()->last_post_id());
+
+    // The last committed entry refers to the main frame, so no POST data there.
+    EXPECT_EQ("GET", root->current_frame_host()->last_http_method());
+    EXPECT_FALSE(controller.GetLastCommittedEntry()->GetHasPostData());
+    EXPECT_EQ(-1, controller.GetLastCommittedEntry()->GetPostID());
+  }
+
+  // 4) Reload the iframe. The iframe will keep the POST ID.
+  {
+    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
+    FrameNavigateParamsCapturer capturer(iframe);
+    EXPECT_TRUE(ExecJs(iframe, "location.reload();"));
+    capturer.Wait();
+    EXPECT_EQ(fragment_url,
+              iframe->current_frame_host()->GetLastCommittedURL());
+    EXPECT_EQ(0, delegate->repost_form_warning_count());
+    EXPECT_EQ("POST", iframe->current_frame_host()->last_http_method());
+    EXPECT_EQ(form_post_id, iframe->current_frame_host()->last_post_id());
+  }
+
+  // 5) Reload the tab. The iframe will reload the original page it loaded, and
+  // the POST ID on the iframe will be removed.
+  {
+    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
+    controller.Reload(ReloadType::NORMAL, true /* check_for_repost */);
+    EXPECT_TRUE(WaitForLoadStop(contents()));
+    iframe = root->child_at(0);
+    EXPECT_EQ(iframe_start_url,
+              iframe->current_frame_host()->GetLastCommittedURL());
+    EXPECT_EQ(0, delegate->repost_form_warning_count());
+    EXPECT_EQ("GET", iframe->current_frame_host()->last_http_method());
+    EXPECT_EQ(-1, iframe->current_frame_host()->last_post_id());
+  }
 }
 
 // Verify that a session history navigation which results in a different

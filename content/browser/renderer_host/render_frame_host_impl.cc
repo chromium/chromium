@@ -2668,14 +2668,15 @@ void RenderFrameHostImpl::DidNavigate(
   if (!params.url_is_unreachable)
     last_successful_url_ = params.url;
 
-  // Set the last committed HTTP method. Note that we're setting this here
-  // instead of in DidCommitNewDocument because same-document navigations
-  // triggered by the History API (history.replaceState/pushState) will reset
-  // the method to "GET" (while fragment navigations won't).
+  // Set the last committed HTTP method and POST ID. Note that we're setting
+  // this here instead of in DidCommitNewDocument because same-document
+  // navigations triggered by the History API (history.replaceState/pushState)
+  // will reset the method to "GET" (while fragment navigations won't).
   // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoadParams. Use
   // the NavigationRequest instead. The browser process doesn't need to rely on
   // the renderer process.
   last_http_method_ = params.method;
+  last_post_id_ = params.post_id;
 
   if (did_create_new_document)
     DidCommitNewDocument(params, navigation_request);
@@ -8571,7 +8572,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   if (navigation_request) {
     VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
-        navigation_request.get(), *params, is_same_document_navigation);
+        navigation_request.get(), *params, same_document_params.Clone());
   }
 
   // TODO(clamy): We should stop having a special case for same-document
@@ -9421,16 +9422,36 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
 int64_t CalculatePostID(
     const std::string& method,
     const scoped_refptr<network::ResourceRequestBody>& request_body,
-    NavigationEntryImpl* last_committed_entry,
+    int64_t last_post_id,
     bool is_same_document) {
   if (method != "POST")
     return -1;
-  if (!is_same_document)
-    return request_body ? request_body->identifier() : -1;
-  // We have a DCHECK to catch issues in testing, but handle the null case
-  // anyways so that we won't crash the browser process.
-  DCHECK(last_committed_entry);
-  return last_committed_entry ? last_committed_entry->GetPostID() : -1;
+  // On same-document navigations that keep the "POST" method, use the POST ID
+  // from the last navigation.
+  if (is_same_document)
+    return last_post_id;
+  // Otherwise, this is a cross-document navigation. Use the POST ID from the
+  // navigation request.
+  return request_body ? request_body->identifier() : -1;
+}
+
+const std::string CalculateMethod(
+    const std::string& nav_request_method,
+    const std::string& last_http_method,
+    bool is_same_document,
+    bool is_same_document_history_api_navigation) {
+  DCHECK(is_same_document || !is_same_document_history_api_navigation);
+  // History API navigations are always "GET" navigations. See spec:
+  // https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps
+  if (is_same_document_history_api_navigation)
+    return "GET";
+  // If this is a same-document navigation that isn't triggered by the history
+  // API, we should preserve the HTTP method used by the last navigation.
+  if (is_same_document)
+    return last_http_method;
+  // Otherwise, this is a cross-document navigation. Use the method specified in
+  // the navigation request.
+  return nav_request_method;
 }
 
 bool DoBaseURLExpectationsMatch(const GURL& renderer_base_url,
@@ -9487,7 +9508,8 @@ void RenderFrameHostImpl::
     VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
         NavigationRequest* request,
         const mojom::DidCommitProvisionalLoadParams& params,
-        bool is_same_document_navigation) {
+        const mojom::DidCommitSameDocumentNavigationParamsPtr
+            same_document_params) {
 #if !DCHECK_IS_ON()
   // Only check for the flag if DCHECK is not enabled, so that we will always
   // verify the params for tests.
@@ -9516,11 +9538,17 @@ void RenderFrameHostImpl::
   const bool base_url_expectations_match =
       DoBaseURLExpectationsMatch(params.base_url, request->GetNetErrorCode());
 
+  const bool is_same_document_navigation = !!same_document_params;
+  const bool is_same_document_history_api_navigation =
+      same_document_params && same_document_params->is_history_api_navigation;
+
   const int64_t browser_post_id =
       CalculatePostID(params.method, request->common_params().post_data,
-                      NavigationEntryImpl::FromNavigationEntry(
-                          frame_tree()->controller()->GetLastCommittedEntry()),
-                      is_same_document_navigation);
+                      last_post_id_, is_same_document_navigation);
+
+  const std::string& browser_method = CalculateMethod(
+      request->common_params().method, last_http_method_,
+      is_same_document_navigation, is_same_document_history_api_navigation);
 
   const bool browser_is_overriding_user_agent =
       is_same_document_navigation ? is_overriding_user_agent_
@@ -9530,8 +9558,7 @@ void RenderFrameHostImpl::
   if ((!ShouldVerify("intended_as_new_entry") ||
        request->commit_params().intended_as_new_entry ==
            params.intended_as_new_entry) &&
-      (!ShouldVerify("method") ||
-       request->common_params().method == params.method) &&
+      (!ShouldVerify("method") || browser_method == params.method) &&
       (!ShouldVerify("url_is_unreachable") ||
        browser_url_is_unreachable == params.url_is_unreachable) &&
       (!ShouldVerify("base_url") || base_url_expectations_match) &&
@@ -9541,82 +9568,98 @@ void RenderFrameHostImpl::
     return;
   }
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", browser_intended,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, browser_intended,
                         request->commit_params().intended_as_new_entry);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", renderer_intended,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_intended,
                         params.intended_as_new_entry);
 
-  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", browser_method,
-                            request->common_params().method);
-  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", renderer_method, params.method);
-  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", original_method,
+  SCOPED_CRASH_KEY_STRING32(VerifyDidCommit, browser_method, browser_method);
+  SCOPED_CRASH_KEY_STRING32(VerifyDidCommit, renderer_method, params.method);
+  SCOPED_CRASH_KEY_STRING32(VerifyDidCommit, original_method,
                             request->commit_params().original_method);
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", browser_unreachable,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, browser_unreachable,
                         browser_url_is_unreachable);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", renderer_unreachable,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_unreachable,
                         params.url_is_unreachable);
 
-  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", browser_base_url,
+  SCOPED_CRASH_KEY_STRING256(VerifyDidCommit, browser_base_url,
                              browser_base_url.possibly_invalid_spec());
-  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", renderer_base_url,
+  SCOPED_CRASH_KEY_STRING256(VerifyDidCommit, renderer_base_url,
                              params.base_url.possibly_invalid_spec());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", base_url_exp_match,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, base_url_exp_match,
                         base_url_expectations_match);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", b_base_url_valid,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, b_base_url_valid,
                         browser_base_url.is_valid());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", b_base_url_empty,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, b_base_url_empty,
                         browser_base_url.is_empty());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", r_base_url_empty,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, r_base_url_empty,
                         params.base_url.is_empty());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", r_base_url_is_error,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, r_base_url_is_error,
                         params.base_url == kUnreachableWebDataURL);
 
-  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", browser_post_id, browser_post_id);
-  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", renderer_post_id, params.post_id);
+  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, browser_post_id, browser_post_id);
+  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, renderer_post_id, params.post_id);
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", browser_override_ua,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, browser_override_ua,
                         browser_is_overriding_user_agent);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", renderer_override_ua,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_override_ua,
                         params.is_overriding_user_agent);
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", is_same_document,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_same_document,
                         is_same_document_navigation);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", renderer_initiated,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_same_doc_history,
+                        is_same_document_history_api_navigation);
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_initiated,
                         request->IsRendererInitiated());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", is_subframe,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_subframe,
                         !frame_tree_node_->IsMainFrame());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", is_form_submission,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_form_submission,
                         request->IsFormSubmission());
-  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", net_error,
+  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, net_error,
                           request->GetNetErrorCode());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", is_server_redirect,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_server_redirect,
                         request->WasServerRedirect());
+  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, redirects_size,
+                          params.redirects.size());
+  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, entry_offset,
+                          request->GetNavigationEntryOffset());
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_reload,
+                        request->GetReloadType() != ReloadType::NONE);
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_restore,
+                        request->GetRestoreType() == RestoreType::kRestored);
 
-  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", navigation_url,
+  auto* last_committed_entry = NavigationEntryImpl::FromNavigationEntry(
+      frame_tree()->controller()->GetLastCommittedEntry());
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, lce_exists, !!last_committed_entry);
+  SCOPED_CRASH_KEY_NUMBER(
+      VerifyDidCommit, last_post_id,
+      last_committed_entry ? last_committed_entry->GetPostID() : -1);
+
+  SCOPED_CRASH_KEY_STRING256(VerifyDidCommit, navigation_url,
                              params.url.possibly_invalid_spec());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", nav_url_blank,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, nav_url_blank,
                         params.url.IsAboutBlank());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", nav_url_srcdoc,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, nav_url_srcdoc,
                         params.url.IsAboutSrcdoc());
-  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", last_committed_url,
+  SCOPED_CRASH_KEY_STRING256(VerifyDidCommit, last_committed_url,
                              GetLastCommittedURL().spec());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", last_url_blank,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, last_url_blank,
                         GetLastCommittedURL().IsAboutBlank());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", last_url_srcdoc,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, last_url_srcdoc,
                         GetLastCommittedURL().IsAboutSrcdoc());
   bool has_original_url =
       GetSiteInstance() && !GetSiteInstance()->IsDefaultSiteInstance();
   SCOPED_CRASH_KEY_STRING256(
-      "VerifyDidCommit", original_url,
+      VerifyDidCommit, original_url,
       has_original_url
           ? GetSiteInstance()->original_url().possibly_invalid_spec()
           : "");
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", original_url_blank,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, original_url_blank,
                         has_original_url
                             ? GetSiteInstance()->original_url().IsAboutBlank()
                             : false);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", original_url_srcdoc,
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, original_url_srcdoc,
                         has_original_url
                             ? GetSiteInstance()->original_url().IsAboutSrcdoc()
                             : false);
@@ -9626,7 +9669,7 @@ void RenderFrameHostImpl::
   // TODO(rakina): Add DCHECK for url_is_unreachable.
   DCHECK_EQ(request->commit_params().intended_as_new_entry,
             params.intended_as_new_entry);
-  DCHECK_EQ(request->common_params().method, params.method);
+  DCHECK_EQ(browser_method, params.method);
   DCHECK_EQ(browser_post_id, params.post_id);
   DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
   DCHECK(base_url_expectations_match);
