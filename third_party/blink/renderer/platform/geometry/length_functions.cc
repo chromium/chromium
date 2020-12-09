@@ -40,7 +40,7 @@ float FloatValueForLength(const Length& length, float maximum_value) {
     case Length::kFixed:
       return length.GetFloatValue();
     case Length::kPercent:
-      return static_cast<float>(maximum_value * length.Percent() / 100.0f);
+      return clampTo<float>(maximum_value * length.Percent() / 100.0f);
     case Length::kFillAvailable:
     case Length::kAuto:
       return static_cast<float>(maximum_value);

@@ -736,4 +736,33 @@ TEST(TransformOperationsTest, SizeDependenciesCombineTest) {
   EXPECT_EQ(ops.BoxSizeDependencies(), TransformOperation::kDependsBoth);
 }
 
+// https://crbug.com/1155018
+TEST(TransformOperationsTest, OutOfRangePercentage) {
+  TransformOperations ops;
+  ops.Operations().push_back(TranslateTransformOperation::Create(
+      Length::Percent(std::numeric_limits<float>::max()), Length::Percent(50),
+      TransformOperation::kTranslate));
+
+  TransformationMatrix mat;
+  ops.Apply(FloatSize(800, 600), mat);
+
+  // There should not be inf or nan in the transformation result.
+  EXPECT_TRUE(isfinite(mat.M11()));
+  EXPECT_TRUE(isfinite(mat.M12()));
+  EXPECT_TRUE(isfinite(mat.M13()));
+  EXPECT_TRUE(isfinite(mat.M14()));
+  EXPECT_TRUE(isfinite(mat.M21()));
+  EXPECT_TRUE(isfinite(mat.M22()));
+  EXPECT_TRUE(isfinite(mat.M23()));
+  EXPECT_TRUE(isfinite(mat.M24()));
+  EXPECT_TRUE(isfinite(mat.M31()));
+  EXPECT_TRUE(isfinite(mat.M32()));
+  EXPECT_TRUE(isfinite(mat.M33()));
+  EXPECT_TRUE(isfinite(mat.M34()));
+  EXPECT_TRUE(isfinite(mat.M41()));
+  EXPECT_TRUE(isfinite(mat.M42()));
+  EXPECT_TRUE(isfinite(mat.M43()));
+  EXPECT_TRUE(isfinite(mat.M44()));
+}
+
 }  // namespace blink
