@@ -90,6 +90,7 @@ class CORE_EXPORT ModuleRecord final {
   static v8::MaybeLocal<v8::Module> ResolveModuleCallback(
       v8::Local<v8::Context>,
       v8::Local<v8::String> specifier,
+      v8::Local<v8::FixedArray> import_assertions,
       v8::Local<v8::Module> referrer);
 };
 

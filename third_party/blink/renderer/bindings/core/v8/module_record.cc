@@ -133,17 +133,23 @@ Vector<ModuleRequest> ModuleRecord::ModuleRequests(
   if (record.IsEmpty())
     return Vector<ModuleRequest>();
 
+  v8::Local<v8::FixedArray> v8_module_requests = record->GetModuleRequests();
+  int length = v8_module_requests->Length();
   Vector<ModuleRequest> requests;
-  int length = record->GetModuleRequestsLength();
   requests.ReserveInitialCapacity(length);
 
   for (int i = 0; i < length; ++i) {
-    v8::Local<v8::String> v8_name = record->GetModuleRequest(i);
-    v8::Location v8_loc = record->GetModuleRequestLocation(i);
+    v8::Local<v8::ModuleRequest> v8_module_request =
+        v8_module_requests->Get(script_state->GetContext(), i)
+            .As<v8::ModuleRequest>();
+    v8::Local<v8::String> v8_specifier = v8_module_request->GetSpecifier();
+    int source_offset = v8_module_request->GetSourceOffset();
+    v8::Location v8_loc = record->SourceOffsetToLocation(source_offset);
     TextPosition position(
         OrdinalNumber::FromZeroBasedInt(v8_loc.GetLineNumber()),
         OrdinalNumber::FromZeroBasedInt(v8_loc.GetColumnNumber()));
-    requests.emplace_back(ToCoreString(v8_name), position);
+
+    requests.emplace_back(ToCoreString(v8_specifier), position);
   }
   return requests;
 }
@@ -156,6 +162,7 @@ v8::Local<v8::Value> ModuleRecord::V8Namespace(v8::Local<v8::Module> record) {
 v8::MaybeLocal<v8::Module> ModuleRecord::ResolveModuleCallback(
     v8::Local<v8::Context> context,
     v8::Local<v8::String> specifier,
+    v8::Local<v8::FixedArray> import_assertions,
     v8::Local<v8::Module> referrer) {
   v8::Isolate* isolate = context->GetIsolate();
   Modulator* modulator = Modulator::From(ScriptState::From(context));
