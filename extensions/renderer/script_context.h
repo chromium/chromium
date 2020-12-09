@@ -46,7 +46,8 @@ class Extension;
 // functionality as those bound to the main RenderThread.
 class ScriptContext {
  public:
-  using RunScriptExceptionHandler = base::Callback<void(const v8::TryCatch&)>;
+  using RunScriptExceptionHandler =
+      base::OnceCallback<void(const v8::TryCatch&)>;
 
   ScriptContext(const v8::Local<v8::Context>& context,
                 blink::WebLocalFrame* frame,
@@ -262,7 +263,7 @@ class ScriptContext {
   v8::Local<v8::Value> RunScript(
       v8::Local<v8::String> name,
       v8::Local<v8::String> code,
-      const RunScriptExceptionHandler& exception_handler,
+      RunScriptExceptionHandler exception_handler,
       v8::ScriptCompiler::NoCacheReason no_cache_reason =
           v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);
 

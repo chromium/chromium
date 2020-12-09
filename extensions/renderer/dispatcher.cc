@@ -513,7 +513,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   {
     v8::Local<v8::Value> result = context->RunScript(
         v8_helpers::ToV8StringUnsafe(isolate, "service_worker"), script,
-        base::Bind(&CrashOnException));
+        base::BindOnce(&CrashOnException));
     CHECK(result->IsFunction());
     main_function = result.As<v8::Function>();
   }
