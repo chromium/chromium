@@ -14,7 +14,6 @@ export const {{struct.name}}_{{constant.name}} =
 mojo.internal.Struct(
     {{struct.name}}Spec.$,
     '{{struct.name}}',
-    {{struct.packed|payload_size}},
     [
 {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
       mojo.internal.StructField(
@@ -24,11 +23,17 @@ mojo.internal.Struct(
         {{packed_field.field.kind|spec_type_in_js_module}},
         {{packed_field.field|default_value_in_js_module}},
 {%-   if packed_field.field.kind.is_nullable %}
-        true /* nullable */),
+        true /* nullable */,
 {%-   else %}
-        false /* nullable */),
+        false /* nullable */,
 {%-   endif %}
+        {{packed_field.field.min_version or 0}}),
 {%- endfor %}
+    ],
+    [
+{%-   for info in struct.versions -%}
+      [{{info.version}}, {{info.num_bytes}}],
+{%-   endfor -%}
     ]);
 
 {% if generate_struct_deserializers %}

@@ -1,0 +1,234 @@
+import {InterfaceVersionTest, InterfaceVersionTestReceiver, InterfaceVersionTestRemote, StructVersionTest_Deserialize} from '/gen/content/test/data/mojo_bindings_web_test.test-mojom.m.js';
+
+async function waitForMessage(handle) {
+  let watcher;
+  await new Promise(r => {
+    watcher = handle.watch({readable: true}, r);
+  });
+  watcher.cancel();
+}
+
+promise_test(async () => {
+  // A manually serialized encoding of the StructVersionTest struct at version
+  // 0, with just two string fields `a` and `b`. Assumes a little-endian host.
+  const kTestStructV0 = new Uint32Array([
+    24, 0,         // size and version
+    16, 0, 24, 0,  // offset of string fields `a` and `b`
+    9, 1, 120, 0,  // string `a` header and value 'x'
+    9, 1, 121, 0,  // string `b` header and value 'y'
+  ]);
+  assert_object_equals(
+      StructVersionTest_Deserialize(new DataView(kTestStructV0.buffer)),
+      {a: 'x', b: 'y', c: null, d: null});
+
+  // Adding field `c` as a version 1 struct
+  const kTestStructV1 = new Uint32Array([
+    32, 1,                 // size and version
+    24, 0, 32,  0, 40, 0,  // offsets of string fields
+    9,  1, 120, 0,         // string `a` header and value 'x'
+    9,  1, 121, 0,         // string `b` header and value 'y'
+    9,  1, 122, 0,         // string `c` header and value 'z'
+  ]);
+  assert_object_equals(
+      StructVersionTest_Deserialize(new DataView(kTestStructV1.buffer)),
+      {a: 'x', b: 'y', c: 'z', d: null});
+
+  // Adding field `d` as a version 2 struct
+  const kTestStructV2 = new Uint32Array([
+    40, 2,                        // size and version
+    32, 0, 40,  0, 48, 0, 56, 0,  // offsets of string fields
+    9,  1, 120, 0,                // string `a` header and value 'x'
+    9,  1, 121, 0,                // string `b` header and value 'y'
+    9,  1, 122, 0,                // string `c` header and value 'z'
+    9,  1, 119, 0,                // string `d` header and value 'w'
+  ]);
+  assert_object_equals(
+      StructVersionTest_Deserialize(new DataView(kTestStructV2.buffer)),
+      {a: 'x', b: 'y', c: 'z', d: 'w'});
+}, 'current and older versions can be deserialized');
+
+promise_test(async () => {
+  // A manually serialized encoding of the StructVersionTest struct at an
+  // imaginary version newer than the one defined in the committed mojom file we
+  // have. This version has an extra string field unknown to our generated
+  // bindings.
+  const kTestStructV7 = new Uint32Array([
+    48, 7,                                    // size and version
+    40, 0, 48,       0, 56, 0, 64, 0, 72, 0,  // offset of string fields
+    9,  1, 120,      0,                       // string `a` header and value 'x'
+    9,  1, 121,      0,                       // string `b` header and value 'y'
+    9,  1, 122,      0,                       // string `c` header and value 'z'
+    9,  1, 119,      0,                       // string `d` header and value 'w'
+    11, 3, 0x6c6f6c, 0,  // unknown new string field header and contents
+  ]);
+
+  // The `e` field is not present because it is not part of our local mojom
+  // definition and is therefore not known to our generated deserializer. We can
+  // still deserialize what we know about though.
+  assert_object_equals(
+      StructVersionTest_Deserialize(new DataView(kTestStructV7.buffer)),
+      {a: 'x', b: 'y', c: 'z', d: 'w'});
+}, 'newer versions can be partially deserialized');
+
+promise_test(async () => {
+  const kTestTooSmall = new Uint32Array([8, 0]);
+  assert_throws_js(
+      Error,
+      () => StructVersionTest_Deserialize(new DataView(kTestTooSmall.buffer)));
+}, 'reject struct encoding that is too small even for version 0');
+
+promise_test(async () => {
+  const kTestWrongSize = new Uint32Array([
+    32, 2,         // size and version. size should be 40 but isn't.
+    16, 0, 24, 0,  // offsets of string fields
+    9, 1, 120, 0,  // string `a` header and value 'x'
+    9, 1, 121, 0,  // string `b` header and value 'y'
+  ]);
+  assert_throws_js(
+      Error,
+      () => StructVersionTest_Deserialize(new DataView(kTestWrongSize.buffer)));
+}, 'reject struct encoding whose size does not match the version');
+
+class InterfaceVersionTestImpl {
+  constructor() {
+    const {handle0, handle1} = Mojo.createMessagePipe();
+    this.remoteHandle_ = handle0;
+    this.receiver_ = new InterfaceVersionTestReceiver(this);
+    this.receiver_.$.bindHandle(handle1);
+    this.nextFooResolvers_ = [];
+  }
+
+  sendRawMessage(message) {
+    this.remoteHandle_.writeMessage(message, []);
+  }
+
+  receiveNextFoo() {
+    return new Promise(resolve => {
+      this.nextFooResolvers_.push(resolve);
+    });
+  }
+
+  foo(x, y) {
+    const resolvers = this.nextFooResolvers_;
+    this.nextFooResolvers = [];
+    for (const r of resolvers) {
+      r({z: y, w: x});
+    }
+    return {z: y, w: x};
+  }
+}
+
+promise_test(async () => {
+  const impl = new InterfaceVersionTestImpl;
+
+  const kTestMessageV0 = new Uint32Array([
+    // Mojo message header. This is request 0 of message ID 0 on interface 0,
+    // expecting a reply. See the definition of MessageHeaderV1 within
+    // mojo/public/cpp/bindings/lib/message_internal.h.
+    32, 1, 0, 0, 1, 0, 0, 0,
+
+    16, 0,  // Foo params struct size and version
+    42, 0,  // value of `x` and padding
+  ]);
+
+  // The implementation returns the inputs x,y swapped, so z=y and w=x. The
+  // message was v0 and does not include y, so we should have z=0 and w=42.
+  impl.sendRawMessage(kTestMessageV0);
+  const {z: z0, w: w0} = await impl.receiveNextFoo();
+  assert_equals(z0, 0);
+  assert_equals(w0, 42);
+
+  // Current version (1)
+  const kTestMessageV1 = new Uint32Array([
+    32, 1, 0, 0, 1, 0, 1, 0,  // Mojo message header. See above.
+    16, 1,                    // Foo params struct size and version
+    42, 37,                   // `x` and `y` values
+  ]);
+
+  impl.sendRawMessage(kTestMessageV1);
+  const {z: z1, w: w1} = await impl.receiveNextFoo();
+  assert_equals(z1, 37);
+  assert_equals(w1, 42);
+
+  // Imaginary future version 2.
+  const kTestMessageV2 = new Uint32Array([
+    32, 1, 0, 0, 1, 0, 2, 0,  // Mojo message header
+    24, 2,                    // Foo params struct size and version
+    42, 37,                   // `x` and `y` values
+    19, 0,                    // new unknown field value
+  ]);
+
+  impl.sendRawMessage(kTestMessageV2);
+  const {z: z2, w: w2} = await impl.receiveNextFoo();
+  assert_equals(z2, 37);
+  assert_equals(w2, 42);
+}, 'interface receivers can handle requests from all versions old and new');
+
+promise_test(async () => {
+  const {handle0, handle1} = Mojo.createMessagePipe();
+  const remote = new InterfaceVersionTestRemote(handle1);
+
+  const kTestReplyV0 = new Uint32Array([
+    // Mojo message header. This is reply 0 for message ID 0 on interface 0.
+    // See the definition of MessageHeaderV1 within
+    // mojo/public/cpp/bindings/lib/message_internal.h.
+    32, 1, 0, 0, 2, 0, 0, 0,
+
+    16, 0,  // Foo reply struct size and version
+    19, 0,  // `z` value and padding
+  ]);
+
+  // Send the expected reply before we actually send the corresponding request.
+  // The receiver won't see it until after the request happens below.
+  handle0.writeMessage(kTestReplyV0, []);
+  const {z: z0, w: w0} = await remote.foo(1, 2);
+  assert_equals(z0, 19);
+  assert_equals(w0, 0);
+
+  const kTestReplyV1 = new Uint32Array([
+    32, 1, 0, 0, 2, 0, 1, 0,  // Mojo message header
+    16, 1,                    // Foo reply struct size and version
+    19, 7,                    // `z` and `w` values
+  ]);
+
+  // Send the expected reply before we actually send the corresponding request.
+  // The receiver won't see it until after the request happens below.
+  handle0.writeMessage(kTestReplyV1, []);
+  const {z: z1, w: w1} = await remote.foo(1, 2);
+  assert_equals(z1, 19);
+  assert_equals(w1, 7);
+
+  const kTestReplyV2 = new Uint32Array([
+    32, 1, 0, 0, 2, 0, 2, 0,  // Mojo message header
+    24, 2,                    // Foo reply struct size and version
+    19, 7,                    // `z` and `w` values
+    0x12345678,               // new unknown field value
+  ]);
+
+  // Send the expected reply before we actually send the corresponding request.
+  // The receiver won't see it until after the request happens below.
+  handle0.writeMessage(kTestReplyV2, []);
+  const {z: z2, w: w2} = await remote.foo(1, 2);
+  assert_equals(z2, 19);
+  assert_equals(w2, 7);
+}, 'interface remotes can handle responses from all versions old and new');
+
+promise_test(async () => {
+  const {handle0, handle1} = Mojo.createMessagePipe();
+  const remote = new InterfaceVersionTestRemote(handle0);
+  remote.foo(1, 2);
+  await waitForMessage(handle1);
+
+  const {result, buffer} = handle1.readMessage();
+  assert_equals(result, Mojo.RESULT_OK);
+
+  // First some quick general validity checks.
+  const data = new DataView(buffer);
+  assert_equals(data.getUint32(0, true), 32);  // message header size
+  assert_equals(data.getUint32(4, true), 1);   // message header version
+
+  // Ensure the parameter structure reflects version 1 of the Foo message, since
+  // that's the current version in the mojom we're using.
+  assert_equals(data.getUint32(32, true), 16);  // Foo request size
+  assert_equals(data.getUint32(36, true), 1);   // Foo request version
+}, 'structures properly encode their current version in outgoing messages');

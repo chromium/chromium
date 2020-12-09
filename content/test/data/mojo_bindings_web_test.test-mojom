@@ -51,3 +51,13 @@ interface SubinterfaceClient {
   DidFlush(array<int32> values);
 };
 
+struct StructVersionTest {
+  string a;
+  string b;
+  [MinVersion=1] string? c;
+  [MinVersion=2] string? d;
+};
+
+interface InterfaceVersionTest {
+  Foo(int32 x, [MinVersion=1] int32 y) => (int32 z, [MinVersion=1] int32 w);
+};

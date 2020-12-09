@@ -16,7 +16,6 @@
 mojo.internal.Struct(
     {{module.namespace}}.{{struct.name}}Spec.$,
     '{{struct.name}}',
-    {{struct.packed|payload_size}},
     [
 {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
       mojo.internal.StructField(
@@ -31,6 +30,11 @@ mojo.internal.Struct(
         false /* nullable */),
 {%-   endif %}
 {%- endfor %}
+    ],
+    [
+{%-   for info in struct.versions -%}
+      [{{info.version}}, {{info.num_bytes}}],
+{%-   endfor -%}
     ]);
 
 {% if generate_struct_deserializers %}

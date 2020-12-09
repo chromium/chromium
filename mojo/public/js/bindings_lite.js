@@ -147,7 +147,7 @@ mojo.internal.getUint64 = function(dataView, byteOffset) {
  * @return {number}
  */
 mojo.internal.computeTotalStructSize = function(structSpec, value) {
-  let size = mojo.internal.kStructHeaderSize + structSpec.packedSize;
+  let size = structSpec.packedSize;
   for (const field of structSpec.fields) {
     const fieldValue = value[field.name];
     if (field.type.$.computePayloadSize &&
@@ -280,8 +280,7 @@ mojo.internal.Message = class {
     /** @private {number} */
     this.nextAllocationOffset_ = headerSize;
 
-    const paramStructData = this.allocate(
-        mojo.internal.kStructHeaderSize + paramStructSpec.packedSize);
+    const paramStructData = this.allocate(paramStructSpec.packedSize);
     const encoder = new mojo.internal.Encoder(this, paramStructData);
     encoder.encodeStructInline(paramStructSpec, value);
   }
@@ -462,8 +461,7 @@ mojo.internal.Encoder = class {
    * @param {!Object} value
    */
   encodeStruct(structSpec, offset, value) {
-    const structData = this.message_.allocate(
-        mojo.internal.kStructHeaderSize + structSpec.packedSize);
+    const structData = this.message_.allocate(structSpec.packedSize);
     const structEncoder = new mojo.internal.Encoder(this.message_, structData);
     this.encodeOffset(offset, structData.byteOffset);
     structEncoder.encodeStructInline(structSpec, value);
@@ -474,9 +472,9 @@ mojo.internal.Encoder = class {
    * @param {!Object} value
    */
   encodeStructInline(structSpec, value) {
-    this.encodeUint32(
-        0, mojo.internal.kStructHeaderSize + structSpec.packedSize);
-    this.encodeUint32(4, 0);  // TODO: Support versioning.
+    const versions = structSpec.versions;
+    this.encodeUint32(0, structSpec.packedSize);
+    this.encodeUint32(4, versions[versions.length - 1].version);
     for (const field of structSpec.fields) {
       const byteOffset = mojo.internal.kStructHeaderSize + field.packedOffset;
 
@@ -746,14 +744,54 @@ mojo.internal.Decoder = class {
 
   /**
    * @param {!mojo.internal.StructSpec} structSpec
+   * @param {number} size
+   * @param {number} version
+   * @return {boolean}
+   */
+  isStructHeaderValid(structSpec, size, version) {
+    const versions = structSpec.versions;
+    for (let i = versions.length - 1; i >= 0; --i) {
+      const info = versions[i];
+      if (version > info.version) {
+        // If it's newer than the next newest version we know about, the only
+        // requirement is that it's at least large enough to decode that next
+        // newest version.
+        return size >= info.packedSize;
+      }
+      if (version == info.version) {
+        // If it IS the next newest version we know about, expect an exact size
+        // match.
+        return size == info.packedSize;
+      }
+    }
+
+    // This should be effectively unreachable, because we always generate info
+    // for version 0, and the `version` parameter here is guaranteed in practice
+    // to be a non-negative value.
+    throw new Error(
+        `Impossible version ${version} for struct ${structSpec.name}`);
+  }
+
+  /**
+   * @param {!mojo.internal.StructSpec} structSpec
    * @return {!Object}
    */
   decodeStructInline(structSpec) {
     const size = this.decodeUint32(0);
     const version = this.decodeUint32(4);
+    if (!this.isStructHeaderValid(structSpec, size, version)) {
+      throw new Error(
+          `Received ${structSpec.name} of invalid size (${size}) and/or ` +
+          `version (${version})`);
+    }
+
     const result = {};
     for (const field of structSpec.fields) {
       const byteOffset = mojo.internal.kStructHeaderSize + field.packedOffset;
+      if (field.minVersion > version) {
+        result[field.name] = field.defaultValue;
+        continue;
+      }
       const value = field.type.$.decode(
           this, byteOffset, field.packedBitOffset, !!field.nullable);
       if (value === null && !field.nullable) {
@@ -933,15 +971,25 @@ mojo.internal.MapSpec;
  *   type: !mojo.internal.MojomType,
  *   defaultValue: *,
  *   nullable: boolean,
+ *   minVersion: number,
  * }}
  */
 mojo.internal.StructFieldSpec;
 
 /**
  * @typedef {{
+ *   version: number,
+ *   packedSize: number,
+ * }}
+ */
+mojo.internal.StructVersionInfo;
+
+/**
+ * @typedef {{
  *   name: string,
  *   packedSize: number,
  *   fields: !Array<!mojo.internal.StructFieldSpec>,
+ *   versions: !Array<!mojo.internal.StructVersionInfo>,
  * }}
  */
 mojo.internal.StructSpec;
@@ -1295,11 +1343,13 @@ mojo.internal.Enum = function() {
  * @param {!mojo.internal.MojomType} type
  * @param {*} defaultValue
  * @param {boolean} nullable
+ * @param {number=} minVersion
  * @return {!mojo.internal.StructFieldSpec}
  * @export
  */
 mojo.internal.StructField = function(
-    name, packedOffset, packedBitOffset, type, defaultValue, nullable) {
+    name, packedOffset, packedBitOffset, type, defaultValue, nullable,
+    minVersion = 0) {
   return {
     name: name,
     packedOffset: packedOffset,
@@ -1307,23 +1357,22 @@ mojo.internal.StructField = function(
     type: type,
     defaultValue: defaultValue,
     nullable: nullable,
+    minVersion: minVersion,
   };
 };
 
 /**
  * @param {!Object} objectToBlessAsType
  * @param {string} name
- * @param {number} packedSize
  * @param {!Array<!mojo.internal.StructFieldSpec>} fields
+ * @param {Array<!Array<number>>=} versionData
  * @export
  */
-mojo.internal.Struct = function(objectToBlessAsType, name, packedSize, fields) {
-  /** @type {!mojo.internal.StructSpec} */
-  const structSpec = {
-    name: name,
-    packedSize: packedSize,
-    fields: fields,
-  };
+mojo.internal.Struct =
+    function(objectToBlessAsType, name, fields, versionData) {
+  const versions = versionData.map(v => ({version: v[0], packedSize: v[1]}));
+  const packedSize = versions[versions.length - 1].packedSize;
+  const structSpec = {name, packedSize, fields, versions};
   objectToBlessAsType.$ = {
     structSpec: structSpec,
     encode: function(value, encoder, byteOffset, bitOffset, nullable) {

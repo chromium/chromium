@@ -846,6 +846,8 @@ mojom("mojo_bindings_web_test_mojom") {
     "data/mojo_bindings_web_test.test-mojom",
     "data/mojo_bindings_web_test_types.test-mojom",
   ]
+  scramble_message_ids = false
+  js_generate_struct_deserializers = true
 }
 
 if (is_android) {
