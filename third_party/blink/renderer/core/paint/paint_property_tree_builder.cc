@@ -187,6 +187,7 @@ class FragmentPaintPropertyTreeBuilder {
   }
 
  private:
+  ALWAYS_INLINE bool CanPropagateSubpixelAccumulation() const;
   ALWAYS_INLINE void UpdatePaintOffset();
   ALWAYS_INLINE void UpdateForPaintOffsetTranslation(base::Optional<IntPoint>&);
   ALWAYS_INLINE void UpdatePaintOffsetTranslation(
@@ -461,6 +462,28 @@ static bool NeedsPaintOffsetTranslation(
   return false;
 }
 
+bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
+    const {
+  if (full_context_.direct_compositing_reasons &
+      CompositingReason::kPreventingSubpixelAccumulationReasons) {
+    return false;
+  }
+  if (full_context_.direct_compositing_reasons &
+      CompositingReason::kActiveTransformAnimation) {
+    if (const auto* element = DynamicTo<Element>(object_.GetNode())) {
+      DCHECK(element->GetElementAnimations());
+      return element->GetElementAnimations()->IsIdentityOrTranslation();
+    }
+    return false;
+  }
+  TransformationMatrix matrix;
+  object_.StyleRef().ApplyTransform(
+      matrix, LayoutSize(), ComputedStyle::kExcludeTransformOrigin,
+      ComputedStyle::kIncludeMotionPath,
+      ComputedStyle::kIncludeIndependentTransformProperties);
+  return matrix.IsIdentityOrTranslation();
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
     base::Optional<IntPoint>& paint_offset_translation) {
   if (!NeedsPaintOffsetTranslation(
@@ -494,14 +517,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
            .IsZero()) {
     // If the object has a non-translation transform, discard the fractional
     // paint offset which can't be transformed by the transform.
-    TransformationMatrix matrix;
-    object_.StyleRef().ApplyTransform(
-        matrix, LayoutSize(), ComputedStyle::kExcludeTransformOrigin,
-        ComputedStyle::kIncludeMotionPath,
-        ComputedStyle::kIncludeIndependentTransformProperties);
-    if ((full_context_.direct_compositing_reasons &
-         CompositingReason::kPreventingSubpixelAccumulationReasons) ||
-        !matrix.IsIdentityOrTranslation()) {
+    if (!CanPropagateSubpixelAccumulation()) {
       context_.current.paint_offset = PhysicalOffset();
       context_.current
           .directly_composited_container_paint_offset_subpixel_delta =
@@ -909,10 +925,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
           state.rendering_context_id =
               PtrHash<const LayoutObject>::GetHash(&object_);
         }
-        // TODO(flackr): This only needs to consider composited transform
-        // animations. This is currently a cyclic dependency but we could
-        // calculate most of the compositable animation reasons up front to
-        // only consider animations which are candidates for compositing.
+
         state.flags.animation_is_axis_aligned =
             UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
                 box, full_context_.direct_compositing_reasons);

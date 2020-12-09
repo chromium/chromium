@@ -136,6 +136,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   void Trace(Visitor*) const override;
 
   bool UpdateBoxSizeAndCheckTransformAxisAlignment(const FloatSize& box_size);
+  bool IsIdentityOrTranslation() const;
 
   ActiveInterpolationsMap InterpolationsForCommitStyles();
 

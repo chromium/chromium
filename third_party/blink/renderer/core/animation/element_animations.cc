@@ -153,4 +153,16 @@ bool ElementAnimations::UpdateBoxSizeAndCheckTransformAxisAlignment(
   return preserves_axis_alignment;
 }
 
+bool ElementAnimations::IsIdentityOrTranslation() const {
+  for (auto& entry : animations_) {
+    if (auto* effect = DynamicTo<KeyframeEffect>(entry.key->effect())) {
+      if (!effect->IsCurrent() && !effect->IsInEffect())
+        continue;
+      if (!effect->IsIdentityOrTranslation())
+        return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace blink

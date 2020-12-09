@@ -97,6 +97,7 @@ class PLATFORM_EXPORT TransformOperation
   }
 
   virtual bool PreservesAxisAlignment() const { return false; }
+  virtual bool IsIdentityOrTranslation() const { return false; }
 
   bool Is3DOperation() const {
     OperationType op_type = GetType();

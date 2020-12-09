@@ -28,6 +28,7 @@
 #include <memory>
 
 #include "cc/layers/picture_layer.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
@@ -473,6 +474,23 @@ static PhysicalOffset ComputeOffsetFromCompositedAncestor(
   return offset;
 }
 
+static bool CanPropagateSubpixelAccumulation(const PaintLayer& layer) {
+  if (layer.GetCompositingReasons() &
+      CompositingReason::kPreventingSubpixelAccumulationReasons) {
+    return false;
+  }
+  if (layer.GetCompositingReasons() &
+      CompositingReason::kActiveTransformAnimation) {
+    if (const Element* element =
+            To<Element>(layer.GetLayoutObject().GetNode())) {
+      DCHECK(element->GetElementAnimations());
+      return element->GetElementAnimations()->IsIdentityOrTranslation();
+    }
+    return false;
+  }
+  return !layer.Transform() || layer.Transform()->IsIdentityOrTranslation();
+}
+
 void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
     const PaintLayer* composited_ancestor,
     IntRect& local_bounds,
@@ -497,10 +515,7 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
       RoundedIntPoint(offset_from_composited_ancestor);
 
   PhysicalOffset subpixel_accumulation;
-  if ((!owning_layer_.Transform() ||
-       owning_layer_.Transform()->IsIdentityOrTranslation()) &&
-      !(owning_layer_.GetCompositingReasons() &
-        CompositingReason::kPreventingSubpixelAccumulationReasons)) {
+  if (CanPropagateSubpixelAccumulation(owning_layer_)) {
     subpixel_accumulation =
         offset_from_composited_ancestor -
         PhysicalOffset(snapped_offset_from_composited_ancestor);

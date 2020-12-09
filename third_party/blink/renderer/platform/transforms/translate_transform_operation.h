@@ -104,6 +104,7 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   }
 
   bool PreservesAxisAlignment() const final { return true; }
+  bool IsIdentityOrTranslation() const final { return true; }
 
   TranslateTransformOperation(const Length& tx,
                               const Length& ty,

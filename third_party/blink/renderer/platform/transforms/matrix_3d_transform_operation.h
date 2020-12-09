@@ -72,6 +72,9 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
   bool PreservesAxisAlignment() const final {
     return matrix_.Preserves2dAxisAlignment();
   }
+  bool IsIdentityOrTranslation() const final {
+    return matrix_.IsIdentityOrTranslation();
+  }
 
   Matrix3DTransformOperation(const TransformationMatrix& mat) { matrix_ = mat; }
 

@@ -91,6 +91,14 @@ class PLATFORM_EXPORT TransformOperations {
     return true;
   }
 
+  bool IsIdentityOrTranslation() const {
+    for (auto& operation : operations_) {
+      if (!operation->IsIdentityOrTranslation())
+        return false;
+    }
+    return true;
+  }
+
   // Returns true if any operation has a non-trivial component in the Z axis.
   bool HasNonTrivial3DComponent() const {
     for (auto& operation : operations_) {

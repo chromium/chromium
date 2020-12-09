@@ -155,8 +155,7 @@ class PLATFORM_EXPORT CompositingReason {
     kComboSquashableReasons =
         kOverlap | kAssumedOverlap | kOverflowScrollingParent,
 
-    kPreventingSubpixelAccumulationReasons =
-        kWillChangeTransform | kActiveTransformAnimation,
+    kPreventingSubpixelAccumulationReasons = kWillChangeTransform,
 
     kDirectReasonsForPaintOffsetTranslationProperty =
         kScrollDependentPosition | kVideo | kCanvas | kPlugin | kIFrame |

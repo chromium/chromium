@@ -89,6 +89,7 @@ class CORE_EXPORT ElementAnimations final
   void ClearBaseComputedStyle();
 
   bool UpdateBoxSizeAndCheckTransformAxisAlignment(const FloatSize& box_size);
+  bool IsIdentityOrTranslation() const;
 
   void Trace(Visitor*) const;
 

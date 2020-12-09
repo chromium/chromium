@@ -75,6 +75,9 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
   bool PreservesAxisAlignment() const final {
     return from_.PreservesAxisAlignment() && to_.PreservesAxisAlignment();
   }
+  bool IsIdentityOrTranslation() const final {
+    return from_.IsIdentityOrTranslation() && to_.IsIdentityOrTranslation();
+  }
 
   BoxSizeDependency BoxSizeDependencies() const override {
     return CombineDependencies(from_.BoxSizeDependencies(starting_index_),

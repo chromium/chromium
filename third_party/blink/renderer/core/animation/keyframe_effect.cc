@@ -517,6 +517,27 @@ bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
   return preserves_axis_alignment;
 }
 
+bool KeyframeEffect::IsIdentityOrTranslation() const {
+  static const auto** properties = TransformProperties();
+  for (size_t i = 0; i < num_transform_properties; i++) {
+    const auto* keyframes =
+        Model()->GetPropertySpecificKeyframes(PropertyHandle(*properties[i]));
+    if (!keyframes)
+      continue;
+
+    for (const auto& keyframe : *keyframes) {
+      if (const auto* value = keyframe->GetCompositorKeyframeValue()) {
+        if (!To<CompositorKeyframeTransform>(value)
+                 ->GetTransformOperations()
+                 .IsIdentityOrTranslation()) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
 EffectModel::CompositeOperation KeyframeEffect::CompositeInternal() const {
   return model_->Composite();
 }
