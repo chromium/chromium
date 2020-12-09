@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.signin.ui.SigninScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.drawable.AnimationLooper;
 import org.chromium.ui.widget.ButtonCompat;

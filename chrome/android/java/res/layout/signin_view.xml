@@ -10,7 +10,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <org.chromium.chrome.browser.signin.SigninScrollView
+    <org.chromium.chrome.browser.signin.ui.SigninScrollView
         android:id="@+id/signin_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -136,7 +136,7 @@
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                 tools:text="@string/signin_details_description"/>
         </RelativeLayout>
-    </org.chromium.chrome.browser.signin.SigninScrollView>
+    </org.chromium.chrome.browser.signin.ui.SigninScrollView>
     <LinearLayout
         android:id="@+id/button_bar"
         android:layout_width="match_parent"
