@@ -9,13 +9,16 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class PrefService;
+
 // Observes ash-chrome for changes in metrics reporting consent state. The UX
 // goal is to have a single "shared" metrics reporting state across the OS and
 // browser. Ash owns the canonical state, so lacros observes it for changes.
 class MetricsReportingObserver
     : public crosapi::mojom::MetricsReportingObserver {
  public:
-  MetricsReportingObserver();
+  // |local_state| is the "Local State" (non-profile) preferences store.
+  explicit MetricsReportingObserver(PrefService* local_state);
   MetricsReportingObserver(const MetricsReportingObserver&) = delete;
   MetricsReportingObserver& operator=(const MetricsReportingObserver&) = delete;
   ~MetricsReportingObserver() override;
@@ -26,6 +29,20 @@ class MetricsReportingObserver
   void OnMetricsReportingChanged(bool enabled) override;
 
  private:
+  friend class TestMetricsReportingObserver;
+
+  // Updates the metrics reporting if it has changed from the previous state.
+  void UpdateMetricsReportingState(bool enabled);
+
+  // Changes the metrics reporting state. Virtual for testing.
+  virtual void DoChangeMetricsReportingState(bool enabled);
+
+  // Returns whether metrics reporting is enabled.
+  bool IsMetricsReportingEnabled() const;
+
+  // Local state (non-profile) preferences.
+  PrefService* const local_state_;
+
   // Mojo connection to ash.
   mojo::Remote<crosapi::mojom::MetricsReporting> metrics_reporting_remote_;
 

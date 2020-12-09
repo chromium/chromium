@@ -4,11 +4,16 @@
 
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 
-#include "base/bind.h"
+#include "base/check.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/prefs/pref_service.h"
 
-MetricsReportingObserver::MetricsReportingObserver() = default;
+MetricsReportingObserver::MetricsReportingObserver(PrefService* local_state)
+    : local_state_(local_state) {
+  DCHECK(local_state_);
+}
 
 MetricsReportingObserver::~MetricsReportingObserver() = default;
 
@@ -20,7 +25,7 @@ void MetricsReportingObserver::Init() {
   }
 
   // Set the initial state.
-  ChangeMetricsReportingState(
+  UpdateMetricsReportingState(
       lacros_service->init_params()->ash_metrics_enabled);
 
   // Add this object as an observer. The observer will fire with the current
@@ -32,5 +37,23 @@ void MetricsReportingObserver::Init() {
 }
 
 void MetricsReportingObserver::OnMetricsReportingChanged(bool enabled) {
+  UpdateMetricsReportingState(enabled);
+}
+
+void MetricsReportingObserver::UpdateMetricsReportingState(bool enabled) {
+  // ChangeMetricsReportingState() unconditionally records its own UMA metrics
+  // and clears stability metrics. Only call it if the enabled state actually
+  // changed.
+  if (enabled == IsMetricsReportingEnabled())
+    return;
+
+  DoChangeMetricsReportingState(enabled);
+}
+
+void MetricsReportingObserver::DoChangeMetricsReportingState(bool enabled) {
   ChangeMetricsReportingState(enabled);
+}
+
+bool MetricsReportingObserver::IsMetricsReportingEnabled() const {
+  return local_state_->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
 }

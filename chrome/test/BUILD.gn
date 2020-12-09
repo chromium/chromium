@@ -4905,6 +4905,7 @@ test("unit_tests") {
     assert(enable_native_notifications)
     sources += [
       "../browser/lacros/lacros_chrome_service_delegate_impl_unittest.cc",
+      "../browser/lacros/metrics_reporting_observer_unittest.cc",
       "../browser/notifications/notification_platform_bridge_lacros_unittest.cc",
       "../common/chrome_paths_lacros_unittest.cc",
     ]

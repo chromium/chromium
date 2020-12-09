@@ -25,7 +25,8 @@ int ChromeBrowserMainPartsLacros::PreEarlyInitialization() {
   // for updates. Create it here because local state is required to check for
   // policy overrides.
   DCHECK(g_browser_process->local_state());
-  metrics_reporting_observer_ = std::make_unique<MetricsReportingObserver>();
+  metrics_reporting_observer_ = std::make_unique<MetricsReportingObserver>(
+      g_browser_process->local_state());
   metrics_reporting_observer_->Init();
 
   return content::RESULT_CODE_NORMAL_EXIT;
