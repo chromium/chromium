@@ -326,7 +326,7 @@ void WebViewPlugin::WebViewHelper::DidInvalidateRect(const WebRect& rect) {
     plugin_->container_->InvalidateRect(rect);
 }
 
-void WebViewPlugin::WebViewHelper::DidChangeCursor(const ui::Cursor& cursor) {
+void WebViewPlugin::WebViewHelper::SetCursor(const ui::Cursor& cursor) {
   plugin_->current_cursor_ = cursor;
 }
 

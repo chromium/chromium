@@ -24,6 +24,10 @@ class LayerTreeSettings;
 class PaintImage;
 }  // namespace cc
 
+namespace ui {
+class Cursor;
+}  // namespace ui
+
 namespace blink {
 
 // In interface exposed within Blink from local root frames that provides

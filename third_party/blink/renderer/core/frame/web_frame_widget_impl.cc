@@ -3180,7 +3180,6 @@ void WebFrameWidgetImpl::InjectGestureScrollEvent(
 
 void WebFrameWidgetImpl::DidChangeCursor(const ui::Cursor& cursor) {
   widget_base_->SetCursor(cursor);
-  Client()->DidChangeCursor(cursor);
 }
 
 bool WebFrameWidgetImpl::SetComposition(

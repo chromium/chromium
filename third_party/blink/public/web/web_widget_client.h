@@ -59,10 +59,6 @@ namespace gfx {
 class Point;
 }
 
-namespace ui {
-class Cursor;
-}
-
 namespace blink {
 class WebDragData;
 
@@ -73,9 +69,6 @@ class WebWidgetClient {
   // Called to request a BeginMainFrame from the compositor. This is only
   // called for widget's WebView's that do not composite.
   virtual void ScheduleNonCompositedAnimation() {}
-
-  // Called when the cursor for the widget changes.
-  virtual void DidChangeCursor(const ui::Cursor&) {}
 
   // Called when a drag-and-drop operation should begin. Returns whether the
   // call has been handled.

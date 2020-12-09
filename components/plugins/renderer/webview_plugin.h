@@ -182,7 +182,6 @@ class WebViewPlugin : public blink::WebPlugin,
                                 blink::DragOperationsMask,
                                 const SkBitmap&,
                                 const gfx::Point&) override;
-    void DidChangeCursor(const ui::Cursor& cursor) override;
     void ScheduleNonCompositedAnimation() override;
 
     // WebLocalFrameClient methods:
@@ -193,7 +192,7 @@ class WebViewPlugin : public blink::WebPlugin,
         override;
 
     // blink::mojom::WidgetHost implementation.
-    void SetCursor(const ui::Cursor& cursor) override {}
+    void SetCursor(const ui::Cursor& cursor) override;
     void SetToolTipText(const base::string16& tooltip_text,
                         base::i18n::TextDirection hint) override;
     void TextInputStateChanged(ui::mojom::TextInputStatePtr state) override {}
