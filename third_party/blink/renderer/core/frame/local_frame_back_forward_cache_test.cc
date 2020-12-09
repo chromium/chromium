@@ -77,7 +77,7 @@ TEST_F(LocalFrameBackForwardCacheTest, EvictionOnV8ExecutionAtMicrotask) {
       web_frame_client.GetRemoteNavigationAssociatedInterfaces());
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.Initialize(
-      &web_frame_client, nullptr, nullptr,
+      &web_frame_client, nullptr,
       [](WebSettings* settings) { settings->SetJavaScriptEnabled(true); });
   web_view_helper.Resize(gfx::Size(640, 480));
 

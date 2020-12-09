@@ -2878,7 +2878,7 @@ TEST_F(ScrollbarsTestWithVirtualTimer,
   // Verify that the scrollbar autopress timer requested some scrolls via
   // gestures. The button was pressed for 2 seconds and the timer fires
   // every 250ms - we should have at least 7 injected gesture updates.
-  EXPECT_GT(WebWidgetClient().GetInjectedScrollEvents().size(), 6u);
+  EXPECT_GT(GetWebFrameWidget().GetInjectedScrollEvents().size(), 6u);
 }
 
 class ScrollbarTrackMarginsTest : public ScrollbarsTest {

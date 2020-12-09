@@ -88,8 +88,10 @@ class DelegatedInkTrailPresenterUnitTest : public SimTest {
   }
 
   TestDelegatedInkMetadata GetActualMetadata() {
-    return TestDelegatedInkMetadata(
-        WebWidgetClient().layer_tree_host()->DelegatedInkMetadataForTesting());
+    return TestDelegatedInkMetadata(WebView()
+                                        .MainFrameViewWidget()
+                                        ->LayerTreeHostForTesting()
+                                        ->DelegatedInkMetadataForTesting());
   }
 
   void SetPageZoomFactor(const float zoom) {

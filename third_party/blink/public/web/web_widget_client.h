@@ -77,15 +77,6 @@ class WebWidgetClient {
   // Called when the cursor for the widget changes.
   virtual void DidChangeCursor(const ui::Cursor&) {}
 
-  // Allocates a LayerTreeFrameSink to submit CompositorFrames to. Only
-  // override this method if you wish to provide your own implementation
-  // of LayerTreeFrameSinks (usually for tests). If this method returns null
-  // a frame sink will be requested from the browser process (ie. default flow).
-  virtual std::unique_ptr<cc::LayerTreeFrameSink>
-  AllocateNewLayerTreeFrameSink() {
-    return nullptr;
-  }
-
   // Called when a drag-and-drop operation should begin. Returns whether the
   // call has been handled.
   virtual bool InterceptStartDragging(const WebDragData&,
@@ -95,19 +86,6 @@ class WebWidgetClient {
     return false;
   }
 
-  // For more information on the sequence of when these callbacks are made
-  // consult cc/trees/layer_tree_host_client.h.
-
-  // Notifies that the layer tree host has completed a call to
-  // RequestMainFrameUpdate in response to a BeginMainFrame.
-  virtual void DidBeginMainFrame() {}
-
-  // Called to indicate a syntehtic event was queued.
-  virtual void WillQueueSyntheticEvent(const WebCoalescedInputEvent& event) {}
-
-  // Whether compositing to LCD text should be auto determined. This can be
-  // overridden by tests to disable this.
-  virtual bool ShouldAutoDetermineCompositingToLCDTextSetting() { return true; }
 };
 
 }  // namespace blink

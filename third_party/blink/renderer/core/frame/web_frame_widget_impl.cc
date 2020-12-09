@@ -219,10 +219,10 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
 
 // WebFrameWidget ------------------------------------------------------------
 
-static CreateWebFrameWidgetFunction g_create_web_frame_widget = nullptr;
+static CreateWebFrameWidgetCallback* g_create_web_frame_widget = nullptr;
 
 void InstallCreateWebFrameWidgetHook(
-    CreateWebFrameWidgetFunction create_widget) {
+    CreateWebFrameWidgetCallback* create_widget) {
   g_create_web_frame_widget = create_widget;
 }
 
@@ -255,7 +255,7 @@ WebFrameWidget* WebFrameWidget::CreateForMainFrame(
 
   WebFrameWidgetImpl* widget = nullptr;
   if (g_create_web_frame_widget) {
-    widget = static_cast<WebFrameWidgetImpl*>(g_create_web_frame_widget(
+    widget = static_cast<WebFrameWidgetImpl*>(g_create_web_frame_widget->Run(
         base::PassKey<WebFrameWidget>(), *client,
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
@@ -302,7 +302,7 @@ WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
 
   WebFrameWidgetImpl* widget = nullptr;
   if (g_create_web_frame_widget) {
-    widget = static_cast<WebFrameWidgetImpl*>(g_create_web_frame_widget(
+    widget = static_cast<WebFrameWidgetImpl*>(g_create_web_frame_widget->Run(
         base::PassKey<WebFrameWidget>(), *client,
         std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
         std::move(mojo_widget_host), std::move(mojo_widget),
@@ -1355,11 +1355,10 @@ void WebFrameWidgetImpl::DidObserveFirstScrollDelay(
 
 std::unique_ptr<cc::LayerTreeFrameSink>
 WebFrameWidgetImpl::AllocateNewLayerTreeFrameSink() {
-  return Client()->AllocateNewLayerTreeFrameSink();
+  return nullptr;
 }
 
 void WebFrameWidgetImpl::DidBeginMainFrame() {
-  Client()->DidBeginMainFrame();
   DCHECK(LocalRootImpl()->GetFrame());
   PageWidgetDelegate::DidBeginFrame(*LocalRootImpl()->GetFrame());
 }
@@ -3688,8 +3687,8 @@ cc::LayerTreeHost* WebFrameWidgetImpl::LayerTreeHost() {
   return widget_base_->LayerTreeHost();
 }
 
-cc::LayerTreeHost* WebFrameWidgetImpl::LayerTreeHostForTesting() {
-  return LayerTreeHost();
+cc::LayerTreeHost* WebFrameWidgetImpl::LayerTreeHostForTesting() const {
+  return widget_base_->LayerTreeHost();
 }
 
 ScreenMetricsEmulator* WebFrameWidgetImpl::DeviceEmulator() {
@@ -3787,7 +3786,7 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
     View()->SetDeviceScaleFactor(screen_info.device_scale_factor);
   }
 
-  if (Client()->ShouldAutoDetermineCompositingToLCDTextSetting()) {
+  if (ShouldAutoDetermineCompositingToLCDTextSetting()) {
     // This causes compositing state to be modified which dirties the
     // document lifecycle. Android Webview relies on the document
     // lifecycle being clean after the RenderWidget is initialized, in
@@ -4172,6 +4171,10 @@ WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
   params->behavior = mojom::blink::ScrollBehavior::kInstant;
   out_rect_to_scroll = PhysicalRect(maximal_rect);
   return params;
+}
+
+bool WebFrameWidgetImpl::ShouldAutoDetermineCompositingToLCDTextSetting() {
+  return true;
 }
 
 }  // namespace blink

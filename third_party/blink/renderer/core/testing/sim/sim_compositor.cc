@@ -37,7 +37,7 @@ void SimCompositor::SetWebView(
 SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
                                               bool raster) {
   DCHECK(web_view_);
-  DCHECK(!layer_tree_host()->defer_main_frame_update());
+  DCHECK(!LayerTreeHost()->defer_main_frame_update());
   // Verify that the need for a BeginMainFrame has been registered, and would
   // have caused the compositor to schedule one if we were using its scheduler.
   DCHECK(NeedsBeginFrame());
@@ -48,7 +48,7 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
   SimCanvas::Commands commands;
   paint_commands_ = &commands;
 
-  layer_tree_host()->CompositeForTest(last_frame_time_, raster);
+  LayerTreeHost()->CompositeForTest(last_frame_time_, raster);
 
   paint_commands_ = nullptr;
   return commands;
@@ -77,6 +77,14 @@ void SimCompositor::DidBeginMainFrame() {
   // result, frame throttling status has not been updated yet, and will be in
   // the same state as when the lifecycle steps ran.
   *paint_commands_ = PaintFrame();
+}
+
+void SimCompositor::SetLayerTreeHost(cc::LayerTreeHost* layer_tree_host) {
+  layer_tree_host_ = layer_tree_host;
+}
+
+cc::LayerTreeHost* SimCompositor::LayerTreeHost() const {
+  return layer_tree_host_;
 }
 
 }  // namespace blink

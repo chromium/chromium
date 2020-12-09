@@ -29,7 +29,7 @@ class MobileFriendlinessCheckerTest : public testing::Test {
   }
 
   void SetUp() override {
-    helper_.Initialize(nullptr, nullptr, nullptr, ConfigureAndroidSettings);
+    helper_.Initialize(nullptr, nullptr, ConfigureAndroidSettings);
   }
 
   WebViewImpl* WebView() const { return helper_.GetWebView(); }

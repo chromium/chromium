@@ -222,11 +222,11 @@ class MockHandledEventCallback {
   DISALLOW_COPY_AND_ASSIGN(MockHandledEventCallback);
 };
 
-class MockWebFrameWidgetImpl : public WebFrameWidgetImpl {
+class MockWebFrameWidgetImpl : public SimWebFrameWidget {
  public:
   template <typename... Args>
   explicit MockWebFrameWidgetImpl(Args&&... args)
-      : WebFrameWidgetImpl(std::forward<Args>(args)...) {}
+      : SimWebFrameWidget(std::forward<Args>(args)...) {}
 
   MOCK_METHOD1(HandleInputEvent,
                WebInputEventResult(const WebCoalescedInputEvent&));
@@ -239,36 +239,36 @@ class MockWebFrameWidgetImpl : public WebFrameWidgetImpl {
                     bool event_processed));
 
   MOCK_METHOD1(WillHandleGestureEvent, bool(const WebGestureEvent& event));
-};
 
-WebFrameWidget* CreateWebFrameWidget(
-    base::PassKey<WebFrameWidget> pass_key,
-    WebWidgetClient& client,
-    CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>
-        frame_widget_host,
-    CrossVariantMojoAssociatedReceiver<mojom::FrameWidgetInterfaceBase>
-        frame_widget,
-    CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
-        widget_host,
-    CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    const viz::FrameSinkId& frame_sink_id,
-    bool hidden,
-    bool never_composited,
-    bool is_for_child_local_root,
-    bool is_for_nested_main_frame) {
-  return MakeGarbageCollected<MockWebFrameWidgetImpl>(
-      pass_key, client, std::move(frame_widget_host), std::move(frame_widget),
-      std::move(widget_host), std::move(widget), std::move(task_runner),
-      frame_sink_id, hidden, never_composited, is_for_child_local_root,
-      is_for_nested_main_frame);
-}
+  // mojom::blink::WidgetHost overrides:
+  using SimWebFrameWidget::SetCursor;
+};
 
 class WebFrameWidgetImplSimTest : public SimTest {
  public:
-  void SetUp() override {
-    InstallCreateWebFrameWidgetHook(CreateWebFrameWidget);
-    SimTest::SetUp();
+  SimWebFrameWidget* CreateSimWebFrameWidget(
+      base::PassKey<WebFrameWidget> pass_key,
+      WebWidgetClient& widget_client,
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
+          frame_widget,
+      CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+          widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+          widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const viz::FrameSinkId& frame_sink_id,
+      bool hidden,
+      bool never_composited,
+      bool is_for_child_local_root,
+      bool is_for_nested_main_frame,
+      SimCompositor* compositor) override {
+    return MakeGarbageCollected<MockWebFrameWidgetImpl>(
+        compositor, pass_key, widget_client, std::move(frame_widget_host),
+        std::move(frame_widget), std::move(widget_host), std::move(widget),
+        std::move(task_runner), frame_sink_id, hidden, never_composited,
+        is_for_child_local_root, is_for_nested_main_frame);
   }
 
   MockWebFrameWidgetImpl* MockMainFrameWidget() {
@@ -307,13 +307,16 @@ class WebFrameWidgetImplSimTest : public SimTest {
 TEST_F(WebFrameWidgetImplSimTest, CursorChange) {
   ui::Cursor cursor;
 
-  MockMainFrameWidget()->SetCursor(cursor);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(WebWidgetClient().CursorSetCount(), 1u);
+  frame_test_helpers::TestWebFrameWidgetHost& widget_host =
+      MockMainFrameWidget()->WidgetHost();
 
   MockMainFrameWidget()->SetCursor(cursor);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(WebWidgetClient().CursorSetCount(), 1u);
+  EXPECT_EQ(widget_host.CursorSetCount(), 1u);
+
+  MockMainFrameWidget()->SetCursor(cursor);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(widget_host.CursorSetCount(), 1u);
 
   EXPECT_CALL(*MockMainFrameWidget(), HandleInputEvent(_))
       .WillOnce(::testing::Return(WebInputEventResult::kNotHandled));
@@ -321,11 +324,11 @@ TEST_F(WebFrameWidgetImplSimTest, CursorChange) {
       SyntheticWebMouseEventBuilder::Build(WebInputEvent::Type::kMouseLeave),
       base::DoNothing());
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(WebWidgetClient().CursorSetCount(), 1u);
+  EXPECT_EQ(widget_host.CursorSetCount(), 1u);
 
   MockMainFrameWidget()->SetCursor(cursor);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(WebWidgetClient().CursorSetCount(), 2u);
+  EXPECT_EQ(widget_host.CursorSetCount(), 2u);
 }
 
 TEST_F(WebFrameWidgetImplSimTest, EventOverscroll) {
@@ -518,7 +521,7 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
           /*presentation_time=*/swap_time + swap_to_presentation,
           base::TimeDelta::FromMilliseconds(16), 0);
     }
-    auto* last_frame_sink = WebWidgetClient().LastCreatedFrameSink();
+    auto* last_frame_sink = GetWebFrameWidget().LastCreatedFrameSink();
     last_frame_sink->NotifyDidPresentCompositorFrame(1, timing_details);
     presentation_run_loop.Run();
   }

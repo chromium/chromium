@@ -466,7 +466,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state);
 
   // Return the compositor LayerTreeHost.
-  cc::LayerTreeHost* LayerTreeHostForTesting();
+  cc::LayerTreeHost* LayerTreeHostForTesting() const;
   // Ask compositor to composite a frame for testing. This will generate a
   // BeginMainFrame, and update the document lifecycle.
   void SynchronouslyCompositeForTesting(base::TimeTicks frame_time);
@@ -570,6 +570,14 @@ class CORE_EXPORT WebFrameWidgetImpl
  protected:
   // WidgetBaseClient overrides:
   void ScheduleAnimation() override;
+  void DidBeginMainFrame() override;
+  std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
+      override;
+  const ScreenInfo& GetOriginalScreenInfo() override;
+
+  // Whether compositing to LCD text should be auto determined. This can be
+  // overridden by tests to disable this.
+  virtual bool ShouldAutoDetermineCompositingToLCDTextSetting();
 
   bool doing_drag_and_drop_ = false;
 
@@ -594,12 +602,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   void BeginUpdateLayers() override;
   void EndUpdateLayers() override;
   void DidCommitAndDrawCompositorFrame() override;
-  std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
-      override;
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
-  void DidBeginMainFrame() override;
   void DidCompletePageScaleAnimation() override;
   void FocusChangeComplete() override;
   bool WillHandleGestureEvent(const WebGestureEvent& event) override;
@@ -624,7 +629,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void DidUpdateSurfaceAndScreen(
       const ScreenInfo& previous_original_screen_info) override;
   gfx::Rect ViewportVisibleRect() override;
-  const ScreenInfo& GetOriginalScreenInfo() override;
   base::Optional<blink::mojom::ScreenOrientation> ScreenOrientationOverride()
       override;
   void WasHidden() override;

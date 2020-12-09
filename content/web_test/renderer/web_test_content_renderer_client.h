@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "content/shell/renderer/shell_content_renderer_client.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 
 namespace content {
 
@@ -29,6 +30,7 @@ class WebTestContentRendererClient : public ShellContentRendererClient {
   bool IsIdleMediaSuspendEnabled() override;
 
  private:
+  blink::CreateWebFrameWidgetCallback create_widget_callback_;
   std::unique_ptr<WebTestRenderThreadObserver> render_thread_observer_;
 };
 

@@ -98,6 +98,8 @@ class WidgetBaseClient {
   virtual void UpdateCompositorScrollState(
       const cc::CompositorCommitData& commit_data) {}
 
+  // Notifies that the layer tree host has completed a call to
+  // RequestMainFrameUpdate in response to a BeginMainFrame.
   virtual void DidBeginMainFrame() {}
   virtual void DidCommitAndDrawCompositorFrame() {}
 
@@ -108,6 +110,10 @@ class WidgetBaseClient {
   virtual void WillBeginMainFrame() {}
   virtual void DidCompletePageScaleAnimation() {}
 
+  // Allocates a LayerTreeFrameSink to submit CompositorFrames to. Only
+  // override this method if you wish to provide your own implementation
+  // of LayerTreeFrameSinks (usually for tests). If this method returns null
+  // a frame sink will be requested from the browser process (ie. default flow)
   virtual std::unique_ptr<cc::LayerTreeFrameSink>
   AllocateNewLayerTreeFrameSink() = 0;
 
@@ -198,6 +204,9 @@ class WidgetBaseClient {
 
   virtual void RunPaintBenchmark(int repeat_count,
                                  cc::PaintBenchmarkResult& result) {}
+
+  // Called to indicate a synthetic event was queued.
+  virtual void WillQueueSyntheticEvent(const WebCoalescedInputEvent& event) {}
 
   // When the WebWidget is part of a frame tree, returns the active url for
   // main frame of that tree, if the main frame is local in that tree. When

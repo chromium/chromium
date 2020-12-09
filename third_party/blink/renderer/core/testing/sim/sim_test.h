@@ -11,9 +11,11 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_network.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_page.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_web_frame_widget.h"
 
 namespace blink {
 
+class WebFrameWidget;
 class WebViewImpl;
 class WebLocalFrameImpl;
 class Document;
@@ -43,13 +45,52 @@ class SimTest : public testing::Test {
   WebLocalFrameImpl& MainFrame();
   WebLocalFrameImpl& LocalFrameRoot();
   frame_test_helpers::TestWebViewClient& WebViewClient();
-  frame_test_helpers::TestWebWidgetClient& WebWidgetClient();
   frame_test_helpers::TestWebFrameClient& WebFrameClient();
+  SimWebFrameWidget& GetWebFrameWidget();
   SimCompositor& Compositor();
 
   Vector<String>& ConsoleMessages();
 
+  // Creates a SimWebFrameWidget. Subclasses can override this if the
+  // wish to create their own.
+  virtual SimWebFrameWidget* CreateSimWebFrameWidget(
+      base::PassKey<WebFrameWidget> pass_key,
+      WebWidgetClient& widget_client,
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
+          frame_widget,
+      CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+          widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+          widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const viz::FrameSinkId& frame_sink_id,
+      bool hidden,
+      bool never_composited,
+      bool is_for_child_local_root,
+      bool is_for_nested_main_frame,
+      SimCompositor* compositor);
+
  private:
+  frame_test_helpers::TestWebFrameWidget* CreateTestWebFrameWidget(
+      base::PassKey<WebFrameWidget> pass_key,
+      WebWidgetClient& widget_client,
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
+          frame_widget,
+      CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+          widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+          widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const viz::FrameSinkId& frame_sink_id,
+      bool hidden,
+      bool never_composited,
+      bool is_for_child_local_root,
+      bool is_for_nested_main_frame);
+
   // These are unique_ptrs in order to destroy them in TearDown. Subclasses
   // may override Platform::Current() and these must shutdown before the
   // subclass destructor.

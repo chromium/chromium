@@ -1251,9 +1251,7 @@ void WidgetBase::ImeFinishComposingText(bool keep_selection) {
 
 void WidgetBase::QueueSyntheticEvent(
     std::unique_ptr<WebCoalescedInputEvent> event) {
-  FrameWidget* frame_widget = client_->FrameWidget();
-  if (frame_widget)
-    frame_widget->Client()->WillQueueSyntheticEvent(*event);
+  client_->WillQueueSyntheticEvent(*event);
 
   // TODO(acomminos): If/when we add support for gesture event attribution on
   //                  the impl thread, have the caller provide attribution.

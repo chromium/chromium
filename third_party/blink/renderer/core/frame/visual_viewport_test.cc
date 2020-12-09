@@ -100,7 +100,7 @@ class VisualViewportTest : public testing::Test,
       void (*override_settings_func)(WebSettings*) = nullptr) {
     if (!override_settings_func)
       override_settings_func = &ConfigureSettings;
-    helper_.Initialize(nullptr, nullptr, nullptr, override_settings_func);
+    helper_.Initialize(nullptr, nullptr, override_settings_func);
     WebView()->SetDefaultPageScaleLimits(1, 4);
   }
 
@@ -108,7 +108,7 @@ class VisualViewportTest : public testing::Test,
       void (*override_settings_func)(WebSettings*) = nullptr) {
     if (!override_settings_func)
       override_settings_func = &ConfigureAndroidSettings;
-    helper_.Initialize(nullptr, nullptr, nullptr, override_settings_func);
+    helper_.Initialize(nullptr, nullptr, override_settings_func);
     WebView()->SetDefaultPageScaleLimits(0.25f, 5);
   }
 

@@ -24,10 +24,10 @@ class WebViewImpl;
 // only part of the layer was invalid.
 //
 // Note: This also does not support compositor driven animations.
-class SimCompositor final : public frame_test_helpers::TestWebWidgetClient {
+class SimCompositor final {
  public:
   SimCompositor();
-  ~SimCompositor() override;
+  ~SimCompositor();
 
   // When the compositor asks for a main frame, this WebViewImpl will have its
   // lifecycle updated and be painted.
@@ -38,6 +38,9 @@ class SimCompositor final : public frame_test_helpers::TestWebWidgetClient {
   // pass it here explicitly to provide type safety, though it is the client
   // available on the WebViewImpl as well.
   void SetWebView(WebViewImpl&, frame_test_helpers::TestWebViewClient&);
+
+  // Set the LayerTreeHost that the compositor is associated with.
+  void SetLayerTreeHost(cc::LayerTreeHost*);
 
   // Executes the BeginMainFrame processing steps, an approximation of what
   // cc::ThreadProxy::BeginMainFrame would do.
@@ -54,31 +57,36 @@ class SimCompositor final : public frame_test_helpers::TestWebWidgetClient {
   // Returns true if a main frame has been requested from blink, until the
   // BeginFrame() step occurs.
   bool NeedsBeginFrame() const {
-    return layer_tree_host()->RequestedMainFramePendingForTesting();
+    return LayerTreeHost()->RequestedMainFramePendingForTesting();
   }
   // Returns true if commits are deferred in the compositor. Since these tests
   // use synchronous compositing through BeginFrame(), the deferred state has no
   // real effect.
   bool DeferMainFrameUpdate() const {
-    return layer_tree_host()->defer_main_frame_update();
+    return LayerTreeHost()->defer_main_frame_update();
   }
   // Returns true if a selection is set on the compositor.
   bool HasSelection() const {
-    return layer_tree_host()->selection() != cc::LayerSelection();
+    return LayerTreeHost()->selection() != cc::LayerSelection();
   }
   // Returns the background color set on the compositor.
-  SkColor background_color() { return layer_tree_host()->background_color(); }
+  SkColor background_color() const {
+    return LayerTreeHost()->background_color();
+  }
 
   base::TimeTicks LastFrameTime() const { return last_frame_time_; }
+
+  // Called when the begin frame occured.
+  void DidBeginMainFrame();
+
+  cc::LayerTreeHost* LayerTreeHost() const;
 
  private:
   SimCanvas::Commands PaintFrame();
 
-  // TestWebWidgetClient overrides:
-  void DidBeginMainFrame() override;
-
   WebViewImpl* web_view_ = nullptr;
   frame_test_helpers::TestWebViewClient* test_web_view_client_ = nullptr;
+  cc::LayerTreeHost* layer_tree_host_ = nullptr;
 
   base::TimeTicks last_frame_time_;
 

@@ -79,7 +79,7 @@ namespace blink {
 class ScrollingTest : public testing::Test, public PaintTestConfigurations {
  public:
   ScrollingTest() : base_url_("http://www.test.com/") {
-    helper_.Initialize(nullptr, nullptr, nullptr, &ConfigureSettings);
+    helper_.Initialize(nullptr, nullptr, &ConfigureSettings);
     GetWebView()->MainFrameViewWidget()->Resize(gfx::Size(320, 240));
     GetWebView()->MainFrameViewWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
@@ -113,8 +113,9 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
 
   WebViewImpl* GetWebView() const { return helper_.GetWebView(); }
   LocalFrame* GetFrame() const { return helper_.LocalMainFrame()->GetFrame(); }
-  frame_test_helpers::TestWebWidgetClient* GetWidgetClient() const {
-    return helper_.GetWebWidgetClient();
+
+  frame_test_helpers::TestWebFrameWidget* GetMainFrameWidget() const {
+    return helper_.GetMainFrameWidget();
   }
 
   PaintLayerScrollableArea* ScrollableAreaByDOMElementId(
@@ -478,7 +479,7 @@ TEST_P(ScrollingTest, scrollEventHandler) {
   NavigateTo(base_url_ + "scroll-event-handler.html");
   ForceFullCompositingUpdate();
 
-  ASSERT_TRUE(GetWidgetClient()->HaveScrollEventHandlers());
+  ASSERT_TRUE(GetMainFrameWidget()->HaveScrollEventHandlers());
 }
 
 TEST_P(ScrollingTest, updateEventHandlersDuringTeardown) {

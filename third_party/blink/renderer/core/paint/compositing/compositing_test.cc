@@ -41,7 +41,7 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
 
   void SetUp() override {
     web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
-    web_view_helper_->Initialize(nullptr, nullptr, &web_widget_client_,
+    web_view_helper_->Initialize(nullptr, nullptr,
                                  &ConfigureCompositingWebView);
     web_view_helper_->Resize(gfx::Size(200, 200));
 
@@ -76,7 +76,9 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
   }
 
   cc::LayerTreeHost* LayerTreeHost() {
-    return web_widget_client_.layer_tree_host();
+    return web_view_helper_->LocalMainFrame()
+        ->FrameWidgetImpl()
+        ->LayerTreeHostForTesting();
   }
 
   Element* GetElementById(const AtomicString& id) {
@@ -103,7 +105,6 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
   }
 
  private:
-  frame_test_helpers::TestWebWidgetClient web_widget_client_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
 };
 
@@ -484,7 +485,7 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
   }
 
   cc::PropertyTrees* GetPropertyTrees() {
-    return Compositor().layer_tree_host()->property_trees();
+    return Compositor().LayerTreeHost()->property_trees();
   }
 
   cc::TransformNode* GetTransformNode(const cc::Layer* layer) {
@@ -533,7 +534,7 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateEarlierLayers) {
   auto* b_layer = CcLayerByDOMElementId("b");
 
   // Initially, neither a nor b should have a layer that should push properties.
-  cc::LayerTreeHost& host = *Compositor().layer_tree_host();
+  cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
   EXPECT_FALSE(host.LayersThatShouldPushProperties().count(a_layer));
   EXPECT_FALSE(host.LayersThatShouldPushProperties().count(b_layer));
 
@@ -575,7 +576,7 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateLaterLayers) {
   auto* c_layer = CcLayerByDOMElementId("c");
 
   // Initially, no layer should need to push properties.
-  cc::LayerTreeHost& host = *Compositor().layer_tree_host();
+  cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
   EXPECT_FALSE(host.LayersThatShouldPushProperties().count(a_layer));
   EXPECT_FALSE(host.LayersThatShouldPushProperties().count(b_layer));
   EXPECT_FALSE(host.LayersThatShouldPushProperties().count(c_layer));
@@ -613,7 +614,7 @@ TEST_P(CompositingSimTest,
   Compositor().BeginFrame();
 
   // Initially the host should not need to sync.
-  cc::LayerTreeHost& layer_tree_host = *Compositor().layer_tree_host();
+  cc::LayerTreeHost& layer_tree_host = *Compositor().LayerTreeHost();
   EXPECT_FALSE(layer_tree_host.needs_full_tree_sync());
   int sequence_number = GetPropertyTrees()->sequence_number;
   EXPECT_GT(sequence_number, 0);
@@ -1642,13 +1643,13 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
   auto* scrollable_area = scroller->GetLayoutBox()->GetScrollableArea();
   auto element_id = scrollable_area->GetScrollElementId();
 
-  EXPECT_FALSE(Compositor().layer_tree_host()->CommitRequested());
+  EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
 
   // Simulate the scroll update with scroll delta from impl-side.
   cc::CompositorCommitData commit_data;
   commit_data.scrolls.emplace_back(cc::CompositorCommitData::ScrollUpdateInfo(
       element_id, gfx::ScrollOffset(0, 10), base::nullopt));
-  Compositor().layer_tree_host()->ApplyCompositorChanges(&commit_data);
+  Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
   EXPECT_EQ(FloatPoint(0, 10), scrollable_area->ScrollPosition());
   EXPECT_EQ(gfx::ScrollOffset(0, 10),
             GetPropertyTrees()->scroll_tree.current_scroll_offset(element_id));
@@ -1660,10 +1661,10 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
   // A main frame is needed to call UpdateLayers which updates property trees,
   // re-calculating cached to/from-screen transforms.
   EXPECT_TRUE(
-      Compositor().layer_tree_host()->RequestedMainFramePendingForTesting());
+      Compositor().LayerTreeHost()->RequestedMainFramePendingForTesting());
 
   // A full commit is not needed.
-  EXPECT_FALSE(Compositor().layer_tree_host()->CommitRequested());
+  EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
 }
 
 TEST_P(CompositingSimTest, FrameAttribution) {

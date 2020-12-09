@@ -16,9 +16,7 @@ namespace blink {
 
 class HTMLParserMetricsTest : public testing::Test {
  public:
-  HTMLParserMetricsTest() {
-    helper_.Initialize(nullptr, nullptr, nullptr, nullptr);
-  }
+  HTMLParserMetricsTest() { helper_.Initialize(nullptr, nullptr, nullptr); }
 
   ~HTMLParserMetricsTest() override = default;
 

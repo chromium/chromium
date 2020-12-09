@@ -95,13 +95,16 @@ WebTestContentRendererClient::WebTestContentRendererClient() {
   // the creation of the production type with the subclasses.
   RenderViewImpl::InstallCreateHook(CreateWebViewTestProxy);
   RenderFrameImpl::InstallCreateHook(CreateWebFrameTestProxy);
-  blink::InstallCreateWebFrameWidgetHook(CreateWebTestWebFrameWidget);
+  create_widget_callback_ = base::BindRepeating(&CreateWebTestWebFrameWidget);
+  blink::InstallCreateWebFrameWidgetHook(&create_widget_callback_);
 
   blink::UniqueNameHelper::PreserveStableUniqueNameForTesting();
   WebWorkerFetchContextImpl::InstallRewriteURLFunction(RewriteWebTestsURL);
 }
 
-WebTestContentRendererClient::~WebTestContentRendererClient() = default;
+WebTestContentRendererClient::~WebTestContentRendererClient() {
+  blink::InstallCreateWebFrameWidgetHook(nullptr);
+}
 
 void WebTestContentRendererClient::RenderThreadStarted() {
   ShellContentRendererClient::RenderThreadStarted();
