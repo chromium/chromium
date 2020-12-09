@@ -78,8 +78,9 @@ class WakeEventPage::WakeEventPageNativeHandler
 
     make_request_.Run(
         extension_id,
-        base::Bind(&WakeEventPageNativeHandler::OnEventPageIsAwake,
-                   weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
+        base::BindOnce(&WakeEventPageNativeHandler::OnEventPageIsAwake,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::Passed(&callback)));
   }
 
   void OnEventPageIsAwake(v8::Global<v8::Function> callback, bool success) {
@@ -132,9 +133,9 @@ v8::Local<v8::Function> WakeEventPage::GetForContext(ScriptContext* context) {
     // Implement this using a NativeHandler, which requires a function name
     // (arbitrary in this case). Handles own lifetime.
     WakeEventPageNativeHandler* native_handler = new WakeEventPageNativeHandler(
-        context, base::Bind(&WakeEventPage::MakeRequest,
-                            // Safe, owned by a LazyInstance.
-                            base::Unretained(this)));
+        context, base::BindRepeating(&WakeEventPage::MakeRequest,
+                                     // Safe, owned by a LazyInstance.
+                                     base::Unretained(this)));
     native_handler->Initialize();
 
     // Extract and cache the wake-event-page function from the native handler.
@@ -150,8 +151,8 @@ v8::Local<v8::Function> WakeEventPage::GetForContext(ScriptContext* context) {
 }
 
 WakeEventPage::RequestData::RequestData(int thread_id,
-                                        const OnResponseCallback& on_response)
-    : thread_id(thread_id), on_response(on_response) {}
+                                        OnResponseCallback on_response)
+    : thread_id(thread_id), on_response(std::move(on_response)) {}
 
 WakeEventPage::RequestData::~RequestData() {}
 
@@ -160,13 +161,13 @@ WakeEventPage::WakeEventPage() {}
 WakeEventPage::~WakeEventPage() {}
 
 void WakeEventPage::MakeRequest(const std::string& extension_id,
-                                const OnResponseCallback& on_response) {
+                                OnResponseCallback on_response) {
   static base::AtomicSequenceNumber sequence_number;
   int request_id = sequence_number.GetNext();
   {
     base::AutoLock lock(requests_lock_);
     requests_[request_id] = std::make_unique<RequestData>(
-        content::WorkerThread::GetCurrentId(), on_response);
+        content::WorkerThread::GetCurrentId(), std::move(on_response));
   }
   message_filter_->Send(
       new ExtensionHostMsg_WakeEventPage(request_id, extension_id));
@@ -194,11 +195,11 @@ void WakeEventPage::OnWakeEventPageResponse(int request_id, bool success) {
   if (request_data->thread_id == 0) {
     // Thread ID of 0 means it wasn't called on a worker thread, so safe to
     // call immediately.
-    request_data->on_response.Run(success);
+    std::move(request_data->on_response).Run(success);
   } else {
     content::WorkerThread::PostTask(
         request_data->thread_id,
-        base::BindOnce(request_data->on_response, success));
+        base::BindOnce(std::move(request_data->on_response), success));
   }
 }
 
