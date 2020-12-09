@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -535,6 +536,10 @@ void StyleEngine::UpdateActiveStyleSheets() {
       UpdateActiveStyleSheetsInShadow(tree_scope, tree_scopes_removed);
     for (TreeScope* tree_scope : tree_scopes_removed)
       active_tree_scopes_.erase(tree_scope);
+  }
+
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
+    CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
   }
 
   probe::ActiveStyleSheetsUpdated(document_);
@@ -1448,6 +1453,7 @@ enum RuleSetFlags {
   kFullRecalcRules = 1 << 2,
   kPropertyRules = 1 << 3,
   kScrollTimelineRules = 1 << 4,
+  kCounterStyleRules = 1 << 5,
 };
 
 unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
@@ -1462,6 +1468,8 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
       flags |= kFullRecalcRules;
     if (!rule_set->PropertyRules().IsEmpty())
       flags |= kPropertyRules;
+    if (!rule_set->CounterStyleRules().IsEmpty())
+      flags |= kCounterStyleRules;
     if (!rule_set->ScrollTimelineRules().IsEmpty())
       flags |= kScrollTimelineRules;
   }
@@ -1549,6 +1557,24 @@ void StyleEngine::ApplyUserRuleSetChanges(
     ScopedStyleResolver::KeyframesRulesAdded(GetDocument());
   }
 
+  if (changed_rule_flags & kCounterStyleRules) {
+    if (change == kActiveSheetsChanged)
+      user_counter_style_map_.Clear();
+
+    for (auto* it = new_style_sheets.begin(); it != new_style_sheets.end();
+         it++) {
+      DCHECK(it->second);
+      if (!it->second->CounterStyleRules().IsEmpty())
+        EnsureUserCounterStyleMap().AddCounterStyles(*it->second);
+    }
+
+    if (CounterStyleMap* doc_map =
+            CounterStyleMap::GetAuthorCounterStyleMap(GetDocument()))
+      doc_map->ResetReferences();
+
+    // TODO(crbug.com/687225): Trigger style/Layout invalidations.
+  }
+
   if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {
     if (changed_rule_flags & kPropertyRules) {
       ClearPropertyRules();
@@ -1611,6 +1637,8 @@ void StyleEngine::ApplyRuleSetChanges(
 
   if (changed_rule_flags & kKeyframesRules)
     ScopedStyleResolver::KeyframesRulesAdded(tree_scope);
+
+  // TODO(crbug.com/687725): Style/layout invalidation for counter style rules.
 
   if ((changed_rule_flags & kPropertyRules) || rebuild_at_property_registry) {
     // @property rules are (for now) ignored in shadow trees, per spec.
@@ -2348,6 +2376,14 @@ void StyleEngine::PropagateWritingModeAndDirectionToHTMLRoot() {
     root_element->PropagateWritingModeAndDirectionFromBody();
 }
 
+CounterStyleMap& StyleEngine::EnsureUserCounterStyleMap() {
+  if (!user_counter_style_map_) {
+    user_counter_style_map_ =
+        CounterStyleMap::CreateUserCounterStyleMap(GetDocument());
+  }
+  return *user_counter_style_map_;
+}
+
 void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(injected_user_style_sheets_);
@@ -2355,6 +2391,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(active_user_style_sheets_);
   visitor->Trace(custom_element_default_style_sheets_);
   visitor->Trace(keyframes_rule_map_);
+  visitor->Trace(user_counter_style_map_);
   visitor->Trace(scroll_timeline_map_);
   visitor->Trace(inspector_style_sheet_);
   visitor->Trace(document_style_sheet_collection_);

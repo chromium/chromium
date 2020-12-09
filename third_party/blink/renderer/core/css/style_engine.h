@@ -62,6 +62,7 @@
 
 namespace blink {
 
+class CounterStyleMap;
 class CSSFontSelector;
 class CSSStyleSheet;
 class FontSelector;
@@ -382,6 +383,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       const AtomicString& animation_name);
   StyleRuleScrollTimeline* FindScrollTimelineRule(const AtomicString& name);
 
+  CounterStyleMap* GetUserCounterStyleMap() { return user_counter_style_map_; }
+
   DocumentStyleEnvironmentVariables& EnsureEnvironmentVariables();
 
   scoped_refptr<StyleInitialData> MaybeCreateAndGetInitialData();
@@ -528,6 +531,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void AddPropertyRules(const RuleSet&);
   void AddScrollTimelineRules(const RuleSet&);
 
+  CounterStyleMap& EnsureUserCounterStyleMap();
+
   void UpdateColorScheme();
   bool SupportsDarkColorScheme();
   void UpdateForcedBackgroundColor();
@@ -641,6 +646,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   using KeyframesRuleMap =
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
+
+  Member<CounterStyleMap> user_counter_style_map_;
 
   HeapHashMap<AtomicString, Member<StyleRuleScrollTimeline>>
       scroll_timeline_map_;

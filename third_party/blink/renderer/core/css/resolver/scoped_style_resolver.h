@@ -38,6 +38,7 @@
 
 namespace blink {
 
+class CounterStyleMap;
 class PageRuleCollector;
 class PartNames;
 class StyleSheetContents;
@@ -61,6 +62,9 @@ class CORE_EXPORT ScopedStyleResolver final
       const ActiveStyleSheetVector& sheets);
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
+
+  CounterStyleMap* GetCounterStyleMap() { return counter_style_map_; }
+  static void CounterStyleRulesChanged(TreeScope& scope);
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
   void CollectMatchingElementScopeRules(
@@ -100,11 +104,13 @@ class CORE_EXPORT ScopedStyleResolver final
                                     CSSStyleSheet*,
                                     unsigned sheet_index);
   void AddSlottedRules(const RuleSet&, CSSStyleSheet*, unsigned sheet_index);
-  void AddKeyframeRules(const RuleSet&);
   void AddFontFaceRules(const RuleSet&);
+  void AddKeyframeRules(const RuleSet&);
   void AddKeyframeStyle(StyleRuleKeyframes*);
 
   const ActiveStyleSheetVector& ActiveStyleSheets();
+
+  CounterStyleMap& EnsureCounterStyleMap();
 
   Member<TreeScope> scope_;
 
@@ -115,6 +121,8 @@ class CORE_EXPORT ScopedStyleResolver final
   using KeyframesRuleMap =
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
+
+  Member<CounterStyleMap> counter_style_map_;
 
   class RuleSubSet final : public GarbageCollected<RuleSubSet> {
    public:

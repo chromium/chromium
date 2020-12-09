@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
@@ -67,6 +68,12 @@ void ScopedStyleResolver::AddKeyframeRules(const RuleSet& rule_set) {
     AddKeyframeStyle(rule);
 }
 
+CounterStyleMap& ScopedStyleResolver::EnsureCounterStyleMap() {
+  if (!counter_style_map_)
+    counter_style_map_ = CounterStyleMap::CreateAuthorCounterStyleMap(*scope_);
+  return *counter_style_map_;
+}
+
 void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
   // FIXME(BUG 72461): We don't add @font-face rules of scoped style sheets for
   // the moment.
@@ -102,6 +109,8 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
     style_sheets_.push_back(sheet);
     AddKeyframeRules(rule_set);
     AddFontFaceRules(rule_set);
+    if (!rule_set.CounterStyleRules().IsEmpty())
+      EnsureCounterStyleMap().AddCounterStyles(rule_set);
     AddTreeBoundaryCrossingRules(rule_set, sheet, index);
     AddSlottedRules(rule_set, sheet, index++);
   }
@@ -139,6 +148,7 @@ void ScopedStyleResolver::ResetStyle() {
   viewport_dependent_media_query_results_.clear();
   device_dependent_media_query_results_.clear();
   keyframes_rule_map_.clear();
+  counter_style_map_.Clear();
   tree_boundary_crossing_rule_set_ = nullptr;
   slotted_rule_set_ = nullptr;
   has_deep_or_shadow_selector_ = false;
@@ -329,6 +339,7 @@ void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(scope_);
   visitor->Trace(style_sheets_);
   visitor->Trace(keyframes_rule_map_);
+  visitor->Trace(counter_style_map_);
   visitor->Trace(tree_boundary_crossing_rule_set_);
   visitor->Trace(slotted_rule_set_);
 }
