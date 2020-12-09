@@ -63,8 +63,6 @@ class CORE_EXPORT IntersectionGeometry {
     // True iff unscrolled_unclipped_intersection_rect actually intersects the
     // root, as defined by edge-inclusive intersection rules.
     bool does_intersect;
-    // True iff the target rect before any margins were applied was empty
-    bool pre_margin_target_rect_is_empty;
     // Invalidation flag
     bool valid;
   };
