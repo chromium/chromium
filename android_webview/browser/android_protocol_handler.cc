@@ -18,6 +18,7 @@
 #include "net/base/mime_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -37,9 +38,9 @@ std::unique_ptr<InputStream> CreateInputStream(JNIEnv* env, const GURL& url) {
   DCHECK(env);
 
   // Open the input stream.
-  ScopedJavaLocalRef<jstring> jurl = ConvertUTF8ToJavaString(env, url.spec());
   ScopedJavaLocalRef<jobject> stream =
-      android_webview::Java_AndroidProtocolHandler_open(env, jurl);
+      android_webview::Java_AndroidProtocolHandler_open(
+          env, url::GURLAndroid::FromNativeGURL(env, url));
 
   if (!stream) {
     DLOG(ERROR) << "Unable to open input stream for Android URL";
@@ -54,11 +55,9 @@ bool GetInputStreamMimeType(JNIEnv* env,
                             std::string* mime_type) {
   // Query the mime type from the Java side. It is possible for the query to
   // fail, as the mime type cannot be determined for all supported schemes.
-  ScopedJavaLocalRef<jstring> java_url =
-      ConvertUTF8ToJavaString(env, url.spec());
   ScopedJavaLocalRef<jstring> returned_type =
       android_webview::Java_AndroidProtocolHandler_getMimeType(
-          env, stream->jobj(), java_url);
+          env, stream->jobj(), url::GURLAndroid::FromNativeGURL(env, url));
   if (!returned_type)
     return false;
 
