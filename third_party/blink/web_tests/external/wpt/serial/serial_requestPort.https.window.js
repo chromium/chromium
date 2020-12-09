@@ -16,8 +16,8 @@ serial_test(async (t, fake) => {
 }, 'requestPort() rejects if no port has been selected');
 
 serial_test(async (t, fake) => {
-  let guid = fake.addPort();
-  fake.setSelectedPort(guid);
+  let token = fake.addPort();
+  fake.setSelectedPort(token);
 
   await trustedClick();
   let port = await navigator.serial.requestPort();
@@ -25,8 +25,8 @@ serial_test(async (t, fake) => {
 }, 'requestPort() returns the selected port');
 
 serial_test(async (t, fake) => {
-  let guid = fake.addPort();
-  fake.setSelectedPort(guid);
+  let token = fake.addPort();
+  fake.setSelectedPort(token);
 
   await trustedClick();
   let firstPort = await navigator.serial.requestPort();
@@ -37,8 +37,8 @@ serial_test(async (t, fake) => {
 }, 'requestPort() returns the same port object every time');
 
 serial_test(async (t, fake) => {
-  let guid = fake.addPort();
-  fake.setSelectedPort(guid);
+  let token = fake.addPort();
+  fake.setSelectedPort(token);
 
   await trustedClick();
   let port = await navigator.serial.requestPort({filters: []});
@@ -46,8 +46,8 @@ serial_test(async (t, fake) => {
 }, 'An empty list of filters is valid');
 
 serial_test(async (t, fake) => {
-  let guid = fake.addPort();
-  fake.setSelectedPort(guid);
+  let token = fake.addPort();
+  fake.setSelectedPort(token);
 
   await trustedClick();
   return promise_rejects_js(t, TypeError, navigator.serial.requestPort({
@@ -56,8 +56,8 @@ serial_test(async (t, fake) => {
 }, 'An empty filter is not valid');
 
 serial_test(async (t, fake) => {
-  let guid = fake.addPort();
-  fake.setSelectedPort(guid);
+  let token = fake.addPort();
+  fake.setSelectedPort(token);
 
   await trustedClick();
   return promise_rejects_js(t, TypeError, navigator.serial.requestPort({
