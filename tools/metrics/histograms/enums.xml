@@ -50501,7 +50501,7 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Disallowed by policy"/>
 </enum>
 
-<enum name="NearbyShareFinalPayloadStatus">
+<enum name="NearbyShareFinalStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>
   <int value="2" label="Canceled"/>

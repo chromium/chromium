@@ -776,6 +776,9 @@ void NearbySharingServiceImpl::DoCancel(
     return;
   }
 
+  // For metrics.
+  cancelled_share_target_ids_.insert(share_target.id);
+
   // Cancel all ongoing payload transfers before invoking the transfer update
   // callback. Invoking the transfer update callback first could result in
   // payload cleanup before we have a chance to cancel the payload via Nearby
@@ -2036,13 +2039,20 @@ void NearbySharingServiceImpl::OnPayloadPathsRegistered(
 
 void NearbySharingServiceImpl::OnOutgoingConnection(
     const ShareTarget& share_target,
+    base::TimeTicks connect_start_time,
     NearbyConnection* connection) {
   OutgoingShareTargetInfo* info = GetOutgoingShareTargetInfo(share_target);
-  if (!info || !info->endpoint_id() || !connection) {
+  bool success = info && info->endpoint_id() && connection;
+  RecordNearbyShareEstablishConnectionMetrics(
+      success, /*cancelled=*/
+      base::Contains(cancelled_share_target_ids_, share_target.id),
+      base::TimeTicks::Now() - connect_start_time);
+
+  if (!success) {
     NS_LOG(WARNING) << __func__
                     << ": Failed to initate connection to share target "
                     << share_target.device_name;
-    if (info->transfer_update_callback()) {
+    if (info && info->transfer_update_callback()) {
       info->transfer_update_callback()->OnTransferUpdate(
           share_target, TransferMetadataBuilder()
                             .set_status(TransferMetadata::Status::kFailed)
@@ -2246,12 +2256,16 @@ void NearbySharingServiceImpl::OnCreatePayloads(
   DataUsage adjusted_data_usage = CheckFileSizeForDataUsagePreference(
       settings_.GetDataUsage(), share_target);
 
+  // For metrics.
+  cancelled_share_target_ids_.clear();
+
   // TODO(crbug.com/1111458): Add preferred transfer type.
   nearby_connections_manager_->Connect(
       std::move(endpoint_info), *info->endpoint_id(),
       std::move(bluetooth_mac_address), adjusted_data_usage,
       base::BindOnce(&NearbySharingServiceImpl::OnOutgoingConnection,
-                     weak_ptr_factory_.GetWeakPtr(), share_target));
+                     weak_ptr_factory_.GetWeakPtr(), share_target,
+                     base::TimeTicks::Now()));
 }
 
 void NearbySharingServiceImpl::OnOpenFiles(
@@ -3515,6 +3529,9 @@ void NearbySharingServiceImpl::UnregisterShareTarget(
     const ShareTarget& share_target) {
   NS_LOG(VERBOSE) << __func__ << ": Unregistering share target - "
                   << share_target.device_name;
+
+  // For metrics.
+  cancelled_share_target_ids_.erase(share_target.id);
 
   if (share_target.is_incoming) {
     if (last_incoming_metadata_ &&

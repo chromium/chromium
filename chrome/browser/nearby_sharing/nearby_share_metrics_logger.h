@@ -41,5 +41,9 @@ void RecordNearbyShareStartAdvertisingResultMetric(
 void RecordNearbyShareFinalPayloadStatusForUpgradedMedium(
     location::nearby::connections::mojom::PayloadStatus status,
     base::Optional<location::nearby::connections::mojom::Medium> medium);
+void RecordNearbyShareEstablishConnectionMetrics(
+    bool success,
+    bool cancelled,
+    base::TimeDelta time_to_connect);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_

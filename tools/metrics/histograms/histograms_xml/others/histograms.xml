@@ -9652,6 +9652,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.Connection.EstablishOutgoingConnectionStatus"
+    enum="NearbyShareFinalStatus" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether an attempt to establish a connection to a receiving device
+    succeeded, failed, or was cancelled. Emitted after the user selects a device
+    to send a payload to but before the payload begins its transfer. Because the
+    sending device initiates the connection--via the Nearby Connections
+    library--this metric is only emitted for outgoing transfers.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Connection.TimeToEstablishOutgoingConnection"
+    units="ms" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the time necessary to successfully establish a connection to a
+    receiving device. Emitted after the user selects a device to send a payload
+    to but before the payload begins its transfer, and this is only emitted
+    after a successful connection is established. Because the sending device
+    initiates the connection--via the Nearby Connections library--this metric is
+    only emitted for outgoing transfers.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.Discovery.Delay.FromStartDiscoveryTo{EndState}"
     units="ms" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
@@ -9789,7 +9816,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.Medium.FinalPayloadStatus.{UpgradedMedium}"
-    enum="NearbyShareFinalPayloadStatus" expires_after="2021-08-19">
+    enum="NearbyShareFinalStatus" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

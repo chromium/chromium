@@ -66,7 +66,7 @@ enum class StartAdvertisingFailureReason {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
 // be updated.
-enum class FinalPayloadStatus {
+enum class FinalStatus {
   kSuccess = 0,
   kFailure = 1,
   kCanceled = 2,
@@ -139,18 +139,18 @@ NearbyConnectionsStatusToStartAdvertisingFailureReason(
   }
 }
 
-FinalPayloadStatus PayloadStatusToFinalPayloadStatus(
+FinalStatus PayloadStatusToFinalStatus(
     location::nearby::connections::mojom::PayloadStatus status) {
   switch (status) {
     case location::nearby::connections::mojom::PayloadStatus::kSuccess:
-      return FinalPayloadStatus::kSuccess;
+      return FinalStatus::kSuccess;
     case location::nearby::connections::mojom::PayloadStatus::kFailure:
-      return FinalPayloadStatus::kFailure;
+      return FinalStatus::kFailure;
     case location::nearby::connections::mojom::PayloadStatus::kCanceled:
-      return FinalPayloadStatus::kCanceled;
+      return FinalStatus::kCanceled;
     case location::nearby::connections::mojom::PayloadStatus::kInProgress:
       NOTREACHED();
-      return FinalPayloadStatus::kCanceled;
+      return FinalStatus::kFailure;
   }
 }
 
@@ -372,5 +372,22 @@ void RecordNearbyShareFinalPayloadStatusForUpgradedMedium(
             location::nearby::connections::mojom::PayloadStatus::kInProgress);
   base::UmaHistogramEnumeration("Nearby.Share.Medium.FinalPayloadStatus" +
                                     GetUpgradedMediumSubcategoryName(medium),
-                                PayloadStatusToFinalPayloadStatus(status));
+                                PayloadStatusToFinalStatus(status));
+}
+
+void RecordNearbyShareEstablishConnectionMetrics(
+    bool success,
+    bool cancelled,
+    base::TimeDelta time_to_connect) {
+  FinalStatus status;
+  if (success) {
+    status = FinalStatus::kSuccess;
+    base::UmaHistogramTimes(
+        "Nearby.Share.Connection.TimeToEstablishOutgoingConnection",
+        time_to_connect);
+  } else {
+    status = cancelled ? FinalStatus::kCanceled : FinalStatus::kFailure;
+  }
+  base::UmaHistogramEnumeration(
+      "Nearby.Share.Connection.EstablishOutgoingConnectionStatus", status);
 }

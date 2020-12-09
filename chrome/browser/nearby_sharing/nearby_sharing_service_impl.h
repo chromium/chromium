@@ -216,6 +216,7 @@ class NearbySharingServiceImpl
                                 StatusCodesCallback status_codes_callback);
 
   void OnOutgoingConnection(const ShareTarget& share_target,
+                            base::TimeTicks connect_start_time,
                             NearbyConnection* connection);
   void SendIntroduction(const ShareTarget& share_target,
                         base::Optional<std::string> four_digit_token);
@@ -395,6 +396,9 @@ class NearbySharingServiceImpl
   // TODO(crbug/1085068) update this map when handling payloads
   base::flat_map<base::UnguessableToken, OutgoingShareTargetInfo>
       outgoing_share_target_info_map_;
+  // For metrics. The IDs of ShareTargets that are cancelled while trying to
+  // establish an outgoing connection.
+  base::flat_set<base::UnguessableToken> cancelled_share_target_ids_;
 
   // A mapping of Attachment Id to additional AttachmentInfo related to the
   // Attachment.
