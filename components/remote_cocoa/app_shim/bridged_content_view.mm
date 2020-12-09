@@ -129,7 +129,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 // editing command from ui_strings.grd and, when not being sent to a
 // TextInputClient, the keyCode that toolkit-views expects internally.
 // For example, moveToLeftEndOfLine: would pass ui::VKEY_HOME in non-RTL locales
-// even though the Home key on Mac defaults to moveToBeginningOfDocument:.
+// even though the Home key on Mac defaults to scrollToBeginningOfDocument:.
 // This approach also allows action messages a user
 // may have remapped in ~/Library/KeyBindings/DefaultKeyBinding.dict to be
 // catered for.
@@ -911,16 +911,16 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 - (void)moveToBeginningOfLine:(id)sender {
   [self handleAction:ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE
-             keyCode:ui::VKEY_HOME
-             domCode:ui::DomCode::HOME
-          eventFlags:0];
+             keyCode:ui::VKEY_LEFT
+             domCode:ui::DomCode::ARROW_LEFT
+          eventFlags:ui::EF_COMMAND_DOWN];
 }
 
 - (void)moveToEndOfLine:(id)sender {
   [self handleAction:ui::TextEditCommand::MOVE_TO_END_OF_LINE
-             keyCode:ui::VKEY_END
-             domCode:ui::DomCode::END
-          eventFlags:0];
+             keyCode:ui::VKEY_RIGHT
+             domCode:ui::DomCode::ARROW_RIGHT
+          eventFlags:ui::EF_COMMAND_DOWN];
 }
 
 - (void)moveToBeginningOfParagraph:(id)sender {
@@ -939,16 +939,16 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 - (void)moveToEndOfDocument:(id)sender {
   [self handleAction:ui::TextEditCommand::MOVE_TO_END_OF_DOCUMENT
-             keyCode:ui::VKEY_END
-             domCode:ui::DomCode::END
-          eventFlags:ui::EF_CONTROL_DOWN];
+             keyCode:ui::VKEY_DOWN
+             domCode:ui::DomCode::ARROW_DOWN
+          eventFlags:ui::EF_COMMAND_DOWN];
 }
 
 - (void)moveToBeginningOfDocument:(id)sender {
   [self handleAction:ui::TextEditCommand::MOVE_TO_BEGINNING_OF_DOCUMENT
-             keyCode:ui::VKEY_HOME
-             domCode:ui::DomCode::HOME
-          eventFlags:ui::EF_CONTROL_DOWN];
+             keyCode:ui::VKEY_UP
+             domCode:ui::DomCode::ARROW_UP
+          eventFlags:ui::EF_COMMAND_DOWN];
 }
 
 - (void)pageDown:(id)sender {
@@ -1149,6 +1149,34 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 - (void)moveToRightEndOfLineAndModifySelection:(id)sender {
   [self isTextRTL] ? [self moveToBeginningOfLineAndModifySelection:sender]
                    : [self moveToEndOfLineAndModifySelection:sender];
+}
+
+- (void)scrollPageDown:(id)sender {
+  [self handleAction:ui::TextEditCommand::SCROLL_PAGE_DOWN
+             keyCode:ui::VKEY_NEXT
+             domCode:ui::DomCode::PAGE_DOWN
+          eventFlags:ui::EF_NONE];
+}
+
+- (void)scrollPageUp:(id)sender {
+  [self handleAction:ui::TextEditCommand::SCROLL_PAGE_UP
+             keyCode:ui::VKEY_PRIOR
+             domCode:ui::DomCode::PAGE_UP
+          eventFlags:ui::EF_NONE];
+}
+
+- (void)scrollToBeginningOfDocument:(id)sender {
+  [self handleAction:ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT
+             keyCode:ui::VKEY_HOME
+             domCode:ui::DomCode::HOME
+          eventFlags:ui::EF_NONE];
+}
+
+- (void)scrollToEndOfDocument:(id)sender {
+  [self handleAction:ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT
+             keyCode:ui::VKEY_END
+             domCode:ui::DomCode::END
+          eventFlags:ui::EF_NONE];
 }
 
 // Graphical Element transposition

@@ -4098,4 +4098,45 @@ TEST_F(TextfieldTest, InsertInvalidCharsTest) {
   EXPECT_EQ(textfield_->GetText(), ASCIIToUTF16("abcdef"));
 }
 
+TEST_F(TextfieldTest, ScrollCommands) {
+  InitTextfield();
+
+  // Scroll commands are only available on Mac.
+#if defined(OS_APPLE)
+  textfield_->SetText(ASCIIToUTF16("12 34567 89"));
+  textfield_->SetEditableSelectionRange(gfx::Range(6));
+
+  EXPECT_TRUE(textfield_->IsTextEditCommandEnabled(
+      ui::TextEditCommand::SCROLL_PAGE_UP));
+  EXPECT_TRUE(textfield_->IsTextEditCommandEnabled(
+      ui::TextEditCommand::SCROLL_PAGE_DOWN));
+  EXPECT_TRUE(textfield_->IsTextEditCommandEnabled(
+      ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT));
+  EXPECT_TRUE(textfield_->IsTextEditCommandEnabled(
+      ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT));
+
+  test_api_->ExecuteTextEditCommand(ui::TextEditCommand::SCROLL_PAGE_UP);
+  EXPECT_EQ(textfield_->GetCursorPosition(), 0u);
+
+  test_api_->ExecuteTextEditCommand(ui::TextEditCommand::SCROLL_PAGE_DOWN);
+  EXPECT_EQ(textfield_->GetCursorPosition(), 11u);
+
+  test_api_->ExecuteTextEditCommand(
+      ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT);
+  EXPECT_EQ(textfield_->GetCursorPosition(), 0u);
+
+  test_api_->ExecuteTextEditCommand(
+      ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT);
+  EXPECT_EQ(textfield_->GetCursorPosition(), 11u);
+#else
+  EXPECT_FALSE(textfield_->IsTextEditCommandEnabled(
+      ui::TextEditCommand::SCROLL_PAGE_UP));
+  EXPECT_FALSE(textfield_->IsTextEditCommandEnabled(
+      ui::TextEditCommand::SCROLL_PAGE_DOWN));
+  EXPECT_FALSE(textfield_->IsTextEditCommandEnabled(
+      ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT));
+  EXPECT_FALSE(textfield_->IsTextEditCommandEnabled(
+      ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT));
+#endif
+}
 }  // namespace views

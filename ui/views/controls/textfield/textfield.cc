@@ -131,6 +131,9 @@ ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event) {
     return ui::TextEditCommand::INVALID_COMMAND;
 
   const bool shift = event.IsShiftDown();
+#if defined(OS_APPLE)
+  const bool command = event.IsCommandDown();
+#endif
   const bool control = event.IsControlDown() || event.IsCommandDown();
   const bool alt = event.IsAltDown() || event.IsAltGrDown();
   switch (event.key_code()) {
@@ -175,21 +178,54 @@ ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event) {
       return control ? ui::TextEditCommand::MOVE_WORD_LEFT_AND_MODIFY_SELECTION
                      : ui::TextEditCommand::MOVE_LEFT_AND_MODIFY_SELECTION;
     case ui::VKEY_HOME:
+      if (shift) {
+        return ui::TextEditCommand::
+            MOVE_TO_BEGINNING_OF_LINE_AND_MODIFY_SELECTION;
+      }
+#if defined(OS_APPLE)
+      return ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT;
+#else
+      return ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE;
+#endif
+    case ui::VKEY_END:
+      if (shift)
+        return ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION;
+#if defined(OS_APPLE)
+      return ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT;
+#else
+      return ui::TextEditCommand::MOVE_TO_END_OF_LINE;
+#endif
+    case ui::VKEY_UP:
+#if defined(OS_APPLE)
+      if (control && shift) {
+        return ui::TextEditCommand::
+            MOVE_PARAGRAPH_BACKWARD_AND_MODIFY_SELECTION;
+      }
+      if (command)
+        return ui::TextEditCommand::MOVE_TO_BEGINNING_OF_DOCUMENT;
       return shift ? ui::TextEditCommand::
                          MOVE_TO_BEGINNING_OF_LINE_AND_MODIFY_SELECTION
-                   : ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE;
-    case ui::VKEY_END:
-      return shift
-                 ? ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION
-                 : ui::TextEditCommand::MOVE_TO_END_OF_LINE;
-    case ui::VKEY_UP:
+                   : ui::TextEditCommand::MOVE_UP;
+#else
       return shift ? ui::TextEditCommand::
                          MOVE_TO_BEGINNING_OF_LINE_AND_MODIFY_SELECTION
                    : ui::TextEditCommand::INVALID_COMMAND;
+#endif
     case ui::VKEY_DOWN:
+#if defined(OS_APPLE)
+      if (control && shift) {
+        return ui::TextEditCommand::MOVE_PARAGRAPH_FORWARD_AND_MODIFY_SELECTION;
+      }
+      if (command)
+        return ui::TextEditCommand::MOVE_TO_END_OF_DOCUMENT;
+      return shift
+                 ? ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION
+                 : ui::TextEditCommand::MOVE_DOWN;
+#else
       return shift
                  ? ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION
                  : ui::TextEditCommand::INVALID_COMMAND;
+#endif
     case ui::VKEY_BACK:
       if (!control) {
 #if defined(OS_WIN)
@@ -219,6 +255,12 @@ ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event) {
         return ui::TextEditCommand::COPY;
       return (shift && !control) ? ui::TextEditCommand::PASTE
                                  : ui::TextEditCommand::INVALID_COMMAND;
+    case ui::VKEY_PRIOR:
+      return control ? ui::TextEditCommand::SCROLL_PAGE_UP
+                     : ui::TextEditCommand::INVALID_COMMAND;
+    case ui::VKEY_NEXT:
+      return control ? ui::TextEditCommand::SCROLL_PAGE_DOWN
+                     : ui::TextEditCommand::INVALID_COMMAND;
     default:
       return ui::TextEditCommand::INVALID_COMMAND;
   }
@@ -1805,6 +1847,10 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::MOVE_PAGE_UP_AND_MODIFY_SELECTION:
     case ui::TextEditCommand::MOVE_UP:
     case ui::TextEditCommand::MOVE_UP_AND_MODIFY_SELECTION:
+    case ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT:
+    case ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT:
+    case ui::TextEditCommand::SCROLL_PAGE_DOWN:
+    case ui::TextEditCommand::SCROLL_PAGE_UP:
 // On Mac, the textfield should respond to Up/Down arrows keys and
 // PageUp/PageDown.
 #if defined(OS_APPLE)
@@ -2031,6 +2077,8 @@ void Textfield::ExecuteTextEditCommand(ui::TextEditCommand command) {
     case ui::TextEditCommand::MOVE_TO_BEGINNING_OF_PARAGRAPH:
     case ui::TextEditCommand::MOVE_UP:
     case ui::TextEditCommand::MOVE_PAGE_UP:
+    case ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT:
+    case ui::TextEditCommand::SCROLL_PAGE_UP:
       model_->MoveCursor(gfx::FIELD_BREAK, begin, gfx::SELECTION_NONE);
       break;
     case ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE_AND_MODIFY_SELECTION:
@@ -2053,6 +2101,8 @@ void Textfield::ExecuteTextEditCommand(ui::TextEditCommand command) {
     case ui::TextEditCommand::MOVE_TO_END_OF_PARAGRAPH:
     case ui::TextEditCommand::MOVE_DOWN:
     case ui::TextEditCommand::MOVE_PAGE_DOWN:
+    case ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT:
+    case ui::TextEditCommand::SCROLL_PAGE_DOWN:
       model_->MoveCursor(gfx::FIELD_BREAK, end, gfx::SELECTION_NONE);
       break;
     case ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION:

@@ -127,6 +127,11 @@ std::string TextEditCommandAuraLinux::GetCommandString() const {
       return "SetMark";
     case TextEditCommand::UNSELECT:
       return "Unselect";
+    case TextEditCommand::SCROLL_PAGE_DOWN:
+    case TextEditCommand::SCROLL_PAGE_UP:
+    case TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT:
+    case TextEditCommand::SCROLL_TO_END_OF_DOCUMENT:
+      // Scroll commands are used by Mac only
     case TextEditCommand::INVALID_COMMAND:
       NOTREACHED();
       return std::string();
