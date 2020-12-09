@@ -1603,7 +1603,7 @@ crbug.com/836783 fast/peerconnection/RTCRtpSender-setParameters.html [ Pass Time
 crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Pass Timeout ]
 
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
-crbug.com/846656 external/wpt/css/selectors/focus-visible-002-manual.html [ Pass Timeout ]
+crbug.com/846656 external/wpt/css/selectors/focus-visible-002.html [ Pass Timeout ]
 crbug.com/1135405 http/tests/devtools/sources/debugger-pause/debugger-pause-infinite-loop.js [ Pass Timeout ]
 crbug.com/1097094 external/wpt/window-segments/getWindowSegments-iframes.tentative.sub.html [ Pass Timeout ]
 crbug.com/1150992 http/tests/devtools/application-panel/storage-view-reports-quota.js [ Pass Timeout ]
@@ -2517,7 +2517,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Linux ] external/wpt/css/selectors/focus-visible-002.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection-no-sink.https.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection.https.html [ Timeout ]
 crbug.com/626703 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Timeout ]
