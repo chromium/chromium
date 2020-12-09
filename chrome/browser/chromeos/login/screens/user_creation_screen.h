@@ -73,6 +73,9 @@ class UserCreationScreen
 
   ErrorScreen* error_screen_ = nullptr;
 
+  // TODO(crbug.com/1154669) Refactor error screen usage
+  bool error_screen_visible_ = false;
+
   ScreenExitCallback exit_callback_;
 };
 

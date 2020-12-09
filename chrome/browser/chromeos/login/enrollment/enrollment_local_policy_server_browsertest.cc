@@ -23,6 +23,7 @@
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/chromeos/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screens_utils.h"
@@ -195,6 +196,9 @@ class AutoEnrollmentLocalPolicyServer : public EnrollmentLocalPolicyServerBase {
         ->browser_policy_connector_chromeos()
         ->GetStateKeysBroker();
   }
+
+ protected:
+  NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentLocalPolicyServer);
@@ -616,6 +620,18 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentLocalPolicyServer, Attestation) {
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
+}
+
+// Verify able to advance to login screen when error screen is shown.
+IN_PROC_BROWSER_TEST_F(AutoEnrollmentLocalPolicyServer, TestCaptivePortal) {
+  network_portal_detector_.SimulateDefaultNetworkState(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+  host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+
+  network_portal_detector_.SimulateDefaultNetworkState(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 }
 
 // FRE explicitly required in VPD, but the state keys are missing.
