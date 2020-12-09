@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import android.webkit.JavascriptInterface;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -48,14 +50,17 @@ public class JavaBridgeArrayTest {
 
         private boolean mWasArrayMethodCalled;
 
+        @JavascriptInterface
         public synchronized void setBooleanValue(boolean x) {
             mBooleanValue = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setIntValue(int x) {
             mIntValue = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setStringValue(String x) {
             mStringValue = x;
             notifyResultIsReady();
@@ -74,10 +79,12 @@ public class JavaBridgeArrayTest {
             return mStringValue;
         }
 
+        @JavascriptInterface
         public synchronized void setIntArray(int[] x) {
             mIntArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setIntIntArray(int[][] x) {
             mIntIntArray = x;
             notifyResultIsReady();
@@ -92,6 +99,7 @@ public class JavaBridgeArrayTest {
             return mIntIntArray;
         }
 
+        @JavascriptInterface
         public synchronized int[] arrayMethod() {
             mWasArrayMethodCalled = true;
             return new int[] {42, 43, 44};

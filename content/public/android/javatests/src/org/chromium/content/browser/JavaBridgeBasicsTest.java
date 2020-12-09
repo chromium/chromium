@@ -7,6 +7,7 @@ package org.chromium.content.browser;
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.support.test.InstrumentationRegistry;
+import android.webkit.JavascriptInterface;
 
 import androidx.test.filters.SmallTest;
 
@@ -61,18 +62,22 @@ public class JavaBridgeBasicsTest {
         private String mStringValue;
         private boolean mBooleanValue;
 
+        @JavascriptInterface
         public synchronized void setIntValue(int x) {
             mIntValue = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setLongValue(long x) {
             mLongValue = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setStringValue(String x) {
             mStringValue = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setBooleanValue(boolean x) {
             mBooleanValue = x;
             notifyResultIsReady();
@@ -101,6 +106,7 @@ public class JavaBridgeBasicsTest {
     }
 
     private static class ObjectWithStaticMethod {
+        @JavascriptInterface
         public static String staticMethod() {
             return "foo";
         }
@@ -176,6 +182,7 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testRemovalNotReflectedUntilReload(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public void method() {
                 mTestController.setStringValue("I'm here");
             }
@@ -252,6 +259,7 @@ public class JavaBridgeBasicsTest {
     public void testUncaughtJavaExceptionRaisesJavaScriptException(boolean useMojo)
             throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public void method() {
                 throw new RuntimeException("foo");
             }
@@ -320,11 +328,19 @@ public class JavaBridgeBasicsTest {
         mActivityTestRule.injectObjectAndReload(new Object() {
             private void method() {}
             protected void method2() {}
+            @JavascriptInterface
+            private void method3() {}
+            @JavascriptInterface
+            protected void method4() {}
         }, "testObject");
         Assert.assertEquals(
                 "undefined", executeJavaScriptAndGetStringResult("typeof testObject.method"));
         Assert.assertEquals(
                 "undefined", executeJavaScriptAndGetStringResult("typeof testObject.method2"));
+        Assert.assertEquals(
+                "undefined", executeJavaScriptAndGetStringResult("typeof testObject.method3"));
+        Assert.assertEquals(
+                "undefined", executeJavaScriptAndGetStringResult("typeof testObject.method4"));
     }
 
     @Test
@@ -333,6 +349,7 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testReplaceInjectedObject(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public void method() {
                 mTestController.setStringValue("object 1");
             }
@@ -341,6 +358,7 @@ public class JavaBridgeBasicsTest {
         Assert.assertEquals("object 1", mTestController.waitForStringValue());
 
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public void method() {
                 mTestController.setStringValue("object 2");
             }
@@ -376,14 +394,17 @@ public class JavaBridgeBasicsTest {
     public void testCallOverloadedMethodWithDifferentNumberOfArguments(boolean useMojo)
             throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public void method() {
                 mTestController.setStringValue("0 args");
             }
 
+            @JavascriptInterface
             public void method(int x) {
                 mTestController.setStringValue("1 arg");
             }
 
+            @JavascriptInterface
             public void method(int x, int y) {
                 mTestController.setStringValue("2 args");
             }
@@ -461,8 +482,10 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testCallMethodOnReturnedObject(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public Object getInnerObject() {
                 return new Object() {
+                    @JavascriptInterface
                     public void method(int x) {
                         mTestController.setIntValue(x);
                     }
@@ -481,12 +504,14 @@ public class JavaBridgeBasicsTest {
         class InnerObject {
             private int mNumMethodInvocations;
 
+            @JavascriptInterface
             public void method() {
                 mTestController.setIntValue(++mNumMethodInvocations);
             }
         }
         final InnerObject innerObject = new InnerObject();
         final Object object = new Object() {
+            @JavascriptInterface
             public InnerObject getInnerObject() {
                 return innerObject;
             }
@@ -513,6 +538,7 @@ public class JavaBridgeBasicsTest {
         class InnerObject {
         }
         class TestObject {
+            @JavascriptInterface
             public InnerObject getInnerObject() {
                 InnerObject inner = new InnerObject();
                 mWeakRefForInner = new WeakReference<InnerObject>(inner);
@@ -555,6 +581,7 @@ public class JavaBridgeBasicsTest {
         }
         final InnerObject innerObject = new InnerObject();
         final Object injectedTestObject = new Object() {
+            @JavascriptInterface
             public InnerObject getInnerObject() {
                 return innerObject;
             }
@@ -573,6 +600,7 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testMethodInvokedOnBackgroundThread(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public void captureThreadId() {
                 mTestController.setLongValue(Thread.currentThread().getId());
             }
@@ -602,6 +630,7 @@ public class JavaBridgeBasicsTest {
                 return mLatch.await(scaleTimeout(10000),
                         java.util.concurrent.TimeUnit.MILLISECONDS);
             }
+            @JavascriptInterface
             public void unlockTheLatch() {
                 mTestController.setStringValue("unlocked");
                 mLatch.countDown();
@@ -638,6 +667,7 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPublicInheritedMethod(boolean useMojo) throws Throwable {
         class Base {
+            @JavascriptInterface
             public void method(int x) {
                 mTestController.setIntValue(x);
             }
@@ -657,6 +687,7 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPrivateInheritedMethod(boolean useMojo) throws Throwable {
         class Base {
+            @JavascriptInterface
             private void method() {}
         }
         class Derived extends Base {
@@ -672,12 +703,14 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testOverriddenMethod(boolean useMojo) throws Throwable {
         class Base {
+            @JavascriptInterface
             public void method() {
                 mTestController.setStringValue("base");
             }
         }
         class Derived extends Base {
             @Override
+            @JavascriptInterface
             public void method() {
                 mTestController.setStringValue("derived");
             }
@@ -697,7 +730,7 @@ public class JavaBridgeBasicsTest {
             private void privateMethod() {}
             public int field;
             private int mPrivateField;
-        }, "testObject");
+        }, "testObject", null);
         mActivityTestRule.executeJavaScript("var result = \"\"; "
                 + "for (x in testObject) { result += \" \" + x } "
                 + "testController.setStringValue(result);");
@@ -711,14 +744,16 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReflectPublicMethod(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public Class<?> myGetClass() {
                 return getClass();
             }
 
+            @JavascriptInterface
             public String method() {
                 return "foo";
             }
-        }, "testObject");
+        }, "testObject", null);
         Assert.assertEquals("foo",
                 executeJavaScriptAndGetStringResult(
                         "testObject.myGetClass().getMethod('method', null).invoke(testObject, null)"
@@ -731,12 +766,13 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReflectPublicField(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public Class<?> myGetClass() {
                 return getClass();
             }
 
             public String field = "foo";
-        }, "testObject");
+        }, "testObject", null);
         Assert.assertEquals("foo",
                 executeJavaScriptAndGetStringResult(
                         "testObject.myGetClass().getField('field').get(testObject).toString()"));
@@ -769,6 +805,7 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testReflectPrivateFieldRaisesException(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public Class<?> myGetClass() {
                 return getClass();
             }
@@ -790,6 +827,7 @@ public class JavaBridgeBasicsTest {
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testAllowNonAnnotatedMethods(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
+            @JavascriptInterface
             public String allowed() {
                 return "foo";
             }
@@ -1030,7 +1068,7 @@ public class JavaBridgeBasicsTest {
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testAccessToObjectGetClassIsBlocked(boolean useMojo) throws Throwable {
-        mActivityTestRule.injectObjectAndReload(new Object(), "testObject");
+        mActivityTestRule.injectObjectAndReload(new Object(), "testObject", null);
         Assert.assertEquals(
                 "function", executeJavaScriptAndGetStringResult("typeof testObject.getClass"));
         assertRaisesException("testObject.getClass()");
@@ -1070,6 +1108,7 @@ public class JavaBridgeBasicsTest {
             TestObject(int index) {
                 mIndex = index;
             }
+            @JavascriptInterface
             public void method() {
                 mTestController.setIntValue(mIndex);
             }
@@ -1098,6 +1137,7 @@ public class JavaBridgeBasicsTest {
             TestObject(int index) {
                 mIndex = index;
             }
+            @JavascriptInterface
             public void method() {
                 mTestController.setIntValue(mIndex);
             }

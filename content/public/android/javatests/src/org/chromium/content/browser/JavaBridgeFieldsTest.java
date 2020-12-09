@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import android.webkit.JavascriptInterface;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -35,11 +37,13 @@ public class JavaBridgeFieldsTest {
     private static class TestObject extends Controller {
         private String mStringValue;
 
+        @JavascriptInterface
         // These methods are used to control the test.
         public synchronized void setStringValue(String x) {
             mStringValue = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized String waitForStringValue() {
             waitForResult();
             return mStringValue;

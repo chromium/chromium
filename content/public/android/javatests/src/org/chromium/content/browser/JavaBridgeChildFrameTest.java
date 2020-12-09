@@ -5,6 +5,7 @@
 package org.chromium.content.browser;
 
 import android.support.test.InstrumentationRegistry;
+import android.webkit.JavascriptInterface;
 
 import androidx.test.filters.SmallTest;
 
@@ -51,6 +52,7 @@ public class JavaBridgeChildFrameTest {
         private String mStringValue;
 
         @SuppressWarnings("unused") // Called via reflection
+        @JavascriptInterface
         public synchronized void setStringValue(String x) {
             mStringValue = x;
             notifyResultIsReady();

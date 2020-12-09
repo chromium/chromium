@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import android.webkit.JavascriptInterface;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -62,53 +64,66 @@ public class JavaBridgeArrayCoercionTest {
             mCustomTypeInstance = new CustomType();
         }
 
+        @JavascriptInterface
         public Object getObjectInstance() {
             return mObjectInstance;
         }
+        @JavascriptInterface
         public CustomType getCustomTypeInstance() {
             return mCustomTypeInstance;
         }
 
+        @JavascriptInterface
         public synchronized void setBooleanArray(boolean[] x) {
             mBooleanArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setByteArray(byte[] x) {
             mByteArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setCharArray(char[] x) {
             mCharArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setShortArray(short[] x) {
             mShortArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setIntArray(int[] x) {
             mIntArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setLongArray(long[] x) {
             mLongArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setFloatArray(float[] x) {
             mFloatArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setDoubleArray(double[] x) {
             mDoubleArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setStringArray(String[] x) {
             mStringArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setObjectArray(Object[] x) {
             mObjectArray = x;
             notifyResultIsReady();
         }
+        @JavascriptInterface
         public synchronized void setCustomTypeArray(CustomType[] x) {
             mCustomTypeArray = x;
             notifyResultIsReady();

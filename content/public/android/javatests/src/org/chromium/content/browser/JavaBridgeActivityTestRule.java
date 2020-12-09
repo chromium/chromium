@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import android.webkit.JavascriptInterface;
+
 import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -128,7 +130,8 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     public void injectObjectAndReload(Object object, String name) {
-        injectObjectAndReload(object, name, null);
+        Class<? extends Annotation> requiredAnnotation = JavascriptInterface.class;
+        injectObjectAndReload(object, name, requiredAnnotation);
     }
 
     public void injectObjectAndReload(
