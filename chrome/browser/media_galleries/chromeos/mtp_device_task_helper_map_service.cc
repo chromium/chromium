@@ -5,7 +5,7 @@
 #include "chrome/browser/media_galleries/chromeos/mtp_device_task_helper_map_service.h"
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/media_galleries/chromeos/mtp_device_task_helper.h"
 #include "content/public/browser/browser_thread.h"
 

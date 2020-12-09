@@ -9,7 +9,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/views/view_model.h"
 
 namespace ash {

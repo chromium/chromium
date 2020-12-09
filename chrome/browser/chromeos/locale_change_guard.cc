@@ -7,8 +7,8 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"

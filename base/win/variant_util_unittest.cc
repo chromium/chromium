@@ -9,7 +9,7 @@
 #include <set>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/win/dispatch_stub.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/variant_util.h"

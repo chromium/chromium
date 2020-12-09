@@ -10,6 +10,7 @@
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/escape.h"

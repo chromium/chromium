@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/settings/supervised_user_cros_settings_provider.h"
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/test_blocklist_state_fetcher.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/safe_browsing/core/db/v4_test_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/android/password_edit_delegate_settings_impl.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "components/password_manager/core/browser/password_store.h"

@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"

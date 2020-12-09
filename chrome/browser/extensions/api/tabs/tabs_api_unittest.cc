@@ -4,9 +4,9 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include "base/containers/contains.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"

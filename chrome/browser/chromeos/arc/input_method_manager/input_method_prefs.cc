@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/arc/input_method_manager/input_method_prefs.h"
 
+#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

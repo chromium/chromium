@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 

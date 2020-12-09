@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/certificate_provider/pin_dialog_manager.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 

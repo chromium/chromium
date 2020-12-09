@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/cloud_devices/common/cloud_device_description.h"

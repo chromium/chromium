@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"

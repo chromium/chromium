@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/printers_map.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace chromeos {
 namespace {

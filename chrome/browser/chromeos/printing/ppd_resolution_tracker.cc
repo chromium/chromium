@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/ppd_resolution_tracker.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/chromeos/printing/ppd_resolution_state.h"
 
 namespace chromeos {

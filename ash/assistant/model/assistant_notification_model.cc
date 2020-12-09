@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/assistant/model/assistant_notification_model_observer.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chromeos/services/assistant/public/cpp/assistant_notification.h"
 
 namespace ash {

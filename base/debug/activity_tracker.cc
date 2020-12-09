@@ -10,6 +10,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bits.h"
+#include "base/containers/contains.h"
 #include "base/debug/stack_trace.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -22,7 +23,6 @@
 #include "base/pickle.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"

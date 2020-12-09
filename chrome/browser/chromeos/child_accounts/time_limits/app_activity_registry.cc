@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_limit_utils.h"

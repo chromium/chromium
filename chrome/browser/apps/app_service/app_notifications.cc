@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_notifications.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace apps {
 

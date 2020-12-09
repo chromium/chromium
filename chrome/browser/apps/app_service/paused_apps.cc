@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/app_service/paused_apps.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace apps {
 

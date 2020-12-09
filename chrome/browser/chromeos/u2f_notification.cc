@@ -8,9 +8,9 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"

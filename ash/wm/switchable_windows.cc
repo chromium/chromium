@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desks_util.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/aura/window.h"
 
 namespace ash {

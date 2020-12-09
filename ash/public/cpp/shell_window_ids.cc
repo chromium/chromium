@@ -7,7 +7,7 @@
 #include <array>
 
 #include "ash/public/cpp/ash_features.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace ash {
 

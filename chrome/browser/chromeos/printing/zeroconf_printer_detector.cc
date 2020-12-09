@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/hash/md5.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"

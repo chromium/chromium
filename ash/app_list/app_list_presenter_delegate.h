@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "ash/app_list/app_list_export.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
 
 namespace aura {

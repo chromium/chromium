@@ -13,7 +13,7 @@
 #include "ash/shell_delegate.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_blocker.h"

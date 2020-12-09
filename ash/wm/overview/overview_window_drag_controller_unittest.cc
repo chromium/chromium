@@ -22,7 +22,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/window_util.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/test/display_manager_test_api.h"

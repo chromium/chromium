@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 
 @interface CRBProtocolObservers () {
   base::scoped_nsobject<Protocol> _protocol;
