@@ -77,7 +77,8 @@
   }
 </style>
 
-<cr-button on-click="onProfileClick_">
+<cr-button on-click="onProfileClick_"
+    aria-label="[[profileState.localProfileName]]">
   <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
   <!-- TODO(msalama): Implement editing local profile name in place -->
   <div class="profile-card-info">[[profileState.localProfileName]]</div>
