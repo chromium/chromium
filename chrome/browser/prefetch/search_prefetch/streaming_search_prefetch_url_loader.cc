@@ -64,6 +64,9 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
   DCHECK(!streaming_prefetch_request_);
   // Bind to the content/ navigation code.
   DCHECK(!receiver_.is_bound());
+
+  network_url_loader_->SetPriority(resource_request.priority, -1);
+
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(
       base::BindOnce(&StreamingSearchPrefetchURLLoader::OnMojoDisconnect,

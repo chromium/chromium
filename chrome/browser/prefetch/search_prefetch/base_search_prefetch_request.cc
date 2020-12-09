@@ -126,6 +126,10 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   url::Origin prefetch_origin = url::Origin::Create(prefetch_url_);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
+  // This prefetch is not as high priority as navigation, but due to its
+  // navigation speeding and relatively high likelihood of being served to a
+  // navigation, the request is relatively high priority.
+  resource_request->priority = net::MEDIUM;
   resource_request->load_flags |= net::LOAD_PREFETCH;
   resource_request->url = prefetch_url_;
   // Search prefetch URL Loaders should check |report_raw_headers| on the
