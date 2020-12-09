@@ -22,7 +22,7 @@ class ScreenPowerControllerDefault : public ScreenPowerController {
   void SetScreenOn() override;
   void SetScreenOff() override;
   void SetAllowScreenPowerOff(bool allow_power_off) override;
-  inline bool IsScreenOn() const override { return screen_on_; }
+  bool IsScreenOn() const override;
 
  private:
   bool screen_on_;

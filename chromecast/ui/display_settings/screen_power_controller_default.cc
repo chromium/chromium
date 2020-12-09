@@ -52,6 +52,8 @@ void ScreenPowerControllerDefault::SetAllowScreenPowerOff(
       << "Screen is not allowed to be powered off. Please enable AURA.";
 }
 
-}  // namespace chromecast
+bool ScreenPowerControllerDefault::IsScreenOn() const {
+  return screen_on_;
+}
 
-#endif  // CHROMECAST_UI_DISPLAY_SETTINGS_BRIGHTNESS_ANIMATION_H_
+}  // namespace chromecast
