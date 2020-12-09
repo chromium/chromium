@@ -219,10 +219,11 @@ void NetworkDiagnostics::VideoConferencing(
     routine =
         std::make_unique<VideoConferencingRoutine>(stun_server_name.value());
   }
+  auto* const routine_ptr = routine.get();
   // RunRoutine() takes a lambda callback that takes ownership of the routine.
   // This ensures that the routine stays alive when it makes asynchronous mojo
   // calls. The routine will be destroyed when the lambda exits.
-  routine->RunRoutine(base::BindOnce(
+  routine_ptr->RunRoutine(base::BindOnce(
       [](std::unique_ptr<VideoConferencingRoutine> routine,
          VideoConferencingCallback callback, mojom::RoutineVerdict verdict,
          const std::vector<mojom::VideoConferencingProblem>& problems,
