@@ -23,33 +23,12 @@ namespace {
 // which point the reply is forwarded to the wrapped |callback|.
 void OnDecodeImage(mojo::Remote<mojom::ImageDecoder> decoder,
                    mojom::ImageDecoder::DecodeImageCallback callback,
-                   const SkBitmap& unsafe_bitmap) {
-  // On receipt of an arbitrary bitmap from the renderer, we convert to an N32
-  // 32bpp bitmap. Other pixel sizes can lead to out-of-bounds mistakes when
-  // transferring the pixels out of the bitmap into other buffers.
-  SkBitmap bitmap;
-  if (!skia::SkBitmapToN32OpaqueOrPremul(unsafe_bitmap, &bitmap)) {
-    NOTREACHED() << "Unable to convert bitmap for decode image";
-    base::debug::DumpWithoutCrashing();
-    std::move(callback).Run(SkBitmap());
-    return;
-  }
+                   const SkBitmap& bitmap) {
   std::move(callback).Run(bitmap);
 }
-
 void OnDecodeImages(mojo::Remote<mojom::ImageDecoder> decoder,
                     mojom::ImageDecoder::DecodeAnimationCallback callback,
                     std::vector<mojom::AnimationFramePtr> bitmaps) {
-  for (mojom::AnimationFramePtr& frame : bitmaps) {
-    if (frame->bitmap.colorType() != kN32_SkColorType) {
-      // The renderer should be sending us N32 32bpp bitmaps in reply, otherwise
-      // this can lead to out-of-bounds mistakes when transferring the pixels
-      // out of the bitmap into other buffers.
-      base::debug::DumpWithoutCrashing();
-      std::move(callback).Run(std::vector<mojom::AnimationFramePtr>());
-      return;
-    }
-  }
   std::move(callback).Run(std::move(bitmaps));
 }
 
