@@ -548,14 +548,17 @@ component("views") {
       "linux_ui/window_button_order_observer.h",
     ]
     sources += [
-      "controls/menu/menu_config_linux.cc",
       "linux_ui/linux_ui.cc",
       "linux_ui/status_icon_linux.cc",
       "linux_ui/window_button_order_provider.cc",
     ]
+
+    if (!is_chromeos_lacros) {
+      sources += [ "controls/menu/menu_config_linux.cc" ]
+    }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [ "controls/menu/menu_config_chromeos.cc" ]
   }
 
