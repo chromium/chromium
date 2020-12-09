@@ -600,12 +600,12 @@ void GaiaCookieManagerService::TriggerListAccounts() {
 
 void GaiaCookieManagerService::ForceOnCookieChangeProcessing() {
   GURL google_url = GaiaUrls::GetInstance()->secure_google_url();
-  std::unique_ptr<net::CanonicalCookie> cookie(
-      std::make_unique<net::CanonicalCookie>(
-          kGaiaCookieName, std::string(), "." + google_url.host(), "/",
-          base::Time(), base::Time(), base::Time(), true /* secure */,
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::CreateSanitizedCookie(
+          google_url, kGaiaCookieName, std::string(), "." + google_url.host(),
+          "/", base::Time(), base::Time(), base::Time(), true /* secure */,
           false /* httponly */, net::CookieSameSite::NO_RESTRICTION,
-          net::COOKIE_PRIORITY_DEFAULT, false /* same_party */));
+          net::COOKIE_PRIORITY_DEFAULT, false /* same_party */);
   OnCookieChange(
       net::CookieChangeInfo(*cookie, net::CookieAccessResult(),
                             net::CookieChangeCause::UNKNOWN_DELETION));
