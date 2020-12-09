@@ -4,7 +4,7 @@
 
 #include "components/js_injection/browser/js_to_browser_messaging.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"

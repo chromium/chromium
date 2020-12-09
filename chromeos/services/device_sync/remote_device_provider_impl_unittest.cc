@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/multidevice/beacon_seed.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"

@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 

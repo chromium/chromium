@@ -11,11 +11,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

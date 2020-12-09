@@ -8,9 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"

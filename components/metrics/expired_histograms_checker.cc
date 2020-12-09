@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 
 namespace metrics {

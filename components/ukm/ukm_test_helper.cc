@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/unsent_log_store.h"
 

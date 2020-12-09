@@ -4,7 +4,7 @@
 
 #include "components/favicon/core/core_favicon_service.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/favicon_base/favicon_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"

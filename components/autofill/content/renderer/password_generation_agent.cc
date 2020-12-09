@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"

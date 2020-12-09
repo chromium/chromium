@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"

@@ -9,12 +9,12 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"

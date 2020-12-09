@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"

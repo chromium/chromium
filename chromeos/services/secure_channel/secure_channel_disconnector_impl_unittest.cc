@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/fake_connection.h"

@@ -11,9 +11,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

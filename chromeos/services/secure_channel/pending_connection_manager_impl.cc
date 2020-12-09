@@ -4,9 +4,9 @@
 
 #include "chromeos/services/secure_channel/pending_connection_manager_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
 #include "chromeos/services/secure_channel/ble_initiator_connection_attempt.h"
 #include "chromeos/services/secure_channel/ble_listener_connection_attempt.h"

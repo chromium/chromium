@@ -5,7 +5,7 @@
 #include "components/browsing_data/content/mock_shared_worker_helper.h"
 
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"

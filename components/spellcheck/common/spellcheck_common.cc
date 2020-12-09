@@ -6,9 +6,9 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/common/unicode/urename.h"

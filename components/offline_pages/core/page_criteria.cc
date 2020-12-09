@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/page_criteria.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_item.h"

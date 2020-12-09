@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/removable_storage_observer.h"
 #include "components/storage_monitor/transient_device_ids.h"

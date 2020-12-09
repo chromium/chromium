@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

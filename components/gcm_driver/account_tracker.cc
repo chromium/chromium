@@ -4,8 +4,8 @@
 
 #include "components/gcm_driver/account_tracker.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 

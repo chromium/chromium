@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/debug/activity_analyzer.h"
 #include "base/debug/activity_tracker.h"
 #include "base/files/file.h"
@@ -14,7 +15,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/notreached.h"

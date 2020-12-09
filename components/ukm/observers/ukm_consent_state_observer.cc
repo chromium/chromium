@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "google_apis/gaia/google_service_auth_error.h"

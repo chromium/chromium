@@ -4,8 +4,8 @@
 
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"

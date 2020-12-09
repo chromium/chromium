@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/public/browser/storage_partition.h"

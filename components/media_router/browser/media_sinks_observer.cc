@@ -5,7 +5,7 @@
 #include "components/media_router/browser/media_sinks_observer.h"
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/media_router/browser/media_router.h"
 
 #if DCHECK_IS_ON()

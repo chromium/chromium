@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"

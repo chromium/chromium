@@ -4,9 +4,9 @@
 
 #include "components/safe_browsing/core/realtime/policy_engine.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

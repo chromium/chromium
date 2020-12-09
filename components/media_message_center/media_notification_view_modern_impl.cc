@@ -4,8 +4,8 @@
 
 #include "components/media_message_center/media_notification_view_modern_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "components/media_message_center/media_notification_background_impl.h"
 #include "components/media_message_center/media_notification_constants.h"
 #include "components/media_message_center/media_notification_container.h"

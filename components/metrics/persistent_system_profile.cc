@@ -8,6 +8,7 @@
 
 #include "base/atomicops.h"
 #include "base/bits.h"
+#include "base/containers/contains.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/pickle.h"

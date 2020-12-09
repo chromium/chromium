@@ -4,7 +4,7 @@
 
 #include "chromeos/services/device_sync/cryptauth_key_registry_impl.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"
 #include "chromeos/services/device_sync/pref_names.h"
 #include "components/prefs/testing_pref_service.h"

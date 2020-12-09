@@ -7,10 +7,10 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"

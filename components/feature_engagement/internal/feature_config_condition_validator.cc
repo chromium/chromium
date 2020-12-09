@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "components/feature_engagement/internal/availability_model.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"
 #include "components/feature_engagement/internal/event_model.h"

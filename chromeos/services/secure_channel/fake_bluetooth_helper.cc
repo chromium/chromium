@@ -4,7 +4,7 @@
 
 #include "chromeos/services/secure_channel/fake_bluetooth_helper.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace chromeos {
 

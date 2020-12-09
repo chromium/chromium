@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/guid.h"
 #include "base/logging.h"

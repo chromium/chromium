@@ -7,8 +7,8 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"

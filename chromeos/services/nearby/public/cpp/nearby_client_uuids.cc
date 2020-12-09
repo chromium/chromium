@@ -7,8 +7,8 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 
 namespace chromeos {
 namespace nearby {

@@ -7,10 +7,10 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/variations/entropy_provider.h"

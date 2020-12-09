@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/i18n/case_conversion.h"
 #include "base/macros.h"

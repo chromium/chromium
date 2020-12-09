@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/paint_preview/common/glyph_usage.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "third_party/skia/include/core/SkCanvas.h"

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"

@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_result.h"

@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_usage_estimator.h"

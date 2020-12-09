@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"

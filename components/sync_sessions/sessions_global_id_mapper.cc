@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/stl_util.h"
 
 namespace sync_sessions {

@@ -4,7 +4,7 @@
 
 #include "components/ui_devtools/viz/dom_agent_viz.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/ui_devtools/root_element.h"
 #include "components/ui_devtools/ui_element.h"
 #include "components/ui_devtools/viz/frame_sink_element.h"

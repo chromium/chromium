@@ -10,10 +10,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"

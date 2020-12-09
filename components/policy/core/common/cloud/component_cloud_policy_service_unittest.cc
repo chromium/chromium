@@ -11,11 +11,11 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"

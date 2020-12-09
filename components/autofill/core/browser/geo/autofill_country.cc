@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/geo/country_names.h"

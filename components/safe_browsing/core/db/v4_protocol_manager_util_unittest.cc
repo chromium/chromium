@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/db/v4_test_util.h"

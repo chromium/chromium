@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/async_execution_time_metrics_logger.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"

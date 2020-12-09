@@ -4,10 +4,10 @@
 
 #include "chromeos/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "chromeos/constants/chromeos_features.h"
 

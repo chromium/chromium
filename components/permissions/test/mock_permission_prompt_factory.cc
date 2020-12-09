@@ -5,9 +5,9 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt.h"
 #include "content/public/browser/web_contents.h"

@@ -4,7 +4,7 @@
 
 #include "chromeos/services/secure_channel/nearby_connection_manager.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
 

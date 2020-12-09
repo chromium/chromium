@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"

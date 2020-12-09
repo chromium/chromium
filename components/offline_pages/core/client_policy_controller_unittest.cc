@@ -8,7 +8,7 @@
 #include <memory>
 #include <set>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"

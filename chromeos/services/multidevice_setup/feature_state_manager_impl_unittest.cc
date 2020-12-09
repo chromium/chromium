@@ -7,9 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/stl_util.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/fake_feature_state_manager.h"

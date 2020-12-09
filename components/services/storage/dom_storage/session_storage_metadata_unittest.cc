@@ -5,11 +5,11 @@
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"

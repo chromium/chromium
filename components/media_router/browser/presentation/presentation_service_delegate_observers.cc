@@ -4,7 +4,7 @@
 
 #include "components/media_router/browser/presentation/presentation_service_delegate_observers.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace media_router {
 

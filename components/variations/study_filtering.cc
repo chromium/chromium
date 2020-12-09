@@ -9,8 +9,8 @@
 
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "components/variations/variations_seed_processor.h"
 

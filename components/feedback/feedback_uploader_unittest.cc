@@ -8,9 +8,9 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"

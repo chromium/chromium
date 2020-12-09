@@ -5,9 +5,9 @@
 #include "chromeos/services/secure_channel/ble_advertiser_impl.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"

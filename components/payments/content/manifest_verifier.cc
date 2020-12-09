@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"

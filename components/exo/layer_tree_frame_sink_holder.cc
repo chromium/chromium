@@ -4,7 +4,7 @@
 
 #include "components/exo/layer_tree_frame_sink_holder.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/exo/surface_tree_host.h"

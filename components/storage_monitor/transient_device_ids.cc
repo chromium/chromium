@@ -7,8 +7,8 @@
 #include "components/storage_monitor/transient_device_ids.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
-#include "base/stl_util.h"
 #include "components/storage_monitor/storage_info.h"
 
 namespace storage_monitor {

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"

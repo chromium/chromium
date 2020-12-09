@@ -4,8 +4,8 @@
 
 #include "components/safe_browsing/core/triggers/trigger_throttler.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/default_clock.h"
