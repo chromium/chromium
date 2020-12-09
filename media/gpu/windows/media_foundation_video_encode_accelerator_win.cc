@@ -784,18 +784,18 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
   {
     MediaBufferScopedPointer scoped_buffer(input_buffer.Get());
     DCHECK(scoped_buffer.get());
-    int dst_stride_y = frame->stride(VideoFrame::kYPlane);
+
     uint8_t* dst_uv =
-        scoped_buffer.get() +
-        frame->stride(VideoFrame::kYPlane) * frame->rows(VideoFrame::kYPlane);
-    int dst_stride_uv = frame->stride(VideoFrame::kUPlane) * 2;
+        scoped_buffer.get() + frame->row_bytes(VideoFrame::kYPlane) *
+                                  frame->rows(VideoFrame::kYPlane);
     libyuv::I420ToNV12(frame->visible_data(VideoFrame::kYPlane),
                        frame->stride(VideoFrame::kYPlane),
                        frame->visible_data(VideoFrame::kUPlane),
                        frame->stride(VideoFrame::kUPlane),
                        frame->visible_data(VideoFrame::kVPlane),
                        frame->stride(VideoFrame::kVPlane), scoped_buffer.get(),
-                       dst_stride_y, dst_uv, dst_stride_uv,
+                       frame->row_bytes(VideoFrame::kYPlane), dst_uv,
+                       frame->row_bytes(VideoFrame::kUPlane) * 2,
                        input_visible_size_.width(),
                        input_visible_size_.height());
   }
