@@ -101,9 +101,6 @@ Code for a python client.
 Code for the chromedriver server.
 A python wrapper to the chromedriver server.
 
-* [extension/](extension/):
-An extension used for automating the desktop browser.
-
 * [test/](test/):
 Integration tests.
 
