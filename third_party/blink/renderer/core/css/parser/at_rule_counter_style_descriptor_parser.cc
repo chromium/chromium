@@ -30,8 +30,10 @@ CSSValue* ConsumeCounterStyleSymbol(CSSParserTokenRange& range,
   // <symbol> = <string> | <image> | <custom-ident>
   if (CSSValue* string = css_parsing_utils::ConsumeString(range))
     return string;
-  if (CSSValue* image = css_parsing_utils::ConsumeImage(range, context))
-    return image;
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleImageSymbolsEnabled()) {
+    if (CSSValue* image = css_parsing_utils::ConsumeImage(range, context))
+      return image;
+  }
   if (CSSCustomIdentValue* custom_ident =
           css_parsing_utils::ConsumeCustomIdent(range, context)) {
     return custom_ident;

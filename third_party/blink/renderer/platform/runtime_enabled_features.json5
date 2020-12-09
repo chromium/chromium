@@ -451,6 +451,11 @@
       status: "test",
     },
     {
+      // Whether <image> values are allowed as counter style <symbol>
+      name: "CSSAtRuleCounterStyleImageSymbols",
+      depends_on: ["CSSAtRuleCounterStyle"]
+    },
+    {
       name: "CSSCalcAsInt",
       status: "test",
     },
