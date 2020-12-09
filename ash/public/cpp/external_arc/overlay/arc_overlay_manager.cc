@@ -67,15 +67,14 @@ void ArcOverlayManager::DeregisterHostWindow(const std::string& overlay_token) {
 
 void ArcOverlayManager::OnWindowInitialized(aura::Window* window) {
   // We only ever observe the most recent window being created
-  if (observed_window_observer_.IsObserving())
-    observed_window_observer_.RemoveObservation();
+  observed_window_observer_.Reset();
   observed_window_ = window;
   observed_window_observer_.Observe(observed_window_);
 }
 
 void ArcOverlayManager::OnWindowDestroying(aura::Window* window) {
   if (observed_window_observer_.IsObservingSource(window)) {
-    observed_window_observer_.RemoveObservation();
+    observed_window_observer_.Reset();
     observed_window_ = nullptr;
   }
 }
@@ -88,7 +87,8 @@ void ArcOverlayManager::OnWindowPropertyChanged(aura::Window* window,
     return;
 
   // We don't need to observe the window after this.
-  observed_window_observer_.RemoveObservation();
+  DCHECK(observed_window_observer_.IsObserving());
+  observed_window_observer_.Reset();
   observed_window_ = nullptr;
 
   // If this isn't a variant of a ShellSurfaceBase, ignore it

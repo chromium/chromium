@@ -364,7 +364,7 @@ void ServiceWorkerSubresourceLoader::SettleFetchEventDispatch(
     // Already settled.
     return;
   }
-  controller_connector_observation_.RemoveObservation();
+  controller_connector_observation_.Reset();
 
   if (status) {
     blink::ServiceWorkerStatusCode value = status.value();

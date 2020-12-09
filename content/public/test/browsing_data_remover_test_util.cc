@@ -31,7 +31,8 @@ void BrowsingDataRemoverCompletionObserver::OnBrowsingDataRemoverDone(
     uint64_t failed_data_types) {
   browsing_data_remover_done_ = true;
   failed_data_types_ = failed_data_types;
-  observation_.RemoveObservation();
+  DCHECK(observation_.IsObserving());
+  observation_.Reset();
   QuitRunLoopWhenTasksComplete();
 }
 

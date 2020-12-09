@@ -247,7 +247,7 @@ void PageHandler::SetRenderer(int process_host_id,
   RenderWidgetHostImpl* widget_host =
       host_ ? host_->GetRenderWidgetHost() : nullptr;
   if (widget_host && observation_.IsObservingSource(widget_host))
-    observation_.RemoveObservation();
+    observation_.Reset();
 
   host_ = frame_host;
   widget_host = host_ ? host_->GetRenderWidgetHost() : nullptr;
@@ -285,7 +285,7 @@ void PageHandler::RenderWidgetHostVisibilityChanged(
 
 void PageHandler::RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) {
   DCHECK(observation_.IsObservingSource(widget_host));
-  observation_.RemoveObservation();
+  observation_.Reset();
 }
 
 void PageHandler::DidAttachInterstitialPage() {

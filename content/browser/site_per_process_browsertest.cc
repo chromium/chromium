@@ -478,8 +478,7 @@ class RenderWidgetHostVisibilityObserver : public RenderWidgetHostObserver {
   bool WaitUntilSatisfied() {
     if (!was_observed_)
       message_loop_runner_->Run();
-    if (observation_.IsObservingSource(render_widget_))
-      observation_.RemoveObservation();
+    observation_.Reset();
     return !did_fail_;
   }
 
@@ -494,7 +493,7 @@ class RenderWidgetHostVisibilityObserver : public RenderWidgetHostObserver {
 
   void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override {
     DCHECK(observation_.IsObservingSource(widget_host));
-    observation_.RemoveObservation();
+    observation_.Reset();
   }
 
   bool expected_visibility_state_;

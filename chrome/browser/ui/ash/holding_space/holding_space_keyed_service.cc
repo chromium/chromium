@@ -274,7 +274,8 @@ void HoldingSpaceKeyedService::Shutdown() {
 
 void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
   if (profile == profile_) {
-    profile_manager_observer_.RemoveObservation();
+    DCHECK(profile_manager_observer_.IsObserving());
+    profile_manager_observer_.Reset();
     OnProfileReady();
   }
 }

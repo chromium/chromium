@@ -119,10 +119,8 @@ void DiceInterceptedSessionStartupHelper::OnStateChanged(
 }
 
 void DiceInterceptedSessionStartupHelper::MoveTab() {
-  if (accounts_in_cookie_observer_.IsObserving())
-    accounts_in_cookie_observer_.RemoveObservation();
-  if (reconcilor_observer_.IsObserving())
-    reconcilor_observer_.RemoveObservation();
+  accounts_in_cookie_observer_.Reset();
+  reconcilor_observer_.Reset();
   on_cookie_update_timeout_.Cancel();
 
   // TODO(https://crbug.com/1151313): Remove this histogram when the cause

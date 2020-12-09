@@ -54,7 +54,8 @@ void NewUserRestorePrefHandler::OnIsSyncingChanged() {
 
   // OnIsSyncingChanged could be called multiple times. We only check and modify
   // the restore pref for the first sync.
-  syncable_pref_observer_.RemoveObservation();
+  DCHECK(syncable_pref_observer_.IsObserving());
+  syncable_pref_observer_.Reset();
 
   // If |kRestoreAppsAndPagesPrefName| is modified before the first sync, that
   // means |kRestoreAppsAndPagesPrefName| is modifyed from sync, or the user

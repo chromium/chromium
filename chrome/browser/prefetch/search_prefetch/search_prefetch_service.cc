@@ -51,8 +51,7 @@ SearchPrefetchService::SearchPrefetchService(Profile* profile)
 SearchPrefetchService::~SearchPrefetchService() = default;
 
 void SearchPrefetchService::Shutdown() {
-  if (observer_.IsObserving())
-    observer_.RemoveObservation();
+  observer_.Reset();
 }
 
 bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {

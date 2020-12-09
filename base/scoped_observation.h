@@ -64,8 +64,10 @@ class ScopedObservation {
   // Remove the object passed to the constructor as an observer from |source_|
   // if currently observing. Does nothing otherwise.
   void Reset() {
-    if (IsObserving())
-      RemoveObservation();
+    if (source_) {
+      (source_->*RemoveObsFn)(observer_);
+      source_ = nullptr;
+    }
   }
 
   // Returns true if any source is being observed.
@@ -75,14 +77,6 @@ class ScopedObservation {
   bool IsObservingSource(Source* source) const {
     DCHECK(source);
     return source_ == source;
-  }
-
-  // Remove the object passed to the constructor as an observer from |source_|.
-  // This method is DEPRECATED, please use Reset().
-  void RemoveObservation() {
-    DCHECK_NE(source_, nullptr);
-    (source_->*RemoveObsFn)(observer_);
-    source_ = nullptr;
   }
 
  private:

@@ -55,18 +55,18 @@ void ArcOverlayControllerImpl::AttachOverlay(aura::Window* overlay_window) {
 void ArcOverlayControllerImpl::OnWindowDestroying(aura::Window* window) {
   if (host_window_observer_.IsObservingSource(window)) {
     host_window_ = nullptr;
-    host_window_observer_.RemoveObservation();
+    host_window_observer_.Reset();
   }
   if (overlay_window_observer_.IsObservingSource(window)) {
     overlay_window_ = nullptr;
-    overlay_window_observer_.RemoveObservation();
+    overlay_window_observer_.Reset();
   }
 }
 
 void ArcOverlayControllerImpl::OnViewIsDeleting(views::View* observed_view) {
   if (overlay_container_observer_.IsObservingSource(observed_view)) {
     overlay_container_ = nullptr;
-    overlay_container_observer_.RemoveObservation();
+    overlay_container_observer_.Reset();
   }
 }
 

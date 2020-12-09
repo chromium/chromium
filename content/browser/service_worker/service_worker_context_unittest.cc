@@ -373,7 +373,8 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
   }
 
   void OnDestruct(content::ServiceWorkerContext* context) override {
-    scoped_observation_.RemoveObservation();
+    DCHECK(scoped_observation_.IsObserving());
+    scoped_observation_.Reset();
 
     EventLog log;
     log.type = EventType::Destruct;

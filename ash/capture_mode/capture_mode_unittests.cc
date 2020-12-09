@@ -314,7 +314,7 @@ class CaptureSessionWidgetObserver : public views::WidgetObserver {
   // views::WidgetObserver
   void OnWidgetClosing(views::Widget* widget) override {
     DCHECK(observer_.IsObservingSource(widget));
-    observer_.RemoveObservation();
+    observer_.Reset();
   }
 
  private:

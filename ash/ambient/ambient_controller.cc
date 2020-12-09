@@ -254,11 +254,8 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       } else {
         DCHECK(visibility == AmbientUiVisibility::kClosed);
         inactivity_timer_.Stop();
-        if (user_activity_observer_.IsObserving())
-          user_activity_observer_.RemoveObservation();
-
-        if (power_status_observer_.IsObserving())
-          power_status_observer_.RemoveObservation();
+        user_activity_observer_.Reset();
+        power_status_observer_.Reset();
       }
 
       break;
@@ -563,14 +560,9 @@ void AmbientController::OnEnabledPrefChanged() {
         pref_change_registrar_->Remove(pref_name);
     }
 
-    if (ambient_ui_model_observer_.IsObserving())
-      ambient_ui_model_observer_.RemoveObservation();
-
-    if (ambient_backend_model_observer_.IsObserving())
-      ambient_backend_model_observer_.RemoveObservation();
-
-    if (power_manager_client_observer_.IsObserving())
-      power_manager_client_observer_.RemoveObservation();
+    ambient_ui_model_observer_.Reset();
+    ambient_backend_model_observer_.Reset();
+    power_manager_client_observer_.Reset();
 
     if (fingerprint_observer_receiver_.is_bound())
       fingerprint_observer_receiver_.reset();

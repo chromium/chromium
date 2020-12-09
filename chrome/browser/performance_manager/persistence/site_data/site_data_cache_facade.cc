@@ -155,7 +155,7 @@ void SiteDataCacheFacade::OnURLsDeleted(
 void SiteDataCacheFacade::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
   DCHECK(history_observation_.IsObservingSource(history_service));
-  history_observation_.RemoveObservation();
+  history_observation_.Reset();
 }
 
 }  // namespace performance_manager

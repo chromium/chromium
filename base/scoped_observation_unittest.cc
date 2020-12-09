@@ -62,21 +62,6 @@ TEST(ScopedObservationTest, RemovesObservationOnDestruction) {
   EXPECT_EQ(0u, s1.num_observers());
 }
 
-TEST(ScopedObservationTest, RemoveObservation) {
-  TestSource s1;
-  TestSourceObserver o1;
-  TestScopedObservation obs(&o1);
-  EXPECT_EQ(0u, s1.num_observers());
-  EXPECT_FALSE(s1.HasObserver(&o1));
-
-  obs.Observe(&s1);
-  EXPECT_EQ(1u, s1.num_observers());
-  EXPECT_TRUE(s1.HasObserver(&o1));
-
-  obs.RemoveObservation();
-  EXPECT_EQ(0u, s1.num_observers());
-}
-
 TEST(ScopedObservationTest, Reset) {
   TestSource s1;
   TestSourceObserver o1;
@@ -105,7 +90,7 @@ TEST(ScopedObservationTest, IsObserving) {
   obs.Observe(&s1);
   EXPECT_TRUE(obs.IsObserving());
 
-  obs.RemoveObservation();
+  obs.Reset();
   EXPECT_FALSE(obs.IsObserving());
 }
 
@@ -121,7 +106,7 @@ TEST(ScopedObservationTest, IsObservingSource) {
   EXPECT_TRUE(obs.IsObservingSource(&s1));
   EXPECT_FALSE(obs.IsObservingSource(&s2));
 
-  obs.RemoveObservation();
+  obs.Reset();
   EXPECT_FALSE(obs.IsObservingSource(&s1));
   EXPECT_FALSE(obs.IsObservingSource(&s2));
 }
