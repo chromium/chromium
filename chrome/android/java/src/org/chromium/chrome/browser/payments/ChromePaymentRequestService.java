@@ -278,6 +278,11 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
+        WindowAndroid windowAndroid = mDelegate.getWindowAndroid(mRenderFrameHost);
+        if (windowAndroid == null) return ErrorStrings.WINDOW_NOT_FOUND;
+        Context context = windowAndroid.getContext().get();
+        if (context == null) return ErrorStrings.CONTEXT_NOT_FOUND;
+
         // If we are skipping showing the app selector UI, we should call into the payment app
         // immediately after we determine the apps are ready and UI is shown.
         if (mHasSkippedAppSelector) {
@@ -285,8 +290,6 @@ public class ChromePaymentRequestService
             assert mPaymentUiService.isPaymentRequestUiAlive();
 
             if (isMinimalUiApplicable(isUserGestureShow)) {
-                WindowAndroid windowAndroid = mDelegate.getWindowAndroid(mRenderFrameHost);
-                if (windowAndroid == null) return ErrorStrings.WINDOW_NOT_FOUND;
                 if (mPaymentUiService.triggerMinimalUI(windowAndroid, mSpec.getRawTotal(),
                             this::onMinimalUIReady, this::onMinimalUiConfirmed,
                             /*dismissObserver=*/
@@ -313,6 +316,8 @@ public class ChromePaymentRequestService
                     mSpec.getRawTotal().amount.value, false /*completed*/);
             invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
                     selectedApp);
+        } else {
+            mPaymentUiService.createShippingSectionIfNeeded(context);
         }
         return null;
     }
@@ -413,13 +418,6 @@ public class ChromePaymentRequestService
         if (context == null) return ErrorStrings.CONTEXT_NOT_FOUND;
 
         mPaymentUiService.updateDetailsOnPaymentRequestUI(mSpec.getPaymentDetails());
-
-        // Do not create shipping section When UI is not built yet. This happens when the show
-        // promise gets resolved before all apps are ready.
-        if (mPaymentUiService.isPaymentRequestUiAlive()
-                && mPaymentUiService.shouldShowShippingSection()) {
-            mPaymentUiService.createShippingSectionForPaymentRequestUI(context);
-        }
 
         // Triggered transaction amount gets recorded when both of the following conditions are met:
         // 1- Either Event.Shown or Event.SKIPPED_SHOW bits are set showing that transaction is
