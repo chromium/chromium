@@ -43,11 +43,12 @@ source_set("cpp") {
     "//base",
     "//services/data_decoder/public/mojom",
   ]
+  deps = []
 
   if (is_android) {
     sources += [ "json_sanitizer_android.cc" ]
 
-    deps =
+    deps +=
         [ "//services/data_decoder/public/cpp/android:safe_json_jni_headers" ]
   } else {
     sources += [ "json_sanitizer_non_android.cc" ]
@@ -67,6 +68,7 @@ source_set("cpp") {
       "decode_image.cc",
       "safe_web_bundle_parser.cc",
     ]
+    deps += [ "//skia" ]
   }
 
   defines = [ "IS_DATA_DECODER_PUBLIC_IMPL" ]
