@@ -1690,7 +1690,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Ash.Shelf.UkmLogger.HasNightLightSchedule" enum="Boolean"
     expires_after="2020-09-27">
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Whether or not the user had set up a night light schedule at the time of
     night light event logging.
@@ -1700,7 +1699,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Ash.Shelf.UkmLogger.NumAvailableBluetoothDevices"
     units="count" expires_after="2020-09-27">
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The number of Bluetooth devices available at the time of Bluetooth event
     logging.

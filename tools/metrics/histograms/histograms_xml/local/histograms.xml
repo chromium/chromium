@@ -51,7 +51,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
-  <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -65,7 +64,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
-  <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -81,7 +79,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="LocalSearchService.MetricsDailyEventInterval"
     enum="DailyEventIntervalType" expires_after="2021-06-30">
-  <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -94,7 +91,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
-  <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -109,7 +105,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
-  <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -122,7 +117,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="LocalSearchServiceResponseStatus" expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
-  <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -135,7 +129,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
 
-  <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>

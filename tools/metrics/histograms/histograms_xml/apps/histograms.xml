@@ -101,7 +101,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.AggregatedSearchRankerError"
     enum="AggregatedSearchRankerError" expires_after="2020-12-01">
   <owner>thanhdng@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The type of errors that occur during the inference of Search Ranking
     aggregated model.
@@ -179,7 +178,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="count" expires_after="2021-03-15">
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The number of results returned from a call to the Drive QuickAccess API.
     Only reported if the API call did not error.
@@ -190,7 +188,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="BooleanEmpty" expires_after="2021-04-11">
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Whether or not the results cache is empty. An empty cache means either poor
     network conditions, the user opening zero-state very quickly, or an API
@@ -201,7 +198,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.DriveQuickAccessProvider.CacheWarmed"
     units="Boolean" expires_after="2021-03-28">
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Whether or not the cache of Drive file results has already been warmed with
     a request to ItemSuggest. Emitted each time we decide whether to warm the
@@ -213,7 +210,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="Boolean" expires_after="2021-04-11">
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Whether or not DriveFS is mounted on a call to
     DriveQuickAccessProvider::Start or ::GetQuickAccessItems.
@@ -224,7 +220,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="DriveFileError" expires_after="2021-04-11">
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The error code returned from a call to the Drive QuickAccess API.
   </summary>
@@ -235,7 +230,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="ms" expires_after="2021-03-15">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The time between when GetQuickAccessItems was last called, and receiving
     Drive QuickAccess results back. Only reported if the API call did not error.
@@ -246,7 +240,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-03-15">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The time between sending a zero state query and receiving file
     recommendations back from the DriveQuickAccessProvider.
@@ -258,7 +251,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="ms" expires_after="2021-03-15">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The time between when GetQuickAccessItems was last called, and the user
     entering zero state search.
@@ -269,7 +261,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="count" expires_after="2021-04-04">
   <owner>tby@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Counts how many results from one call to the QuickAccess API exist in the
     DriveFS mount and are OK for display.
@@ -279,7 +270,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
     expires_after="2021-05-16">
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -291,7 +281,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.DriveZeroStateProvider.Status"
     enum="DriveZeroStateProviderStatus" expires_after="2021-05-16">
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -303,7 +292,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.ItemSuggestCache.ResponseSize" units="bytes"
     expires_after="2021-05-16">
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -316,7 +304,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.ItemSuggestCache.Status"
     enum="ItemSuggestCacheStatus" expires_after="2021-05-16">
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -359,8 +346,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
     enum="OsSettingsProviderError" expires_after="2021-04-18">
-  <owner>jiameng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <summary>
     Various error states of the provider for OS settings in the cros launcher.
     Emitted only in the case of an unexpected error, the bucket proportion is
@@ -370,7 +357,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.OsSettingsProvider.QueryTime" units="ms"
     expires_after="2021-04-11">
-  <owner>jiameng@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
     The latency of a search in the OsSettingsProvider. Recorded each time a
@@ -382,7 +369,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
     expires_after="2021-05-16">
   <owner>thanhdng@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
   <summary>
     The length of the query that resulted in an app launch from search box. This
     metric only records non-empty queries.
@@ -392,7 +379,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.SearchSuccess.Apps" enum="AppListLaunchedFrom"
     expires_after="2021-10-29">
   <owner>thanhdng@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
   <summary>
     The number of app launches from the search box with non-empty queries.
   </summary>
@@ -401,7 +388,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.SuggestedContent.Enabled" enum="BooleanEnabled"
     expires_after="2021-03-28">
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <summary>
     Whether or not the user has enabled Suggested Content in the launcher. This
     is logged once per UMA upload, and only for any user that has the Suggested
@@ -415,7 +403,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed December 2020.
   </obsolete>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Emitted when a suggestion chip is launched. Currently only 'true' is used,
     but we may emit 'false' in future to track abandonment.
@@ -425,7 +412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.SuggestedFiles.LaunchIndex" units="index"
     expires_after="2021-03-12">
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Emitted when a suggestion chip is launched, records the index (position in
     the bar) of that chip. The left-most chip is index 0 and the maximum index
@@ -439,7 +426,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed December 2020.
   </obsolete>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Emitted when a suggestion chip is launched, records the type of that chip.
   </summary>
@@ -448,7 +434,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppList.UserEvent.Error" enum="AppListSearchResult"
     expires_after="2021-04-04">
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <summary>
     Records error when processing user events into Apps.AppList.UserEvent.*
     metrics. These are expected to be rare and bucket proportion is not
@@ -461,7 +447,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <summary>
     Emitted on a usage of the launcher, and records overall impressions,
     launches, and abandons for a launcher UI view. The bucket proportion is not
@@ -476,7 +462,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <summary>
     Emitted after an impression, if the user then closes the launcher or moves
     to a different view without launching any search result. This is emitted
@@ -493,7 +479,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <summary>
     When a set of results is displayed for 2 seconds and the user has probably
     seen it, or the user interacted with the results and has definitely seen it,
@@ -516,7 +502,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <summary>
     Emitted after an impression, if the user launches a result. Records the type
     of the launched result. See Apps.AppList.UserEvent.TypeImpression for more
@@ -531,7 +517,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-04-11">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The time between sending a zero state query and receiving file
     recommendations back from the ZeroStateFileProvider.
@@ -552,7 +537,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="ZeroStateResultType" expires_after="2021-04-11">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The type of item that was launched from a zero state launcher search result.
   </summary>
@@ -565,7 +549,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Logs the result score received from the Drive Quick Access provider. The
     original float score is scaled to range from 0 to 100 and its floor is
@@ -580,7 +563,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Logs the result score received from the Omnibox search provider. The
     original float score is scaled to range from 0 to 100 and its floor is
@@ -595,7 +577,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Logs the result score received from the zero state file provider. The
     original float score is scaled to range from 0 to 100 and its floor is
@@ -610,7 +591,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Whether an item was clicked from zero state search results, or if results
     were displayed for some amount time but not clicked. These clicks and
@@ -625,7 +605,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Whether a set of search result impressions contains any Drive QuickAccess
     file results.
@@ -636,7 +615,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="AppListSearchResult" expires_after="2021-02-07">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The number of zero state impressions that contained at least one result of
     the specified file type.
@@ -650,7 +628,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The position index of an item launched from zero state search results.
   </summary>
@@ -663,7 +640,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </obsolete>
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     The number of item types included in each zero state impression set.
   </summary>
@@ -826,7 +802,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppListLauncherClickedSearchQueryLength"
     units="characters" expires_after="M90">
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
   <summary>
     Logs the length of user typed queries that result in launcher clicks.
     Emitted each time the user opens a launcher search result after typing a
@@ -914,7 +890,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     When a user opens an app recommendation result, this is the number of times
     we showed the result before opening. Number of times shown is reset to 0
@@ -927,7 +902,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Response when parsing the recommended app list from Play Store for candidate
     app list, recorded every time a response from the play store is parsed in
@@ -940,7 +914,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Number of responses from server in Apps.AppListRecommendedResponse.count
     when fetching appListRecommendded GetAppReinstallCandidates.
@@ -952,7 +925,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
   <summary>
     Milliseconds elapsed to fetch appListRecommended GetAppReinstallCandidates.
   </summary>
@@ -961,7 +933,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppListResultLaunchIndexAndQueryLength" units="units"
     expires_after="2021-01-31">
   <owner>tby@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <summary>
     The index of a clicked result in the search result box and the length of the
     search query. The index is relative to the SearchResultListView, not the
@@ -972,7 +944,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppListResultLaunchIsEmptyQuery" enum="Boolean"
     expires_after="2021-11-15">
   <owner>thanhdng@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
   <summary>
     This boolean records if the query that introduces a launch in the results
     list is empty or not. This will be recorded every time the user clicks an
@@ -983,7 +955,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.AppListSearchAbandonQueryLength" units="characters"
     expires_after="2021-03-15">
   <owner>jennyz@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
   <summary>
     The length of the query when the user abandons results of a queried search
     or recommendations of zero state (zero length query) in launcher UI.
@@ -1331,7 +1304,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Apps.LauncherSearchQueryLengthJumped" enum="Boolean"
     expires_after="M90">
   <owner>wrong@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
   <summary>
     Whether or not the most recent Launcher search query differs from the
     previous query in length by more than one character. Search queries are
@@ -1578,7 +1551,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <obsolete>
     Removed October 2020, replaced by Apps.AppList.UserEvent.Overall.*
   </obsolete>
-  <owner>jiameng@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
