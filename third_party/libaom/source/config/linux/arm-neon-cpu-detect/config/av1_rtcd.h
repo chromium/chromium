@@ -205,6 +205,20 @@ void av1_build_compound_diffwtd_mask_highbd_c(uint8_t* mask,
 #define av1_build_compound_diffwtd_mask_highbd \
   av1_build_compound_diffwtd_mask_highbd_c
 
+void av1_calc_indices_dim1_c(const int* data,
+                             const int* centroids,
+                             uint8_t* indices,
+                             int n,
+                             int k);
+#define av1_calc_indices_dim1 av1_calc_indices_dim1_c
+
+void av1_calc_indices_dim2_c(const int* data,
+                             const int* centroids,
+                             uint8_t* indices,
+                             int n,
+                             int k);
+#define av1_calc_indices_dim2 av1_calc_indices_dim2_c
+
 void av1_cnn_activate_c(float** input,
                         int channels,
                         int width,

@@ -239,6 +239,38 @@ RTCD_EXTERN void (*av1_build_compound_diffwtd_mask_highbd)(
     int w,
     int bd);
 
+void av1_calc_indices_dim1_c(const int* data,
+                             const int* centroids,
+                             uint8_t* indices,
+                             int n,
+                             int k);
+void av1_calc_indices_dim1_avx2(const int* data,
+                                const int* centroids,
+                                uint8_t* indices,
+                                int n,
+                                int k);
+RTCD_EXTERN void (*av1_calc_indices_dim1)(const int* data,
+                                          const int* centroids,
+                                          uint8_t* indices,
+                                          int n,
+                                          int k);
+
+void av1_calc_indices_dim2_c(const int* data,
+                             const int* centroids,
+                             uint8_t* indices,
+                             int n,
+                             int k);
+void av1_calc_indices_dim2_avx2(const int* data,
+                                const int* centroids,
+                                uint8_t* indices,
+                                int n,
+                                int k);
+RTCD_EXTERN void (*av1_calc_indices_dim2)(const int* data,
+                                          const int* centroids,
+                                          uint8_t* indices,
+                                          int n,
+                                          int k);
+
 void av1_cnn_activate_c(float** input,
                         int channels,
                         int width,
@@ -2199,6 +2231,12 @@ static void setup_rtcd_internal(void) {
   if (flags & HAS_AVX2)
     av1_build_compound_diffwtd_mask_highbd =
         av1_build_compound_diffwtd_mask_highbd_avx2;
+  av1_calc_indices_dim1 = av1_calc_indices_dim1_c;
+  if (flags & HAS_AVX2)
+    av1_calc_indices_dim1 = av1_calc_indices_dim1_avx2;
+  av1_calc_indices_dim2 = av1_calc_indices_dim2_c;
+  if (flags & HAS_AVX2)
+    av1_calc_indices_dim2 = av1_calc_indices_dim2_avx2;
   av1_compute_cross_correlation = av1_compute_cross_correlation_c;
   if (flags & HAS_SSE4_1)
     av1_compute_cross_correlation = av1_compute_cross_correlation_sse4_1;

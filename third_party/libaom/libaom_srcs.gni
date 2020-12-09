@@ -179,6 +179,7 @@ aom_av1_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/wedge_utils_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/encodetxb_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/rdopt_avx2.c",
+  "//third_party/libaom/source/libaom/av1/encoder/x86/av1_k_means_avx2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/temporal_filter_avx2.c",
 ]
 
@@ -492,8 +493,6 @@ aom_dsp_decoder_sources = [
 ]
 
 aom_dsp_encoder_asm_sse2 = [
-  "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_sad4d_sse2.asm",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_sad_sse2.asm",
   "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_subpel_variance_impl_sse2.asm",
   "//third_party/libaom/source/libaom/aom_dsp/x86/highbd_variance_impl_sse2.asm",
   "//third_party/libaom/source/libaom/aom_dsp/x86/sad4d_sse2.asm",
