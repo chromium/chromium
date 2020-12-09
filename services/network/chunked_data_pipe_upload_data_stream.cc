@@ -23,6 +23,9 @@ ChunkedDataPipeUploadDataStream::ChunkedDataPipeUploadDataStream(
       handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                       base::SequencedTaskRunnerHandle::Get()) {
+  // TODO(yhirano): Turn this to a DCHECK once we find the root cause of
+  // https://crbug.com/1156550.
+  CHECK(chunked_data_pipe_getter_.is_bound());
   chunked_data_pipe_getter_.set_disconnect_handler(
       base::BindOnce(&ChunkedDataPipeUploadDataStream::OnDataPipeGetterClosed,
                      base::Unretained(this)));
