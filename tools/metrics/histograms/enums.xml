@@ -25616,6 +25616,9 @@ Called by update_extension_histograms.py.-->
   <int value="1533" label="DECLARATIVENETREQUEST_UPDATESESSIONRULES"/>
   <int value="1534" label="DECLARATIVENETREQUEST_GETSESSIONRULES"/>
   <int value="1535" label="SCRIPTING_INSERTCSS"/>
+  <int value="1536" label="VIRTUALKEYBOARDPRIVATE_PASTECLIPBOARDITEM"/>
+  <int value="1537" label="VIRTUALKEYBOARDPRIVATE_GETCLIPBOARDHISTORY"/>
+  <int value="1538" label="VIRTUALKEYBOARDPRIVATE_DELETECLIPBOARDITEM"/>
 </enum>
 
 <enum name="ExtensionIconState">

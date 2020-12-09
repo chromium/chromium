@@ -245,6 +245,30 @@ VirtualKeyboardPrivateSetWindowBoundsInScreenFunction::Run() {
 VirtualKeyboardPrivateSetWindowBoundsInScreenFunction ::
     ~VirtualKeyboardPrivateSetWindowBoundsInScreenFunction() = default;
 
+ExtensionFunction::ResponseAction
+VirtualKeyboardPrivateGetClipboardHistoryFunction::Run() {
+  return RespondNow(Error("Not implemented"));
+}
+
+VirtualKeyboardPrivateGetClipboardHistoryFunction ::
+    ~VirtualKeyboardPrivateGetClipboardHistoryFunction() = default;
+
+ExtensionFunction::ResponseAction
+VirtualKeyboardPrivatePasteClipboardItemFunction::Run() {
+  return RespondNow(Error("Not implemented"));
+}
+
+VirtualKeyboardPrivatePasteClipboardItemFunction ::
+    ~VirtualKeyboardPrivatePasteClipboardItemFunction() = default;
+
+ExtensionFunction::ResponseAction
+VirtualKeyboardPrivateDeleteClipboardItemFunction::Run() {
+  return RespondNow(Error("Not implemented"));
+}
+
+VirtualKeyboardPrivateDeleteClipboardItemFunction ::
+    ~VirtualKeyboardPrivateDeleteClipboardItemFunction() = default;
+
 VirtualKeyboardAPI::VirtualKeyboardAPI(content::BrowserContext* context) {
   delegate_ =
       ExtensionsAPIClient::Get()->CreateVirtualKeyboardDelegate(context);

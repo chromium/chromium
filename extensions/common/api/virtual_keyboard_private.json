@@ -88,6 +88,26 @@
             "description": "The bounds of the virtual keyboard after changing mode"
           }
         }
+      },
+      {
+        "id": "ClipboardItem",
+        "type" : "object",
+        "properties": {
+          "id" : {
+            "type": "string",
+            "description": "The unique id which identifies this clipboard item."
+          },
+          "imageData": {
+            "type": "string",
+            "optional": true,
+            "description": "The image data associated with this item."
+          },
+          "textData": {
+            "type": "string",
+            "optional": true,
+            "description": "The text data associated with this item."
+          }
+        }
       }
     ],
     "functions": [
@@ -303,6 +323,80 @@
             "$ref": "Bounds"
           }
         ]
+      },
+      {
+        "name": "getClipboardHistory",
+        "type": "function",
+        "description": "Get the clipboard history",
+        "parameters": [
+          {
+            "name": "options",
+            "type": "object",
+            "properties": {
+              "itemIds": {
+                "type": "array",
+                "items": {"type": "string"},
+                "optional": true,
+                "description": "A filter represented as a list of clipboard item ids. getClipboardHistory will only return the items in this list. If this list is empty, getClipboardHistory will return all clipboard items in the history."
+              }
+            }
+          },
+          {
+            "type": "function",
+            "name": "callback",
+            "description": "Called when querying the ClipboardHistory is complete.",
+            "parameters": [
+              {
+                "name": "clipboardHistory",
+                "type": "array",
+                "description": "List of clipboard items corresponding to the requested items (or everything if 'itemIds' was not specified).",
+                "items": {"$ref": "ClipboardItem"}
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "pasteClipboardItem",
+        "type": "function",
+        "description": "Pastes a clipboard item from the clipboard history.",
+        "parameters": [
+          {
+            "name": "itemId",
+            "type": "string",
+            "description": "The unique id which identifies this clipboard item.",
+            "parameters": [
+              {
+                "type": "function",
+                "name": "callback",
+                "optional": true,
+                "description": "Called when pasting the clipboard item is complete.",
+                "parameters": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "deleteClipboardItem",
+        "type": "function",
+        "description": "Deletes a clipboard item from the clipboard history.",
+        "parameters": [
+          {
+            "name": "itemId",
+            "type": "string",
+            "description": "The unique id which identifies this clipboard item.",
+            "parameters": [
+              {
+                "type": "function",
+                "name": "callback",
+                "optional": true,
+                "description": "Called when deleting the clipboard item is complete.",
+                "parameters": []
+              }
+            ]
+          }
+        ]
       }
     ],
     "events": [
@@ -332,6 +426,31 @@
             "name": "config",
             "description": "The virtual keyboard config",
             "$ref": "KeyboardConfig"
+          }
+        ]
+      },
+      {
+        "name": "onClipboardHistoryChanged",
+        "type": "funciton",
+        "description": "Fired when the list of items in the clipboard history changes.",
+        "parameters": [
+          {
+            "name": "itemIds",
+            "type": "array",
+            "description": "A list of ids for all current items in the clipboard history.",
+            "items": {"type": "string"}
+          }
+        ]
+      },
+      {
+        "name": "onClipboardItemUpdated",
+        "type": "function",
+        "description": "Fired when the data in a specific clipboard item is updated (mainly used for sending updated rendered html image).",
+        "parameters": [
+          {
+            "name": "clipboardHistoryItem",
+            "description": "An existing clipboard history item with changed data",
+            "$ref": "ClipboardItem"
           }
         ]
       }

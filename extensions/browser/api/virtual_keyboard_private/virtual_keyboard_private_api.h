@@ -247,6 +247,48 @@ class VirtualKeyboardPrivateSetWindowBoundsInScreenFunction
   ResponseAction Run() override;
 };
 
+class VirtualKeyboardPrivateGetClipboardHistoryFunction
+    : public VirtualKeyboardPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("virtualKeyboardPrivate.getClipboardHistory",
+                             VIRTUALKEYBOARDPRIVATE_GETCLIPBOARDHISTORY)
+
+ protected:
+  ~VirtualKeyboardPrivateGetClipboardHistoryFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnGetClipboardHistory(base::Value results);
+};
+
+class VirtualKeyboardPrivatePasteClipboardItemFunction
+    : public VirtualKeyboardPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("virtualKeyboardPrivate.pasteClipboardItem",
+                             VIRTUALKEYBOARDPRIVATE_PASTECLIPBOARDITEM)
+
+ protected:
+  ~VirtualKeyboardPrivatePasteClipboardItemFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class VirtualKeyboardPrivateDeleteClipboardItemFunction
+    : public VirtualKeyboardPrivateFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("virtualKeyboardPrivate.deleteClipboardItem",
+                             VIRTUALKEYBOARDPRIVATE_DELETECLIPBOARDITEM)
+
+ protected:
+  ~VirtualKeyboardPrivateDeleteClipboardItemFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class VirtualKeyboardDelegate;
 
 class VirtualKeyboardAPI : public BrowserContextKeyedAPI {
