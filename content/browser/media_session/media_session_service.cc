@@ -13,14 +13,14 @@
 #include "services/media_session/media_session_service_impl.h"
 #include "services/media_session/public/cpp/features.h"
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "services/media_session/public/cpp/media_session_service.h"
-#endif  // BUILDFLAG(IS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace content {
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace {
 
 class LacrosMediaSessionServiceImpl
@@ -64,12 +64,12 @@ class LacrosMediaSessionServiceImpl
 };
 
 }  // namespace
-#endif  // BUILDFLAG(IS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 media_session::MediaSessionService& GetMediaSessionService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
   if (lacros_chrome_service &&
       lacros_chrome_service->IsMediaSessionControllerAvailable() &&
@@ -78,7 +78,7 @@ media_session::MediaSessionService& GetMediaSessionService() {
     static base::NoDestructor<LacrosMediaSessionServiceImpl> service;
     return *service;
   }
-#endif  // BUILDFLAG(IS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   static base::NoDestructor<media_session::MediaSessionServiceImpl> service;
   return *service;
 }

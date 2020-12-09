@@ -590,7 +590,8 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 // TODO(crbug.com/1147911) Android Lollipop has a problem with capturing
 // screenshot.
 // TODO(crbug.com/1156767) Flaky on linux-lacros-tester-rel
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown \
   DISABLED_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown
 #else

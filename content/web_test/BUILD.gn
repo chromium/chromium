@@ -153,6 +153,7 @@ static_library("web_test_browser") {
   deps = [
     ":web_test_common",
     "//base",
+    "//build:chromeos_buildflags",
     "//cc/base",
     "//cc/paint",
     "//components/download/content/factory",

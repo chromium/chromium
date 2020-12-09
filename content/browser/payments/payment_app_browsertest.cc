@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest, MAYBE_AbortPayment) {
 }
 
 // TODO(https://crbug.com/869790) Flakes on linux-chromeos-dbg
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_CanMakePayment DISABLED_CanMakePayment
 #else
 #define MAYBE_CanMakePayment CanMakePayment
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest,
 }
 
 // TODO(https://crbug.com/869790) Flakes on linux-chromeos-dbg
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_PaymentAppInvocation DISABLED_PaymentAppInvocation
 #else
 #define MAYBE_PaymentAppInvocation PaymentAppInvocation
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(PaymentAppBrowserTest, MAYBE_PaymentAppInvocation) {
 }
 
 // TODO(https://crbug.com/869790) Flakes on linux-chromeos-dbg
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_PaymentAppOpenWindowFailed DISABLED_PaymentAppOpenWindowFailed
 #else
 #define MAYBE_PaymentAppOpenWindowFailed PaymentAppOpenWindowFailed

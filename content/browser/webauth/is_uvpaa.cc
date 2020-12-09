@@ -18,7 +18,7 @@
 #include "device/fido/win/webauthn_api.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "device/fido/cros/authenticator.h"
 #endif
 

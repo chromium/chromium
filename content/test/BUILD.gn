@@ -627,7 +627,7 @@ static_library("test_support") {
     ]
   }
 
-  if (chromeos_is_browser_only) {
+  if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]
   }
 
@@ -1411,7 +1411,7 @@ test("content_browsertests") {
     ]
   }
 
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     sources +=
         [ "../browser/media/media_keys_listener_manager_impl_browsertest.cc" ]
   }
@@ -1560,7 +1560,7 @@ test("content_browsertests") {
     data += [ "$root_out_dir/Content Shell.app/" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chromeos/audio",
       "//chromeos/dbus/audio",
@@ -2355,7 +2355,7 @@ test("content_unittests") {
       "../browser/media/capture/desktop_capture_device_unittest.cc",
       "../browser/media/capture/frame_sink_video_capture_device_unittest.cc",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "../browser/media/capture/slow_capture_overlay_chromeos_unittest.cc",
       ]
@@ -2404,7 +2404,7 @@ test("content_unittests") {
       "IOSurface.framework",
     ]
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chromeos/audio",
       "//chromeos/dbus/audio",

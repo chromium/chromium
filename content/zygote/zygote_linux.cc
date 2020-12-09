@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/set_process_title.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/public/common/content_descriptors.h"
@@ -122,7 +123,7 @@ bool Zygote::ProcessRequests() {
     bool r = base::UnixDomainSocket::SendMsg(
         kZygoteSocketPairFd, kZygoteHelloMessage, sizeof(kZygoteHelloMessage),
         std::vector<int>());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     LOG_IF(WARNING, !r) << "Sending zygote magic failed";
     // Exit normally on chromeos because session manager may send SIGTERM
     // right after the process starts and it may fail to send zygote magic

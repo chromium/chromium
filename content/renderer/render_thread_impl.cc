@@ -44,6 +44,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/histograms.h"
 #include "cc/base/switches.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -1104,11 +1105,13 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
           kGpuStreamPriorityMedia);
 
   const bool enable_video_accelerator =
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
       base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux) &&
 #else
       !cmd_line->HasSwitch(switches::kDisableAcceleratedVideoDecode) &&
-#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
       (gpu_channel_host->gpu_feature_info()
            .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] ==
        gpu::kGpuFeatureStatusEnabled);

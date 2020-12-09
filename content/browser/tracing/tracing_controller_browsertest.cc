@@ -497,7 +497,8 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest, MAYBE_DoubleStopTracing) {
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || \
-    (BUILDFLAG(IS_CHROMECAST) && defined(OS_LINUX))
+    (BUILDFLAG(IS_CHROMECAST) &&  \
+     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)))
 #define MAYBE_SystemTraceEvents SystemTraceEvents
 #else
 #define MAYBE_SystemTraceEvents DISABLED_SystemTraceEvents

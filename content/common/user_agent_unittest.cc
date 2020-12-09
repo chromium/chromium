@@ -5,6 +5,7 @@
 #include "content/public/common/user_agent.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -73,7 +74,7 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
         /*cpu_type=*/"CPU TYPE",
         /*expected_os_cpu_info=*/"CPU TYPE Mac OS X VERSION",
     },
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
     {
         /*os_version=*/"4537.56.0",
         /*cpu_type=*/"armv7l",

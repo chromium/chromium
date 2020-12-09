@@ -23,6 +23,7 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/service/main/viz_main_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
@@ -140,7 +141,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 
 #if BUILDFLAG(USE_VAAPI)
 // TODO(andrescj) Make this work on LaCrOS, not just ASH.
-#if BUILDFLAG(IS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     media::VaapiWrapper::PreSandboxInitialization();
 #else  // For any non-ash chrome (ie: linux or lacros) that can support vaapi.
     if (!gpu_prefs.disable_accelerated_video_decode)

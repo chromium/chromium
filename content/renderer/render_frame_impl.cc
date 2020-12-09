@@ -2766,7 +2766,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
       return new PepperWebPluginImpl(pepper_module.get(), params, this);
     }
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   LOG(WARNING) << "Pepper module/plugin creation failed.";
 #endif
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -4742,7 +4742,7 @@ blink::WebString RenderFrameImpl::UserAgentOverride() {
                                    .user_agent_override.ua_string_override);
   }
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(https://crbug.com/1114866): Implement proper L3 CDM support for
   // Lacros. This is scheduled for Q2 2021. After that we can remove this hack.
   WebSecurityOrigin frame_origin = frame_->GetDocument().GetSecurityOrigin();

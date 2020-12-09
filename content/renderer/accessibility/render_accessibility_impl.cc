@@ -24,6 +24,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 #include "content/renderer/accessibility/ax_image_annotator.h"
@@ -220,7 +221,7 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   settings->SetAriaModalPrunesAXTree(true);
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not ignore SVG grouping (<g>) elements on ChromeOS, which is needed so
   // Select-to-Speak can read SVG text nodes in natural reading order.
   settings->SetAccessibilityIncludeSvgGElement(true);
@@ -232,7 +233,7 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   // UI for a select element directly accessible. Disable by default on
   // Chrome OS, but some tests may override.
   bool disable_ax_menu_list = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   disable_ax_menu_list = true;
 #endif
   auto* command_line = base::CommandLine::ForCurrentProcess();

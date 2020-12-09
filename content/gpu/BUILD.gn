@@ -135,7 +135,8 @@ target(link_target_type, "gpu_sources") {
   }
 
   # Use DRI on desktop Linux builds.
-  if (current_cpu != "s390x" && current_cpu != "ppc64" && is_linux &&
+  if (current_cpu != "s390x" && current_cpu != "ppc64" &&
+      (is_linux || is_chromeos_lacros) &&
       (!is_chromecast || is_cast_desktop_build)) {
     configs += [ "//build/config/linux/dri" ]
   }

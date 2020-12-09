@@ -14,6 +14,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "content/child/child_thread_impl.h"
 #include "content/public/common/content_features.h"
@@ -416,7 +417,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (CheckContextLost())
     return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
-#if defined(OS_CHROMEOS) && defined(USE_OZONE)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_OZONE)
   // TODO(sugoi): This configuration is currently used only for testing ChromeOS
   // on Linux and doesn't support hardware acceleration. OSMesa did not support
   // any hardware acceleration here, so this was never an issue, but SwiftShader

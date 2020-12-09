@@ -43,6 +43,7 @@ source_set("ppapi_plugin_sources") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/discardable_memory/client",
     "//content:export",
     "//content/child",

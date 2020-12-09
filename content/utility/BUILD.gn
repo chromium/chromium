@@ -74,7 +74,7 @@ source_set("utility") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chromeos/services/ime:sandbox_hook",
       "//chromeos/services/tts:sandbox_hook",

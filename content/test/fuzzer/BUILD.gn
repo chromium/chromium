@@ -4,6 +4,7 @@
 
 # Fuzzers for content/ components.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -276,7 +277,7 @@ fuzzer_test("indexed_db_leveldb_coding_decodeidbkeypath_fuzzer") {
 
 # Fuzzer only supports linux. As we use a `V4L2CaptureDevice`, which is only
 # usable on linux through `VideoCaptureDeviceFactoryLinux`.
-if (is_linux) {
+if (is_linux || is_chromeos_lacros) {
   mojolpm_fuzzer_test("video_capture_host_mojolpm_fuzzer") {
     sources = [ "video_capture_host_mojolpm_fuzzer.cc" ]
 

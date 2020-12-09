@@ -23,6 +23,7 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/skia_utils.h"
@@ -57,10 +58,10 @@
 #include "third_party/blink/public/web/web_view.h"
 #endif  // OS_MAC
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
 #include "chromeos/system/core_scheduling.h"
-#endif  // OS_CHROMEOS
+#endif  // IS_CHROMEOS_ASH
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/renderer/pepper/pepper_plugin_registry.h"
@@ -116,7 +117,7 @@ int RendererMain(const MainFunctionParams& parameters) {
   base::mac::ScopedNSAutoreleasePool* pool = parameters.autorelease_pool;
 #endif  // OS_MAC
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // As Zygote process starts up earlier than browser process gets its own
   // locale (at login time for Chrome OS), we have to set the ICU default
   // locale for renderer process here.
@@ -213,7 +214,7 @@ int RendererMain(const MainFunctionParams& parameters) {
     new RenderThreadImpl(run_loop.QuitClosure(),
                          std::move(main_thread_scheduler));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Once the sandbox has been entered and initialization of render threads
     // complete we will transfer FDs to the browser, or close them on failure.
     // This should always be called because it will also transfer the errno that

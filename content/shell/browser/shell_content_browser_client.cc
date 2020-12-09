@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/login_delegate.h"
@@ -60,7 +61,7 @@
 #include "content/shell/android/shell_descriptors.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/public/browser/context_factory.h"
 #endif
 

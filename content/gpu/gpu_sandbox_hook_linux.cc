@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/set_process_title.h"
 #include "content/public/common/content_switches.h"
 #include "media/gpu/buildflags.h"
@@ -41,7 +42,7 @@ namespace content {
 namespace {
 
 inline bool IsChromeOS() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;
@@ -80,7 +81,7 @@ inline bool UseLibV4L2() {
 #endif
 }
 
-#if defined(OS_CHROMEOS) && defined(__aarch64__)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(__aarch64__)
 static const char kLibGlesPath[] = "/usr/lib64/libGLESv2.so.2";
 static const char kLibEglPath[] = "/usr/lib64/libEGL.so.1";
 static const char kLibMaliPath[] = "/usr/lib64/libmali.so";

@@ -13,6 +13,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_client.h"
@@ -31,7 +32,7 @@
 #include "services/network/network_sandbox_hook_linux.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/services/ime/ime_sandbox_hook.h"
 #include "chromeos/services/tts/tts_sandbox_hook.h"
 #endif
@@ -90,10 +91,10 @@ int UtilityMain(const MainFunctionParams& parameters) {
       sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
   if (parameters.zygote_child ||
       sandbox_type == sandbox::policy::SandboxType::kNetwork ||
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type == sandbox::policy::SandboxType::kIme ||
       sandbox_type == sandbox::policy::SandboxType::kTts ||
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type == sandbox::policy::SandboxType::kAudio ||
       sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition) {
     sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
@@ -104,12 +105,12 @@ int UtilityMain(const MainFunctionParams& parameters) {
     else if (sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition)
       pre_sandbox_hook =
           base::BindOnce(&speech::SpeechRecognitionPreSandboxHook);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     else if (sandbox_type == sandbox::policy::SandboxType::kIme)
       pre_sandbox_hook = base::BindOnce(&chromeos::ime::ImePreSandboxHook);
     else if (sandbox_type == sandbox::policy::SandboxType::kTts)
       pre_sandbox_hook = base::BindOnce(&chromeos::tts::TtsPreSandboxHook);
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     sandbox::policy::Sandbox::Initialize(
         sandbox_type, std::move(pre_sandbox_hook),

@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/ax_serialization_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/accessibility/ax_image_annotator.h"
@@ -980,7 +981,7 @@ void BlinkAXTreeSource::SerializeHTMLAttributes(WebAXObject src,
 
 // TODO(nektar): Turn off kHTMLAccessibilityMode for automation and Mac
 // and remove ifdef.
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (dst->role == ax::mojom::Role::kMath && element.InnerHTML().length()) {
     TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kInnerHtml,
                                   element.InnerHTML().Utf8());

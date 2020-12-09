@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
@@ -37,7 +38,7 @@
 #include "ui/gfx/win/direct_write.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/file_util.h"
 #endif
 
@@ -101,7 +102,7 @@ int PpapiPluginMain(const MainFunctionParams& parameters) {
 #endif
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Specifies $HOME explicitly because some plugins rely on $HOME but
   // no other part of Chrome OS uses that.  See crbug.com/335290.
   base::FilePath homedir;
