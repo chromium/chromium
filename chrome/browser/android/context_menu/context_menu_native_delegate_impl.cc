@@ -96,11 +96,8 @@ void OnRetrieveImageForContextMenu(
 
 ContextMenuNativeDelegateImpl::ContextMenuNativeDelegateImpl(
     content::WebContents* const web_contents,
-    content::ContextMenuParams* const context_menu_params,
-    content::RenderFrameHost* const render_frame_host)
-    : web_contents_(web_contents),
-      context_menu_params_(context_menu_params),
-      render_frame_host_(render_frame_host) {}
+    content::ContextMenuParams* const context_menu_params)
+    : web_contents_(web_contents), context_menu_params_(context_menu_params) {}
 
 void ContextMenuNativeDelegateImpl::StartDownload(
     JNIEnv* env,
@@ -113,50 +110,57 @@ void ContextMenuNativeDelegateImpl::StartDownload(
 
 void ContextMenuNativeDelegateImpl::SearchForImage(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!render_frame_host_)
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jrender_frame_host) {
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
+  if (!render_frame_host)
     return;
 
   CoreTabHelper::FromWebContents(web_contents_)
-      ->SearchByImageInNewTab(render_frame_host_,
-                              context_menu_params_->src_url);
+      ->SearchByImageInNewTab(render_frame_host, context_menu_params_->src_url);
 }
 
 void ContextMenuNativeDelegateImpl::RetrieveImageForShare(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jrender_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px,
     jint jimage_format) {
   RetrieveImageInternal(env, base::BindOnce(&OnRetrieveImageForShare),
-                        jcallback, max_width_px, max_height_px,
-                        ToChromeMojomImageFormat(jimage_format));
+                        jrender_frame_host, jcallback, max_width_px,
+                        max_height_px, ToChromeMojomImageFormat(jimage_format));
 }
 
 void ContextMenuNativeDelegateImpl::RetrieveImageForContextMenu(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& jrender_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px) {
   // For context menu, Image needs to be PNG for receiving transparency pixels.
   RetrieveImageInternal(env, base::BindOnce(&OnRetrieveImageForContextMenu),
-                        jcallback, max_width_px, max_height_px,
-                        chrome::mojom::ImageFormat::PNG);
+                        jrender_frame_host, jcallback, max_width_px,
+                        max_height_px, chrome::mojom::ImageFormat::PNG);
 }
 
 void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
     JNIEnv* env,
     ImageRetrieveCallback retrieve_callback,
+    const JavaParamRef<jobject>& jrender_frame_host,
     const JavaParamRef<jobject>& jcallback,
     jint max_width_px,
     jint max_height_px,
     chrome::mojom::ImageFormat image_format) {
-  if (!render_frame_host_)
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
+  if (!render_frame_host)
     return;
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
-  render_frame_host_->GetRemoteAssociatedInterfaces()->GetInterface(
+  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
 
   // Bind the InterfacePtr into the callback so that it's kept alive
@@ -173,16 +177,13 @@ void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
 static jlong JNI_ContextMenuNativeDelegateImpl_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jobject>& jcontext_menu_params,
-    const JavaParamRef<jobject>& jrender_frame_host) {
+    const JavaParamRef<jobject>& jcontext_menu_params) {
   if (jweb_contents.is_null())
     return reinterpret_cast<intptr_t>(nullptr);
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
   auto* params =
       context_menu::ContextMenuParamsFromJavaObject(jcontext_menu_params);
-  auto* render_frame_host =
-      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-  return reinterpret_cast<intptr_t>(new ContextMenuNativeDelegateImpl(
-      web_contents, params, render_frame_host));
+  return reinterpret_cast<intptr_t>(
+      new ContextMenuNativeDelegateImpl(web_contents, params));
 }

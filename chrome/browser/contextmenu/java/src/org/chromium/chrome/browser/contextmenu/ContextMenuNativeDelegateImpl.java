@@ -20,6 +20,8 @@ import org.chromium.content_public.browser.WebContents;
 class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
     private static final int MAX_SHARE_DIMEN_PX = 2048;
 
+    private final RenderFrameHost mRenderFrameHost;
+
     private long mNativePtr;
 
     /**
@@ -45,8 +47,8 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
 
     public ContextMenuNativeDelegateImpl(WebContents webContents, RenderFrameHost renderFrameHost,
             ContextMenuParams contextMenuParams) {
-        mNativePtr = ContextMenuNativeDelegateImplJni.get().init(
-                webContents, contextMenuParams, renderFrameHost);
+        mRenderFrameHost = renderFrameHost;
+        mNativePtr = ContextMenuNativeDelegateImplJni.get().init(webContents, contextMenuParams);
     }
 
     @Override
@@ -67,8 +69,8 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
             imageRetrieveCallback.onResult(createImageCallbackResultForTesting());
         } else {
             ContextMenuNativeDelegateImplJni.get().retrieveImageForShare(mNativePtr,
-                    ContextMenuNativeDelegateImpl.this, imageRetrieveCallback, MAX_SHARE_DIMEN_PX,
-                    MAX_SHARE_DIMEN_PX, imageFormat);
+                    ContextMenuNativeDelegateImpl.this, mRenderFrameHost, imageRetrieveCallback,
+                    MAX_SHARE_DIMEN_PX, MAX_SHARE_DIMEN_PX, imageFormat);
         }
     }
 
@@ -77,8 +79,9 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
             int maxWidthPx, int maxHeightPx, Callback<Bitmap> callback) {
         if (mNativePtr == 0) return;
 
-        ContextMenuNativeDelegateImplJni.get().retrieveImageForContextMenu(
-                mNativePtr, ContextMenuNativeDelegateImpl.this, callback, maxWidthPx, maxHeightPx);
+        ContextMenuNativeDelegateImplJni.get().retrieveImageForContextMenu(mNativePtr,
+                ContextMenuNativeDelegateImpl.this, mRenderFrameHost, callback, maxWidthPx,
+                maxHeightPx);
     }
 
     @Override
@@ -94,7 +97,7 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
         if (mNativePtr == 0) return;
 
         ContextMenuNativeDelegateImplJni.get().searchForImage(
-                mNativePtr, ContextMenuNativeDelegateImpl.this);
+                mNativePtr, ContextMenuNativeDelegateImpl.this, mRenderFrameHost);
     }
 
     /**
@@ -124,17 +127,17 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
 
     @NativeMethods
     interface Natives {
-        long init(WebContents webContents, ContextMenuParams contextMenuParams,
-                RenderFrameHost renderFrameHost);
+        long init(WebContents webContents, ContextMenuParams contextMenuParams);
         void retrieveImageForShare(long nativeContextMenuNativeDelegateImpl,
-                ContextMenuNativeDelegateImpl caller, Callback<ImageCallbackResult> callback,
-                int maxWidthPx, int maxHeightPx, @ContextMenuImageFormat int imageFormat);
+                ContextMenuNativeDelegateImpl caller, RenderFrameHost renderFrameHost,
+                Callback<ImageCallbackResult> callback, int maxWidthPx, int maxHeightPx,
+                @ContextMenuImageFormat int imageFormat);
         void retrieveImageForContextMenu(long nativeContextMenuNativeDelegateImpl,
-                ContextMenuNativeDelegateImpl caller, Callback<Bitmap> callback, int maxWidthPx,
-                int maxHeightPx);
+                ContextMenuNativeDelegateImpl caller, RenderFrameHost renderFrameHost,
+                Callback<Bitmap> callback, int maxWidthPx, int maxHeightPx);
         void startDownload(long nativeContextMenuNativeDelegateImpl,
                 ContextMenuNativeDelegateImpl caller, boolean isLink);
-        void searchForImage(
-                long nativeContextMenuNativeDelegateImpl, ContextMenuNativeDelegateImpl caller);
+        void searchForImage(long nativeContextMenuNativeDelegateImpl,
+                ContextMenuNativeDelegateImpl caller, RenderFrameHost renderFrameHost);
     }
 }

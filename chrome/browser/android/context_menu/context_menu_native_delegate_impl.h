@@ -25,18 +25,19 @@ class ContextMenuNativeDelegateImpl {
  public:
   explicit ContextMenuNativeDelegateImpl(
       content::WebContents* const web_contents,
-      content::ContextMenuParams* const context_menu_params,
-      content::RenderFrameHost* const render_frame_host);
+      content::ContextMenuParams* const context_menu_params);
 
   void RetrieveImageForContextMenu(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jrender_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px);
   void RetrieveImageForShare(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jrender_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px,
@@ -44,8 +45,10 @@ class ContextMenuNativeDelegateImpl {
   void StartDownload(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj,
                      jboolean jis_link);
-  void SearchForImage(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj);
+  void SearchForImage(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jrender_frame_host);
 
  protected:
   using ImageRetrieveCallback = base::OnceCallback<void(
@@ -60,6 +63,7 @@ class ContextMenuNativeDelegateImpl {
   void RetrieveImageInternal(
       JNIEnv* env,
       ImageRetrieveCallback retrieve_callback,
+      const base::android::JavaParamRef<jobject>& jrender_frame_host,
       const base::android::JavaParamRef<jobject>& jcallback,
       jint max_width_px,
       jint max_height_px,
@@ -67,7 +71,6 @@ class ContextMenuNativeDelegateImpl {
 
   content::WebContents* const web_contents_;
   content::ContextMenuParams* const context_menu_params_;
-  content::RenderFrameHost* const render_frame_host_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXT_MENU_CONTEXT_MENU_NATIVE_DELEGATE_IMPL_H_
