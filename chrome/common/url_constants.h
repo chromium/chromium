@@ -381,6 +381,9 @@ extern const char kTabletModeGesturesLearnMoreURL[];
 
 // The URL for the help center article about Wi-Fi sync.
 extern const char kWifiSyncLearnMoreURL[];
+
+// The URL for contacts management in Nearby Share feature.
+extern const char kNearbyShareManageContactsURL[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)

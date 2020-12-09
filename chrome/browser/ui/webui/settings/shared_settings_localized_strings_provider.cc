@@ -32,6 +32,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/common/url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace settings {
@@ -255,6 +256,8 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareEditDeviceName", IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME},
       {"nearbyShareDeviceNameAriaDescription",
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION},
+      {"nearbyShareManageContactsRowTitle",
+       IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_ROW_TITLE},
       {"nearbyShareEditDataUsage", IDS_SETTINGS_NEARBY_SHARE_EDIT_DATA_USAGE},
       {"nearbyShareUpdateDataUsage",
        IDS_SETTINGS_NEARBY_SHARE_UPDATE_DATA_USAGE},
@@ -286,6 +289,8 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
 
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
+  html_source->AddString("nearbyShareManageContactsUrl",
+                         chrome::kNearbyShareManageContactsURL);
   html_source->AddBoolean(
       "nearbySharingFeatureFlag",
       base::FeatureList::IsEnabled(features::kNearbySharing));

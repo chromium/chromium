@@ -59,6 +59,12 @@ Polymer({
       value: false,
     },
 
+    /** @private */
+    manageContactsUrl_: {
+      type: String,
+      value: () => loadTimeData.getString('nearbyShareManageContactsUrl')
+    },
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -146,6 +152,23 @@ Polymer({
    */
   onReceiveDialogClose_(event) {
     this.showReceiveDialog_ = false;
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onManageContactsTap_(event) {
+    window.open(this.manageContactsUrl_);
+  },
+
+  /**
+   * @private
+   * @return {string} Sublabel for manage contacts row.
+   */
+  getManageContactsSubLabel_() {
+    // Remove the protocol part of the contacts url.
+    return this.manageContactsUrl_.replace(/(^\w+:|^)\/\//, '');
   },
 
   /**

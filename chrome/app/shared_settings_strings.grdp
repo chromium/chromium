@@ -114,6 +114,9 @@
   <message name="IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION" desc="Description for screen readers, not displayed in UI, specifying the current device name which is shown to other devices for the Nearby Share feature." is_accessibility_with_no_ui="true">
     Current device name is <ph name="DEVICE_NAME">$1<ex>Michael's Chromebook</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_ROW_TITLE" desc="Text for row in settings that allows user to manage contacts for the Nearby Share feature.">
+    Contacts
+  </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_DATA_USAGE" desc="Label for the button that brings up a dialog to allow a user to edit the data usage setting for the Nearby Share feature.">
     Edit
   </message>

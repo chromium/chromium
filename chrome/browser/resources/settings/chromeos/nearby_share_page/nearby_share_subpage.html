@@ -1,5 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
@@ -101,6 +102,10 @@
           id="visibilityDialog" on-close="onVisibilityDialogClose_">
       </nearby-share-contact-visibility-dialog>
     </template>
+    <cr-link-row class="hr" external on-click="onManageContactsTap_"
+        label="$i18n{nearbyShareManageContactsRowTitle}"
+        sub-label="[[getManageContactsSubLabel_(manageContactsUrl_)]]">
+    </cr-link-row>
     <div class="settings-box two-line">
       <div class="start">
         <div aria-hidden="true">

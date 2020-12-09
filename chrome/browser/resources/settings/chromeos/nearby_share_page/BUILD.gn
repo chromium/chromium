@@ -273,8 +273,10 @@ js_library("nearby_share_subpage.m") {
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",
+    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data",
   ]
   extra_deps = [ ":nearby_share_subpage_module" ]
 }
