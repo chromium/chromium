@@ -28,6 +28,7 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
  private:
   friend class AmbientAshTestBase;

@@ -474,9 +474,6 @@ TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnEvents) {
       gfx::Vector2d(), gfx::PointF(), gfx::PointF(), base::TimeTicks(),
       ui::EF_NONE, ui::EF_NONE));
 
-  events.emplace_back(std::make_unique<ui::KeyEvent>(
-      ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
-
   events.emplace_back(std::make_unique<ui::ScrollEvent>(
       ui::ET_SCROLL, gfx::PointF(), gfx::PointF(), base::TimeTicks(),
       ui::EF_NONE, /*x_offset=*/0.0f,
@@ -509,15 +506,49 @@ TEST_F(AmbientControllerTest, ShouldDismissAndThenComesBack) {
   FastForwardTiny();
   EXPECT_TRUE(WidgetsVisible());
 
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_1,
-                         ui::EF_NONE);
-  ambient_controller()->OnUserActivity(&key_event);
+  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             base::TimeTicks(), ui::EF_NONE, ui::EF_NONE);
+  ambient_controller()->OnUserActivity(&mouse_event);
   FastForwardTiny();
   EXPECT_TRUE(GetContainerViews().empty());
 
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
   EXPECT_TRUE(WidgetsVisible());
+}
+
+TEST_F(AmbientControllerTest, ShouldDismissContainerViewOnKeyEvent) {
+  // Without user interaction, should show ambient mode.
+  ambient_controller()->ShowUi();
+  EXPECT_FALSE(WidgetsVisible());
+  FastForwardTiny();
+  EXPECT_TRUE(WidgetsVisible());
+  CloseAmbientScreen();
+
+  // Before ambient widget is created, if there is a user interaction, will exit
+  // ambient mode.
+  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_1,
+                         ui::EF_NONE);
+
+  ambient_controller()->ShowUi();
+  EXPECT_FALSE(WidgetsVisible());
+  ambient_controller()->OnUserActivity(&key_event);
+  FastForwardTiny();
+  EXPECT_FALSE(WidgetsVisible());
+
+  // After ambient widget is created, OnUserActivity() should ignore key event.
+  ambient_controller()->ShowUi();
+  FastForwardTiny();
+  EXPECT_TRUE(WidgetsVisible());
+  ambient_controller()->OnUserActivity(&key_event);
+  FastForwardTiny();
+  EXPECT_TRUE(WidgetsVisible());
+
+  // General key press will exit ambient mode.
+  // Simulate key press to close the widget.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->PressKey(ui::VKEY_A, /*flags=*/0);
+  EXPECT_FALSE(WidgetsVisible());
 }
 
 TEST_F(AmbientControllerTest,
@@ -706,8 +737,7 @@ TEST_F(AmbientControllerTest, ShowsOnMultipleDisplays) {
   EXPECT_EQ(GetContainerViews().size(), 2u);
   // Check that each root controller has an ambient widget.
   for (auto* ctrl : RootWindowController::root_window_controllers())
-    EXPECT_TRUE(ctrl->ambient_widget_for_testing() &&
-                ctrl->ambient_widget_for_testing()->IsVisible());
+    EXPECT_TRUE(ctrl->ambient_widget() && ctrl->ambient_widget()->IsVisible());
 }
 
 TEST_F(AmbientControllerTest, RespondsToDisplayAdded) {
@@ -726,8 +756,7 @@ TEST_F(AmbientControllerTest, RespondsToDisplayAdded) {
   EXPECT_EQ(screen->GetNumDisplays(), 2);
   EXPECT_EQ(GetContainerViews().size(), 2u);
   for (auto* ctrl : RootWindowController::root_window_controllers())
-    EXPECT_TRUE(ctrl->ambient_widget_for_testing() &&
-                ctrl->ambient_widget_for_testing()->IsVisible());
+    EXPECT_TRUE(ctrl->ambient_widget() && ctrl->ambient_widget()->IsVisible());
 }
 
 TEST_F(AmbientControllerTest, HandlesDisplayRemoved) {

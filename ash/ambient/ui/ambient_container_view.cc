@@ -60,6 +60,11 @@ void AmbientContainerView::Layout() {
   View::Layout();
 }
 
+bool AmbientContainerView::OnKeyPressed(const ui::KeyEvent& event) {
+  delegate_->OnViewEvents();
+  return true;
+}
+
 void AmbientContainerView::Init() {
   // TODO(b/139954108): Choose a better dark mode theme color.
   SetBackground(views::CreateSolidBackground(SK_ColorBLACK));

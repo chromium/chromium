@@ -391,7 +391,7 @@ AmbientPhotoController* AmbientAshTestBase::photo_controller() {
 std::vector<AmbientContainerView*> AmbientAshTestBase::GetContainerViews() {
   std::vector<AmbientContainerView*> result;
   for (auto* ctrl : RootWindowController::root_window_controllers()) {
-    auto* widget = ctrl->ambient_widget_for_testing();
+    auto* widget = ctrl->ambient_widget();
     if (widget) {
       auto* view = widget->GetContentsView();
       DCHECK(view && view->GetID() == kAmbientContainerView);
@@ -402,8 +402,7 @@ std::vector<AmbientContainerView*> AmbientAshTestBase::GetContainerViews() {
 }
 
 AmbientContainerView* AmbientAshTestBase::GetContainerView() {
-  auto* widget =
-      Shell::GetPrimaryRootWindowController()->ambient_widget_for_testing();
+  auto* widget = Shell::GetPrimaryRootWindowController()->ambient_widget();
 
   if (widget) {
     auto* container_view = widget->GetContentsView();

@@ -27,6 +27,9 @@ class ASH_EXPORT AmbientViewDelegate {
   // Ambient Mode.
   virtual AmbientBackendModel* GetAmbientBackendModel() = 0;
 
+  // Invoked when user interacting with the ambient mode container view.
+  virtual void OnViewEvents() = 0;
+
   // Invoked when the photo transition animation completed.
   virtual void OnPhotoTransitionAnimationCompleted() = 0;
 };

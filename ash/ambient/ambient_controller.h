@@ -105,6 +105,9 @@ class ASH_EXPORT AmbientController
   // constructed.
   bool IsShown() const;
 
+  // Handles events on the ambient mode container view.
+  void OnViewEvents();
+
   void RequestAccessToken(
       AmbientAccessTokenController::AccessTokenCallback callback,
       bool may_refresh_token_on_lock = false);

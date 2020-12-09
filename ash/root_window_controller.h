@@ -226,7 +226,7 @@ class ASH_EXPORT RootWindowController {
   void CreateAmbientWidget();
   void CloseAmbientWidget(bool immediately);
 
-  views::Widget* ambient_widget_for_testing() { return ambient_widget_.get(); }
+  views::Widget* ambient_widget() { return ambient_widget_.get(); }
 
   // Returns accessibility panel layout manager for this root window.
   AccessibilityPanelLayoutManager* GetAccessibilityPanelLayoutManagerForTest();
