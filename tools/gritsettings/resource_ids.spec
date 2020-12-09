@@ -113,9 +113,9 @@
   "chrome/browser/resources/chromeos/cellular_setup/cellular_setup_resources.grd": {
     "structures": [1360],
   },
-  "chrome/browser/resources/chromeos/multidevice_internals/multidevice_internals_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/multidevice_internals/resources.grd": {
+    "META": {"sizes": {"includes": [35]}},
     "includes": [1370],
-    "structures": [1380],
   },
   "chrome/browser/resources/chromeos/multidevice_setup/multidevice_setup_resources.grd": {
     "structures": [1400],

@@ -19,13 +19,6 @@
 
 namespace chromeos {
 
-namespace {
-
-constexpr char kMultideviceInternalsGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/chromeos/multidevice_internals/";
-
-}  // namespace
-
 MultideviceInternalsUI::MultideviceInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   content::WebUIDataSource* html_source = content::WebUIDataSource::Create(
@@ -36,7 +29,7 @@ MultideviceInternalsUI::MultideviceInternalsUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kMultideviceInternalsResources,
                       kMultideviceInternalsResourcesSize),
-      kMultideviceInternalsGeneratedPath, IDR_MULTIDEVICE_INTERNALS_INDEX_HTML);
+      "", IDR_MULTIDEVICE_INTERNALS_INDEX_HTML);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
   web_ui->AddMessageHandler(
