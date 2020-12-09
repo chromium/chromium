@@ -66,6 +66,7 @@ cr.define('settings', function() {
     kParsePrincipalFailed: 18,
     kBadConfig: 19,
     kJailFailure: 20,
+    kKerberosDisabled: 21,
   };
 
   /**
