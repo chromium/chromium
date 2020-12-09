@@ -200,7 +200,7 @@ void UserManagerProfileDialog::ShowUnlockDialogWithProfilePath(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::Reason::REASON_UNLOCK, email);
   g_user_manager_view->SetSigninProfilePath(profile_path);
-  g_user_manager_view->ShowDialog(browser_context, email, url);
+  g_user_manager_view->ShowDialog(browser_context, url);
 }
 
 // static
@@ -213,7 +213,7 @@ void UserManagerProfileDialog::ShowForceSigninDialog(
   GURL url = signin::GetEmbeddedPromoURL(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT, true);
-  g_user_manager_view->ShowDialog(browser_context, std::string(), url);
+  g_user_manager_view->ShowDialog(browser_context, url);
 }
 
 void UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
@@ -224,7 +224,7 @@ void UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
   // so that the error page will show the error message that is assoicated with
   // the system profile.
   g_user_manager_view->SetSigninProfilePath(base::FilePath());
-  g_user_manager_view->ShowDialog(browser_context, std::string(),
+  g_user_manager_view->ShowDialog(browser_context,
                                   GURL(chrome::kChromeUISigninErrorURL));
 }
 
@@ -245,7 +245,6 @@ void UserManagerProfileDialog::HideDialog() {
 
 UserManagerView::UserManagerView()
     : web_view_(nullptr),
-      delegate_(nullptr),
       user_manager_started_showing_(base::Time()) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetHasWindowSizeControls(true);
@@ -281,27 +280,17 @@ void UserManagerView::OnSystemProfileCreated(
 }
 
 void UserManagerView::ShowDialog(content::BrowserContext* browser_context,
-                                 const std::string& email,
                                  const GURL& url) {
-  HideDialog();
-  // The dialog delegate will be deleted when the widget closes. The created
-  // WebView's lifetime is managed by the delegate.
-  delegate_ = new UserManagerProfileDialogDelegate(
-      this, std::make_unique<views::WebView>(browser_context), url);
-  gfx::NativeView parent = g_user_manager_view->GetWidget()->GetNativeView();
-  views::DialogDelegate::CreateDialogWidget(delegate_, nullptr, parent);
-  delegate_->GetWidget()->Show();
+  gfx::NativeView parent = GetWidget()->GetNativeView();
+  dialog_host_.ShowDialog(browser_context, url, parent);
 }
 
 void UserManagerView::HideDialog() {
-  if (delegate_) {
-    delegate_->CloseDialog();
-    DCHECK(!delegate_);
-  }
+  dialog_host_.HideDialog();
 }
 
-void UserManagerView::OnDialogDestroyed() {
-  delegate_ = nullptr;
+void UserManagerView::DisplayErrorMessage() {
+  dialog_host_.DisplayErrorMessage();
 }
 
 void UserManagerView::Init(Profile* system_profile, const GURL& url) {
@@ -408,11 +397,6 @@ void UserManagerView::WindowClosing() {
   // may have already opened a new instance).
   if (g_user_manager_view == this)
     g_user_manager_view = nullptr;
-}
-
-void UserManagerView::DisplayErrorMessage() {
-  if (delegate_)
-    delegate_->DisplayErrorMessage();
 }
 
 void UserManagerView::SetSigninProfilePath(const base::FilePath& profile_path) {

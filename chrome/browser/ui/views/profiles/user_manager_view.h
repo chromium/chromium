@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_host.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -49,14 +50,14 @@ class UserManagerView : public views::DialogDelegateView {
   // Hides the reauth dialog if it is showing.
   void HideDialog();
 
-  // Show a dialog where the user can auth the profile or see the auth error
-  // message.
-  void ShowDialog(content::BrowserContext* browser_context,
-                  const std::string& email,
-                  const GURL& url);
+  // Shows a dialog where the user can auth the profile or see the auth error
+  // message. If a dialog is already shown, this destroys the current dialog and
+  // creates a new one.
+  void ShowDialog(content::BrowserContext* browser_context, const GURL& url);
 
-  // Display sign in error message that is created by Chrome but not GAIA
-  // without browser window.
+  // Displays sign in error message that is created by Chrome but not GAIA
+  // without browser window. If the dialog is not currently shown, this does
+  // nothing.
   void DisplayErrorMessage();
 
   // Setter and getter of the path of profile which is selected in user manager
@@ -70,9 +71,6 @@ class UserManagerView : public views::DialogDelegateView {
 
   ~UserManagerView() override;
 
-  // Resets delegate_ to nullptr when delegate_ is no longer alive.
-  void OnDialogDestroyed();
-
   // Creates dialog and initializes UI.
   void Init(Profile* guest_profile, const GURL& url);
 
@@ -85,12 +83,12 @@ class UserManagerView : public views::DialogDelegateView {
 
   views::WebView* web_view_;
 
-  UserManagerProfileDialogDelegate* delegate_;
-
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   base::Time user_manager_started_showing_;
 
   base::FilePath signin_profile_path_;
+
+  UserManagerProfileDialogHost dialog_host_;
 
   DISALLOW_COPY_AND_ASSIGN(UserManagerView);
 };

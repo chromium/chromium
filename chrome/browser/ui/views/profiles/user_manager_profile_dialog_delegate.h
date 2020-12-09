@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_DELEGATE_H_
 
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
-#include "chrome/browser/ui/views/profiles/user_manager_view.h"
+#include "chrome/browser/ui/user_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class GURL;
+class UserManagerProfileDialogHost;
 
 namespace views {
 class WebView;
@@ -34,7 +35,7 @@ class UserManagerProfileDialogDelegate
       public ChromeWebModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost {
  public:
-  UserManagerProfileDialogDelegate(UserManagerView* parent,
+  UserManagerProfileDialogDelegate(UserManagerProfileDialogHost* host,
                                    std::unique_ptr<views::WebView> web_view,
                                    const GURL& url);
   ~UserManagerProfileDialogDelegate() override;
@@ -72,7 +73,7 @@ class UserManagerProfileDialogDelegate
   void DeleteDelegate() override;
   views::View* GetInitiallyFocusedView() override;
 
-  UserManagerView* parent_;   // Not owned.
+  UserManagerProfileDialogHost* host_;  // Not owned.
   views::WebView* web_view_;  // Owned by the view hierarchy.
 };
 

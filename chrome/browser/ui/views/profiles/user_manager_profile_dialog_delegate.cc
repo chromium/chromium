@@ -6,6 +6,7 @@
 
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_host.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/web_modal/modal_dialog_host.h"
@@ -17,10 +18,10 @@
 #include "ui/views/view.h"
 
 UserManagerProfileDialogDelegate::UserManagerProfileDialogDelegate(
-    UserManagerView* parent,
+    UserManagerProfileDialogHost* host,
     std::unique_ptr<views::WebView> web_view,
     const GURL& url)
-    : parent_(parent) {
+    : host_(host) {
   SetHasWindowSizeControls(true);
   SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -103,8 +104,8 @@ void UserManagerProfileDialogDelegate::CloseDialog() {
 }
 
 void UserManagerProfileDialogDelegate::OnDialogDestroyed() {
-  if (parent_) {
-    parent_->OnDialogDestroyed();
-    parent_ = nullptr;
+  if (host_) {
+    host_->OnDialogDestroyed();
+    host_ = nullptr;
   }
 }
