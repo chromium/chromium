@@ -374,12 +374,6 @@ body.files-ng [file-type-icon='removable'] {
   -webkit-mask-image: url(../images/volumes/hard_drive.svg);
 }
 
-.tree-row:not([selected]) > [volume-type-icon='provided'] {
-  /* Third-party icons are not provided with both an active and a non-active
-  version. This filter defines the non-active version of a provided icon. */
-  filter: contrast(0) brightness(0.7143);
-}
-
 .tree-row > .file-row > [root-type-icon='recent'] {
   -webkit-mask-image: url(../images/volumes/recent.svg);
 }
