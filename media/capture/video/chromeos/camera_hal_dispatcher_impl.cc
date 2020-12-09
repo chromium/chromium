@@ -144,6 +144,10 @@ bool CameraHalDispatcherImpl::Start(
   if (!StartThreads()) {
     return false;
   }
+  // This event is for adding camera category to categories list.
+  TRACE_EVENT0("camera", "CameraHalDispatcherImpl");
+  base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
+
   jda_factory_ = std::move(jda_factory);
   jea_factory_ = std::move(jea_factory);
   base::WaitableEvent started(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -218,11 +222,7 @@ CameraHalDispatcherImpl::CameraHalDispatcherImpl()
       blocking_io_thread_("CameraBlockingIOThread"),
       camera_hal_server_callbacks_(this),
       active_client_observers_(
-          new base::ObserverListThreadSafe<CameraActiveClientObserver>()) {
-  // This event is for adding camera category to categories list.
-  TRACE_EVENT0("camera", "CameraHalDispatcherImpl");
-  base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
-}
+          new base::ObserverListThreadSafe<CameraActiveClientObserver>()) {}
 
 CameraHalDispatcherImpl::~CameraHalDispatcherImpl() {
   VLOG(1) << "Stopping CameraHalDispatcherImpl...";
@@ -233,7 +233,6 @@ CameraHalDispatcherImpl::~CameraHalDispatcherImpl() {
     proxy_thread_.Stop();
   }
   blocking_io_thread_.Stop();
-  base::trace_event::TraceLog::GetInstance()->RemoveEnabledStateObserver(this);
   VLOG(1) << "CameraHalDispatcherImpl stopped";
 }
 
@@ -595,6 +594,7 @@ void CameraHalDispatcherImpl::OnCameraHalClientConnectionError(
 
 void CameraHalDispatcherImpl::StopOnProxyThread() {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+  base::trace_event::TraceLog::GetInstance()->RemoveEnabledStateObserver(this);
 
   // TODO(crbug.com/1053569): Remove these lines once the issue is solved.
   base::File::Info info;
