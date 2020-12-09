@@ -1,4 +1,11 @@
 <style include="profile-picker-shared">
+  #profileCardContainer {
+    border-radius: inherit;
+    /* Allows descendants to be absolute positioned relatively to the
+       container */
+    position: relative
+  }
+
   cr-button {
     --card-background-color: var(--md-background-color);
     background-color: var(--card-background-color);
@@ -77,16 +84,18 @@
   }
 </style>
 
-<cr-button on-click="onProfileClick_"
-    aria-label="[[profileState.localProfileName]]">
-  <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
-  <!-- TODO(msalama): Implement editing local profile name in place -->
-  <div class="profile-card-info">[[profileState.localProfileName]]</div>
-  <div id="avatarContainer">
-    <img class="profile-avatar" alt="" src="[[profileState.avatarIcon]]">
-    <div id="iconContainer" hidden="[[!profileState.isManaged]]">
-      <iron-icon icon="cr:domain"></iron-icon>
+<div id="profileCardContainer">
+  <cr-button on-click="onProfileClick_"
+      aria-label="[[profileState.localProfileName]]">
+    <!-- TODO(msalama): Implement editing local profile name in place -->
+    <div class="profile-card-info">[[profileState.localProfileName]]</div>
+    <div id="avatarContainer">
+      <img class="profile-avatar" alt="" src="[[profileState.avatarIcon]]">
+      <div id="iconContainer" hidden="[[!profileState.isManaged]]">
+        <iron-icon icon="cr:domain"></iron-icon>
+      </div>
     </div>
-  </div>
-  <div class="profile-card-info">[[profileState.gaiaName]]</div>
-</cr-button>
+    <div class="profile-card-info">[[profileState.gaiaName]]</div>
+  </cr-button>
+  <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
+</div>
