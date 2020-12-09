@@ -156,7 +156,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   base::span<const InteractionsStats> GetInteractionsStats() const override;
   base::span<const CompromisedCredentials> GetCompromisedCredentials()
       const override;
-  bool IsBlacklisted() const override;
+  bool IsBlocklisted() const override;
   bool WasUnblacklisted() const override;
   bool IsMovableToAccountStore() const override;
 

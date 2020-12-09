@@ -273,8 +273,8 @@ PasswordFormManager::GetCompromisedCredentials() const {
   return form_fetcher_->GetCompromisedCredentials();
 }
 
-bool PasswordFormManager::IsBlacklisted() const {
-  return form_fetcher_->IsBlacklisted() || newly_blacklisted_;
+bool PasswordFormManager::IsBlocklisted() const {
+  return form_fetcher_->IsBlocklisted() || newly_blacklisted_;
 }
 
 bool PasswordFormManager::WasUnblacklisted() const {
@@ -309,7 +309,7 @@ bool PasswordFormManager::IsMovableToAccountStore() const {
 void PasswordFormManager::Save() {
   DCHECK_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
   DCHECK(!client_->IsIncognito());
-  if (IsBlacklisted()) {
+  if (IsBlocklisted()) {
     password_save_manager_->Unblocklist(ConstructObservedFormDigest());
     newly_blacklisted_ = false;
   }
@@ -657,7 +657,7 @@ void PasswordFormManager::OnFetchCompleted() {
 
   client_->UpdateCredentialCache(url::Origin::Create(GetURL()),
                                  form_fetcher_->GetBestMatches(),
-                                 form_fetcher_->IsBlacklisted());
+                                 form_fetcher_->IsBlocklisted());
 
   if (is_submitted_)
     CreatePendingCredentials();
@@ -798,7 +798,7 @@ void PasswordFormManager::Fill() {
   if (!observed_password_form)
     return;
 
-  if (observed_password_form->is_new_password_reliable && !IsBlacklisted()) {
+  if (observed_password_form->is_new_password_reliable && !IsBlocklisted()) {
     driver_->FormEligibleForGenerationFound({
 #if defined(OS_IOS)
       .form_renderer_id = observed_password_form->form_data.unique_renderer_id,
@@ -819,7 +819,7 @@ void PasswordFormManager::Fill() {
   SendFillInformationToRenderer(
       client_, driver_.get(), *observed_password_form.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),
-      form_fetcher_->GetPreferredMatch(), form_fetcher_->IsBlacklisted(),
+      form_fetcher_->GetPreferredMatch(), form_fetcher_->IsBlocklisted(),
       metrics_recorder_.get());
 }
 
@@ -989,7 +989,7 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
   }
 
   metrics_recorder_->CalculateFillingAssistanceMetric(
-      submitted_form, saved_usernames, saved_passwords, IsBlacklisted(),
+      submitted_form, saved_usernames, saved_passwords, IsBlocklisted(),
       form_fetcher_->GetInteractionsStats(),
       client_->GetPasswordFeatureManager()
           ->ComputePasswordAccountStorageUsageLevel());

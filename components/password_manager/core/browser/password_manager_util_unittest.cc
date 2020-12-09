@@ -405,32 +405,32 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernamePickFirst) {
             GetMatchForUpdating(parsed, {&stored3, &stored2, &stored1}));
 }
 
-TEST(PasswordManagerUtil, MakeNormalizedBlacklistedForm_Android) {
-  PasswordForm blacklisted_credential = MakeNormalizedBlacklistedForm(
+TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Android) {
+  PasswordForm blocklisted_credential = MakeNormalizedBlocklistedForm(
       password_manager::PasswordStore::FormDigest(GetTestAndroidCredential()));
-  EXPECT_TRUE(blacklisted_credential.blocked_by_user);
-  EXPECT_EQ(PasswordForm::Scheme::kHtml, blacklisted_credential.scheme);
-  EXPECT_EQ(kTestAndroidRealm, blacklisted_credential.signon_realm);
-  EXPECT_EQ(GURL(kTestAndroidRealm), blacklisted_credential.url);
+  EXPECT_TRUE(blocklisted_credential.blocked_by_user);
+  EXPECT_EQ(PasswordForm::Scheme::kHtml, blocklisted_credential.scheme);
+  EXPECT_EQ(kTestAndroidRealm, blocklisted_credential.signon_realm);
+  EXPECT_EQ(GURL(kTestAndroidRealm), blocklisted_credential.url);
 }
 
-TEST(PasswordManagerUtil, MakeNormalizedBlacklistedForm_Html) {
-  PasswordForm blacklisted_credential = MakeNormalizedBlacklistedForm(
+TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Html) {
+  PasswordForm blocklisted_credential = MakeNormalizedBlocklistedForm(
       password_manager::PasswordStore::FormDigest(GetTestCredential()));
-  EXPECT_TRUE(blacklisted_credential.blocked_by_user);
-  EXPECT_EQ(PasswordForm::Scheme::kHtml, blacklisted_credential.scheme);
+  EXPECT_TRUE(blocklisted_credential.blocked_by_user);
+  EXPECT_EQ(PasswordForm::Scheme::kHtml, blocklisted_credential.scheme);
   EXPECT_EQ(GURL(kTestURL).GetOrigin().spec(),
-            blacklisted_credential.signon_realm);
-  EXPECT_EQ(GURL(kTestURL).GetOrigin(), blacklisted_credential.url);
+            blocklisted_credential.signon_realm);
+  EXPECT_EQ(GURL(kTestURL).GetOrigin(), blocklisted_credential.url);
 }
 
-TEST(PasswordManagerUtil, MakeNormalizedBlacklistedForm_Proxy) {
-  PasswordForm blacklisted_credential = MakeNormalizedBlacklistedForm(
+TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Proxy) {
+  PasswordForm blocklisted_credential = MakeNormalizedBlocklistedForm(
       password_manager::PasswordStore::FormDigest(GetTestProxyCredential()));
-  EXPECT_TRUE(blacklisted_credential.blocked_by_user);
-  EXPECT_EQ(PasswordForm::Scheme::kBasic, blacklisted_credential.scheme);
-  EXPECT_EQ(kTestProxySignonRealm, blacklisted_credential.signon_realm);
-  EXPECT_EQ(GURL(kTestProxyOrigin), blacklisted_credential.url);
+  EXPECT_TRUE(blocklisted_credential.blocked_by_user);
+  EXPECT_EQ(PasswordForm::Scheme::kBasic, blocklisted_credential.scheme);
+  EXPECT_EQ(kTestProxySignonRealm, blocklisted_credential.signon_realm);
+  EXPECT_EQ(GURL(kTestProxyOrigin), blocklisted_credential.url);
 }
 
 TEST(PasswordManagerUtil, ManualGenerationShouldNotReauthIfNotNeeded) {

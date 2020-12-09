@@ -62,13 +62,13 @@ void MultiStoreFormFetcher::Fetch() {
   }
 }
 
-bool MultiStoreFormFetcher::IsBlacklisted() const {
+bool MultiStoreFormFetcher::IsBlocklisted() const {
   if (client_->GetPasswordFeatureManager()->IsOptedInForAccountStorage() &&
       client_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
           PasswordForm::Store::kAccountStore) {
-    return is_blacklisted_in_account_store_;
+    return is_blocklisted_in_account_store_;
   }
-  return is_blacklisted_in_profile_store_;
+  return is_blocklisted_in_profile_store_;
 }
 
 bool MultiStoreFormFetcher::IsMovingBlocked(
@@ -98,8 +98,8 @@ std::unique_ptr<FormFetcher> MultiStoreFormFetcher::Clone() {
   std::unique_ptr<FormFetcher> fetcher_ptr = FormFetcherImpl::Clone();
   MultiStoreFormFetcher& fetcher =
       *static_cast<MultiStoreFormFetcher*>(fetcher_ptr.get());
-  fetcher.is_blacklisted_in_account_store_ = is_blacklisted_in_account_store_;
-  fetcher.is_blacklisted_in_profile_store_ = is_blacklisted_in_profile_store_;
+  fetcher.is_blocklisted_in_account_store_ = is_blocklisted_in_account_store_;
+  fetcher.is_blocklisted_in_profile_store_ = is_blocklisted_in_profile_store_;
   return fetcher_ptr;
 }
 
@@ -172,21 +172,21 @@ void MultiStoreFormFetcher::OnGetCompromisedCredentials(
 
 void MultiStoreFormFetcher::SplitResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
-  // Compute the |is_blacklisted_in_profile_store_| and
-  // |is_blacklisted_in_account_store_| and then delegate the rest to splitting
+  // Compute the |is_blocklisted_in_profile_store_| and
+  // |is_blocklisted_in_account_store_| and then delegate the rest to splitting
   // to FormFetcherImpl::SplitResults().
-  is_blacklisted_in_profile_store_ = false;
-  is_blacklisted_in_account_store_ = false;
+  is_blocklisted_in_profile_store_ = false;
+  is_blocklisted_in_account_store_ = false;
   for (auto& result : results) {
     if (!result->blocked_by_user)
       continue;
-    // Ignore PSL matches for blacklisted entries.
+    // Ignore PSL matches for blocklisted entries.
     if (result->is_public_suffix_match)
       continue;
     if (result->IsUsingAccountStore())
-      is_blacklisted_in_account_store_ = true;
+      is_blocklisted_in_account_store_ = true;
     else
-      is_blacklisted_in_profile_store_ = true;
+      is_blocklisted_in_profile_store_ = true;
   }
   FormFetcherImpl::SplitResults(std::move(results));
 }

@@ -77,11 +77,11 @@ void UserTriggeredManualGenerationFromContextMenu(
     password_manager::PasswordManagerClient* password_manager_client);
 
 // This function handles the following clean-ups of credentials:
-// (1) Removing blacklisted duplicates: if two blacklisted credentials have the
+// (1) Removing blocklisted duplicates: if two blocklisted credentials have the
 // same signon_realm, they are duplicates of each other. Deleting all but one
 // sharing the signon_realm does not affect Chrome's behaviour and hence
-// duplicates can be removed. Having duplicates makes un-blacklisting not work,
-// hence blacklisted duplicates need to be removed.
+// duplicates can be removed. Having duplicates makes un-blocklisting not work,
+// hence blocklisted duplicates need to be removed.
 // (2) Removing or fixing of HTTPS credentials with wrong signon_realm. See
 // https://crbug.com/881731 for details.
 // (3) Report metrics about HTTP to HTTPS migration process and remove obsolete
@@ -104,7 +104,7 @@ void RemoveUselessCredentials(
 base::StringPiece GetSignonRealmWithProtocolExcluded(
     const password_manager::PasswordForm& form);
 
-// Given all non-blacklisted |non_federated_matches|, finds and populates
+// Given all non-blocklisted |non_federated_matches|, finds and populates
 // |non_federated_same_scheme|, |best_matches|, and |preferred_match|
 // accordingly. For comparing credentials the following rule is used: non-psl
 // match is better than psl match, most recently used match is better than other
@@ -137,12 +137,12 @@ const password_manager::PasswordForm* GetMatchForUpdating(
     const password_manager::PasswordForm& submitted_form,
     const std::vector<const password_manager::PasswordForm*>& credentials);
 
-// This method creates a blacklisted form with |digests|'s scheme, signon_realm
+// This method creates a blocklisted form with |digests|'s scheme, signon_realm
 // and origin. This is done to avoid storing PII and to have a normalized unique
 // key. Furthermore it attempts to normalize the origin by stripping path
 // components. In case this fails (e.g. for non-standard origins like Android
 // credentials), the original origin is kept.
-password_manager::PasswordForm MakeNormalizedBlacklistedForm(
+password_manager::PasswordForm MakeNormalizedBlocklistedForm(
     password_manager::PasswordStore::FormDigest digest);
 
 }  // namespace password_manager_util

@@ -1774,7 +1774,7 @@ TEST_P(PasswordManagerTest, SameDocumentBlockedSite) {
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
 
   manager()->OnPasswordFormSubmittedNoChecks(&driver_, form.submission_event);
-  EXPECT_TRUE(form_manager_to_save->IsBlacklisted());
+  EXPECT_TRUE(form_manager_to_save->IsBlocklisted());
 }
 
 TEST_P(PasswordManagerTest, FormSubmittedUnchangedNotifiesClient) {

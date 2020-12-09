@@ -77,9 +77,9 @@ class FormFetcher {
   // returns NOT_WAITING.
   virtual std::vector<const PasswordForm*> GetFederatedMatches() const = 0;
 
-  // Whether there are blacklisted matches in the backend. Valid only if
+  // Whether there are blocklisted matches in the backend. Valid only if
   // GetState() returns NOT_WAITING.
-  virtual bool IsBlacklisted() const = 0;
+  virtual bool IsBlocklisted() const = 0;
 
   // Whether moving the credentials with |username| from the
   // local store to the account store for the user with
@@ -93,7 +93,7 @@ class FormFetcher {
   virtual const std::vector<const PasswordForm*>& GetAllRelevantMatches()
       const = 0;
 
-  // Nonblacklisted matches obtained from the backend.
+  // Nonblocklisted matches obtained from the backend.
   virtual const std::vector<const PasswordForm*>& GetBestMatches() const = 0;
 
   // Pointer to a preferred entry in the vector returned by GetBestMatches().

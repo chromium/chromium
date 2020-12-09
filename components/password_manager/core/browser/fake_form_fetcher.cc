@@ -51,8 +51,8 @@ std::vector<const PasswordForm*> FakeFormFetcher::GetFederatedMatches() const {
   return federated_;
 }
 
-bool FakeFormFetcher::IsBlacklisted() const {
-  return is_blacklisted_;
+bool FakeFormFetcher::IsBlocklisted() const {
+  return is_blocklisted_;
 }
 
 bool FakeFormFetcher::IsMovingBlocked(const autofill::GaiaIdHash& destination,
@@ -105,8 +105,8 @@ void FakeFormFetcher::SetNonFederated(
                                          &best_matches_, &preferred_match_);
 }
 
-void FakeFormFetcher::SetBlacklisted(bool is_blacklisted) {
-  is_blacklisted_ = is_blacklisted;
+void FakeFormFetcher::SetBlocklisted(bool is_blocklisted) {
+  is_blocklisted_ = is_blocklisted;
 }
 
 void FakeFormFetcher::NotifyFetchCompleted() {

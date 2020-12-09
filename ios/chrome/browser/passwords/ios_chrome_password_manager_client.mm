@@ -97,7 +97,7 @@ bool IOSChromePasswordManagerClient::PromptUserToChooseCredentials(
 bool IOSChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool update_password) {
-  if (form_to_save->IsBlacklisted())
+  if (form_to_save->IsBlocklisted())
     return false;
 
   [bridge_ removePasswordInfoBarManualFallback:YES];

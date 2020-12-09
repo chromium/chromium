@@ -369,7 +369,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
     store->Unblocklist(form_digest, base::NullCallback());
   } else {
     password_manager::PasswordForm form =
-        password_manager_util::MakeNormalizedBlacklistedForm(
+        password_manager_util::MakeNormalizedBlocklistedForm(
             std::move(form_digest));
     form.date_created = base::Time::Now();
     store->AddLogin(form);

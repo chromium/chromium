@@ -326,7 +326,7 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     return false;
 
 #if defined(OS_ANDROID)
-  if (form_to_save->IsBlacklisted())
+  if (form_to_save->IsBlocklisted())
     return false;
 
   if (update_password) {

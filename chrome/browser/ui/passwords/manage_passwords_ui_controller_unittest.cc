@@ -318,7 +318,7 @@ ManagePasswordsUIControllerTest::CreateFormManagerWithBestMatches(
   EXPECT_CALL(*form_manager, GetURL())
       .Times(AtMost(1))
       .WillOnce(ReturnRef(test_local_form_.url));
-  EXPECT_CALL(*form_manager, IsBlacklisted())
+  EXPECT_CALL(*form_manager, IsBlocklisted())
       .Times(AtMost(1))
       .WillOnce(Return(is_blocklisted));
   EXPECT_CALL(*form_manager, GetInteractionsStats())

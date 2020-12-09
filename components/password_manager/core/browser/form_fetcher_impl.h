@@ -55,7 +55,7 @@ class FormFetcherImpl : public FormFetcher,
       const override;
   std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
   std::vector<const PasswordForm*> GetFederatedMatches() const override;
-  bool IsBlacklisted() const override;
+  bool IsBlocklisted() const override;
   bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
                        const base::string16& username) const override;
 
@@ -70,7 +70,7 @@ class FormFetcherImpl : public FormFetcher,
   void ProcessPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results);
 
-  // Splits |results| into |federated_|, |non_federated_| and |is_blacklisted_|.
+  // Splits |results| into |federated_|, |non_federated_| and |is_blocklisted_|.
   virtual void SplitResults(std::vector<std::unique_ptr<PasswordForm>> results);
 
   // PasswordStore results will be fetched for this description.
@@ -121,7 +121,7 @@ class FormFetcherImpl : public FormFetcher,
   // Non-federated credentials of the same scheme as the observed form.
   std::vector<const PasswordForm*> non_federated_same_scheme_;
 
-  // Set of nonblacklisted PasswordForms from the password store that best match
+  // Set of nonblocklisted PasswordForms from the password store that best match
   // the form being managed by |this|.
   std::vector<const PasswordForm*> best_matches_;
 
@@ -131,9 +131,9 @@ class FormFetcherImpl : public FormFetcher,
   // matches (when first saved, a login is marked preferred).
   const PasswordForm* preferred_match_ = nullptr;
 
-  // Whether there were any blacklisted credentials obtained from the password
+  // Whether there were any blocklisted credentials obtained from the password
   // store.
-  bool is_blacklisted_ = false;
+  bool is_blocklisted_ = false;
 
   // Statistics for the current domain.
   std::vector<InteractionsStats> interactions_stats_;

@@ -77,11 +77,11 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
   std::unique_ptr<WebViewPasswordManagerClient> password_manager_client_;
 };
 
-TEST_F(WebViewPasswordManagerClientTest, NoPromptIfBlacklisted) {
+TEST_F(WebViewPasswordManagerClientTest, NoPromptIfBlocklisted) {
   auto password_manager_for_ui =
       std::make_unique<password_manager::MockPasswordFormManagerForUI>();
 
-  EXPECT_CALL(*password_manager_for_ui, IsBlacklisted()).WillOnce(Return(true));
+  EXPECT_CALL(*password_manager_for_ui, IsBlocklisted()).WillOnce(Return(true));
 
   EXPECT_FALSE(password_manager_client_->PromptUserToSaveOrUpdatePassword(
       std::move(password_manager_for_ui), /*update_password=*/false));
@@ -91,7 +91,7 @@ TEST_F(WebViewPasswordManagerClientTest, NoPromptIfNotOptedInToAccountStorage) {
   auto password_manager_for_ui =
       std::make_unique<password_manager::MockPasswordFormManagerForUI>();
 
-  EXPECT_CALL(*password_manager_for_ui, IsBlacklisted())
+  EXPECT_CALL(*password_manager_for_ui, IsBlocklisted())
       .WillOnce(Return(false));
   CoreAccountInfo account_info;
   account_info.gaia = "1337";
@@ -105,7 +105,7 @@ TEST_F(WebViewPasswordManagerClientTest, PromptIfAllConditionsPass) {
   auto password_manager_for_ui =
       std::make_unique<password_manager::MockPasswordFormManagerForUI>();
 
-  EXPECT_CALL(*password_manager_for_ui, IsBlacklisted())
+  EXPECT_CALL(*password_manager_for_ui, IsBlocklisted())
       .WillOnce(Return(false));
 
   CoreAccountInfo account_info;

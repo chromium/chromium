@@ -44,7 +44,7 @@ class FakeFormFetcher : public FormFetcher {
       const override;
   std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
   std::vector<const PasswordForm*> GetFederatedMatches() const override;
-  bool IsBlacklisted() const override;
+  bool IsBlocklisted() const override;
   bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
                        const base::string16& username) const override;
   const std::vector<const PasswordForm*>& GetAllRelevantMatches()
@@ -72,7 +72,7 @@ class FakeFormFetcher : public FormFetcher {
 
   void SetNonFederated(const std::vector<const PasswordForm*>& non_federated);
 
-  void SetBlacklisted(bool is_blacklisted);
+  void SetBlocklisted(bool is_blocklisted);
 
   void NotifyFetchCompleted();
 
@@ -87,7 +87,7 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<const PasswordForm*> best_matches_;
   std::vector<CompromisedCredentials> compromised_;
   const PasswordForm* preferred_match_ = nullptr;
-  bool is_blacklisted_ = false;
+  bool is_blocklisted_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FakeFormFetcher);
 };

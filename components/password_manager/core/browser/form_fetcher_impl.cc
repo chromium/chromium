@@ -151,8 +151,8 @@ std::vector<const PasswordForm*> FormFetcherImpl::GetFederatedMatches() const {
   return MakeWeakCopies(federated_);
 }
 
-bool FormFetcherImpl::IsBlacklisted() const {
-  return is_blacklisted_;
+bool FormFetcherImpl::IsBlocklisted() const {
+  return is_blocklisted_;
 }
 
 bool FormFetcherImpl::IsMovingBlocked(const autofill::GaiaIdHash& destination,
@@ -188,7 +188,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
 
   result->non_federated_ = MakeCopies(non_federated_);
   result->federated_ = MakeCopies(federated_);
-  result->is_blacklisted_ = is_blacklisted_;
+  result->is_blocklisted_ = is_blocklisted_;
   password_manager_util::FindBestMatches(
       MakeWeakCopies(result->non_federated_), form_digest_.scheme,
       &result->non_federated_same_scheme_, &result->best_matches_,
@@ -218,14 +218,14 @@ void FormFetcherImpl::ProcessPasswordStoreResults(
 
 void FormFetcherImpl::SplitResults(
     std::vector<std::unique_ptr<PasswordForm>> forms) {
-  is_blacklisted_ = false;
+  is_blocklisted_ = false;
   non_federated_.clear();
   federated_.clear();
   for (auto& form : forms) {
     if (form->blocked_by_user) {
-      // Ignore PSL matches for blacklisted entries.
+      // Ignore PSL matches for blocklisted entries.
       if (!form->is_public_suffix_match) {
-        is_blacklisted_ = true;
+        is_blocklisted_ = true;
       }
     } else if (form->IsFederatedCredential()) {
       federated_.push_back(std::move(form));

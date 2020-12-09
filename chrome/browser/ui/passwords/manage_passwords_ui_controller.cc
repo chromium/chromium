@@ -128,7 +128,7 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
   if (bubble_status_ == BubbleStatus::SHOWN &&
       GetState() == password_manager::ui::PENDING_PASSWORD_STATE)
     return;
-  bool show_bubble = !form_manager->IsBlacklisted();
+  bool show_bubble = !form_manager->IsBlocklisted();
   DestroyAccountChooser();
   save_fallback_timer_.Stop();
   passwords_data_.OnPendingPassword(std::move(form_manager));

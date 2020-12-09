@@ -85,7 +85,7 @@ FormSaverImpl::~FormSaverImpl() = default;
 
 PasswordForm FormSaverImpl::Blocklist(PasswordStore::FormDigest digest) {
   PasswordForm blocklisted =
-      password_manager_util::MakeNormalizedBlacklistedForm(std::move(digest));
+      password_manager_util::MakeNormalizedBlocklistedForm(std::move(digest));
   blocklisted.date_created = base::Time::Now();
   store_->AddLogin(blocklisted);
   return blocklisted;

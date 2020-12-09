@@ -330,7 +330,7 @@ TEST_F(FormSaverImplTest, Blocklist) {
   observed.url = GURL("https://www.example.com/foobar");
 
   PasswordForm blocklisted =
-      password_manager_util::MakeNormalizedBlacklistedForm(
+      password_manager_util::MakeNormalizedBlocklistedForm(
           PasswordStore::FormDigest(observed));
 
   EXPECT_CALL(*mock_store_, AddLogin(FormWithSomeDate(blocklisted)));

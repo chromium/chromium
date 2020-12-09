@@ -56,7 +56,7 @@ class PasswordFormManagerForUI {
       const = 0;
 
   // Determines if the user opted to 'never remember' passwords for this form.
-  virtual bool IsBlacklisted() const = 0;
+  virtual bool IsBlocklisted() const = 0;
 
   // Checks if the user unblacklisted the origin of the form for saving.
   virtual bool WasUnblacklisted() const = 0;

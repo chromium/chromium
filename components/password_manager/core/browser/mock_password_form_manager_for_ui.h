@@ -41,7 +41,7 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
               GetCompromisedCredentials,
               (),
               (const override));
-  MOCK_METHOD(bool, IsBlacklisted, (), (const override));
+  MOCK_METHOD(bool, IsBlocklisted, (), (const override));
   MOCK_METHOD(bool, WasUnblacklisted, (), (const override));
   MOCK_METHOD(bool, IsMovableToAccountStore, (), (const override));
   MOCK_METHOD(void, Save, (), (override));

@@ -107,7 +107,7 @@ bool WebViewPasswordManagerClient::PromptUserToChooseCredentials(
 bool WebViewPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool update_password) {
-  if (form_to_save->IsBlacklisted()) {
+  if (form_to_save->IsBlocklisted()) {
     return false;
   }
   if (!password_feature_manager_.IsOptedInForAccountStorage()) {

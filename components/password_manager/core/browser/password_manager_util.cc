@@ -312,7 +312,7 @@ const PasswordForm* GetMatchForUpdating(
   return credentials.empty() ? nullptr : credentials.front();
 }
 
-PasswordForm MakeNormalizedBlacklistedForm(
+PasswordForm MakeNormalizedBlocklistedForm(
     password_manager::PasswordStore::FormDigest digest) {
   PasswordForm result;
   result.blocked_by_user = true;
