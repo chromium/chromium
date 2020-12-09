@@ -5,6 +5,7 @@
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/webapps/installable/installable_metrics.h"
 
@@ -26,6 +27,12 @@ ChromeWebappsClient::GetSecurityLevelForWebContents(
     content::WebContents* web_contents) {
   return SecurityStateTabHelper::FromWebContents(web_contents)
       ->GetSecurityLevel();
+}
+
+infobars::ContentInfoBarManager*
+ChromeWebappsClient::GetInfoBarManagerForWebContents(
+    content::WebContents* web_contents) {
+  return InfoBarService::FromWebContents(web_contents);
 }
 
 WebappInstallSource ChromeWebappsClient::GetInstallSource(

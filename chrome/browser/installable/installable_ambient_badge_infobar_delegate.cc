@@ -8,10 +8,11 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/android/infobars/installable_ambient_badge_infobar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/webapps/webapps_client.h"
 #include "ui/base/l10n/l10n_util.h"
 
 InstallableAmbientBadgeInfoBarDelegate::
@@ -25,7 +26,8 @@ void InstallableAmbientBadgeInfoBarDelegate::Create(
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,
     const GURL& start_url) {
-  InfoBarService::FromWebContents(web_contents)
+  webapps::WebappsClient::Get()
+      ->GetInfoBarManagerForWebContents(web_contents)
       ->AddInfoBar(std::make_unique<InstallableAmbientBadgeInfoBar>(
           std::unique_ptr<InstallableAmbientBadgeInfoBarDelegate>(
               new InstallableAmbientBadgeInfoBarDelegate(

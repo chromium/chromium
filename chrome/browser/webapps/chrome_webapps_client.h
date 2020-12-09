@@ -20,6 +20,8 @@ class ChromeWebappsClient : public WebappsClient {
   // WebappsClient:
   security_state::SecurityLevel GetSecurityLevelForWebContents(
       content::WebContents* web_contents) override;
+  infobars::ContentInfoBarManager* GetInfoBarManagerForWebContents(
+      content::WebContents* web_contents) override;
   WebappInstallSource GetInstallSource(content::WebContents* web_contents,
                                        InstallTrigger trigger) override;
 

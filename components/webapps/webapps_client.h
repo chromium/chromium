@@ -11,6 +11,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace infobars {
+class ContentInfoBarManager;
+}  // namespace infobars
+
 namespace webapps {
 
 enum class InstallTrigger;
@@ -29,6 +33,9 @@ class WebappsClient {
   static WebappsClient* Get();
 
   virtual security_state::SecurityLevel GetSecurityLevelForWebContents(
+      content::WebContents* web_contents) = 0;
+
+  virtual infobars::ContentInfoBarManager* GetInfoBarManagerForWebContents(
       content::WebContents* web_contents) = 0;
 
   virtual WebappInstallSource GetInstallSource(
