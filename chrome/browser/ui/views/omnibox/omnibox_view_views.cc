@@ -23,6 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/url_elision_policy.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
@@ -1505,6 +1506,8 @@ const char* OmniboxViewViews::GetClassName() const {
 }
 
 bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
+  PermitExternalProtocolHandler();
+
   // Clear focus of buttons, but do not clear keyword mode.
   if (model()->popup_model() && model()->popup_model()->selected_line_state() !=
                                     OmniboxPopupModel::KEYWORD_MODE) {
@@ -1607,6 +1610,8 @@ bool OmniboxViewViews::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
+  PermitExternalProtocolHandler();
+
   views::Textfield::OnMouseReleased(event);
   // When the user has clicked and released to give us focus, select all.
   if ((event.IsOnlyLeftMouseButton() || event.IsOnlyRightMouseButton()) &&
@@ -1627,6 +1632,8 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
+  PermitExternalProtocolHandler();
+
   static const bool kTakeFocusOnTapUp =
       base::FeatureList::IsEnabled(views::features::kTextfieldFocusOnTapUp);
 
@@ -2173,6 +2180,8 @@ void OmniboxViewViews::ContentsChanged(views::Textfield* sender,
 
 bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
                                       const ui::KeyEvent& event) {
+  PermitExternalProtocolHandler();
+
   if (event.type() == ui::ET_KEY_RELEASED) {
     // The omnibox contents may change while the control key is pressed.
     if (event.key_code() == ui::VKEY_CONTROL)
@@ -2528,6 +2537,10 @@ void OmniboxViewViews::OnCompositingShuttingDown(ui::Compositor* compositor) {
 
 void OmniboxViewViews::OnTemplateURLServiceChanged() {
   InstallPlaceholderText();
+}
+
+void OmniboxViewViews::PermitExternalProtocolHandler() {
+  ExternalProtocolHandler::PermitLaunchUrl();
 }
 
 gfx::Range OmniboxViewViews::GetSimplifiedDomainBounds(

@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -27,6 +28,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "content/public/browser/web_contents.h"
@@ -831,3 +833,92 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   EXPECT_FALSE(omnibox_view->model()->popup_model()->IsOpen());
 }
 #endif  // OS_WIN
+
+// ClickOnView(VIEW_ID_OMNIBOX) does not set focus to omnibox on Mac.
+// Looks like the same problem as in the SelectAllOnClick().
+// Tracked in: https://crbug.com/915591
+#if defined(OS_MAC)
+#define MAYBE_HandleExternalProtocolURLs DISABLED_HandleExternalProtocolURLs
+#else
+#define MAYBE_HandleExternalProtocolURLs HandleExternalProtocolURLs
+#endif
+
+// Checks that focusing on the omnibox allows the page to open external protocol
+// URLs. Regression test for https://crbug.com/1143632
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_HandleExternalProtocolURLs) {
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
+  OmniboxPopupModel* popup_model = omnibox_view->model()->popup_model();
+  ASSERT_TRUE(popup_model);
+  AutocompleteController* controller =
+      omnibox_view->model()->autocomplete_controller();
+  ASSERT_TRUE(controller);
+
+  auto set_text_and_perform_navigation = [this, omnibox_view, popup_model,
+                                          controller]() {
+    const char fake_protocol[] = "fake";
+    const char fake_url[] = "fake://path";
+
+    EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+
+    // Set omnibox text and wait for autocomplete.
+    omnibox_view->SetUserText(base::ASCIIToUTF16(fake_url));
+    if (!controller->done())
+      ui_test_utils::WaitForAutocompleteDone(browser());
+    ASSERT_TRUE(controller->done());
+    ASSERT_TRUE(popup_model->IsOpen());
+
+    EXPECT_NE(ExternalProtocolHandler::BLOCK,
+              ExternalProtocolHandler::GetBlockState(fake_protocol, nullptr,
+                                                     browser()->profile()));
+
+    // Check SWYT and UWYT suggestions
+    const AutocompleteResult& result = controller->result();
+    ASSERT_EQ(result.size(), 2U);
+    EXPECT_EQ(result.match_at(0).type,
+              AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+    EXPECT_EQ(result.match_at(1).type,
+              AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+
+    // Navigate to UWYT suggestion.
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
+                                                false, false, false));
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
+                                                false, false, false, false));
+
+    content::WebContents* tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+    EXPECT_EQ(ExternalProtocolHandler::BLOCK,
+              ExternalProtocolHandler::GetBlockState(fake_protocol, nullptr,
+                                                     browser()->profile()));
+  };
+
+  set_text_and_perform_navigation();
+
+  // Set focus to omnibox by click.
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::ClickOnView(browser(), VIEW_ID_OMNIBOX));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true));
+
+  set_text_and_perform_navigation();
+
+// No touch on desktop Mac. Tracked in http://crbug.com/445520.
+#if !defined(OS_MAC) || defined(USE_AURA)
+
+  // Set focus to omnibox by tap.
+  const gfx::Point omnibox_tap_point =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetViewByID(VIEW_ID_OMNIBOX)
+          ->GetBoundsInScreen()
+          .CenterPoint();
+  ASSERT_NO_FATAL_FAILURE(Tap(omnibox_tap_point, omnibox_tap_point));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true));
+
+  set_text_and_perform_navigation();
+
+#endif  // !defined(OS_MAC) || defined(USE_AURA)
+}

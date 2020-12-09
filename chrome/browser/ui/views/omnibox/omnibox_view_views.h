@@ -482,6 +482,11 @@ class OmniboxViewViews : public OmniboxView,
   // TemplateURLServiceObserver:
   void OnTemplateURLServiceChanged() override;
 
+  // Permits launch of the external protocol handler after user actions in
+  // the omnibox. The handler needs to be informed that omnibox input should
+  // always be considered "user gesture-triggered", lest it always return BLOCK.
+  void PermitExternalProtocolHandler();
+
   // Returns the gfx::Range of the simplified domain of the current URL, if
   // there is one. The simplified domain could be either the registrable domain
   // (if OmniboxFieldTrial::ElideToRegistrableDomain() is enabled) or the full
