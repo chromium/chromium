@@ -267,6 +267,14 @@ std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
   if (!rfh || !rfh->IsCurrent())
     return "";
 
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return "";
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser || !browser->app_controller())
+    return "";
+
   auto* apk_web_app_service = chromeos::ApkWebAppService::Get(
       Profile::FromBrowserContext(rfh->GetBrowserContext()));
   if (!apk_web_app_service)
@@ -274,8 +282,7 @@ std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
 
   base::Optional<std::string> twa_package_name =
       apk_web_app_service->GetPackageNameForWebApp(
-          content::WebContents::FromRenderFrameHost(rfh)
-              ->GetLastCommittedURL());
+          web_contents->GetLastCommittedURL());
 
   return twa_package_name.has_value() ? twa_package_name.value() : "";
 #else
