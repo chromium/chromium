@@ -32,10 +32,6 @@ SkColor TestAppListColorProvider::GetSearchBoxCardBackgroundColor() const {
   return gfx::kGoogleGrey900;
 }
 
-SkColor TestAppListColorProvider::GetSearchBoxPlaceholderTextColor() const {
-  return gfx::kGoogleGrey500;
-}
-
 SkColor TestAppListColorProvider::GetSearchBoxTextColor(
     SkColor default_color) const {
   return gfx::kGoogleGrey200;

@@ -13,6 +13,9 @@ namespace ash {
 constexpr SkColor kDeprecatedSearchBoxTextDefaultColor =
     SkColorSetRGB(0x33, 0x33, 0x33);
 
+constexpr SkColor kDeprecatedSearchBoxPlaceholderTextColor =
+    SkColorSetARGB(0xDE, 0x00, 0x00, 0x00);
+
 class ASH_PUBLIC_EXPORT AppListColorProvider {
  public:
   // Returns the singleton instance.
@@ -23,7 +26,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetExpandArrowIconBackgroundColor() const = 0;
   virtual SkColor GetAppListBackgroundColor() const = 0;
   virtual SkColor GetSearchBoxBackgroundColor() const = 0;
-  virtual SkColor GetSearchBoxPlaceholderTextColor() const = 0;
   virtual SkColor GetSearchBoxTextColor(SkColor default_color) const = 0;
   virtual SkColor GetSearchBoxSecondaryTextColor(
       SkColor default_color) const = 0;

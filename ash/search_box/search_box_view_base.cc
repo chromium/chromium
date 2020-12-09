@@ -345,9 +345,10 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
                                     : gfx::Canvas::TEXT_ALIGN_LEFT)
              : gfx::Canvas::TEXT_ALIGN_CENTER);
   search_box_->set_placeholder_text_color(
-      ash::AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          active ? kZeroQuerySearchboxColor
-                 : kDefaultSearchboxPlaceholderTextColor));
+      active ? AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+                   kDefaultSearchboxPlaceholderTextColor)
+             : ash::AppListColorProvider::Get()->GetSearchBoxTextColor(
+                   kZeroQuerySearchboxColor));
   search_box_->SetCursorEnabled(active);
 
   if (active) {

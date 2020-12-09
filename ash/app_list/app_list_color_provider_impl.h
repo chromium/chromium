@@ -22,7 +22,6 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetAppListBackgroundColor() const override;
   SkColor GetSearchBoxBackgroundColor() const override;
   SkColor GetSearchBoxSecondaryTextColor(SkColor default_color) const override;
-  SkColor GetSearchBoxPlaceholderTextColor() const override;
   SkColor GetSearchBoxTextColor(SkColor default_color) const override;
   SkColor GetSuggestionChipBackgroundColor() const override;
   SkColor GetSuggestionChipTextColor() const override;

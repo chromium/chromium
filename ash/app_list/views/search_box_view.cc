@@ -402,7 +402,8 @@ void SearchBoxView::OnWallpaperColorsChanged() {
   UpdateSearchIcon();
   AppListColorProvider* app_list_color_provider = AppListColorProvider::Get();
   search_box()->set_placeholder_text_color(
-      app_list_color_provider->GetSearchBoxPlaceholderTextColor());
+      app_list_color_provider->GetSearchBoxTextColor(
+          kDeprecatedSearchBoxPlaceholderTextColor));
   search_box()->SetTextColor(app_list_color_provider->GetSearchBoxTextColor(
       kDeprecatedSearchBoxTextDefaultColor));
   if (features::IsDarkLightModeEnabled()) {
