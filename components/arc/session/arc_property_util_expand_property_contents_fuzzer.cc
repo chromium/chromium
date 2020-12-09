@@ -17,7 +17,7 @@
 #include "testing/libfuzzer/libfuzzer_exports.h"
 
 namespace {
-constexpr size_t kMaxInputSize = 256 * 1024;
+constexpr size_t kMaxInputSize = 64 * 1024;
 }
 
 extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
