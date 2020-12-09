@@ -106,8 +106,8 @@ class RemoteToLocalSyncer : public SyncTask {
   void ResolveRemoteChange(std::unique_ptr<SyncTaskToken> token);
 
   void MoveToBackground(std::unique_ptr<SyncTaskToken> token,
-                        const Continuation& continuation);
-  void ContinueAsBackgroundTask(const Continuation& continuation,
+                        Continuation continuation);
+  void ContinueAsBackgroundTask(Continuation continuation,
                                 std::unique_ptr<SyncTaskToken> token);
 
   // Handles missing remote metadata case.

@@ -312,7 +312,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
 }
 
 void RemoteToLocalSyncer::MoveToBackground(std::unique_ptr<SyncTaskToken> token,
-                                           const Continuation& continuation) {
+                                           Continuation continuation) {
   DCHECK(dirty_tracker_);
 
   std::unique_ptr<TaskBlocker> blocker(new TaskBlocker);
@@ -324,12 +324,12 @@ void RemoteToLocalSyncer::MoveToBackground(std::unique_ptr<SyncTaskToken> token,
 
   SyncTaskManager::UpdateTaskBlocker(
       std::move(token), std::move(blocker),
-      base::Bind(&RemoteToLocalSyncer::ContinueAsBackgroundTask,
-                 weak_ptr_factory_.GetWeakPtr(), continuation));
+      base::BindOnce(&RemoteToLocalSyncer::ContinueAsBackgroundTask,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(continuation)));
 }
 
 void RemoteToLocalSyncer::ContinueAsBackgroundTask(
-    const Continuation& continuation,
+    Continuation continuation,
     std::unique_ptr<SyncTaskToken> token) {
   DCHECK(dirty_tracker_);
 
@@ -391,7 +391,7 @@ void RemoteToLocalSyncer::ContinueAsBackgroundTask(
       return;
     }
   }
-  continuation.Run(std::move(token));
+  std::move(continuation).Run(std::move(token));
 }
 
 void RemoteToLocalSyncer::HandleMissingRemoteMetadata(

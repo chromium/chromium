@@ -41,8 +41,8 @@ void ConflictResolver::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
   task_blocker->exclusive = true;
   SyncTaskManager::UpdateTaskBlocker(
       std::move(token), std::move(task_blocker),
-      base::Bind(&ConflictResolver::RunExclusive,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ConflictResolver::RunExclusive,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ConflictResolver::RunExclusive(std::unique_ptr<SyncTaskToken> token) {

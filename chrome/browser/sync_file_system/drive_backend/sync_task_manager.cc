@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -25,11 +26,12 @@ namespace {
 
 class SyncTaskAdapter : public ExclusiveTask {
  public:
-  explicit SyncTaskAdapter(const SyncTaskManager::Task& task) : task_(task) {}
-  ~SyncTaskAdapter() override {}
+  explicit SyncTaskAdapter(SyncTaskManager::Task task)
+      : task_(std::move(task)) {}
+  ~SyncTaskAdapter() override = default;
 
   void RunExclusive(const SyncStatusCallback& callback) override {
-    task_.Run(callback);
+    std::move(task_).Run(callback);
   }
 
  private:
@@ -40,11 +42,14 @@ class SyncTaskAdapter : public ExclusiveTask {
 
 }  // namespace
 
-SyncTaskManager::PendingTask::PendingTask() {}
+SyncTaskManager::PendingTask::PendingTask() = default;
 
-SyncTaskManager::PendingTask::PendingTask(
-    const base::Closure& task, Priority pri, int seq)
-    : task(task), priority(pri), seq(seq) {}
+SyncTaskManager::PendingTask::PendingTask(base::OnceClosure task,
+                                          Priority pri,
+                                          int seq)
+    : wrapped_once_closure(base::AdaptCallbackForRepeating(std::move(task))),
+      priority(pri),
+      seq(seq) {}
 
 SyncTaskManager::PendingTask::PendingTask(const PendingTask& other) = default;
 
@@ -85,14 +90,14 @@ void SyncTaskManager::Initialize(SyncStatusCode status) {
 }
 
 void SyncTaskManager::ScheduleTask(const base::Location& from_here,
-                                   const Task& task,
+                                   Task task,
                                    Priority priority,
                                    const SyncStatusCallback& callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   ScheduleSyncTask(from_here,
-                   std::unique_ptr<SyncTask>(new SyncTaskAdapter(task)),
-                   priority, callback);
+                   std::make_unique<SyncTaskAdapter>(std::move(task)), priority,
+                   callback);
 }
 
 void SyncTaskManager::ScheduleSyncTask(const base::Location& from_here,
@@ -103,24 +108,22 @@ void SyncTaskManager::ScheduleSyncTask(const base::Location& from_here,
 
   std::unique_ptr<SyncTaskToken> token(GetToken(from_here, callback));
   if (!token) {
-    PushPendingTask(
-        base::Bind(&SyncTaskManager::ScheduleSyncTask,
-                   weak_ptr_factory_.GetWeakPtr(), from_here,
-                   base::Passed(&task), priority, callback),
-        priority);
+    PushPendingTask(base::BindOnce(&SyncTaskManager::ScheduleSyncTask,
+                                   weak_ptr_factory_.GetWeakPtr(), from_here,
+                                   std::move(task), priority, callback),
+                    priority);
     return;
   }
   RunTask(std::move(token), std::move(task));
 }
 
 bool SyncTaskManager::ScheduleTaskIfIdle(const base::Location& from_here,
-                                         const Task& task,
+                                         Task task,
                                          const SyncStatusCallback& callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   return ScheduleSyncTaskIfIdle(
-      from_here, std::unique_ptr<SyncTask>(new SyncTaskAdapter(task)),
-      callback);
+      from_here, std::make_unique<SyncTaskAdapter>(std::move(task)), callback);
 }
 
 bool SyncTaskManager::ScheduleSyncTaskIfIdle(
@@ -158,13 +161,13 @@ void SyncTaskManager::NotifyTaskDone(std::unique_ptr<SyncTaskToken> token,
 void SyncTaskManager::UpdateTaskBlocker(
     std::unique_ptr<SyncTaskToken> current_task_token,
     std::unique_ptr<TaskBlocker> task_blocker,
-    const Continuation& continuation) {
+    Continuation continuation) {
   DCHECK(current_task_token);
 
   SyncTaskManager* manager = current_task_token->manager();
   if (current_task_token->token_id() == SyncTaskToken::kTestingTaskTokenID) {
     DCHECK(!manager);
-    continuation.Run(std::move(current_task_token));
+    std::move(continuation).Run(std::move(current_task_token));
     return;
   }
 
@@ -182,7 +185,7 @@ void SyncTaskManager::UpdateTaskBlocker(
 
   manager->UpdateTaskBlockerBody(
       std::move(foreground_task_token), std::move(background_task_token),
-      std::move(task_log), std::move(task_blocker), continuation);
+      std::move(task_log), std::move(task_blocker), std::move(continuation));
 }
 
 bool SyncTaskManager::IsRunningTask(int64_t token_id) const {
@@ -261,7 +264,7 @@ void SyncTaskManager::UpdateTaskBlockerBody(
     std::unique_ptr<SyncTaskToken> background_task_token,
     std::unique_ptr<TaskLogger::TaskLog> task_log,
     std::unique_ptr<TaskBlocker> task_blocker,
-    const Continuation& continuation) {
+    Continuation continuation) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   // Run the task directly if the parallelization is disabled.
@@ -269,7 +272,7 @@ void SyncTaskManager::UpdateTaskBlockerBody(
     DCHECK(foreground_task_token);
     DCHECK(!background_task_token);
     foreground_task_token->SetTaskLog(std::move(task_log));
-    continuation.Run(std::move(foreground_task_token));
+    std::move(continuation).Run(std::move(foreground_task_token));
     return;
   }
 
@@ -288,13 +291,11 @@ void SyncTaskManager::UpdateTaskBlockerBody(
                                      SyncStatusCallback());
     if (!foreground_task_token) {
       PushPendingTask(
-          base::Bind(&SyncTaskManager::UpdateTaskBlockerBody,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(&foreground_task_token),
-                     base::Passed(&background_task_token),
-                     base::Passed(&task_log),
-                     base::Passed(&task_blocker),
-                     continuation),
+          base::BindOnce(&SyncTaskManager::UpdateTaskBlockerBody,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(foreground_task_token),
+                         std::move(background_task_token), std::move(task_log),
+                         std::move(task_blocker), std::move(continuation)),
           PRIORITY_HIGH);
       MaybeStartNextForegroundTask(nullptr);
       return;
@@ -313,14 +314,10 @@ void SyncTaskManager::UpdateTaskBlockerBody(
     DCHECK(pending_backgrounding_task_.is_null());
 
     // Wait for NotifyTaskDone to release a |task_blocker|.
-    pending_backgrounding_task_ =
-        base::Bind(&SyncTaskManager::UpdateTaskBlockerBody,
-                   weak_ptr_factory_.GetWeakPtr(),
-                   base::Passed(&foreground_task_token),
-                   base::Passed(&background_task_token),
-                   base::Passed(&task_log),
-                   base::Passed(&task_blocker),
-                   continuation);
+    pending_backgrounding_task_ = base::BindOnce(
+        &SyncTaskManager::UpdateTaskBlockerBody, weak_ptr_factory_.GetWeakPtr(),
+        std::move(foreground_task_token), std::move(background_task_token),
+        std::move(task_log), std::move(task_blocker), std::move(continuation));
     return;
   }
 
@@ -342,7 +339,7 @@ void SyncTaskManager::UpdateTaskBlockerBody(
   token_ = std::move(foreground_task_token);
   MaybeStartNextForegroundTask(nullptr);
   background_task_token->SetTaskLog(std::move(task_log));
-  continuation.Run(std::move(background_task_token));
+  std::move(continuation).Run(std::move(background_task_token));
 }
 
 std::unique_ptr<SyncTaskToken> SyncTaskManager::GetToken(
@@ -356,11 +353,12 @@ std::unique_ptr<SyncTaskToken> SyncTaskManager::GetToken(
   return std::move(token_);
 }
 
-void SyncTaskManager::PushPendingTask(
-    const base::Closure& closure, Priority priority) {
+void SyncTaskManager::PushPendingTask(base::OnceClosure closure,
+                                      Priority priority) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
-  pending_tasks_.push(PendingTask(closure, priority, pending_task_seq_++));
+  pending_tasks_.push(
+      PendingTask(std::move(closure), priority, pending_task_seq_++));
 }
 
 void SyncTaskManager::RunTask(std::unique_ptr<SyncTaskToken> token,
@@ -382,9 +380,7 @@ void SyncTaskManager::MaybeStartNextForegroundTask(
   }
 
   if (!pending_backgrounding_task_.is_null()) {
-    base::Closure closure = pending_backgrounding_task_;
-    pending_backgrounding_task_.Reset();
-    closure.Run();
+    std::move(pending_backgrounding_task_).Run();
     return;
   }
 
@@ -392,9 +388,9 @@ void SyncTaskManager::MaybeStartNextForegroundTask(
     return;
 
   if (!pending_tasks_.empty()) {
-    base::Closure closure = pending_tasks_.top().task;
+    base::RepeatingClosure closure = pending_tasks_.top().wrapped_once_closure;
     pending_tasks_.pop();
-    closure.Run();
+    std::move(closure).Run();
     return;
   }
 

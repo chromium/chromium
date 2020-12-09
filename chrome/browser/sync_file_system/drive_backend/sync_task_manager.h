@@ -43,9 +43,9 @@ struct TaskBlocker;
 // doesn't block the new background task, and queues it up if it can't run.
 class SyncTaskManager {
  public:
-  typedef base::Callback<void(const SyncStatusCallback& callback)> Task;
-  typedef base::Callback<void(std::unique_ptr<SyncTaskToken> token)>
-      Continuation;
+  using Task = base::OnceCallback<void(const SyncStatusCallback& callback)>;
+  using Continuation =
+      base::OnceCallback<void(std::unique_ptr<SyncTaskToken> token)>;
 
   enum Priority {
     PRIORITY_LOW,
@@ -83,7 +83,7 @@ class SyncTaskManager {
 
   // Schedules a task at the given priority.
   void ScheduleTask(const base::Location& from_here,
-                    const Task& task,
+                    Task task,
                     Priority priority,
                     const SyncStatusCallback& callback);
   void ScheduleSyncTask(const base::Location& from_here,
@@ -91,10 +91,10 @@ class SyncTaskManager {
                         Priority priority,
                         const SyncStatusCallback& callback);
 
-  // Runs the posted task only when we're idle.  Returns true if tha task is
+  // Runs the posted task only when we're idle.  Returns true if that task is
   // scheduled.
   bool ScheduleTaskIfIdle(const base::Location& from_here,
-                          const Task& task,
+                          Task task,
                           const SyncStatusCallback& callback);
   bool ScheduleSyncTaskIfIdle(const base::Location& from_here,
                               std::unique_ptr<SyncTask> task,
@@ -119,7 +119,7 @@ class SyncTaskManager {
   static void UpdateTaskBlocker(
       std::unique_ptr<SyncTaskToken> current_task_token,
       std::unique_ptr<TaskBlocker> task_blocker,
-      const Continuation& continuation);
+      Continuation continuation);
 
   bool IsRunningTask(int64_t task_token_id) const;
 
@@ -127,12 +127,15 @@ class SyncTaskManager {
 
  private:
   struct PendingTask {
-    base::Closure task;
+    // TODO: Change |wrapped_once_closure| to base::OnceTask if
+    // std::priority_queue supports move-only type. In the meantime, we can
+    // wrap a base::OnceClosure via AdaptCallbackForRepeating.
+    base::RepeatingClosure wrapped_once_closure;
     Priority priority;
     int64_t seq;
 
     PendingTask();
-    PendingTask(const base::Closure& task, Priority pri, int seq);
+    PendingTask(base::OnceClosure task, Priority pri, int seq);
     PendingTask(const PendingTask& other);
     ~PendingTask();
   };
@@ -152,7 +155,7 @@ class SyncTaskManager {
       std::unique_ptr<SyncTaskToken> background_task_token,
       std::unique_ptr<TaskLogger::TaskLog> task_log,
       std::unique_ptr<TaskBlocker> task_blocker,
-      const Continuation& continuation);
+      Continuation continuation);
 
   // This should be called when an async task needs to get a task token.
   std::unique_ptr<SyncTaskToken> GetToken(const base::Location& from_here,
@@ -163,7 +166,7 @@ class SyncTaskManager {
       const SyncStatusCallback& callback,
       std::unique_ptr<TaskBlocker> task_blocker);
 
-  void PushPendingTask(const base::Closure& closure, Priority priority);
+  void PushPendingTask(base::OnceClosure closure, Priority priority);
 
   void RunTask(std::unique_ptr<SyncTaskToken> token,
                std::unique_ptr<SyncTask> task);
@@ -185,7 +188,7 @@ class SyncTaskManager {
   size_t maximum_background_task_;
 
   // Holds pending continuation to move task to background.
-  base::Closure pending_backgrounding_task_;
+  base::OnceClosure pending_backgrounding_task_;
 
   std::priority_queue<PendingTask, std::vector<PendingTask>,
                       PendingTaskComparator> pending_tasks_;

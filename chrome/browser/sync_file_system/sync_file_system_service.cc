@@ -421,9 +421,7 @@ void SyncFileSystemService::CheckIfIdle() {
   if (idle_callback_.is_null())
     return;
 
-  base::Closure callback = idle_callback_;
-  idle_callback_.Reset();
-  callback.Run();
+  std::move(idle_callback_).Run();
 }
 
 SyncServiceState SyncFileSystemService::GetSyncServiceState() {
@@ -435,10 +433,9 @@ SyncFileSystemService* SyncFileSystemService::GetSyncService() {
   return this;
 }
 
-void SyncFileSystemService::CallOnIdleForTesting(
-    const base::Closure& callback) {
+void SyncFileSystemService::CallOnIdleForTesting(base::OnceClosure callback) {
   DCHECK(idle_callback_.is_null());
-  idle_callback_ = callback;
+  idle_callback_ = std::move(callback);
   CheckIfIdle();
 }
 

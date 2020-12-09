@@ -276,8 +276,8 @@ void LocalToRemoteSyncer::MoveToBackground(
   // After the invocation of ContinueAsBackgroundTask
   SyncTaskManager::UpdateTaskBlocker(
       std::move(token), std::move(blocker),
-      base::Bind(&LocalToRemoteSyncer::ContinueAsBackgroundTask,
-                 weak_ptr_factory_.GetWeakPtr(), continuation));
+      base::BindOnce(&LocalToRemoteSyncer::ContinueAsBackgroundTask,
+                     weak_ptr_factory_.GetWeakPtr(), continuation));
 }
 
 void LocalToRemoteSyncer::ContinueAsBackgroundTask(

@@ -85,7 +85,7 @@ class SyncFileSystemService
 
   TaskLogger* task_logger() { return &task_logger_; }
 
-  void CallOnIdleForTesting(const base::Closure& callback);
+  void CallOnIdleForTesting(base::OnceClosure callback);
 
  private:
   friend class SyncFileSystemServiceFactory;
@@ -181,7 +181,7 @@ class SyncFileSystemService
   base::ObserverList<SyncEventObserver>::Unchecked observers_;
 
   bool promoting_demoted_changes_;
-  base::Closure idle_callback_;
+  base::OnceClosure idle_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncFileSystemService);
 };

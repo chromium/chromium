@@ -43,9 +43,9 @@ void ListChangesTask::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
   }
 
   SyncTaskManager::UpdateTaskBlocker(
-      std::move(token), std::unique_ptr<TaskBlocker>(new TaskBlocker),
-      base::Bind(&ListChangesTask::StartListing,
-                 weak_ptr_factory_.GetWeakPtr()));
+      std::move(token), std::make_unique<TaskBlocker>(),
+      base::BindOnce(&ListChangesTask::StartListing,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ListChangesTask::StartListing(std::unique_ptr<SyncTaskToken> token) {
@@ -107,7 +107,7 @@ void ListChangesTask::DidListChanges(
     return;
   }
 
-  std::unique_ptr<TaskBlocker> task_blocker(new TaskBlocker);
+  auto task_blocker = std::make_unique<TaskBlocker>();
   task_blocker->exclusive = true;
   SyncTaskManager::UpdateTaskBlocker(
       std::move(token), std::move(task_blocker),
