@@ -69,7 +69,7 @@ void FileManagerUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
 
   page_handler_ = std::make_unique<FileManagerPageHandler>(
-      std::move(pending_page_handler), std::move(pending_page));
+      this, std::move(pending_page_handler), std::move(pending_page));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FileManagerUI)

@@ -16,10 +16,13 @@
 namespace chromeos {
 namespace file_manager {
 
+class FileManagerUI;
+
 // Class backing the page's functionality.
 class FileManagerPageHandler : public mojom::PageHandler {
  public:
   FileManagerPageHandler(
+      FileManagerUI* file_manager_ui,
       mojo::PendingReceiver<mojom::PageHandler> pending_receiver,
       mojo::PendingRemote<mojom::Page> pending_page);
   ~FileManagerPageHandler() override;
@@ -28,6 +31,7 @@ class FileManagerPageHandler : public mojom::PageHandler {
   FileManagerPageHandler& operator=(const FileManagerPageHandler&) = delete;
 
  private:
+  FileManagerUI* file_manager_ui_;  // Owns |this|.
   mojo::Receiver<mojom::PageHandler> receiver_;
   mojo::Remote<mojom::Page> page_;
 };
