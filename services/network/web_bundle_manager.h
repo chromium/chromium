@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
   WebBundleManager& operator=(const WebBundleManager&) = delete;
 
   base::WeakPtr<WebBundleURLLoaderFactory> CreateWebBundleURLLoaderFactory(
+      const GURL& bundle_url,
       const ResourceRequest::WebBundleTokenParams& params);
 
   base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(

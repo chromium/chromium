@@ -278,7 +278,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
     DCHECK(url_request.web_bundle_token_params.has_value());
     base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
         context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
-            *url_request.web_bundle_token_params);
+            url_request.url, *url_request.web_bundle_token_params);
     client =
         web_bundle_url_loader_factory->WrapURLLoaderClient(std::move(client));
   }

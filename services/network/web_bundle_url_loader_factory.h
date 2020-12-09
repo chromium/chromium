@@ -18,7 +18,8 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
     : public mojom::URLLoaderFactory {
  public:
-  explicit WebBundleURLLoaderFactory(
+  WebBundleURLLoaderFactory(
+      const GURL& bundle_url,
       mojo::Remote<mojom::WebBundleHandle> web_bundle_handle);
   ~WebBundleURLLoaderFactory() override;
   WebBundleURLLoaderFactory(const WebBundleURLLoaderFactory&) = delete;
@@ -54,6 +55,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error);
 
+  GURL bundle_url_;
   mojo::Remote<mojom::WebBundleHandle> web_bundle_handle_;
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;

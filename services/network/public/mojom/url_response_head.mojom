@@ -225,4 +225,8 @@ struct URLResponseHead {
   // The alias chain is preserved in reverse order, from canonical name (i.e.
   // address record name) through to query name.
   array<string> dns_aliases;
+
+  // The URL of WebBundle this response was loaded from. This value is only
+  // populated for resources loaded from a WebBundle.
+  url.mojom.Url web_bundle_url;
 };

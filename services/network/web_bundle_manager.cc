@@ -17,6 +17,7 @@ WebBundleManager::~WebBundleManager() = default;
 
 base::WeakPtr<WebBundleURLLoaderFactory>
 WebBundleManager::CreateWebBundleURLLoaderFactory(
+    const GURL& bundle_url,
     const ResourceRequest::WebBundleTokenParams& web_bundle_token_params) {
   DCHECK(factories_.find(web_bundle_token_params.token) == factories_.end());
 
@@ -31,7 +32,8 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
                      // |this| outlives |remote|.
                      base::Unretained(this), web_bundle_token_params.token));
 
-  auto factory = std::make_unique<WebBundleURLLoaderFactory>(std::move(remote));
+  auto factory = std::make_unique<WebBundleURLLoaderFactory>(bundle_url,
+                                                             std::move(remote));
   auto weak_factory = factory->GetWeakPtr();
   factories_.insert({web_bundle_token_params.token, std::move(factory)});
 

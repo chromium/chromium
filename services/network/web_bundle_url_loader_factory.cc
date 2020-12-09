@@ -316,8 +316,10 @@ class WebBundleURLLoaderFactory::BundleDataSource
 };
 
 WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
+    const GURL& bundle_url,
     mojo::Remote<mojom::WebBundleHandle> web_bundle_handle)
-    : web_bundle_handle_(std::move(web_bundle_handle)) {}
+    : bundle_url_(bundle_url),
+      web_bundle_handle_(std::move(web_bundle_handle)) {}
 
 WebBundleURLLoaderFactory::~WebBundleURLLoaderFactory() {
   for (auto loader : pending_loaders_) {
@@ -454,7 +456,10 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
     return;
   }
 
-  loader->OnResponse(web_package::CreateResourceResponse(response));
+  mojom::URLResponseHeadPtr response_head =
+      web_package::CreateResourceResponse(response);
+  response_head->web_bundle_url = bundle_url_;
+  loader->OnResponse(std::move(response_head));
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;

@@ -18,6 +18,7 @@ namespace network {
 
 namespace {
 
+const char kBundleUrl[] = "https://example.com/bundle.wbn";
 const char kResourceUrl[] = "https://example.com/";
 const char kResourceUrl2[] = "https://example.com/another";
 const char kResourceUrl3[] = "https://example.com/yetanother";
@@ -95,7 +96,8 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     mojo::Remote<mojom::WebBundleHandle> handle;
     handle_ = std::make_unique<TestWebBundleHandle>(
         handle.BindNewPipeAndPassReceiver());
-    factory_ = std::make_unique<WebBundleURLLoaderFactory>(std::move(handle));
+    factory_ = std::make_unique<WebBundleURLLoaderFactory>(GURL(kBundleUrl),
+                                                           std::move(handle));
     factory_->SetBundleStream(std::move(consumer));
   }
 
@@ -151,6 +153,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, Basic) {
 
   EXPECT_EQ(net::OK, request.client->completion_status().error_code);
   EXPECT_FALSE(last_bundle_error().has_value());
+  EXPECT_EQ(request.client->response_head()->web_bundle_url, GURL(kBundleUrl));
   std::string body;
   EXPECT_TRUE(mojo::BlockingCopyToString(
       request.client->response_body_release(), &body));

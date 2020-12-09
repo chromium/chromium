@@ -12,6 +12,12 @@
 
 namespace network {
 
+namespace {
+
+const char kBundleUrl[] = "https://example.com/bundle.wbn";
+
+}  // namespace
+
 class WebBundleManagerTest : public testing::Test {
  public:
   WebBundleManagerTest() = default;
@@ -31,7 +37,8 @@ TEST_F(WebBundleManagerTest, RemoveFactoryWhenDisconnected) {
     auto token_params =
         ResourceRequest::WebBundleTokenParams(token, std::move(handle));
 
-    auto factory = manager.CreateWebBundleURLLoaderFactory(token_params);
+    auto factory =
+        manager.CreateWebBundleURLLoaderFactory(GURL(kBundleUrl), token_params);
     ASSERT_TRUE(factory);
     ASSERT_TRUE(manager.GetWebBundleURLLoaderFactory(token));
     // Getting out of scope to delete |receiver|.
