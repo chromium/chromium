@@ -22,6 +22,7 @@
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 #if !defined(OS_APPLE)
 #include "ui/aura/window.h"
@@ -125,6 +126,12 @@ void MenuHost::InitMenuHost(Widget* parent,
                        : Widget::InitParams::WindowOpacity::kOpaque;
   params.parent = parent ? parent->GetNativeView() : gfx::kNullNativeView;
   params.bounds = bounds;
+
+  auto delegate = std::make_unique<WidgetDelegate>();
+  delegate->SetOwnedByWidget(true);
+  delegate->SetInitiallyFocusedView(submenu_);
+  params.delegate = delegate.release();
+
   // If MenuHost has no parent widget, it needs to be marked
   // Activatable, so that calling Show in ShowMenuHost will
   // get keyboard focus.
