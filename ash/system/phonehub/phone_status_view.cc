@@ -41,9 +41,11 @@ namespace {
 constexpr int kTitleContainerSpacing = 16;
 constexpr int kStatusSpacing = 4;
 constexpr gfx::Size kStatusIconSize(kUnifiedTrayIconSize, kUnifiedTrayIconSize);
+constexpr gfx::Size kSignalIconSize(15, 15);
 constexpr int kSeparatorHeight = 18;
 constexpr int kPhoneNameLabelWidthMax = 160;
 constexpr gfx::Insets kBorderInsets(0, 16);
+constexpr gfx::Insets kBatteryLabelBorderInsets(0, 0, 0, 4);
 
 // Typograph in dip.
 constexpr int kBatteryLabelFontSize = 11;
@@ -151,6 +153,8 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
   auto default_font = battery_label_->font_list();
   battery_label_->SetFontList(default_font.DeriveWithSizeDelta(
       kBatteryLabelFontSize - default_font.GetFontSize()));
+  battery_label_->SetBorder(
+      views::CreateEmptyBorder(kBatteryLabelBorderInsets));
   AddView(TriView::Container::CENTER, battery_label_);
 
   separator_ = new views::Separator();
@@ -214,12 +218,14 @@ void PhoneStatusView::UpdateMobileStatus() {
       signal_image = CreateVectorIcon(kPhoneHubMobileNoSimIcon, primary_color);
       tooltip_text =
           l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_MOBILE_STATUS_NO_SIM);
+      signal_icon_->SetImageSize(kStatusIconSize);
       break;
     case PhoneStatusModel::MobileStatus::kSimButNoReception:
       signal_image =
           CreateVectorIcon(kPhoneHubMobileNoConnectionIcon, primary_color);
       tooltip_text =
           l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_MOBILE_STATUS_NO_NETWORK);
+      signal_icon_->SetImageSize(kStatusIconSize);
       break;
     case PhoneStatusModel::MobileStatus::kSimWithReception:
       const PhoneStatusModel::MobileConnectionMetadata& metadata =
@@ -227,8 +233,9 @@ void PhoneStatusView::UpdateMobileStatus() {
       int signal_strength = GetSignalStrengthAsInt(metadata.signal_strength);
       signal_image = gfx::CanvasImageSource::MakeImageSkia<
           network_icon::SignalStrengthImageSource>(
-          network_icon::ImageType::BARS, primary_color, kStatusIconSize,
+          network_icon::ImageType::BARS, primary_color, kSignalIconSize,
           signal_strength);
+      signal_icon_->SetImageSize(kSignalIconSize);
       tooltip_text = l10n_util::GetStringFUTF16(
           IDS_ASH_PHONE_HUB_MOBILE_STATUS_NETWORK_NAME_AND_STRENGTH,
           metadata.mobile_provider,
@@ -238,7 +245,6 @@ void PhoneStatusView::UpdateMobileStatus() {
   }
 
   signal_icon_->SetImage(signal_image);
-  signal_icon_->SetImageSize(kStatusIconSize);
   signal_icon_->SetTooltipText(tooltip_text);
 }
 
