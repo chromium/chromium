@@ -49,9 +49,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTaskRunner
   bool HasTaskRunner() const { return !!task_runner_; }
 
   // These are only used on Android when talking to the system Perfetto service.
-  void AddFileDescriptorWatch(int fd, std::function<void()>) override;
-  void RemoveFileDescriptorWatch(int fd) override;
-
+  void AddFileDescriptorWatch(perfetto::base::PlatformHandle,
+                              std::function<void()>) override;
+  void RemoveFileDescriptorWatch(perfetto::base::PlatformHandle) override;
 
   // Tests will shut down all task runners in between runs, so we need
   // to re-create any static instances on each SetUp();

@@ -66,8 +66,9 @@ bool PerfettoTaskRunner::RunsTasksOnCurrentThread() const {
   return task_runner_->RunsTasksInCurrentSequence();
 }
 
+// PlatformHandle is an int on POSIX, a HANDLE on Windows.
 void PerfettoTaskRunner::AddFileDescriptorWatch(
-    int fd,
+    perfetto::base::PlatformHandle fd,
     std::function<void()> callback) {
 #if !defined(OS_POSIX)
   NOTREACHED();
@@ -104,7 +105,8 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
 #endif  // !defined(OS_POSIX)
 }
 
-void PerfettoTaskRunner::RemoveFileDescriptorWatch(int fd) {
+void PerfettoTaskRunner::RemoveFileDescriptorWatch(
+    perfetto::base::PlatformHandle fd) {
 #if !defined(OS_POSIX)
   NOTREACHED();
 #else
