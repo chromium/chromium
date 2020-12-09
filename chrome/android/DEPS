@@ -55,6 +55,7 @@ include_rules = [
   "+components/infobars/android",
   "+components/invalidation",
   "+components/javascript_dialogs/android",
+  "+components/messages/android",
   "+components/media_router/browser/android",
   "+components/page_info/android/java",
   "+components/permissions/android/nfc",

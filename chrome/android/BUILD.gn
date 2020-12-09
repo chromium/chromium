@@ -885,6 +885,8 @@ junit_binary("chrome_junit_tests") {
     "//components/feed/core/proto:proto_java",
     "//components/feed/core/proto:proto_java_v2",
     "//components/infobars/android:java",
+    "//components/messages/android:java",
+    "//components/messages/android:manager_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/module_installer/android:module_installer_java",
     "//components/offline_items_collection/core:core_java",

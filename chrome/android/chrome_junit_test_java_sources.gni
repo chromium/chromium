@@ -121,6 +121,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/media/ui/MediaNotificationTestTabHolder.java",
   "junit/src/org/chromium/chrome/browser/media/ui/MediaNotificationThrottlerTest.java",
   "junit/src/org/chromium/chrome/browser/media/ui/MediaNotificationTitleUpdatedTest.java",
+  "junit/src/org/chromium/chrome/browser/messages/ChromeMessageQueueMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/metrics/VariationsSessionTest.java",
   "junit/src/org/chromium/chrome/browser/native_page/NativePageFactoryTest.java",
   "junit/src/org/chromium/chrome/browser/net/nqe/NetworkQualityProviderTest.java",
