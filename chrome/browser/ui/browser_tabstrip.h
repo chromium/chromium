@@ -58,9 +58,6 @@ void CloseWebContents(Browser* browser,
 // applicable.
 void ConfigureTabGroupForNavigation(NavigateParams* nav_params);
 
-// Decides whether or not to create a new tab group.
-bool ShouldAutoCreateGroupForNavigation(NavigateParams* nav_params);
-
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_BROWSER_TABSTRIP_H_
