@@ -48,10 +48,10 @@ class PredictionModelFetcher {
   // request is complete providing the GetModelsResponse object if successful or
   // nullopt if the fetch failed or no fetch is needed. Virtualized for testing.
   virtual bool FetchOptimizationGuideServiceModels(
-      const std::vector<optimization_guide::proto::ModelInfo>&
-          models_request_info,
+      const std::vector<proto::ModelInfo>& models_request_info,
       const std::vector<std::string>& hosts,
-      optimization_guide::proto::RequestContext request_context,
+      const std::vector<proto::FieldTrial>& active_field_trials,
+      proto::RequestContext request_context,
       ModelsFetchedCallback models_fetched_callback);
 
  private:

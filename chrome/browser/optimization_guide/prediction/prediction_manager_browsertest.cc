@@ -350,6 +350,10 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     expected_field_trial_name_hashes_ = expected_field_trial_name_hashes;
   }
 
+  void SetExpectedHostsSentInRequest(bool expected_hosts_sent_in_request) {
+    expected_hosts_sent_in_request_ = expected_hosts_sent_in_request;
+  }
+
   GURL https_url_with_content() { return https_url_with_content_; }
   GURL https_url_without_content() { return https_url_without_content_; }
 
@@ -392,11 +396,15 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     EXPECT_EQ(seen_field_trial_name_hashes.size(),
               expected_field_trial_name_hashes_.size());
 
+    EXPECT_EQ(expected_hosts_sent_in_request_, !models_request.hosts().empty());
+    std::vector<std::string> hosts;
+    if (expected_hosts_sent_in_request_) {
+      hosts = {"example1.com", https_server_->GetURL("/").host()};
+    }
     response->set_code(net::HTTP_OK);
     std::unique_ptr<optimization_guide::proto::GetModelsResponse>
-        get_models_response = BuildGetModelsResponse(
-            {"example1.com", https_server_->GetURL("/").host()},
-            {client_model_feature_});
+        get_models_response =
+            BuildGetModelsResponse(hosts, {client_model_feature_});
     if (response_type_ == PredictionModelsFetcherRemoteResponseType::
                               kSuccessfulWithFeaturesAndNoModels) {
       get_models_response->clear_models();
@@ -431,6 +439,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
           kSuccessfulWithModelsAndFeatures;
   std::unique_ptr<OptimizationGuideConsumerWebContentsObserver> consumer_;
   base::flat_set<uint32_t> expected_field_trial_name_hashes_;
+  bool expected_hosts_sent_in_request_ = true;
 };
 
 class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
@@ -753,6 +762,72 @@ IN_PROC_BROWSER_TEST_F(
   run_loop->Run();
 }
 
+class PredictionManagerNoUserPermissionsTest
+    : public PredictionManagerBrowserTest {
+ public:
+  PredictionManagerNoUserPermissionsTest() {
+    // Hosts and field trials should not be sent.
+    SetExpectedHostsSentInRequest(false);
+    SetExpectedFieldTrialNames({});
+  }
+
+  ~PredictionManagerNoUserPermissionsTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    PredictionManagerBrowserTest::SetUpCommandLine(cmd);
+
+    // Remove switches that enable user permissions.
+    cmd->RemoveSwitch("enable-spdy-proxy-auth");
+    cmd->RemoveSwitch(switches::kDisableCheckingUserPermissionsForTesting);
+  }
+
+ private:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kOptimizationHints, {}},
+            {features::kRemoteOptimizationGuideFetching, {}},
+            {features::kOptimizationTargetPrediction, {}},
+            {features::kOptimizationHintsFieldTrials,
+             {{"allowed_field_trial_names",
+               "scoped_feature_list_trial_for_OptimizationHints,scoped_feature_"
+               "list_trial_for_OptimizationHintsFetching"}}},
+        },
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PredictionManagerNoUserPermissionsTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(
+                           HostsAndFieldTrialsNotPassedWhenNoUserPermissions)) {
+  base::HistogramTester histogram_tester;
+
+  SetResponseType(PredictionModelsFetcherRemoteResponseType::
+                      kSuccessfulWithModelsAndFeatures);
+  RegisterWithKeyedService();
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 1);
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
+
+  SetCallbackOnConsumer(base::DoNothing());
+  ui_test_utils::NavigateToURL(browser(), https_url_with_content());
+
+  // Expect that we did not fetch for host and that we did not get any host
+  // model features.
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionManager.HasHostModelFeaturesForHost", false,
+      1);
+}
+
 // Implementation of a download system logger that provides the ability to wait
 // for certain events to happen, notably added and progressing downloads.
 class DownloadServiceObserver : public download::Logger::Observer {
@@ -860,8 +935,17 @@ class PredictionManagerModelDownloadingBrowserTest
             {features::kOptimizationTargetPrediction, {}},
             {features::kOptimizationGuideModelDownloading,
              {{"unrestricted_model_downloading", "true"}}},
+            {features::kOptimizationHintsFieldTrials,
+             {{"allowed_field_trial_names",
+               "scoped_feature_list_trial_for_OptimizationHints,scoped_feature_"
+               "list_trial_for_OptimizationHintsFetching"}}},
         },
         {});
+    SetExpectedFieldTrialNames(base::flat_set<uint32_t>(
+        {variations::HashName(
+             "scoped_feature_list_trial_for_OptimizationHints"),
+         variations::HashName(
+             "scoped_feature_list_trial_for_OptimizationHintsFetching")}));
   }
 
   std::unique_ptr<DownloadServiceObserver> download_service_observer_;

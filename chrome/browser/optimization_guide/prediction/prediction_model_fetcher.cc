@@ -44,10 +44,10 @@ PredictionModelFetcher::PredictionModelFetcher(
 PredictionModelFetcher::~PredictionModelFetcher() = default;
 
 bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
-    const std::vector<optimization_guide::proto::ModelInfo>&
-        models_request_info,
+    const std::vector<proto::ModelInfo>& models_request_info,
     const std::vector<std::string>& hosts,
-    optimization_guide::proto::RequestContext request_context,
+    const std::vector<proto::FieldTrial>& active_field_trials,
+    proto::RequestContext request_context,
     ModelsFetchedCallback models_fetched_callback) {
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -70,8 +70,8 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
 
   pending_models_request_->set_request_context(request_context);
 
-  *pending_models_request_->mutable_active_field_trials() =
-      optimization_guide::GetActiveFieldTrialsAllowedForFetch();
+  *pending_models_request_->mutable_active_field_trials() = {
+      active_field_trials.begin(), active_field_trials.end()};
 
   // Limit the number of hosts to fetch features for, the list of hosts
   // is assumed to be ordered from most to least important by the top

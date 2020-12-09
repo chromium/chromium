@@ -42,10 +42,8 @@ class PredictionModelFetcherTest : public testing::Test {
 
   ~PredictionModelFetcherTest() override {}
 
-  void OnModelsFetched(
-      base::Optional<
-          std::unique_ptr<optimization_guide::proto::GetModelsResponse>>
-          get_models_response) {
+  void OnModelsFetched(base::Optional<std::unique_ptr<proto::GetModelsResponse>>
+                           get_models_response) {
     if (get_models_response)
       models_fetched_ = true;
   }
@@ -65,14 +63,13 @@ class PredictionModelFetcherTest : public testing::Test {
   }
 
  protected:
-  bool FetchModels(
-      const std::vector<optimization_guide::proto::ModelInfo>
-          models_request_info,
-      const std::vector<std::string>& hosts,
-      const optimization_guide::proto::RequestContext& request_context) {
+  bool FetchModels(const std::vector<proto::ModelInfo> models_request_info,
+                   const std::vector<std::string>& hosts,
+                   const std::vector<proto::FieldTrial>& active_field_trials,
+                   proto::RequestContext request_context) {
     bool status =
         prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
-            models_request_info, hosts, request_context,
+            models_request_info, hosts, active_field_trials, request_context,
             base::BindOnce(&PredictionModelFetcherTest::OnModelsFetched,
                            base::Unretained(this)));
     RunUntilIdle();
@@ -120,10 +117,10 @@ TEST_F(PredictionModelFetcherTest, FetchOptimizationGuideServiceModels) {
   base::HistogramTester histogram_tester;
   std::string response_content;
   std::vector<std::string> hosts = {"foo.com", "bar.com"};
-  std::vector<optimization_guide::proto::ModelInfo> models_request_info({});
-  EXPECT_TRUE(FetchModels(
-      models_request_info, hosts,
-      optimization_guide::proto::RequestContext::CONTEXT_BATCH_UPDATE));
+  std::vector<proto::ModelInfo> models_request_info({});
+  std::vector<proto::FieldTrial> active_field_trials({});
+  EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
   VerifyHasPendingFetchRequests();
 
   histogram_tester.ExpectUniqueSample(
@@ -146,12 +143,14 @@ TEST_F(PredictionModelFetcherTest,
   std::string response_content;
   std::vector<std::string> hosts;
   for (size_t i = 0;
-       i <= features::MaxHostsForOptimizationGuideServiceModelsFetch() + 1; i++)
+       i <= features::MaxHostsForOptimizationGuideServiceModelsFetch() + 1;
+       i++) {
     hosts.push_back("host" + base::NumberToString(i) + ".com");
-  std::vector<optimization_guide::proto::ModelInfo> models_request_info({});
-  EXPECT_TRUE(FetchModels(
-      models_request_info, hosts,
-      optimization_guide::proto::RequestContext::CONTEXT_BATCH_UPDATE));
+  }
+  std::vector<proto::ModelInfo> models_request_info({});
+  std::vector<proto::FieldTrial> active_field_trials({});
+  EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
   VerifyHasPendingFetchRequests();
 
   histogram_tester.ExpectUniqueSample(
@@ -173,10 +172,10 @@ TEST_F(PredictionModelFetcherTest, FetchFilterInvalidHosts) {
   std::string response_content;
   std::vector<std::string> hosts = {"192.168.1.1", "_abc", "localhost",
                                     "foo.com"};
-  std::vector<optimization_guide::proto::ModelInfo> models_request_info({});
-  EXPECT_TRUE(FetchModels(
-      models_request_info, hosts,
-      optimization_guide::proto::RequestContext::CONTEXT_BATCH_UPDATE));
+  std::vector<proto::ModelInfo> models_request_info({});
+  std::vector<proto::FieldTrial> active_field_trials({});
+  EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
   VerifyHasPendingFetchRequests();
 
   histogram_tester.ExpectUniqueSample(
@@ -199,10 +198,10 @@ TEST_F(PredictionModelFetcherTest, FetchReturned404) {
   std::string response_content;
 
   std::vector<std::string> hosts = {"foo.com", "bar.com"};
-  std::vector<optimization_guide::proto::ModelInfo> models_request_info({});
-  EXPECT_TRUE(FetchModels(
-      models_request_info, hosts,
-      optimization_guide::proto::RequestContext::CONTEXT_BATCH_UPDATE));
+  std::vector<proto::ModelInfo> models_request_info({});
+  std::vector<proto::FieldTrial> active_field_trials({});
+  EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
   // Send a 404 to HintsFetcher.
   SimulateResponse(response_content, net::HTTP_NOT_FOUND);
   EXPECT_FALSE(models_fetched());
@@ -220,10 +219,10 @@ TEST_F(PredictionModelFetcherTest, FetchReturnBadResponse) {
   std::string response_content = "not proto";
 
   std::vector<std::string> hosts = {"foo.com", "bar.com"};
-  std::vector<optimization_guide::proto::ModelInfo> models_request_info({});
-  EXPECT_TRUE(FetchModels(
-      models_request_info, hosts,
-      optimization_guide::proto::RequestContext::CONTEXT_BATCH_UPDATE));
+  std::vector<proto::ModelInfo> models_request_info({});
+  std::vector<proto::FieldTrial> active_field_trials({});
+  EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
   VerifyHasPendingFetchRequests();
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
   EXPECT_FALSE(models_fetched());
@@ -233,16 +232,15 @@ TEST_F(PredictionModelFetcherTest, FetchAttemptWhenNetworkOffline) {
   SetConnectionOffline();
   std::string response_content;
   std::vector<std::string> hosts = {"foo.com", "bar.com"};
-  std::vector<optimization_guide::proto::ModelInfo> models_request_info({});
-  EXPECT_FALSE(FetchModels(
-      models_request_info, hosts,
-      optimization_guide::proto::RequestContext::CONTEXT_BATCH_UPDATE));
+  std::vector<proto::ModelInfo> models_request_info({});
+  std::vector<proto::FieldTrial> active_field_trials({});
+  EXPECT_FALSE(FetchModels(models_request_info, hosts, active_field_trials,
+                           proto::RequestContext::CONTEXT_BATCH_UPDATE));
   EXPECT_FALSE(models_fetched());
 
   SetConnectionOnline();
-  EXPECT_TRUE(FetchModels(
-      models_request_info, hosts,
-      optimization_guide::proto::RequestContext::CONTEXT_BATCH_UPDATE));
+  EXPECT_TRUE(FetchModels(models_request_info, hosts, active_field_trials,
+                          proto::RequestContext::CONTEXT_BATCH_UPDATE));
   VerifyHasPendingFetchRequests();
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
   EXPECT_TRUE(models_fetched());
@@ -252,10 +250,10 @@ TEST_F(PredictionModelFetcherTest, EmptyModelInfoAndHosts) {
   base::HistogramTester histogram_tester;
   std::string response_content;
   std::vector<std::string> hosts = {};
-  std::vector<optimization_guide::proto::ModelInfo> models_request_info({});
-  EXPECT_FALSE(FetchModels(
-      models_request_info, hosts,
-      optimization_guide::proto::RequestContext::CONTEXT_BATCH_UPDATE));
+  std::vector<proto::ModelInfo> models_request_info({});
+  std::vector<proto::FieldTrial> active_field_trials({});
+  EXPECT_FALSE(FetchModels(models_request_info, hosts, active_field_trials,
+                           proto::RequestContext::CONTEXT_BATCH_UPDATE));
 
   EXPECT_FALSE(models_fetched());
 }

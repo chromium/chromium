@@ -321,6 +321,10 @@ void PredictionManager::RegisterOptimizationTargets(
   if (new_optimization_targets.size() == 0)
     return;
 
+  // If no fetch is scheduled, maybe schedule one.
+  if (!fetch_timer_.IsRunning())
+    MaybeScheduleModelAndHostModelFeaturesFetch();
+
   // Start loading the host model features if they are not already.
   if (!host_model_features_loaded_) {
     LoadHostModelFeatures();
@@ -605,7 +609,8 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
 
 void PredictionManager::FetchModelsAndHostModelFeatures() {
   SEQUENCE_CHECKER(sequence_checker_);
-  if (!IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_))
+
+  if (!features::IsRemoteFetchingEnabled())
     return;
 
   ScheduleModelsAndHostModelFeaturesFetch();
@@ -633,24 +638,31 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
     prediction_model_download_manager_->CancelAllPendingDownloads();
 
   std::vector<std::string> top_hosts;
-  // If the top host provider is not available, the user has likely not seen the
-  // Lite mode infobar, so top hosts cannot be provided. However, prediction
-  // models are allowed to be fetched.
-  if (top_host_provider_) {
-    top_hosts = top_host_provider_->GetTopHosts();
+  std::vector<proto::FieldTrial> active_field_trials;
+  // Top hosts and active field trials convey some sort of user information, so
+  // ensure that the user has opted into the right permissions before adding
+  // these fields to the request.
+  if (IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_)) {
+    if (top_host_provider_) {
+      top_hosts = top_host_provider_->GetTopHosts();
 
-    // Remove hosts that are already available in the host model features cache.
-    // The request should still be made in case there is a new model or a model
-    // that does not rely on host model features to be fetched.
-    auto it = top_hosts.begin();
-    while (it != top_hosts.end()) {
-      if (host_model_features_cache_.Peek(*it) !=
-          host_model_features_cache_.end()) {
-        it = top_hosts.erase(it);
-        continue;
+      // Remove hosts that are already available in the host model features
+      // cache. The request should still be made in case there is a new model or
+      // a model that does not rely on host model features to be fetched.
+      auto it = top_hosts.begin();
+      while (it != top_hosts.end()) {
+        if (host_model_features_cache_.Peek(*it) !=
+            host_model_features_cache_.end()) {
+          it = top_hosts.erase(it);
+          continue;
+        }
+        ++it;
       }
-      ++it;
     }
+    google::protobuf::RepeatedPtrField<proto::FieldTrial> current_field_trials =
+        GetActiveFieldTrialsAllowedForFetch();
+    active_field_trials = std::vector<proto::FieldTrial>(
+        {current_field_trials.begin(), current_field_trials.end()});
   }
 
   if (!prediction_model_fetcher_) {
@@ -688,7 +700,8 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
   }
 
   prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
-      models_info, top_hosts, optimization_guide::proto::CONTEXT_BATCH_UPDATE,
+      models_info, top_hosts, active_field_trials,
+      optimization_guide::proto::CONTEXT_BATCH_UPDATE,
       base::BindOnce(&PredictionManager::OnModelsAndHostFeaturesFetched,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1097,7 +1110,7 @@ bool PredictionManager::ProcessAndStoreHostModelFeatures(
 }
 
 void PredictionManager::MaybeScheduleModelAndHostModelFeaturesFetch() {
-  if (!IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_))
+  if (!features::IsRemoteFetchingEnabled())
     return;
 
   if (optimization_guide::switches::
