@@ -82,7 +82,7 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
     // Secondary font is for double-digit counts. Because we have control over
     // system fonts on ChromeOS, we can just choose a condensed font. For other
     // platforms we adjust size.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     typeface = "Roboto Condensed";
 #else
     size_delta -= 2;

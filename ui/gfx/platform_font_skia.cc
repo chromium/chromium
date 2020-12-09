@@ -172,7 +172,7 @@ bool PlatformFontSkia::InitDefaultFont() {
     delegate->GetDefaultFontDescription(&family, &size_pixels, &style, &weight,
                                         &params);
   } else if (default_font_description_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // On ChromeOS, a FontList font description string is stored as a
     // translatable resource and passed in via SetDefaultFontDescription().
     FontRenderParamsQuery query;
