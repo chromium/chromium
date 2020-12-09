@@ -8,7 +8,6 @@
 #import <MaterialComponents/MaterialTypography.h>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_view_delegate.h"
@@ -16,7 +15,6 @@
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -293,9 +291,7 @@ NSString* const kTitleViewAccessibilityIdentifier = @"titleView";
   ]];
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       closeButton.pointerInteractionEnabled = YES;
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 
@@ -360,11 +356,9 @@ NSString* const kTitleViewAccessibilityIdentifier = @"titleView";
                                action:@selector(didTapCancel)];
 #if defined(__IPHONE_13_4)
       if (@available(iOS 13.4, *)) {
-        if (base::FeatureList::IsEnabled(kPointerSupport)) {
           cancelButton.pointerInteractionEnabled = YES;
           cancelButton.pointerStyleProvider =
               CreateTransparentButtonPointerStyleProvider();
-        }
       }
 #endif  // defined(__IPHONE_13_4)
 
@@ -380,11 +374,9 @@ NSString* const kTitleViewAccessibilityIdentifier = @"titleView";
                                action:@selector(didTapConfirm)];
 #if defined(__IPHONE_13_4)
       if (@available(iOS 13.4, *)) {
-        if (base::FeatureList::IsEnabled(kPointerSupport)) {
           confirmButton.pointerInteractionEnabled = YES;
           confirmButton.pointerStyleProvider =
               CreateOpaqueButtonPointerStyleProvider();
-        }
       }
 #endif  // defined(__IPHONE_13_4)
 

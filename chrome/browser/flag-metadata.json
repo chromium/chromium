@@ -3920,11 +3920,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "pointer-support",
-    "owners": [ "edchin", "bling-flags@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "post-quantum-cecpq2",
     "owners": [ "agl" ],
     "expiry_milestone": 86

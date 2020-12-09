@@ -10,7 +10,6 @@
 #import <MaterialComponents/MaterialButtons.h>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/i18n/rtl.h"
 #include "base/mac/foundation_util.h"
@@ -20,7 +19,6 @@
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -835,9 +833,7 @@ UIImage* InfoBarCloseImage() {
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       _closeButton.pointerInteractionEnabled = YES;
-    }
   }
 #endif  // defined(__IPHONE_13_4)
   [self addSubview:_closeButton];
@@ -1045,10 +1041,8 @@ UIImage* InfoBarCloseImage() {
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       button.pointerInteractionEnabled = YES;
       button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-    }
   }
 #endif  // defined(__IPHONE_13_4)
   // Without the call to layoutIfNeeded, |button| returns an incorrect

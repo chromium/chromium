@@ -7,10 +7,9 @@
 #import <CoreGraphics/CoreGraphics.h>
 #include <algorithm>
 
-#include "base/feature_list.h"
+#include "base/check_op.h"
 #include "base/numerics/ranges.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -394,14 +393,12 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       self.incognitoHoverView.center =
           [self centerOfSegment:TabGridPageIncognitoTabs];
       self.regularHoverView.center =
           [self centerOfSegment:TabGridPageRegularTabs];
       self.remoteHoverView.center =
           [self centerOfSegment:TabGridPageRemoteTabs];
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 
@@ -570,7 +567,6 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kOverallHeight);
       UIView* incognitoHoverView = [[UIView alloc] initWithFrame:segmentRect];
       UIView* regularHoverView = [[UIView alloc] initWithFrame:segmentRect];
@@ -590,7 +586,6 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
           addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
       [self.sliderView
           addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 

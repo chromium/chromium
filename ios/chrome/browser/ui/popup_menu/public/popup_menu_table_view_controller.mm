@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 
-#include "base/feature_list.h"
 #include "base/ios/ios_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -13,7 +12,6 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
@@ -51,10 +49,8 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
   if (self) {
 #if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
-      if (base::FeatureList::IsEnabled(kPointerSupport)) {
         self.cellsInMemory =
             [NSHashTable<UITableViewCell*> weakObjectsHashTable];
-      }
     }
 #endif  // defined(__IPHONE_13_4)
   }
@@ -228,12 +224,10 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
                      cellForRowAtIndexPath:indexPath];
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       if (![self.cellsInMemory containsObject:cell]) {
         [cell addInteraction:[[ViewPointerInteraction alloc] init]];
         [self.cellsInMemory addObject:cell];
       }
-    }
   }
 #endif  // defined(__IPHONE_13_4)
   return cell;

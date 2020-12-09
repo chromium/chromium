@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 
-#include "base/feature_list.h"
+#include <ostream>
+
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -39,11 +39,9 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
   button.badgeType = badgeType;
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       button.pointerInteractionEnabled = YES;
       button.pointerStyleProvider =
           CreateDefaultEffectCirclePointerStyleProvider();
-    }
   }
 #endif  // defined(__IPHONE_13_4)
   return button;

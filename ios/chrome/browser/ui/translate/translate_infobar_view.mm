@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/translate/translate_infobar_view.h"
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/procedural_block_types.h"
@@ -18,7 +17,6 @@
 #import "ios/chrome/browser/ui/translate/translate_infobar_language_tab_strip_view_delegate.h"
 #import "ios/chrome/browser/ui/translate/translate_infobar_view_constants.h"
 #import "ios/chrome/browser/ui/translate/translate_infobar_view_delegate.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
@@ -290,10 +288,8 @@ const CGFloat kIconTrailingMargin = 12;
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       self.optionsButton.pointerInteractionEnabled = YES;
       self.dismissButton.pointerInteractionEnabled = YES;
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 

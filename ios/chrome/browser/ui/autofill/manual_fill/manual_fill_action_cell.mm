@@ -4,11 +4,9 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
 
-#include "base/feature_list.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_button.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -108,9 +106,7 @@
   [NSLayoutConstraint activateConstraints:constraints];
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       [self addInteraction:[[ViewPointerInteraction alloc] init]];
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 }

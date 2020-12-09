@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_new_tab_button.h"
 
-#include "base/feature_list.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
@@ -58,11 +56,9 @@ const CGFloat kSpotlightHeight = 36.0f;
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       // Customize the pointer highlight tomatch the spotlight view.
       self.pointerInteractionEnabled = YES;
       self.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 }

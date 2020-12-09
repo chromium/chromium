@@ -6,11 +6,10 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
-#include "base/feature_list.h"
+#import "base/check_op.h"
 #import "base/logging.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/gradient_view.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
@@ -458,11 +457,9 @@ enum AuthenticationButtonType {
   DCHECK(button);
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       button.pointerInteractionEnabled = YES;
       button.pointerStyleProvider =
           CreateOpaqueOrTransparentButtonPointerStyleProvider();
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 }

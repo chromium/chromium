@@ -156,9 +156,7 @@ UIColor* BackgroundColor() {
 
 #if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
-      if (base::FeatureList::IsEnabled(kPointerSupport)) {
         self.pointerInteractionEnabled = YES;
-      }
     }
 #endif  // defined(__IPHONE_13_4)
   }
@@ -508,9 +506,7 @@ UIColor* BackgroundColor() {
 
 #if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
-      if (base::FeatureList::IsEnabled(kPointerSupport)) {
         _buttonNewTab.pointerInteractionEnabled = YES;
-      }
     }
 #endif  // defined(__IPHONE_13_4)
 

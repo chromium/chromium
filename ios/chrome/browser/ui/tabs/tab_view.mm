@@ -7,7 +7,6 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -17,7 +16,6 @@
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -314,9 +312,7 @@ UIImage* DefaultFaviconImage() {
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       _closeButton.pointerInteractionEnabled = YES;
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 
@@ -401,8 +397,6 @@ UIImage* DefaultFaviconImage() {
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (!base::FeatureList::IsEnabled(kPointerSupport))
-      return;
     if (selected) {
       if (_pointerInteraction)
         [self removeInteraction:_pointerInteraction];

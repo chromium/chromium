@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/ui/passwords/password_breach_view_controller.h"
 
-#include "base/feature_list.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,9 +25,7 @@
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       self.pointerInteractionEnabled = YES;
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 

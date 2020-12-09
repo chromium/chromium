@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_view.h"
 
-#include "base/feature_list.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -73,10 +71,8 @@ const CGFloat kPreferredMaxWidth = 73;
 
 #ifdef __IPHONE_13_4
     if (@available(iOS 13.4, *)) {
-      if (base::FeatureList::IsEnabled(kPointerSupport)) {
         [self addInteraction:[[UIPointerInteraction alloc]
                                  initWithDelegate:self]];
-      }
     }
 #endif
   }

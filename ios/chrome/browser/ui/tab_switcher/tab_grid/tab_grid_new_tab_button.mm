@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_new_tab_button.h"
 
-#include "base/feature_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,11 +30,9 @@
 
 #if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
-      if (base::FeatureList::IsEnabled(kPointerSupport)) {
         self.pointerInteractionEnabled = YES;
         self.pointerStyleProvider =
             CreateLiftEffectCirclePointerStyleProvider();
-      }
     }
 #endif  // defined(__IPHONE_13_4)
   }

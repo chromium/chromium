@@ -8,9 +8,6 @@
 #error "This file requires ARC support."
 #endif
 
-#include "base/feature_list.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-
 @implementation ExtendedTouchTargetButton
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -18,9 +15,7 @@
   if (self) {
 #if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
-      if (base::FeatureList::IsEnabled(kPointerSupport)) {
         self.pointerInteractionEnabled = YES;
-      }
     }
 #endif  // defined(__IPHONE_13_4)
   }

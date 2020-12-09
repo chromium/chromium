@@ -322,10 +322,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       [self.fakeOmnibox
           addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 
@@ -384,7 +382,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
-    if (base::FeatureList::IsEnabled(kPointerSupport)) {
       self.identityDiscButton.pointerInteractionEnabled = YES;
       self.identityDiscButton.pointerStyleProvider =
           ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
@@ -400,7 +397,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                                     cornerRadius:rect.size.width / 2];
         return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
       };
-    }
   }
 #endif  // defined(__IPHONE_13_4)
 

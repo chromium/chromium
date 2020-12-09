@@ -37,11 +37,6 @@ extern const base::Feature kTestFeature;
 // Feature flag that enables the native UI Context Menus (not for Web content).
 extern const base::Feature kEnableNativeContextMenus;
 
-#if defined(__IPHONE_13_4)
-// Feature flag to enable Pointer support on tablets
-extern const base::Feature kPointerSupport;
-#endif  // defined(__IPHONE_13_4)
-
 // Feature flag to enable MyGoogle account management UI in iOS Settings.
 extern const base::Feature kEnableMyGoogle;
 

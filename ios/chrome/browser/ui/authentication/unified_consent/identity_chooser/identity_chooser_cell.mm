@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_cell.h"
 
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_view.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -49,9 +47,7 @@ const CGFloat kCheckmarkMagin = 26.;
                                         sideFlags, insets);
 #if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
-      if (base::FeatureList::IsEnabled(kPointerSupport)) {
         [self addInteraction:[[ViewPointerInteraction alloc] init]];
-      }
     }
 #endif  // defined(__IPHONE_13_4)
   }
