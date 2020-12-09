@@ -51,6 +51,18 @@ Polymer({
     },
 
     /**
+     * The list of pending eSIM profiles to display after the list of eSIM
+     * networks.
+     * @type {!Array<NetworkList.CustomItemState>}
+     */
+    eSimPendingProfiles_: {
+      type: Array,
+      value() {
+        return [];
+      },
+    },
+
+    /**
      * The list of pSIM network state properties for display.
      * @type {!Array<!OncMojo.NetworkStateProperties>}
      * @private
@@ -92,6 +104,34 @@ Polymer({
   created() {
     this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
                               .getMojoServiceRemote();
+    this.fetchESimPendingProfileList_();
+  },
+
+  /** @private */
+  fetchESimPendingProfileList_() {
+    cellular_setup.getESimManagerRemote()
+        .getAvailableEuiccs()
+        .then(response => {
+          if (response.euiccs.length > 0) {
+            return cellular_setup.getPendingESimProfiles(response.euiccs[0]);
+          }
+          throw new Error('No EUICCs available.');
+        })
+        .then(profiles => {
+          this.eSimPendingProfiles_ = profiles.map(profile => {
+            return {
+              // TODO(crbug.com/1093185) Populate with profile name and
+              // provider. Right now use any valid i18n string for
+              // customItemName so an error isn't thrown during test.
+              customItemName: 'cellularNetworkEsimLabel',
+              polymerIcon: 'network:cellular-0',
+              showBeforeNetworksList: false,
+            };
+          });
+        })
+        .catch(error => {
+          console.error(error);
+        });
   },
 
   /**
@@ -131,12 +171,15 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!OncMojo.NetworkStateProperties>} list
+   * @param {...!Array<!NetworkList.NetworkListItemType>} lists
    * @returns {boolean}
    * @private
    */
-  shouldShowNetworkSublist_(list) {
-    return list.length > 0;
+  shouldShowNetworkSublist_(...lists) {
+    const totalListLength = lists.reduce((accumulator, currentList) => {
+      return accumulator + currentList.length;
+    }, 0);
+    return totalListLength > 0;
   },
 
   /**

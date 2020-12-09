@@ -998,6 +998,8 @@ var OSSettingsInternetSubpageTest = class extends OSSettingsBrowserTest {
       BROWSER_SETTINGS_PATH + '../test_util.js',
       BROWSER_SETTINGS_PATH + '../fake_chrome_event.js',
       BROWSER_SETTINGS_PATH + '../chromeos/fake_network_config_mojom.js',
+      BROWSER_SETTINGS_PATH +
+          '../cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js',
       'internet_subpage_tests.js',
     ]);
   }
@@ -1062,6 +1064,8 @@ var OSSettingsCellularNetworksListTest = class extends OSSettingsBrowserTest {
       '//ui/webui/resources/js/assert.js',
       BROWSER_SETTINGS_PATH + '../test_util.js',
       BROWSER_SETTINGS_PATH + '../chromeos/fake_network_config_mojom.js',
+      BROWSER_SETTINGS_PATH +
+          '../cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js',
       'cellular_networks_list_test.js',
     ]);
   }

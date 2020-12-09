@@ -7,6 +7,8 @@
 
 // #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+// #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -20,6 +22,9 @@ suite('InternetSubpage', function() {
 
   /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   let mojoApi_ = null;
+
+  /** @type {?chromeos.cellularSetup.mojom.CellularSetupRemote} */
+  let eSimManagerRemote;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -36,6 +41,9 @@ suite('InternetSubpage', function() {
 
     mojoApi_ = new FakeNetworkConfig();
     network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+
+    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
+    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
 
     // Disable animations so sub-pages open within one event loop.
     testing.Test.disableAnimationsAndTransitions();
@@ -78,6 +86,7 @@ suite('InternetSubpage', function() {
     internetSubpage = document.createElement('settings-internet-subpage');
     assertTrue(!!internetSubpage);
     mojoApi_.resetForTest();
+    eSimManagerRemote.addEuiccForTest(0);
     document.body.appendChild(internetSubpage);
     internetSubpage.init();
     return flushAsync();
