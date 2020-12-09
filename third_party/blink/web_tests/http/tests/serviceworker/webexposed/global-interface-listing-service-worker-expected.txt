@@ -1562,7 +1562,6 @@ interface URLPattern
     method constructor
     method exec
     method test
-    method toRegExp
 interface URLSearchParams
     attribute @@toStringTag
     method @@iterator

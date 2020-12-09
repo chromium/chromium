@@ -15,6 +15,7 @@ struct Options;
 namespace blink {
 
 class ExceptionState;
+class URLPatternComponentResult;
 class URLPatternInit;
 class URLPatternResult;
 class USVStringOrURLPatternInit;
@@ -38,10 +39,9 @@ class URLPattern : public ScriptWrappable {
              base::PassKey<URLPattern> key);
 
   bool test(const USVStringOrURLPatternInit& input,
-            ExceptionState& exception_state);
+            ExceptionState& exception_state) const;
   URLPatternResult* exec(const USVStringOrURLPatternInit& input,
-                         ExceptionState& exception_state);
-  String toRegExp(const String& component, ExceptionState& exception_state);
+                         ExceptionState& exception_state) const;
 
   // TODO: define a stringifier
 
@@ -59,6 +59,24 @@ class URLPattern : public ScriptWrappable {
                                    StringView component,
                                    const liburlpattern::Options& options,
                                    ExceptionState& exception_state);
+
+  // A utility function to determine if a given |input| matches the pattern
+  // or not.  Returns |true| if there is a match and |false| otherwise.  If
+  // |result| is not nullptr then the URLPatternResult contents will be filled
+  // in as expected by the exec() method.
+  bool Match(const USVStringOrURLPatternInit& input,
+             URLPatternResult* result,
+             ExceptionState& exception_state) const;
+
+  // A utility function that constructs a URLPatternComponentResult for
+  // a given |component|, |input|, and |group_list|.  The |component| may
+  // be nullptr.  If the result is for the pathname component then you must
+  // set |is_pathname| to true.
+  static URLPatternComponentResult* MakeComponentResult(
+      Component* component,
+      const String& input,
+      const Vector<String>& group_list,
+      bool is_pathname = false);
 
   // The compiled patterns for each URL component.  If a Component member is
   // nullptr then it should be treated as a wildcard matching any input.

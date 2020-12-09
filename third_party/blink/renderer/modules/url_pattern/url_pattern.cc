@@ -7,7 +7,8 @@
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/modules/v8/usv_string_or_url_pattern_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_init.h"
+#include "third_party/blink/renderer/modules/url_pattern/url_pattern_component_result.h"
+#include "third_party/blink/renderer/modules/url_pattern/url_pattern_result.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -21,6 +22,11 @@ namespace blink {
 class URLPattern::Component final
     : public GarbageCollected<URLPattern::Component> {
  public:
+  bool Match(StringView input, Vector<String>* group_list) const {
+    return regexp->Match(input, /*start_from=*/0, /*match_length=*/nullptr,
+                         group_list) == 0;
+  }
+
   void Trace(Visitor* visitor) const { visitor->Trace(regexp); }
 
   // The pattern compiled down to a js regular expression.
@@ -28,9 +34,9 @@ class URLPattern::Component final
 
   // The names to be applied to the regular expression capture groups.  Note,
   // liburlpattern regular expressions do not use named capture groups directly.
-  WTF::Vector<String> name_list;
+  Vector<String> name_list;
 
-  Component(ScriptRegexp* r, WTF::Vector<String> n)
+  Component(ScriptRegexp* r, Vector<String> n)
       : regexp(r), name_list(std::move(n)) {}
 };
 
@@ -97,7 +103,10 @@ void ApplyInit(const URLPatternInit* init,
                ExceptionState& exception_state) {
   // If there is a baseURL we need to apply its component values first.  The
   // rest of the URLPatternInit structure will then later override these
-  // values.
+  // values.  Note, the baseURL will always set either an empty string or
+  // longer value for each considered component.  We do not allow null strings
+  // to persist for these components past this phase since they should no
+  // longer be treated as wildcards.
   if (init->hasBaseURL()) {
     KURL baseURL(init->baseURL());
     if (!baseURL.IsValid() || baseURL.IsEmpty()) {
@@ -108,16 +117,33 @@ void ApplyInit(const URLPatternInit* init,
 
     if (baseURL.Protocol())
       protocol = baseURL.Protocol();
+    else
+      protocol = g_empty_string;
+
     if (baseURL.User())
       username = baseURL.User();
+    else
+      username = g_empty_string;
+
     if (baseURL.Pass())
       password = baseURL.Pass();
+    else
+      password = g_empty_string;
+
     if (baseURL.Host())
       hostname = baseURL.Host();
-    if (baseURL.HasPort() && baseURL.Port() > 0)
+    else
+      hostname = g_empty_string;
+
+    if (baseURL.Port() > 0)
       port = String::Number(baseURL.Port());
+    else
+      port = g_empty_string;
+
     if (baseURL.GetPath())
       pathname = baseURL.GetPath();
+    else
+      pathname = "/";
 
     // Do no propagate search or hash from the base URL.  This matches the
     // behavior when resolving a relative URL against a base URL.
@@ -138,6 +164,11 @@ void ApplyInit(const URLPatternInit* init,
   if (init->hasPathname()) {
     // TODO: handle relative pathnames
     pathname = init->pathname();
+    if (pathname.IsEmpty() || pathname[0] != '/') {
+      exception_state.ThrowTypeError(
+          "Could not resolve absolute pathname for '" + pathname + "'.");
+      return;
+    }
   }
   if (init->hasSearch())
     search = init->search();
@@ -247,95 +278,16 @@ URLPattern::URLPattern(Component* protocol,
       hash_(hash) {}
 
 bool URLPattern::test(const USVStringOrURLPatternInit& input,
-                      ExceptionState& exception_state) {
-  // By default each URL component value starts with an empty string.  The
-  // given input is then layered on top of these defaults.
-  String protocol(g_empty_string);
-  String username(g_empty_string);
-  String password(g_empty_string);
-  String hostname(g_empty_string);
-  String port(g_empty_string);
-  String pathname(g_empty_string);
-  String search(g_empty_string);
-  String hash(g_empty_string);
-
-  // TODO: Refactor the following input processing into a utility method that
-  //       can be shared with exec().
-
-  if (input.IsURLPatternInit()) {
-    // Layer the URLPatternInit values on top of the default empty strings.
-    ApplyInit(input.GetAsURLPatternInit(), protocol, username, password,
-              hostname, port, pathname, search, hash, exception_state);
-    if (exception_state.HadException()) {
-      // Treat exceptions simply as a failure to match.
-      exception_state.ClearException();
-      return false;
-    }
-    // TODO: Canonicalize the hostname manually since we did not run the
-    //       input through KURL.
-    // TODO: URL encode input component values using url::EncodeURIComponent()
-    //       since we did not go through KURL
-  } else {
-    DCHECK(input.IsUSVString());
-
-    // The compile the input string as a fully resolved URL.
-    KURL url(input.GetAsUSVString());
-    if (!url.IsValid() || url.IsEmpty()) {
-      // Treat as failure to match, but don't throw an exception.
-      return false;
-    }
-
-    // TODO: Support relative URLs here by taking a string in a second argument.
-
-    // Apply the parsed URL components on top of our defaults.
-    if (url.Protocol())
-      protocol = url.Protocol();
-    if (url.User())
-      username = url.User();
-    if (url.Pass())
-      password = url.Pass();
-    if (url.Host())
-      hostname = url.Host();
-    if (url.HasPort() && url.Port() > 0)
-      port = String::Number(url.Port());
-    if (url.GetPath())
-      pathname = url.GetPath();
-    if (url.Query())
-      search = url.Query();
-    if (url.FragmentIdentifier())
-      hash = url.FragmentIdentifier();
-  }
-
-  // TODO: Should we do special processing for port to make "default" values
-  //       match things like "80" for an http protocol?
-
-  // Each component of the pattern must match the corresponding component of
-  // the input.  If a pattern Component is nullptr, then it matches any
-  // input and we can avoid running a real regular expression match.
-  return (!protocol_ || protocol_->regexp->Match(protocol) == 0) &&
-         (!username_ || username_->regexp->Match(username) == 0) &&
-         (!password_ || password_->regexp->Match(password) == 0) &&
-         (!hostname_ || hostname_->regexp->Match(hostname) == 0) &&
-         (!port_ || port_->regexp->Match(port) == 0) &&
-         (!pathname_ || pathname_->regexp->Match(pathname) == 0) &&
-         (!search_ || search_->regexp->Match(search) == 0) &&
-         (!hash_ || hash_->regexp->Match(hash) == 0);
+                      ExceptionState& exception_state) const {
+  return Match(input, /*result=*/nullptr, exception_state);
 }
 
 URLPatternResult* URLPattern::exec(const USVStringOrURLPatternInit& input,
-                                   ExceptionState& exception_state) {
-  // TODO: Implement
-  // TODO: Modernize ScriptRegexp() to support returning capture group values.
-  exception_state.ThrowTypeError("The exec() method is not implemented yet.");
-  return nullptr;
-}
-
-String URLPattern::toRegExp(const String& component,
-                            ExceptionState& exception_state) {
-  // TODO: Implement
-  exception_state.ThrowTypeError(
-      "The toRegExp() method is not implemented yet.");
-  return String();
+                                   ExceptionState& exception_state) const {
+  URLPatternResult* result = URLPatternResult::Create();
+  if (!Match(input, result, exception_state))
+    return nullptr;
+  return result;
 }
 
 void URLPattern::Trace(Visitor* visitor) const {
@@ -392,7 +344,7 @@ URLPattern::Component* URLPattern::CompilePattern(
     return nullptr;
   }
 
-  WTF::Vector<String> wtf_name_list;
+  Vector<String> wtf_name_list;
   wtf_name_list.ReserveInitialCapacity(
       static_cast<wtf_size_t>(name_list.size()));
   for (const auto& name : name_list) {
@@ -402,6 +354,157 @@ URLPattern::Component* URLPattern::CompilePattern(
 
   return MakeGarbageCollected<URLPattern::Component>(std::move(regexp),
                                                      std::move(wtf_name_list));
+}
+
+bool URLPattern::Match(const USVStringOrURLPatternInit& input,
+                       URLPatternResult* result,
+                       ExceptionState& exception_state) const {
+  // By default each URL component value starts with an empty string.  The
+  // given input is then layered on top of these defaults.
+  String protocol(g_empty_string);
+  String username(g_empty_string);
+  String password(g_empty_string);
+  String hostname(g_empty_string);
+  String port(g_empty_string);
+  String pathname("/");
+  String search(g_empty_string);
+  String hash(g_empty_string);
+
+  if (input.IsURLPatternInit()) {
+    // Layer the URLPatternInit values on top of the default empty strings.
+    ApplyInit(input.GetAsURLPatternInit(), protocol, username, password,
+              hostname, port, pathname, search, hash, exception_state);
+    if (exception_state.HadException()) {
+      // Treat exceptions simply as a failure to match.
+      exception_state.ClearException();
+      return false;
+    }
+    // TODO: Canonicalize the hostname manually since we did not run the
+    //       input through KURL.
+    // TODO: URL encode input component values using url::EncodeURIComponent()
+    //       since we did not go through KURL
+  } else {
+    DCHECK(input.IsUSVString());
+
+    // The compile the input string as a fully resolved URL.
+    KURL url(input.GetAsUSVString());
+    if (!url.IsValid() || url.IsEmpty()) {
+      // Treat as failure to match, but don't throw an exception.
+      return false;
+    }
+
+    // TODO: Support relative URLs here by taking a string in a second argument.
+
+    // Apply the parsed URL components on top of our defaults.
+    if (url.Protocol())
+      protocol = url.Protocol();
+    if (url.User())
+      username = url.User();
+    if (url.Pass())
+      password = url.Pass();
+    if (url.Host())
+      hostname = url.Host();
+    if (url.Port() > 0)
+      port = String::Number(url.Port());
+    if (url.GetPath())
+      pathname = url.GetPath();
+    if (url.Query())
+      search = url.Query();
+    if (url.FragmentIdentifier())
+      hash = url.FragmentIdentifier();
+  }
+
+  // The pathname should be resolved to an absolute value before now.
+  DCHECK(!pathname.IsEmpty());
+  DCHECK(pathname.StartsWith("/"));
+
+  // TODO: Should we do special processing for port to make "default" values
+  //       match things like "80" for an http protocol?  See
+  //       https://github.com/WICG/urlpattern/issues/31.
+
+  Vector<String> protocol_group_list;
+  Vector<String> username_group_list;
+  Vector<String> password_group_list;
+  Vector<String> hostname_group_list;
+  Vector<String> port_group_list;
+  Vector<String> pathname_group_list;
+  Vector<String> search_group_list;
+  Vector<String> hash_group_list;
+
+  // If we are not generating a full result then we don't need to populate
+  // group lists.
+  auto* protocol_group_list_ref = result ? &protocol_group_list : nullptr;
+  auto* username_group_list_ref = result ? &username_group_list : nullptr;
+  auto* password_group_list_ref = result ? &password_group_list : nullptr;
+  auto* hostname_group_list_ref = result ? &hostname_group_list : nullptr;
+  auto* port_group_list_ref = result ? &port_group_list : nullptr;
+  auto* pathname_group_list_ref = result ? &pathname_group_list : nullptr;
+  auto* search_group_list_ref = result ? &search_group_list : nullptr;
+  auto* hash_group_list_ref = result ? &hash_group_list : nullptr;
+
+  // Each component of the pattern must match the corresponding component of
+  // the input.  If a pattern Component is nullptr, then it matches any
+  // input and we can avoid running a real regular expression match.
+  bool matched =
+      (!protocol_ || protocol_->Match(protocol, protocol_group_list_ref)) &&
+      (!username_ || username_->Match(username, username_group_list_ref)) &&
+      (!password_ || password_->Match(password, password_group_list_ref)) &&
+      (!hostname_ || hostname_->Match(hostname, hostname_group_list_ref)) &&
+      (!port_ || port_->Match(port, port_group_list_ref)) &&
+      (!pathname_ || pathname_->Match(pathname, pathname_group_list_ref)) &&
+      (!search_ || search_->Match(search, search_group_list_ref)) &&
+      (!hash_ || hash_->Match(hash, hash_group_list_ref));
+
+  if (!matched || !result)
+    return matched;
+
+  result->setInput(input);
+  result->setProtocol(
+      MakeComponentResult(protocol_, protocol, protocol_group_list));
+  result->setUsername(
+      MakeComponentResult(username_, username, username_group_list));
+  result->setPassword(
+      MakeComponentResult(password_, password, password_group_list));
+  result->setHostname(
+      MakeComponentResult(hostname_, hostname, hostname_group_list));
+  result->setPort(MakeComponentResult(port_, port, port_group_list));
+  result->setPathname(MakeComponentResult(
+      pathname_, pathname, pathname_group_list, /*is_pathname=*/true));
+  result->setSearch(MakeComponentResult(search_, search, search_group_list));
+  result->setHash(MakeComponentResult(hash_, hash, hash_group_list));
+  return true;
+}
+
+// static
+URLPatternComponentResult* URLPattern::MakeComponentResult(
+    Component* component,
+    const String& input,
+    const Vector<String>& group_list,
+    bool is_pathname) {
+  Vector<std::pair<String, String>> groups;
+  if (!component) {
+    // When there is not Component we must act as if there was a default
+    // wildcard pattern with a group.  For most components the group ends
+    // up including the entire input.  For pathname, however, the leading "/"
+    // is excluded from the group since its considered a prefix.
+    if (is_pathname) {
+      DCHECK(!input.IsEmpty());
+      DCHECK_EQ(input[0], '/');
+      groups.emplace_back("0", input.Substring(1));
+    } else {
+      groups.emplace_back("0", input);
+    }
+  } else {
+    DCHECK_EQ(component->name_list.size(), group_list.size());
+    for (wtf_size_t i = 0; i < group_list.size(); ++i) {
+      groups.emplace_back(component->name_list[i], group_list[i]);
+    }
+  }
+
+  auto* result = URLPatternComponentResult::Create();
+  result->setInput(input);
+  result->setGroups(groups);
+  return result;
 }
 
 }  // namespace blink

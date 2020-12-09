@@ -13,5 +13,4 @@ typedef (USVString or URLPatternInit) URLPatternInput;
   [RaisesException] constructor(URLPatternInit init);
   [RaisesException] boolean test(URLPatternInput input);
   [RaisesException] URLPatternResult exec(URLPatternInput input);
-  [RaisesException] DOMString toRegExp(USVString component);
 };

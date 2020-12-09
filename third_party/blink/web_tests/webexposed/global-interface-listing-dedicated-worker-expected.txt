@@ -1592,7 +1592,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method exec
 [Worker]     method test
-[Worker]     method toRegExp
 [Worker] interface URLSearchParams
 [Worker]     attribute @@toStringTag
 [Worker]     method @@iterator

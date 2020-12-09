@@ -52,9 +52,17 @@ class CORE_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
                MultilineMode = kMultilineDisabled,
                CharacterMode = BMP);
 
-  int Match(const String&,
+  // Attempt to match the given input string against the regexp.  Returns the
+  // index of the match within the input string on success and -1 otherwise.
+  // If |match_length| is provided, then its populated with the length of the
+  // match on success.  If |group_list| is provided its populated with the
+  // matched groups within the regexp.  These are the values normally starting
+  // at index 1 within the array returned from Regexp.exec().  |group_list|
+  // must be empty if it is provided.
+  int Match(StringView,
             int start_from = 0,
-            int* match_length = nullptr) const;
+            int* match_length = nullptr,
+            WTF::Vector<String>* group_list = nullptr) const;
 
   bool IsValid() const { return !regex_.IsEmpty(); }
   // exceptionMessage is available only if !isValid().
