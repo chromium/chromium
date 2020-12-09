@@ -27,7 +27,8 @@ InstalledAndCriticalVersion GetInstalledVersion() {
   // Failure may be a result of invoking a Chrome that predates the introduction
   // of the --product-version switch in https://crrev.com/48795 (6.0.424.0).
   DLOG_IF(ERROR, !installed_version.IsValid())
-      << "Failed to get current file version";
+      << "Failed to get current file version; child process replied with: "
+      << reply;
 
   return InstalledAndCriticalVersion(std::move(installed_version));
 }
