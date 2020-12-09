@@ -1557,6 +1557,9 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     @PaymentRequestUI.SelectionResult
     public int onSectionOptionSelected(@PaymentRequestUI.DataType int optionType,
             EditableOption option, Callback<PaymentInformation> callback) {
+        Context context = mDelegate.getContext();
+        if (context == null) return PaymentRequestUI.SelectionResult.NONE;
+
         boolean wasRetryCalled = mDelegate.wasRetryCalled();
         if (optionType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
             AutofillAddress address = (AutofillAddress) option;
@@ -1588,15 +1591,11 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
             return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
         } else if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
             if (shouldShowShippingSection() && mShippingAddressesSection == null) {
-                ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-                assert activity != null;
-                createShippingSectionForPaymentRequestUI(activity);
+                createShippingSectionForPaymentRequestUI(context);
             }
             if (shouldShowContactSection() && mContactSection == null) {
-                ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-                assert activity != null;
                 mContactSection = new ContactDetailsSection(
-                        activity, mAutofillProfiles, mContactEditor, mJourneyLogger);
+                        context, mAutofillProfiles, mContactEditor, mJourneyLogger);
             }
             onSelectedPaymentMethodUpdated();
             PaymentApp paymentApp = (PaymentApp) option;
