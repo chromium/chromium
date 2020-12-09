@@ -2,30 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/performance_manager/mechanisms/userspace_swap_renderer_initialization_impl.h"
+#include "chromeos/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
 
+#include <utility>
+
+#include "base/callback.h"
 #include "chromeos/memory/userspace_swap/userfaultfd.h"
 #include "chromeos/memory/userspace_swap/userspace_swap.h"
 #include "chromeos/memory/userspace_swap/userspace_swap.mojom.h"
-#include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace performance_manager {
-namespace mechanism {
-
-namespace {
-using chromeos::memory::userspace_swap::UserfaultFD;
-
-mojo::Remote<::userspace_swap::mojom::UserspaceSwapInitialization>
-ConnectUserspaceSwapInitializationToBrowser() {
-  mojo::Remote<::userspace_swap::mojom::UserspaceSwapInitialization> remote;
-  content::RenderThread::Get()->BindHostReceiver(
-      remote.BindNewPipeAndPassReceiver());
-
-  return remote;
-}
-
-}  // namespace
+namespace chromeos {
+namespace memory {
+namespace userspace_swap {
 
 UserspaceSwapRendererInitializationImpl::
     UserspaceSwapRendererInitializationImpl() {
@@ -56,8 +45,12 @@ bool UserspaceSwapRendererInitializationImpl::PreSandboxSetup() {
   return uffd_.is_valid();
 }
 
-void UserspaceSwapRendererInitializationImpl::TransferFDsOrCleanup() {
-  auto remote = ConnectUserspaceSwapInitializationToBrowser();
+void UserspaceSwapRendererInitializationImpl::TransferFDsOrCleanup(
+    base::OnceCallback<void(mojo::GenericPendingReceiver)>
+        bind_host_receiver_callback) {
+  mojo::Remote<::userspace_swap::mojom::UserspaceSwapInitialization> remote;
+  std::move(bind_host_receiver_callback)
+      .Run(remote.BindNewPipeAndPassReceiver());
   remote->TransferUserfaultFD(uffd_errno_,
                               mojo::PlatformHandle(std::move(uffd_)));
   uffd_errno_ = 0;
@@ -69,5 +62,6 @@ bool UserspaceSwapRendererInitializationImpl::
   return chromeos::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
 }
 
-}  // namespace mechanism
-}  // namespace performance_manager
+}  // namespace userspace_swap
+}  // namespace memory
+}  // namespace chromeos

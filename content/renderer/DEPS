@@ -56,7 +56,7 @@ specific_include_rules = {
     "+components/viz/test",
     "+third_party/blink/renderer/platform/testing",
   ],
-  "userspace_swap_renderer_initialization_impl.*": [
+  "renderer_main.cc": [
    "+chromeos/memory/userspace_swap"
   ],
 }

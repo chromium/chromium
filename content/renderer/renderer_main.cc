@@ -58,8 +58,8 @@
 #endif  // OS_MAC
 
 #if defined(OS_CHROMEOS)
+#include "chromeos/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
 #include "chromeos/system/core_scheduling.h"
-#include "content/renderer/performance_manager/mechanisms/userspace_swap_renderer_initialization_impl.h"
 #endif  // OS_CHROMEOS
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -131,10 +131,10 @@ int RendererMain(const MainFunctionParams& parameters) {
   // available we want to turn it on.
   chromeos::system::EnableCoreSchedulingIfAvailable();
 
-  base::Optional<
-      performance_manager::mechanism::UserspaceSwapRendererInitializationImpl>
-      swap_init;
-  if (performance_manager::mechanism::UserspaceSwapRendererInitializationImpl::
+  using chromeos::memory::userspace_swap::
+      UserspaceSwapRendererInitializationImpl;
+  base::Optional<UserspaceSwapRendererInitializationImpl> swap_init;
+  if (UserspaceSwapRendererInitializationImpl::
           UserspaceSwapSupportedAndEnabled()) {
     swap_init.emplace();
 
@@ -219,7 +219,10 @@ int RendererMain(const MainFunctionParams& parameters) {
     // This should always be called because it will also transfer the errno that
     // prevented the creation of the userfaultfd if applicable.
     if (swap_init) {
-      swap_init->TransferFDsOrCleanup();
+      swap_init->TransferFDsOrCleanup(base::BindOnce(
+          &RenderThread::BindHostReceiver,
+          // Unretained is safe because TransferFDsOrCleanup is synchronous.
+          base::Unretained(RenderThread::Get())));
 
       // No need to leave this around any further.
       swap_init.reset();
