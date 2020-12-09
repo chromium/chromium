@@ -1437,7 +1437,7 @@ deps = {
     Var('swiftshader_git') + '/SwiftShader.git' + '@' +  Var('swiftshader_revision'),
 
   'src/third_party/text-fragments-polyfill/src': {
-    'url': Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'b2df6bf7b4dc1665989306a8119eb041f013f567',
+    'url': Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + '90a76f78e73579ab6bc4f300953cec39b27d058b',
     'condition': 'checkout_ios',
   },
 
