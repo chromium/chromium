@@ -8503,7 +8503,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="MachineLearningService.CpuTimeMicrosec"
-    units="microseconds" expires_after="2021-01-01">
+    units="microseconds" expires_after="2021-07-01">
 <!-- Name completed by histogram_suffixes
      name="MachineLearningServiceRequests" -->
 
@@ -8633,7 +8633,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="MachineLearningService.TotalMemoryDeltaKb"
-    units="KB" expires_after="2021-01-01">
+    units="KB" expires_after="2021-07-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
