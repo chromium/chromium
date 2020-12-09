@@ -382,11 +382,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         return tab.getView();
     }
 
-    public boolean allowKeyboardLearning() {
-        if (mLocationBarDataProvider == null) return false;
-        return !mLocationBarDataProvider.isIncognito();
-    }
-
     /* package */ void setUrlBarFocus(
             boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason) {
         if (shouldBeFocused) {

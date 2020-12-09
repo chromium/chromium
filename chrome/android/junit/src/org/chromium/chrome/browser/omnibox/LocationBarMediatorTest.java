@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -236,5 +239,14 @@ public class LocationBarMediatorTest {
         verify(mOverrideUrlLoadingDelegate)
                 .willHandleLoadUrlWithPostData(TEST_URL, PageTransition.TYPED, null, null, false);
         verify(mTab, times(0)).loadUrl(any());
+    }
+
+    @Test
+    public void testAllowKeyboardLearning() {
+        doReturn(false).when(mLocationBarDataProvider).isIncognito();
+        assertTrue(mMediator.allowKeyboardLearning());
+
+        doReturn(true).when(mLocationBarDataProvider).isIncognito();
+        assertFalse(mMediator.allowKeyboardLearning());
     }
 }

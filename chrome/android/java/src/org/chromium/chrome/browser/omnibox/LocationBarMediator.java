@@ -436,7 +436,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public boolean allowKeyboardLearning() {
-        return mLocationBarLayout.allowKeyboardLearning();
+        assert mLocationBarDataProvider != null;
+        return !mLocationBarDataProvider.isIncognito();
     }
 
     @Override
