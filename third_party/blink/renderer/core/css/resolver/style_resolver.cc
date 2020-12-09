@@ -1069,7 +1069,8 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     const ComputedStyle& base_style,
     const ComputedStyle* parent_style,
     const PropertyHandle& property,
-    const CSSValue* value) {
+    const CSSValue* value,
+    double offset) {
   // TODO(alancutter): Avoid creating a StyleResolverState just to apply a
   // single value on a ComputedStyle.
   StyleResolverState state(element.GetDocument(), element, parent_style,
@@ -1087,7 +1088,8 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
         element.GetTreeScope());
     cascade.Apply();
   }
-  return CompositorKeyframeValueFactory::Create(property, *state.Style());
+  return CompositorKeyframeValueFactory::Create(property, *state.Style(),
+                                                offset);
 }
 
 scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(

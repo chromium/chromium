@@ -1239,9 +1239,9 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
 
   if (property.GetCSSProperty().IsCompositableProperty()) {
     CompositorKeyframeValue* from = CompositorKeyframeValueFactory::Create(
-        property, *state.before_change_style);
-    CompositorKeyframeValue* to =
-        CompositorKeyframeValueFactory::Create(property, state.style);
+        property, *state.before_change_style, start_keyframe->Offset().value());
+    CompositorKeyframeValue* to = CompositorKeyframeValueFactory::Create(
+        property, state.style, end_keyframe->Offset().value());
     start_keyframe->SetCompositorValue(from);
     end_keyframe->SetCompositorValue(to);
   }

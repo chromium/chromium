@@ -432,7 +432,7 @@ void KeyframeEffect::AttachCompositedLayers() {
   // very special element id for this animation so that the compositor animation
   // system recognize it. We do not use 0 as the element id because 0 is
   // kInvalidElementId.
-  if (compositor_animation && !Model()->HasNonVariableProperty()) {
+  if (compositor_animation && !Model()->RequiresPropertyNode()) {
     compositor_animation->AttachNoElement();
     return;
   }

@@ -322,7 +322,8 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
       (!should_paint_image || !layer.ImageOccludesNextLayers(doc, style));
   should_paint_color_with_paint_worklet_image =
       should_paint_color &&
-      RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled();
+      RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+      style.HasCurrentBackgroundColorAnimation();
 }
 
 namespace {
@@ -499,7 +500,7 @@ void FillRectWithPaintWorklet(const Document* document,
   BackgroundColorPaintImageGenerator* generator =
       document->GetFrame()->GetBackgroundColorPaintImageGenerator();
   scoped_refptr<Image> paint_worklet_image =
-      generator->Paint(src_rect.Size(), SkColor(info.color));
+      generator->Paint(src_rect.Size(), node);
   context.DrawImageRRect(
       paint_worklet_image.get(), Image::kSyncDecode, dest_rect, src_rect,
       node && node->ComputedStyleRef().HasFilterInducingProperty(),

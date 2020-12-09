@@ -746,9 +746,6 @@ PaintWorkletJobMap LayerTreeHostImpl::GatherDirtyPaintWorklets(
       PaintWorkletJob::AnimatedPropertyValues animated_property_values;
       for (const auto& element : input->GetPropertyKeys()) {
         DCHECK(!animated_property_values.contains(element));
-        // TODO(xidachen): extend this to support two cases: custom property and
-        // native property.
-        DCHECK(element.custom_property_name.has_value());
         const PaintWorkletInput::PropertyValue& animated_property_value =
             paint_worklet_tracker_.GetPropertyAnimationValue(element);
         // No value indicates that the input property was not mutated by CC
@@ -4657,11 +4654,10 @@ void LayerTreeHostImpl::SetElementFilterMutated(
 }
 
 void LayerTreeHostImpl::OnCustomPropertyMutated(
-    ElementId element_id,
-    const std::string& custom_property_name,
-    PaintWorkletInput::PropertyValue custom_property_value) {
-  paint_worklet_tracker_.OnCustomPropertyMutated(
-      element_id, custom_property_name, std::move(custom_property_value));
+    PaintWorkletInput::PropertyKey property_key,
+    PaintWorkletInput::PropertyValue property_value) {
+  paint_worklet_tracker_.OnCustomPropertyMutated(std::move(property_key),
+                                                 std::move(property_value));
 }
 
 void LayerTreeHostImpl::SetElementBackdropFilterMutated(

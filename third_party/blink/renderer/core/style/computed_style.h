@@ -2250,7 +2250,7 @@ class ComputedStyle : public ComputedStyleBase,
     return HasCurrentOpacityAnimation() || HasCurrentTransformAnimation() ||
            HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation();
   }
-  bool IsRunningAnimationOnCompositor() const {
+  bool RequiresPropertyNodeForAnimation() const {
     return IsRunningOpacityAnimationOnCompositor() ||
            IsRunningTransformAnimationOnCompositor() ||
            IsRunningFilterAnimationOnCompositor() ||

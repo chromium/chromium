@@ -75,9 +75,8 @@ class MutatorHostClient {
       ElementListType tree_type) = 0;
 
   virtual void OnCustomPropertyMutated(
-      ElementId element_id,
-      const std::string& custom_property_name,
-      PaintWorkletInput::PropertyValue custom_property_value) = 0;
+      PaintWorkletInput::PropertyKey property_key,
+      PaintWorkletInput::PropertyValue property_value) = 0;
 };
 
 }  // namespace cc

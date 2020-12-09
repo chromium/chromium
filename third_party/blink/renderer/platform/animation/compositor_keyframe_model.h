@@ -12,6 +12,7 @@
 #include "cc/animation/keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -37,11 +38,14 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
   // The |custom_property_name| has a default value of an empty string,
   // indicating that the animated property is a native property. When it is an
   // animated custom property, it should be the property name.
-  CompositorKeyframeModel(const CompositorAnimationCurve&,
-                          compositor_target_property::Type,
-                          int keyframe_model_id,
-                          int group_id,
-                          const AtomicString& custom_property_name = "");
+  CompositorKeyframeModel(
+      const CompositorAnimationCurve&,
+      compositor_target_property::Type,
+      int keyframe_model_id,
+      int group_id,
+      const AtomicString& custom_property_name = "",
+      CompositorPaintWorkletInput::NativePropertyType native_property_type =
+          CompositorPaintWorkletInput::NativePropertyType::kInvalid);
   ~CompositorKeyframeModel();
 
   // An id must be unique.

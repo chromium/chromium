@@ -157,7 +157,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
     return has_revert_;
   }
 
-  bool HasNonVariableProperty() const;
+  bool RequiresPropertyNode() const;
 
   bool IsTransformRelatedEffect() const override;
 
