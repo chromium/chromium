@@ -108,11 +108,10 @@ PluginVmSetupResult BucketForCancelledInstall(
 
 }  // namespace
 
-PluginVmInstaller::~PluginVmInstaller() = default;
-
-bool PluginVmInstaller::IsProcessing() {
-  return state_ != State::kIdle;
-}
+PluginVmInstaller::PluginVmInstaller(Profile* profile)
+    : profile_(profile),
+      download_service_(
+          DownloadServiceFactory::GetForKey(profile->GetProfileKey())) {}
 
 base::Optional<PluginVmInstaller::FailureReason> PluginVmInstaller::Start() {
   if (IsProcessing()) {
@@ -181,6 +180,143 @@ void PluginVmInstaller::Cancel() {
       NOTREACHED();
   }
 }
+
+bool PluginVmInstaller::IsProcessing() {
+  return state_ != State::kIdle;
+}
+
+void PluginVmInstaller::SetObserver(Observer* observer) {
+  observer_ = observer;
+}
+
+void PluginVmInstaller::RemoveObserver() {
+  observer_ = nullptr;
+}
+
+std::string PluginVmInstaller::GetCurrentDownloadGuid() {
+  return current_download_guid_;
+}
+
+void PluginVmInstaller::OnDownloadStarted() {}
+
+void PluginVmInstaller::OnDownloadProgressUpdated(uint64_t bytes_downloaded,
+                                                  int64_t content_length) {
+  DCHECK_EQ(installing_state_, InstallingState::kDownloadingImage);
+  if (observer_)
+    observer_->OnDownloadProgressUpdated(bytes_downloaded, content_length);
+
+  if (content_length <= 0)
+    content_length = kDownloadSizeFallbackEstimate;
+
+  UpdateProgress(
+      std::min(1., static_cast<double>(bytes_downloaded) / content_length));
+}
+
+void PluginVmInstaller::OnDownloadCompleted(
+    const download::CompletionInfo& info) {
+  downloaded_image_ = info.path;
+  downloaded_image_size_ = info.bytes_downloaded;
+  current_download_guid_.clear();
+
+  if (downloaded_image_for_testing_)
+    downloaded_image_ = downloaded_image_for_testing_.value();
+
+  if (!VerifyDownload(info.hash256)) {
+    OnDownloadFailed(FailureReason::HASH_MISMATCH);
+    return;
+  }
+
+  RecordPluginVmImageDownloadedSizeHistogram(info.bytes_downloaded);
+  StartImport();
+}
+
+void PluginVmInstaller::OnDownloadFailed(FailureReason reason) {
+  RemoveTemporaryImageIfExists();
+  current_download_guid_.clear();
+
+  if (using_drive_download_service_) {
+    drive_download_service_->ResetState();
+    using_drive_download_service_ = false;
+  }
+
+  InstallFailed(reason);
+}
+
+void PluginVmInstaller::OnDiskImageProgress(
+    const vm_tools::concierge::DiskImageStatusResponse& signal) {
+  if (signal.command_uuid() != current_import_command_uuid_)
+    return;
+
+  const uint64_t percent_completed = signal.progress();
+  const vm_tools::concierge::DiskImageStatus status = signal.status();
+
+  switch (status) {
+    case vm_tools::concierge::DiskImageStatus::DISK_STATUS_CREATED:
+      VLOG(1) << "Disk image status indicates that importing is done.";
+      RequestFinalStatus();
+      return;
+    case vm_tools::concierge::DiskImageStatus::DISK_STATUS_IN_PROGRESS:
+      UpdateProgress(percent_completed / 100.);
+      return;
+    default:
+      LOG(ERROR) << "Disk image status signal has status: " << status
+                 << " with error message: " << signal.failure_reason()
+                 << " and current progress: " << percent_completed;
+      OnImported(FailureReason::UNEXPECTED_DISK_IMAGE_STATUS);
+      return;
+  }
+}
+
+bool PluginVmInstaller::VerifyDownload(
+    const std::string& downloaded_archive_hash) {
+  if (downloaded_archive_hash.empty()) {
+    LOG(ERROR) << "No hash found for downloaded PluginVm image archive";
+    return false;
+  }
+  const base::Value* plugin_vm_image_hash_ptr =
+      profile_->GetPrefs()
+          ->GetDictionary(prefs::kPluginVmImage)
+          ->FindKey("hash");
+  if (!plugin_vm_image_hash_ptr) {
+    LOG(ERROR) << "Hash of PluginVm image is not specified";
+    return false;
+  }
+  std::string plugin_vm_image_hash = plugin_vm_image_hash_ptr->GetString();
+
+  if (!base::EqualsCaseInsensitiveASCII(plugin_vm_image_hash,
+                                        downloaded_archive_hash)) {
+    LOG(ERROR) << "Downloaded PluginVm image archive hash ("
+               << downloaded_archive_hash << ") doesn't match "
+               << "hash specified by the PluginVmImage policy ("
+               << plugin_vm_image_hash << ")";
+    return false;
+  }
+
+  return true;
+}
+
+int64_t PluginVmInstaller::RequiredFreeDiskSpace() {
+  return static_cast<int64_t>(profile_->GetPrefs()->GetInteger(
+             prefs::kPluginVmRequiredFreeDiskSpaceGB)) *
+         kBytesPerGigabyte;
+}
+
+void PluginVmInstaller::SetDownloadServiceForTesting(
+    download::DownloadService* download_service) {
+  download_service_ = download_service;
+}
+
+void PluginVmInstaller::SetDownloadedImageForTesting(
+    const base::FilePath& downloaded_image) {
+  downloaded_image_for_testing_ = downloaded_image;
+}
+
+void PluginVmInstaller::SetDriveDownloadServiceForTesting(
+    std::unique_ptr<PluginVmDriveImageDownloadService> drive_download_service) {
+  drive_download_service_ = std::move(drive_download_service);
+}
+
+PluginVmInstaller::~PluginVmInstaller() = default;
 
 void PluginVmInstaller::CheckLicense() {
   UpdateInstallingState(InstallingState::kCheckingLicense);
@@ -312,69 +448,6 @@ void PluginVmInstaller::StartDlcDownload() {
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PluginVmInstaller::StartDispatcher() {
-  DCHECK_EQ(installing_state_, InstallingState::kDownloadingDlc);
-  UpdateInstallingState(InstallingState::kStartingDispatcher);
-
-  PluginVmManagerFactory::GetForProfile(profile_)->StartDispatcher(
-      base::BindOnce(&PluginVmInstaller::OnDispatcherStarted,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PluginVmInstaller::OnDispatcherStarted(bool success) {
-  if (state_ == State::kCancelling) {
-    CancelFinished();
-    return;
-  }
-
-  if (!success) {
-    InstallFailed(FailureReason::DISPATCHER_NOT_AVAILABLE);
-    return;
-  }
-
-  StartDownload();
-}
-
-void PluginVmInstaller::StartDownload() {
-  DCHECK_EQ(installing_state_, InstallingState::kStartingDispatcher);
-  UpdateInstallingState(InstallingState::kDownloadingImage);
-  UpdateProgress(/*state_progress=*/0);
-
-  GURL url = GetPluginVmImageDownloadUrl();
-  // This may have changed since running StartDlcDownload.
-  if (!url.is_valid()) {
-    InstallFailed(FailureReason::INVALID_IMAGE_URL);
-    return;
-  }
-
-  base::Optional<std::string> drive_id = GetIdFromDriveUrl(url);
-  using_drive_download_service_ = drive_id.has_value();
-
-  if (using_drive_download_service_) {
-    if (!drive_download_service_) {
-      drive_download_service_ =
-          std::make_unique<PluginVmDriveImageDownloadService>(this, profile_);
-    } else {
-      drive_download_service_->ResetState();
-    }
-
-    drive_download_service_->StartDownload(drive_id.value());
-  } else {
-    download_service_->StartDownload(GetDownloadParams(url));
-  }
-}
-
-void PluginVmInstaller::CancelDownload() {
-  if (using_drive_download_service_) {
-    DCHECK(drive_download_service_);
-    drive_download_service_->CancelDownload();
-  } else {
-    download_service_->CancelDownload(current_download_guid_);
-    current_download_guid_.clear();
-  }
-  CancelFinished();
-}
-
 void PluginVmInstaller::OnDlcDownloadProgressUpdated(double progress) {
   DCHECK_EQ(installing_state_, InstallingState::kDownloadingDlc);
   if (state_ == State::kCancelling)
@@ -428,49 +501,65 @@ void PluginVmInstaller::OnDlcDownloadCompleted(
   InstallFailed(reason);
 }
 
-void PluginVmInstaller::OnDownloadStarted() {}
+void PluginVmInstaller::StartDispatcher() {
+  DCHECK_EQ(installing_state_, InstallingState::kDownloadingDlc);
+  UpdateInstallingState(InstallingState::kStartingDispatcher);
 
-void PluginVmInstaller::OnDownloadProgressUpdated(uint64_t bytes_downloaded,
-                                                  int64_t content_length) {
-  DCHECK_EQ(installing_state_, InstallingState::kDownloadingImage);
-  if (observer_)
-    observer_->OnDownloadProgressUpdated(bytes_downloaded, content_length);
-
-  if (content_length <= 0)
-    content_length = kDownloadSizeFallbackEstimate;
-
-  UpdateProgress(
-      std::min(1., static_cast<double>(bytes_downloaded) / content_length));
+  PluginVmManagerFactory::GetForProfile(profile_)->StartDispatcher(
+      base::BindOnce(&PluginVmInstaller::OnDispatcherStarted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PluginVmInstaller::OnDownloadCompleted(
-    const download::CompletionInfo& info) {
-  downloaded_image_ = info.path;
-  downloaded_image_size_ = info.bytes_downloaded;
-  current_download_guid_.clear();
-
-  if (downloaded_image_for_testing_)
-    downloaded_image_ = downloaded_image_for_testing_.value();
-
-  if (!VerifyDownload(info.hash256)) {
-    OnDownloadFailed(FailureReason::HASH_MISMATCH);
+void PluginVmInstaller::OnDispatcherStarted(bool success) {
+  if (state_ == State::kCancelling) {
+    CancelFinished();
     return;
   }
 
-  RecordPluginVmImageDownloadedSizeHistogram(info.bytes_downloaded);
-  StartImport();
-}
-
-void PluginVmInstaller::OnDownloadFailed(FailureReason reason) {
-  RemoveTemporaryImageIfExists();
-  current_download_guid_.clear();
-
-  if (using_drive_download_service_) {
-    drive_download_service_->ResetState();
-    using_drive_download_service_ = false;
+  if (!success) {
+    InstallFailed(FailureReason::DISPATCHER_NOT_AVAILABLE);
+    return;
   }
 
-  InstallFailed(reason);
+  StartDownload();
+}
+
+void PluginVmInstaller::StartDownload() {
+  DCHECK_EQ(installing_state_, InstallingState::kStartingDispatcher);
+  UpdateInstallingState(InstallingState::kDownloadingImage);
+  UpdateProgress(/*state_progress=*/0);
+
+  GURL url = GetPluginVmImageDownloadUrl();
+  // This may have changed since running StartDlcDownload.
+  if (!url.is_valid()) {
+    InstallFailed(FailureReason::INVALID_IMAGE_URL);
+    return;
+  }
+
+  base::Optional<std::string> drive_id = GetIdFromDriveUrl(url);
+  using_drive_download_service_ = drive_id.has_value();
+
+  if (using_drive_download_service_) {
+    if (!drive_download_service_) {
+      drive_download_service_ =
+          std::make_unique<PluginVmDriveImageDownloadService>(this, profile_);
+    } else {
+      drive_download_service_->ResetState();
+    }
+
+    drive_download_service_->StartDownload(drive_id.value());
+  } else {
+    download_service_->StartDownload(GetDownloadParams(url));
+  }
+}
+
+void PluginVmInstaller::OnStartDownload(
+    const std::string& download_guid,
+    download::DownloadParams::StartResult start_result) {
+  if (start_result == download::DownloadParams::ACCEPTED)
+    current_download_guid_ = download_guid;
+  else
+    OnDownloadFailed(FailureReason::DOWNLOAD_FAILED_UNKNOWN);
 }
 
 void PluginVmInstaller::StartImport() {
@@ -484,56 +573,6 @@ void PluginVmInstaller::StartImport() {
                      base::Unretained(this)),
       base::BindOnce(&PluginVmInstaller::OnImageTypeDetected,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PluginVmInstaller::UpdateProgress(double state_progress) {
-  DCHECK_EQ(state_, State::kInstalling);
-  if (state_progress < 0 || state_progress > 1) {
-    LOG(ERROR) << "Unexpected progress value " << state_progress
-               << " in installing state "
-               << GetInstallingStateName(installing_state_);
-    return;
-  }
-
-  double start_range = 0;
-  double end_range = 0;
-  switch (installing_state_) {
-    case InstallingState::kDownloadingDlc:
-      start_range = 0;
-      end_range = 0.01;
-      break;
-    case InstallingState::kDownloadingImage:
-      start_range = 0.01;
-      end_range = 0.45;
-      break;
-    case InstallingState::kImporting:
-      start_range = 0.45;
-      end_range = 1;
-      break;
-    default:
-      // Other states take a negligible amount of time so we don't send progress
-      // updates.
-      NOTREACHED();
-  }
-
-  double new_progress =
-      start_range + (end_range - start_range) * state_progress;
-  if (new_progress < progress_) {
-    LOG(ERROR) << "Progress went backwards from " << progress_ << " to "
-               << new_progress;
-    return;
-  }
-
-  progress_ = new_progress;
-  if (observer_)
-    observer_->OnProgressUpdated(new_progress);
-}
-
-void PluginVmInstaller::UpdateInstallingState(
-    InstallingState installing_state) {
-  DCHECK_NE(installing_state, InstallingState::kInactive);
-  installing_state_ = installing_state;
-  observer_->OnStateUpdated(installing_state_);
 }
 
 void PluginVmInstaller::DetectImageType() {
@@ -652,31 +691,6 @@ void PluginVmInstaller::OnImportDiskImage(base::Optional<ReplyType> reply) {
   //   at this stage though.
 }
 
-void PluginVmInstaller::OnDiskImageProgress(
-    const vm_tools::concierge::DiskImageStatusResponse& signal) {
-  if (signal.command_uuid() != current_import_command_uuid_)
-    return;
-
-  const uint64_t percent_completed = signal.progress();
-  const vm_tools::concierge::DiskImageStatus status = signal.status();
-
-  switch (status) {
-    case vm_tools::concierge::DiskImageStatus::DISK_STATUS_CREATED:
-      VLOG(1) << "Disk image status indicates that importing is done.";
-      RequestFinalStatus();
-      return;
-    case vm_tools::concierge::DiskImageStatus::DISK_STATUS_IN_PROGRESS:
-      UpdateProgress(percent_completed / 100.);
-      return;
-    default:
-      LOG(ERROR) << "Disk image status signal has status: " << status
-                 << " with error message: " << signal.failure_reason()
-                 << " and current progress: " << percent_completed;
-      OnImported(FailureReason::UNEXPECTED_DISK_IMAGE_STATUS);
-      return;
-  }
-}
-
 void PluginVmInstaller::RequestFinalStatus() {
   vm_tools::concierge::DiskImageStatusRequest status_request;
   status_request.set_command_uuid(current_import_command_uuid_);
@@ -733,6 +747,85 @@ void PluginVmInstaller::OnImported(
   InstallFinished();
 }
 
+void PluginVmInstaller::UpdateInstallingState(
+    InstallingState installing_state) {
+  DCHECK_NE(installing_state, InstallingState::kInactive);
+  installing_state_ = installing_state;
+  observer_->OnStateUpdated(installing_state_);
+}
+
+void PluginVmInstaller::UpdateProgress(double state_progress) {
+  DCHECK_EQ(state_, State::kInstalling);
+  if (state_progress < 0 || state_progress > 1) {
+    LOG(ERROR) << "Unexpected progress value " << state_progress
+               << " in installing state "
+               << GetInstallingStateName(installing_state_);
+    return;
+  }
+
+  double start_range = 0;
+  double end_range = 0;
+  switch (installing_state_) {
+    case InstallingState::kDownloadingDlc:
+      start_range = 0;
+      end_range = 0.01;
+      break;
+    case InstallingState::kDownloadingImage:
+      start_range = 0.01;
+      end_range = 0.45;
+      break;
+    case InstallingState::kImporting:
+      start_range = 0.45;
+      end_range = 1;
+      break;
+    default:
+      // Other states take a negligible amount of time so we don't send progress
+      // updates.
+      NOTREACHED();
+  }
+
+  double new_progress =
+      start_range + (end_range - start_range) * state_progress;
+  if (new_progress < progress_) {
+    LOG(ERROR) << "Progress went backwards from " << progress_ << " to "
+               << new_progress;
+    return;
+  }
+
+  progress_ = new_progress;
+  if (observer_)
+    observer_->OnProgressUpdated(new_progress);
+}
+
+void PluginVmInstaller::InstallFailed(FailureReason reason) {
+  state_ = State::kIdle;
+  GetWakeLock()->CancelWakeLock();
+  installing_state_ = InstallingState::kInactive;
+  base::UmaHistogramEnumeration(kFailureReasonHistogram, reason);
+  RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kError);
+  if (observer_)
+    observer_->OnError(reason);
+}
+
+void PluginVmInstaller::InstallFinished() {
+  base::UmaHistogramLongTimes(kSetupTimeHistogram,
+                              base::TimeTicks::Now() - setup_start_tick_);
+  state_ = State::kIdle;
+  GetWakeLock()->CancelWakeLock();
+  installing_state_ = InstallingState::kInactive;
+}
+
+void PluginVmInstaller::CancelDownload() {
+  if (using_drive_download_service_) {
+    DCHECK(drive_download_service_);
+    drive_download_service_->CancelDownload();
+  } else {
+    download_service_->CancelDownload(current_download_guid_);
+    current_download_guid_.clear();
+  }
+  CancelFinished();
+}
+
 void PluginVmInstaller::CancelImport() {
   VLOG(1) << "Cancelling disk image import with command_uuid: "
           << current_import_command_uuid_;
@@ -770,53 +863,14 @@ void PluginVmInstaller::OnImportDiskImageCancelled(
   CancelFinished();
 }
 
-void PluginVmInstaller::SetObserver(Observer* observer) {
-  observer_ = observer;
-}
+void PluginVmInstaller::CancelFinished() {
+  DCHECK_EQ(state_, State::kCancelling);
+  state_ = State::kIdle;
+  GetWakeLock()->CancelWakeLock();
+  installing_state_ = InstallingState::kInactive;
 
-void PluginVmInstaller::RemoveObserver() {
-  observer_ = nullptr;
-}
-
-void PluginVmInstaller::SetDownloadServiceForTesting(
-    download::DownloadService* download_service) {
-  download_service_ = download_service;
-}
-
-void PluginVmInstaller::SetDownloadedImageForTesting(
-    const base::FilePath& downloaded_image) {
-  downloaded_image_for_testing_ = downloaded_image;
-}
-
-std::string PluginVmInstaller::GetCurrentDownloadGuid() {
-  return current_download_guid_;
-}
-
-void PluginVmInstaller::SetDriveDownloadServiceForTesting(
-    std::unique_ptr<PluginVmDriveImageDownloadService> drive_download_service) {
-  drive_download_service_ = std::move(drive_download_service);
-}
-
-PluginVmInstaller::PluginVmInstaller(Profile* profile)
-    : profile_(profile),
-      download_service_(
-          DownloadServiceFactory::GetForKey(profile->GetProfileKey())) {}
-
-GURL PluginVmInstaller::GetPluginVmImageDownloadUrl() {
-  const base::Value* url_ptr = profile_->GetPrefs()
-                                   ->GetDictionary(prefs::kPluginVmImage)
-                                   ->FindKey("url");
-  if (!url_ptr) {
-    LOG(ERROR) << "Url to PluginVm image is not specified";
-    return GURL();
-  }
-  return GURL(url_ptr->GetString());
-}
-
-int64_t PluginVmInstaller::RequiredFreeDiskSpace() {
-  return static_cast<int64_t>(profile_->GetPrefs()->GetInteger(
-             prefs::kPluginVmRequiredFreeDiskSpaceGB)) *
-         kBytesPerGigabyte;
+  if (observer_)
+    observer_->OnCancelFinished();
 }
 
 std::string PluginVmInstaller::GetStateName(State state) {
@@ -851,6 +905,17 @@ std::string PluginVmInstaller::GetInstallingStateName(InstallingState state) {
   }
 }
 
+GURL PluginVmInstaller::GetPluginVmImageDownloadUrl() {
+  const base::Value* url_ptr = profile_->GetPrefs()
+                                   ->GetDictionary(prefs::kPluginVmImage)
+                                   ->FindKey("url");
+  if (!url_ptr) {
+    LOG(ERROR) << "Url to PluginVm image is not specified";
+    return GURL();
+  }
+  return GURL(url_ptr->GetString());
+}
+
 download::DownloadParams PluginVmInstaller::GetDownloadParams(const GURL& url) {
   download::DownloadParams params;
 
@@ -879,43 +944,6 @@ download::DownloadParams PluginVmInstaller::GetDownloadParams(const GURL& url) {
   return params;
 }
 
-void PluginVmInstaller::OnStartDownload(
-    const std::string& download_guid,
-    download::DownloadParams::StartResult start_result) {
-  if (start_result == download::DownloadParams::ACCEPTED)
-    current_download_guid_ = download_guid;
-  else
-    OnDownloadFailed(FailureReason::DOWNLOAD_FAILED_UNKNOWN);
-}
-
-bool PluginVmInstaller::VerifyDownload(
-    const std::string& downloaded_archive_hash) {
-  if (downloaded_archive_hash.empty()) {
-    LOG(ERROR) << "No hash found for downloaded PluginVm image archive";
-    return false;
-  }
-  const base::Value* plugin_vm_image_hash_ptr =
-      profile_->GetPrefs()
-          ->GetDictionary(prefs::kPluginVmImage)
-          ->FindKey("hash");
-  if (!plugin_vm_image_hash_ptr) {
-    LOG(ERROR) << "Hash of PluginVm image is not specified";
-    return false;
-  }
-  std::string plugin_vm_image_hash = plugin_vm_image_hash_ptr->GetString();
-
-  if (!base::EqualsCaseInsensitiveASCII(plugin_vm_image_hash,
-                                        downloaded_archive_hash)) {
-    LOG(ERROR) << "Downloaded PluginVm image archive hash ("
-               << downloaded_archive_hash << ") doesn't match "
-               << "hash specified by the PluginVmImage policy ("
-               << plugin_vm_image_hash << ")";
-    return false;
-  }
-
-  return true;
-}
-
 void PluginVmInstaller::RemoveTemporaryImageIfExists() {
   if (using_drive_download_service_) {
     drive_download_service_->RemoveTemporaryArchive(
@@ -939,34 +967,6 @@ void PluginVmInstaller::OnTemporaryImageRemoved(bool success) {
   downloaded_image_size_ = -1;
   downloaded_image_.clear();
   creating_new_vm_ = false;
-}
-
-void PluginVmInstaller::CancelFinished() {
-  DCHECK_EQ(state_, State::kCancelling);
-  state_ = State::kIdle;
-  GetWakeLock()->CancelWakeLock();
-  installing_state_ = InstallingState::kInactive;
-
-  if (observer_)
-    observer_->OnCancelFinished();
-}
-
-void PluginVmInstaller::InstallFailed(FailureReason reason) {
-  state_ = State::kIdle;
-  GetWakeLock()->CancelWakeLock();
-  installing_state_ = InstallingState::kInactive;
-  base::UmaHistogramEnumeration(kFailureReasonHistogram, reason);
-  RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kError);
-  if (observer_)
-    observer_->OnError(reason);
-}
-
-void PluginVmInstaller::InstallFinished() {
-  base::UmaHistogramLongTimes(kSetupTimeHistogram,
-                              base::TimeTicks::Now() - setup_start_tick_);
-  state_ = State::kIdle;
-  GetWakeLock()->CancelWakeLock();
-  installing_state_ = InstallingState::kInactive;
 }
 
 device::mojom::WakeLock* PluginVmInstaller::GetWakeLock() {
