@@ -40,13 +40,37 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   FeaturePromoBubbleView& operator=(const FeaturePromoBubbleView&) = delete;
   ~FeaturePromoBubbleView() override;
 
+  struct CreateParams {
+    CreateParams();
+    CreateParams(CreateParams&&);
+    ~CreateParams();
+
+    views::View* anchor_view = nullptr;
+
+    base::string16 body_text;
+    base::Optional<base::string16> title_text;
+    base::Optional<base::string16> screenreader_text;
+
+    bool snoozable = false;
+
+    views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT;
+    base::Optional<int> preferred_width;
+
+    bool focusable = false;
+    bool persist_on_blur = false;
+
+    // Changes the bubble timeout. Intended for tests, avoid use.
+    base::Optional<base::TimeDelta> timeout_default;
+    base::Optional<base::TimeDelta> timeout_short;
+  };
+
   // NOTE: Please read comment above class. This method shouldn't be
   // called in most cases.
   //
   // Creates the promo. The returned pointer is only valid until the
   // widget is destroyed. It must not be manually deleted by the caller.
   static FeaturePromoBubbleView* Create(
-      const FeaturePromoBubbleParams& params,
+      CreateParams params,
       base::RepeatingClosure snooze_callback = base::RepeatingClosure(),
       base::RepeatingClosure dismiss_callback = base::RepeatingClosure());
 
@@ -57,7 +81,7 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   views::Button* GetSnoozeButtonForTesting() const;
 
  private:
-  FeaturePromoBubbleView(const FeaturePromoBubbleParams& params,
+  FeaturePromoBubbleView(CreateParams params,
                          base::RepeatingClosure snooze_callback,
                          base::RepeatingClosure dismiss_callback);
 

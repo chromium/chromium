@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_registry.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
 FeaturePromoControllerViews::FeaturePromoControllerViews(
@@ -257,17 +258,47 @@ void FeaturePromoControllerViews::ShowPromoBubbleImpl(
   params.anchor_view->SetProperty(kHasInProductHelpPromoKey, true);
   anchor_view_tracker_.SetView(params.anchor_view);
 
+  // Map |params| to the bubble's create params, fetching needed strings.
+  FeaturePromoBubbleView::CreateParams create_params;
+  create_params.anchor_view = params.anchor_view;
+  create_params.body_text =
+      params.body_string_specifier != -1
+          ? l10n_util::GetStringUTF16(params.body_string_specifier)
+          : params.body_text_raw;
+  if (params.title_string_specifier)
+    create_params.title_text =
+        l10n_util::GetStringUTF16(*params.title_string_specifier);
+
+  if (params.screenreader_string_specifier && params.feature_accelerator) {
+    create_params.screenreader_text = l10n_util::GetStringFUTF16(
+        *params.screenreader_string_specifier,
+        params.feature_accelerator->GetShortcutText());
+  } else if (params.screenreader_string_specifier) {
+    create_params.screenreader_text =
+        l10n_util::GetStringUTF16(*params.screenreader_string_specifier);
+  }
+
+  create_params.snoozable = params.allow_snooze;
+  create_params.focusable = params.allow_focus;
+  create_params.persist_on_blur = params.persist_on_blur;
+
+  create_params.arrow = params.arrow;
+  create_params.preferred_width = params.preferred_width;
+
+  create_params.timeout_default = params.timeout_default;
+  create_params.timeout_short = params.timeout_short;
+
   if (current_iph_feature_) {
     // For normal promos:
     promo_bubble_ = FeaturePromoBubbleView::Create(
-        params,
+        std::move(create_params),
         base::BindRepeating(&FeaturePromoControllerViews::OnUserSnooze,
                             base::Unretained(this), *current_iph_feature_),
         base::BindRepeating(&FeaturePromoControllerViews::OnUserDismiss,
                             base::Unretained(this), *current_iph_feature_));
   } else {
     // For critical promos, since they aren't snoozable:
-    promo_bubble_ = FeaturePromoBubbleView::Create(params);
+    promo_bubble_ = FeaturePromoBubbleView::Create(std::move(create_params));
   }
 
   widget_observer_.Add(promo_bubble_->GetWidget());

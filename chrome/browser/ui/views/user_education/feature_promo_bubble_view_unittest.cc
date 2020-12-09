@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -39,13 +40,14 @@ class FeaturePromoBubbleViewTest : public TestWithBrowserView {
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
-  FeaturePromoBubbleParams GetBubbleParams(bool snoozable) {
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_FEATURE_PROMO_BODY;
+  FeaturePromoBubbleView::CreateParams GetBubbleParams(bool snoozable) {
+    FeaturePromoBubbleView::CreateParams params;
+    params.body_text = base::ASCIIToUTF16("To X, do Y");
     params.anchor_view = browser_view()->contents_container();
     params.arrow = views::BubbleBorder::TOP_RIGHT;
-    params.allow_focus = snoozable;
-    params.allow_snooze = snoozable;
+    params.focusable = snoozable;
+    params.persist_on_blur = snoozable;
+    params.snoozable = snoozable;
     return params;
   }
 };
