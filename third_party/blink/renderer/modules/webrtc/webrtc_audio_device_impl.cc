@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"

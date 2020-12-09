@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observer.h"
-#include "base/stl_util.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"

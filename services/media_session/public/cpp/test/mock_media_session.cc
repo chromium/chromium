@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 
 namespace media_session {
 namespace test {

@@ -9,8 +9,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"

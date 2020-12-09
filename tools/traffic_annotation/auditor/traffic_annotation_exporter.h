@@ -9,8 +9,8 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "tools/traffic_annotation/auditor/instance.h"
 
 class TrafficAnnotationExporter {

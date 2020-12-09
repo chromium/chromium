@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <atomic>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/common/trace_event_common.h"

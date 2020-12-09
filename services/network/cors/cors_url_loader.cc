@@ -5,10 +5,10 @@
 #include "services/network/cors/cors_url_loader.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"

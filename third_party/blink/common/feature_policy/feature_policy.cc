@@ -4,10 +4,10 @@
 
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"

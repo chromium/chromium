@@ -11,7 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/containers/adapters.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "cc/layers/layer.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "third_party/skia/include/core/SkBitmap.h"

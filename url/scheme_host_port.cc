@@ -10,9 +10,9 @@
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"

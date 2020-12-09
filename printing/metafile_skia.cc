@@ -11,9 +11,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "cc/paint/paint_record.h"

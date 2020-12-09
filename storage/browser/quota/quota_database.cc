@@ -12,9 +12,9 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"

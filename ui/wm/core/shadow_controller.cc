@@ -8,11 +8,11 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observer.h"
-#include "base/stl_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"

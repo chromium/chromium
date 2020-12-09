@@ -4,7 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {

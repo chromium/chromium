@@ -14,10 +14,10 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

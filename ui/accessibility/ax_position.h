@@ -16,10 +16,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/i18n/break_iterator.h"
 #include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"

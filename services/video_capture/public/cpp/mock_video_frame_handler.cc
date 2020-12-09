@@ -4,7 +4,7 @@
 
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_capture/public/mojom/scoped_access_permission.mojom.h"
 

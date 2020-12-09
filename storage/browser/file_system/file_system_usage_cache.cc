@@ -11,9 +11,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/pickle.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 

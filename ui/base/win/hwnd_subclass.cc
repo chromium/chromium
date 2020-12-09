@@ -7,10 +7,10 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "ui/base/win/touch_input.h"
 #include "ui/gfx/win/hwnd_util.h"
 

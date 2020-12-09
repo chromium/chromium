@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

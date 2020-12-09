@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 
 // Include once to get the type definitions

@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "ui/display/util/edid_parser.h"
 
 namespace display {

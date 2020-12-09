@@ -11,10 +11,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_temporary_storage_evictor.h"

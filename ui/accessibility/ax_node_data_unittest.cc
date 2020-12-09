@@ -6,7 +6,7 @@
 
 #include <set>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"

@@ -4,7 +4,7 @@
 
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"

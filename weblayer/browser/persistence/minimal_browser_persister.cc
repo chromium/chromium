@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/persistence/minimal_browser_persister.h"
 
+#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"

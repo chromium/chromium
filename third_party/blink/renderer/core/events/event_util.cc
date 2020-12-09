@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/events/event_util.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 

@@ -4,7 +4,7 @@
 
 #include "services/network/origin_policy/origin_policy_parsed_header.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "net/http/structured_headers.h"
 
 namespace network {

@@ -11,9 +11,9 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/pickle.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

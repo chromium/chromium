@@ -10,8 +10,8 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {

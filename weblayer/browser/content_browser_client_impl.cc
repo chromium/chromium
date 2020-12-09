@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"

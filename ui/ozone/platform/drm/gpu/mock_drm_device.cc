@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"

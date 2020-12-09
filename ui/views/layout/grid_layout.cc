@@ -9,8 +9,8 @@
 #include <numeric>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"

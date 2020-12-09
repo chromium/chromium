@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"

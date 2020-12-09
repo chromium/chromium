@@ -18,6 +18,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -26,7 +27,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/stl_util.h"
 #include "base/timer/timer.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client.h"

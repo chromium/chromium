@@ -9,9 +9,9 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"

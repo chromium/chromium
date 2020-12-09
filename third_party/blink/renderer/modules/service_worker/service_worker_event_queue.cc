@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_event_queue.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-blink.h"

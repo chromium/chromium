@@ -4,8 +4,8 @@
 
 #include "tools/traffic_annotation/auditor/instance.h"
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

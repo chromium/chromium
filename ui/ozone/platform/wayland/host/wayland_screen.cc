@@ -7,7 +7,7 @@
 #include <set>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"

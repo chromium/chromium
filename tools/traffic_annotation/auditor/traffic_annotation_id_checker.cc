@@ -4,7 +4,7 @@
 
 #include "tools/traffic_annotation/auditor/traffic_annotation_id_checker.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 

@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/aura/window.h"

@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/webrtc/webrtc_switches.h"

@@ -8,10 +8,10 @@
 #include <map>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 

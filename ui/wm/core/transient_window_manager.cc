@@ -8,7 +8,7 @@
 #include <functional>
 
 #include "base/auto_reset.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window.h"

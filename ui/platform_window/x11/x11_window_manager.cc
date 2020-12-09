@@ -4,7 +4,7 @@
 
 #include "ui/platform_window/x11/x11_window_manager.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/platform_window/x11/x11_window.h"
 
 namespace ui {

@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/optional.h"
-#include "base/stl_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_util.h"
 #include "services/network/network_context.h"

@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 

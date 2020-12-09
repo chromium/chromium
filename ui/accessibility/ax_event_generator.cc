@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"

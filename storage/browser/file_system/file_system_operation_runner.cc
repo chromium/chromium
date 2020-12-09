@@ -12,9 +12,9 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/url_request/url_request_context.h"
 #include "storage/browser/blob/shareable_file_reference.h"

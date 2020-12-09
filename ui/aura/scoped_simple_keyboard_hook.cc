@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace aura {

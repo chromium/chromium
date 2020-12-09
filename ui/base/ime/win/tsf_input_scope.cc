@@ -8,8 +8,8 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/task/current_thread.h"
 #include "base/win/windows_version.h"
 

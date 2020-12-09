@@ -4,7 +4,7 @@
 
 #include "services/audio/test/mock_group_coordinator.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/unguessable_token.h"
 #include "services/audio/test/mock_group_member.h"
 #include "testing/gmock/include/gmock/gmock.h"

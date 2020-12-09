@@ -8,7 +8,7 @@
 #include <valarray>
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace ui {
 

@@ -11,11 +11,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
