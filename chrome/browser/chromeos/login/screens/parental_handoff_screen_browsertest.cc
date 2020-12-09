@@ -199,6 +199,7 @@ class ParentalHandoffScreenChildBrowserTest
     login_manager_mixin().LoginAsNewChildUser();
 
     WizardControllerExitWaiter(UserCreationView::kScreenId).Wait();
+    WizardControllerExitWaiter(LocaleSwitchView::kScreenId).Wait();
     base::RunLoop().RunUntilIdle();
 
     ASSERT_EQ(

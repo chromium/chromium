@@ -184,10 +184,6 @@ void MarketingOptInScreenTest::SetUpOnMainThread() {
       &MarketingOptInScreenTest::HandleScreenExit, base::Unretained(this)));
 
   OobeBaseTest::SetUpOnMainThread();
-  PerformLogin();
-  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      ash::prefs::kGestureEducationNotificationShown, true);
 }
 
 MarketingOptInScreen* MarketingOptInScreenTest::GetScreen() {
@@ -196,6 +192,10 @@ MarketingOptInScreen* MarketingOptInScreenTest::GetScreen() {
 }
 
 void MarketingOptInScreenTest::ShowMarketingOptInScreen() {
+  PerformLogin();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
+      ash::prefs::kGestureEducationNotificationShown, true);
   LoginDisplayHost::default_host()->StartWizard(
       MarketingOptInScreenView::kScreenId);
 }
@@ -514,7 +514,7 @@ class MarketingOptInScreenTestChildUser : public MarketingOptInScreenTest {
     // Child users require a user policy, set up an empty one so the user can
     // get through login.
     ASSERT_TRUE(user_policy_mixin_.RequestPolicyUpdate());
-    OobeBaseTest::SetUpInProcessBrowserTestFixture();
+    MarketingOptInScreenTest::SetUpInProcessBrowserTestFixture();
   }
   void PerformLogin() override { login_manager_mixin_.LoginAsNewChildUser(); }
 

@@ -14,7 +14,6 @@
 
 namespace chromeos {
 
-class CoreOobeView;
 class TermsOfServiceScreen;
 
 // Interface for dependency injection between TermsOfServiceScreen and its
@@ -55,8 +54,7 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
  public:
   using TView = TermsOfServiceScreenView;
 
-  TermsOfServiceScreenHandler(JSCallsContainer* js_calls_container,
-                              CoreOobeView* core_oobe_view);
+  explicit TermsOfServiceScreenHandler(JSCallsContainer* js_calls_container);
   ~TermsOfServiceScreenHandler() override;
 
   // BaseScreenHandler:
@@ -76,10 +74,6 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void Initialize() override;
 
-  // Callback invoked after the UI locale has been changed.
-  void OnLanguageChangedCallback(
-      const locale_util::LanguageSwitchResult& result);
-
   // Switch to the user's preferred input method and show the screen. This
   // method is called after it has been ensured that the current UI locale
   // matches the UI locale chosen by the user.
@@ -94,8 +88,6 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   void UpdateTermsOfServiceInUI();
 
   TermsOfServiceScreen* screen_ = nullptr;
-
-  CoreOobeView* core_oobe_view_ = nullptr;
 
   // Whether the screen should be shown right after initialization.
   bool show_on_init_ = false;

@@ -2076,13 +2076,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
   login_wait_run_loop.Run();
   controller->RemoveLoginStatusConsumer(&login_status_consumer);
 
-  // Verify that the Terms of Service screen is being shown.
-  chromeos::WizardController* wizard_controller =
-        chromeos::WizardController::default_controller();
-  ASSERT_TRUE(wizard_controller);
-  ASSERT_TRUE(wizard_controller->current_screen());
-  EXPECT_EQ(chromeos::TermsOfServiceScreenView::kScreenId.AsId(),
-            wizard_controller->current_screen()->screen_id());
+  // Wait for the Terms of Service screen is being shown.
+  chromeos::OobeScreenWaiter(chromeos::TermsOfServiceScreenView::kScreenId)
+      .Wait();
 
   // Wait for the Terms of Service to finish downloading.
   chromeos::test::OobeJS()

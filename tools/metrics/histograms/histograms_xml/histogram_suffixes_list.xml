@@ -11973,6 +11973,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Hid-detection" label=""/>
   <suffix name="Image" label=""/>
   <suffix name="Kiosk-enable" label=""/>
+  <suffix name="Locale-switch" label=""/>
   <suffix name="Marketing-opt-in" label=""/>
   <suffix name="Multidevice-setup" label="">
     <obsolete>
@@ -12031,6 +12032,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Hid-detection.Next" label=""/>
   <suffix name="Hid-detection.StartDemo" label=""/>
   <suffix name="Kiosk-enable.Next" label=""/>
+  <suffix name="Locale-switch.LocaleFetchFailed" label=""/>
+  <suffix name="Locale-switch.LocaleFetchTimeout" label=""/>
+  <suffix name="Locale-switch.NoSwitchNeeded" label=""/>
+  <suffix name="Locale-switch.SwitchFailed" label=""/>
+  <suffix name="Locale-switch.SwitchSucceded" label=""/>
   <suffix name="Marketing-opt-in.Next" label=""/>
   <suffix name="Multidevice-setup-screen.Next" label=""/>
   <suffix name="Multidevice-setup.Next" label="">

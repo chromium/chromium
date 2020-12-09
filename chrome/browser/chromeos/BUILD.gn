@@ -1784,6 +1784,8 @@ source_set("chromeos") {
     "login/screens/kiosk_autolaunch_screen.h",
     "login/screens/kiosk_enable_screen.cc",
     "login/screens/kiosk_enable_screen.h",
+    "login/screens/locale_switch_screen.cc",
+    "login/screens/locale_switch_screen.h",
     "login/screens/marketing_opt_in_screen.cc",
     "login/screens/marketing_opt_in_screen.h",
     "login/screens/multidevice_setup_screen.cc",

@@ -31,8 +31,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/discover/discover_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_pin_setup.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -357,7 +357,7 @@ SigninUI* LoginDisplayHostCommon::GetSigninUI() {
 }
 
 void LoginDisplayHostCommon::StartUserOnboarding() {
-  StartWizard(TermsOfServiceScreenView::kScreenId);
+  StartWizard(LocaleSwitchView::kScreenId);
 }
 
 void LoginDisplayHostCommon::StartSupervisionTransition() {

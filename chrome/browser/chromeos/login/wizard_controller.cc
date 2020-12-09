@@ -71,6 +71,7 @@
 #include "chrome/browser/chromeos/login/screens/hid_detection_screen.h"
 #include "chrome/browser/chromeos/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/chromeos/login/screens/kiosk_enable_screen.h"
+#include "chrome/browser/chromeos/login/screens/locale_switch_screen.h"
 #include "chrome/browser/chromeos/login/screens/marketing_opt_in_screen.h"
 #include "chrome/browser/chromeos/login/screens/multidevice_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/network_error.h"
@@ -131,6 +132,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
@@ -562,6 +564,10 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
   append(std::make_unique<KioskAutolaunchScreen>(
       oobe_ui->GetView<KioskAutolaunchScreenHandler>(),
       base::BindRepeating(&WizardController::OnKioskAutolaunchScreenExit,
+                          weak_factory_.GetWeakPtr())));
+  append(std::make_unique<LocaleSwitchScreen>(
+      oobe_ui->GetView<LocaleSwitchScreenHandler>(),
+      base::BindRepeating(&WizardController::OnLocaleSwitchScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<TermsOfServiceScreen>(
       oobe_ui->GetView<TermsOfServiceScreenHandler>(),
@@ -1332,6 +1338,13 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
   }
 }
 
+void WizardController::OnLocaleSwitchScreenExit(
+    LocaleSwitchScreen::Result result) {
+  OnScreenExit(LocaleSwitchView::kScreenId,
+               LocaleSwitchScreen::GetResultString(result));
+  AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
+}
+
 void WizardController::OnTermsOfServiceScreenExit(
     TermsOfServiceScreen::Result result) {
   OnScreenExit(TermsOfServiceScreenView::kScreenId,
@@ -1830,7 +1843,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == GaiaView::kScreenId ||
              screen_id == UserCreationView::kScreenId ||
              screen_id == ActiveDirectoryLoginView::kScreenId ||
-             screen_id == SignInFatalErrorView::kScreenId) {
+             screen_id == SignInFatalErrorView::kScreenId ||
+             screen_id == LocaleSwitchView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

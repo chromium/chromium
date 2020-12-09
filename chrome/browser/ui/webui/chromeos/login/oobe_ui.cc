@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_dropdown_handler.h"
@@ -457,8 +458,11 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<EnrollmentScreenHandler>(
       js_calls_container_.get(), network_state_informer_, error_screen));
 
-  AddScreenHandler(std::make_unique<TermsOfServiceScreenHandler>(
+  AddScreenHandler(std::make_unique<LocaleSwitchScreenHandler>(
       js_calls_container_.get(), core_handler_));
+
+  AddScreenHandler(
+      std::make_unique<TermsOfServiceScreenHandler>(js_calls_container_.get()));
 
   AddScreenHandler(
       std::make_unique<SyncConsentScreenHandler>(js_calls_container_.get()));

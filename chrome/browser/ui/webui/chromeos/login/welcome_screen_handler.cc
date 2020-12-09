@@ -211,6 +211,25 @@ void WelcomeScreenHandler::DeclareJSCallbacks() {
 
 void WelcomeScreenHandler::GetAdditionalParameters(
     base::DictionaryValue* dict) {
+  // GetAdditionalParameters() is called when OOBE language is updated.
+  // This happens in two different cases:
+  //
+  // 1) User selects new locale on OOBE screen. We need to sync active input
+  // methods with locale.
+  //
+  // 2) After user session started and user preferences applied.
+  // Either signin to public session: user has selected some locale & input
+  // method on "Public Session User pod". After "Login" button is pressed,
+  // new user session is created, locale & input method are changed (both
+  // asynchronously).
+  // Or signin to Gaia account which might trigger language change from the
+  // user locale or synced application locale.
+  // For the case 2) we might just skip this setup - welcome screen is not
+  // needed anymore.
+
+  if (user_manager::UserManager::Get()->IsUserLoggedIn())
+    return;
+
   const std::string application_locale =
       g_browser_process->GetApplicationLocale();
   const std::string selected_input_method =
@@ -232,27 +251,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(
   if (!language_list)
     language_list = GetMinimalUILanguageList();
 
-  // GetAdditionalParameters() is called when OOBE language is updated.
-  // This happens in two different cases:
-  //
-  // 1) User selects new locale on OOBE screen. We need to sync active input
-  // methods with locale, so EnableLoginLayouts() is needed.
-  //
-  // 2) This is signin to public session. User has selected some locale & input
-  // method on "Public Session User POD". After "Login" button is pressed,
-  // new user session is created, locale & input method are changed (both
-  // asynchronously).
-  // But after public user session is started, "Terms of Service" dialog is
-  // shown. It is a part of OOBE UI screens, so it initiates reload of UI
-  // strings in new locale. It also happens asynchronously, that leads to race
-  // between "locale change", "input method change" and
-  // "EnableLoginLayouts()".  This way EnableLoginLayouts() happens after user
-  // input method has been changed, resetting input method to hardware default.
-  //
-  // So we need to disable activation of login layouts if we are already in
-  // active user session.
-  const bool enable_layouts =
-      !user_manager::UserManager::Get()->IsUserLoggedIn();
+  const bool enable_layouts = true;
 
   dict->Set("languageList", std::move(language_list));
   dict->Set("inputMethodsList",
