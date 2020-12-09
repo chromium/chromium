@@ -629,6 +629,7 @@ def fyi_builder(
         # ResultSink and result_adapter is confirmed to work.
         experiments = {
             "chromium.resultdb.result_sink": 100,
+            "chromium.resultdb.result_sink.junit_tests": 30,
         },
         **kwargs
     )
