@@ -214,7 +214,7 @@ class PasswordManagerClient {
   virtual void UpdateCredentialCache(
       const url::Origin& origin,
       const std::vector<const PasswordForm*>& best_matches,
-      bool is_blacklisted);
+      bool is_blocklisted);
 
   // Called when a password is saved in an automated fashion. Embedder may
   // inform the user that this save has occurred.

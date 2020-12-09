@@ -139,7 +139,7 @@ class ChromePasswordManagerClient
   void UpdateCredentialCache(
       const url::Origin& origin,
       const std::vector<const password_manager::PasswordForm*>& best_matches,
-      bool is_blacklisted) override;
+      bool is_blocklisted) override;
   void AutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           saved_form_manager) override;

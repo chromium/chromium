@@ -44,7 +44,7 @@ void PasswordManagerClient::GeneratePassword(
 void PasswordManagerClient::UpdateCredentialCache(
     const url::Origin& origin,
     const std::vector<const PasswordForm*>& best_matches,
-    bool is_blacklisted) {}
+    bool is_blocklisted) {}
 
 void PasswordManagerClient::PasswordWasAutofilled(
     const std::vector<const PasswordForm*>& best_matches,

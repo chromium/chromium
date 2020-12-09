@@ -265,9 +265,9 @@ TEST_F(PasswordAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
 
 TEST_F(PasswordAccessoryControllerTest, TransformsMatchesToSuggestions) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
 
       url::Origin::Create(GURL(kExampleSite)));
   EXPECT_CALL(
@@ -287,9 +287,9 @@ TEST_F(PasswordAccessoryControllerTest, TransformsMatchesToSuggestions) {
 
 TEST_F(PasswordAccessoryControllerTest, HintsToEmptyUserNames) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("", "S3cur3", GURL(kExampleSite), false, false).get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
   EXPECT_CALL(
@@ -308,12 +308,12 @@ TEST_F(PasswordAccessoryControllerTest, HintsToEmptyUserNames) {
 
 TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get(),
        CreateEntry("Zebra", "M3h", GURL(kExampleSite), false, false).get(),
        CreateEntry("Alf", "PWD", GURL(kExampleSite), false, false).get(),
        CreateEntry("Cat", "M1@u", GURL(kExampleSite), false, false).get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
   AccessorySheetData result(AccessoryTabType::PASSWORDS, base::string16());
@@ -349,9 +349,9 @@ TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
 
 TEST_F(PasswordAccessoryControllerTest, RepeatsSuggestionsForSameFrame) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
   // Pretend that any input in the same frame was focused.
@@ -372,8 +372,8 @@ TEST_F(PasswordAccessoryControllerTest, RepeatsSuggestionsForSameFrame) {
 
 TEST_F(PasswordAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(false),
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
   EXPECT_CALL(mock_manual_filling_controller_,
@@ -387,9 +387,9 @@ TEST_F(PasswordAccessoryControllerTest, ProvidesEmptySuggestionsMessage) {
 
 TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   // Pretend a username field was focused. This should result in non-interactive
   // suggestion.
@@ -426,9 +426,9 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
 
 TEST_F(PasswordAccessoryControllerTest, CachesIsReplacedByNewPasswords) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   EXPECT_CALL(
       mock_manual_filling_controller_,
@@ -444,9 +444,9 @@ TEST_F(PasswordAccessoryControllerTest, CachesIsReplacedByNewPasswords) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Alf", "M3lm4k", GURL(kExampleSite), false, false).get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   EXPECT_CALL(
       mock_manual_filling_controller_,
@@ -468,11 +468,11 @@ TEST_F(PasswordAccessoryControllerTest, HidesEntriesForPSLMatchedOriginsInV1) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       autofill::features::kAutofillKeyboardAccessory);
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get(),
        CreateEntry("Alf", "R4nd0m", GURL(kExampleSiteMobile), true, false)
            .get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
   AccessorySheetData result(AccessoryTabType::PASSWORDS, base::string16());
@@ -499,11 +499,11 @@ TEST_F(PasswordAccessoryControllerTest, SetsTitleForPSLMatchedOriginsInV2) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       autofill::features::kAutofillKeyboardAccessory);
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get(),
        CreateEntry("Alf", "R4nd0m", GURL(kExampleSiteMobile), true, false)
            .get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
   AccessorySheetData result(AccessoryTabType::PASSWORDS, base::string16());
@@ -532,9 +532,9 @@ TEST_F(PasswordAccessoryControllerTest, SetsTitleForPSLMatchedOriginsInV2) {
 
 TEST_F(PasswordAccessoryControllerTest, UnfillableFieldClearsSuggestions) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   // Pretend a username field was focused. This should result in non-emtpy
   // suggestions.
@@ -567,9 +567,9 @@ TEST_F(PasswordAccessoryControllerTest, NavigatingMainFrameClearsSuggestions) {
   CreateSheetController();
   // Set any, non-empty password list and pretend a username field was focused.
   // This should result in non-emtpy suggestions.
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
       {CreateEntry("Ben", "S3cur3", GURL(kExampleSite), false, false).get()},
-      CredentialCache::IsOriginBlacklisted(false),
+      CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   EXPECT_CALL(
       mock_manual_filling_controller_,
@@ -614,8 +614,8 @@ TEST_F(PasswordAccessoryControllerTest, OnAutomaticGenerationRequested) {
 
 TEST_F(PasswordAccessoryControllerTest, AddsGenerationCommandWhenAvailable) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(false),
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
                                            passwords_empty_str(kExampleDomain));
@@ -633,8 +633,8 @@ TEST_F(PasswordAccessoryControllerTest, AddsGenerationCommandWhenAvailable) {
 
 TEST_F(PasswordAccessoryControllerTest, NoGenerationCommandIfNotPasswordField) {
   CreateSheetController();
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(false),
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   EXPECT_CALL(mock_manual_filling_controller_,
               RefreshSuggestions(PasswordAccessorySheetDataBuilder(
@@ -658,15 +658,15 @@ TEST_F(PasswordAccessoryControllerTest, OnManualGenerationRequested) {
   controller()->OnOptionSelected(AccessoryAction::GENERATE_PASSWORD_MANUAL);
 }
 
-TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlacklisted) {
+TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlocklisted) {
   CreateSheetController();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {password_manager::features::kRecoverFromNeverSaveAndroid,
        autofill::features::kAutofillKeyboardAccessory},
       {});
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(true),
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
@@ -686,7 +686,7 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfIsBlacklisted) {
 }
 
 TEST_F(PasswordAccessoryControllerTest,
-       NoSaveToggleIfIsBlacklistedAndSavingDisabled) {
+       NoSaveToggleIfIsBlocklistedAndSavingDisabled) {
   CreateSheetController();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -699,8 +699,8 @@ TEST_F(PasswordAccessoryControllerTest,
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(false));
 
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(true),
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
 
   AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
@@ -714,19 +714,19 @@ TEST_F(PasswordAccessoryControllerTest,
       /*is_manual_generation_available=*/false);
 }
 
-TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlacklisted) {
+TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlocklisted) {
   CreateSheetController();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {password_manager::features::kRecoverFromNeverSaveAndroid,
        autofill::features::kAutofillKeyboardAccessory},
       {});
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(true),
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
-  // Simulate unblacklisting.
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(false),
+  // Simulate unblocklisting.
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
@@ -752,8 +752,8 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
       {password_manager::features::kRecoverFromNeverSaveAndroid,
        autofill::features::kAutofillKeyboardAccessory},
       {});
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(true),
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
@@ -773,7 +773,7 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
 }
 
 TEST_F(PasswordAccessoryControllerTest,
-       RecordsAccessoryImpressionsForBlacklisted) {
+       RecordsAccessoryImpressionsForBlocklisted) {
   CreateSheetController();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -783,8 +783,8 @@ TEST_F(PasswordAccessoryControllerTest,
 
   base::HistogramTester histogram_tester;
 
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(true),
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
       .WillByDefault(Return(true));
@@ -798,7 +798,7 @@ TEST_F(PasswordAccessoryControllerTest,
       "KeyboardAccessory.DisabledSavingAccessoryImpressions", true, 1);
 }
 
-TEST_F(PasswordAccessoryControllerTest, NoAccessoryImpressionsIfUnblacklisted) {
+TEST_F(PasswordAccessoryControllerTest, NoAccessoryImpressionsIfUnblocklisted) {
   CreateSheetController();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -807,12 +807,12 @@ TEST_F(PasswordAccessoryControllerTest, NoAccessoryImpressionsIfUnblacklisted) {
       {});
   base::HistogramTester histogram_tester;
 
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(true),
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(true),
       url::Origin::Create(GURL(kExampleSite)));
-  // Simulate unblacklistig.
-  cache()->SaveCredentialsAndBlacklistedForOrigin(
-      {}, CredentialCache::IsOriginBlacklisted(false),
+  // Simulate unblocklisting.
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
   ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))

@@ -69,14 +69,14 @@ std::ostream& operator<<(std::ostream& os, const UiCredential& credential);
 // credentials without creating unnecessary copies.
 class OriginCredentialStore {
  public:
-  enum class BlacklistedStatus {
-    // The origin was not blacklisted at the moment this store was initialized.
-    kNeverBlacklisted,
-    // The origin was blacklisted when the store was initialized, but it isn't
-    // currently blacklisted.
-    kWasBlacklisted,
-    // The origin is currently blacklisted.
-    kIsBlacklisted
+  enum class BlocklistedStatus {
+    // The origin was not blocklisted at the moment this store was initialized.
+    kNeverBlocklisted,
+    // The origin was blocklisted when the store was initialized, but it isn't
+    // currently blocklisted.
+    kWasBlocklisted,
+    // The origin is currently blocklisted.
+    kIsBlocklisted
   };
 
   explicit OriginCredentialStore(url::Origin origin);
@@ -90,15 +90,15 @@ class OriginCredentialStore {
   // Returns references to the held credentials (or an empty set if aren't any).
   base::span<const UiCredential> GetCredentials() const;
 
-  // Sets the blacklisted status. The possible transitions are:
-  // (*, is_blacklisted = true) -> kIsBlacklisted
-  // ((kIsBlacklisted|kWasBlacklisted), is_blacklisted = false)
-  //      -> kWasBlacklisted
-  // (kNeverBlacklisted, is_blacklisted = false) -> kNeverBlacklisted
-  void SetBlacklistedStatus(bool is_blacklisted);
+  // Sets the blocklisted status. The possible transitions are:
+  // (*, is_blocklisted = true) -> kIsBlocklisted
+  // ((kIsBlocklisted|kWasBlocklisted), is_blocklisted = false)
+  //      -> kWasBlocklisted
+  // (kNeverBlocklisted, is_blocklisted = false) -> kNeverBlocklisted
+  void SetBlocklistedStatus(bool is_blocklisted);
 
   // Returns the blacklsited status for |origin_|.
-  BlacklistedStatus GetBlacklistedStatus() const;
+  BlocklistedStatus GetBlocklistedStatus() const;
 
   // Removes all credentials from the store.
   void ClearCredentials();
@@ -110,10 +110,10 @@ class OriginCredentialStore {
   // Contains all previously stored of credentials.
   std::vector<UiCredential> credentials_;
 
-  // The blacklisted status for |origin_|.
-  // Used to know whether unblacklisting UI needs to be displayed and what
+  // The blocklisted status for |origin_|.
+  // Used to know whether unblocklisting UI needs to be displayed and what
   // state it should display;
-  BlacklistedStatus blacklisted_status_ = BlacklistedStatus::kNeverBlacklisted;
+  BlocklistedStatus blocklisted_status_ = BlocklistedStatus::kNeverBlocklisted;
 
   // The origin which all stored passwords are related to.
   const url::Origin origin_;

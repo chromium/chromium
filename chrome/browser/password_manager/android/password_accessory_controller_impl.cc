@@ -56,8 +56,8 @@ using autofill::mojom::FocusedFieldType;
 using password_manager::CredentialCache;
 using password_manager::PasswordStore;
 using password_manager::UiCredential;
-using BlacklistedStatus =
-    password_manager::OriginCredentialStore::BlacklistedStatus;
+using BlocklistedStatus =
+    password_manager::OriginCredentialStore::BlocklistedStatus;
 using FillingSource = ManualFillingController::FillingSource;
 using IsPslMatch = autofill::UserInfo::IsPslMatch;
 
@@ -315,11 +315,11 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
       std::move(info_to_add), std::move(footer_commands_to_add));
 
   if (ShouldShowRecoveryToggle(origin)) {
-    BlacklistedStatus blacklisted_status =
-        credential_cache_->GetCredentialStore(origin).GetBlacklistedStatus();
-    if (blacklisted_status == BlacklistedStatus::kWasBlacklisted ||
-        blacklisted_status == BlacklistedStatus::kIsBlacklisted) {
-      bool enabled = (blacklisted_status == BlacklistedStatus::kWasBlacklisted);
+    BlocklistedStatus blocklisted_status =
+        credential_cache_->GetCredentialStore(origin).GetBlocklistedStatus();
+    if (blocklisted_status == BlocklistedStatus::kWasBlocklisted ||
+        blocklisted_status == BlocklistedStatus::kIsBlocklisted) {
+      bool enabled = (blocklisted_status == BlocklistedStatus::kWasBlocklisted);
       if (!enabled) {
         UMA_HISTOGRAM_BOOLEAN(
             "KeyboardAccessory.DisabledSavingAccessoryImpressions", true);

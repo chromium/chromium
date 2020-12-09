@@ -16,7 +16,7 @@
 
 namespace password_manager {
 
-using BlacklistedStatus = OriginCredentialStore::BlacklistedStatus;
+using BlocklistedStatus = OriginCredentialStore::BlocklistedStatus;
 
 UiCredential::UiCredential(base::string16 username,
                            base::string16 password,
@@ -78,19 +78,19 @@ base::span<const UiCredential> OriginCredentialStore::GetCredentials() const {
   return credentials_;
 }
 
-void OriginCredentialStore::SetBlacklistedStatus(bool is_blacklisted) {
-  if (is_blacklisted) {
-    blacklisted_status_ = BlacklistedStatus::kIsBlacklisted;
+void OriginCredentialStore::SetBlocklistedStatus(bool is_blocklisted) {
+  if (is_blocklisted) {
+    blocklisted_status_ = BlocklistedStatus::kIsBlocklisted;
     return;
   }
 
-  if (blacklisted_status_ == BlacklistedStatus::kIsBlacklisted) {
-    blacklisted_status_ = BlacklistedStatus::kWasBlacklisted;
+  if (blocklisted_status_ == BlocklistedStatus::kIsBlocklisted) {
+    blocklisted_status_ = BlocklistedStatus::kWasBlocklisted;
   }
 }
 
-BlacklistedStatus OriginCredentialStore::GetBlacklistedStatus() const {
-  return blacklisted_status_;
+BlocklistedStatus OriginCredentialStore::GetBlocklistedStatus() const {
+  return blocklisted_status_;
 }
 
 void OriginCredentialStore::ClearCredentials() {

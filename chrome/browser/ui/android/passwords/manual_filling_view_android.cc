@@ -214,7 +214,7 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
     const base::android::JavaParamRef<jobject>& j_web_contents,
     const base::android::JavaParamRef<jobjectArray>& j_usernames,
     const base::android::JavaParamRef<jobjectArray>& j_passwords,
-    jboolean j_blacklisted) {
+    jboolean j_blocklisted) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
@@ -235,9 +235,9 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
   }
   return ChromePasswordManagerClient::FromWebContents(web_contents)
       ->GetCredentialCacheForTesting()
-      ->SaveCredentialsAndBlacklistedForOrigin(
+      ->SaveCredentialsAndBlocklistedForOrigin(
           credentials,
-          password_manager::CredentialCache::IsOriginBlacklisted(j_blacklisted),
+          password_manager::CredentialCache::IsOriginBlocklisted(j_blocklisted),
           origin);
 }
 

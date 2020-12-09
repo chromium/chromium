@@ -964,8 +964,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   form.password_value = base::ASCIIToUTF16("S3cr3t");
   GetClient()
       ->GetCredentialCacheForTesting()
-      ->SaveCredentialsAndBlacklistedForOrigin(
-          {&form}, CredentialCache::IsOriginBlacklisted(false), origin);
+      ->SaveCredentialsAndBlocklistedForOrigin(
+          {&form}, CredentialCache::IsOriginBlocklisted(false), origin);
 
   // Check that a navigation within the same document does not clear the cache.
   content::MockNavigationHandle handle(web_contents());
