@@ -18,6 +18,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -99,6 +100,28 @@ class PictureInPictureTestBrowserClient : public TestContentBrowserClient {
   }
 };
 
+// Helper class with a dummy implementation of the media::mojom::MediaPlayer
+// mojo interface to allow providing a valid PendingRemote to StartSession from
+// inside the PictureInPictureServiceImplTest unit tests.
+class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
+ public:
+  mojo::PendingRemote<media::mojom::MediaPlayer>
+  BindMediaPlayerReceiverAndPassRemote() {
+    // A tests could potentially call StartSession() multiple times.
+    receiver_.reset();
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  // content::mojom::MediaPlayer implementation.
+  void RequestPlay() override {}
+  void RequestPause(bool triggered_by_user) override {}
+  void RequestSeekForward(base::TimeDelta seek_time) override {}
+  void RequestSeekBackward(base::TimeDelta seek_time) override {}
+
+ private:
+  mojo::Receiver<media::mojom::MediaPlayer> receiver_{this};
+};
+
 class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
  public:
   void SetUp() override {
@@ -124,11 +147,18 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 
   PictureInPictureDelegate& delegate() { return delegate_; }
 
+  mojo::PendingRemote<media::mojom::MediaPlayer>
+  BindMediaPlayerReceiverAndPassRemote() {
+    return media_player_receiver_.BindMediaPlayerReceiverAndPassRemote();
+  }
+
  private:
   PictureInPictureTestBrowserClient browser_client_;
   PictureInPictureDelegate delegate_;
   // Will be deleted when the frame is destroyed.
   PictureInPictureServiceImpl* service_impl_;
+  // Required to pass a valid PendingRemote to StartSession() in the tests.
+  PictureInPictureMediaPlayerReceiver media_player_receiver_;
 };
 
 // Flaky on Android. https://crbug.com/970866
@@ -169,8 +199,9 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
   gfx::Size window_size;
 
   service().StartSession(
-      kPlayerVideoOnlyId, surface_id, gfx::Size(42, 42),
-      true /* show_play_pause_button */, std::move(observer_remote),
+      kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), surface_id,
+      gfx::Size(42, 42), true /* show_play_pause_button */,
+      std::move(observer_remote),
       base::BindLambdaForTesting(
           [&](mojo::PendingRemote<blink::mojom::PictureInPictureSession> remote,
               const gfx::Size& b) {
@@ -216,8 +247,9 @@ TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NotSupported) {
   gfx::Size window_size;
 
   service().StartSession(
-      kPlayerVideoOnlyId, surface_id, gfx::Size(42, 42),
-      true /* show_play_pause_button */, std::move(observer_remote),
+      kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), surface_id,
+      gfx::Size(42, 42), true /* show_play_pause_button */,
+      std::move(observer_remote),
       base::BindLambdaForTesting(
           [&](mojo::PendingRemote<blink::mojom::PictureInPictureSession> remote,
               const gfx::Size& b) {
@@ -257,8 +289,9 @@ TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NoSurfaceId) {
   gfx::Size window_size;
 
   service().StartSession(
-      kPlayerVideoOnlyId, base::nullopt, gfx::Size(42, 42),
-      true /* show_play_pause_button */, std::move(observer_remote),
+      kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), base::nullopt,
+      gfx::Size(42, 42), true /* show_play_pause_button */,
+      std::move(observer_remote),
       base::BindLambdaForTesting(
           [&](mojo::PendingRemote<blink::mojom::PictureInPictureSession> remote,
               const gfx::Size& b) {

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/media/display_type.h"
@@ -177,8 +178,13 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
   session_observer_receiver_.Bind(
       session_observer.InitWithNewPipeAndPassReceiver(), task_runner);
 
+  mojo::PendingRemote<media::mojom::blink::MediaPlayer> media_player_remote;
+  video_element->BindMediaPlayerReceiver(
+      media_player_remote.InitWithNewPipeAndPassReceiver());
+
   picture_in_picture_service_->StartSession(
       video_element->GetWebMediaPlayer()->GetDelegateId(),
+      std::move(media_player_remote),
       video_element->GetWebMediaPlayer()->GetSurfaceId(),
       video_element->GetWebMediaPlayer()->NaturalSize(),
       ShouldShowPlayPauseButton(*video_element), std::move(session_observer),

@@ -16,11 +16,13 @@ namespace content {
 PictureInPictureSession::PictureInPictureSession(
     PictureInPictureServiceImpl* service,
     const MediaPlayerId& player_id,
+    mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
     mojo::PendingReceiver<blink::mojom::PictureInPictureSession> receiver,
     mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer)
     : service_(service),
       receiver_(this, std::move(receiver)),
       player_id_(player_id),
+      media_player_remote_(std::move(player_remote)),
       observer_(std::move(observer)) {
   receiver_.set_disconnect_handler(base::BindOnce(
       &PictureInPictureSession::OnConnectionError, base::Unretained(this)));
@@ -47,6 +49,12 @@ void PictureInPictureSession::Update(
 
 void PictureInPictureSession::NotifyWindowResized(const gfx::Size& size) {
   observer_->OnWindowSizeChanged(size);
+}
+
+mojo::Remote<media::mojom::MediaPlayer>&
+PictureInPictureSession::GetMediaPlayerRemote() {
+  DCHECK(media_player_remote_.is_bound());
+  return media_player_remote_;
 }
 
 void PictureInPictureSession::Disconnect() {

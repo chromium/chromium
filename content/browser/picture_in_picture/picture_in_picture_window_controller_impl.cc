@@ -161,8 +161,6 @@ bool PictureInPictureWindowControllerImpl::TogglePlayPause() {
   DCHECK(window_);
   DCHECK(active_session_);
 
-  MediaPlayerId player_id = active_session_->player_id();
-
   if (IsPlayerActive()) {
     if (media_session_action_pause_handled_) {
       MediaSessionImpl::Get(web_contents())
@@ -170,9 +168,8 @@ bool PictureInPictureWindowControllerImpl::TogglePlayPause() {
       return true /* still playing */;
     }
 
-    player_id.render_frame_host->Send(new MediaPlayerDelegateMsg_Pause(
-        player_id.render_frame_host->GetRoutingID(), player_id.delegate_id,
-        false /* triggered_by_user */));
+    active_session_->GetMediaPlayerRemote()->RequestPause(
+        /*triggered_by_user=*/false);
     return false /* paused */;
   }
 
@@ -182,14 +179,14 @@ bool PictureInPictureWindowControllerImpl::TogglePlayPause() {
     return false /* still paused */;
   }
 
-  player_id.render_frame_host->Send(new MediaPlayerDelegateMsg_Play(
-      player_id.render_frame_host->GetRoutingID(), player_id.delegate_id));
+  active_session_->GetMediaPlayerRemote()->RequestPlay();
   return true /* playing */;
 }
 
 PictureInPictureResult PictureInPictureWindowControllerImpl::StartSession(
     PictureInPictureServiceImpl* service,
     const MediaPlayerId& player_id,
+    mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button,
@@ -208,8 +205,8 @@ PictureInPictureResult PictureInPictureWindowControllerImpl::StartSession(
     active_session_->Disconnect();
 
   active_session_ = std::make_unique<PictureInPictureSession>(
-      service, player_id, session_remote->InitWithNewPipeAndPassReceiver(),
-      std::move(observer));
+      service, player_id, std::move(player_remote),
+      session_remote->InitWithNewPipeAndPassReceiver(), std::move(observer));
 
   EmbedSurface(surface_id, natural_size);
   SetShowPlayPauseButton(show_play_pause_button);
@@ -323,13 +320,10 @@ void PictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
     bool should_pause_video) {
   DCHECK(active_session_);
 
-  MediaPlayerId player_id = active_session_->player_id();
-
   if (IsPlayerActive() && should_pause_video) {
     // Pause the current video so there is only one video playing at a time.
-    player_id.render_frame_host->Send(new MediaPlayerDelegateMsg_Pause(
-        player_id.render_frame_host->GetRoutingID(), player_id.delegate_id,
-        false /* triggered_by_user */));
+    active_session_->GetMediaPlayerRemote()->RequestPause(
+        /*triggered_by_user=*/false);
   }
 
   active_session_->Shutdown();

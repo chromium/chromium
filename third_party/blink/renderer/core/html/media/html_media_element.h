@@ -118,6 +118,11 @@ class CORE_EXPORT HTMLMediaElement
   // for the given document.
   static void OnMediaControlsEnabledChange(Document*);
 
+  // Binds |pending_receiver| and adds it to |media_player_receiver_set_|. Also
+  // called from other Blink classes (e.g. PictureInPictureControllerImpl).
+  void BindMediaPlayerReceiver(
+      mojo::PendingReceiver<media::mojom::blink::MediaPlayer> pending_receiver);
+
   void Trace(Visitor*) const override;
 
   WebMediaPlayer* GetWebMediaPlayer() const { return web_media_player_.get(); }
@@ -454,8 +459,8 @@ class CORE_EXPORT HTMLMediaElement
   gfx::ColorSpace TargetColorSpace() override;
   bool WasAutoplayInitiated() override;
   bool IsInAutoPIP() const override { return false; }
-  void RequestPlay() final;
-  void RequestPause() final;
+  void ResumePlayback() final;
+  void PausePlayback() final;
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
 
@@ -465,6 +470,8 @@ class CORE_EXPORT HTMLMediaElement
   media::mojom::blink::MediaPlayerHost& GetMediaPlayerHostRemote();
 
   // media::mojom::MediaPlayer  implementation.
+  void RequestPlay() override;
+  void RequestPause(bool triggered_by_user) override;
   void RequestSeekForward(base::TimeDelta seek_time) override;
   void RequestSeekBackward(base::TimeDelta seek_time) override;
 

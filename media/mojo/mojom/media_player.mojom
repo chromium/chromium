@@ -8,6 +8,12 @@ import "mojo/public/mojom/base/time.mojom";
 
 // Implemented by HTMLMediaElement in the renderer process.
 interface MediaPlayer {
+  // Requests the media player to start or resume media playback.
+  RequestPlay();
+
+  // Requests the media player to pause media playback.
+  RequestPause(bool triggered_by_user);
+
   // Requests the media player to move forward the media playback position.
   RequestSeekForward(mojo_base.mojom.TimeDelta seek_time);
 

@@ -160,11 +160,11 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // behavior as regular Picture-in-Picture.
   virtual bool IsInAutoPIP() const = 0;
 
-  // Requests the player to start playback.
-  virtual void RequestPlay() = 0;
+  // Requests the player to resume playback.
+  virtual void ResumePlayback() = 0;
 
   // Request the player to pause playback.
-  virtual void RequestPause() = 0;
+  virtual void PausePlayback() = 0;
 
   // Request the player to enter picture-in-picture.
   virtual void RequestEnterPictureInPicture() = 0;
