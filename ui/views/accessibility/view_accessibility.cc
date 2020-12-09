@@ -255,7 +255,7 @@ void ViewAccessibility::SetPopupFocusOverride() {}
 
 void ViewAccessibility::EndPopupFocusOverride() {}
 
-bool ViewAccessibility::IsFocusedForTesting() {
+bool ViewAccessibility::IsFocusedForTesting() const {
   return view_->HasFocus() && !focused_virtual_child_;
 }
 
@@ -329,11 +329,11 @@ void ViewAccessibility::OverridePreviousFocus(Widget* widget) {
   previous_focus_ = widget;
 }
 
-Widget* ViewAccessibility::GetNextFocus() {
+Widget* ViewAccessibility::GetNextFocus() const {
   return next_focus_;
 }
 
-Widget* ViewAccessibility::GetPreviousFocus() {
+Widget* ViewAccessibility::GetPreviousFocus() const {
   return previous_focus_;
 }
 

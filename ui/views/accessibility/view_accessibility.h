@@ -83,20 +83,23 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideDescribedBy(View* described_by_view);
   void OverrideHasPopup(const ax::mojom::HasPopup has_popup);
 
-  // Override indexes used by some screen readers when describing elements in a
-  // menu, list, etc. If not specified, a view's index in its parent and its
-  // parent's number of children provide the values for these.
+  // Override information provided to users by screen readers when describing
+  // elements in a menu, listbox, or another set-like item. For example, "New
+  // tab, menu item 1 of 5". If not specified, a view's index in its parent and
+  // its parent's number of children provide the values for |pos_in_set| and
+  // |set_size| respectively.
   //
-  // Note: |pos_in_set| is 1-indexed.
+  // Note that |pos_in_set| is one-based, i.e. it starts from 1 not 0.
   void OverridePosInSet(int pos_in_set, int set_size);
 
-  // Override the next or previous focused widget. Some screen readers may
-  // utilize this information to transition focus from the beginning or end of
-  // one window to another when navigating by its default navigation method.
+  // Override the next or previous focused widget. Some assistive technologies,
+  // such as screen readers, may utilize this information to transition focus
+  // from the beginning or end of one widget to another when navigating by its
+  // default navigation method.
   void OverrideNextFocus(Widget* widget);
   void OverridePreviousFocus(Widget* widget);
-  Widget* GetNextFocus();
-  Widget* GetPreviousFocus();
+  Widget* GetNextFocus() const;
+  Widget* GetPreviousFocus() const;
 
   // Returns the accessibility object that represents the View whose
   // accessibility is managed by this instance. This may be an AXPlatformNode or
@@ -164,7 +167,7 @@ class VIEWS_EXPORT ViewAccessibility {
   virtual void EndPopupFocusOverride();
 
   // Return true if this view is considered focused.
-  virtual bool IsFocusedForTesting();
+  virtual bool IsFocusedForTesting() const;
 
   // Call when a menu closes, to restore focus to where it was previously.
   virtual void FireFocusAfterMenuClose();
@@ -212,6 +215,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // "presentational".
   bool is_ignored_;
 
+  // Used by the Views system to help some assistive technologies, such as
+  // screen readers, transition focus from one widget to another.
   Widget* next_focus_ = nullptr;
   Widget* previous_focus_ = nullptr;
 };

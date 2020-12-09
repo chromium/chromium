@@ -96,7 +96,7 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   base::Optional<int> GetSetSize() const override;
   void SetPopupFocusOverride() override;
   void EndPopupFocusOverride() override;
-  bool IsFocusedForTesting() override;
+  bool IsFocusedForTesting() const override;
 
  protected:
   explicit ViewAXPlatformNodeDelegate(View* view);

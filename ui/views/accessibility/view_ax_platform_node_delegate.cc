@@ -159,7 +159,7 @@ void ViewAXPlatformNodeDelegate::EndPopupFocusOverride() {
   ui::AXPlatformNode::SetPopupFocusOverride(nullptr);
 }
 
-bool ViewAXPlatformNodeDelegate::IsFocusedForTesting() {
+bool ViewAXPlatformNodeDelegate::IsFocusedForTesting() const {
   if (ui::AXPlatformNode::GetPopupFocusOverride())
     return ui::AXPlatformNode::GetPopupFocusOverride() ==
            GetNativeViewAccessible();
