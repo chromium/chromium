@@ -361,7 +361,7 @@ const base::Feature kMojoDBusRelay{"MojoDBusRelay",
 // Enables pasting a few recently copied items in a menu when pressing search +
 // v.
 const base::Feature kClipboardHistory{"ClipboardHistory",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, the clipboard nudge shown prefs will be reset at the start of
 // each new user session.

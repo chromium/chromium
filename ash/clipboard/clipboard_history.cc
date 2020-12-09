@@ -72,7 +72,9 @@ void ClipboardHistory::OnClipboardDataChanged() {
     return;
 
   auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
-  CHECK(clipboard);
+  // Clipboard may not exist in tests.
+  if (!clipboard)
+    return;
 
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   const auto* clipboard_data = clipboard->GetClipboardData(&data_dst);

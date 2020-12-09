@@ -360,7 +360,11 @@ Clipboard* Clipboard::Create() {
 // static
 ClipboardNonBacked* ClipboardNonBacked::GetForCurrentThread() {
   auto* clipboard = Clipboard::GetForCurrentThread();
-  CHECK(IsRegisteredInstance(clipboard));  // Ensure type safety.
+
+  // Ensure type safety. In tests the instance may not be registered.
+  if (!IsRegisteredInstance(clipboard))
+    return nullptr;
+
   return static_cast<ClipboardNonBacked*>(clipboard);
 }
 
