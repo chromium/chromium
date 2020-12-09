@@ -4403,6 +4403,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Downgrade.TakeSnapshot.ProfileDirectoryCreation.Result"
     enum="BooleanSuccess" expires_after="2020-12-31">
+  <obsolete>
+    Removed in M89.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>

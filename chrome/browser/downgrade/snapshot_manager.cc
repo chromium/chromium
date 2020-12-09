@@ -201,14 +201,9 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
 
   // Copy items to be preserved in each Profile directory.
   for (const auto& profile_dir : GetUserProfileDirectories(user_data_dir_)) {
-    bool profile_dir_created =
-        base::CreateDirectory(snapshot_dir.Append(profile_dir));
-    base::UmaHistogramBoolean(
-        "Downgrade.TakeSnapshot.ProfileDirectoryCreation.Result",
-        profile_dir_created);
     // Abort the current profile snapshot if the profile directory could not be
-    // created.
-    if (!profile_dir_created) {
+    // created. This succeeds almost all the time.
+    if (!base::CreateDirectory(snapshot_dir.Append(profile_dir))) {
       ++error_count;
       continue;
     }
