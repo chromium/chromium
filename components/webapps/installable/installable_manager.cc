@@ -538,7 +538,8 @@ void InstallableManager::WorkOnTask() {
   const InstallableParams& params = task_queue_.Current().params;
 
   auto errors = GetErrors(params);
-  bool check_passed = errors.empty();
+  bool check_passed = errors.empty() || (errors.size() == 1 &&
+                                         errors[0] == WARN_NOT_OFFLINE_CAPABLE);
   if ((!check_passed && !params.is_debug_mode) || IsComplete(params)) {
     // Yield the UI thread before processing the next task. If this object is
     // deleted in the meantime, the next task naturally won't run.
@@ -720,9 +721,7 @@ void InstallableManager::OnDidCheckHasServiceWorker(
                            check_service_worker_start_time,
                            enforce_offline_capability));
 
-        // Execution continues in OnDidCheckOfflineCapability.
-        if (enforce_offline_capability)
-          return;
+        return;
       }
       worker_->has_worker = true;
       break;
@@ -769,23 +768,22 @@ void InstallableManager::OnDidCheckOfflineCapability(
   InstallableMetrics::RecordCheckServiceWorkerStatus(
       InstallableMetrics::ConvertFromOfflineCapability(capability));
 
-  if (!enforce_offline_capability) {
-    if (capability == content::OfflineCapability::kUnsupported) {
-      LogToConsole(web_contents(), WARN_NOT_OFFLINE_CAPABLE,
-                   blink::mojom::ConsoleMessageLevel::kWarning);
-    }
-    // No enforcement means that we are just recording metrics and logging a
-    // warning.
-    return;
-  }
-
   switch (capability) {
     case content::OfflineCapability::kSupported:
       worker_->has_worker = true;
       break;
     case content::OfflineCapability::kUnsupported:
-      worker_->has_worker = false;
-      worker_->error = NOT_OFFLINE_CAPABLE;
+      if (enforce_offline_capability) {
+        worker_->has_worker = false;
+        worker_->error = NOT_OFFLINE_CAPABLE;
+      } else {
+        // No enforcement means that we are just recording metrics and logging a
+        // warning.
+        worker_->has_worker = true;
+        worker_->error = WARN_NOT_OFFLINE_CAPABLE;
+        LogToConsole(web_contents(), WARN_NOT_OFFLINE_CAPABLE,
+                     blink::mojom::ConsoleMessageLevel::kWarning);
+      }
       break;
   }
 

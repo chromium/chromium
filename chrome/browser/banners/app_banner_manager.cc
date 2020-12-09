@@ -383,7 +383,11 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
 
   auto error =
       data.errors.empty() ? webapps::NO_ERROR_DETECTED : data.errors[0];
-  if (error != webapps::NO_ERROR_DETECTED) {
+  // TODO(https://crbug.com/965802): Remove `WARN_NOT_OFFLINE_CAPABLE` once the
+  // CheckOfflineCapability feature is enabled with 'enforce' mode by default in
+  // M93.
+  if (error != webapps::NO_ERROR_DETECTED &&
+      error != webapps::WARN_NOT_OFFLINE_CAPABLE) {
     if (error == webapps::NO_MATCHING_SERVICE_WORKER)
       TrackDisplayEvent(DISPLAY_EVENT_LACKS_SERVICE_WORKER);
 

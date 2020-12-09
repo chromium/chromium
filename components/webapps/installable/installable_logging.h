@@ -19,8 +19,8 @@ namespace webapps {
 // These values are a central reference for installability errors. The
 // InstallableManager will specify an InstallableStatusCode (or
 // NO_ERROR_DETECTED) in its result. Clients may also add their own error codes,
-// and utilise LogErrorToConsole to write a message to the devtools console.
-// This enum backs an UMA histogram, so it must be treated as append-only.
+// and utilise LogToConsole to write a message to the devtools console. This
+// enum backs an UMA histogram, so it must be treated as append-only.
 enum InstallableStatusCode {
   NO_ERROR_DETECTED = 0,
   RENDERER_EXITING = 1,

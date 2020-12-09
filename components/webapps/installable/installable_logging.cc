@@ -69,7 +69,7 @@ static const char kManifestDisplayOverrideNotSupportedMessage[] =
     "display mode must be one of 'standalone', 'fullscreen', or 'minimal-ui'";
 static const char kWarnNotOfflineCapable[] =
     "Page does not work offline. The page will not be regarded as installable "
-    "after M93, stable release August 2021.";
+    "after Chrome 93, stable release August 2021.";
 
 static const char kNotFromSecureOriginId[] = "not-from-secure-origin";
 static const char kNoManifestId[] = "no-manifest";
