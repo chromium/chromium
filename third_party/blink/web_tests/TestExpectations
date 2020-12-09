@@ -1905,7 +1905,6 @@ crbug.com/694525 external/wpt/content-security-policy/connect-src/worker-from-gu
 crbug.com/694525 external/wpt/content-security-policy/connect-src/worker-connect-src-blocked.sub.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/navigation/to-javascript-parent-initiated-child-csp.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/form-action/form-action-src-redirect-blocked.sub.html [ Skip ]
-crbug.com/694525 external/wpt/content-security-policy/script-src/script-src-strict_dynamic_in_img-src.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/script-src/worker-importscripts-blocked.sub.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/script-src/worker-set-timeout-blocked.sub.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/style-src/inline-style-allowed-while-cloning-objects.sub.html [ Skip ]

@@ -234,7 +234,8 @@ class CORE_EXPORT CSPDirectiveList final
 
   bool CheckEval(SourceListDirective*) const;
   bool CheckWasmEval(SourceListDirective*) const;
-  bool CheckDynamic(SourceListDirective*) const;
+  bool CheckDynamic(SourceListDirective*,
+                    ContentSecurityPolicy::DirectiveType) const;
   bool IsMatchingNoncePresent(SourceListDirective*, const String&) const;
   bool AreAllMatchingHashesPresent(SourceListDirective*,
                                    const IntegrityMetadataSet&) const;

@@ -306,7 +306,16 @@ bool CSPDirectiveList::CheckUnsafeHashesAllowed(
   return !directive || directive->AllowUnsafeHashes();
 }
 
-bool CSPDirectiveList::CheckDynamic(SourceListDirective* directive) const {
+bool CSPDirectiveList::CheckDynamic(
+    SourceListDirective* directive,
+    ContentSecurityPolicy::DirectiveType effective_type) const {
+  // 'strict-dynamic' only applies to scripts
+  if (effective_type != ContentSecurityPolicy::DirectiveType::kScriptSrc &&
+      effective_type != ContentSecurityPolicy::DirectiveType::kScriptSrcAttr &&
+      effective_type != ContentSecurityPolicy::DirectiveType::kScriptSrcElem &&
+      effective_type != ContentSecurityPolicy::DirectiveType::kWorkerSrc) {
+    return false;
+  }
   return !directive || directive->AllowDynamic();
 }
 
@@ -498,7 +507,8 @@ bool CSPDirectiveList::CheckSourceAndReportViolation(
     return true;
 
   // We ignore URL-based allowlists if we're allowing dynamic script injection.
-  if (CheckSource(directive, url, redirect_status) && !CheckDynamic(directive))
+  if (CheckSource(directive, url, redirect_status) &&
+      !CheckDynamic(directive, effective_type))
     return true;
 
   // We should never have a violation against `child-src` or `default-src`
@@ -538,7 +548,7 @@ bool CSPDirectiveList::CheckSourceAndReportViolation(
     prefix = prefix + "navigate to '";
 
   String suffix = String();
-  if (CheckDynamic(directive)) {
+  if (CheckDynamic(directive, effective_type)) {
     suffix =
         " 'strict-dynamic' is present, so host-based allowlisting is disabled.";
   }
@@ -807,13 +817,14 @@ bool CSPDirectiveList::AllowHash(
 
 bool CSPDirectiveList::AllowDynamic(
     ContentSecurityPolicy::DirectiveType directive_type) const {
-  return CheckDynamic(OperativeDirective(directive_type));
+  return CheckDynamic(OperativeDirective(directive_type), directive_type);
 }
 
 bool CSPDirectiveList::AllowDynamicWorker() const {
   SourceListDirective* worker_src =
       OperativeDirective(ContentSecurityPolicy::DirectiveType::kWorkerSrc);
-  return CheckDynamic(worker_src);
+  return CheckDynamic(worker_src,
+                      ContentSecurityPolicy::DirectiveType::kWorkerSrc);
 }
 
 const String& CSPDirectiveList::PluginTypesText() const {
