@@ -309,11 +309,11 @@ const base::Feature kOmniboxSearchReadyIncognito{
 // Feature that puts a single row of buttons on suggestions with actionable
 // elements like keywords, tab-switch buttons, and Pedals.
 const base::Feature kOmniboxSuggestionButtonRow{
-    "OmniboxSuggestionButtonRow", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxSuggestionButtonRow", enabled_by_default_desktop_only};
 
 // Feature used to enable Pedal suggestions.
 const base::Feature kOmniboxPedalSuggestions{"OmniboxPedalSuggestions",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             enabled_by_default_desktop_only};
 
 // Feature used to enable the keyword search button.
 const base::Feature kOmniboxKeywordSearchButton{
