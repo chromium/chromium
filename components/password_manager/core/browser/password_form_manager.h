@@ -168,7 +168,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void OnNopeUpdateClicked() override;
   void OnNeverClicked() override;
   void OnNoInteraction(bool is_update) override;
-  void PermanentlyBlacklist() override;
+  void Blocklist() override;
   void OnPasswordsRevealed() override;
   void MoveCredentialsToAccountStore() override;
   void BlockMovingCredentialsToAccountStore() override;

@@ -83,17 +83,16 @@ FormSaverImpl::FormSaverImpl(PasswordStore* store) : store_(store) {
 
 FormSaverImpl::~FormSaverImpl() = default;
 
-PasswordForm FormSaverImpl::PermanentlyBlacklist(
-    PasswordStore::FormDigest digest) {
-  PasswordForm blacklisted =
+PasswordForm FormSaverImpl::Blocklist(PasswordStore::FormDigest digest) {
+  PasswordForm blocklisted =
       password_manager_util::MakeNormalizedBlacklistedForm(std::move(digest));
-  blacklisted.date_created = base::Time::Now();
-  store_->AddLogin(blacklisted);
-  return blacklisted;
+  blocklisted.date_created = base::Time::Now();
+  store_->AddLogin(blocklisted);
+  return blocklisted;
 }
 
-void FormSaverImpl::Unblacklist(const PasswordStore::FormDigest& digest) {
-  store_->Unblacklist(digest, /*completion=*/base::DoNothing());
+void FormSaverImpl::Unblocklist(const PasswordStore::FormDigest& digest) {
+  store_->Unblocklist(digest, /*completion=*/base::DoNothing());
 }
 
 void FormSaverImpl::Save(PasswordForm pending,

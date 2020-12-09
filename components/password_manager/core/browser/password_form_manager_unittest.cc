@@ -248,7 +248,7 @@ class MockFormSaver : public StubFormSaver {
   ~MockFormSaver() override = default;
 
   // FormSaver:
-  MOCK_METHOD1(PermanentlyBlacklist, PasswordForm(PasswordStore::FormDigest));
+  MOCK_METHOD1(Blocklist, PasswordForm(PasswordStore::FormDigest));
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
@@ -1269,7 +1269,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
   CheckPendingCredentials(expected, saved_form);
 }
 
-TEST_P(PasswordFormManagerTest, PermanentlyBlacklist) {
+TEST_P(PasswordFormManagerTest, Blocklist) {
   fetcher_->NotifyFetchCompleted();
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
@@ -1277,11 +1277,10 @@ TEST_P(PasswordFormManagerTest, PermanentlyBlacklist) {
   PasswordForm actual_blacklisted_form =
       password_manager_util::MakeNormalizedBlacklistedForm(
           PasswordStore::FormDigest(observed_form_));
-  EXPECT_CALL(form_saver,
-              PermanentlyBlacklist(PasswordStore::FormDigest(observed_form_)))
+  EXPECT_CALL(form_saver, Blocklist(PasswordStore::FormDigest(observed_form_)))
       .WillOnce(Return(actual_blacklisted_form));
 
-  form_manager_->PermanentlyBlacklist();
+  form_manager_->Blocklist();
   EXPECT_TRUE(form_manager_->IsBlacklisted());
 }
 
@@ -2004,8 +2003,7 @@ TEST_P(PasswordFormManagerTest, BlacklistHttpAuthCredentials) {
 
   // Simulate that the user clicks never.
   PasswordForm blacklisted_form;
-  EXPECT_CALL(form_saver,
-              PermanentlyBlacklist(PasswordStore::FormDigest(http_auth_form)));
+  EXPECT_CALL(form_saver, Blocklist(PasswordStore::FormDigest(http_auth_form)));
   form_manager_->OnNeverClicked();
 }
 
@@ -2393,8 +2391,8 @@ class MockPasswordSaveManager : public PasswordSaveManager {
                void(const PasswordForm&,
                     const autofill::FormData*,
                     const PasswordForm&));
-  MOCK_METHOD1(PermanentlyBlacklist, void(const PasswordStore::FormDigest&));
-  MOCK_METHOD1(Unblacklist, void(const PasswordStore::FormDigest&));
+  MOCK_METHOD1(Blocklist, void(const PasswordStore::FormDigest&));
+  MOCK_METHOD1(Unblocklist, void(const PasswordStore::FormDigest&));
   MOCK_METHOD1(PresaveGeneratedPassword, void(PasswordForm));
   MOCK_METHOD2(GeneratedPasswordAccepted,
                void(PasswordForm, base::WeakPtr<PasswordManagerDriver>));
@@ -2581,14 +2579,14 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   form_manager_->OnUpdatePasswordFromPrompt(password);
 }
 
-TEST_F(PasswordFormManagerTestWithMockedSaver, PermanentlyBlacklist) {
+TEST_F(PasswordFormManagerTestWithMockedSaver, Blocklist) {
   fetcher_->NotifyFetchCompleted();
   PasswordForm actual_blacklisted_form =
       password_manager_util::MakeNormalizedBlacklistedForm(
           PasswordStore::FormDigest(observed_form_));
   EXPECT_CALL(*mock_password_save_manager(),
-              PermanentlyBlacklist(PasswordStore::FormDigest(observed_form_)));
-  form_manager_->PermanentlyBlacklist();
+              Blocklist(PasswordStore::FormDigest(observed_form_)));
+  form_manager_->Blocklist();
   EXPECT_TRUE(form_manager_->IsBlacklisted());
 }
 

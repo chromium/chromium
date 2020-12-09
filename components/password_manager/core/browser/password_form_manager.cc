@@ -310,7 +310,7 @@ void PasswordFormManager::Save() {
   DCHECK_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
   DCHECK(!client_->IsIncognito());
   if (IsBlacklisted()) {
-    password_save_manager_->Unblacklist(ConstructObservedFormDigest());
+    password_save_manager_->Unblocklist(ConstructObservedFormDigest());
     newly_blacklisted_ = false;
   }
 
@@ -394,7 +394,7 @@ void PasswordFormManager::OnNeverClicked() {
                                      autofill::UNKNOWN_TYPE, std::string());
 
   votes_uploader_.MaybeSendSingleUsernameVote(false /* credentials_saved */);
-  PermanentlyBlacklist();
+  Blocklist();
 }
 
 void PasswordFormManager::OnNoInteraction(bool is_update) {
@@ -408,9 +408,9 @@ void PasswordFormManager::OnNoInteraction(bool is_update) {
   votes_uploader_.MaybeSendSingleUsernameVote(false /* credentials_saved */);
 }
 
-void PasswordFormManager::PermanentlyBlacklist() {
+void PasswordFormManager::Blocklist() {
   DCHECK(!client_->IsIncognito());
-  password_save_manager_->PermanentlyBlacklist(ConstructObservedFormDigest());
+  password_save_manager_->Blocklist(ConstructObservedFormDigest());
   newly_blacklisted_ = true;
 }
 

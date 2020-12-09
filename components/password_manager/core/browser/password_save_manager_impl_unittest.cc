@@ -117,12 +117,9 @@ void CheckPasswordGenerationUKM(const ukm::TestAutoSetUkmRecorder& recorder,
 class MockFormSaver : public StubFormSaver {
  public:
   // FormSaver:
-  MOCK_METHOD(PasswordForm,
-              PermanentlyBlacklist,
-              (PasswordStore::FormDigest),
-              (override));
+  MOCK_METHOD(PasswordForm, Blocklist, (PasswordStore::FormDigest), (override));
   MOCK_METHOD(void,
-              Unblacklist,
+              Unblocklist,
               (const PasswordStore::FormDigest&),
               (override));
   MOCK_METHOD(void,
@@ -388,18 +385,18 @@ class PasswordSaveManagerImplTest : public testing::Test,
   DISALLOW_COPY_AND_ASSIGN(PasswordSaveManagerImplTest);
 };
 
-TEST_P(PasswordSaveManagerImplTest, PermanentlyBlacklist) {
+TEST_P(PasswordSaveManagerImplTest, Blocklist) {
   PasswordStore::FormDigest form_digest(PasswordForm::Scheme::kDigest,
                                         "www.example.com", GURL("www.abc.com"));
-  EXPECT_CALL(*mock_form_saver(), PermanentlyBlacklist(form_digest));
-  password_save_manager_impl()->PermanentlyBlacklist(form_digest);
+  EXPECT_CALL(*mock_form_saver(), Blocklist(form_digest));
+  password_save_manager_impl()->Blocklist(form_digest);
 }
 
-TEST_P(PasswordSaveManagerImplTest, Unblacklist) {
+TEST_P(PasswordSaveManagerImplTest, Unblocklist) {
   PasswordStore::FormDigest form_digest(PasswordForm::Scheme::kDigest,
                                         "www.example.com", GURL("www.abc.com"));
-  EXPECT_CALL(*mock_form_saver(), Unblacklist(form_digest));
-  password_save_manager_impl()->Unblacklist(form_digest);
+  EXPECT_CALL(*mock_form_saver(), Unblocklist(form_digest));
+  password_save_manager_impl()->Unblocklist(form_digest);
 }
 
 // Tests creating pending credentials when the password store is empty.

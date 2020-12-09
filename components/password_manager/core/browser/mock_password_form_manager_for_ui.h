@@ -57,7 +57,7 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
   MOCK_METHOD(void, OnNopeUpdateClicked, (), (override));
   MOCK_METHOD(void, OnNeverClicked, (), (override));
   MOCK_METHOD(void, OnNoInteraction, (bool), (override));
-  MOCK_METHOD(void, PermanentlyBlacklist, (), (override));
+  MOCK_METHOD(void, Blocklist, (), (override));
   MOCK_METHOD(void, OnPasswordsRevealed, (), (override));
   MOCK_METHOD(void, MoveCredentialsToAccountStore, (), (override));
   MOCK_METHOD(void, BlockMovingCredentialsToAccountStore, (), (override));

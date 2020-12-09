@@ -607,7 +607,7 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
                           formPtr->Save();
                           break;
                         case CWVPasswordUserDecisionNever:
-                          formPtr->PermanentlyBlacklist();
+                          formPtr->Blocklist();
                           break;
                         case CWVPasswordUserDecisionNotThisTime:
                           // Do nothing.

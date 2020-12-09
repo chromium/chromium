@@ -6,12 +6,11 @@
 
 namespace password_manager {
 
-PasswordForm StubFormSaver::PermanentlyBlacklist(
-    PasswordStore::FormDigest digest) {
+PasswordForm StubFormSaver::Blocklist(PasswordStore::FormDigest digest) {
   return PasswordForm();
 }
 
-void StubFormSaver::Unblacklist(const PasswordStore::FormDigest& digest) {}
+void StubFormSaver::Unblocklist(const PasswordStore::FormDigest& digest) {}
 
 std::unique_ptr<FormSaver> StubFormSaver::Clone() {
   return nullptr;

@@ -57530,7 +57530,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Clicked 'Never'"/>
   <int value="4" label="Clicked 'Manage passwords'"/>
   <int value="5" label="Clicked 'Done' (obsolete)"/>
-  <int value="6" label="Clicked 'Unblacklist' (obsolete)"/>
+  <int value="6" label="Clicked 'Unblocklist' (obsolete)"/>
   <int value="7" label="Clicked 'OK' (obsolete)"/>
   <int value="8" label="Clicked on a credential (obsolete)"/>
   <int value="9" label="Auto-signin toast timeout"/>

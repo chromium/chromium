@@ -99,8 +99,8 @@ class PasswordFormManagerForUI {
   virtual void OnNoInteraction(bool is_update) = 0;
 
   // A user opted to 'never remember' passwords for this form.
-  // Blacklist it so that from now on when it is seen we ignore it.
-  virtual void PermanentlyBlacklist() = 0;
+  // Blocklist it so that from now on when it is seen we ignore it.
+  virtual void Blocklist() = 0;
 
   // Called when the passwords were shown on on the bubble without obfuscation.
   virtual void OnPasswordsRevealed() = 0;

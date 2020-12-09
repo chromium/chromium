@@ -42,7 +42,7 @@ namespace {
 class MockPasswordFormManager : public PasswordFormManager {
  public:
   MOCK_METHOD(bool, WasUnblacklisted, (), (const, override));
-  MOCK_METHOD(void, PermanentlyBlacklist, (), (override));
+  MOCK_METHOD(void, Blocklist, (), (override));
 
   MockPasswordFormManager(
       password_manager::PasswordManagerClient* client,
@@ -188,7 +188,7 @@ void SavePasswordInfoBarDelegateTest::TearDown() {
 TEST_F(SavePasswordInfoBarDelegateTest, CancelTest) {
   std::unique_ptr<MockPasswordFormManager> password_form_manager(
       CreateMockFormManager(nullptr, false /* with_federation_origin */));
-  EXPECT_CALL(*password_form_manager.get(), PermanentlyBlacklist());
+  EXPECT_CALL(*password_form_manager.get(), Blocklist());
   std::unique_ptr<ConfirmInfoBarDelegate> infobar(
       CreateDelegate(std::move(password_form_manager),
                      true /* is_smartlock_branding_enabled */));
@@ -332,7 +332,7 @@ TEST_P(SavePasswordInfoBarDelegateTestForUKMs, VerifyUKMRecording) {
     std::unique_ptr<MockPasswordFormManager> password_form_manager(
         CreateMockFormManager(recorder, false /* with_federation_origin */));
     if (dismissal_reason == BubbleDismissalReason::kDeclined)
-      EXPECT_CALL(*password_form_manager.get(), PermanentlyBlacklist());
+      EXPECT_CALL(*password_form_manager.get(), Blocklist());
     std::unique_ptr<ConfirmInfoBarDelegate> infobar(
         CreateDelegate(std::move(password_form_manager),
                        true /* is_smartlock_branding_enabled */));

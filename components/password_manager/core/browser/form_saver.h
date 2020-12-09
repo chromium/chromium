@@ -18,7 +18,7 @@ namespace password_manager {
 
 struct PasswordForm;
 
-// This interface allows the caller to save passwords and blacklist entries in
+// This interface allows the caller to save passwords and blocklist entries in
 // a password store.
 class FormSaver {
  public:
@@ -26,14 +26,13 @@ class FormSaver {
 
   virtual ~FormSaver() = default;
 
-  // Blacklist the origin described by |digest|. Returns the PasswordForm pushed
+  // Blocklist the origin described by |digest|. Returns the PasswordForm pushed
   // to the store.
-  virtual PasswordForm PermanentlyBlacklist(
-      PasswordStore::FormDigest digest) = 0;
+  virtual PasswordForm Blocklist(PasswordStore::FormDigest digest) = 0;
 
-  // Unblacklist the origin described by |digest| by deleting all corresponding
-  // blacklisted entries.
-  virtual void Unblacklist(const PasswordStore::FormDigest& digest) = 0;
+  // Unblocklist the origin described by |digest| by deleting all corresponding
+  // blocklisted entries.
+  virtual void Unblocklist(const PasswordStore::FormDigest& digest) = 0;
 
   // Saves the |pending| form.
   // |matches| are relevant credentials for the site. After saving |pending|,

@@ -249,7 +249,7 @@ void PasswordStore::DisableAutoSignInForOrigins(
                      std::move(completion)));
 }
 
-void PasswordStore::Unblacklist(const PasswordStore::FormDigest& form_digest,
+void PasswordStore::Unblocklist(const PasswordStore::FormDigest& form_digest,
                                 base::OnceClosure completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   ScheduleTask(base::BindOnce(&PasswordStore::UnblacklistInternal, this,

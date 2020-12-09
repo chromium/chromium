@@ -24,8 +24,8 @@ class FormSaverImpl : public FormSaver {
   ~FormSaverImpl() override;
 
   // FormSaver:
-  PasswordForm PermanentlyBlacklist(PasswordStore::FormDigest digest) override;
-  void Unblacklist(const PasswordStore::FormDigest& digest) override;
+  PasswordForm Blocklist(PasswordStore::FormDigest digest) override;
+  void Unblocklist(const PasswordStore::FormDigest& digest) override;
   void Save(PasswordForm pending,
             const std::vector<const PasswordForm*>& matches,
             const base::string16& old_password) override;

@@ -223,11 +223,11 @@ class PasswordStore : protected PasswordStoreSync,
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion);
 
-  // Unblacklists the login with |form_digest| by deleting all the corresponding
-  // blacklisted entries. If |completion| is not null, it will be posted to the
+  // Unblocklists the login with |form_digest| by deleting all the corresponding
+  // blocklisted entries. If |completion| is not null, it will be posted to the
   // |main_task_runner_| after deletions have been completed. Should be called
   // on the UI thread.
-  virtual void Unblacklist(const PasswordStore::FormDigest& form_digest,
+  virtual void Unblocklist(const PasswordStore::FormDigest& form_digest,
                            base::OnceClosure completion);
 
   // Searches for a matching PasswordForm, and notifies |consumer| on

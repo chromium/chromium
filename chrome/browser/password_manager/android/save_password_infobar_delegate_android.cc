@@ -114,7 +114,7 @@ bool SavePasswordInfoBarDelegate::Accept() {
 
 bool SavePasswordInfoBarDelegate::Cancel() {
   DCHECK(form_to_save_.get());
-  form_to_save_->PermanentlyBlacklist();
+  form_to_save_->Blocklist();
   infobar_response_ = password_manager::metrics_util::CLICKED_NEVER;
   return true;
 }

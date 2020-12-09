@@ -838,7 +838,7 @@ TEST_F(PasswordAccessoryControllerTest, SavePasswordsEnabledUpdatesStore) {
   CreateSheetController();
   password_manager::PasswordStore::FormDigest form_digest(
       PasswordForm::Scheme::kHtml, kExampleSignonRealm, GURL(kExampleSite));
-  EXPECT_CALL(*mock_password_store_, Unblacklist(form_digest, _));
+  EXPECT_CALL(*mock_password_store_, Unblocklist(form_digest, _));
   controller()->OnToggleChanged(
       autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, true);
 }

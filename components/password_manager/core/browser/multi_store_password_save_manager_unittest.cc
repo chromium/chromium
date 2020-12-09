@@ -48,8 +48,8 @@ class MockFormSaver : public StubFormSaver {
   ~MockFormSaver() override = default;
 
   // FormSaver:
-  MOCK_METHOD1(PermanentlyBlacklist, PasswordForm(PasswordStore::FormDigest));
-  MOCK_METHOD1(Unblacklist, void(const PasswordStore::FormDigest&));
+  MOCK_METHOD1(Blocklist, PasswordForm(PasswordStore::FormDigest));
+  MOCK_METHOD1(Unblocklist, void(const PasswordStore::FormDigest&));
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
@@ -717,50 +717,47 @@ TEST_F(MultiStorePasswordSaveManagerTest, UpdateVsPSLMatch) {
   password_save_manager()->Save(&observed_form_, parsed_submitted_form_);
 }
 
-TEST_F(MultiStorePasswordSaveManagerTest, UnblacklistInBothStores) {
+TEST_F(MultiStorePasswordSaveManagerTest, UnblocklistInBothStores) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
   const PasswordStore::FormDigest form_digest(saved_match_);
 
-  EXPECT_CALL(*mock_profile_form_saver(), Unblacklist(form_digest));
-  EXPECT_CALL(*mock_account_form_saver(), Unblacklist(form_digest));
+  EXPECT_CALL(*mock_profile_form_saver(), Unblocklist(form_digest));
+  EXPECT_CALL(*mock_account_form_saver(), Unblocklist(form_digest));
 
-  password_save_manager()->Unblacklist(form_digest);
+  password_save_manager()->Unblocklist(form_digest);
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,
-       BlacklistInAccountStoreWhenAccountStoreEnabled) {
+       BlocklistInAccountStoreWhenAccountStoreEnabled) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
   const PasswordStore::FormDigest form_digest(saved_match_);
   SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 
-  EXPECT_CALL(*mock_profile_form_saver(), PermanentlyBlacklist(form_digest))
-      .Times(0);
-  EXPECT_CALL(*mock_account_form_saver(), PermanentlyBlacklist(form_digest));
-  password_save_manager()->PermanentlyBlacklist(form_digest);
+  EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest)).Times(0);
+  EXPECT_CALL(*mock_account_form_saver(), Blocklist(form_digest));
+  password_save_manager()->Blocklist(form_digest);
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,
-       BlacklistInProfileStoreAlthoughAccountStoreEnabled) {
+       BlocklistInProfileStoreAlthoughAccountStoreEnabled) {
   SetAccountStoreEnabled(/*is_enabled=*/true);
   const PasswordStore::FormDigest form_digest(saved_match_);
   SetDefaultPasswordStore(PasswordForm::Store::kProfileStore);
 
-  EXPECT_CALL(*mock_profile_form_saver(), PermanentlyBlacklist(form_digest));
-  EXPECT_CALL(*mock_account_form_saver(), PermanentlyBlacklist(form_digest))
-      .Times(0);
-  password_save_manager()->PermanentlyBlacklist(form_digest);
+  EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest));
+  EXPECT_CALL(*mock_account_form_saver(), Blocklist(form_digest)).Times(0);
+  password_save_manager()->Blocklist(form_digest);
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,
-       BlacklistInProfileStoreWhenAccountStoreDisabled) {
+       BlocklistInProfileStoreWhenAccountStoreDisabled) {
   SetAccountStoreEnabled(/*is_enabled=*/false);
   const PasswordStore::FormDigest form_digest(saved_match_);
   SetDefaultPasswordStore(PasswordForm::Store::kAccountStore);
 
-  EXPECT_CALL(*mock_profile_form_saver(), PermanentlyBlacklist(form_digest));
-  EXPECT_CALL(*mock_account_form_saver(), PermanentlyBlacklist(form_digest))
-      .Times(0);
-  password_save_manager()->PermanentlyBlacklist(form_digest);
+  EXPECT_CALL(*mock_profile_form_saver(), Blocklist(form_digest));
+  EXPECT_CALL(*mock_account_form_saver(), Blocklist(form_digest)).Times(0);
+  password_save_manager()->Blocklist(form_digest);
 }
 
 TEST_F(MultiStorePasswordSaveManagerTest,

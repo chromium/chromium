@@ -195,7 +195,7 @@ bool IOSChromeSavePasswordInfoBarDelegate::Accept() {
 bool IOSChromeSavePasswordInfoBarDelegate::Cancel() {
   DCHECK(form_to_save());
   DCHECK(!password_update_);
-  form_to_save()->PermanentlyBlacklist();
+  form_to_save()->Blocklist();
   set_infobar_response(password_manager::metrics_util::CLICKED_NEVER);
   return true;
 }

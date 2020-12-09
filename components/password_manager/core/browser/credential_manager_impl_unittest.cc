@@ -1661,7 +1661,7 @@ TEST_P(CredentialManagerImplTest, BlockedPasswordCredential) {
   RunAllPendingTasks();
 
   ASSERT_TRUE(client_->pending_manager());
-  client_->pending_manager()->PermanentlyBlacklist();
+  client_->pending_manager()->Blocklist();
   // Allow the PasswordFormManager to talk to the password store.
   RunAllPendingTasks();
 
@@ -1689,7 +1689,7 @@ TEST_P(CredentialManagerImplTest, BlockedFederatedCredential) {
   RunAllPendingTasks();
 
   ASSERT_TRUE(client_->pending_manager());
-  client_->pending_manager()->PermanentlyBlacklist();
+  client_->pending_manager()->Blocklist();
   // Allow the PasswordFormManager to talk to the password store.
   RunAllPendingTasks();
 

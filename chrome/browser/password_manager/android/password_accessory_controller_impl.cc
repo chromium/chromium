@@ -366,7 +366,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
   password_manager::PasswordStore* store =
       password_client_->GetProfilePasswordStore();
   if (saving_enabled) {
-    store->Unblacklist(form_digest, base::NullCallback());
+    store->Unblocklist(form_digest, base::NullCallback());
   } else {
     password_manager::PasswordForm form =
         password_manager_util::MakeNormalizedBlacklistedForm(

@@ -316,9 +316,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            SaveOperation::kUpdate,
                                            SaveOperation::kReplaceUpdate));
 
-// Check that blacklisting an observed form sets the right properties and calls
+// Check that blocklisting an observed form sets the right properties and calls
 // the PasswordStore.
-TEST_F(FormSaverImplTest, PermanentlyBlacklist) {
+TEST_F(FormSaverImplTest, Blocklist) {
   PasswordForm observed = CreateObserved();
   observed.blocked_by_user = false;
   observed.username_value = ASCIIToUTF16("user1");
@@ -329,14 +329,14 @@ TEST_F(FormSaverImplTest, PermanentlyBlacklist) {
       {ASCIIToUTF16("user2"), ASCIIToUTF16("field")}};
   observed.url = GURL("https://www.example.com/foobar");
 
-  PasswordForm blacklisted =
+  PasswordForm blocklisted =
       password_manager_util::MakeNormalizedBlacklistedForm(
           PasswordStore::FormDigest(observed));
 
-  EXPECT_CALL(*mock_store_, AddLogin(FormWithSomeDate(blacklisted)));
+  EXPECT_CALL(*mock_store_, AddLogin(FormWithSomeDate(blocklisted)));
   PasswordForm result =
-      form_saver_.PermanentlyBlacklist(PasswordStore::FormDigest(observed));
-  EXPECT_THAT(result, FormWithSomeDate(blacklisted));
+      form_saver_.Blocklist(PasswordStore::FormDigest(observed));
+  EXPECT_THAT(result, FormWithSomeDate(blocklisted));
 }
 
 // Check that Remove() method is relayed properly.

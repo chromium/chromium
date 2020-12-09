@@ -23,7 +23,7 @@ class MockPasswordStore : public PasswordStore {
   MockPasswordStore();
 
   MOCK_METHOD1(RemoveLogin, void(const PasswordForm&));
-  MOCK_METHOD2(Unblacklist,
+  MOCK_METHOD2(Unblocklist,
                void(const PasswordStore::FormDigest&, base::OnceClosure));
   MOCK_METHOD2(GetLogins,
                void(const PasswordStore::FormDigest&, PasswordStoreConsumer*));

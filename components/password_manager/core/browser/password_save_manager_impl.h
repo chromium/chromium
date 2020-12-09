@@ -56,9 +56,8 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
               const autofill::FormData* observed_form,
               const PasswordForm& parsed_submitted_form) override;
 
-  void PermanentlyBlacklist(
-      const PasswordStore::FormDigest& form_digest) override;
-  void Unblacklist(const PasswordStore::FormDigest& form_digest) override;
+  void Blocklist(const PasswordStore::FormDigest& form_digest) override;
+  void Unblocklist(const PasswordStore::FormDigest& form_digest) override;
 
   // Called when generated password is accepted or changed by user.
   void PresaveGeneratedPassword(PasswordForm parsed_form) override;

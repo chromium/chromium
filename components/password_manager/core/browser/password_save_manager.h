@@ -74,9 +74,8 @@ class PasswordSaveManager {
                       const autofill::FormData* observed_form,
                       const PasswordForm& parsed_submitted_form) = 0;
 
-  virtual void PermanentlyBlacklist(
-      const PasswordStore::FormDigest& form_digest) = 0;
-  virtual void Unblacklist(const PasswordStore::FormDigest& form_digest) = 0;
+  virtual void Blocklist(const PasswordStore::FormDigest& form_digest) = 0;
+  virtual void Unblocklist(const PasswordStore::FormDigest& form_digest) = 0;
 
   // Called when generated password is accepted or changed by user.
   virtual void PresaveGeneratedPassword(PasswordForm parsed_form) = 0;

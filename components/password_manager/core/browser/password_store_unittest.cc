@@ -981,7 +981,7 @@ TEST_F(PasswordStoreTest, GetAllLogins) {
       {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", L"",
        L"", L"", L"username_value_4", L"", kTestLastUsageTime, 1},
       // A PasswordFormData with nullptr as the username_value will be converted
-      // in a blacklisted PasswordForm in FillPasswordFormWithData().
+      // in a blocklisted PasswordForm in FillPasswordFormWithData().
       {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebOrigin2, "", L"",
        L"", L"", nullptr, L"", kTestLastUsageTime, 1},
       {PasswordForm::Scheme::kHtml, kTestWebRealm3, kTestWebOrigin3, "", L"",
@@ -1017,7 +1017,7 @@ TEST_F(PasswordStoreTest, GetLogisByPassword) {
   static constexpr wchar_t untested_password[] = L"and_another_password";
 
   // The first, third and forth credentials use the same password, but the forth
-  // is blacklisted.
+  // is blocklisted.
   static constexpr PasswordFormData kTestCredentials[] = {
       // Has the specified password:
       {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", L"", L"", L"",
@@ -1032,8 +1032,8 @@ TEST_F(PasswordStoreTest, GetLogisByPassword) {
       {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", L"",
        L"", L"", L"username_value_4", untested_password, kTestLastUsageTime, 1},
       // A PasswordFormData with nullptr as the username_value will be converted
-      // in a blacklisted PasswordForm in FillPasswordFormWithData().
-      // Has the specified password, but is blacklisted.
+      // in a blocklisted PasswordForm in FillPasswordFormWithData().
+      // Has the specified password, but is blocklisted.
       {PasswordForm::Scheme::kHtml, kTestWebRealm3, kTestWebOrigin3, "", L"",
        L"", L"", nullptr, tested_password, kTestLastUsageTime, 1}};
 
@@ -1086,7 +1086,7 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
       {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", L"",
        L"", L"", L"username_value_4", L"", kTestLastUsageTime, 1},
       // A PasswordFormData with nullptr as the username_value will be converted
-      // in a blacklisted PasswordForm in FillPasswordFormWithData().
+      // in a blocklisted PasswordForm in FillPasswordFormWithData().
       {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebOrigin2, "", L"",
        L"", L"", nullptr, L"", kTestLastUsageTime, 1},
       {PasswordForm::Scheme::kHtml, kTestWebRealm3, kTestWebOrigin3, "", L"",
@@ -1140,33 +1140,33 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   store->ShutdownOnUIThread();
 }
 
-TEST_F(PasswordStoreTest, Unblacklisting) {
+TEST_F(PasswordStoreTest, Unblocklisting) {
   static const PasswordFormData kTestCredentials[] = {
       // A PasswordFormData with nullptr as the username_value will be converted
-      // in a blacklisted PasswordForm in FillPasswordFormWithData().
+      // in a blocklisted PasswordForm in FillPasswordFormWithData().
 
-      // Blacklisted entry for the observed domain.
+      // Blocklisted entry for the observed domain.
       {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", L"",
        L"", L"", nullptr, L"", kTestLastUsageTime, 1},
-      // Blacklisted entry for a PSL match of the observed form.
+      // Blocklisted entry for a PSL match of the observed form.
       {PasswordForm::Scheme::kHtml, kTestPSLMatchingWebRealm,
        kTestPSLMatchingWebOrigin, "", L"", L"", L"", nullptr, L"",
        kTestLastUsageTime, 1},
-      // Blacklisted entry for another domain
+      // Blocklisted entry for another domain
       {PasswordForm::Scheme::kHtml, kTestUnrelatedWebRealm,
        kTestUnrelatedWebOrigin, "", L"", L"", L"", nullptr, L"",
        kTestLastUsageTime, 1},
-      // Non-blacklisted for the observed domain with a username.
+      // Non-blocklisted for the observed domain with a username.
       {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", L"",
        L"", L"", L"username", L"", kTestLastUsageTime, 1},
-      // Non-blacklisted for the observed domain without a username.
+      // Non-blocklisted for the observed domain without a username.
       {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", L"",
        L"", L"username_element", L"", L"", kTestLastUsageTime, 1},
-      // Non-blacklisted entry for a PSL match of the observed form.
+      // Non-blocklisted entry for a PSL match of the observed form.
       {PasswordForm::Scheme::kHtml, kTestPSLMatchingWebRealm,
        kTestPSLMatchingWebOrigin, "", L"", L"", L"", L"username", L"",
        kTestLastUsageTime, 1},
-      // Non-blacklisted entry for another domain
+      // Non-blocklisted entry for another domain
       {PasswordForm::Scheme::kHtml, kTestUnrelatedWebRealm2,
        kTestUnrelatedWebOrigin2, "", L"", L"", L"", L"username", L"",
        kTestLastUsageTime, 1}};
@@ -1190,13 +1190,13 @@ TEST_F(PasswordStoreTest, Unblacklisting) {
   PasswordStore::FormDigest observed_form_digest = {
       PasswordForm::Scheme::kHtml, kTestWebRealm1, GURL(kTestWebOrigin1)};
 
-  store->Unblacklist(observed_form_digest, run_loop.QuitClosure());
+  store->Unblocklist(observed_form_digest, run_loop.QuitClosure());
   run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
-  // Unblacklisting will delete only the first credential. It should leave the
-  // PSL match as well as the unrelated blacklisting entry and all
-  // non-blacklisting entries.
+  // Unblocklisting will delete only the first credential. It should leave the
+  // PSL match as well as the unrelated blocklisting entry and all
+  // non-blocklisting entries.
   all_credentials.erase(all_credentials.begin());
 
   MockPasswordStoreConsumer mock_consumer;
