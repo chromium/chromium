@@ -13,19 +13,6 @@
  */
 const PREFIX = 'settings.a11y.switch_access.';
 
-/**
- * The ending of the setting name for all key code preferences.
- * @const
- */
-const KEY_CODE_SUFFIX = '.key_codes';
-
-/**
- * The ending of the setting name for all preferences referring to
- * Switch Access command settings.
- * @const
- */
-const COMMAND_SUFFIX = '.setting';
-
 /** @type {!Array<number>} */
 const AUTO_SCAN_SPEED_RANGE_MS = [
   700,  800,  900,  1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800,
@@ -40,21 +27,6 @@ const AUTO_SCAN_SPEED_RANGE_MS = [
 function ticksWithLabelsInSec(ticksInMs) {
   // Dividing by 1000 to convert milliseconds to seconds for the label.
   return ticksInMs.map(x => ({label: `${x / 1000}`, value: x}));
-}
-
-/**
- * @param {!Array} array
- * @param {*} value
- * @return {!Array}
- */
-function removeElementWithValue(array, value) {
-  for (let i = 0; i < array.length; i++) {
-    if (array[i].value === value) {
-      array.splice(i, 1);
-      return array;
-    }
-  }
-  return array;
 }
 
 Polymer({
@@ -262,18 +234,6 @@ Polymer({
             'assignSwitchSubLabel5OrMoreSwitches', ...switches.slice(0, 3),
             switches.length - 3);
     }
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  currentSpeed_() {
-    const speed = this.getPref(PREFIX + 'auto_scan.speed_ms').value;
-    if (typeof speed !== 'number') {
-      return '';
-    }
-    return this.scanSpeedStringInSec_(speed);
   },
 
   /**
