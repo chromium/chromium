@@ -15,6 +15,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/video_codecs.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
+#include "media/mojo/services/media_metrics_provider.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
@@ -34,7 +35,8 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
                     ukm::SourceId source_id,
                     bool is_top_frame,
                     uint64_t player_id,
-                    RecordAggregateWatchTimeCallback record_playback_cb);
+                    RecordAggregateWatchTimeCallback record_playback_cb,
+                    MediaMetricsProvider::Source source);
   ~WatchTimeRecorder() override;
 
   // mojom::WatchTimeRecorder implementation:
@@ -127,6 +129,7 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   base::TimeDelta last_timestamp_ = kNoTimestamp;
   base::Optional<bool> autoplay_initiated_;
   RecordAggregateWatchTimeCallback record_playback_cb_;
+  const MediaMetricsProvider::Source source_;
 
   DISALLOW_COPY_AND_ASSIGN(WatchTimeRecorder);
 };

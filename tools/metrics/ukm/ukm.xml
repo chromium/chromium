@@ -6598,6 +6598,12 @@ be describing additional metrics about the same event.
       Boolean value indicating if this event is for an EME playback.
     </summary>
   </metric>
+  <metric name="IsFromKaleidoscope" enum="Boolean">
+    <summary>
+      Boolean value indicating if this event is from a page that was launched
+      from Kaleidoscope.
+    </summary>
+  </metric>
   <metric name="IsMSE">
     <summary>
       Boolean value indicating if this event is for an MSE playback. If false it

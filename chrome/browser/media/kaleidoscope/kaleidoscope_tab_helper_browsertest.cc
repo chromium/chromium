@@ -42,6 +42,13 @@ class KaleidoscopeTabHelperBrowserTest : public InProcessBrowserTest {
     return played;
   }
 
+  bool WaitFor10Secs(content::WebContents* web_contents) {
+    bool played = false;
+    EXPECT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractBool(
+        web_contents, "waitFor10Secs();", &played));
+    return played;
+  }
+
   bool NavigateInRenderer(content::WebContents* web_contents, const GURL& url) {
     content::TestNavigationObserver observer(web_contents);
 
@@ -192,4 +199,29 @@ IN_PROC_BROWSER_TEST_F(KaleidoscopeTabHelperBrowserTest,
       KaleidoscopeTabHelper::
           kKaleidoscopeOpenedMediaRecommendationHistogramName,
       false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(KaleidoscopeTabHelperBrowserTest,
+                       OpenedFromKaleidoscopeShouldAttributeWatchtime) {
+  const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  NavigateParams params(browser(), kTestPageUrl, ui::PAGE_TRANSITION_LINK);
+  params.initiator_origin =
+      url::Origin::Create(GURL(kKaleidoscopeUntrustedContentUIURL));
+  ui_test_utils::NavigateToURL(&params);
+
+  EXPECT_TRUE(GetTabHelper()->IsKaleidoscopeDerived());
+
+  // Wait for significant playback so that we record some watchtime.
+  EXPECT_TRUE(AttemptPlay(GetWebContents()));
+  WaitFor10Secs(GetWebContents());
+  NavigateInRenderer(GetWebContents(), kTestPageUrl);
+
+  using Entry = ukm::builders::Media_BasicPlayback;
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(Entry::kEntryName);
+
+  auto* ukm_entry = ukm_entries.back();
+  ukm::TestUkmRecorder::ExpectEntryMetric(ukm_entry,
+                                          Entry::kIsFromKaleidoscopeName, 1);
 }

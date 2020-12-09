@@ -745,6 +745,11 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Returns a weak ptr to the web contents delegate.
   virtual base::WeakPtr<WebContentsDelegate> GetDelegateWeakPtr();
 
+  // Returns the source that media watchtime metrics will be recorded against.
+  enum class MediaMetricsSource { kUnknown, kKaleidoscope };
+  virtual MediaMetricsSource GetMediaMetricsProviderSource(
+      WebContents* web_contents);
+
  protected:
   virtual ~WebContentsDelegate();
 

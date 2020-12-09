@@ -62,20 +62,7 @@ class WatchTimeRecorderTest : public testing::Test {
                        kDiscardedWatchTimeAudioVideoMse,
                        kDiscardedWatchTimeAudioVideoEme}) {
     source_id_ = test_recorder_->GetNewSourceID();
-    ResetMetricRecorders();
-    MediaMetricsProvider::Create(
-        MediaMetricsProvider::BrowsingMode::kIncognito,
-        MediaMetricsProvider::FrameStatus::kTopFrame,
-        base::BindRepeating(&WatchTimeRecorderTest::GetSourceId,
-                            base::Unretained(this)),
-        base::BindRepeating(
-            []() { return learning::FeatureValue(0); }) /* origin callback */,
-        VideoDecodePerfHistory::SaveCallback(),
-        MediaMetricsProvider::GetLearningSessionCallback(),
-        base::BindRepeating(
-            &WatchTimeRecorderTest::GetRecordAggregateWatchTimeCallback,
-            base::Unretained(this)),
-        provider_.BindNewPipeAndPassReceiver());
+    CreateMetricsProvider(MediaMetricsProvider::Source::kUnknown);
   }
 
   ~WatchTimeRecorderTest() override { base::RunLoop().RunUntilIdle(); }
@@ -166,6 +153,14 @@ class WatchTimeRecorderTest : public testing::Test {
     }
   }
 
+  void ExpectUkmIsFromKaleidoscope(bool value) {
+    const auto& entries =
+        test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+    EXPECT_EQ(1u, entries.size());
+    test_recorder_->ExpectEntryMetric(entries.back(),
+                                      UkmEntry::kIsFromKaleidoscopeName, value);
+  }
+
   void ResetMetricRecorders() {
     histogram_tester_.reset(new base::HistogramTester());
     // Ensure cleared global before attempting to create a new TestUkmReporter.
@@ -196,6 +191,25 @@ class WatchTimeRecorderTest : public testing::Test {
 
   MOCK_METHOD0(GetCurrentMediaTime, base::TimeDelta());
 
+  void CreateMetricsProvider(MediaMetricsProvider::Source source) {
+    ResetMetricRecorders();
+    provider_.reset();
+
+    MediaMetricsProvider::Create(
+        MediaMetricsProvider::BrowsingMode::kIncognito,
+        MediaMetricsProvider::FrameStatus::kTopFrame,
+        base::BindRepeating(&WatchTimeRecorderTest::GetSourceId,
+                            base::Unretained(this)),
+        base::BindRepeating(
+            []() { return learning::FeatureValue(0); }) /* origin callback */,
+        VideoDecodePerfHistory::SaveCallback(),
+        MediaMetricsProvider::GetLearningSessionCallback(),
+        base::BindRepeating(
+            &WatchTimeRecorderTest::GetRecordAggregateWatchTimeCallback,
+            base::Unretained(this)),
+        provider_.BindNewPipeAndPassReceiver(), source);
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::Remote<mojom::MediaMetricsProvider> provider_;
@@ -214,6 +228,8 @@ class WatchTimeRecorderTest : public testing::Test {
 TEST_F(WatchTimeRecorderTest, TestBasicReporting) {
   constexpr base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(25);
   constexpr base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(50);
+
+  CreateMetricsProvider(MediaMetricsProvider::Source::kKaleidoscope);
 
   for (int i = 0; i <= static_cast<int>(WatchTimeKey::kWatchTimeKeyMax); ++i) {
     const WatchTimeKey key = static_cast<WatchTimeKey>(i);
@@ -264,6 +280,7 @@ TEST_F(WatchTimeRecorderTest, TestBasicReporting) {
       case WatchTimeKey::kVideoAll:
       case WatchTimeKey::kVideoBackgroundAll:
         ExpectUkmWatchTime({UkmEntry::kWatchTimeName}, kWatchTime2);
+        ExpectUkmIsFromKaleidoscope(true);
         break;
 
       // These keys are not reported, instead we boolean flags for each type.
@@ -516,6 +533,8 @@ TEST_F(WatchTimeRecorderTest, TestFinalizeNoDuplication) {
     EXPECT_NO_UKM(UkmEntry::kWatchTime_DisplayInlineName);
     EXPECT_NO_UKM(UkmEntry::kWatchTime_DisplayPictureInPictureName);
   }
+
+  ExpectUkmIsFromKaleidoscope(false);
 }
 
 TEST_F(WatchTimeRecorderTest, FinalizeWithoutWatchTime) {

@@ -148,7 +148,8 @@ WatchTimeRecorder::WatchTimeRecorder(
     ukm::SourceId source_id,
     bool is_top_frame,
     uint64_t player_id,
-    RecordAggregateWatchTimeCallback record_playback_cb)
+    RecordAggregateWatchTimeCallback record_playback_cb,
+    MediaMetricsProvider::Source source)
     : properties_(std::move(properties)),
       source_id_(source_id),
       is_top_frame_(is_top_frame),
@@ -169,7 +170,8 @@ WatchTimeRecorder::WatchTimeRecorder(
            {WatchTimeKey::kAudioVideoEme,
             kMeanTimeBetweenRebuffersAudioVideoEme,
             kRebuffersCountAudioVideoEme, kDiscardedWatchTimeAudioVideoEme}}),
-      record_playback_cb_(std::move(record_playback_cb)) {}
+      record_playback_cb_(std::move(record_playback_cb)),
+      source_(source) {}
 
 WatchTimeRecorder::~WatchTimeRecorder() {
   FinalizeWatchTime({});
@@ -430,6 +432,8 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     builder.SetPlayerID(player_id_);
     if (clamped_duration_ms.has_value())
       builder.SetDuration(*clamped_duration_ms);
+    builder.SetIsFromKaleidoscope(source_ ==
+                                  MediaMetricsProvider::Source::kKaleidoscope);
 
     bool recorded_all_metric = false;
     for (auto& kv : ukm_record.aggregate_watch_time_info) {

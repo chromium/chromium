@@ -434,7 +434,8 @@ class WebMediaPlayerImplTest
         base::BindRepeating(
             &WebMediaPlayerImplTest::GetRecordAggregateWatchTimeCallback,
             base::Unretained(this)),
-        provider.BindNewPipeAndPassReceiver());
+        provider.BindNewPipeAndPassReceiver(),
+        MediaMetricsProvider::Source::kUnknown);
 
     // Initialize provider since none of the tests below actually go through the
     // full loading/pipeline initialize phase. If this ever changes the provider
