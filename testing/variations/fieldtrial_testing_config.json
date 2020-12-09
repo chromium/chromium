@@ -6730,6 +6730,24 @@
             ]
         }
     ],
+    "SmoothnessModeForAnimatedScrolls": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SmoothnessModeForAnimatedScrolls"
+                    ]
+                }
+            ]
+        }
+    ],
     "SplitCacheByNetworkIsolationKey": [
         {
             "platforms": [
