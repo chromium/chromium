@@ -32,7 +32,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/service_names.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -54,13 +53,15 @@ namespace chromecast {
 
 namespace {
 
+const char kSystemServiceName[] = "content_system";
+
 base::LazyInstance<std::unique_ptr<service_manager::Connector>>::Leaky
     g_io_thread_connector = LAZY_INSTANCE_INITIALIZER;
 
 const service_manager::Manifest& GetBrowserManifest() {
   static base::NoDestructor<service_manager::Manifest> manifest{
       service_manager::ManifestBuilder()
-          .WithServiceName(content::mojom::kBrowserServiceName)
+          .WithServiceName(ServiceManagerContext::kBrowserServiceName)
           .WithDisplayName("Browser process")
           .WithOptions(service_manager::ManifestOptionsBuilder()
                            .CanConnectToInstancesInAnyGroup(true)
@@ -82,11 +83,11 @@ service_manager::Manifest GetSystemManifest(
   // be tied to a BrowserContext. The per-BrowserContext service should go away
   // soon, and then this can be removed.
   service_manager::Manifest manifest = GetBrowserManifest();
-  manifest.Amend(
-      cast_content_browser_client
-          ->GetServiceManifestOverlay(content::mojom::kBrowserServiceName)
-          .value_or(service_manager::Manifest()));
-  manifest.service_name = content::mojom::kSystemServiceName;
+  manifest.Amend(cast_content_browser_client
+                     ->GetServiceManifestOverlay(
+                         ServiceManagerContext::kBrowserServiceName)
+                     .value_or(service_manager::Manifest()));
+  manifest.service_name = kSystemServiceName;
   manifest.packaged_services.clear();
   manifest.options.instance_sharing_policy =
       service_manager::Manifest::InstanceSharingPolicy::kSingleton;
@@ -209,6 +210,8 @@ class BrowserServiceManagerDelegate
 
 }  // namespace
 
+const char ServiceManagerContext::kBrowserServiceName[] = "content_browser";
+
 // State which lives on the IO thread and drives the ServiceManager.
 class ServiceManagerContext::InProcessServiceManagerContext
     : public base::RefCountedThreadSafe<InProcessServiceManagerContext> {
@@ -261,7 +264,7 @@ class ServiceManagerContext::InProcessServiceManagerContext
 
     mojo::Remote<service_manager::mojom::ProcessMetadata> metadata;
     service_manager_->RegisterService(
-        service_manager::Identity(content::mojom::kSystemServiceName,
+        service_manager::Identity(kSystemServiceName,
                                   service_manager::kSystemInstanceGroup,
                                   base::Token{}, base::Token::CreateRandom()),
         std::move(system_remote), metadata.BindNewPipeAndPassReceiver());

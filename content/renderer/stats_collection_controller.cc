@@ -10,7 +10,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_util.h"
 #include "content/common/renderer_host.mojom.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "gin/handle.h"

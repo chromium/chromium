@@ -288,7 +288,6 @@ target(link_target_type, "renderer") {
     "//content/common:buildflags",
     "//content/gpu:gpu_sources",
     "//content/public/child:child_sources",
-    "//content/public/common:service_names",
     "//crypto",
     "//crypto:platform",
     "//device/base/synchronization",

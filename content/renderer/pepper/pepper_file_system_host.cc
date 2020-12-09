@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/optional.h"
 #include "content/common/pepper_file_util.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"

@@ -240,7 +240,6 @@ static_library("content_shell_lib") {
     "//content:dev_ui_content_resources",
     "//content/app/resources",
     "//content/public/common",
-    "//content/public/common:service_names",
     "//content/test:content_test_mojo_bindings",
     "//content/test:test_support",
     "//device/bluetooth",

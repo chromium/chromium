@@ -31,6 +31,8 @@ class CastContentBrowserClient;
 // launched from an external one.
 class ServiceManagerContext {
  public:
+  static const char kBrowserServiceName[];
+
   ServiceManagerContext(
       shell::CastContentBrowserClient* cast_content_browser_client,
       scoped_refptr<base::SingleThreadTaskRunner>

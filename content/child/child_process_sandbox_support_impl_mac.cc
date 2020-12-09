@@ -13,7 +13,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "content/common/mac/font_loader.h"
 #include "content/public/child/child_thread.h"
-#include "content/public/common/service_names.mojom.h"
 #include "mojo/public/cpp/system/buffer.h"
 
 namespace content {

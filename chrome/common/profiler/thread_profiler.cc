@@ -27,7 +27,6 @@
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/service_names.mojom.h"
 #include "sandbox/policy/sandbox.h"
 
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)

@@ -49,6 +49,7 @@
 #include "chromecast/browser/media/media_caps_impl.h"
 #include "chromecast/browser/service/cast_service_simple.h"
 #include "chromecast/browser/service_connector.h"
+#include "chromecast/browser/service_manager_context.h"
 #include "chromecast/common/cast_content_client.h"
 #include "chromecast/common/global_descriptors.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
@@ -76,7 +77,6 @@
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "media/audio/audio_thread_impl.h"
 #include "media/base/media_switches.h"
@@ -736,7 +736,7 @@ void CastContentBrowserClient::GetApplicationMediaInfo(
 base::Optional<service_manager::Manifest>
 CastContentBrowserClient::GetServiceManifestOverlay(
     base::StringPiece service_name) {
-  if (service_name == content::mojom::kBrowserServiceName)
+  if (service_name == ServiceManagerContext::kBrowserServiceName)
     return GetCastContentBrowserOverlayManifest();
 
   return base::nullopt;

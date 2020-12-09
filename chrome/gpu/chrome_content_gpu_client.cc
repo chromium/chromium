@@ -16,7 +16,6 @@
 #include "chrome/gpu/browser_exposed_gpu_interfaces.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/service_names.mojom.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -2250,7 +2250,6 @@ static_library("browser") {
     "//content/app/resources",
     "//content/public/browser",
     "//content/public/common",
-    "//content/public/common:service_names",
     "//crypto",
     "//crypto:platform",
     "//device/base",

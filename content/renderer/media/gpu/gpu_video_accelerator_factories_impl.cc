@@ -18,7 +18,6 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "content/child/child_thread_impl.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/renderer/render_thread_impl.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"

@@ -135,7 +135,6 @@ static_library("test_support") {
     "//components/startup_metric_utils/browser",
     "//content/public/app",
     "//content/public/common",
-    "//content/public/common:service_names",
     "//pdf:pdf_ppapi",
     "//ppapi/buildflags",
     "//printing/buildflags",

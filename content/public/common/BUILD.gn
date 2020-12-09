@@ -201,7 +201,6 @@ source_set("common_sources") {
   public_deps = [
     ":interfaces",
     ":renderer_type",
-    ":service_names",
     ":trust_tokens_mojo_bindings",
     "//content/common",
     "//content/public/common/zygote:buildflags",
@@ -398,8 +397,4 @@ mojom("trust_tokens_mojo_bindings") {
 
 mojom("renderer_type") {
   sources = [ "media_playback_renderer_type.mojom" ]
-}
-
-mojom("service_names") {
-  sources = [ "service_names.mojom" ]
 }

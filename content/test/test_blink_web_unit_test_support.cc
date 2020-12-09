@@ -23,7 +23,6 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/child/child_process.h"
-#include "content/public/common/service_names.mojom.h"
 #include "media/base/media.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"

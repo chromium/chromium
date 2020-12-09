@@ -257,7 +257,6 @@ if (!is_android && !is_mac) {
         # Needed to use the master_preferences functions
         "//chrome/installer/util:with_no_strings",
         "//content/public/app",
-        "//content/public/common:service_names",
 
         # For headless mode.
         "//headless:headless_shell_lib",
@@ -353,7 +352,6 @@ if (is_win) {
       "//components/crash/core/app",
       "//components/policy:generated",
       "//content/app/resources",
-      "//content/public/common:service_names",
       "//crypto",
       "//headless:headless_shell_browser_lib",
       "//net:net_resources",
@@ -977,7 +975,6 @@ if (is_win) {
       "//components/crash/core/app",
       "//components/policy:generated",
       "//content/public/app",
-      "//content/public/common:service_names",
       "//headless:headless_shell_lib",
       "//third_party/cld_3/src/src:cld_3",
     ]
@@ -1528,7 +1525,6 @@ if (is_android) {
       "//components/safe_browsing/android:safe_browsing_mobile",
       "//components/services/heap_profiling",
       "//content/public/app",
-      "//content/public/common:service_names",
     ]
 
     # Explicit dependency required for JNI registration to be able to

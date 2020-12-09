@@ -242,7 +242,6 @@ cast_source_set("browser_base") {
     "//components/viz/service",
     "//content/public/browser",
     "//content/public/common",
-    "//content/public/common:service_names",
     "//device/bluetooth",
     "//gpu",
     "//ipc",

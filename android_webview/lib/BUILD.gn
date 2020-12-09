@@ -36,7 +36,6 @@ source_set("lib") {
     "//content/public/browser",
     "//content/public/common",
     "//content/public/common:content_descriptor_keys",
-    "//content/public/common:service_names",
     "//gin",
     "//gpu/command_buffer/service",
     "//gpu/config",

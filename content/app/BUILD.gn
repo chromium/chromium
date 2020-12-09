@@ -19,7 +19,6 @@ content_app_deps = [
   "//content:export",
   "//content:sandbox_helper_win",
   "//content/public/common:common_sources",
-  "//content/public/common:service_names",
   "//crypto",
   "//mojo/core/embedder",
   "//ppapi/buildflags",

@@ -28,7 +28,6 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/testing_pref_service.h"
-#include "content/public/common/service_names.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/preferences/public/cpp/tracked/configuration.h"
