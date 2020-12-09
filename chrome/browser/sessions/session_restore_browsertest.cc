@@ -555,7 +555,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Creates a tabbed browser and popup and makes sure we restore both.
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NormalAndPopup) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Disabled for mac-arm64 bot stabilization: https://crbug.com/1154345
+#define MAYBE_NormalAndPopup DISABLED_NormalAndPopup
+#else
+#define MAYBE_NormalAndPopup NormalAndPopup
+#endif
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_NormalAndPopup) {
   // Open a popup.
   Browser* popup = CreateBrowserForPopup(browser()->profile());
   ASSERT_EQ(2u, active_browser_list_->size());
