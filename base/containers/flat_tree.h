@@ -542,11 +542,13 @@ class flat_tree {
 
   void sort_and_unique() { sort_and_unique(begin(), end()); }
 
-  container_type body_;
   // To support comparators that may not be possible to default-construct, we
   // have to store an instance of Compare. Since Compare commonly is stateless,
   // we use the NO_UNIQUE_ADDRESS attribute to save space.
   NO_UNIQUE_ADDRESS key_compare comp_;
+  // Declare after |key_compare_comp_| to workaround GCC ICE. For details
+  // see https://crbug.com/1156268
+  container_type body_;
 
   // If the compare is not transparent we want to construct key_type once.
   template <typename K>
@@ -568,7 +570,7 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     InputIterator first,
     InputIterator last,
     const KeyCompare& comp)
-    : body_(first, last), comp_(comp) {
+    : comp_(comp), body_(first, last) {
   sort_and_unique();
 }
 
@@ -576,7 +578,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     const container_type& items,
     const KeyCompare& comp)
-    : body_(items), comp_(comp) {
+    : comp_(comp), body_(items) {
   sort_and_unique();
 }
 
@@ -584,7 +586,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     container_type&& items,
     const KeyCompare& comp)
-    : body_(std::move(items)), comp_(comp) {
+    : comp_(comp), body_(std::move(items)) {
   sort_and_unique();
 }
 
@@ -601,7 +603,7 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     InputIterator first,
     InputIterator last,
     const KeyCompare& comp)
-    : body_(first, last), comp_(comp) {
+    : comp_(comp), body_(first, last) {
   DCHECK(is_sorted_and_unique(*this, value_comp()));
 }
 
@@ -610,7 +612,7 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     sorted_unique_t,
     const container_type& items,
     const KeyCompare& comp)
-    : body_(items), comp_(comp) {
+    : comp_(comp), body_(items) {
   DCHECK(is_sorted_and_unique(*this, value_comp()));
 }
 
@@ -619,7 +621,7 @@ constexpr flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     sorted_unique_t,
     container_type&& items,
     const KeyCompare& comp)
-    : body_(std::move(items)), comp_(comp) {
+    : comp_(comp), body_(std::move(items)) {
   DCHECK(is_sorted_and_unique(*this, value_comp()));
 }
 
