@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
   EnableArcForProfile(ProfileManager::GetActiveUserProfile());
 
-  arc_data_snapshotd_manager()->OnSessionStateChanged();
+  arc_data_snapshotd_manager()->OnSnapshotSessionStarted();
 
   EXPECT_TRUE(auto_login_account_id().is_valid());
   EXPECT_EQ(0, auto_login_delay());

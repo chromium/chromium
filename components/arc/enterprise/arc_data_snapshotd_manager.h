@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/arc/enterprise/arc_apps_tracker.h"
+#include "components/arc/enterprise/snapshot_session_controller.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 class PrefService;
@@ -30,7 +31,7 @@ class ArcDataSnapshotdBridge;
 // This class manages ARC data/ directory snapshots and controls the lifetime of
 // the arc-data-snapshotd daemon.
 class ArcDataSnapshotdManager final
-    : public session_manager::SessionManagerObserver {
+    : public SnapshotSessionController::Observer {
  public:
   // State of the flow.
   enum class State {
@@ -94,6 +95,9 @@ class ArcDataSnapshotdManager final
     // Returns true if OS version is updated, since the snapshot has been taken.
     bool IsOsVersionUpdated() const;
 
+    void set_verified(bool verified) { verified_ = true; }
+    bool is_verified() const { return verified_; }
+
     bool is_last() const { return is_last_; }
 
    private:
@@ -153,6 +157,9 @@ class ArcDataSnapshotdManager final
     // Updates the last snapshot creation date and OS version.
     void OnSnapshotTaken();
 
+    // Returns the info of a snapshot in use.
+    SnapshotInfo* GetCurrentSnapshot();
+
     void set_blocked_ui_mode(bool blocked_ui_mode) {
       blocked_ui_mode_ = blocked_ui_mode;
     }
@@ -204,8 +211,18 @@ class ArcDataSnapshotdManager final
   // waiting for the response from arc-data-snapshotd daemon.
   bool IsAutoLoginAllowed();
 
-  // session_manager::SessionManagerObserver:
-  void OnSessionStateChanged() override;
+  // SnapshotSessionController::Observer overrides:
+  void OnSnapshotSessionStarted() override;
+  void OnSnapshotSessionStopped() override;
+  void OnSnapshotSessionFailed() override;
+  void OnSnapshotAppInstalled(int percent) override;
+
+  static void set_snapshot_enabled_for_testing(bool enabled) {
+    is_snapshot_enabled_for_testing_ = enabled;
+  }
+  static bool is_snapshot_enabled_for_testing() {
+    return is_snapshot_enabled_for_testing_;
+  }
 
   // Get |bridge_| for testing.
   ArcDataSnapshotdBridge* bridge() { return bridge_.get(); }
@@ -215,14 +232,12 @@ class ArcDataSnapshotdManager final
   void set_reset_autologin_callback(base::OnceClosure callback) {
     reset_autologin_callback_ = std::move(callback);
   }
-
-  static void set_snapshot_enabled_for_testing(bool enabled) {
-    is_snapshot_enabled_for_testing_ = enabled;
-  }
-  static bool is_snapshot_enabled_for_testing() {
-    return is_snapshot_enabled_for_testing_;
-  }
   void set_state_for_testing(State state) { state_ = state; }
+
+  void set_session_controller_for_testing(
+      std::unique_ptr<SnapshotSessionController> session_controller) {
+    session_controller_ = std::move(session_controller);
+  }
 
  private:
   // Attempts to arc-data-snapshotd daemon regardless of state of the class.
@@ -294,6 +309,10 @@ class ArcDataSnapshotdManager final
 
   // Callback to reset an autologin timer once userless MGS is ready to start.
   base::OnceClosure reset_autologin_callback_;
+
+  // Initialized only when needed to observe and call back on a user session
+  // events.
+  std::unique_ptr<SnapshotSessionController> session_controller_;
 
   // Used for cancelling previously posted tasks to daemon.
   base::WeakPtrFactory<ArcDataSnapshotdManager> daemon_weak_ptr_factory_{this};

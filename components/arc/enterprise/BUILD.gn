@@ -13,6 +13,8 @@ static_library("enterprise") {
     "arc_data_snapshotd_manager.h",
     "snapshot_hours_policy_service.cc",
     "snapshot_hours_policy_service.h",
+    "snapshot_session_controller.cc",
+    "snapshot_session_controller.h",
   ]
 
   deps = [
