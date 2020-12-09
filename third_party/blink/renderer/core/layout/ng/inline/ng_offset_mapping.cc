@@ -368,7 +368,7 @@ NGOffsetMapping::GetMappingUnitsForLayoutObject(
                    [&layout_object](const NGOffsetMappingUnit& unit) {
                      return unit.GetLayoutObject() == layout_object;
                    });
-  DCHECK_NE(begin, units_.end());
+  CHECK_NE(begin, units_.end());
   const auto* end =
       std::find_if(std::next(begin), units_.end(),
                    [&layout_object](const NGOffsetMappingUnit& unit) {
@@ -500,7 +500,7 @@ Position NGOffsetMapping::GetFirstPosition(unsigned offset) const {
                        [](const NGOffsetMappingUnit& unit, unsigned offset) {
                          return unit.TextContentEnd() < offset;
                        });
-  DCHECK_NE(result, units_.end());
+  CHECK_NE(result, units_.end());
   // Skip CSS generated content, e.g. "content" property in ::before/::after.
   while (!result->AssociatedNode()) {
     result = std::next(result);
@@ -552,7 +552,7 @@ const NGOffsetMappingUnit* NGOffsetMapping::GetLastMappingUnit(
                        [](unsigned offset, const NGOffsetMappingUnit& unit) {
                          return offset < unit.TextContentStart();
                        });
-  DCHECK_NE(result, units_.begin());
+  CHECK_NE(result, units_.begin());
   result = std::prev(result);
   if (result->TextContentEnd() < offset)
     return nullptr;
