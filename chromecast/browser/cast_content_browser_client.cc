@@ -80,6 +80,7 @@
 #include "content/public/common/url_constants.h"
 #include "media/audio/audio_thread_impl.h"
 #include "media/base/media_switches.h"
+#include "media/gpu/buildflags.h"
 #include "media/mojo/services/mojo_renderer_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -167,6 +168,10 @@ CastContentBrowserClient::CastContentBrowserClient(
 #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_VIDEO_CAPTURE_SERVICE)
         features::kMojoVideoCapture,
 #endif
+#if BUILDFLAG(USE_V4L2_CODEC)
+        // Enable accelerated video decode if v4l2 codec is supported.
+        ::media::kVaapiVideoDecodeLinux,
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
   });
 
   cast_feature_list_creator_->SetExtraDisableFeatures({

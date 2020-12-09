@@ -52,6 +52,7 @@ include_rules = [
   "+gpu/command_buffer/service/gpu_switches.h",
   "+media/audio",
   "+media/base",
+  "+media/gpu",
   "+media/mojo",
   "+mojo/public",
   "+net",
