@@ -545,7 +545,12 @@ public class ChromePaymentRequestService
     @Override
     public void onRetry(PaymentValidationErrors errors) {
         mWasRetryCalled = true;
-        mPaymentUiService.onRetry(errors);
+        Context context = mDelegate.getContext(mRenderFrameHost);
+        if (context == null) {
+            disconnectFromClientWithDebugMessage(ErrorStrings.CONTEXT_NOT_FOUND);
+            return;
+        }
+        mPaymentUiService.onRetry(context, errors);
     }
 
     // Implements BrowserPaymentRequest:
@@ -725,5 +730,12 @@ public class ChromePaymentRequestService
         if (mPaymentRequestService == null) return;
         // This updates the line items and the shipping options asynchronously.
         mPaymentRequestService.onShippingAddressChange(address);
+    }
+
+    // Implement PaymentUiService.Delegate:
+    @Override
+    @Nullable
+    public Context getContext() {
+        return mDelegate.getContext(mRenderFrameHost);
     }
 }
