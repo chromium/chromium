@@ -1048,6 +1048,8 @@ class TabListMediator {
         mModel.get(index).model.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
         mModel.get(index).model.set(TabProperties.IS_SELECTED, isSelected);
         mModel.get(index).model.set(TabProperties.TITLE, getLatestTitleForTab(pseudoTab));
+        mModel.get(index).model.set(
+                TabProperties.TAB_CLOSED_LISTENER, isRealTab ? mTabClosedListener : null);
         updateDescriptionString(pseudoTab, mModel.get(index).model);
         if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
             updateCloseButtonDescriptionString(pseudoTab, mModel.get(index).model);
