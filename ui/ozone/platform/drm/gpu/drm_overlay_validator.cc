@@ -46,7 +46,7 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
   // flip commits.
   std::vector<uint64_t> modifiers =
       is_0th_plane
-          ? drm_window->GetController()->GetSupportedModifiers(fourcc_format)
+          ? drm_window->GetController()->GetFormatModifiers(fourcc_format)
           : std::vector<uint64_t>();
 
   // Check if we can re-use existing buffers.
@@ -86,7 +86,7 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
 
 DrmOverlayValidator::DrmOverlayValidator(DrmWindow* window) : window_(window) {}
 
-DrmOverlayValidator::~DrmOverlayValidator() = default;
+DrmOverlayValidator::~DrmOverlayValidator() {}
 
 OverlayStatusList DrmOverlayValidator::TestPageFlip(
     const OverlaySurfaceCandidateList& params,
