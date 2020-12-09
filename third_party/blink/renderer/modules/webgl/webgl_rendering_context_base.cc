@@ -1529,11 +1529,47 @@ void WebGLRenderingContextBase::DidDraw() {
 }
 
 bool WebGLRenderingContextBase::PushFrame() {
-  int submitted_frame = false;
+  TRACE_EVENT0("blink", "WebGLRenderingContextBase::PushFrame");
+  DCHECK(Host());
+  DCHECK(Host()->IsOffscreenCanvas());
+  if (isContextLost() || !GetDrawingBuffer())
+    return false;
+
+  bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
+  if (!must_paint_to_canvas_ && !must_clear_now)
+    return false;
+
+  if (!Host()->LowLatencyEnabled() &&
+      GetDrawingBuffer()->IsUsingGpuCompositing()) {
+    // If LowLatency is not enabled, and it's using Gpu Compositing, it will try
+    // to export the mailbox, synctoken and callback mechanism for the
+    // compositor to present the frame in the offscrencanvas.
+    if (PushFrameNoCopy())
+      return true;
+  }
+
+  return PushFrameWithCopy();
+}
+
+bool WebGLRenderingContextBase::PushFrameNoCopy() {
+  auto canvas_resource = GetDrawingBuffer()->ExportCanvasResource();
+  if (!canvas_resource)
+    return false;
+  const int width = GetDrawingBuffer()->Size().Width();
+  const int height = GetDrawingBuffer()->Size().Height();
+  const bool submitted_frame = Host()->PushFrame(
+      std::move(canvas_resource), SkIRect::MakeWH(width, height));
+
+  MarkLayerComposited();
+  return submitted_frame;
+}
+
+bool WebGLRenderingContextBase::PushFrameWithCopy() {
+  bool submitted_frame = false;
   if (PaintRenderingResultsToCanvas(kBackBuffer)) {
     if (Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
-      int width = GetDrawingBuffer()->Size().Width();
-      int height = GetDrawingBuffer()->Size().Height();
+      const int width = GetDrawingBuffer()->Size().Width();
+      const int height = GetDrawingBuffer()->Size().Height();
       submitted_frame =
           Host()->PushFrame(Host()->ResourceProvider()->ProduceCanvasResource(),
                             SkIRect::MakeWH(width, height));
@@ -1702,6 +1738,8 @@ void WebGLRenderingContextBase::SetIsInHiddenPage(bool hidden) {
 
 bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     SourceDrawingBuffer source_buffer) {
+  TRACE_EVENT0("blink",
+               "WebGLRenderingContextBase::PaintRenderingResultsToCanvas");
   if (isContextLost() || !GetDrawingBuffer())
     return false;
 
@@ -1730,8 +1768,9 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
     // Single buffered passthrough resource provider doesn't have backing
     // texture. We need to export the backbuffer mailbox directly without
     // copying.
-    if (!resource_provider->ImportResource(GetDrawingBuffer()->AsCanvasResource(
-            resource_provider->CreateWeakPtr()))) {
+    if (!resource_provider->ImportResource(
+            GetDrawingBuffer()->ExportLowLatencyCanvasResource(
+                resource_provider->CreateWeakPtr()))) {
       // This isn't expected to fail for single buffered resource provider.
       NOTREACHED();
       return false;

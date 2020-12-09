@@ -1840,6 +1840,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                            GLenum precision_type,
                                            WebGLShaderPrecisionFormat* format);
 
+  // PushFrameWithCopy will make a potential copy if the resource is accelerated
+  // or a drawImage if the resource is non accelerated.
+  bool PushFrameWithCopy();
+  // PushFrameNoCopy will try and export the content of the DrawingBuffer as a
+  // ExtenralCanvasResource.
+  bool PushFrameNoCopy();
+
   static bool webgl_context_limits_initialized_;
   static unsigned max_active_webgl_contexts_;
   static unsigned max_active_webgl_contexts_on_worker_;

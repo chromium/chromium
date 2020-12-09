@@ -1031,18 +1031,21 @@ CanvasResourceSkiaDawnSharedImage::ContextProviderWrapper() const {
 //==============================================================================
 scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     const gpu::Mailbox& mailbox,
+    std::unique_ptr<viz::SingleReleaseCallback> release_callback,
+    gpu::SyncToken sync_token,
     const IntSize& size,
     GLenum texture_target,
     const CanvasColorParams& color_params,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     SkFilterQuality filter_quality,
-    bool is_origin_top_left) {
+    bool is_origin_top_left,
+    bool is_overlay_candidate) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
   auto resource = AdoptRef(new ExternalCanvasResource(
-      mailbox, size, texture_target, color_params,
-      std::move(context_provider_wrapper), std::move(provider), filter_quality,
-      is_origin_top_left));
+      mailbox, std::move(release_callback), sync_token, size, texture_target,
+      color_params, std::move(context_provider_wrapper), std::move(provider),
+      filter_quality, is_origin_top_left, is_overlay_candidate));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -1051,7 +1054,7 @@ ExternalCanvasResource::~ExternalCanvasResource() {
 }
 
 bool ExternalCanvasResource::IsValid() const {
-  return context_provider_wrapper_ && !mailbox_.IsZero();
+  return context_provider_wrapper_ && HasGpuMailbox();
 }
 
 void ExternalCanvasResource::Abandon() {
@@ -1084,6 +1087,8 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
 }
 
 void ExternalCanvasResource::TearDown() {
+  if (release_callback_)
+    release_callback_->Run(GetSyncToken(), resource_is_lost_);
   Abandon();
 }
 
@@ -1104,6 +1109,14 @@ const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
     auto* gl = ContextGL();
     if (gl)
       gl->GenSyncTokenCHROMIUM(sync_token_.GetData());
+  } else if (!sync_token_.verified_flush()) {
+    // The offscreencanvas usage needs the sync_token to be verified in order to
+    // be able to use it by the compositor.
+    int8_t* token_data = sync_token_.GetData();
+    auto* gl = ContextGL();
+    gl->ShallowFlushCHROMIUM();
+    gl->VerifySyncTokensCHROMIUM(&token_data, 1);
+    sync_token_.SetVerifyFlush();
   }
   return sync_token_;
 }
@@ -1115,19 +1128,27 @@ ExternalCanvasResource::ContextProviderWrapper() const {
 
 ExternalCanvasResource::ExternalCanvasResource(
     const gpu::Mailbox& mailbox,
+    std::unique_ptr<viz::SingleReleaseCallback> out_callback,
+    gpu::SyncToken sync_token,
     const IntSize& size,
     GLenum texture_target,
     const CanvasColorParams& color_params,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     SkFilterQuality filter_quality,
-    bool is_origin_top_left)
+    bool is_origin_top_left,
+    bool is_overlay_candidate)
     : CanvasResource(std::move(provider), filter_quality, color_params),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(size),
       mailbox_(mailbox),
       texture_target_(texture_target),
-      is_origin_top_left_(is_origin_top_left) {}
+      release_callback_(std::move(out_callback)),
+      sync_token_(sync_token),
+      is_origin_top_left_(is_origin_top_left),
+      is_overlay_candidate_(is_overlay_candidate) {
+  DCHECK(!release_callback_ || sync_token_.HasData());
+}
 
 // CanvasResourceSwapChain
 //==============================================================================

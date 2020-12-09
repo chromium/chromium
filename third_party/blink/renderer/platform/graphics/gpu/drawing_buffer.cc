@@ -672,7 +672,7 @@ DrawingBuffer::ScopedRGBEmulationForBlitFramebuffer::
   }
 }
 
-scoped_refptr<CanvasResource> DrawingBuffer::AsCanvasResource(
+scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
     base::WeakPtr<CanvasResourceProvider> resource_provider) {
   // Swap chain must be presented before resource is exported.
   ResolveAndPresentSwapChainIfNeeded();
@@ -695,10 +695,51 @@ scoped_refptr<CanvasResource> DrawingBuffer::AsCanvasResource(
   }
 
   return ExternalCanvasResource::Create(
-      canvas_resource_buffer->mailbox, canvas_resource_buffer->size,
-      texture_target_, color_params, context_provider_->GetWeakPtr(),
-      resource_provider, kLow_SkFilterQuality,
-      /*is_origin_top_left=*/opengl_flip_y_extension_);
+      canvas_resource_buffer->mailbox, /*release_callback=*/nullptr,
+      gpu::SyncToken(), canvas_resource_buffer->size, texture_target_,
+      color_params, context_provider_->GetWeakPtr(), resource_provider,
+      kLow_SkFilterQuality,
+      /*is_origin_top_left=*/opengl_flip_y_extension_,
+      /*is_overlay_candidate=*/true);
+}
+
+scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
+  ScopedStateRestorer scoped_state_restorer(this);
+  TRACE_EVENT0("blink", "DrawingBuffer::ExportCanvasResource");
+
+  // Using PrepareTransferableResourceInternal, with force_gpu_result as we
+  // will use this ExportCanvasResource only for gpu_composited content.
+  viz::TransferableResource out_resource;
+  std::unique_ptr<viz::SingleReleaseCallback> out_release_callback;
+  const bool force_gpu_result = true;
+  if (!PrepareTransferableResourceInternal(
+          nullptr, &out_resource, &out_release_callback, force_gpu_result))
+    return nullptr;
+
+  CanvasColorParams color_params;
+  switch (out_resource.format) {
+    case viz::RGBA_8888:
+      color_params.SetCanvasPixelFormat(CanvasPixelFormat::kRGBA8);
+      break;
+    case viz::RGBX_8888:
+      color_params.SetCanvasPixelFormat(CanvasPixelFormat::kRGBX8);
+      break;
+    case viz::RGBA_F16:
+      color_params.SetCanvasPixelFormat(CanvasPixelFormat::kF16);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  return ExternalCanvasResource::Create(
+      out_resource.mailbox_holder.mailbox, std::move(out_release_callback),
+      out_resource.mailbox_holder.sync_token, IntSize(out_resource.size),
+      out_resource.mailbox_holder.texture_target, color_params,
+      context_provider_->GetWeakPtr(), /*resource_provider=*/nullptr,
+      kLow_SkFilterQuality,
+      /*is_origin_top_left=*/opengl_flip_y_extension_,
+      out_resource.is_overlay_candidate);
 }
 
 DrawingBuffer::ColorBuffer::ColorBuffer(

@@ -390,7 +390,7 @@ TEST_F(CanvasResourceProviderTest,
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
       kSize, kLow_SkFilterQuality, kColorParams, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */, true /* is_origin_top_left */);
+      nullptr /*resource_dispatcher */, true /*is_origin_top_left*/);
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
@@ -409,9 +409,10 @@ TEST_F(CanvasResourceProviderTest,
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   scoped_refptr<ExternalCanvasResource> resource =
       ExternalCanvasResource::Create(
-          mailbox, kSize, GL_TEXTURE_2D, kColorParams,
-          SharedGpuContext::ContextProviderWrapper(), provider->CreateWeakPtr(),
-          kMedium_SkFilterQuality, true /*is_origin_top_left*/);
+          mailbox, nullptr, gpu::SyncToken(), kSize, GL_TEXTURE_2D,
+          kColorParams, SharedGpuContext::ContextProviderWrapper(),
+          provider->CreateWeakPtr(), kMedium_SkFilterQuality,
+          true /*is_origin_top_left*/, true /*is_overlay_candidate*/);
 
   // NewOrRecycledResource() would return nullptr before an ImportResource().
   EXPECT_TRUE(provider->ImportResource(resource));

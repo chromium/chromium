@@ -159,6 +159,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool HasDepthBuffer() const { return !!depth_stencil_buffer_; }
   bool HasStencilBuffer() const { return !!depth_stencil_buffer_; }
 
+  bool IsUsingGpuCompositing() const { return using_gpu_compositing_; }
+
   // Given the desired buffer size, provides the largest dimensions that will
   // fit in the pixel budget.
   static IntSize AdjustSize(const IntSize& desired_size,
@@ -281,7 +283,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     bool doing_work_ = false;
   };
 
-  scoped_refptr<CanvasResource> AsCanvasResource(
+  scoped_refptr<CanvasResource> ExportCanvasResource();
+
+  scoped_refptr<CanvasResource> ExportLowLatencyCanvasResource(
       base::WeakPtr<CanvasResourceProvider> resource_provider);
 
   static const size_t kDefaultColorBufferCacheLimit;
