@@ -341,7 +341,6 @@
     "gn_args": {
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
-      "ios_use_goma_rbe": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -355,7 +354,6 @@
     "gn_args": {
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
-      "ios_use_goma_rbe": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,

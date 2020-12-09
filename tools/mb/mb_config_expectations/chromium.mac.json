@@ -24,7 +24,6 @@
     "gn_args": {
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
-      "ios_use_goma_rbe": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -37,7 +36,6 @@
   "ios-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_use_goma_rbe": true,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -62,7 +60,6 @@
   "ios-simulator-noncq": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
-      "ios_use_goma_rbe": true,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
