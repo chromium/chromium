@@ -236,7 +236,8 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
   const bool guest_signin_allowed =
       user_manager::UserManager::Get()->IsGuestSessionAllowed();
   const bool offline_login_allowed =
-      GetErrorState() != NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT;
+      GetErrorState() != NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT &&
+      !user_manager::UserManager::Get()->GetUsers().empty();
   AllowGuestSignin(guest_signin_allowed);
   AllowOfflineLogin(offline_login_allowed);
 

@@ -20,13 +20,15 @@
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/guest_session_mixin.h"
 #include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
-#include "chrome/browser/chromeos/login/test/offline_gaia_test_mixin.h"
+#include "chrome/browser/chromeos/login/test/offline_login_test_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/chromeos/login/test/test_predicate_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -82,7 +84,7 @@ class LoginOfflineTest : public LoginManagerTest {
  protected:
   AccountId test_account_id_;
   LoginManagerMixin login_manager_{&mixin_host_};
-  OfflineGaiaTestMixin offline_gaia_test_mixin_{&mixin_host_};
+  OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
   // We need Fake gaia to avoid network errors that can be caused by
   // attempts to load real GAIA.
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
@@ -119,7 +121,7 @@ class LoginOfflineManagedTest : public LoginManagerTest {
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   LoginManagerMixin login_manager_{&mixin_host_};
-  OfflineGaiaTestMixin offline_gaia_test_mixin_{&mixin_host_};
+  OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
   // We need Fake gaia to avoid network errors that can be caused by
   // attempts to load real GAIA.
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
@@ -204,16 +206,16 @@ IN_PROC_BROWSER_TEST_F(LoginSigninTest, WebUIVisible) {
       .Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineTest, PRE_GaiaAuthOffline) {
-  offline_gaia_test_mixin_.PrepareOfflineGaiaLogin();
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, PRE_AuthOffline) {
+  offline_login_test_mixin_.PrepareOfflineLogin();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineTest, GaiaAuthOffline) {
-  offline_gaia_test_mixin_.GoOffline();
-  offline_gaia_test_mixin_.InitOfflineLogin(test_account_id_,
-                                            LoginManagerTest::kPassword);
-  offline_gaia_test_mixin_.CheckManagedStatus(false);
-  offline_gaia_test_mixin_.SubmitGaiaAuthOfflineForm(
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, AuthOffline) {
+  offline_login_test_mixin_.GoOffline();
+  offline_login_test_mixin_.InitOfflineLogin(test_account_id_,
+                                             LoginManagerTest::kPassword);
+  offline_login_test_mixin_.CheckManagedStatus(false);
+  offline_login_test_mixin_.SubmitLoginAuthOfflineForm(
       test_account_id_.GetUserEmail(), LoginManagerTest::kPassword,
       true /* wait for sign-in */);
   TestSystemTrayIsVisible(false);
@@ -230,13 +232,14 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, CorrectDomainCompletion) {
               separator_pos < email.length() - 1);
   std::string prefix = email.substr(0, separator_pos);
 
-  offline_gaia_test_mixin_.GoOffline();
-  offline_gaia_test_mixin_.InitOfflineLogin(managed_user_id_,
-                                            LoginManagerTest::kPassword);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  offline_login_test_mixin_.GoOffline();
+  offline_login_test_mixin_.InitOfflineLogin(managed_user_id_,
+                                             LoginManagerTest::kPassword);
 
-  offline_gaia_test_mixin_.CheckManagedStatus(true);
+  offline_login_test_mixin_.CheckManagedStatus(true);
 
-  offline_gaia_test_mixin_.SubmitGaiaAuthOfflineForm(
+  offline_login_test_mixin_.SubmitLoginAuthOfflineForm(
       prefix, LoginManagerTest::kPassword, true /* wait for sign-in */);
   TestSystemTrayIsVisible(false);
 }
@@ -244,11 +247,12 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, CorrectDomainCompletion) {
 IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, FullEmailDontMatchProvided) {
   ConfigurePolicy("another.domain");
 
-  offline_gaia_test_mixin_.GoOffline();
-  offline_gaia_test_mixin_.InitOfflineLogin(managed_user_id_,
-                                            LoginManagerTest::kPassword);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  offline_login_test_mixin_.GoOffline();
+  offline_login_test_mixin_.InitOfflineLogin(managed_user_id_,
+                                             LoginManagerTest::kPassword);
 
-  offline_gaia_test_mixin_.SubmitGaiaAuthOfflineForm(
+  offline_login_test_mixin_.SubmitLoginAuthOfflineForm(
       managed_user_id_.GetUserEmail(), LoginManagerTest::kPassword,
       true /* wait for sign-in */);
   TestSystemTrayIsVisible(false);

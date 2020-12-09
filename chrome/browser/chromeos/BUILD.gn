@@ -1794,6 +1794,8 @@ source_set("chromeos") {
     "login/screens/network_error.h",
     "login/screens/network_screen.cc",
     "login/screens/network_screen.h",
+    "login/screens/offline_login_screen.cc",
+    "login/screens/offline_login_screen.h",
     "login/screens/packaged_license_screen.cc",
     "login/screens/packaged_license_screen.h",
     "login/screens/parental_handoff_screen.cc",

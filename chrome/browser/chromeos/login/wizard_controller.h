@@ -42,6 +42,7 @@
 #include "chrome/browser/chromeos/login/screens/marketing_opt_in_screen.h"
 #include "chrome/browser/chromeos/login/screens/multidevice_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/network_screen.h"
+#include "chrome/browser/chromeos/login/screens/offline_login_screen.h"
 #include "chrome/browser/chromeos/login/screens/packaged_license_screen.h"
 #include "chrome/browser/chromeos/login/screens/parental_handoff_screen.h"
 #include "chrome/browser/chromeos/login/screens/pin_setup_screen.h"
@@ -329,6 +330,7 @@ class WizardController {
   void OnEduCoexistenceLoginScreenExit(
       EduCoexistenceLoginScreen::Result result);
   void OnParentalHandoffScreenExit(ParentalHandoffScreen::Result result);
+  void OnOfflineLoginScreenExit(OfflineLoginScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

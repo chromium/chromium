@@ -11983,6 +11983,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Multidevice-setup-screen" label=""/>
   <suffix name="Network" label=""/>
   <suffix name="Network-selection" label=""/>
+  <suffix name="Offline-login" label=""/>
   <suffix name="Packaged-license" label=""/>
   <suffix name="Parental-handoff" label=""/>
   <suffix name="Recommend-apps" label=""/>
@@ -12049,6 +12050,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Network-selection.OfflineDemoSetup" label=""/>
   <suffix name="Oauth-enrollment.Back" label=""/>
   <suffix name="Oauth-enrollment.Completed" label=""/>
+  <suffix name="Offline-login.Back" label=""/>
+  <suffix name="Offline-login.ReloadOnlineLogin" label=""/>
   <suffix name="Packaged-license.DontEnroll" label=""/>
   <suffix name="Packaged-license.Enroll" label=""/>
   <suffix name="Parental-Handoff.Done" label=""/>

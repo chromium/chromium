@@ -28,7 +28,6 @@ function loadCommonComponents() {
 // <include src="../checking_downloading_update.js">
 
 // <include src="../screen_gaia_signin.js">
-// <include src="../offline_gaia.js">
 // <include src="../saml_confirm_password.js">
 // <include src="../offline_ad_login.js">
 // <include src="../arc_terms_of_service.js">

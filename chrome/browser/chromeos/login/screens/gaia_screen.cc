@@ -70,10 +70,6 @@ void GaiaScreen::LoadOnlineForChildSignin() {
   view_->LoadGaiaAsync(EmptyAccountId());
 }
 
-void GaiaScreen::LoadOffline(const AccountId& account) {
-  view_->LoadOfflineGaia(account);
-}
-
 void GaiaScreen::ShowImpl() {
   // Landed on the login screen. No longer skipping enrollment for tests.
   context()->skip_to_login_for_tests = false;

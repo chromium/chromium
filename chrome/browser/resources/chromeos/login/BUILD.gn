@@ -35,7 +35,7 @@ js_type_check("closure_compile_local") {
     ":network_select_login",
     ":notification_card",
     ":offline_ad_login",
-    ":offline_gaia",
+    ":offline_login",
     ":oobe_a11y_option",
     ":oobe_enable_kiosk",
     ":oobe_eula",
@@ -224,8 +224,9 @@ js_library("network_select_login") {
 js_library("notification_card") {
 }
 
-js_library("offline_gaia") {
+js_library("offline_login") {
   deps = [
+    "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
     "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",

@@ -21,15 +21,6 @@ const MAX_GAIA_LOADING_TIME_SEC = 60;
 // The help topic regarding user not being in the allowlist.
 const HELP_CANT_ACCESS_ACCOUNT = 188036;
 
-// Amount of time the user has to be idle for before showing the online login
-// page.
-const IDLE_TIME_UNTIL_EXIT_OFFLINE_IN_MILLISECONDS = 180 * 1000;
-
-// Approximate amount of time between checks to see if we should go to the
-// online login page when we're in the offline login page and the device is
-// online.
-const IDLE_TIME_CHECK_FREQUENCY = 5 * 1000;
-
 // Amount of time allowed for video based SAML logins, to prevent a site from
 // keeping the camera on indefinitely.  This is a hard deadline and it will
 // not be extended by user activity.
@@ -47,8 +38,7 @@ const BUBBLE_VERTICAL_PADDING = -213;
  */
 const AuthMode = {
   DEFAULT: 0,            // Default GAIA login flow.
-  OFFLINE: 1,            // GAIA offline login.
-  SAML_INTERSTITIAL: 2,  // Interstitial page before SAML redirection.
+  SAML_INTERSTITIAL: 1,  // Interstitial page before SAML redirection.
 };
 
 /**
@@ -57,7 +47,6 @@ const AuthMode = {
  */
 const DialogMode = {
   GAIA: 'online-gaia',
-  OFFLINE_GAIA: 'offline-gaia',
   GAIA_LOADING: 'gaia-loading',
   LOADING: 'loading',
   PIN_DIALOG: 'pin',
@@ -73,7 +62,6 @@ Polymer({
   EXTERNAL_API: [
     'loadAuthExtension',
     'doReload',
-    'monitorOfflineIdle',
     'showAllowlistCheckFailedError',
     'showPinDialog',
     'closePinDialog',
@@ -306,23 +294,6 @@ Polymer({
   samlPasswordConfirmAttempt_: 0,
 
   /**
-   * Do we currently have a setTimeout task running that tries to bring us
-   * back to the online login page after the user has idled for awhile? If so,
-   * then this id will be non-negative.
-   * @type {number}
-   * @private
-   */
-  tryToGoToOnlineLoginPageCallbackId_: -1,
-
-  /**
-   * The most recent period of time that the user has interacted. This is only
-   * updated when the offline page is active and the device is online.
-   * @type {number}
-   * @private
-   */
-  mostRecentUserActivity_: Date.now(),
-
-  /**
    * The UI component that hosts IdP pages.
    * @type {!cr.login.Authenticator|undefined}
    */
@@ -349,7 +320,7 @@ Polymer({
 
     const that = this;
     const $that = this.$;
-    [this.authenticator_, this.$['offline-gaia']].forEach(
+    [this.authenticator_].forEach(
         function(frame) {
           // Ignore events from currently inactive frame.
           const frameFilter = function(callback) {
@@ -359,9 +330,6 @@ Polymer({
                 case AuthMode.DEFAULT:
                 case AuthMode.SAML_INTERSTITIAL:
                   currentFrame = that.authenticator_;
-                  break;
-                case AuthMode.OFFLINE:
-                  currentFrame = $that['offline-gaia'];
                   break;
               }
               if (frame === currentFrame)
@@ -422,9 +390,6 @@ Polymer({
           eventName, authenticatorEventListeners[eventName].bind(this));
     }
 
-    this.$['offline-gaia'].addEventListener(
-        'offline-gaia-cancel', this.cancel.bind(this));
-
     this.$['gaia-allowlist-error'].addEventListener('buttonclick', function() {
       this.showAllowlistCheckFailedError(false);
     }.bind(this));
@@ -446,7 +411,7 @@ Polymer({
    * @private
    */
   isClosable_() {
-    return Oobe.getInstance().hasUserPods || this.isOffline_();
+    return Oobe.getInstance().hasUserPods;
   },
 
   /**
@@ -525,15 +490,6 @@ Polymer({
   },
 
   /**
-   * Returns true if offline version of Gaia is used.
-   * @return {boolean}
-   * @private
-   */
-  isOffline_() {
-    return this.screenMode_ == AuthMode.OFFLINE;
-  },
-
-  /**
    * Observer that is called when the |screenMode_| property gets changed.
    * @param {number} newValue
    * @param {number} oldValue
@@ -545,7 +501,6 @@ Polymer({
       // value.
       return;
     }
-    chrome.send('updateOfflineLogin', [this.isOffline_()]);
     this.updateButtonsVisibilityAtFirstSigingStep_();
   },
 
@@ -558,78 +513,6 @@ Polymer({
    */
   computeSamlSsoVisible_(isSaml, pinDialogParameters) {
     return isSaml && !pinDialogParameters;
-  },
-
-  /**
-   * This enables or disables trying to go back to the online login page
-   * after the user is idle for a few minutes, assuming that we're currently
-   * in the offline one. This is only applicable when the offline page is
-   * currently active. It is intended that when the device goes online, this
-   * gets called with true; when it goes offline, this gets called with
-   * false.
-   * @param {boolean} shouldMonitor
-   */
-  monitorOfflineIdle(shouldMonitor) {
-    const ACTIVITY_EVENTS = ['click', 'mousemove', 'keypress'];
-    const self = this;
-
-    // updateActivityTime_ is used as a callback for addEventListener, so we
-    // need the exact reference for removeEventListener. Because the callback
-    // needs to access the |this| as scoped inside of this function, we create
-    // a closure that uses the appropriate |this|.
-    //
-    // Unfortunately, we cannot define this function inside of the JSON object
-    // as then we have no way to create to capture the correct |this| reference.
-    // We define it here instead.
-    if (!self.updateActivityTime_) {
-      self.updateActivityTime_ = function() {
-        self.mostRecentUserActivity_ = Date.now();
-      };
-    }
-
-    // Begin monitoring.
-    if (shouldMonitor) {
-      // If we're not using the offline login page or we're already
-      // monitoring, then we don't need to do anything.
-      if (!self.isOffline_() ||
-          self.tryToGoToOnlineLoginPageCallbackId_ !== -1) {
-        return;
-      }
-
-      self.mostRecentUserActivity_ = Date.now();
-      ACTIVITY_EVENTS.forEach(function(event) {
-        document.addEventListener(event, self.updateActivityTime_);
-      });
-
-      self.tryToGoToOnlineLoginPageCallbackId_ = setInterval(function() {
-        // If we're not in the offline page or the signin page, then we want
-        // to terminate monitoring.
-        if (!self.isOffline_() ||
-            Oobe.getInstance().currentScreen.id != 'gaia-signin') {
-          self.monitorOfflineIdle(false);
-          return;
-        }
-
-        const idleDuration = Date.now() - self.mostRecentUserActivity_;
-        if (idleDuration > IDLE_TIME_UNTIL_EXIT_OFFLINE_IN_MILLISECONDS) {
-          self.monitorOfflineIdle(false);
-          Oobe.resetSigninUI(true);
-        }
-      }, IDLE_TIME_CHECK_FREQUENCY);
-    }
-
-    // Stop monitoring.
-    else {
-      // We're not monitoring, so we don't need to do anything.
-      if (self.tryToGoToOnlineLoginPageCallbackId_ === -1)
-        return;
-
-      ACTIVITY_EVENTS.forEach(function(event) {
-        document.removeEventListener(event, self.updateActivityTime_);
-      });
-      clearInterval(self.tryToGoToOnlineLoginPageCallbackId_);
-      self.tryToGoToOnlineLoginPageCallbackId_ = -1;
-    }
   },
 
   /**
@@ -718,7 +601,6 @@ Polymer({
 
     cr.ui.login.invokePolymerMethod(
         this.$['signin-frame-dialog'], 'onBeforeShow');
-    cr.ui.login.invokePolymerMethod(this.$['offline-gaia'], 'onBeforeShow');
     cr.ui.login.invokePolymerMethod(this.$.pinDialog, 'onBeforeShow');
   },
 
@@ -740,8 +622,6 @@ Polymer({
     switch (this.screenMode_) {
       case AuthMode.DEFAULT:
         return this.getSigninFrame_();
-      case AuthMode.OFFLINE:
-        return this.$['offline-gaia'];
       case AuthMode.SAML_INTERSTITIAL:
         return this.$['saml-interstitial'];
     }
@@ -763,7 +643,6 @@ Polymer({
    */
   onBeforeHide() {
     chrome.send('loginUIStateChanged', ['gaia-signin', false]);
-    this.$['offline-gaia'].switchToEmailCard(false /* animated */);
   },
 
   /**
@@ -781,7 +660,6 @@ Polymer({
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
 
     this.screenMode_ = data.screenMode;
-    this.email_ = '';
     this.authCompleted_ = false;
     this.lastBackMessageValue_ = false;
     this.setBackNavigationVisibility_(true);
@@ -814,11 +692,6 @@ Polymer({
       case AuthMode.DEFAULT:
         this.loadAuthenticator_(false /* doSamlRedirect */);
         break;
-
-      case AuthMode.OFFLINE:
-        this.loadOffline_(params);
-        break;
-
       case AuthMode.SAML_INTERSTITIAL:
         this.samlInterstitialDomain_ = data.enterpriseDisplayDomain;
         this.loadingFrameContents_ = false;
@@ -933,9 +806,6 @@ Polymer({
     // Workaround to hide flashing scroll bar.
     this.async(function() {
       this.loadingFrameContents_ = false;
-
-      if (!this.$['offline-gaia'].hidden)
-        this.$['offline-gaia'].focus();
     }.bind(this), 100);
   },
 
@@ -1194,11 +1064,6 @@ Polymer({
     if (credentials.publicSAML) {
       this.email_ = credentials.email;
       chrome.send('launchSAMLPublicSession', [credentials.email]);
-    } else if (credentials.useOffline) {
-      this.email_ = credentials.email;
-      chrome.send(
-          'completeOfflineAuthentication',
-          [credentials.email, credentials.password]);
     } else {
       chrome.send('completeAuthentication', [
         credentials.gaiaId, credentials.email, credentials.password,
@@ -1273,19 +1138,12 @@ Polymer({
   /**
    * Clears input fields and switches to input mode.
    * @param {boolean} takeFocus True to take focus.
-   * @param {boolean} forceOnline Whether online sign-in should be forced.
-   * If |forceOnline| is false previously used sign-in type will be used.
    */
-  reset(takeFocus, forceOnline) {
+  reset(takeFocus) {
     // Reload and show the sign-in UI if needed.
     this.authenticator_.resetStates();
     if (takeFocus) {
-      if (!forceOnline && this.isOffline_()) {
-        Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
-        // Do nothing, since offline version is reloaded after an error comes.
-      } else {
-        Oobe.showSigninUI();
-      }
+      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
     }
   },
 
@@ -1309,11 +1167,7 @@ Polymer({
    * @param {HTMLElement} error Content to show in bubble.
    */
   showErrorBubble(loginAttempts, error) {
-    if (this.isOffline_()) {
-      // Reload offline version of the sign-in extension, which will show
-      // error itself.
-      chrome.send('offlineLogin', [this.email_]);
-    } else if (!this.loadingFrameContents_) {
+    if (!this.loadingFrameContents_) {
       $('bubble').showContentForElement(
           this, cr.ui.Bubble.Attachment.BOTTOM, error,
           BUBBLE_HORIZONTAL_PADDING, BUBBLE_VERTICAL_PADDING);
@@ -1368,25 +1222,6 @@ Polymer({
   onRemoveUserByEmail_(data) {
     chrome.send('removeUserByEmail', [data]);
     this.cancel();
-  },
-
-  /**
-   * Sets enterprise info strings for offline gaia.
-   * Also sets callback and sends message whether we already have email and
-   * should switch to the password screen with error.
-   * @private
-   */
-  loadOffline_(params) {
-    this.loadingFrameContents_ = true;
-    this.startLoadingTimer_();
-    const offlineLogin = this.$['offline-gaia'];
-    offlineLogin.reset();
-    if ('enterpriseDomainManager' in params)
-      offlineLogin.manager = params['enterpriseDomainManager'];
-    if ('emailDomain' in params)
-      offlineLogin.emailDomain = '@' + params['emailDomain'];
-    offlineLogin.setEmail(params.email);
-    this.onAuthReady_();
   },
 
   /**
@@ -1564,9 +1399,6 @@ Polymer({
         break;
       case AuthMode.SAML_INTERSTITIAL:
         this.step_ = DialogMode.SAML_INTERSTITIAL;
-        break;
-      case AuthMode.OFFLINE:
-        this.step_ = DialogMode.OFFLINE_GAIA;
         break;
     }
   },

@@ -70,9 +70,6 @@
         </oobe-text-button>
       </div>
     </oobe-dialog>
-    <offline-gaia id="offline-gaia" class="gaia-dialog"
-        hidden="[[!isStep_(step_, 'offline-gaia')]]">
-    </offline-gaia>
     <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
         hidden="[[!isStep_(step_, 'pin')]]"
         on-cancel="onPinDialogCanceled_" on-completed="onPinDialogCompleted_">

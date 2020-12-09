@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OFFLINE_GAIA_TEST_MIXIN_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OFFLINE_GAIA_TEST_MIXIN_H_
+#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OFFLINE_LOGIN_TEST_MIXIN_H_
+#define CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OFFLINE_LOGIN_TEST_MIXIN_H_
 
 #include <memory>
 #include <string>
@@ -16,19 +16,19 @@ namespace chromeos {
 
 class NetworkStateTestHelper;
 
-// This object sets offline Gaia login mode on the login screen.
-class OfflineGaiaTestMixin : public InProcessBrowserTestMixin {
+// This object sets offline login mode on the login screen.
+class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
  public:
-  explicit OfflineGaiaTestMixin(InProcessBrowserTestMixinHost* host);
-  ~OfflineGaiaTestMixin() override;
+  explicit OfflineLoginTestMixin(InProcessBrowserTestMixinHost* host);
+  ~OfflineLoginTestMixin() override;
 
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
-  // Initializes DeviceSettingsProvider to start with OfflineGaia on the next
+  // Initializes DeviceSettingsProvider to start with OfflineLogin on the next
   // start. Should be called from the PRE_ test.
-  void PrepareOfflineGaiaLogin();
+  void PrepareOfflineLogin();
 
   // Go Offline/Online forces test to be offline and switches back to online.
   void GoOffline();
@@ -42,22 +42,22 @@ class OfflineGaiaTestMixin : public InProcessBrowserTestMixin {
   void InitOfflineLogin(const AccountId& test_account_id,
                         const std::string& password);
 
-  // Fills in and submits offline GAIA login.
+  // Fills in and submits offline login.
   // Expects user to be already registered (probably via LoginManagerMixin).
   // Optionally waits for sign-in to complete.
-  void SubmitGaiaAuthOfflineForm(const std::string& user_email,
-                                 const std::string& password,
-                                 bool wait_for_signin);
+  void SubmitLoginAuthOfflineForm(const std::string& user_email,
+                                  const std::string& password,
+                                  bool wait_for_signin);
 
  private:
-  // Triggers Offlige Gaia screen.
-  void StartGaiaAuthOffline();
+  // Triggers Offline Login screen.
+  void StartLoginAuthOffline();
 
   // This is ised to disable networking.
   std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
 
-  DISALLOW_COPY_AND_ASSIGN(OfflineGaiaTestMixin);
+  DISALLOW_COPY_AND_ASSIGN(OfflineLoginTestMixin);
 };
 
 }  // namespace chromeos
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OFFLINE_GAIA_TEST_MIXIN_H_
+#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_TEST_OFFLINE_LOGIN_TEST_MIXIN_H_

@@ -8,3 +8,4 @@
 // <include src="../encryption_migration.js">
 // <include src="../update_required_card.js">
 // <include src="../oobe_terms_of_service.js">
+// <include src="../offline_login.js">

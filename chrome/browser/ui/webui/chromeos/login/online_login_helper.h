@@ -29,9 +29,6 @@ struct GaiaContext {
   // Forces Gaia to reload.
   bool force_reload = false;
 
-  // Whether Gaia should be loaded in offline mode.
-  bool use_offline = false;
-
   // Email of the current user.
   std::string email;
 

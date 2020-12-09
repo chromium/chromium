@@ -501,20 +501,30 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.NORMAL,
       states: [
         {
-          // Generic offline GAIA
-          id: 'offline-gaia',
+          id: 'allowlist-customer',
           trigger: (screen) => {
-            screen.loadAuthExtension({
-              screenMode: 1,  // Offline
+            screen.showAllowlistCheckFailedError(true, {
+              enterpriseManaged: false,
             });
+          },
+        },
+      ],
+    },
+    {
+      id: 'offline-login',
+      kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'default',
+          trigger: (screen) => {
+            screen.loadParams({});
           },
         },
         {
           // kAccountsPrefLoginScreenDomainAutoComplete value is set
           id: 'offline-gaia-domain',
           trigger: (screen) => {
-            screen.loadAuthExtension({
-              screenMode: 1,  // Offline
+            screen.loadParams({
               emailDomain: 'somedomain.com',
             });
           },
@@ -523,8 +533,7 @@ cr.define('cr.ui.login.debug', function() {
           // Device is enterprise-managed.
           id: 'offline-gaia-enterprise',
           trigger: (screen) => {
-            screen.loadAuthExtension({
-              screenMode: 1,  // Offline
+            screen.loadParams({
               enterpriseDomainManager: 'example.com',
             });
           },
@@ -533,17 +542,8 @@ cr.define('cr.ui.login.debug', function() {
           // Retry after incorrect password attempt, user name is already known.
           id: 'offline-gaia-user',
           trigger: (screen) => {
-            screen.loadAuthExtension({
-              screenMode: 1,  // Offline
+            screen.loadParams({
               email: 'someone@example.com',
-            });
-          },
-        },
-        {
-          id: 'allowlist-customer',
-          trigger: (screen) => {
-            screen.showAllowlistCheckFailedError(true, {
-              enterpriseManaged: false,
             });
           },
         },

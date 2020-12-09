@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
@@ -183,14 +184,6 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, NetworkOffline) {
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   test::OobeJS().ExpectVisiblePath({"error-guest-signin-link"});
-  test::OobeJS().ExpectVisiblePath({"error-offline-login-link"});
-
-  test::OobeJS().ClickOnPath({"error-offline-login-link"});
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-
-  content::ExecuteScriptAsync(GetLoginUI()->GetWebContents(),
-                              "$('gaia-signin').cancel()");
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);

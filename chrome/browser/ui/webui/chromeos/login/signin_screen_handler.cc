@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
+#include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
@@ -197,15 +198,6 @@ bool IsSigninScreenError(NetworkError::ErrorState error_state) {
          error_state == NetworkError::ERROR_STATE_OFFLINE ||
          error_state == NetworkError::ERROR_STATE_PROXY ||
          error_state == NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT;
-}
-
-// Returns network name by service path.
-std::string GetNetworkName(const std::string& service_path) {
-  const NetworkState* network = NetworkHandler::Get()->network_state_handler()->
-      GetNetworkState(service_path);
-  if (!network)
-    return std::string();
-  return network->name();
 }
 
 }  // namespace
@@ -402,8 +394,6 @@ void SigninScreenHandler::DeclareLocalizedValues(
 
 void SigninScreenHandler::RegisterMessages() {
   AddCallback("authenticateUser", &SigninScreenHandler::HandleAuthenticateUser);
-  AddCallback("completeOfflineAuthentication",
-              &SigninScreenHandler::HandleCompleteOfflineAuthentication);
   AddCallback("launchIncognito", &SigninScreenHandler::HandleLaunchIncognito);
   AddCallback("launchSAMLPublicSession",
               &SigninScreenHandler::HandleLaunchSAMLPublicSession);
@@ -536,7 +526,8 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
 
   NetworkStateInformer::State state = network_state_informer_->state();
   const std::string network_path = network_state_informer_->network_path();
-  const std::string network_name = GetNetworkName(network_path);
+  const std::string network_name =
+      NetworkStateInformer::GetNetworkName(network_path);
 
   // Skip "update" notification about OFFLINE state from
   // NetworkStateInformer if previous notification already was
@@ -586,10 +577,7 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   const bool is_gaia_error =
       FrameError() != net::OK && FrameError() != net::ERR_NETWORK_CHANGED;
   const bool is_gaia_signin = IsGaiaVisible() || IsGaiaHiddenByError();
-  const bool offline_login_active =
-      gaia_screen_handler_->IsOfflineLoginActive();
-  const bool error_screen_should_overlay =
-      !offline_login_active && IsGaiaVisible();
+  const bool error_screen_should_overlay = IsGaiaVisible();
   const bool from_not_online_to_online_transition =
       is_online && last_network_state_ != NetworkStateInformer::ONLINE;
   last_network_state_ = state;
@@ -611,10 +599,6 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
       HideOfflineMessage(state, reason);
     return;
   }
-
-  // Use the online login page if the user has not used the machine for awhile.
-  if (offline_login_active)
-    gaia_screen_handler_->MonitorOfflineIdle(is_online);
 
   // Reload frame if network state is changed from {!ONLINE} -> ONLINE state.
   if (reason == NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED &&
@@ -653,8 +637,7 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
     reload_gaia.ScheduleCall();
   }
 
-  if ((!is_online || is_gaia_loading_timeout || is_gaia_error) &&
-      !offline_login_active) {
+  if (!is_online || is_gaia_loading_timeout || is_gaia_error) {
     SetupAndShowOfflineMessage(state, reason);
   } else {
     HideOfflineMessage(state, reason);
@@ -685,7 +668,8 @@ void SigninScreenHandler::SetupAndShowOfflineMessage(
         (error_screen_->GetErrorState() != NetworkError::ERROR_STATE_PORTAL)) {
       LoginDisplayHost::default_host()->HandleDisplayCaptivePortal();
     }
-    const std::string network_name = GetNetworkName(network_path);
+    const std::string network_name =
+        NetworkStateInformer::GetNetworkName(network_path);
     error_screen_->SetErrorState(NetworkError::ERROR_STATE_PORTAL,
                                  network_name);
   } else if (is_gaia_loading_timeout) {
@@ -701,8 +685,10 @@ void SigninScreenHandler::SetupAndShowOfflineMessage(
   if (IsSigninScreenError(error_screen_->GetErrorState())) {
     guest_signin_allowed =
         user_manager::UserManager::Get()->IsGuestSessionAllowed();
-    offline_login_allowed = error_screen_->GetErrorState() !=
-                            NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT;
+    offline_login_allowed =
+        error_screen_->GetErrorState() !=
+            NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT &&
+        !user_manager::UserManager::Get()->GetUsers().empty();
   }
   error_screen_->AllowGuestSignin(guest_signin_allowed);
   error_screen_->AllowOfflineLogin(offline_login_allowed);
@@ -983,28 +969,6 @@ void SigninScreenHandler::AuthenticateExistingUser(const AccountId& account_id,
   UpdatePinKeyboardState(account_id);
 }
 
-void SigninScreenHandler::HandleCompleteOfflineAuthentication(
-    const std::string& email,
-    const std::string& password) {
-  const std::string sanitized_email = gaia::SanitizeEmail(email);
-  const AccountId account_id = user_manager::known_user::GetAccountId(
-      sanitized_email, std::string() /* id */, AccountType::UNKNOWN);
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->FindUser(account_id);
-  if (!user) {
-    LOG(ERROR)
-        << "HandleCompleteOfflineAuthentication: User not found! account type="
-        << AccountId::AccountTypeToString(account_id.GetAccountType());
-    LoginDisplayHost::default_host()->GetLoginDisplay()->ShowError(
-        IDS_LOGIN_ERROR_OFFLINE_FAILED_NETWORK_NOT_CONNECTED, 1,
-        HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
-    return;
-  }
-
-  AuthenticateExistingUser(account_id, password,
-                           false /* authenticated_by_pin */);
-}
-
 void SigninScreenHandler::HandleLaunchIncognito() {
   UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
   if (delegate_)
@@ -1031,12 +995,12 @@ void SigninScreenHandler::HandleOfflineLogin(const base::ListValue* args) {
   std::string email;
   args->GetString(0, &email);
 
-  GaiaScreen* gaia_screen =
-      WizardController::default_controller()->GetScreen<GaiaScreen>();
-  gaia_screen->LoadOffline(AccountId::FromUserEmail(email));
+  auto* offline_login_screen =
+      WizardController::default_controller()->GetScreen<OfflineLoginScreen>();
+  offline_login_screen->LoadOffline(email);
   HideOfflineMessage(NetworkStateInformer::OFFLINE,
                      NetworkError::ERROR_REASON_NONE);
-  LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
+  LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
 
   UpdateUIState(UI_STATE_GAIA_SIGNIN);
 }

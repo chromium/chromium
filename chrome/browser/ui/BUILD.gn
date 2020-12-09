@@ -2325,6 +2325,8 @@ static_library("ui") {
       "webui/chromeos/login/network_screen_handler.h",
       "webui/chromeos/login/network_state_informer.cc",
       "webui/chromeos/login/network_state_informer.h",
+      "webui/chromeos/login/offline_login_screen_handler.cc",
+      "webui/chromeos/login/offline_login_screen_handler.h",
       "webui/chromeos/login/online_login_helper.cc",
       "webui/chromeos/login/online_login_helper.h",
       "webui/chromeos/login/oobe_display_chooser.cc",

@@ -15,7 +15,7 @@
 .show-with-error-state-auth-ext-timeout,
 .show-with-error-state-kiosk-online,
 .guest-signin,
-.offline-login,
+.error-offline-login,
 .connecting-indicator {
   display: none;
 }
@@ -33,7 +33,7 @@
 .error-state-auth-ext-timeout .show-with-error-state-auth-ext-timeout,
 .error-state-kiosk-online .show-with-error-state-kiosk-online,
 .allow-guest-signin .guest-signin,
-.allow-offline-login .offline-login,
+.allow-offline-login .error-offline-login,
 .show-connecting-indicator .connecting-indicator {
   display: block;
 }

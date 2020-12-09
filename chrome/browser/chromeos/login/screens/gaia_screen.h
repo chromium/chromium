@@ -44,8 +44,6 @@ class GaiaScreen : public BaseScreen {
   void LoadOnlineForChildSignup();
   // Loads online Gaia (for child signin) into the webview.
   void LoadOnlineForChildSignin();
-  // Loads offline version of Gaia.
-  void LoadOffline(const AccountId& account);
 
  private:
   void ShowImpl() override;

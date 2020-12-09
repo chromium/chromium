@@ -262,8 +262,6 @@ class SigninScreenHandler
   void HandleAuthenticateUser(const AccountId& account_id,
                               const std::string& password,
                               bool authenticated_by_pin);
-  void HandleCompleteOfflineAuthentication(const std::string& email,
-                                           const std::string& password);
   void HandleLaunchIncognito();
   void HandleLaunchSAMLPublicSession(const std::string& email);
   void HandleOfflineLogin(const base::ListValue* args);

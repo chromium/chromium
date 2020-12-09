@@ -76,6 +76,7 @@
 #include "chrome/browser/chromeos/login/screens/multidevice_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/network_error.h"
 #include "chrome/browser/chromeos/login/screens/network_screen.h"
+#include "chrome/browser/chromeos/login/screens/offline_login_screen.h"
 #include "chrome/browser/chromeos/login/screens/packaged_license_screen.h"
 #include "chrome/browser/chromeos/login/screens/pin_setup_screen.h"
 #include "chrome/browser/chromeos/login/screens/recommend_apps_screen.h"
@@ -136,6 +137,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
@@ -651,6 +653,10 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       &WizardController::OnGaiaScreenExit, weak_factory_.GetWeakPtr()));
   gaia_screen->SetView(oobe_ui->GetView<GaiaScreenHandler>());
   append(std::move(gaia_screen));
+  append(std::make_unique<OfflineLoginScreen>(
+      oobe_ui->GetView<OfflineLoginScreenHandler>(),
+      base::BindRepeating(&WizardController::OnOfflineLoginScreenExit,
+                          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<TpmErrorScreen>(
       oobe_ui->GetView<TpmErrorScreenHandler>()));
@@ -989,6 +995,26 @@ void WizardController::OnParentalHandoffScreenExit(
   OnScreenExit(ParentalHandoffScreenView::kScreenId,
                ParentalHandoffScreen::GetResultString(result));
   ShowMultiDeviceSetupScreen();
+}
+
+void WizardController::OnOfflineLoginScreenExit(
+    OfflineLoginScreen::Result result) {
+  OnScreenExit(OfflineLoginView::kScreenId,
+               OfflineLoginScreen::GetResultString(result));
+  switch (result) {
+    case OfflineLoginScreen::Result::BACK:
+      if (wizard_context_->is_user_creation_enabled) {
+        AdvanceToScreen(UserCreationView::kScreenId);
+      } else if (wizard_context_->device_has_users) {
+        LoginDisplayHost::default_host()->HideOobeDialog();
+      } else {
+        NOTREACHED();
+      }
+      break;
+    case OfflineLoginScreen::Result::RELOAD_ONLINE_LOGIN:
+      AdvanceToScreen(GaiaView::kScreenId);
+      break;
+  }
 }
 
 void WizardController::SkipToLoginForTesting() {
@@ -1844,7 +1870,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == UserCreationView::kScreenId ||
              screen_id == ActiveDirectoryLoginView::kScreenId ||
              screen_id == SignInFatalErrorView::kScreenId ||
-             screen_id == LocaleSwitchView::kScreenId) {
+             screen_id == LocaleSwitchView::kScreenId ||
+             screen_id == OfflineLoginView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

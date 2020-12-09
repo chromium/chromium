@@ -63,8 +63,6 @@ class GaiaView {
   // prefilling information.
   virtual void LoadGaiaAsync(const AccountId& account_id) = 0;
 
-  virtual void LoadOfflineGaia(const AccountId& account_id) = 0;
-
   // Shows Gaia screen.
   virtual void Show() = 0;
   virtual void Hide() = 0;
@@ -99,11 +97,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
     // Default Gaia authentication will be used.
     GAIA_SCREEN_MODE_DEFAULT = 0,
 
-    // Gaia offline mode will be used.
-    GAIA_SCREEN_MODE_OFFLINE = 1,
-
     // An interstitial page will be used before SAML redirection.
-    GAIA_SCREEN_MODE_SAML_INTERSTITIAL = 2,
+    GAIA_SCREEN_MODE_SAML_INTERSTITIAL = 1,
   };
 
   enum FrameState {
@@ -122,7 +117,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // GaiaView:
   void DisableRestrictiveProxyCheckForTest() override;
   void LoadGaiaAsync(const AccountId& account_id) override;
-  void LoadOfflineGaia(const AccountId& account_id) override;
   void Show() override;
   void Hide() override;
   void Bind(GaiaScreen* screen) override;
@@ -143,10 +137,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
       SecurityTokenPinEnteredCallback pin_entered_callback,
       SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) override;
   void CloseSecurityTokenPinDialog() override;
-
-  // Returns true if offline login mode was either required, or reported by the
-  // WebUI (i.e. WebUI mignt not have completed transition to the new mode).
-  bool IsOfflineLoginActive() const;
 
   void SetNextSamlChallengeKeyHandlerForTesting(
       std::unique_ptr<SamlChallengeKeyHandler> handler_for_test);
@@ -179,10 +169,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // will be sent in any case, otherwise it will be sent only when Gaia is
   // not loading right now.
   void ReloadGaia(bool force_reload);
-
-  // Turns offline idle detection on or off. Idle detection should only be on if
-  // we're using the offline login page but the device is online.
-  void MonitorOfflineIdle(bool is_online);
 
   // Show error UI at the end of GAIA flow when user is not allowlisted.
   void ShowAllowlistCheckFailedError();
@@ -276,9 +262,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void ShowGaiaScreenIfReady();
 
   // Tells webui to load authentication extension. `force` is used to force the
-  // extension reloading, if it has already been loaded. `offline` is true when
-  // offline version of the extension should be used.
-  void LoadAuthExtension(bool force, bool offline);
+  // extension reloading, if it has already been loaded.
+  void LoadAuthExtension(bool force);
 
   // TODO (antrim@): GaiaScreenHandler should implement
   // NetworkStateInformer::Observer.
@@ -303,9 +288,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   AccountId GetAccountId(const std::string& authenticated_email,
                          const std::string& id,
                          const AccountType& account_type) const;
-
-  // Records whether WebUI is currently in offline mode.
-  void SetOfflineLoginIsActive(bool is_active);
 
   void OnCookieWaitTimeout();
 
@@ -378,9 +360,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // TODO (antrim@): GaiaScreenHandler shouldn't communicate with
   // signin_screen_handler directly.
   SigninScreenHandler* signin_screen_handler_ = nullptr;
-
-  // True if WebUI is currently displaying offline GAIA.
-  bool offline_login_is_active_ = false;
 
   // True if the authentication extension is still loading.
   bool auth_extension_being_loaded_ = false;

@@ -129,11 +129,7 @@ void RecordAPILogin(bool is_third_party_idp, bool is_api_used) {
   base::UmaHistogramEnumeration("ChromeOS.SAML.APILogin", login_type);
 }
 
-GaiaScreenHandler::GaiaScreenMode GetGaiaScreenMode(const std::string& email,
-                                                    bool use_offline) {
-  if (use_offline)
-    return GaiaScreenHandler::GAIA_SCREEN_MODE_OFFLINE;
-
+GaiaScreenHandler::GaiaScreenMode GetGaiaScreenMode(const std::string& email) {
   int authentication_behavior = 0;
   CrosSettings::Get()->GetInteger(kLoginAuthenticationBehavior,
                                   &authentication_behavior);
@@ -374,14 +370,12 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   UpdateAuthParams(&params, IsRestrictiveProxy());
 
-  screen_mode_ = GetGaiaScreenMode(context.email, context.use_offline);
+  screen_mode_ = GetGaiaScreenMode(context.email);
   params.SetInteger("screenMode", screen_mode_);
 
-  if (screen_mode_ != GAIA_SCREEN_MODE_OFFLINE) {
-    const std::string app_locale = g_browser_process->GetApplicationLocale();
-    if (!app_locale.empty())
-      params.SetString("hl", app_locale);
-  }
+  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  if (!app_locale.empty())
+    params.SetString("hl", app_locale);
 
   std::string realm(GetRealm());
   if (!realm.empty()) {
@@ -535,11 +529,7 @@ void GaiaScreenHandler::ReloadGaia(bool force_reload) {
   signin_screen_handler_->proxy_auth_dialog_need_reload_ = false;
   VLOG(1) << "Reloading Gaia.";
   frame_state_ = FRAME_STATE_LOADING;
-  LoadAuthExtension(force_reload, false /* offline */);
-}
-
-void GaiaScreenHandler::MonitorOfflineIdle(bool is_online) {
-  CallJS("login.GaiaSigninScreen.monitorOfflineIdle", is_online);
+  LoadAuthExtension(force_reload);
 }
 
 void GaiaScreenHandler::DeclareLocalizedValues(
@@ -558,17 +548,6 @@ void GaiaScreenHandler::DeclareLocalizedValues(
 
   builder->AddF("loginWelcomeMessage", IDS_LOGIN_WELCOME_MESSAGE,
                 ui::GetChromeOSDeviceTypeResourceId());
-  builder->Add("offlineLoginEmail", IDS_OFFLINE_LOGIN_EMAIL);
-  builder->Add("offlineLoginPassword", IDS_OFFLINE_LOGIN_PASSWORD);
-  builder->Add("offlineLoginInvalidEmail", IDS_OFFLINE_LOGIN_INVALID_EMAIL);
-  builder->Add("offlineLoginInvalidPassword",
-               IDS_OFFLINE_LOGIN_INVALID_PASSWORD);
-  builder->Add("offlineLoginNextBtn", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
-  builder->Add("offlineLoginForgotPasswordBtn",
-               IDS_OFFLINE_LOGIN_FORGOT_PASSWORD_BUTTON_TEXT);
-  builder->Add("offlineLoginForgotPasswordDlg",
-               IDS_OFFLINE_LOGIN_FORGOT_PASSWORD_DIALOG_TEXT);
-  builder->Add("offlineLoginCloseBtn", IDS_OFFLINE_LOGIN_CLOSE_BUTTON_TEXT);
   builder->Add("enterpriseInfoMessage", IDS_LOGIN_DEVICE_MANAGED_BY_NOTICE);
   builder->Add("samlInterstitialMessage", IDS_LOGIN_SAML_INTERSTITIAL_MESSAGE);
   builder->Add("samlInterstitialChangeAccountLink",
@@ -636,8 +615,6 @@ void GaiaScreenHandler::RegisterMessages() {
               &GaiaScreenHandler::HandleSamlChallengeMachineKey);
   AddCallback("loginWebuiReady", &GaiaScreenHandler::HandleGaiaUIReady);
   AddCallback("identifierEntered", &GaiaScreenHandler::HandleIdentifierEntered);
-  AddCallback("updateOfflineLogin",
-              &GaiaScreenHandler::SetOfflineLoginIsActive);
   AddCallback("authExtensionLoaded",
               &GaiaScreenHandler::HandleAuthExtensionLoaded);
   AddRawCallback("showAddUser", &GaiaScreenHandler::HandleShowAddUser);
@@ -663,13 +640,12 @@ void GaiaScreenHandler::OnPortalDetectionCompleted(
   const NetworkPortalDetector::CaptivePortalStatus previous_status =
       captive_portal_status_;
   captive_portal_status_ = status;
-  if (IsOfflineLoginActive() ||
-      IsOnline(captive_portal_status_) == IsOnline(previous_status) ||
+  if (IsOnline(captive_portal_status_) == IsOnline(previous_status) ||
       disable_restrictive_proxy_check_for_test_ ||
       GetCurrentScreen() != kScreenId)
     return;
 
-  LoadAuthExtension(true /* force */, false /* offline */);
+  LoadAuthExtension(true /* force */);
 }
 
 void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {
@@ -810,7 +786,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
 }
 
 void GaiaScreenHandler::OnCookieWaitTimeout() {
-  LoadAuthExtension(true /* force */, false /* offline */);
+  LoadAuthExtension(true /* force */);
   core_oobe_view_->ShowSignInError(
       0, l10n_util::GetStringUTF8(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN),
       std::string(), HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
@@ -1147,11 +1123,6 @@ void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
   }
 }
 
-void GaiaScreenHandler::LoadOfflineGaia(const AccountId& account_id) {
-  populated_account_id_ = account_id;
-  LoadAuthExtension(true /* force */, true /* offline */);
-}
-
 void GaiaScreenHandler::ShowSigninScreenForTest(const std::string& username,
                                                 const std::string& password,
                                                 const std::string& services) {
@@ -1217,10 +1188,6 @@ void GaiaScreenHandler::CloseSecurityTokenPinDialog() {
     CallJS("login.GaiaSigninScreen.closePinDialog");
 }
 
-bool GaiaScreenHandler::IsOfflineLoginActive() const {
-  return (screen_mode_ == GAIA_SCREEN_MODE_OFFLINE) || offline_login_is_active_;
-}
-
 void GaiaScreenHandler::SetNextSamlChallengeKeyHandlerForTesting(
     std::unique_ptr<SamlChallengeKeyHandler> handler_for_test) {
   saml_challenge_key_handler_for_test_ = std::move(handler_for_test);
@@ -1267,7 +1234,7 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
                     chromeos::onc::CertificateScope::Default()));
   }
 
-  LoadAuthExtension(!gaia_silent_load_ /* force */, false /* offline */);
+  LoadAuthExtension(!gaia_silent_load_ /* force */);
   signin_screen_handler_->UpdateUIState(
       SigninScreenHandler::UI_STATE_GAIA_SIGNIN);
   core_oobe_view_->UpdateKeyboardState();
@@ -1303,9 +1270,8 @@ void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
   CallJS("login.GaiaSigninScreen.showAllowlistCheckFailedError", true, params);
 }
 
-void GaiaScreenHandler::LoadAuthExtension(bool force, bool offline) {
-  VLOG(1) << "LoadAuthExtension, force: " << force << ", offline: " << offline;
-
+void GaiaScreenHandler::LoadAuthExtension(bool force) {
+  VLOG(1) << "LoadAuthExtension, force: " << force;
   if (auth_extension_being_loaded_) {
     VLOG(1) << "Skip loading the Auth extension as it's already being loaded";
     return;
@@ -1314,7 +1280,6 @@ void GaiaScreenHandler::LoadAuthExtension(bool force, bool offline) {
   auth_extension_being_loaded_ = true;
   login::GaiaContext context;
   context.force_reload = force;
-  context.use_offline = offline;
   context.email = populated_account_id_.GetUserEmail();
 
   std::string gaia_id;
@@ -1332,10 +1297,6 @@ void GaiaScreenHandler::LoadAuthExtension(bool force, bool offline) {
   populated_account_id_.clear();
 
   LoadGaia(context);
-}
-
-void GaiaScreenHandler::SetOfflineLoginIsActive(bool is_active) {
-  offline_login_is_active_ = is_active;
 }
 
 void GaiaScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
