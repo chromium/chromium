@@ -47,16 +47,6 @@ using testing::Return;
 
 namespace {
 
-std::unique_ptr<KeyedService> CreateSyncSetupService(
-    web::BrowserState* context) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(chrome_browser_state);
-  return std::make_unique<testing::NiceMock<SyncSetupServiceMock>>(
-      sync_service);
-}
-
 class SessionSyncServiceMockForRecentTabsTableCoordinator
     : public sync_sessions::SessionSyncService {
  public:
@@ -130,7 +120,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateSyncSetupService));
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     test_cbs_builder.AddTestingFactory(
         SessionSyncServiceFactory::GetInstance(),
         base::BindRepeating(

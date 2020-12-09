@@ -43,14 +43,6 @@ std::unique_ptr<KeyedService> CreateMockSyncService(
   return std::make_unique<NiceMock<syncer::MockSyncService>>();
 }
 
-std::unique_ptr<KeyedService> CreateMockSyncSetupService(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<SyncSetupServiceMock>(
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
-}
-
 PrefService* SetPrefService() {
   TestingPrefServiceSimple* prefs = new TestingPrefServiceSimple();
   PrefRegistrySimple* registry = prefs->registry();
@@ -68,8 +60,9 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    builder.AddTestingFactory(SyncSetupServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncSetupService));
+    builder.AddTestingFactory(
+        SyncSetupServiceFactory::GetInstance(),
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = builder.Build();
 
     consumer_ = [[ManageSyncSettingsTableViewController alloc]

@@ -54,16 +54,6 @@ scoped_refptr<TestPasswordStore> BuildTestPasswordStore(
                                   web::BrowserState, TestPasswordStore>))
           .get()));
 }
-
-// Sets test sync setup service and returns pointer to it.
-std::unique_ptr<KeyedService> BuildMockSyncSetupService(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<SyncSetupServiceMock>(
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
-}
-
 }  // namespace
 
 @interface FakePasswordsConsumer : NSObject <PasswordsConsumer>
@@ -94,9 +84,9 @@ class PasswordsMediatorTest : public BlockCleanupTest {
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
 
-    builder.AddTestingFactory(SyncSetupServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildMockSyncSetupService));
-
+    builder.AddTestingFactory(
+        SyncSetupServiceFactory::GetInstance(),
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = builder.Build();
     auth_service_ = static_cast<AuthenticationServiceFake*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(

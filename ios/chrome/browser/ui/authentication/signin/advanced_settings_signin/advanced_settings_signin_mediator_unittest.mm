@@ -39,14 +39,6 @@ std::unique_ptr<KeyedService> CreateMockSyncService(
     web::BrowserState* context) {
   return std::make_unique<MockSyncService>();
 }
-
-std::unique_ptr<KeyedService> CreateMockSyncSetupService(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<SyncSetupServiceMock>(
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
-}
 }  // namespace
 
 class AdvancedSettingsSigninMediatorTest : public PlatformTest {
@@ -69,8 +61,9 @@ class AdvancedSettingsSigninMediatorTest : public PlatformTest {
             &AuthenticationServiceFake::CreateAuthenticationService));
     builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    builder.AddTestingFactory(SyncSetupServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncSetupService));
+    builder.AddTestingFactory(
+        SyncSetupServiceFactory::GetInstance(),
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = builder.Build();
 
     mediator_ = [[AdvancedSettingsSigninMediator alloc]

@@ -107,15 +107,6 @@ using password_manager::CompromiseType;
 using password_manager::TestPasswordStore;
 using l10n_util::GetNSString;
 
-// Sets test sync setup service and returns pointer to it.
-std::unique_ptr<KeyedService> BuildMockSyncSetupService(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<SyncSetupServiceMock>(
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
-}
-
 // Sets test password store and returns pointer to it.
 scoped_refptr<TestPasswordStore> BuildTestPasswordStore(
     ChromeBrowserState* _browserState) {
@@ -148,7 +139,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
             &AuthenticationServiceFake::CreateAuthenticationService));
     test_cbs_builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&BuildMockSyncSetupService));
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = test_cbs_builder.Build();
     auth_service_ = static_cast<AuthenticationServiceFake*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(

@@ -45,14 +45,6 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
   return std::make_unique<syncer::TestSyncService>();
 }
 
-std::unique_ptr<KeyedService> BuildMockSyncSetupService(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<SyncSetupServiceMock>(
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
-}
-
 class ClearBrowsingDataManagerTest : public PlatformTest {
  public:
   ClearBrowsingDataManagerTest() {
@@ -66,8 +58,9 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    builder.AddTestingFactory(SyncSetupServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildMockSyncSetupService));
+    builder.AddTestingFactory(
+        SyncSetupServiceFactory::GetInstance(),
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());

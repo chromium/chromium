@@ -9,9 +9,16 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace web {
+class BrowserState;
+}
+
 // Mock for the class that allows configuring sync on iOS.
 class SyncSetupServiceMock : public SyncSetupService {
  public:
+  static std::unique_ptr<KeyedService> CreateKeyedService(
+      web::BrowserState* browser_state);
+
   SyncSetupServiceMock(syncer::SyncService* sync_service);
   ~SyncSetupServiceMock();
   MOCK_METHOD(bool, IsSyncEnabled, (), (const override));
