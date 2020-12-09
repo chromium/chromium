@@ -153,7 +153,7 @@ interface FrameSinkVideoCaptureOverlay {
   // content (e.g., 0.0 refers to the top or left edge; 1.0 to just after the
   // bottom or right edge). Pass empty |bounds| to temporarily hide the overlay
   // until a later call to SetBounds().
-  SetImageAndBounds(skia.mojom.BitmapWithArbitraryBpp image,
+  SetImageAndBounds(skia.mojom.BitmapN32 image,
                     gfx.mojom.RectF bounds);
 
   // Changes the bounds of the previously-set image, showing the overlay if
