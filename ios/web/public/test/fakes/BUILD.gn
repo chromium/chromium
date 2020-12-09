@@ -36,10 +36,12 @@ source_set("fakes") {
     "async_web_state_policy_decider.mm",
     "crw_fake_find_in_page_manager_delegate.h",
     "crw_fake_find_in_page_manager_delegate.mm",
+    "crw_fake_web_state_observer.h",
+    "crw_fake_web_state_observer.mm",
     "crw_fake_web_state_policy_decider.h",
     "crw_fake_web_state_policy_decider.mm",
-    "crw_test_web_state_observer.h",
-    "crw_test_web_state_observer.mm",
+    "crw_fake_web_view_content_view.h",
+    "crw_fake_web_view_content_view.mm",
     "fake_cookie_store.cc",
     "fake_cookie_store.h",
     "fake_download_controller_delegate.h",
@@ -72,7 +74,5 @@ source_set("fakes") {
     "test_web_state_observer.mm",
     "test_web_state_observer_util.h",
     "test_web_state_observer_util.mm",
-    "test_web_view_content_view.h",
-    "test_web_view_content_view.mm",
   ]
 }

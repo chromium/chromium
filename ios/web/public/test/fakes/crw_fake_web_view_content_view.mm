@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/test/fakes/test_web_view_content_view.h"
+#import "ios/web/public/test/fakes/crw_fake_web_view_content_view.h"
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -11,14 +11,14 @@
 #error "This file requires ARC support."
 #endif
 
-@interface TestWebViewContentView () {
+@interface CRWFakeWebViewContentView () {
   id _mockWebView;
   id _mockScrollView;
 }
 
 @end
 
-@implementation TestWebViewContentView
+@implementation CRWFakeWebViewContentView
 
 - (instancetype)initWithMockWebView:(id)webView scrollView:(id)scrollView {
   self = [super initForTesting];

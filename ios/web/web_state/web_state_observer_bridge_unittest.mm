@@ -8,7 +8,7 @@
 #include "base/scoped_observer.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #include "ios/web/public/favicon/favicon_url.h"
-#import "ios/web/public/test/fakes/crw_test_web_state_observer.h"
+#import "ios/web/public/test/fakes/crw_fake_web_state_observer.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
 #include "net/http/http_response_headers.h"
 #include "testing/platform_test.h"
@@ -29,7 +29,7 @@ const char kRawResponseHeaders[] =
 class WebStateObserverBridgeTest : public PlatformTest {
  protected:
   WebStateObserverBridgeTest()
-      : observer_([[CRWTestWebStateObserver alloc] init]),
+      : observer_([[CRWFakeWebStateObserver alloc] init]),
         observer_bridge_(observer_),
         scoped_observer_(&observer_bridge_),
         response_headers_(new net::HttpResponseHeaders(
@@ -38,7 +38,7 @@ class WebStateObserverBridgeTest : public PlatformTest {
   }
 
   web::TestWebState test_web_state_;
-  CRWTestWebStateObserver* observer_;
+  CRWFakeWebStateObserver* observer_;
   WebStateObserverBridge observer_bridge_;
   ScopedObserver<WebState, WebStateObserver> scoped_observer_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;

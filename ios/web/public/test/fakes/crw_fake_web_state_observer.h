@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_PUBLIC_TEST_FAKES_CRW_TEST_WEB_STATE_OBSERVER_H_
-#define IOS_WEB_PUBLIC_TEST_FAKES_CRW_TEST_WEB_STATE_OBSERVER_H_
+#ifndef IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_STATE_OBSERVER_H_
+#define IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_STATE_OBSERVER_H_
 
 #include "ios/web/public/test/fakes/test_web_state_observer_util.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
 // Test implementation of CRWWebStateObserver protocol.
-@interface CRWTestWebStateObserver : NSObject<CRWWebStateObserver>
+@interface CRWFakeWebStateObserver : NSObject <CRWWebStateObserver>
 
 // Arguments passed to |webStateWasShown:|.
 @property(nonatomic, readonly) web::TestWasShownInfo* wasShownInfo;
@@ -47,4 +47,4 @@
 
 @end
 
-#endif  // IOS_WEB_PUBLIC_TEST_FAKES_CRW_TEST_WEB_STATE_OBSERVER_H_
+#endif  // IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_STATE_OBSERVER_H_

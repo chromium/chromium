@@ -33,13 +33,13 @@
 #include "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/test/fakes/crw_fake_web_view_content_view.h"
 #include "ios/web/public/test/fakes/fake_download_controller_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state_policy_decider.h"
 #include "ios/web/public/test/fakes/test_browser_state.h"
 #import "ios/web/public/test/fakes/test_web_client.h"
 #import "ios/web/public/test/fakes/test_web_state_delegate.h"
 #include "ios/web/public/test/fakes/test_web_state_observer.h"
-#import "ios/web/public/test/fakes/test_web_view_content_view.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/security/wk_web_view_security_util.h"
@@ -148,9 +148,9 @@ class CRWWebControllerTest : public WebTestWithWebController {
     SetWebViewURL(@(kTestURLString));
     [[[mock_web_view_ stub] andReturn:scroll_view_] scrollView];
 
-    TestWebViewContentView* web_view_content_view =
-        [[TestWebViewContentView alloc] initWithMockWebView:mock_web_view_
-                                                 scrollView:scroll_view_];
+    CRWFakeWebViewContentView* web_view_content_view =
+        [[CRWFakeWebViewContentView alloc] initWithMockWebView:mock_web_view_
+                                                    scrollView:scroll_view_];
     [web_controller() injectWebViewContentView:web_view_content_view];
   }
 
@@ -1262,9 +1262,10 @@ class CRWWebControllerWebProcessTest : public WebTestWithWebController {
   void SetUp() override {
     WebTestWithWebController::SetUp();
     web_view_ = BuildTerminatedWKWebView();
-    TestWebViewContentView* webViewContentView = [[TestWebViewContentView alloc]
-        initWithMockWebView:web_view_
-                 scrollView:[web_view_ scrollView]];
+    CRWFakeWebViewContentView* webViewContentView =
+        [[CRWFakeWebViewContentView alloc]
+            initWithMockWebView:web_view_
+                     scrollView:[web_view_ scrollView]];
     [web_controller() injectWebViewContentView:webViewContentView];
 
     // This test intentionally crashes the render process.
@@ -1316,9 +1317,10 @@ class CRWWebControllerWebViewTest : public WebTestWithWebController {
     WebTestWithWebController::SetUp();
     web::TestBrowserState browser_state;
     web_view_ = [[CRWFakeWKWebViewObserverCount alloc] init];
-    TestWebViewContentView* webViewContentView = [[TestWebViewContentView alloc]
-        initWithMockWebView:web_view_
-                 scrollView:web_view_.scrollView];
+    CRWFakeWebViewContentView* webViewContentView =
+        [[CRWFakeWebViewContentView alloc]
+            initWithMockWebView:web_view_
+                     scrollView:web_view_.scrollView];
     [web_controller() injectWebViewContentView:webViewContentView];
   }
   CRWFakeWKWebViewObserverCount* web_view_;

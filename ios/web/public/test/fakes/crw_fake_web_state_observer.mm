@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/test/fakes/crw_test_web_state_observer.h"
+#import "ios/web/public/test/fakes/crw_fake_web_state_observer.h"
 
 #include <memory>
 
@@ -21,7 +21,7 @@ TestUpdateFaviconUrlCandidatesInfo::~TestUpdateFaviconUrlCandidatesInfo() =
     default;
 }
 
-@implementation CRWTestWebStateObserver {
+@implementation CRWFakeWebStateObserver {
   // Arguments passed to |webStateWasShown:|.
   std::unique_ptr<web::TestWasShownInfo> _wasShownInfo;
   // Arguments passed to |webStateWasHidden:|.
