@@ -22,8 +22,7 @@ ProfileInvalidationProvider::ProfileInvalidationProvider(
       custom_sender_invalidation_service_factory_(
           std::move(custom_sender_invalidation_service_factory)) {}
 
-ProfileInvalidationProvider::~ProfileInvalidationProvider() {
-}
+ProfileInvalidationProvider::~ProfileInvalidationProvider() = default;
 
 InvalidationService* ProfileInvalidationProvider::GetInvalidationService() {
   return invalidation_service_.get();

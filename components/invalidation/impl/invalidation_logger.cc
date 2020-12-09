@@ -16,7 +16,7 @@ InvalidationLogger::InvalidationLogger()
     : last_invalidator_state_(syncer::TRANSIENT_INVALIDATION_ERROR),
       last_invalidator_state_timestamp_(base::Time::Now()) { }
 
-InvalidationLogger::~InvalidationLogger() {}
+InvalidationLogger::~InvalidationLogger() = default;
 
 void InvalidationLogger::OnRegistration(const std::string& registrar_name) {
   registered_handlers_.insert(registrar_name);

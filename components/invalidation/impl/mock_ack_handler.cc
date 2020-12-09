@@ -15,7 +15,7 @@ namespace syncer {
 namespace {
 
 struct AckHandleMatcher {
-  AckHandleMatcher(const AckHandle& handle);
+  explicit AckHandleMatcher(const AckHandle& handle);
   bool operator()(const syncer::Invalidation& invalidation) const;
 
   syncer::AckHandle handle_;
@@ -31,9 +31,9 @@ bool AckHandleMatcher::operator()(
 
 }  // namespace
 
-MockAckHandler::MockAckHandler() {}
+MockAckHandler::MockAckHandler() = default;
 
-MockAckHandler::~MockAckHandler() {}
+MockAckHandler::~MockAckHandler() = default;
 
 void MockAckHandler::RegisterInvalidation(Invalidation* invalidation) {
   unacked_invalidations_.push_back(*invalidation);

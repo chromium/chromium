@@ -30,6 +30,8 @@ class TopicInvalidationMapTest : public testing::Test {
     invalidate_all_.Insert(Invalidation::InitUnknownVersion(kTopicTwo));
   }
 
+  ~TopicInvalidationMapTest() override = default;
+
  protected:
   const Topic kTopicOne;
   const Topic kTopicTwo;

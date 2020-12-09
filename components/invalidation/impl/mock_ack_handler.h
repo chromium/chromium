@@ -20,6 +20,7 @@ class Invalidation;
 
 // This AckHandler implementation colaborates with the FakeInvalidationService
 // to enable unit tests to assert that invalidations are being acked properly.
+// TODO(crbug.com/1105388): Rename to FakeAckHandler.
 class INVALIDATION_EXPORT MockAckHandler
   : public AckHandler,
     public base::SupportsWeakPtr<MockAckHandler> {

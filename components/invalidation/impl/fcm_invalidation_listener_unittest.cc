@@ -111,8 +111,8 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
 
   void AcknowledgeAll(const Topic& topic) {
     List& list = invalidations_[topic];
-    for (auto it = list.begin(); it != list.end(); ++it) {
-      it->Acknowledge();
+    for (Invalidation& invalidation : list) {
+      invalidation.Acknowledge();
     }
   }
 

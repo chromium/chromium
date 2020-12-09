@@ -6,7 +6,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/invalidation/public/invalidation.h"
 
@@ -24,15 +23,13 @@ class AckHandleEqMatcher : public MatcherInterface<const AckHandle&> {
  public:
   explicit AckHandleEqMatcher(const AckHandle& expected);
 
-  virtual bool MatchAndExplain(const AckHandle& actual,
-                               MatchResultListener* listener) const;
-  virtual void DescribeTo(::std::ostream* os) const;
-  virtual void DescribeNegationTo(::std::ostream* os) const;
+  bool MatchAndExplain(const AckHandle& actual,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(::std::ostream* os) const override;
+  void DescribeNegationTo(::std::ostream* os) const override;
 
  private:
   const AckHandle expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(AckHandleEqMatcher);
 };
 
 AckHandleEqMatcher::AckHandleEqMatcher(const AckHandle& expected)
@@ -56,15 +53,13 @@ class InvalidationEqMatcher : public MatcherInterface<const Invalidation&> {
  public:
   explicit InvalidationEqMatcher(const Invalidation& expected);
 
-  virtual bool MatchAndExplain(const Invalidation& actual,
-                               MatchResultListener* listener) const;
-  virtual void DescribeTo(::std::ostream* os) const;
-  virtual void DescribeNegationTo(::std::ostream* os) const;
+  bool MatchAndExplain(const Invalidation& actual,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(::std::ostream* os) const override;
+  void DescribeNegationTo(::std::ostream* os) const override;
 
  private:
   const Invalidation expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidationEqMatcher);
 };
 
 InvalidationEqMatcher::InvalidationEqMatcher(const Invalidation& expected)

@@ -60,8 +60,9 @@ FCMInvalidationServiceBase::~FCMInvalidationServiceBase() {
   invalidator_registrar_.UpdateInvalidatorState(
       syncer::INVALIDATOR_SHUTTING_DOWN);
 
-  if (IsStarted())
+  if (IsStarted()) {
     StopInvalidator();
+  }
 }
 
 // static
@@ -235,8 +236,9 @@ void FCMInvalidationServiceBase::StopInvalidatorPermanently() {
   // Reset the client ID (aka InstanceID) *before* stopping, so that
   // FCMInvalidationListener gets notified about the cleared ID (the listener
   // gets destroyed during StopInvalidator()).
-  if (!client_id_.empty())
+  if (!client_id_.empty()) {
     ResetClientID();
+  }
 
   StopInvalidator();
 }
@@ -306,8 +308,9 @@ void FCMInvalidationServiceBase::OnDeleteInstanceIDCompleted(
 }
 
 void FCMInvalidationServiceBase::DoUpdateSubscribedTopicsIfNeeded() {
-  if (!invalidation_listener_ || !update_was_requested_)
+  if (!invalidation_listener_ || !update_was_requested_) {
     return;
+  }
   auto subscribed_topics = invalidator_registrar_.GetAllSubscribedTopics();
   invalidation_listener_->UpdateInterestedTopics(subscribed_topics);
   update_was_requested_ = false;

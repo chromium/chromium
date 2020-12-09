@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/fcm_sync_network_channel.h"
@@ -38,7 +37,7 @@ class FCMInvalidationListener
  public:
   class Delegate {
    public:
-    virtual ~Delegate();
+    virtual ~Delegate() = default;
 
     virtual void OnInvalidate(const TopicInvalidationMap& invalidations) = 0;
 
@@ -47,7 +46,9 @@ class FCMInvalidationListener
 
   explicit FCMInvalidationListener(
       std::unique_ptr<FCMSyncNetworkChannel> network_channel);
-
+  FCMInvalidationListener(const FCMInvalidationListener& other) = delete;
+  FCMInvalidationListener& operator=(const FCMInvalidationListener& other) =
+      delete;
   ~FCMInvalidationListener() override;
 
   void Start(Delegate* delegate,
@@ -148,8 +149,6 @@ class FCMInvalidationListener
   bool topics_update_requested_ = false;
 
   base::WeakPtrFactory<FCMInvalidationListener> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FCMInvalidationListener);
 };
 
 }  // namespace syncer

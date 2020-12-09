@@ -341,7 +341,8 @@ void FCMNetworkHandler::RequestDetailedStatus(
   callback.Run(diagnostic_info_.CollectDebugData());
 }
 
-FCMNetworkHandler::FCMNetworkHandlerDiagnostic::FCMNetworkHandlerDiagnostic() {}
+FCMNetworkHandler::FCMNetworkHandlerDiagnostic::FCMNetworkHandlerDiagnostic() =
+    default;
 
 base::DictionaryValue
 FCMNetworkHandler::FCMNetworkHandlerDiagnostic::CollectDebugData() const {

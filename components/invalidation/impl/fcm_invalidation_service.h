@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_H_
 #define COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_H_
 
-#include "base/macros.h"
+#include "base/sequence_checker.h"
 #include "components/invalidation/impl/fcm_invalidation_service_base.h"
 #include "components/invalidation/public/identity_provider.h"
 
@@ -24,6 +24,9 @@ class FCMInvalidationService : public FCMInvalidationServiceBase,
                          instance_id::InstanceIDDriver* instance_id_driver,
                          PrefService* pref_service,
                          const std::string& sender_id = {});
+  FCMInvalidationService(const FCMInvalidationService& other) = delete;
+  FCMInvalidationService& operator=(const FCMInvalidationService& other) =
+      delete;
   ~FCMInvalidationService() override;
 
   void Init() override;
@@ -58,8 +61,6 @@ class FCMInvalidationService : public FCMInvalidationServiceBase,
   Diagnostics diagnostic_info_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FCMInvalidationService);
 };
 
 }  // namespace invalidation

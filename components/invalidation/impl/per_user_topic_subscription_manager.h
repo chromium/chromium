@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -50,7 +49,10 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
       network::mojom::URLLoaderFactory* url_loader_factory,
       const std::string& project_id,
       bool migrate_prefs);
-
+  PerUserTopicSubscriptionManager(
+      const PerUserTopicSubscriptionManager& other) = delete;
+  PerUserTopicSubscriptionManager& operator=(
+      const PerUserTopicSubscriptionManager& other) = delete;
   virtual ~PerUserTopicSubscriptionManager();
 
   // Just calls std::make_unique. For ease of base::Bind'ing
@@ -167,8 +169,6 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
       SubscriptionChannelState::NOT_STARTED;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PerUserTopicSubscriptionManager);
 };
 
 }  // namespace syncer

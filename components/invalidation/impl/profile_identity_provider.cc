@@ -20,6 +20,9 @@ class AccessTokenFetcherAdaptor : public ActiveAccountAccessTokenFetcher {
                             signin::IdentityManager* identity_manager,
                             const signin::ScopeSet& scopes,
                             ActiveAccountAccessTokenCallback callback);
+  AccessTokenFetcherAdaptor(const AccessTokenFetcherAdaptor& other) = delete;
+  AccessTokenFetcherAdaptor& operator=(const AccessTokenFetcherAdaptor& other) =
+      delete;
   ~AccessTokenFetcherAdaptor() override = default;
 
  private:
@@ -29,8 +32,6 @@ class AccessTokenFetcherAdaptor : public ActiveAccountAccessTokenFetcher {
 
   ActiveAccountAccessTokenCallback callback_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessTokenFetcherAdaptor);
 };
 
 AccessTokenFetcherAdaptor::AccessTokenFetcherAdaptor(
@@ -73,23 +74,27 @@ CoreAccountId ProfileIdentityProvider::GetActiveAccountId() {
 
 bool ProfileIdentityProvider::IsActiveAccountWithRefreshToken() {
   if (GetActiveAccountId().empty() || !identity_manager_ ||
-      !identity_manager_->HasAccountWithRefreshToken(GetActiveAccountId()))
+      !identity_manager_->HasAccountWithRefreshToken(GetActiveAccountId())) {
     return false;
+  }
 
   return true;
 }
 
 void ProfileIdentityProvider::SetActiveAccountId(
     const CoreAccountId& account_id) {
-  if (account_id == active_account_id_)
+  if (account_id == active_account_id_) {
     return;
+  }
 
-  if (!active_account_id_.empty())
+  if (!active_account_id_.empty()) {
     FireOnActiveAccountLogout();
+  }
 
   active_account_id_ = account_id;
-  if (!active_account_id_.empty())
+  if (!active_account_id_.empty()) {
     FireOnActiveAccountLogin();
+  }
 }
 
 std::unique_ptr<ActiveAccountAccessTokenFetcher>

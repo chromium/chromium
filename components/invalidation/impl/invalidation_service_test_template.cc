@@ -11,7 +11,7 @@ BoundFakeInvalidationHandler::BoundFakeInvalidationHandler(
     : invalidator_(invalidator),
       last_retrieved_state_(syncer::DEFAULT_INVALIDATION_ERROR) {}
 
-BoundFakeInvalidationHandler::~BoundFakeInvalidationHandler() {}
+BoundFakeInvalidationHandler::~BoundFakeInvalidationHandler() = default;
 
 syncer::InvalidatorState
 BoundFakeInvalidationHandler::GetLastRetrievedState() const {

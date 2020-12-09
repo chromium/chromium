@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/invalidation/public/invalidation_export.h"
@@ -31,7 +30,10 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   InvalidatorRegistrarWithMemory(PrefService* prefs,
                                  const std::string& sender_id,
                                  bool migrate_old_prefs);
-
+  InvalidatorRegistrarWithMemory(const InvalidatorRegistrarWithMemory& other) =
+      delete;
+  InvalidatorRegistrarWithMemory& operator=(
+      const InvalidatorRegistrarWithMemory& other) = delete;
   // It is an error to have registered handlers on destruction.
   ~InvalidatorRegistrarWithMemory();
 
@@ -132,8 +134,6 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
 
   // The FCM sender ID.
   const std::string sender_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidatorRegistrarWithMemory);
 };
 
 }  // namespace syncer

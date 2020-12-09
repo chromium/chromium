@@ -34,7 +34,7 @@ class InvalidationLoggerObserver {
   virtual void OnDetailedStatus(const base::DictionaryValue& details) = 0;
 
  protected:
-  virtual ~InvalidationLoggerObserver() {}
+  virtual ~InvalidationLoggerObserver() = default;
 };
 
 }  // namespace invalidation

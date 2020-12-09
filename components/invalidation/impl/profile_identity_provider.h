@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_PROFILE_IDENTITY_PROVIDER_H_
 #define COMPONENTS_INVALIDATION_IMPL_PROFILE_IDENTITY_PROVIDER_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -16,7 +15,10 @@ namespace invalidation {
 class ProfileIdentityProvider : public IdentityProvider,
                                 public signin::IdentityManager::Observer {
  public:
-  ProfileIdentityProvider(signin::IdentityManager* identity_manager);
+  explicit ProfileIdentityProvider(signin::IdentityManager* identity_manager);
+  ProfileIdentityProvider(const ProfileIdentityProvider& other) = delete;
+  ProfileIdentityProvider& operator=(const ProfileIdentityProvider& other) =
+      delete;
   ~ProfileIdentityProvider() override;
 
   // IdentityProvider:
@@ -40,8 +42,6 @@ class ProfileIdentityProvider : public IdentityProvider,
   signin::IdentityManager* const identity_manager_;
 
   CoreAccountId active_account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileIdentityProvider);
 };
 
 }  // namespace invalidation

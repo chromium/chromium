@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -135,9 +134,8 @@ class RegistrationManagerStateObserver
 
 class PerUserTopicSubscriptionManagerTest : public testing::Test {
  protected:
-  PerUserTopicSubscriptionManagerTest() {}
-
-  ~PerUserTopicSubscriptionManagerTest() override {}
+  PerUserTopicSubscriptionManagerTest() = default;
+  ~PerUserTopicSubscriptionManagerTest() override = default;
 
   void SetUp() override {
     PerUserTopicSubscriptionManager::RegisterProfilePrefs(
@@ -218,8 +216,6 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
   std::unique_ptr<invalidation::ProfileIdentityProvider> identity_provider_;
 
   RegistrationManagerStateObserver state_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerUserTopicSubscriptionManagerTest);
 };
 
 TEST_F(PerUserTopicSubscriptionManagerTest,

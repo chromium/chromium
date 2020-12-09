@@ -238,8 +238,6 @@ void PerUserTopicSubscriptionRequest::RunCompletedCallbackAndMaybeDie(
 }
 
 PerUserTopicSubscriptionRequest::Builder::Builder() = default;
-PerUserTopicSubscriptionRequest::Builder::Builder(
-    PerUserTopicSubscriptionRequest::Builder&&) = default;
 PerUserTopicSubscriptionRequest::Builder::~Builder() = default;
 
 std::unique_ptr<PerUserTopicSubscriptionRequest>

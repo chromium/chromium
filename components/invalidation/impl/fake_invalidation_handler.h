@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 
@@ -18,6 +16,9 @@ class FakeInvalidationHandler : public InvalidationHandler {
  public:
   FakeInvalidationHandler();
   explicit FakeInvalidationHandler(const std::string& owner);
+  FakeInvalidationHandler(const FakeInvalidationHandler& other) = delete;
+  FakeInvalidationHandler& operator=(const FakeInvalidationHandler& other) =
+      delete;
   ~FakeInvalidationHandler() override;
 
   InvalidatorState GetInvalidatorState() const;
@@ -36,8 +37,6 @@ class FakeInvalidationHandler : public InvalidationHandler {
   TopicInvalidationMap last_invalidation_map_;
   int invalidation_count_;
   std::string owner_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeInvalidationHandler);
 };
 
 }  // namespace syncer

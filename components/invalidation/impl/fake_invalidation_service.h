@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #include "components/invalidation/impl/mock_ack_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -29,6 +28,9 @@ class InvalidationLogger;
 class FakeInvalidationService : public InvalidationService {
  public:
   FakeInvalidationService();
+  FakeInvalidationService(const FakeInvalidationService& other) = delete;
+  FakeInvalidationService& operator=(const FakeInvalidationService& other) =
+      delete;
   ~FakeInvalidationService() override;
 
   void RegisterInvalidationHandler(
@@ -64,8 +66,6 @@ class FakeInvalidationService : public InvalidationService {
   std::unique_ptr<syncer::InvalidatorRegistrarWithMemory>
       invalidator_registrar_;
   syncer::MockAckHandler mock_ack_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeInvalidationService);
 };
 
 }  // namespace invalidation

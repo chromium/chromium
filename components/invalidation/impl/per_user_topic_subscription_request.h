@@ -40,7 +40,8 @@ class PerUserTopicSubscriptionRequest {
   class Builder {
    public:
     Builder();
-    Builder(Builder&&);
+    Builder(const Builder& other) = delete;
+    Builder& operator=(const Builder& other) = delete;
     ~Builder();
 
     // Builds a Request object in order to perform the subscription.
@@ -74,10 +75,12 @@ class PerUserTopicSubscriptionRequest {
     std::string auth_header_;
     RequestType type_;
     bool topic_is_public_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Builder);
   };
 
+  PerUserTopicSubscriptionRequest(
+      const PerUserTopicSubscriptionRequest& other) = delete;
+  PerUserTopicSubscriptionRequest& operator=(
+      const PerUserTopicSubscriptionRequest& other) = delete;
   ~PerUserTopicSubscriptionRequest();
 
   // Starts an async request. The callback is invoked when the request succeeds
@@ -126,8 +129,6 @@ class PerUserTopicSubscriptionRequest {
   std::string topic_;
 
   base::WeakPtrFactory<PerUserTopicSubscriptionRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerUserTopicSubscriptionRequest);
 };
 
 }  // namespace syncer

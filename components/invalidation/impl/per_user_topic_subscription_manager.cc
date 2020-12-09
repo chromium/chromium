@@ -198,7 +198,8 @@ PerUserTopicSubscriptionManager::SubscriptionEntry::SubscriptionEntry(
       type(type),
       request_backoff_(&kBackoffPolicy) {}
 
-PerUserTopicSubscriptionManager::SubscriptionEntry::~SubscriptionEntry() {}
+PerUserTopicSubscriptionManager::SubscriptionEntry::~SubscriptionEntry() =
+    default;
 
 void PerUserTopicSubscriptionManager::SubscriptionEntry::SubscriptionFinished(
     const Status& code,
@@ -219,7 +220,7 @@ PerUserTopicSubscriptionManager::PerUserTopicSubscriptionManager(
       migrate_prefs_(migrate_prefs),
       request_access_token_backoff_(&kBackoffPolicy) {}
 
-PerUserTopicSubscriptionManager::~PerUserTopicSubscriptionManager() {}
+PerUserTopicSubscriptionManager::~PerUserTopicSubscriptionManager() = default;
 
 // static
 std::unique_ptr<PerUserTopicSubscriptionManager>

@@ -83,9 +83,6 @@ class MockInstanceID : public InstanceID {
                     const std::string& scope,
                     DeleteTokenCallback callback));
   MOCK_METHOD1(DeleteIDImpl, void(DeleteIDCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInstanceID);
 };
 
 class MockGCMDriver : public gcm::GCMDriver {
@@ -146,9 +143,6 @@ class MockGCMDriver : public gcm::GCMDriver {
   MOCK_METHOD2(RecordDecryptionFailure,
                void(const std::string& app_id,
                     gcm::GCMDecryptionResult result));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGCMDriver);
 };
 
 class MockInstanceIDDriver : public InstanceIDDriver {
@@ -159,9 +153,6 @@ class MockInstanceIDDriver : public InstanceIDDriver {
   MOCK_METHOD1(GetInstanceID, InstanceID*(const std::string& app_id));
   MOCK_METHOD1(RemoveInstanceID, void(const std::string& app_id));
   MOCK_CONST_METHOD1(ExistsInstanceID, bool(const std::string& app_id));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInstanceIDDriver);
 };
 
 class MockOnTokenCallback {

@@ -60,26 +60,17 @@ class TestFCMSyncNetworkChannel : public syncer::FCMSyncNetworkChannel {
 // FCMInvalidationService relies of FCMInvalidationListener class.
 class FakeFCMInvalidationListener : public syncer::FCMInvalidationListener {
  public:
-  FakeFCMInvalidationListener(
-      std::unique_ptr<syncer::FCMSyncNetworkChannel> network_channel);
-  ~FakeFCMInvalidationListener() override;
+  explicit FakeFCMInvalidationListener(
+      std::unique_ptr<syncer::FCMSyncNetworkChannel> network_channel)
+      : syncer::FCMInvalidationListener(std::move(network_channel)) {}
+  ~FakeFCMInvalidationListener() override = default;
 
   void RequestDetailedStatus(
       const base::RepeatingCallback<void(const base::DictionaryValue&)>&
-          callback) const override;
+          callback) const override {
+    callback.Run(base::DictionaryValue());
+  }
 };
-
-FakeFCMInvalidationListener::FakeFCMInvalidationListener(
-    std::unique_ptr<syncer::FCMSyncNetworkChannel> network_channel)
-    : syncer::FCMInvalidationListener(std::move(network_channel)) {}
-
-FakeFCMInvalidationListener::~FakeFCMInvalidationListener() {}
-
-void FakeFCMInvalidationListener::RequestDetailedStatus(
-    const base::RepeatingCallback<void(const base::DictionaryValue&)>& callback)
-    const {
-  callback.Run(base::DictionaryValue());
-}
 
 }  // namespace
 
@@ -110,9 +101,6 @@ class MockInstanceID : public InstanceID {
                     const std::string& scope,
                     DeleteTokenCallback callback));
   MOCK_METHOD1(DeleteIDImpl, void(DeleteIDCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInstanceID);
 };
 
 class MockInstanceIDDriver : public InstanceIDDriver {
@@ -123,9 +111,6 @@ class MockInstanceIDDriver : public InstanceIDDriver {
   MOCK_METHOD1(GetInstanceID, InstanceID*(const std::string& app_id));
   MOCK_METHOD1(RemoveInstanceID, void(const std::string& app_id));
   MOCK_CONST_METHOD1(ExistsInstanceID, bool(const std::string& app_id));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInstanceIDDriver);
 };
 
 class FCMInvalidationServiceTestDelegate {
@@ -140,7 +125,7 @@ class FCMInvalidationServiceTestDelegate {
         pref_service_.registry());
   }
 
-  ~FCMInvalidationServiceTestDelegate() {}
+  ~FCMInvalidationServiceTestDelegate() = default;
 
   void CreateInvalidationService() {
     CreateUninitializedInvalidationService();
@@ -243,11 +228,9 @@ namespace internal {
 
 class FakeCallbackContainer {
  public:
-  FakeCallbackContainer() : called_(false) {}
-
   void FakeCallback(const base::DictionaryValue& value) { called_ = true; }
 
-  bool called_;
+  bool called_ = false;
   base::WeakPtrFactory<FakeCallbackContainer> weak_ptr_factory_{this};
 };
 

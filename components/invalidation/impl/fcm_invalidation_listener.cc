@@ -13,8 +13,6 @@
 
 namespace syncer {
 
-FCMInvalidationListener::Delegate::~Delegate() {}
-
 FCMInvalidationListener::FCMInvalidationListener(
     std::unique_ptr<FCMSyncNetworkChannel> network_channel)
     : network_channel_(std::move(network_channel)) {

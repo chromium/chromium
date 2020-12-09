@@ -6,8 +6,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
-
 namespace syncer {
 
 using ::testing::MakeMatcher;
@@ -22,6 +20,7 @@ class TopicInvalidationMapEqMatcher
     : public MatcherInterface<const TopicInvalidationMap&> {
  public:
   explicit TopicInvalidationMapEqMatcher(const TopicInvalidationMap& expected);
+  ~TopicInvalidationMapEqMatcher() override = default;
 
   bool MatchAndExplain(const TopicInvalidationMap& lhs,
                        MatchResultListener* listener) const override;
@@ -30,8 +29,6 @@ class TopicInvalidationMapEqMatcher
 
  private:
   const TopicInvalidationMap expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopicInvalidationMapEqMatcher);
 };
 
 TopicInvalidationMapEqMatcher::TopicInvalidationMapEqMatcher(

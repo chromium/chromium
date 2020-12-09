@@ -10,7 +10,7 @@ namespace syncer {
 
 FCMSyncNetworkChannel::FCMSyncNetworkChannel() : received_messages_count_(0) {}
 
-FCMSyncNetworkChannel::~FCMSyncNetworkChannel() {}
+FCMSyncNetworkChannel::~FCMSyncNetworkChannel() = default;
 
 void FCMSyncNetworkChannel::SetMessageReceiver(
     MessageCallback incoming_receiver) {

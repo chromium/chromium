@@ -40,7 +40,8 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
                     instance_id::InstanceIDDriver* instance_id_driver,
                     const std::string& sender_id,
                     const std::string& app_id);
-
+  FCMNetworkHandler(const FCMNetworkHandler& other) = delete;
+  FCMNetworkHandler& operator=(const FCMNetworkHandler& other) = delete;
   ~FCMNetworkHandler() override;
 
   // Just calls std::make_unique. For ease of base::Bind'ing.
@@ -120,9 +121,8 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
 
   FCMNetworkHandlerDiagnostic diagnostic_info_;
   base::WeakPtrFactory<FCMNetworkHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FCMNetworkHandler);
 };
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_FCM_NETWORK_HANDLER_H_

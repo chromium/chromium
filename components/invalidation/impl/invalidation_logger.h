@@ -8,7 +8,6 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
@@ -40,6 +39,8 @@ class InvalidationLogger {
 
  public:
   InvalidationLogger();
+  InvalidationLogger(const InvalidationLogger& other) = delete;
+  InvalidationLogger& operator=(const InvalidationLogger& other) = delete;
   ~InvalidationLogger();
 
   // Pass through to any registered InvalidationLoggerObservers.
@@ -94,8 +95,6 @@ class InvalidationLogger {
   // TODO(crbug.com/1049591): it should be std::set, once handlers names are
   // unique.
   std::multiset<std::string> registered_handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidationLogger);
 };
 
 }  // namespace invalidation
