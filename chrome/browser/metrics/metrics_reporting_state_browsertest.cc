@@ -129,8 +129,8 @@ IN_PROC_BROWSER_TEST_P(MetricsReportingStateTest, ChangeMetricsReportingState) {
   bool value_after_change = false;
   ChangeMetricsReportingStateWithReply(
       !is_metrics_reporting_enabled_initial_value(),
-      base::BindRepeating(&OnMetricsReportingStateChanged, &value_after_change,
-                          run_loop.QuitClosure()));
+      base::BindOnce(&OnMetricsReportingStateChanged, &value_after_change,
+                     run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_EQ(!is_metrics_reporting_enabled_initial_value(), value_after_change);
 }

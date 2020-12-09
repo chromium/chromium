@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "components/metrics/metrics_service_client.h"
 
-typedef base::RepeatingCallback<void(bool)> OnMetricsReportingCallbackType;
+using OnMetricsReportingCallbackType = base::OnceCallback<void(bool)>;
 
 // Changes metrics reporting state without caring about the success of the
 // change.

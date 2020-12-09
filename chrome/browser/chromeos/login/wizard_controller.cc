@@ -1184,8 +1184,8 @@ void WizardController::OnEulaAccepted(bool usage_statistics_reporting_enabled) {
   StartupUtils::MarkEulaAccepted();
   ChangeMetricsReportingStateWithReply(
       usage_statistics_reporting_enabled,
-      base::BindRepeating(&WizardController::OnChangedMetricsReportingState,
-                          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&WizardController::OnChangedMetricsReportingState,
+                     weak_factory_.GetWeakPtr()));
   PerformPostEulaActions();
 
   if (arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {

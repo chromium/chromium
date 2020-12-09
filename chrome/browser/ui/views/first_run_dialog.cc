@@ -116,7 +116,7 @@ bool FirstRunDialog::Accept() {
 
   ChangeMetricsReportingStateWithReply(
       report_crashes_->GetChecked(),
-      base::BindRepeating(&InitCrashReporterIfEnabled));
+      base::BindOnce(&InitCrashReporterIfEnabled));
 
   if (make_default_->GetChecked())
     shell_integration::SetAsDefaultBrowser();
