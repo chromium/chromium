@@ -25,7 +25,6 @@ class DataDeviceDelegate;
 class DataOffer;
 class ScopedDataOffer;
 class DataSource;
-class DataExchangeDelegate;
 class Seat;
 class ScopedSurface;
 
@@ -38,9 +37,7 @@ class DataDevice : public WMHelper::DragDropObserver,
                    public SurfaceObserver,
                    public SeatObserver {
  public:
-  explicit DataDevice(DataDeviceDelegate* delegate,
-                      Seat* seat,
-                      DataExchangeDelegate* data_exchange_delegate);
+  DataDevice(DataDeviceDelegate* delegate, Seat* seat);
   ~DataDevice() override;
 
   // Starts drag-and-drop operation.
@@ -85,7 +82,6 @@ class DataDevice : public WMHelper::DragDropObserver,
 
   DataDeviceDelegate* const delegate_;
   Seat* const seat_;
-  DataExchangeDelegate* const data_exchange_delegate_;
   std::unique_ptr<ScopedDataOffer> data_offer_;
   std::unique_ptr<ScopedSurface> focused_surface_;
 

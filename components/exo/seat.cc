@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_source.h"
 #include "components/exo/drag_drop_operation.h"
 #include "components/exo/mime_utils.h"
@@ -53,7 +54,9 @@ Surface* GetEffectiveFocus(aura::Window* window) {
 
 }  // namespace
 
-Seat::Seat() : changing_clipboard_data_to_selection_source_(false) {
+Seat::Seat(std::unique_ptr<DataExchangeDelegate> delegate)
+    : changing_clipboard_data_to_selection_source_(false),
+      data_exchange_delegate_(std::move(delegate)) {
   WMHelper::GetInstance()->AddFocusObserver(this);
   // Prepend handler as it's critical that we see all events.
   WMHelper::GetInstance()->PrependPreTargetHandler(this);
@@ -74,6 +77,8 @@ Seat::Seat() : changing_clipboard_data_to_selection_source_(false) {
   ime_controller->AddObserver(this);
 #endif
 }
+
+Seat::Seat() : Seat(nullptr) {}
 
 Seat::~Seat() {
   Shutdown();
@@ -106,15 +111,14 @@ Surface* Seat::GetFocusedSurface() {
   return GetEffectiveFocus(WMHelper::GetInstance()->GetFocusedWindow());
 }
 
-void Seat::StartDrag(DataExchangeDelegate* data_exchange_delegate,
-                     DataSource* source,
+void Seat::StartDrag(DataSource* source,
                      Surface* origin,
                      Surface* icon,
                      ui::mojom::DragEventSource event_source) {
   // DragDropOperation manages its own lifetime.
   drag_drop_operation_ =
-      DragDropOperation::Create(data_exchange_delegate, source, origin, icon,
-                                last_pointer_location_, event_source);
+      DragDropOperation::Create(data_exchange_delegate_.get(), source, origin,
+                                icon, last_pointer_location_, event_source);
 }
 
 void Seat::SetLastPointerLocation(const gfx::PointF& last_pointer_location) {

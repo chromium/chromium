@@ -422,8 +422,8 @@ TEST_F(SeatTest, SetSelection_SourceDestroyedAfterSetSelection) {
 
 TEST_F(SeatTest, SetSelection_NullSource) {
   Seat seat;
-
   TestDataSourceDelegate delegate;
+
   DataSource source(&delegate);
   source.Offer("text/plain;charset=utf-8");
   seat.SetSelection(&source);
@@ -485,17 +485,15 @@ TEST_F(SeatTest, PressedKeys) {
 }
 
 TEST_F(SeatTest, DragDropAbort) {
-  Seat seat;
+  Seat seat(std::make_unique<TestDataExchangeDelegate>());
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   Surface origin, icon;
-  TestDataExchangeDelegate data_exchange_delegate;
 
   // Give origin a root window for DragDropOperation.
   GetContext()->AddChild(origin.window());
 
-  seat.StartDrag(&data_exchange_delegate, &source, &origin, &icon,
-                 ui::mojom::DragEventSource::kMouse);
+  seat.StartDrag(&source, &origin, &icon, ui::mojom::DragEventSource::kMouse);
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
   seat.AbortPendingDragOperation();
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());

@@ -110,7 +110,7 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
 
 class TestSeat : public Seat {
  public:
-  TestSeat() {}
+  TestSeat() : Seat(std::make_unique<TestDataExchangeDelegate>()) {}
   void set_focused_surface(Surface* surface) { surface_ = surface; }
 
   // Overriden from Seat:
@@ -127,8 +127,7 @@ class DataDeviceTest : public test::ExoTestBase {
   void SetUp() override {
     test::ExoTestBase::SetUp();
     seat_ = std::make_unique<TestSeat>();
-    device_ = std::make_unique<DataDevice>(&delegate_, seat_.get(),
-                                           &data_exchange_delegate_);
+    device_ = std::make_unique<DataDevice>(&delegate_, seat_.get());
     data_.SetString(base::string16(base::ASCIIToUTF16("Test data")));
     surface_ = std::make_unique<Surface>();
   }
@@ -143,7 +142,6 @@ class DataDeviceTest : public test::ExoTestBase {
  protected:
   TestDataDeviceDelegate delegate_;
   std::unique_ptr<TestSeat> seat_;
-  TestDataExchangeDelegate data_exchange_delegate_;
   std::unique_ptr<DataDevice> device_;
   ui::OSExchangeData data_;
   std::unique_ptr<Surface> surface_;
@@ -299,8 +297,7 @@ TEST_F(DataDeviceTest, ClipboardDeviceCreatedAfterFocus) {
   std::vector<DataEvent> events;
   delegate_.PopEvents(&events);
 
-  device_ = std::make_unique<DataDevice>(&delegate_, seat_.get(),
-                                         &data_exchange_delegate_);
+  device_ = std::make_unique<DataDevice>(&delegate_, seat_.get());
 
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kOffer, events[0]);

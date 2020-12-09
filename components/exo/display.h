@@ -142,7 +142,6 @@ class Display {
   std::unique_ptr<ToastSurfaceManager> toast_surface_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  std::unique_ptr<DataExchangeDelegate> data_exchange_delegate_;
   Seat seat_;
 
   bool shutdown_ = false;

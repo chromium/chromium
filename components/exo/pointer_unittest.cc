@@ -937,13 +937,12 @@ TEST_F(PointerTest, RegisterPointerEventsOnNonModal) {
 }
 
 TEST_F(PointerTest, DragDropAbort) {
-  Seat seat;
+  Seat seat(std::make_unique<TestDataExchangeDelegate>());
   MockPointerDelegate pointer_delegate;
   std::unique_ptr<Pointer> pointer(new Pointer(&pointer_delegate, &seat));
   TestDataSourceDelegate data_source_delegate;
   DataSource source(&data_source_delegate);
   Surface origin, icon;
-  TestDataExchangeDelegate data_exchange_delegate;
 
   // Make origin into a real window so the pointer can click it
   ShellSurface shell_surface(&origin);
@@ -959,8 +958,7 @@ TEST_F(PointerTest, DragDropAbort) {
   EXPECT_CALL(pointer_delegate, OnPointerEnter(&origin, gfx::PointF(), 0));
   generator.MoveMouseTo(origin.window()->GetBoundsInScreen().origin());
 
-  seat.StartDrag(&data_exchange_delegate, &source, &origin, &icon,
-                 ui::mojom::DragEventSource::kMouse);
+  seat.StartDrag(&source, &origin, &icon, ui::mojom::DragEventSource::kMouse);
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
 
   EXPECT_CALL(pointer_delegate, OnPointerButton).Times(2);

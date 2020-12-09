@@ -52,8 +52,9 @@ namespace exo {
 // Display, public:
 
 Display::Display()
+    : seat_(nullptr),
 #if defined(USE_OZONE)
-    : client_native_pixmap_factory_(
+      client_native_pixmap_factory_(
           gfx::CreateClientNativePixmapFactoryDmabuf())
 #endif
 {
@@ -68,7 +69,7 @@ Display::Display(
     : notification_surface_manager_(std::move(notification_surface_manager)),
       input_method_surface_manager_(std::move(input_method_surface_manager)),
       toast_surface_manager_(std::move(toast_surface_manager)),
-      data_exchange_delegate_(std::move(data_exchange_delegate)),
+      seat_(std::move(data_exchange_delegate)),
       client_native_pixmap_factory_(
           gfx::CreateClientNativePixmapFactoryDmabuf()) {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -282,8 +283,7 @@ std::unique_ptr<SubSurface> Display::CreateSubSurface(Surface* surface,
 
 std::unique_ptr<DataDevice> Display::CreateDataDevice(
     DataDeviceDelegate* delegate) {
-  return std::make_unique<DataDevice>(delegate, seat(),
-                                      data_exchange_delegate_.get());
+  return std::make_unique<DataDevice>(delegate, seat());
 }
 
 }  // namespace exo

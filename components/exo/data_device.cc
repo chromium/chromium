@@ -39,13 +39,8 @@ ui::DragDropTypes::DragOperation DndActionToDragOperation(
 
 }  // namespace
 
-DataDevice::DataDevice(DataDeviceDelegate* delegate,
-                       Seat* seat,
-                       DataExchangeDelegate* data_exchange_delegate)
-    : delegate_(delegate),
-      seat_(seat),
-      data_exchange_delegate_(data_exchange_delegate),
-      drop_succeeded_(false) {
+DataDevice::DataDevice(DataDeviceDelegate* delegate, Seat* seat)
+    : delegate_(delegate), seat_(seat), drop_succeeded_(false) {
   WMHelper::GetInstance()->AddDragDropObserver(this);
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
 
@@ -67,7 +62,7 @@ void DataDevice::StartDrag(DataSource* source,
                            Surface* origin,
                            Surface* icon,
                            ui::mojom::DragEventSource event_source) {
-  seat_->StartDrag(data_exchange_delegate_, source, origin, icon, event_source);
+  seat_->StartDrag(source, origin, icon, event_source);
 }
 
 void DataDevice::SetSelection(DataSource* source) {
@@ -94,8 +89,8 @@ void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
 
   data_offer_ =
       std::make_unique<ScopedDataOffer>(delegate_->OnDataOffer(), this);
-  data_offer_->get()->SetDropData(data_exchange_delegate_, surface->window(),
-                                  event.data());
+  data_offer_->get()->SetDropData(seat_->data_exchange_delegate(),
+                                  surface->window(), event.data());
   data_offer_->get()->SetSourceActions(dnd_actions);
   data_offer_->get()->SetActions(base::flat_set<DndAction>(), DndAction::kAsk);
   delegate_->OnEnter(surface, event.location_f(), *data_offer_->get());
@@ -204,7 +199,7 @@ Surface* DataDevice::GetEffectiveTargetForEvent(
 
 void DataDevice::SetSelectionToCurrentClipboardData() {
   DataOffer* data_offer = delegate_->OnDataOffer();
-  data_offer->SetClipboardData(data_exchange_delegate_,
+  data_offer->SetClipboardData(seat_->data_exchange_delegate(),
                                *ui::Clipboard::GetForCurrentThread());
   delegate_->OnSelection(*data_offer);
 }

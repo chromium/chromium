@@ -53,7 +53,10 @@ class Seat : public aura::client::FocusChangeObserver,
 #endif
              public DataSourceObserver {
  public:
+  explicit Seat(std::unique_ptr<DataExchangeDelegate> delegate);
   Seat();
+  Seat(const Seat&) = delete;
+  Seat& operator=(const Seat&) = delete;
   ~Seat() override;
 
   void Shutdown();
@@ -74,6 +77,10 @@ class Seat : public aura::client::FocusChangeObserver,
   const XkbTracker* xkb_tracker() const { return xkb_tracker_.get(); }
 #endif
 
+  DataExchangeDelegate* data_exchange_delegate() {
+    return data_exchange_delegate_.get();
+  }
+
   // Returns physical code for the currently processing event.
   ui::DomCode physical_code_for_currently_processing_event() const {
     return physical_code_for_currently_processing_event_;
@@ -82,8 +89,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // Sets clipboard data from |source|.
   void SetSelection(DataSource* source);
 
-  void StartDrag(DataExchangeDelegate* data_exchange_delegate,
-                 DataSource* source,
+  void StartDrag(DataSource* source,
                  Surface* origin,
                  Surface* icon,
                  ui::mojom::DragEventSource event_source);
@@ -187,9 +193,8 @@ class Seat : public aura::client::FocusChangeObserver,
   std::unique_ptr<XkbTracker> xkb_tracker_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  std::unique_ptr<DataExchangeDelegate> data_exchange_delegate_;
   base::WeakPtrFactory<Seat> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Seat);
 };
 
 }  // namespace exo
