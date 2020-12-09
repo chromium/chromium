@@ -118,12 +118,12 @@ void AuthTokenRequester::OnGetUVRetries(
     return;
   }
 
+  internal_uv_locked_ = response->retries == 0;
   if (response->retries == 0) {
     // The authenticator was locked prior to calling
     // ObtainTokenFromInternalUV(). Fall back to PIN if able.
     if (authenticator_->Options()->client_pin_availability ==
         ClientPinAvailability::kSupportedAndPinSet) {
-      delegate_->InternalUVLockedForAuthToken();
       if (options_.skip_pin_touch) {
         ObtainTokenFromPIN();
         return;
@@ -229,6 +229,9 @@ void AuthTokenRequester::OnGetPINRetries(
         authenticator_, Result::kPostTouchAuthenticatorPINHardLock,
         base::nullopt);
     return;
+  }
+  if (internal_uv_locked_) {
+    delegate_->InternalUVLockedForAuthToken();
   }
   delegate_->CollectExistingPIN(
       response->retries, authenticator_->CurrentMinPINLength(),

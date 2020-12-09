@@ -172,6 +172,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
   bool authenticator_was_selected_ = false;
   bool is_internal_uv_retry_ = false;
   base::Optional<std::string> current_pin_;
+  bool internal_uv_locked_ = false;
 
   base::WeakPtrFactory<AuthTokenRequester> weak_factory_{this};
 };

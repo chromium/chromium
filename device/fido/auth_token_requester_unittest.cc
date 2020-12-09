@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/stl_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,10 +52,13 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
  private:
   // AuthTokenRequester::Delegate:
   void AuthenticatorSelectedForPINUVAuthToken(
-      FidoAuthenticator* authenticator) override {}
+      FidoAuthenticator* authenticator) override {
+    authenticator_selected_ = true;
+  }
   void CollectNewPIN(uint32_t min_pin_length,
                      bool force_pin_change,
                      ProvidePINCallback provide_pin_cb) override {
+    DCHECK(authenticator_selected_);
     DCHECK(!pin_.empty());
     pin_was_set_ = true;
     min_pin_length_ = min_pin_length;
@@ -64,21 +68,32 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   void CollectExistingPIN(int attempts,
                           uint32_t min_pin_length,
                           ProvidePINCallback provide_pin_cb) override {
+    DCHECK(authenticator_selected_);
     DCHECK(!pin_.empty());
     pin_was_collected_ = true;
     min_pin_length_ = min_pin_length;
     std::move(provide_pin_cb).Run(pin_);
   }
   void PromptForInternalUVRetry(int attempts) override {
+    DCHECK(authenticator_selected_);
     internal_uv_num_retries_++;
   }
   void InternalUVLockedForAuthToken() override {
+    DCHECK(authenticator_selected_);
     internal_uv_was_locked_ = true;
   }
   void HavePINUVAuthTokenResultForAuthenticator(
       FidoAuthenticator* authenticator,
       AuthTokenRequester::Result result,
       base::Optional<pin::TokenResponse> response) override {
+    if (!base::Contains(
+            std::vector<AuthTokenRequester::Result>{
+                AuthTokenRequester::Result::
+                    kPreTouchAuthenticatorResponseInvalid,
+                AuthTokenRequester::Result::kPreTouchUnsatisfiableRequest},
+            result)) {
+      DCHECK(authenticator_selected_);
+    }
     DCHECK(!result_);
     result_ = result;
     response_ = std::move(response);
@@ -90,6 +105,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   base::Optional<AuthTokenRequester::Result> result_;
   base::Optional<pin::TokenResponse> response_;
 
+  bool authenticator_selected_ = false;
   bool pin_was_collected_ = false;
   bool pin_was_set_ = false;
   bool forced_pin_change_ = false;
@@ -410,6 +426,31 @@ TEST_F(AuthTokenRequesterTest, UVLockedPINFallback) {
   EXPECT_FALSE(delegate_->pin_was_set());
   EXPECT_TRUE(delegate_->pin_was_collected());
   EXPECT_EQ(delegate_->internal_uv_num_retries(), 2u);
+  EXPECT_TRUE(delegate_->internal_uv_was_locked());
+  EXPECT_FALSE(delegate_->forced_pin_change());
+}
+
+TEST_F(AuthTokenRequesterTest, UVAlreadyLockedPINFallback) {
+  VirtualCtap2Device::Config config;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {std::begin(kCtap2Versions2_1),
+                           std::end(kCtap2Versions2_1)};
+  config.user_verification_succeeds = false;
+  auto state = base::MakeRefCounted<VirtualFidoDevice::State>();
+  state->uv_retries = 0;
+
+  RunTestCase(std::move(config), state,
+              TestCase{
+                  ClientPinAvailability::kSupportedAndPinSet,
+                  UserVerificationAvailability::kSupportedAndConfigured,
+                  true,
+              });
+
+  EXPECT_EQ(*delegate_->result(), AuthTokenRequester::Result::kSuccess);
+  EXPECT_TRUE(delegate_->response());
+  EXPECT_FALSE(delegate_->pin_was_set());
+  EXPECT_TRUE(delegate_->pin_was_collected());
+  EXPECT_EQ(delegate_->internal_uv_num_retries(), 0u);
   EXPECT_TRUE(delegate_->internal_uv_was_locked());
   EXPECT_FALSE(delegate_->forced_pin_change());
 }
