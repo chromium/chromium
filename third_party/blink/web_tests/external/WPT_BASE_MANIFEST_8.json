@@ -45854,6 +45854,21 @@
      ]
     },
     "css-backgrounds": {
+     "animations": {
+      "one-element-animation.html": [
+       "581dc79180e94d284ad97b5a1e4ac00466cae681",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/one-element-animation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "background-334.html": [
       "03ee2d3bb251119f55aa194615795563e6ddd350",
       [
@@ -45947,7 +45962,7 @@
        ]
       ],
       "attachment-local-clipping-color-5.html": [
-       "7b27a040d53cb44f8034e086bcf250f916d50b5b",
+       "136b704bd699934a0dc206c3847546ee9185a793",
        [
         null,
         [
@@ -45956,7 +45971,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             10
+            ],
+            [
+             0,
+             160
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "attachment-local-clipping-color-6.html": [
@@ -46025,7 +46056,7 @@
        ]
       ],
       "attachment-local-clipping-image-5.html": [
-       "376c9cd4c0f4dd2d7e1274feb82029ae47d3d0c6",
+       "1d6f1a8c6628a47e5421eb99769f56d53a74a08a",
        [
         null,
         [
@@ -46034,7 +46065,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             10
+            ],
+            [
+             0,
+             300
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "attachment-local-clipping-image-6.html": [
@@ -50930,7 +50977,7 @@
       ]
      ],
      "border-radius-clip-001.html": [
-      "585b62677f4c439deb077a5ab4aba96559366c72",
+      "008ca7367f20b51c55460f8cffa6f85be83d4988",
       [
        null,
        [
@@ -50939,11 +50986,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            1000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "border-radius-clip-002.htm": [
-      "e81871ee50c4498c3ed3a63672725e2e395b5281",
+      "759bd5ce4836899512fe8b435a18bd1aad78cfc2",
       [
        null,
        [
@@ -50952,7 +51015,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            70
+           ],
+           [
+            0,
+            50
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "border-radius-clipping-002.html": [
@@ -157852,7 +157931,7 @@
         ]
        ],
        "fieldset-border-radius-with-alpha.html": [
-        "36b9fc8c8ef7aa08473e4061c090042882b8b582",
+        "7a942076fbeaaee41c668ced609dee94906e56be",
         [
          null,
          [
@@ -180851,6 +180930,10 @@
       "box-shadow-interpolation-expected.txt": [
        "83a8d423116f5266eafa670261a1d4d564850a08",
        []
+      ],
+      "one-element-animation-ref.html": [
+       "eff13ba0d4169384ec7d0efec24975bced509e5f",
+       []
       ]
      },
      "background-332-expected.txt": [
@@ -199462,7 +199545,7 @@
       []
      ],
      "fixed-layout-2-expected.txt": [
-      "5c9553444e3a37cd9b4820f35f697175be849038",
+      "0d1a166b392fb87bb6e059be31a442c2f26fe421",
       []
      ],
      "fixed-layout-excess-width-distribution-001-expected.txt": [
@@ -213388,7 +213471,7 @@
       []
      ],
      "testdriver-extension-tutorial.md": [
-      "0d73f9d41f8205802407aa32cdd5e11aae2c44f9",
+      "185a27f1a46af840f19395cab885451088130cb6",
       []
      ],
      "testdriver.md": [
@@ -220659,6 +220742,10 @@
        []
       ],
       "resources": {
+       "check-sandbox-flags.html": [
+        "0dc95315f164d693bd7bd0622880781f30bad7a1",
+        []
+       ],
        "post-done-to-opener.html": [
         "b47f0f274ef43148d3be418e2c0628a567f1c3c1",
         []
@@ -227926,7 +228013,7 @@
         []
        ],
        "fieldset-border-radius-with-alpha-ref.html": [
-        "577482a328b47b72b78ddc22abef02e12836a378",
+        "5cfe13c40d465a5cd0cebfbafbb8db9d45491cbf",
         []
        ],
        "fieldset-containing-block-ref.html": [
@@ -234773,7 +234860,7 @@
    },
    "js-self-profiling": {
     "__dir__.headers": [
-     "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
+     "35b10bd2ccdbfa99feb96079fafab61346d025ed",
      []
     ]
    },
@@ -342626,6 +342713,13 @@
       ],
       "sandbox-disallow-scripts.html": [
        "1bc116ada46d39b0e7b17dc448cab0c33707057a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "sandbox-initial-empty-document-toward-same-origin.html": [
+       "d1306c970322682f3979c497a5decd78218ba845",
        [
         null,
         {}
