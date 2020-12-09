@@ -1245,6 +1245,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractivePDFTest,
   auto send_right_mouse_event = [](content::RenderWidgetHost* host, int x,
                                    int y, blink::WebInputEvent::Type type) {
     blink::WebMouseEvent event;
+    event.SetTimeStamp(blink::WebInputEvent::GetStaticTimeStampForTests());
     event.SetPositionInWidget(x, y);
     event.button = blink::WebMouseEvent::Button::kRight;
     event.SetType(type);
@@ -1549,6 +1550,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
     // Now simulate a click outside the bounds of the popup.
     blink::WebMouseEvent event;
+    event.SetTimeStamp(blink::WebInputEvent::GetStaticTimeStampForTests());
     // Click a little bit to the right and top of the <input>.
     event.SetPositionInWidget(130, 10);
     event.button = blink::WebMouseEvent::Button::kLeft;

@@ -286,14 +286,17 @@ void UkmManager::RecordEventLatencyUKM(
 
     builder.SetEventType(static_cast<int64_t>(event_metrics->type()));
 
+    base::TimeTicks generated_timestamp =
+        event_metrics->GetDispatchStageTimestamp(
+            EventMetrics::DispatchStage::kGenerated);
+
     if (event_metrics->scroll_type()) {
       builder.SetScrollInputType(
           static_cast<int64_t>(*event_metrics->scroll_type()));
 
       if (!viz_breakdown.swap_timings.is_null()) {
         builder.SetTotalLatencyToSwapBegin(
-            (viz_breakdown.swap_timings.swap_start -
-             event_metrics->time_stamp())
+            (viz_breakdown.swap_timings.swap_start - generated_timestamp)
                 .InMicroseconds());
       }
     }
@@ -305,8 +308,8 @@ void UkmManager::RecordEventLatencyUKM(
     // event's arrival in the browser.
     auto stage_it = std::find_if(
         stage_history.begin(), stage_history.end(),
-        [&event_metrics](const CompositorFrameReporter::StageData& stage) {
-          return stage.start_time > event_metrics->time_stamp();
+        [generated_timestamp](const CompositorFrameReporter::StageData& stage) {
+          return stage.start_time > generated_timestamp;
         });
     // TODO(crbug.com/1079116): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
@@ -319,13 +322,13 @@ void UkmManager::RecordEventLatencyUKM(
       continue;
 
     builder.SetBrowserToRendererCompositor(
-        (stage_it->start_time - event_metrics->time_stamp()).InMicroseconds());
+        (stage_it->start_time - generated_timestamp).InMicroseconds());
 
     for (; stage_it != stage_history.end(); ++stage_it) {
       // Total latency is calculated since the event timestamp.
       const base::TimeTicks start_time =
           stage_it->stage_type == StageType::kTotalLatency
-              ? event_metrics->time_stamp()
+              ? generated_timestamp
               : stage_it->start_time;
 
       switch (stage_it->stage_type) {

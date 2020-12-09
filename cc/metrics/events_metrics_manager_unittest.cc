@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/stl_util.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "cc/metrics/event_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,15 +52,16 @@ class EventsMetricsManagerTest : public testing::Test {
   ~EventsMetricsManagerTest() override = default;
 
  protected:
-  base::TimeTicks now() const { return now_; }
-
-  base::TimeTicks AdvanceNowByMs(int ms) {
-    now_ += base::TimeDelta::FromMilliseconds(ms);
-    return now_;
+  std::unique_ptr<EventMetrics> CreateEventMetrics(ui::EventType type) {
+    test_tick_clock_.Advance(base::TimeDelta::FromMicroseconds(10));
+    base::TimeTicks event_time = test_tick_clock_.NowTicks();
+    test_tick_clock_.Advance(base::TimeDelta::FromMicroseconds(10));
+    return EventMetrics::CreateForTesting(type, base::nullopt, base::nullopt,
+                                          event_time, &test_tick_clock_);
   }
 
   EventsMetricsManager manager_;
-  base::TimeTicks now_ = base::TimeTicks::Now();
+  base::SimpleTestTickClock test_tick_clock_;
 };
 
 // Tests that EventMetrics are saved only if they have an event type we are
@@ -75,27 +77,19 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
   std::pair<std::unique_ptr<EventMetrics>, Behavior> events[] = {
       // An interesting event type for which SaveActiveEventMetrics() is not
       // called.
-      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt,
-                            AdvanceNowByMs(1), base::nullopt),
-       Behavior::kDoNotSave},
+      {CreateEventMetrics(ui::ET_MOUSE_PRESSED), Behavior::kDoNotSave},
 
       // An interesting event type for which SaveActiveEventMetrics() is called
       // inside its monitor scope.
-      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt,
-                            AdvanceNowByMs(1), base::nullopt),
-       Behavior::kSaveInsideScope},
+      {CreateEventMetrics(ui::ET_MOUSE_PRESSED), Behavior::kSaveInsideScope},
 
       // An interesting event type for which SaveActiveEventMetrics() is called
       // after its monitor scope is finished.
-      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt,
-                            AdvanceNowByMs(1), base::nullopt),
-       Behavior::kSaveOutsideScope},
+      {CreateEventMetrics(ui::ET_MOUSE_PRESSED), Behavior::kSaveOutsideScope},
 
       // A non-interesting event type for which SaveActiveEventMetrics() is
       // called inside its monitor scope.
-      {EventMetrics::Create(ui::ET_MOUSE_MOVED, base::nullopt,
-                            AdvanceNowByMs(1), base::nullopt),
-       Behavior::kSaveInsideScope},
+      {CreateEventMetrics(ui::ET_MOUSE_MOVED), Behavior::kSaveInsideScope},
   };
   EXPECT_NE(events[0].first, nullptr);
   EXPECT_NE(events[1].first, nullptr);
@@ -134,22 +128,16 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
 // different configurations.
 TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
   struct {
-    ui::EventType type;
-    base::TimeTicks timestamp;
-  } events[] = {
-      {ui::ET_MOUSE_PRESSED, AdvanceNowByMs(1)},
-      {ui::ET_MOUSE_RELEASED, AdvanceNowByMs(1)},
-  };
-
-  struct {
-    // Index of event to use for the outer scope. -1 if no event should be used.
-    int outer_event;
+    // Type of event to use for the outer scope. `ui::EventType::ET_UNKNOWN` if
+    // no event should be used.
+    ui::EventType outer_event_type;
 
     // Whether to save the outer scope metrics before starting the inner scope.
     bool save_outer_metrics_before_inner;
 
-    // Index of event to use for the inner scope. -1 if no event should be used.
-    int inner_event;
+    // Type of event to use for the inner scope. `ui::EventType::ET_UNKNOWN` if
+    // no event should be used.
+    ui::EventType inner_event_type;
 
     // Whether to save the inner scope metrics.
     bool save_inner_metrics;
@@ -159,45 +147,45 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
   } configs[] = {
       // Config #0.
       {
-          /*outer_metrics=*/0,
+          /*outer_event_type=*/ui::EventType::ET_MOUSE_PRESSED,
           /*save_outer_metrics_before_inner=*/true,
-          /*inner_metrics=*/1,
+          /*inner_event_type=*/ui::EventType::ET_MOUSE_RELEASED,
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/false,
       },
 
       // Config #1.
       {
-          /*outer_metrics=*/0,
+          /*outer_event_type=*/ui::EventType::ET_MOUSE_PRESSED,
           /*save_outer_metrics_before_inner=*/false,
-          /*inner_metrics=*/1,
+          /*inner_event_type=*/ui::EventType::ET_MOUSE_RELEASED,
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/true,
       },
 
       // Config #2.
       {
-          /*outer_metrics=*/0,
+          /*outer_event_type=*/ui::EventType::ET_MOUSE_PRESSED,
           /*save_outer_metrics_before_inner=*/true,
-          /*inner_metrics=*/1,
+          /*inner_event_type=*/ui::EventType::ET_MOUSE_RELEASED,
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/true,
       },
 
       // Config #3.
       {
-          /*outer_metrics=*/0,
+          /*outer_event_type=*/ui::EventType::ET_MOUSE_PRESSED,
           /*save_outer_metrics_before_inner=*/false,
-          /*inner_metrics=*/-1,
+          /*inner_event_type=*/ui::EventType::ET_UNKNOWN,
           /*save_inner_metrics=*/false,
           /*save_outer_metrics_after_inner=*/true,
       },
 
       // Config #4.
       {
-          /*outer_metrics=*/-1,
+          /*outer_event_type=*/ui::EventType::ET_UNKNOWN,
           /*save_outer_metrics_before_inner=*/false,
-          /*inner_metrics=*/0,
+          /*inner_event_type=*/ui::EventType::ET_MOUSE_PRESSED,
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/false,
       },
@@ -209,10 +197,8 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 
     {  // Start outer scope.
       std::unique_ptr<EventMetrics> outer_metrics;
-      if (config.outer_event != -1) {
-        auto& event = events[config.outer_event];
-        outer_metrics = EventMetrics::Create(event.type, base::nullopt,
-                                             event.timestamp, base::nullopt);
+      if (config.outer_event_type != ui::EventType::ET_UNKNOWN) {
+        outer_metrics = CreateEventMetrics(config.outer_event_type);
         DCHECK_NE(outer_metrics, nullptr);
         expected_saved_metrics.push_back(outer_metrics.get());
       }
@@ -223,10 +209,8 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 
       {  // Start inner scope.
         std::unique_ptr<EventMetrics> inner_metrics;
-        if (config.inner_event != -1) {
-          auto& event = events[config.inner_event];
-          inner_metrics = EventMetrics::Create(event.type, base::nullopt,
-                                               event.timestamp, base::nullopt);
+        if (config.inner_event_type != ui::EventType::ET_UNKNOWN) {
+          inner_metrics = CreateEventMetrics(config.inner_event_type);
           DCHECK_NE(inner_metrics, nullptr);
           expected_saved_metrics.push_back(inner_metrics.get());
         }

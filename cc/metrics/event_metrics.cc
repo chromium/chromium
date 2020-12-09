@@ -4,12 +4,14 @@
 
 #include "cc/metrics/event_metrics.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/time/default_tick_clock.h"
 
 namespace cc {
 namespace {
@@ -107,11 +109,82 @@ base::Optional<EventMetrics::ScrollType> ToScrollType(
 
 }  // namespace
 
+// static
 std::unique_ptr<EventMetrics> EventMetrics::Create(
     ui::EventType type,
     base::Optional<ScrollUpdateType> scroll_update_type,
-    base::TimeTicks time_stamp,
-    base::Optional<ui::ScrollInputType> scroll_input_type) {
+    base::Optional<ui::ScrollInputType> scroll_input_type,
+    base::TimeTicks timestamp) {
+  DCHECK(!timestamp.is_null());
+
+  std::unique_ptr<EventMetrics> metrics =
+      CreateInternal(type, scroll_update_type, scroll_input_type, timestamp,
+                     base::DefaultTickClock::GetInstance());
+  if (!metrics)
+    return nullptr;
+
+  metrics->SetDispatchStageTimestamp(
+      DispatchStage::kArrivedInRendererCompositor);
+  return metrics;
+}
+
+// static
+std::unique_ptr<EventMetrics> EventMetrics::CreateForTesting(
+    ui::EventType type,
+    base::Optional<ScrollUpdateType> scroll_update_type,
+    base::Optional<ui::ScrollInputType> scroll_input_type,
+    base::TimeTicks timestamp,
+    const base::TickClock* tick_clock) {
+  DCHECK(!timestamp.is_null());
+
+  std::unique_ptr<EventMetrics> metrics = CreateInternal(
+      type, scroll_update_type, scroll_input_type, timestamp, tick_clock);
+  if (!metrics)
+    return nullptr;
+
+  metrics->SetDispatchStageTimestamp(
+      DispatchStage::kArrivedInRendererCompositor);
+  return metrics;
+}
+
+// static
+std::unique_ptr<EventMetrics> EventMetrics::CreateFromExisting(
+    ui::EventType type,
+    base::Optional<ScrollUpdateType> scroll_update_type,
+    base::Optional<ui::ScrollInputType> scroll_input_type,
+    DispatchStage last_dispatch_stage,
+    const EventMetrics* existing) {
+  std::unique_ptr<EventMetrics> metrics = CreateInternal(
+      type, scroll_update_type, scroll_input_type, base::TimeTicks(),
+      existing ? existing->tick_clock_ : base::DefaultTickClock::GetInstance());
+  if (!metrics)
+    return nullptr;
+
+  // Since the new event is of an interesting type, we expect the existing event
+  // to be  of an interesting type, too; which means `existing` should not be
+  // nullptr. However, some tests that are not interested in reporting metrics,
+  // don't create metrics objects even for events of interesting types. Return
+  // nullptr if that's the case.
+  if (!existing)
+    return nullptr;
+
+  // Use timestamps of all stages (including "Generated" stage) up to
+  // `last_dispatch_stage` from `existing`.
+  for (size_t stage_index = static_cast<size_t>(DispatchStage::kGenerated);
+       stage_index <= static_cast<size_t>(last_dispatch_stage); stage_index++) {
+    metrics->dispatch_stage_timestamps_[stage_index] =
+        existing->dispatch_stage_timestamps_[stage_index];
+  }
+  return metrics;
+}
+
+// static
+std::unique_ptr<EventMetrics> EventMetrics::CreateInternal(
+    ui::EventType type,
+    base::Optional<ScrollUpdateType> scroll_update_type,
+    base::Optional<ui::ScrollInputType> scroll_input_type,
+    base::TimeTicks timestamp,
+    const base::TickClock* tick_clock) {
   // `scroll_update_type` should be set for and only for
   // `ui::ET_GESTURE_SCROLL_UPDATE`.
   DCHECK(type == ui::ET_GESTURE_SCROLL_UPDATE && scroll_update_type ||
@@ -120,14 +193,21 @@ std::unique_ptr<EventMetrics> EventMetrics::Create(
       ToInterestingEventType(type, scroll_update_type);
   if (!interesting_type)
     return nullptr;
-  return base::WrapUnique(new EventMetrics(*interesting_type, time_stamp,
-                                           ToScrollType(scroll_input_type)));
+  return base::WrapUnique(new EventMetrics(*interesting_type,
+                                           ToScrollType(scroll_input_type),
+                                           timestamp, tick_clock));
 }
 
 EventMetrics::EventMetrics(EventType type,
-                           base::TimeTicks time_stamp,
-                           base::Optional<ScrollType> scroll_type)
-    : type_(type), time_stamp_(time_stamp), scroll_type_(scroll_type) {}
+                           base::Optional<ScrollType> scroll_type,
+                           base::TimeTicks timestamp,
+                           const base::TickClock* tick_clock)
+    : type_(type), scroll_type_(scroll_type), tick_clock_(tick_clock) {
+  dispatch_stage_timestamps_[static_cast<int>(DispatchStage::kGenerated)] =
+      timestamp;
+}
+
+EventMetrics::~EventMetrics() = default;
 
 const char* EventMetrics::GetTypeName() const {
   return kInterestingEvents[static_cast<int>(type_)].name;
@@ -139,9 +219,40 @@ const char* EventMetrics::GetScrollTypeName() const {
   return kScrollTypes[static_cast<int>(*scroll_type_)].name;
 }
 
+void EventMetrics::SetDispatchStageTimestamp(DispatchStage stage) {
+  DCHECK(dispatch_stage_timestamps_[static_cast<size_t>(stage)].is_null());
+
+  dispatch_stage_timestamps_[static_cast<size_t>(stage)] =
+      tick_clock_->NowTicks();
+}
+
+base::TimeTicks EventMetrics::GetDispatchStageTimestamp(
+    DispatchStage stage) const {
+  return dispatch_stage_timestamps_[static_cast<size_t>(stage)];
+}
+
+void EventMetrics::ResetToDispatchStage(DispatchStage stage) {
+  for (size_t stage_index = static_cast<size_t>(stage) + 1;
+       stage_index <= static_cast<size_t>(DispatchStage::kMaxValue);
+       stage_index++) {
+    dispatch_stage_timestamps_[stage_index] = base::TimeTicks();
+  }
+}
+
+std::unique_ptr<EventMetrics> EventMetrics::Clone() const {
+  auto clone = base::WrapUnique(
+      new EventMetrics(type_, scroll_type_, base::TimeTicks(), tick_clock_));
+  std::copy(std::begin(dispatch_stage_timestamps_),
+            std::end(dispatch_stage_timestamps_),
+            std::begin(clone->dispatch_stage_timestamps_));
+  return clone;
+}
+
 bool EventMetrics::operator==(const EventMetrics& other) const {
-  return std::tie(type_, time_stamp_, scroll_type_) ==
-         std::tie(other.type_, other.time_stamp_, other.scroll_type_);
+  return type_ == other.type_ && scroll_type_ == other.scroll_type_ &&
+         std::equal(std::begin(dispatch_stage_timestamps_),
+                    std::end(dispatch_stage_timestamps_),
+                    std::begin(other.dispatch_stage_timestamps_));
 }
 
 // EventMetricsSet

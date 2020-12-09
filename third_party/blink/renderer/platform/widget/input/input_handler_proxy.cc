@@ -403,6 +403,12 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
         hit_test_result;
     gesture_event->data.scroll_begin.main_thread_hit_tested = true;
 
+    if (metrics) {
+      // The event is going to be re-processed on the compositor thread; so,
+      // reset timstamps of following dispatch stages.
+      metrics->ResetToDispatchStage(
+          cc::EventMetrics::DispatchStage::kArrivedInRendererCompositor);
+    }
     auto event_with_callback = std::make_unique<EventWithCallback>(
         std::move(event), tick_clock_->NowTicks(), std::move(callback),
         std::move(metrics));
@@ -582,12 +588,12 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
     last_injected_gesture_was_begin_ = false;
   }
 
-  base::TimeTicks metrics_time_stamp =
-      original_metrics ? original_metrics->time_stamp()
-                       : synthetic_gesture_event->TimeStamp();
-  std::unique_ptr<cc::EventMetrics> metrics = cc::EventMetrics::Create(
-      synthetic_gesture_event->GetTypeAsUiEventType(), scroll_update_type,
-      metrics_time_stamp, synthetic_gesture_event->GetScrollInputType());
+  std::unique_ptr<cc::EventMetrics> metrics =
+      cc::EventMetrics::CreateFromExisting(
+          synthetic_gesture_event->GetTypeAsUiEventType(), scroll_update_type,
+          synthetic_gesture_event->GetScrollInputType(),
+          cc::EventMetrics::DispatchStage::kArrivedInRendererCompositor,
+          original_metrics);
   auto gesture_event_with_callback_update = std::make_unique<EventWithCallback>(
       std::make_unique<WebCoalescedInputEvent>(
           std::move(synthetic_gesture_event), scrollbar_latency_info),
@@ -618,8 +624,10 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
 
   cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
   if (event_with_callback->metrics()) {
+    event_with_callback->WillStartProcessingForMetrics();
     done_callback = base::BindOnce(
         [](EventWithCallback* event, bool handled) {
+          event->DidCompleteProcessingForMetrics();
           std::unique_ptr<cc::EventMetrics> result =
               handled ? event->TakeMetrics() : nullptr;
           return result;

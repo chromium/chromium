@@ -8,6 +8,7 @@ import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_
 
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 import android.webkit.WebView.HitTestResult;
@@ -85,10 +86,11 @@ public class WebKitHitTestTest {
 
     private void simulateTabDownUpOnUiThread() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mAwContents.getWebContents().getEventForwarder().dispatchKeyEvent(
-                    new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB));
-            mAwContents.getWebContents().getEventForwarder().dispatchKeyEvent(
-                    new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_TAB));
+            long eventTime = SystemClock.uptimeMillis();
+            mAwContents.getWebContents().getEventForwarder().dispatchKeyEvent(new KeyEvent(
+                    eventTime, eventTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB, 0));
+            mAwContents.getWebContents().getEventForwarder().dispatchKeyEvent(new KeyEvent(
+                    eventTime, eventTime, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_TAB, 0));
         });
     }
 

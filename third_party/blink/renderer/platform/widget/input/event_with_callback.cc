@@ -33,7 +33,7 @@ EventWithCallback::EventWithCallback(
       creation_timestamp_(creation_timestamp),
       last_coalesced_timestamp_(last_coalesced_timestamp) {}
 
-EventWithCallback::~EventWithCallback() {}
+EventWithCallback::~EventWithCallback() = default;
 
 bool EventWithCallback::CanCoalesceWith(const EventWithCallback& other) const {
   return event().CanCoalesce(other.event());
@@ -133,6 +133,26 @@ std::unique_ptr<cc::EventMetrics> EventWithCallback::TakeMetrics() {
 
   // Return metrics for the first original event for reporting purposes.
   return std::move(first->metrics_);
+}
+
+void EventWithCallback::WillStartProcessingForMetrics() {
+  DCHECK(metrics());
+  for (auto& original_event : original_events_) {
+    if (original_event.metrics_) {
+      original_event.metrics_->SetDispatchStageTimestamp(
+          cc::EventMetrics::DispatchStage::kRendererCompositorStarted);
+    }
+  }
+}
+
+void EventWithCallback::DidCompleteProcessingForMetrics() {
+  DCHECK(metrics());
+  for (auto& original_event : original_events_) {
+    if (original_event.metrics_) {
+      original_event.metrics_->SetDispatchStageTimestamp(
+          cc::EventMetrics::DispatchStage::kRendererCompositorFinished);
+    }
+  }
 }
 
 EventWithCallback::OriginalEventWithCallback::OriginalEventWithCallback(

@@ -19,6 +19,7 @@ import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.LocaleList;
 import android.os.Parcel;
+import android.os.SystemClock;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -2182,8 +2183,9 @@ public class AwAutofillTest {
     }
 
     private void dispatchDownAndUpKeyEvents(final int code) throws Throwable {
-        dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, code));
-        dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, code));
+        long eventTime = SystemClock.uptimeMillis();
+        dispatchKeyEvent(new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, code, 0));
+        dispatchKeyEvent(new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_UP, code, 0));
     }
 
     private boolean dispatchKeyEvent(final KeyEvent event) throws Throwable {

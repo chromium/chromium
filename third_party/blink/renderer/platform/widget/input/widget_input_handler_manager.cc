@@ -333,12 +333,12 @@ void WidgetInputHandlerManager::GenerateScrollBeginAndSendToMainThread(
   DCHECK_EQ(update_event.GetType(), WebInputEvent::Type::kGestureScrollUpdate);
   auto event = std::make_unique<WebCoalescedInputEvent>(
       ScrollBeginFromScrollUpdate(update_event), ui::LatencyInfo());
-  base::TimeTicks metrics_time_stamp = update_metrics
-                                           ? update_metrics->time_stamp()
-                                           : event->Event().TimeStamp();
-  std::unique_ptr<cc::EventMetrics> metrics = cc::EventMetrics::Create(
-      event->Event().GetTypeAsUiEventType(), base::nullopt, metrics_time_stamp,
-      event->Event().GetScrollInputType());
+  std::unique_ptr<cc::EventMetrics> metrics =
+      cc::EventMetrics::CreateFromExisting(
+          event->Event().GetTypeAsUiEventType(), base::nullopt,
+          event->Event().GetScrollInputType(),
+          cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
+          update_metrics);
 
   DispatchNonBlockingEventToMainThread(std::move(event), attribution,
                                        std::move(metrics));
@@ -478,7 +478,7 @@ void WidgetInputHandlerManager::DispatchEvent(
   }
   std::unique_ptr<cc::EventMetrics> metrics = cc::EventMetrics::Create(
       event->Event().GetTypeAsUiEventType(), scroll_update_type,
-      event->Event().TimeStamp(), event->Event().GetScrollInputType());
+      event->Event().GetScrollInputType(), event->Event().TimeStamp());
 
   if (uses_input_handler_) {
     // If the input_handler_proxy has disappeared ensure we just ack event.

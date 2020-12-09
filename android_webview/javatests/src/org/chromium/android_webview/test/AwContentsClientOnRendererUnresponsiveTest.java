@@ -6,6 +6,7 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
+import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.webkit.JavascriptInterface;
 
@@ -164,7 +165,9 @@ public class AwContentsClientOnRendererUnresponsiveTest {
 
     private void sendInputEvent(final AwContents awContents) {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            awContents.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+            long eventTime = SystemClock.uptimeMillis();
+            awContents.dispatchKeyEvent(new KeyEvent(
+                    eventTime, eventTime, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER, 0));
         });
     }
 

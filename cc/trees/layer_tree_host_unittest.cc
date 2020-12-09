@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -8984,18 +8985,30 @@ class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {
 
  private:
   void SimulateEventOnMain() {
-    std::unique_ptr<EventMetrics> metrics = EventMetrics::Create(
+    base::SimpleTestTickClock tick_clock;
+    tick_clock.Advance(base::TimeDelta::FromMicroseconds(10));
+    base::TimeTicks event_time = tick_clock.NowTicks();
+    tick_clock.Advance(base::TimeDelta::FromMicroseconds(10));
+    std::unique_ptr<EventMetrics> metrics = EventMetrics::CreateForTesting(
         ui::ET_GESTURE_SCROLL_UPDATE,
-        EventMetrics::ScrollUpdateType::kContinued, base::TimeTicks::Now(),
-        ui::ScrollInputType::kWheel);
+        EventMetrics::ScrollUpdateType::kContinued, ui::ScrollInputType::kWheel,
+        event_time, &tick_clock);
+    DCHECK_NE(metrics, nullptr);
     {
+      tick_clock.Advance(base::TimeDelta::FromMicroseconds(10));
+      metrics->SetDispatchStageTimestamp(
+          EventMetrics::DispatchStage::kRendererCompositorStarted);
       auto done_callback = base::BindOnce(
-          [](std::unique_ptr<EventMetrics> metrics, bool handled) {
+          [](std::unique_ptr<EventMetrics> metrics,
+             base::SimpleTestTickClock* tick_clock, bool handled) {
+            tick_clock->Advance(base::TimeDelta::FromMicroseconds(10));
+            metrics->SetDispatchStageTimestamp(
+                EventMetrics::DispatchStage::kRendererCompositorFinished);
             std::unique_ptr<EventMetrics> result =
                 handled ? std::move(metrics) : nullptr;
             return result;
           },
-          std::move(metrics));
+          std::move(metrics), &tick_clock);
       auto scoped_event_monitor =
           layer_tree_host()->GetScopedEventMetricsMonitor(
               std::move(done_callback));

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "ui/events/types/event_type.h"
@@ -71,23 +72,53 @@ class CC_EXPORT EventMetrics {
     kMaxValue = kContinued,
   };
 
-  // Returns a new instance if |type| is an event type we are interested in.
+  // Stages of event dispatch in different processes/threads.
+  enum class DispatchStage {
+    kGenerated,
+    kArrivedInRendererCompositor,
+    kRendererCompositorStarted,
+    kRendererCompositorFinished,
+    kMaxValue = kRendererCompositorFinished,
+  };
+
+  // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns nullptr.
   static std::unique_ptr<EventMetrics> Create(
       ui::EventType type,
       base::Optional<ScrollUpdateType> scroll_update_type,
-      base::TimeTicks time_stamp,
-      base::Optional<ui::ScrollInputType> scroll_input_type);
+      base::Optional<ui::ScrollInputType> scroll_input_type,
+      base::TimeTicks timestamp);
+
+  // Similar to `Create()` with an extra `base::TickClock` to use in tests.
+  static std::unique_ptr<EventMetrics> CreateForTesting(
+      ui::EventType type,
+      base::Optional<ScrollUpdateType> scroll_update_type,
+      base::Optional<ui::ScrollInputType> scroll_input_type,
+      base::TimeTicks timestamp,
+      const base::TickClock* tick_clock);
+
+  // Used to create an instance for an event generated based on an existing
+  // event. If the new event is of an interesting type, we expect that the
+  // existing event is also of an interesting type in which case `existing` is
+  // not nullptr and timestamps (up to and including `last_dispatch_stage`) and
+  // tick clock from `existing` will be used for the new metrics object. If the
+  // new event is not an interesting one, return value would be nullptr.
+  static std::unique_ptr<EventMetrics> CreateFromExisting(
+      ui::EventType type,
+      base::Optional<ScrollUpdateType> scroll_update_type,
+      base::Optional<ui::ScrollInputType> scroll_input_type,
+      DispatchStage last_dispatch_stage,
+      const EventMetrics* existing);
 
   EventMetrics(const EventMetrics&) = delete;
   EventMetrics& operator=(const EventMetrics&) = delete;
+
+  ~EventMetrics();
 
   EventType type() const { return type_; }
 
   // Returns a string representing event type.
   const char* GetTypeName() const;
-
-  base::TimeTicks time_stamp() const { return time_stamp_; }
 
   const base::Optional<ScrollType>& scroll_type() const { return scroll_type_; }
 
@@ -95,20 +126,45 @@ class CC_EXPORT EventMetrics {
   // called for scroll events.
   const char* GetScrollTypeName() const;
 
+  void SetDispatchStageTimestamp(DispatchStage stage);
+  base::TimeTicks GetDispatchStageTimestamp(DispatchStage stage) const;
+
+  // Resets the metris object to dispatch stage `stage` by setting timestamps of
+  // dispatch stages after `stage` to null timestamp,
+  void ResetToDispatchStage(DispatchStage stage);
+
+  std::unique_ptr<EventMetrics> Clone() const;
+
   // Used in tests to check expectations on EventMetrics objects.
   bool operator==(const EventMetrics& other) const;
 
  private:
+  static std::unique_ptr<EventMetrics> CreateInternal(
+      ui::EventType type,
+      base::Optional<ScrollUpdateType> scroll_update_type,
+      base::Optional<ui::ScrollInputType> scroll_input_type,
+      base::TimeTicks timestamp,
+      const base::TickClock* tick_clock);
+
   EventMetrics(EventType type,
-               base::TimeTicks time_stamp,
-               base::Optional<ScrollType> scroll_type);
+               base::Optional<ScrollType> scroll_type,
+               base::TimeTicks timestamp,
+               const base::TickClock* tick_clock);
 
   EventType type_;
-  base::TimeTicks time_stamp_;
 
   // Only available for scroll events and represents the type of input device
   // for the event.
   base::Optional<ScrollType> scroll_type_;
+
+  const base::TickClock* const tick_clock_;
+
+  // Timestamps of different stages of event dispatch. Timestamps are set as the
+  // event moves forward in the pipeline. In the end, some stages might not have
+  // a timestamp which means the event did not pass those stages.
+  base::TimeTicks
+      dispatch_stage_timestamps_[static_cast<int>(DispatchStage::kMaxValue) +
+                                 1];
 };
 
 // Struct storing event metrics from both main and impl threads.

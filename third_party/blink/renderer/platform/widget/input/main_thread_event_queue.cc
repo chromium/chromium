@@ -71,12 +71,12 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
       const cc::EventMetrics* original_metrics) {
     DCHECK_EQ(raw_event->Event().GetType(),
               WebInputEvent::Type::kPointerRawUpdate);
-    base::TimeTicks original_time_stamp = original_metrics
-                                              ? original_metrics->time_stamp()
-                                              : raw_event->Event().TimeStamp();
-    std::unique_ptr<cc::EventMetrics> metrics = cc::EventMetrics::Create(
-        raw_event->Event().GetTypeAsUiEventType(), base::nullopt,
-        original_time_stamp, raw_event->Event().GetScrollInputType());
+    std::unique_ptr<cc::EventMetrics> metrics =
+        cc::EventMetrics::CreateFromExisting(
+            raw_event->Event().GetTypeAsUiEventType(), base::nullopt,
+            raw_event->Event().GetScrollInputType(),
+            cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
+            original_metrics);
     return std::make_unique<QueuedWebInputEvent>(
         std::move(raw_event), false, HandledEventCallback(), false, attribution,
         std::move(metrics));
