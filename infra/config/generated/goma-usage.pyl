@@ -3,11 +3,11 @@
 # This is consumed by presubmit checks that need to validate the config
 
 {
-  # 61550 (scheduler total) + 344750 (weighted CQ total)
+  # 61750 (scheduler total) + 344750 (weighted CQ total)
   # (weighted CQ total) = 6895 (CQ total) * 50 (CQ weight)
-  '*weighted total*': 406300,
+  '*weighted total*': 406500,
   'scheduler': {
-    '*total*': 61550,
+    '*total*': 61750,
     'triggered': {
       '*total*': 59840,
       ('https://chromium.googlesource.com/chromium/src', 'regexp:refs/heads/master'): {
@@ -491,7 +491,7 @@
       },
     },
     'scheduled': {
-      '*total*': 1710,
+      '*total*': 1910,
       '0 0,12 * * *': {
         '*total*': 80,
         # jobs count assumes an 8-core machine
@@ -523,9 +523,10 @@
         'ci/android-androidx-packager': 80,
       },
       'triggered': {
-        '*total*': 750,
+        '*total*': 950,
         'ci/android-code-coverage': 200,
         'ci/android-pie-x86-fyi-rel': 150,
+        'ci/fuchsia-code-coverage': 200,
         'ci/linux-chromeos-code-coverage': 200,
         'ci/linux-chromeos-js-code-coverage': 200,
       },

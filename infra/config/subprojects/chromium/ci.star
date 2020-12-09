@@ -3041,6 +3041,17 @@ ci.fyi_coverage_builder(
 )
 
 ci.fyi_coverage_builder(
+    name = "fuchsia-code-coverage",
+    console_view_entry = ci.console_view_entry(
+        category = "code_coverage",
+        short_name = "fsa",
+    ),
+    use_clang_coverage = True,
+    schedule = "triggered",
+    triggered_by = [],
+)
+
+ci.fyi_coverage_builder(
     name = "ios-simulator-code-coverage",
     console_view_entry = ci.console_view_entry(
         category = "code_coverage",
