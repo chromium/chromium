@@ -2415,9 +2415,13 @@ TEST_F(DownloadProtectionServiceTest, TestDownloadItemDestroyed) {
     // notification.
   }
 
+  // Result won't be immediately available as it is being posted.
+  EXPECT_FALSE(has_result_);
+  base::RunLoop().RunUntilIdle();
+
   // When download is destroyed, no need to check for client download request
   // result.
-  EXPECT_TRUE(has_result_);
+  EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
   EXPECT_FALSE(HasClientDownloadRequest());
 }
 
@@ -3431,6 +3435,10 @@ TEST_F(DownloadProtectionServiceTest,
       std::move(item),
       base::BindOnce(&DownloadProtectionServiceTest::SyncCheckDoneCallback,
                      base::Unretained(this)));
+  // Result won't be immediately available, wait for the response to
+  // be posted.
+  EXPECT_FALSE(has_result_);
+  base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(IsResult(DownloadCheckResult::WHITELISTED_BY_POLICY));
 }
 

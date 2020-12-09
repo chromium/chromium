@@ -224,7 +224,9 @@ void CheckClientDownloadRequestBase::FinishRequest(
   if (settings.has_value()) {
     UploadBinary(reason, std::move(settings.value()));
   } else {
-    std::move(callback_).Run(result);
+    // Post a task to avoid reentrance issue. http://crbug.com//1152451.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), result));
   }
 
   UMA_HISTOGRAM_ENUMERATION("SBClientDownload.CheckDownloadStats", reason,
