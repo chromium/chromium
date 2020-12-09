@@ -16,27 +16,12 @@
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
-namespace network {
-namespace mojom {
-class NetworkContext;
-}  // namespace mojom
-}  // namespace network
-
 namespace cast_streaming {
 
 // Entry point for the Cast Streaming Receiver implementation. Used to start a
 // Cast Streaming Session for a provided FIDL MessagePort request.
 class CastStreamingSession {
  public:
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
-
-  // Sets the NetworkContextGetter. This must be called before any call to
-  // Start() and must only be called once. If the NetworkContext crashes, any
-  // existing Cast Streaming Session will eventually terminate and call
-  // OnSessionEnded().
-  static void SetNetworkContextGetter(NetworkContextGetter getter);
-
   template <class T>
   struct StreamInfo {
     T decoder_config;

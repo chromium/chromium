@@ -15,6 +15,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "fuchsia/cast_streaming/public/cast_streaming_session.h"
+#include "fuchsia/cast_streaming/public/network_context_getter.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -32,9 +33,8 @@ ContextImpl::ContextImpl(content::BrowserContext* browser_context,
   DCHECK(devtools_controller_);
   devtools_controller_->OnContextCreated();
 
-  cast_streaming::CastStreamingSession::SetNetworkContextGetter(
-      base::BindRepeating(&ContextImpl::GetNetworkContext,
-                          base::Unretained(this)));
+  cast_streaming::SetNetworkContextGetter(base::BindRepeating(
+      &ContextImpl::GetNetworkContext, base::Unretained(this)));
 }
 
 ContextImpl::~ContextImpl() {
