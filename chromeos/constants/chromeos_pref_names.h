@@ -35,6 +35,8 @@ extern const char kEduCoexistenceToSVersion[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kEduCoexistenceToSAcceptedVersion[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kShouldSkipInlineLoginWelcomePage[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kQuirksClientLastServerCheck[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kDeviceWiFiFastTransitionEnabled[];

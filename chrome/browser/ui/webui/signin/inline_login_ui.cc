@@ -43,6 +43,8 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #else
@@ -205,6 +207,9 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddBoolean("isAccountManagementFlowsV2Enabled",
                      chromeos::features::IsAccountManagementFlowsV2Enabled());
+  source->AddBoolean("shouldSkipWelcomePage",
+                     profile->GetPrefs()->GetBoolean(
+                         chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
 
   user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);

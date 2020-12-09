@@ -8,9 +8,12 @@ import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_b
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {isChildVisible} from '../test_util.m.js';
+
 import {getFakeAccountsList, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
 window.inline_login_test = {};
@@ -22,7 +25,8 @@ inline_login_test.TestNames = {
   Initialize: 'Initialize',
   WebUICallbacks: 'WebUICallbacks',
   AuthExtHostCallbacks: 'AuthExtHostCallbacks',
-  BackButton: 'BackButton'
+  BackButton: 'BackButton',
+  OkButton: 'OkButton',
 };
 
 suite(inline_login_test.suiteName, () => {
@@ -32,6 +36,22 @@ suite(inline_login_test.suiteName, () => {
   let testBrowserProxy;
   /** @type {TestAuthenticator} */
   let testAuthenticator;
+
+  function isVisible(selector) {
+    if (!inlineLoginComponent) {
+      return false;
+    }
+    return isChildVisible(inlineLoginComponent, selector, false);
+  }
+
+  suiteSetup(function() {
+    // This test suite tests the 'default' behavior of inline login page, when
+    // only 'Add account' screen is shown: this happens on Chrome Desktop or
+    // when `kInlineLoginWelcomePageSkipped` pref is set to true.
+    if (isChromeOS) {
+      loadTimeData.overrideValues({shouldSkipWelcomePage: true});
+    }
+  });
 
   setup(() => {
     document.body.innerHTML = '';
@@ -47,6 +67,18 @@ suite(inline_login_test.suiteName, () => {
   });
 
   test(assert(inline_login_test.TestNames.Initialize), () => {
+    // 'Add account' screen should be shown.
+    assertTrue(isVisible(`#${inlineLoginComponent.View.addAccount}`));
+    if (isChromeOS) {
+      // 'Welcome' screen should be hidden.
+      assertFalse(isVisible(`#${inlineLoginComponent.View.welcome}`));
+    } else {
+      // 'Welcome' screen should exist only on Chrome OS.
+      assertEquals(
+          null,
+          inlineLoginComponent.$$(`#${inlineLoginComponent.View.welcome}`));
+    }
+
     // The 'loading' spinner should be shown and 'initialize' should be called
     // on startup.
     assertTrue(inlineLoginComponent.$$('paper-spinner-lite').active);
@@ -135,5 +167,10 @@ suite(inline_login_test.suiteName, () => {
     backButton.click();
     assertEquals(0, testBrowserProxy.getCallCount('dialogClose'));
     assertEquals(1, backInWebviewCalls);
+  });
+
+  test(assert(inline_login_test.TestNames.OkButton), () => {
+    // 'OK' button should be hidden.
+    assertTrue(inlineLoginComponent.$$('.next-button').hidden);
   });
 });

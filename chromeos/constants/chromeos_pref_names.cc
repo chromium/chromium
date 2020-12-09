@@ -80,6 +80,11 @@ const char kEduCoexistenceToSVersion[] =
 const char kEduCoexistenceToSAcceptedVersion[] =
     "family_link_user.edu_coexistence_tos_accepted_version";
 
+// A boolean pref indicating whether welcome page should be skipped in
+// in-session 'Add account' flow.
+const char kShouldSkipInlineLoginWelcomePage[] =
+    "should_skip_inline_login_welcome_page";
+
 // A dictionary of info for Quirks Client/Server interaction, mostly last server
 // request times, keyed to display product_id's.
 const char kQuirksClientLastServerCheck[] = "quirks_client.last_server_check";

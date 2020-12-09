@@ -184,6 +184,7 @@
 #include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 #include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
+#include "chrome/browser/ui/webui/signin/inline_login_handler_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -992,6 +993,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::FamilyUserChromeActivityMetrics::RegisterProfilePrefs(registry);
   chromeos::FamilyUserMetricsService::RegisterProfilePrefs(registry);
   chromeos::FamilyUserSessionMetrics::RegisterProfilePrefs(registry);
+  chromeos::InlineLoginHandlerChromeOS::RegisterProfilePrefs(registry);
   chromeos::first_run::RegisterProfilePrefs(registry);
   chromeos::file_system_provider::RegisterProfilePrefs(registry);
   chromeos::full_restore::RegisterProfilePrefs(registry);

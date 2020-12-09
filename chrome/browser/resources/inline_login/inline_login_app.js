@@ -66,6 +66,7 @@ Polymer({
       value: null,
     },
 
+    // <if expr="chromeos">
     /**
      * True if redesign of account management flows is enabled.
      * @private
@@ -73,19 +74,9 @@ Polymer({
     isAccountManagementFlowsV2Enabled_: {
       type: Boolean,
       value() {
-        return isChromeOS &&
-            loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
+        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
       },
       readOnly: true,
-    },
-
-    /**
-     * Id of the screen that is currently displayed.
-     * @private {View}
-     */
-    currentView_: {
-      type: String,
-      value: '',
     },
 
     /*
@@ -95,10 +86,19 @@ Polymer({
     shouldSkipWelcomePage_: {
       type: Boolean,
       value() {
-        // TODO(crbug.com/1144114): get value from pref.
-        return false;
+        return loadTimeData.getBoolean('shouldSkipWelcomePage');
       },
       readOnly: true,
+    },
+    // </if>
+
+    /**
+     * Id of the screen that is currently displayed.
+     * @private {View}
+     */
+    currentView_: {
+      type: String,
+      value: '',
     },
   },
 
@@ -178,11 +178,13 @@ Polymer({
   onNewWindow_(e) {
     window.open(e.detail.targetUrl, '_blank');
     e.detail.window.discard();
+    // <if expr="chromeos">
     if (this.isAccountManagementFlowsV2Enabled_) {
       // On Chrome OS this dialog is always-on-top, so we have to close it if
       // user opens a link in a new window.
       this.closeDialog_();
     }
+    // </if>
   },
 
   /** @private */
@@ -327,6 +329,9 @@ Polymer({
    * @private
    */
   isWelcomePageEnabled_() {
+    if (!isChromeOS) {
+      return false;
+    }
     return this.isAccountManagementFlowsV2Enabled_ &&
         !this.shouldSkipWelcomePage_;
   },
