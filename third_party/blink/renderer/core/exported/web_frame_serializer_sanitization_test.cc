@@ -101,13 +101,9 @@ class WebFrameSerializerSanitizationTest : public testing::Test {
       FocusDelegation focus_delegation = FocusDelegation::kNone) {
     Element* host_element = scope.getElementById(AtomicString::FromUTF8(host));
     ShadowRoot* shadow_root;
-    if (shadow_type == ShadowRootType::V0) {
-      DCHECK_EQ(focus_delegation, FocusDelegation::kNone);
-      shadow_root = &host_element->CreateV0ShadowRootForTesting();
-    } else {
-      shadow_root = &host_element->AttachShadowRootInternal(shadow_type,
-                                                            focus_delegation);
-    }
+    DCHECK_NE(shadow_type, ShadowRootType::V0);
+    shadow_root =
+        &host_element->AttachShadowRootInternal(shadow_type, focus_delegation);
     shadow_root->SetDelegatesFocus(focus_delegation ==
                                    FocusDelegation::kDelegateFocus);
     shadow_root->setInnerHTML(String::FromUTF8(shadow_content),
@@ -336,15 +332,15 @@ TEST_F(WebFrameSerializerSanitizationTest, RemoveElements) {
 TEST_F(WebFrameSerializerSanitizationTest, ShadowDOM) {
   LoadFrame("http://www.test.com", "shadow_dom.html", "text/html");
   Document* document = MainFrameImpl()->GetFrame()->GetDocument();
-  SetShadowContent(*document, "h1", ShadowRootType::V0, "V0 shadow");
   ShadowRoot* shadowRoot = SetShadowContent(
       *document, "h2", ShadowRootType::kOpen,
       "Parent shadow\n<p id=\"h3\">Foo</p>", FocusDelegation::kDelegateFocus);
   SetShadowContent(*shadowRoot, "h3", ShadowRootType::kClosed, "Nested shadow");
   String mhtml = WebFrameSerializerTestHelper::GenerateMHTML(MainFrameImpl());
 
+  // There should not be a V0 shadow tree found, because none was created.
+  EXPECT_EQ(WTF::kNotFound, mhtml.Find("<template shadowmode=3D\"v0\">"));
   // Template with special attribute should be created for each shadow DOM tree.
-  EXPECT_NE(WTF::kNotFound, mhtml.Find("<template shadowmode=3D\"v0\">"));
   EXPECT_NE(WTF::kNotFound,
             mhtml.Find("<template shadowmode=3D\"open\" shadowdelegatesfocus"));
   EXPECT_NE(WTF::kNotFound, mhtml.Find("<template shadowmode=3D\"closed\">"));

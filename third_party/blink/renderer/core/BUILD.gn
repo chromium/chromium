@@ -1214,7 +1214,6 @@ source_set("unit_tests") {
     "dom/range_test.cc",
     "dom/scripted_animation_controller_test.cc",
     "dom/scripted_idle_task_controller_test.cc",
-    "dom/shadow_dom_v0_test.cc",
     "dom/slot_assignment_test.cc",
     "dom/space_split_string_test.cc",
     "dom/static_range_test.cc",

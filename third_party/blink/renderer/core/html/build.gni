@@ -707,7 +707,6 @@ blink_core_tests_html = [
   "forms/step_range_test.cc",
   "forms/text_control_element_test.cc",
   "forms/type_ahead_test.cc",
-  "html_content_element_test.cc",
   "html_dimension_test.cc",
   "html_element_test.cc",
   "html_embed_element_test.cc",
