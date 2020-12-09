@@ -125,6 +125,8 @@ display::DisplayConnectionType GetDisplayType(drmModeConnector* connector) {
     case DRM_MODE_CONNECTOR_DVID:
     case DRM_MODE_CONNECTOR_DVIA:
       return display::DISPLAY_CONNECTION_TYPE_DVI;
+    case DRM_MODE_CONNECTOR_VIRTUAL:
+      // A display on VM is treated as an internal display.
     case DRM_MODE_CONNECTOR_LVDS:
     case DRM_MODE_CONNECTOR_eDP:
     case DRM_MODE_CONNECTOR_DSI:
@@ -481,7 +483,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   const gfx::Size maximum_cursor_size = GetMaximumCursorSize(fd);
 
   std::string display_name;
-  int64_t display_id = display_index;
+  // Make sure the ID contains non index part.
+  int64_t display_id = display_index | 0x100;
   int64_t product_code = display::DisplaySnapshot::kInvalidProductCode;
   int32_t year_of_manufacture = display::kInvalidYearOfManufacture;
   bool has_overscan = false;
