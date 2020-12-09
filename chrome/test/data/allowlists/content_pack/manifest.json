@@ -1,8 +1,0 @@
-{
-  "name": "Test Content Pack",
-  "version": "0.1",
-  "manifest_version": 2,
-  "whitelist": {
-    "file": "site_list.json"
-  }
-}
