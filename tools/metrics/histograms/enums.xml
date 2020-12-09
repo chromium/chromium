@@ -16847,6 +16847,13 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="1" label="Grouping disabled"/>
 </enum>
 
+<enum name="DevToolsCssEditorOpened">
+  <int value="0" label="Color Picker opened"/>
+  <int value="1" label="Shadow Editor opened"/>
+  <int value="2" label="Bezier Editor opened"/>
+  <int value="3" label="Font Editor opened"/>
+</enum>
+
 <enum name="DevToolsDualScreenDeviceEmulated">
   <int value="0" label="Dual-screen or fold device selected"/>
   <int value="1" label="Dual-screen span mode selected"/>
