@@ -441,8 +441,9 @@ void PrintViewManagerBase::DidGetPrintedPagesCount(int32_t cookie,
 void PrintViewManagerBase::SetAccessibilityTree(
     int32_t cookie,
     const ui::AXTreeUpdate& accessibility_tree) {
-  PrintCompositeClient::FromWebContents(web_contents())
-      ->SetAccessibilityTree(cookie, accessibility_tree);
+  auto* client = PrintCompositeClient::FromWebContents(web_contents());
+  if (client)
+    client->SetAccessibilityTree(cookie, accessibility_tree);
 }
 #endif
 
