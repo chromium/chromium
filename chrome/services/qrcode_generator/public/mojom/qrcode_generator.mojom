@@ -56,7 +56,7 @@ struct GenerateQRCodeResponse {
 
   // Image data for generated QR code. May be null on error, or if rendering
   // was not requested.
-  skia.mojom.BitmapWithArbitraryBpp? bitmap;
+  skia.mojom.BitmapN32? bitmap;
 
   // QR Code data.
   array<uint8> data;

@@ -70,10 +70,6 @@ void QRCodeGenerationRequest::OnGenerateCodeResponse(
         env, java_qr_code_generation_request_, nullptr);
     return;
   }
-  // The QRCode service should be sending us N32 32bpp bitmaps in reply,
-  // otherwise this can lead to out-of-bounds mistakes when transferring the
-  // pixels out of the bitmap into other buffers.
-  CHECK_EQ(service_response->bitmap.colorType(), kN32_SkColorType);
 
   // Convert the result to a Java Bitmap.
   ScopedJavaLocalRef<jobject> java_bitmap =
