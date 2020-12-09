@@ -8318,5 +8318,15 @@
         }
       }
     ]
+  },
+  "SigninInterceptionEnabled": {
+    "os": ["win", "linux", "mac"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "SigninInterceptionEnabled": false },
+        "prefs": { "signin.interception_enabled": { "value": false, "location": "user_profile" } }
+      }
+    ]
   }
 }

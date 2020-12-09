@@ -901,6 +901,7 @@ extern const char kForceBrowserSignin[];
 extern const char kBrowserProfilePickerAvailabilityOnStartup[];
 extern const char kBrowserShowProfilePickerOnStartup[];
 extern const char kSigninAllowedOnNextStartup[];
+extern const char kSigninInterceptionEnabled[];
 
 extern const char kCryptAuthDeviceId[];
 extern const char kCryptAuthInstanceId[];

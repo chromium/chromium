@@ -78,8 +78,10 @@ enum class SigninInterceptionHeuristicOutcome {
   // The user already declined a new profile for this account, the UI is not
   // shown again.
   kAbortUserDeclinedProfileForAccount = 14,
+  // Signin interception is disabled by the SigninInterceptionEnabled policy.
+  kAbortInterceptionDisabled = 15,
 
-  kMaxValue = kAbortUserDeclinedProfileForAccount,
+  kMaxValue = kAbortInterceptionDisabled,
 };
 
 // User action resulting from the interception bubble.

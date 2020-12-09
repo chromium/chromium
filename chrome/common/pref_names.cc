@@ -2692,6 +2692,9 @@ const char kBrowserShowProfilePickerOnStartup[] =
 // next startup.
 const char kSigninAllowedOnNextStartup[] = "signin.allowed_on_next_startup";
 
+// Boolean which indicate if signin interception is enabled.
+const char kSigninInterceptionEnabled[] = "signin.interception_enabled";
+
 // Device identifier used by CryptAuth stored in local state. This ID is
 // combined with a user ID before being registered with the CryptAuth server,
 // so it can't correlate users on the same device.

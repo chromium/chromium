@@ -114,6 +114,7 @@ DiceWebSigninInterceptor::~DiceWebSigninInterceptor() = default;
 void DiceWebSigninInterceptor::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kProfileCreationInterceptionDeclinedPref);
+  registry->RegisterBooleanPref(prefs::kSigninInterceptionEnabled, true);
 }
 
 base::Optional<SigninInterceptionHeuristicOutcome>
@@ -122,6 +123,9 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     bool is_sync_signin,
     const std::string& email,
     const ProfileAttributesEntry** entry) const {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kSigninInterceptionEnabled))
+    return SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled;
+
   if (is_sync_signin) {
     // Do not intercept signins from the Sync startup flow.
     // Note: |is_sync_signin| is an approximation, and in rare cases it may be

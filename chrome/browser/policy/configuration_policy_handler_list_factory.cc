@@ -1222,6 +1222,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kChromeVariations,
     variations::prefs::kVariationsRestrictionsByPolicy,
     base::Value::Type::INTEGER },
+  { key::kSigninInterceptionEnabled,
+    prefs::kSigninInterceptionEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
