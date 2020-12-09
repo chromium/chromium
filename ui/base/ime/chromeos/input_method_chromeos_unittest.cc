@@ -25,6 +25,7 @@
 #include "ui/base/ime/chromeos/mock_input_method_manager.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
@@ -391,13 +392,26 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
 // Tests public APIs in ui::InputMethod first.
 
 TEST_F(InputMethodChromeOSTest, GetInputTextType) {
-  EXPECT_EQ(TEXT_INPUT_TYPE_NONE, ime_->GetTextInputType());
-  input_type_ = TEXT_INPUT_TYPE_PASSWORD;
-  ime_->OnTextInputTypeChanged(this);
-  EXPECT_EQ(TEXT_INPUT_TYPE_PASSWORD, ime_->GetTextInputType());
-  input_type_ = TEXT_INPUT_TYPE_TEXT;
-  ime_->OnTextInputTypeChanged(this);
-  EXPECT_EQ(TEXT_INPUT_TYPE_TEXT, ime_->GetTextInputType());
+  InputMethodChromeOS ime(this);
+  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  EXPECT_EQ(ime.GetTextInputType(), TEXT_INPUT_TYPE_TEXT);
+
+  ime.SetFocusedTextInputClient(nullptr);
+}
+
+TEST_F(InputMethodChromeOSTest, OnTextInputTypeChangedChangesInputType) {
+  InputMethodChromeOS ime(this);
+  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+  fake_text_input_client.set_text_input_type(TEXT_INPUT_TYPE_PASSWORD);
+
+  ime.OnTextInputTypeChanged(&fake_text_input_client);
+
+  EXPECT_EQ(ime.GetTextInputType(), TEXT_INPUT_TYPE_PASSWORD);
+
+  ime.SetFocusedTextInputClient(nullptr);
 }
 
 TEST_F(InputMethodChromeOSTest, CanComposeInline) {

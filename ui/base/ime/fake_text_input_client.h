@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_IME_DUMMY_TEXT_INPUT_CLIENT_H_
-#define UI_BASE_IME_DUMMY_TEXT_INPUT_CLIENT_H_
+#ifndef UI_BASE_IME_FAKE_TEXT_INPUT_CLIENT_H_
+#define UI_BASE_IME_FAKE_TEXT_INPUT_CLIENT_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -15,17 +15,18 @@
 
 namespace ui {
 
-// Dummy implementation of TextInputClient. All functions do nothing.
-// TODO(crbug.com/1148157): Replace this class with FakeTextInputClient.
-class DummyTextInputClient : public TextInputClient {
+// Fake in-memory implementation of TextInputClient used for testing.
+// This class should act as a 'reference implementation' for TextInputClient.
+class FakeTextInputClient : public TextInputClient {
  public:
-  DummyTextInputClient();
-  explicit DummyTextInputClient(TextInputType text_input_type);
-  DummyTextInputClient(TextInputType text_input_type,
-                       TextInputMode text_input_mode);
-  ~DummyTextInputClient() override;
+  explicit FakeTextInputClient(TextInputType text_input_type);
+  FakeTextInputClient(const FakeTextInputClient& other) = delete;
+  FakeTextInputClient& operator=(const FakeTextInputClient& other) = delete;
+  ~FakeTextInputClient() override;
 
-  // Overriden from TextInputClient.
+  void set_text_input_type(TextInputType text_input_type);
+
+  // TextInputClient:
   void SetCompositionText(const CompositionText& composition) override;
   uint32_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
@@ -57,19 +58,16 @@ class DummyTextInputClient : public TextInputClient {
   void SetTextEditCommandForNextKeyEvent(TextEditCommand command) override;
   ukm::SourceId GetClientSourceForMetrics() const override;
   bool ShouldDoLearning() override;
-
 #if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool SetCompositionFromExistingText(
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
 #endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
 #endif
-
 #if defined(OS_WIN)
   void GetActiveTextInputControlLayoutBounds(
       base::Optional<gfx::Rect>* control_bounds,
@@ -80,32 +78,10 @@ class DummyTextInputClient : public TextInputClient {
       bool is_composition_committed) override;
 #endif
 
-  int insert_char_count() const { return insert_char_count_; }
-  base::char16 last_insert_char() const { return last_insert_char_; }
-  const std::vector<base::string16>& insert_text_history() const {
-    return insert_text_history_;
-  }
-  const std::vector<CompositionText>& composition_history() const {
-    return composition_history_;
-  }
-  const std::vector<gfx::Range>& selection_history() const {
-    return selection_history_;
-  }
-
-  TextInputType text_input_type_;
-  TextInputMode text_input_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTextInputClient);
-
  private:
-  int insert_char_count_;
-  base::char16 last_insert_char_;
-  std::vector<base::string16> insert_text_history_;
-  std::vector<CompositionText> composition_history_;
-  std::vector<gfx::Range> selection_history_;
-  gfx::Range autocorrect_range_;
+  TextInputType text_input_type_;
 };
 
 }  // namespace ui
 
-#endif  // UI_BASE_IME_DUMMY_TEXT_INPUT_CLIENT_H_
+#endif  // UI_BASE_IME_FAKE_TEXT_INPUT_CLIENT_H_

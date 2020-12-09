@@ -776,6 +776,8 @@ static_library("test_support") {
       "ime/dummy_input_method.h",
       "ime/dummy_text_input_client.cc",
       "ime/dummy_text_input_client.h",
+      "ime/fake_text_input_client.cc",
+      "ime/fake_text_input_client.h",
     ]
 
     deps += [
