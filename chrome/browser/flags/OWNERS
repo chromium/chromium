@@ -6,7 +6,3 @@ twellington@chromium.org
 # changes, use the normal OWNERS rules.
 per-file *ChromeFeatureList.java=*
 per-file *chrome_feature_list.*=*
-
-# TEAM: clank-modularization@chromium.org
-# COMPONENT: Internals>Flags
-# OS: Android
