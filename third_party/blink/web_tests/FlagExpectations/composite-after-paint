@@ -64,3 +64,6 @@ crbug.com/1124979 compositing/video/video-controls-layer-creation.html [ Pass Fa
 
 crbug.com/1150468 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/* [ Skip ]
 crbug.com/1150468 virtual/composite-bgcolor-animation-hidpi/external/wpt/css/css-backgrounds/hidpi/* [ Skip ]
+
+crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
+crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
