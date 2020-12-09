@@ -13,7 +13,7 @@
     <includes>
       <include name="IDR_FILEMANAGER_MANIFEST" file="file_manager/manifest.json" type="BINDATA" />
       <!-- The Files app pages and scripts. -->
-      <include name="IDR_FILE_MANAGER_MAIN" file="file_manager/main.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+      <include name="IDR_FILE_MANAGER_MAIN" file="file_manager/main.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_MAIN_JS" file="file_manager/foreground/js/main_scripts.js" flattenhtml="true" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_IMPORTER_JS" file="file_manager/foreground/js/elements_importer.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_BACKGROUND_JS" file="file_manager/background/js/background_scripts.js" flattenhtml="true" type="BINDATA" />
@@ -37,10 +37,9 @@
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_METADATA_ENTRY_JS" file="file_manager/foreground/elements/files_metadata_entry.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_PASSWORD_DIALOG_HTML" file="file_manager/foreground/elements/files_password_dialog.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_PASSWORD_DIALOG_JS" file="file_manager/foreground/elements/files_password_dialog.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_CSS" file="file_manager/foreground/elements/files_quick_view.css" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_CSS" file="file_manager/foreground/elements/files_quick_view.css"  type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_HTML" file="file_manager/foreground/elements/files_quick_view.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_PREVIEW_JS" file="file_manager/foreground/elements/files_quick_view.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_QUICK_COMMON_CSS" file="file_manager/foreground/css/common.css" flattenhtml="true" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_RIPPLE_HTML" file="file_manager/foreground/elements/files_ripple.html" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_RIPPLE_JS" file="file_manager/foreground/elements/files_ripple.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ELEMENTS_FILES_SAFE_AUDIO_WEBVIEW_CONTENT_CSS" file="file_manager/foreground/elements/files_safe_audio_webview_content.css" type="BINDATA" />
@@ -172,7 +171,6 @@
       <include name="IDR_FILE_MANAGER_WEBSTORE_WIDGET_CWS_WEBVIEW_CLIENT_JS" file="file_manager/cws_widget/cws_webview_client.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_WEBSTORE_WIDGET_CWS_WIDGET_CONTAINER_JS" file="file_manager/cws_widget/cws_widget_container.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_WEBSTORE_WIDGET_CWS_WIDGET_CONTAINER_ERROR_DIALOG_JS" file="file_manager/cws_widget/cws_widget_container_error_dialog.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_WEBSTORE_WIDGET_CWS_WIDGET_CONTAINER_CSS" file="file_manager/cws_widget/cws_widget_container.css" type="BINDATA" />
 
       <!-- Image loader extension manifest and scripts. -->
       <if expr="chromeos">

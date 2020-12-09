@@ -202,7 +202,7 @@ generated_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 generate_grd("build_grd") {
   out_grd = generated_grd
 
-  input_files_base_dir = rebase_path("$target_gen_dir", root_gen_dir)
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   input_files = [
     "audio_player/js/main.m.rollup.js",
     "audio_player/js/main_background.m.rollup.js",
@@ -219,7 +219,10 @@ generate_grd("build_grd") {
     "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
   ]
 
+  grdp_files = [ "$target_gen_dir/file_manager/static_resources.grdp" ]
+
   deps = [
+    "file_manager:build_static_grdp",
     "//ui/file_manager/audio_player/js:build",
     "//ui/file_manager/audio_player/js:build_background",
     "//ui/file_manager/audio_player/js:build_worker",
@@ -229,19 +232,10 @@ generate_grd("build_grd") {
 
 # Resources for the JS modules.
 grit("file_manager_gen_resources") {
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    "-E",
-    "root_src_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
-
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
-  defines +=
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
 
   source = generated_grd
   deps = [ ":build_grd" ]
@@ -252,5 +246,5 @@ grit("file_manager_gen_resources") {
     "grit/file_manager_gen_resources_map.h",
     "file_manager_gen_resources.pak",
   ]
-  output_dir = "$root_gen_dir/ui/file_manager"
+  output_dir = target_gen_dir
 }
