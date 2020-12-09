@@ -354,6 +354,9 @@ _CONFIG = [
             'gfx::ScrollOffset',
             'ui::ScrollGranularity',
 
+            # Document transitions
+            'cc::DocumentTransitionRequest',
+
             # base/types/strong_alias.h
             'base::StrongAlias',
 

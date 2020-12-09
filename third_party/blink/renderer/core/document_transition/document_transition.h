@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_H_
 
+#include "cc/document_transition/document_transition_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -29,6 +30,8 @@ class CORE_EXPORT DocumentTransition final : public ScriptWrappable {
   void start();
 
  private:
+  using Effect = cc::DocumentTransitionRequest::Effect;
+
   Member<Document> document_;
 };
 
