@@ -34,10 +34,6 @@ class Scrollbar;
 class ScrollState;
 class WebGestureEvent;
 
-// Scroll directions used to check whether propagation is possible in a given
-// direction. Used in CanPropagate.
-enum class ScrollPropagationDirection { kHorizontal, kVertical, kBoth, kNone };
-
 // This class takes care of scrolling and resizing and the related states. The
 // user action that causes scrolling or resizing is determined in other *Manager
 // classes and they call into this class for doing the work.
@@ -112,13 +108,6 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
 
   void AnimateSnapFling(base::TimeTicks monotonic_time);
 
-  // Determines whether the scroll-chain should be propagated upwards given a
-  // scroll direction.
-  static bool CanPropagate(const LayoutBox* layout_box,
-                           ScrollPropagationDirection direction);
-  static ScrollPropagationDirection ComputePropagationDirection(
-      const ScrollState&);
-
  private:
   Node* NodeTargetForScrollableAreaElementId(
       CompositorElementId scrollable_area_element_id) const;
@@ -144,11 +133,8 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
 
   void RecomputeScrollChain(const Node& start_node,
                             const ScrollState&,
-                            Deque<DOMNodeId>& scroll_chain,
-                            bool is_autoscroll);
-  bool CanScroll(const ScrollState&,
-                 const Node& current_node,
-                 bool for_autoscroll);
+                            Deque<DOMNodeId>& scroll_chain);
+  bool CanScroll(const ScrollState&, const Node& current_node);
 
   // scroller_size is set only when scrolling non root scroller.
   void ComputeScrollRelatedMetrics(
