@@ -99,6 +99,7 @@ void PrefProvider::RegisterProfilePrefs(
       kObsoleteMouseLockExceptionsPref,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(kObsoletePluginsDataExceptionsPref);
+  registry->RegisterDictionaryPref(kObsoletePluginsExceptionsPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 

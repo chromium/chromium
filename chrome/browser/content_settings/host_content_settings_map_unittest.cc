@@ -23,7 +23,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_details.h"
-#include "components/content_settings/core/browser/content_settings_ephemeral_provider.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -1821,8 +1820,8 @@ TEST_F(HostContentSettingsMapTest,
             host_settings[0].secondary_pattern);
 }
 
-// Creates new instances of PrefProvider and EphemeralProvider and overrides
-// them in |host_content_settings_map|.
+// Creates new instance of PrefProvider and overrides it in
+// |host_content_settings_map|.
 void ReloadProviders(PrefService* pref_service,
                      HostContentSettingsMap* host_content_settings_map) {
   auto pref_provider = std::make_unique<content_settings::PrefProvider>(
@@ -1830,12 +1829,6 @@ void ReloadProviders(PrefService* pref_service,
   content_settings::TestUtils::OverrideProvider(
       host_content_settings_map, std::move(pref_provider),
       HostContentSettingsMap::PREF_PROVIDER);
-
-  auto ephemeral_provider =
-      std::make_unique<content_settings::EphemeralProvider>(true);
-  content_settings::TestUtils::OverrideProvider(
-      host_content_settings_map, std::move(ephemeral_provider),
-      HostContentSettingsMap::EPHEMERAL_PROVIDER);
 }
 
 TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {

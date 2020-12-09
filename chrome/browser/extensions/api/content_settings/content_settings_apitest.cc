@@ -96,9 +96,6 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
                                      ContentSettingsType::JAVASCRIPT));
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
               map->GetContentSetting(example_url, example_url,
-                                     ContentSettingsType::PLUGINS));
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(example_url, example_url,
                                      ContentSettingsType::POPUPS));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(example_url, example_url,
@@ -127,8 +124,6 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_EQ(
         CONTENT_SETTING_BLOCK,
         map->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT));
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(url, url, ContentSettingsType::PLUGINS));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(url, url, ContentSettingsType::POPUPS));
     EXPECT_EQ(
@@ -166,8 +161,6 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
         CONTENT_SETTING_ALLOW,
         map->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT));
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(url, url, ContentSettingsType::PLUGINS));
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
               map->GetContentSetting(url, url, ContentSettingsType::POPUPS));
     EXPECT_EQ(
         CONTENT_SETTING_ASK,
@@ -204,8 +197,6 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
         map->GetContentSetting(url, url, ContentSettingsType::IMAGES));
     content_settings.push_back(
         map->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT));
-    content_settings.push_back(
-        map->GetContentSetting(url, url, ContentSettingsType::PLUGINS));
     content_settings.push_back(
         map->GetContentSetting(url, url, ContentSettingsType::POPUPS));
     content_settings.push_back(

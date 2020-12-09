@@ -35,8 +35,6 @@ class ContentSettingsInfo {
   enum StorageBehavior {
     // The setting is stored and used in future sessions.
     PERSISTENT,
-    // The setting is only valid throughout the current session.
-    EPHEMERAL,
   };
 
   enum OriginRestriction {

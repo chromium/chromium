@@ -684,45 +684,6 @@ TEST_F(PrefProviderTest, LastModified) {
   provider2.ShutdownOnUIThread();
 }
 
-// Tests if PrefProvider rejects storing ephemeral types.
-TEST_F(PrefProviderTest, RejectEphemeralStorage) {
-  // Find an ephemeral type.
-  ContentSettingsType ephemeral_type = ContentSettingsType::NUM_TYPES;
-  ContentSettingsRegistry* registry = ContentSettingsRegistry::GetInstance();
-  for (const content_settings::ContentSettingsInfo* item : *registry) {
-    if (item->storage_behavior() == ContentSettingsInfo::EPHEMERAL) {
-      ephemeral_type = item->website_settings_info()->type();
-      break;
-    }
-  }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // At the very least, ContentSettingsType::PLUGINS is ephemeral.
-  ASSERT_NE(ContentSettingsType::NUM_TYPES, ephemeral_type);
-#else
-  // There might be no ephemeral setting if plugins are not supported.
-  if (ephemeral_type == ContentSettingsType::NUM_TYPES)
-    return;
-#endif
-
-  sync_preferences::TestingPrefServiceSyncable prefs;
-  PrefProvider::RegisterProfilePrefs(prefs.registry());
-  PrefProvider provider(&prefs, false /* regular */,
-                        /*store_last_modified=*/true,
-                        /*restore_session=*/false);
-  ContentSettingsPattern site_pattern =
-      ContentSettingsPattern::FromString("https://example.com");
-
-  std::unique_ptr<base::Value> value(new base::Value(CONTENT_SETTING_ALLOW));
-  EXPECT_FALSE(provider.SetWebsiteSetting(
-      site_pattern, site_pattern, ephemeral_type, std::move(value), {}));
-  std::unique_ptr<RuleIterator> rule_iterator =
-      provider.GetRuleIterator(ephemeral_type, false);
-  EXPECT_EQ(nullptr, rule_iterator);
-
-  provider.ShutdownOnUIThread();
-}
-
 // If a setting is constrained to a session scope it should only persist in
 // memory.
 TEST_F(PrefProviderTest, SessionScopeSettingsDontPersist) {

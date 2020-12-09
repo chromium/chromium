@@ -118,8 +118,8 @@ void DefaultProvider::RegisterProfilePrefs(
 
   // Obsolete prefs -------------------------------------------------------
 
-  // These prefs have been removed, but need to be registered so they can
-  // be deleted on startup.
+  // These prefs have been deprecated, but need to be registered so they can
+  // be deleted on startup (see DiscardOrMigrateObsoletePreferences).
 #if !defined(OS_IOS)
   registry->RegisterIntegerPref(
       kObsoleteFullscreenDefaultPref, 0,
@@ -129,6 +129,7 @@ void DefaultProvider::RegisterProfilePrefs(
       kObsoleteMouseLockDefaultPref, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(kObsoletePluginsDataDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoletePluginsDefaultPref, 0);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 

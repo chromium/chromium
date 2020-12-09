@@ -98,7 +98,7 @@ chrome.test.runTests([
     cs.cookies.get({
       'primaryUrl': 'moo'
     }, chrome.test.callbackFail("The URL \"moo\" is invalid."));
-    cs.plugins.set({
+    cs.javascript.set({
       'primaryPattern': 'http://example.com/*',
       'secondaryPattern': 'http://example.com/path',
       'setting': 'block'

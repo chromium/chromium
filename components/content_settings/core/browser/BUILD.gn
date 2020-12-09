@@ -11,8 +11,6 @@ static_library("browser") {
     "content_settings_default_provider.h",
     "content_settings_details.cc",
     "content_settings_details.h",
-    "content_settings_ephemeral_provider.cc",
-    "content_settings_ephemeral_provider.h",
     "content_settings_global_value_map.cc",
     "content_settings_global_value_map.h",
     "content_settings_info.cc",
@@ -91,7 +89,6 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_settings_ephemeral_provider_unittest.cc",
     "content_settings_pref_unittest.cc",
     "content_settings_registry_unittest.cc",
     "content_settings_rule_unittest.cc",

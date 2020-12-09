@@ -63,6 +63,11 @@ bool RemoveContentType(base::ListValue* args,
   // We remove the ContentSettingsType parameter since this is added by the
   // renderer, and is not part of the JSON schema.
   args->Remove(0, nullptr);
+  // PLUGINS have been deprecated, so ignore requests for removing them.
+  if (content_type_str == "plugins") {
+    *content_type = ContentSettingsType::PLUGINS;
+    return true;
+  }
   *content_type =
       extensions::content_settings_helpers::StringToContentSettingsType(
           content_type_str);
@@ -194,6 +199,12 @@ ContentSettingsContentSettingSetFunction::Run() {
   std::unique_ptr<Set::Params> params(Set::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
+  // PLUGINS have been deprecated.
+  if (content_type == ContentSettingsType::PLUGINS) {
+    return RespondNow(Error(content_settings_api_constants::
+                                kSettingPluginContentSettingsIsDisallowed));
+  }
+
   std::string primary_error;
   ContentSettingsPattern primary_pattern =
       content_settings_helpers::ParseExtensionPattern(
@@ -302,11 +313,6 @@ ContentSettingsContentSettingSetFunction::Run() {
   if (scope == kExtensionPrefsScopeIncognitoSessionOnly &&
       !Profile::FromBrowserContext(browser_context())->HasPrimaryOTRProfile()) {
     return RespondNow(Error(pref_keys::kIncognitoSessionOnlyErrorMessage));
-  }
-
-  if (content_type == ContentSettingsType::PLUGINS) {
-      return RespondNow(Error(content_settings_api_constants::
-                                  kSettingPluginContentSettingsIsDisallowed));
   }
 
   scoped_refptr<ContentSettingsStore> store =
