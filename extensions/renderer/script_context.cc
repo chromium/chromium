@@ -355,7 +355,7 @@ void ScriptContext::SafeCallFunction(
     const v8::Local<v8::Function>& function,
     int argc,
     v8::Local<v8::Value> argv[],
-    const ScriptInjectionCallback::CompleteCallback& callback) {
+    ScriptInjectionCallback::CompleteCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   v8::HandleScope handle_scope(isolate());
   v8::Context::Scope scope(v8_context());
@@ -366,7 +366,7 @@ void ScriptContext::SafeCallFunction(
     ScriptInjectionCallback* wrapper_callback = nullptr;
     if (!callback.is_null()) {
       // ScriptInjectionCallback manages its own lifetime.
-      wrapper_callback = new ScriptInjectionCallback(callback);
+      wrapper_callback = new ScriptInjectionCallback(std::move(callback));
     }
     web_frame_->RequestExecuteV8Function(v8_context(), function, global, argc,
                                          argv, wrapper_callback);
@@ -376,7 +376,7 @@ void ScriptContext::SafeCallFunction(
     v8::Local<v8::Value> result;
     if (!callback.is_null() && maybe_result.ToLocal(&result)) {
       std::vector<v8::Local<v8::Value>> results(1, result);
-      callback.Run(results);
+      std::move(callback).Run(results);
     }
   }
 }

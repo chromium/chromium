@@ -98,12 +98,11 @@ class ModuleSystem : public ObjectBackedNativeHandler {
                             const std::string& method_name,
                             int argc,
                             v8::Local<v8::Value> argv[]);
-  void CallModuleMethodSafe(
-      const std::string& module_name,
-      const std::string& method_name,
-      int argc,
-      v8::Local<v8::Value> argv[],
-      const ScriptInjectionCallback::CompleteCallback& callback);
+  void CallModuleMethodSafe(const std::string& module_name,
+                            const std::string& method_name,
+                            int argc,
+                            v8::Local<v8::Value> argv[],
+                            ScriptInjectionCallback::CompleteCallback callback);
 
   // Register |native_handler| as a potential target for requireNative(), so
   // calls to requireNative(|name|) from JS will return a new object created by

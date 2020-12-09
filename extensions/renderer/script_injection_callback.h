@@ -20,9 +20,10 @@ namespace extensions {
 class ScriptInjectionCallback : public blink::WebScriptExecutionCallback {
  public:
   using CompleteCallback =
-      base::Callback<void(const std::vector<v8::Local<v8::Value>>& result)>;
+      base::OnceCallback<void(const std::vector<v8::Local<v8::Value>>& result)>;
 
-  ScriptInjectionCallback(const CompleteCallback& injection_completed_callback);
+  explicit ScriptInjectionCallback(
+      CompleteCallback injection_completed_callback);
   ~ScriptInjectionCallback() override;
 
   void Completed(const blink::WebVector<v8::Local<v8::Value>>& result) override;

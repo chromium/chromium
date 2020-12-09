@@ -9,9 +9,8 @@
 namespace extensions {
 
 ScriptInjectionCallback::ScriptInjectionCallback(
-    const CompleteCallback& injection_completed_callback)
-    : injection_completed_callback_(injection_completed_callback) {
-}
+    CompleteCallback injection_completed_callback)
+    : injection_completed_callback_(std::move(injection_completed_callback)) {}
 
 ScriptInjectionCallback::~ScriptInjectionCallback() {
 }
@@ -19,7 +18,7 @@ ScriptInjectionCallback::~ScriptInjectionCallback() {
 void ScriptInjectionCallback::Completed(
     const blink::WebVector<v8::Local<v8::Value>>& result) {
   std::vector<v8::Local<v8::Value>> stl_result(result.begin(), result.end());
-  injection_completed_callback_.Run(stl_result);
+  std::move(injection_completed_callback_).Run(stl_result);
   delete this;
 }
 

@@ -91,8 +91,8 @@ class TimedScriptInjectionCallback : public ScriptInjectionCallback {
  public:
   TimedScriptInjectionCallback(base::WeakPtr<ScriptInjection> injection)
       : ScriptInjectionCallback(
-            base::Bind(&TimedScriptInjectionCallback::OnCompleted,
-                       base::Unretained(this))),
+            base::BindOnce(&TimedScriptInjectionCallback::OnCompleted,
+                           base::Unretained(this))),
         injection_(injection) {}
   ~TimedScriptInjectionCallback() override {}
 

@@ -23,14 +23,14 @@ void ExtensionJSRunner::RunJSFunction(v8::Local<v8::Function> function,
                                       ResultCallback callback) {
   ScriptInjectionCallback::CompleteCallback wrapper_callback;
   if (callback) {
-    // TODO(devlin): Update ScriptContext to take a OnceCallback.
-    wrapper_callback = base::BindRepeating(
-        &ExtensionJSRunner::OnFunctionComplete, weak_factory_.GetWeakPtr(),
-        base::Passed(std::move(callback)));
+    wrapper_callback =
+        base::BindOnce(&ExtensionJSRunner::OnFunctionComplete,
+                       weak_factory_.GetWeakPtr(), std::move(callback));
   }
 
   // TODO(devlin): Move ScriptContext::SafeCallFunction() into here?
-  script_context_->SafeCallFunction(function, argc, argv, wrapper_callback);
+  script_context_->SafeCallFunction(function, argc, argv,
+                                    std::move(wrapper_callback));
 }
 
 v8::MaybeLocal<v8::Value> ExtensionJSRunner::RunJSFunctionSync(
