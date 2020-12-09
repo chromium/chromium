@@ -12,6 +12,7 @@
 #include "components/viz/common/viz_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
+#include "media/media_buildflags.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
@@ -19,8 +20,14 @@
 
 namespace features {
 
-const base::Feature kEnableOverlayPrioritization{
-    "EnableOverlayPrioritization", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableOverlayPrioritization {
+  "EnableOverlayPrioritization",
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 const base::Feature kForcePreferredIntervalForVideo{
     "ForcePreferredIntervalForVideo", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -73,7 +80,13 @@ const base::Feature kUsePreferredIntervalForVideo{
 // Whether we should use the real buffers corresponding to overlay candidates in
 // order to do a pageflip test rather than allocating test buffers.
 const base::Feature kUseRealBuffersForPageFlipTest{
-    "UseRealBuffersForPageFlipTest", base::FEATURE_DISABLED_BY_DEFAULT};
+  "UseRealBuffersForPageFlipTest",
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 #if defined(OS_FUCHSIA)
 // Enables SkiaOutputDeviceBufferQueue instead of Vulkan swapchain on Fuchsia.

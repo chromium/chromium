@@ -1,5 +1,6 @@
 include_rules = [
   "+components/system_media_controls",
+  "+media/media_buildflags.h",
   "+net",
   "+skia/ext",
   "+third_party/brotli",

@@ -37,6 +37,7 @@ specific_include_rules = {
   "features.cc" : [
     "+gpu/config/gpu_finch_features.h",
     "+gpu/config/gpu_switches.h",
+    "+media/media_buildflags.h",
   ],
   "bitmap_allocation.cc" : [
     # Only used to pass Mojo handles, not to communicate with the viz service.

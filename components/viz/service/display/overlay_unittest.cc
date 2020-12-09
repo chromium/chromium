@@ -294,10 +294,12 @@ std::unique_ptr<AggregatedRenderPass> CreateRenderPassWithTransform(
 static ResourceId CreateResourceInLayerTree(
     ClientResourceProvider* child_resource_provider,
     const gfx::Size& size,
-    bool is_overlay_candidate) {
+    bool is_overlay_candidate,
+    ResourceFormat resource_format) {
   auto resource = TransferableResource::MakeGL(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
       size, is_overlay_candidate);
+  resource.format = resource_format;
   auto release_callback = SingleReleaseCallback::Create(
       base::BindRepeating([](const gpu::SyncToken&, bool) {}));
 
@@ -307,13 +309,22 @@ static ResourceId CreateResourceInLayerTree(
   return resource_id;
 }
 
+static ResourceId CreateResourceInLayerTree(
+    ClientResourceProvider* child_resource_provider,
+    const gfx::Size& size,
+    bool is_overlay_candidate) {
+  return CreateResourceInLayerTree(child_resource_provider, size,
+                                   is_overlay_candidate, RGBA_8888);
+}
+
 ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
                           ClientResourceProvider* child_resource_provider,
                           ContextProvider* child_context_provider,
                           const gfx::Size& size,
-                          bool is_overlay_candidate) {
+                          bool is_overlay_candidate,
+                          ResourceFormat resource_format) {
   ResourceId resource_id = CreateResourceInLayerTree(
-      child_resource_provider, size, is_overlay_candidate);
+      child_resource_provider, size, is_overlay_candidate, resource_format);
 
   int child_id = parent_resource_provider->CreateChild(base::DoNothing());
 
@@ -335,6 +346,16 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
   return resource_map[list[0].id];
 }
 
+ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
+                          ClientResourceProvider* child_resource_provider,
+                          ContextProvider* child_context_provider,
+                          const gfx::Size& size,
+                          bool is_overlay_candidate) {
+  return CreateResource(parent_resource_provider, child_resource_provider,
+                        child_context_provider, size, is_overlay_candidate,
+                        RGBA_8888);
+}
+
 SolidColorDrawQuad* CreateSolidColorQuadAt(
     const SharedQuadState* shared_quad_state,
     SkColor color,
@@ -353,7 +374,8 @@ TextureDrawQuad* CreateCandidateQuadAt(
     const SharedQuadState* shared_quad_state,
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect,
-    gfx::ProtectedVideoType protected_video_type) {
+    gfx::ProtectedVideoType protected_video_type,
+    ResourceFormat resource_format) {
   bool needs_blending = false;
   bool premultiplied_alpha = false;
   bool flipped = false;
@@ -363,7 +385,7 @@ TextureDrawQuad* CreateCandidateQuadAt(
   bool is_overlay_candidate = true;
   ResourceId resource_id = CreateResource(
       parent_resource_provider, child_resource_provider, child_context_provider,
-      resource_size_in_pixels, is_overlay_candidate);
+      resource_size_in_pixels, is_overlay_candidate, resource_format);
 
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
@@ -383,9 +405,10 @@ TextureDrawQuad* CreateCandidateQuadAt(
     const SharedQuadState* shared_quad_state,
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect) {
-  return CreateCandidateQuadAt(
-      parent_resource_provider, child_resource_provider, child_context_provider,
-      shared_quad_state, render_pass, rect, gfx::ProtectedVideoType::kClear);
+  return CreateCandidateQuadAt(parent_resource_provider,
+                               child_resource_provider, child_context_provider,
+                               shared_quad_state, render_pass, rect,
+                               gfx::ProtectedVideoType::kClear, RGBA_8888);
 }
 
 // For Cast we use VideoHoleDrawQuad, and that's what overlay_processor_
@@ -1486,6 +1509,49 @@ TEST_F(UnderlayTest, DisallowFilteredQuadOnTop) {
       &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
       &content_bounds_);
   ASSERT_EQ(0U, candidate_list.size());
+}
+
+TEST_F(UnderlayTest, AllowFilteredQuadOnTopForProtectedVideo) {
+  // This is only used in the overlay prioritization path.
+  if (!features::IsOverlayPrioritizationEnabled())
+    return;
+
+  auto pass = CreateRenderPass();
+
+  AggregatedRenderPassId render_pass_id{3};
+  AggregatedRenderPassDrawQuad* quad =
+      pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+  quad->SetNew(pass->shared_quad_state_list.back(), kOverlayRect, kOverlayRect,
+               render_pass_id, 0, gfx::RectF(), gfx::Size(),
+               gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+
+  CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      pass->output_rect, gfx::ProtectedVideoType::kHardwareProtected,
+      YUV_420_BIPLANAR)
+      ->needs_blending = false;
+  pass->shared_quad_state_list.front()->opacity = 1.0;
+
+  cc::FilterOperations filters;
+  filters.Append(cc::FilterOperation::CreateBlurFilter(10.f));
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+
+  render_pass_backdrop_filters[render_pass_id] = &filters;
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
+      &content_bounds_);
+  ASSERT_EQ(1U, candidate_list.size());
 }
 
 TEST_F(TransparentUnderlayTest, AllowsOpaqueCandidates) {
@@ -3606,6 +3672,61 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredBasic) {
   EXPECT_FALSE(candidate.requires_overlay);
 
   ASSERT_EQ(gfx::ToRoundedRect(candidate.display_rect), kSmallCandidateRect);
+}
+
+TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredHwProtectedVideo) {
+  // Add a small quad.
+  auto pass = CreateRenderPass();
+  const auto kSmallCandidateRect = gfx::Rect(0, 0, 16, 16);
+  auto* new_quad = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kSmallCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
+      YUV_420_BIPLANAR);
+  SurfaceDamageRectList surface_damage_rect_list;
+  SkMatrix44 default_color = GetIdentityColorMatrix();
+  OverlayCandidate candidate;
+  OverlayCandidate::FromDrawQuad(resource_provider_.get(),
+                                 &surface_damage_rect_list, default_color,
+                                 new_quad, &candidate);
+
+  // Verify that a HW protected video candidate requires overlay.
+  EXPECT_TRUE(candidate.requires_overlay);
+
+  ASSERT_EQ(gfx::ToRoundedRect(candidate.display_rect), kSmallCandidateRect);
+}
+
+TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
+  // Add a small quad.
+  auto pass = CreateRenderPass();
+  const auto kVideoCandidateRect = gfx::Rect(-19, -20, 320, 240);
+  auto* new_quad = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kVideoCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
+      YUV_420_BIPLANAR);
+  pass->shared_quad_state_list.back()->is_clipped = true;
+  pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
+  SurfaceDamageRectList surface_damage_rect_list;
+  SkMatrix44 default_color = GetIdentityColorMatrix();
+  OverlayCandidate candidate;
+  OverlayCandidate::FromDrawQuad(resource_provider_.get(),
+                                 &surface_damage_rect_list, default_color,
+                                 new_quad, &candidate);
+
+  // Default uv rect is 0.1, 0.2, 1.0, 1.0 which in the 320x240 buffer
+  // corresponds to 32, 48, 288x192. That maps to |kVideoCandidateRect| in the
+  // destination space. After clipping by |kOverlayClipRect| that clips the src
+  // rect to be 49.1, 64, 115.2x102.4. After rounding to the nearest subsample
+  // (2x), the result is 48, 64, 114x102.
+  const auto kTargetSrcRect = gfx::Rect(48, 64, 114, 102);
+  EXPECT_EQ(kTargetSrcRect,
+            gfx::ToRoundedRect(gfx::ScaleRect(
+                candidate.uv_rect, candidate.resource_size_in_pixels.width(),
+                candidate.resource_size_in_pixels.height())));
+  EXPECT_TRUE(candidate.requires_overlay);
+  EXPECT_FALSE(candidate.is_clipped);
+  EXPECT_EQ(gfx::ToRoundedRect(candidate.display_rect), kOverlayClipRect);
 }
 
 TEST_F(UnderlayTest, EstimateOccludedDamage) {

@@ -67,6 +67,8 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   // To be modified by the implementer if this candidate can go into
   // an overlay.
   bool overlay_handled = false;
+  // If this candidate requires an overlay for proper display.
+  bool requires_overlay = false;
 };
 
 using OverlaySurfaceCandidateList = std::vector<OverlaySurfaceCandidate>;

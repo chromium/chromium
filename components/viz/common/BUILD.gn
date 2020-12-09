@@ -300,6 +300,7 @@ viz_component("common") {
     "//gpu/config",
     "//gpu/ipc/common:common",
     "//gpu/vulkan:buildflags",
+    "//media:media_buildflags",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/system",
     "//services/tracing/public/cpp:cpp",

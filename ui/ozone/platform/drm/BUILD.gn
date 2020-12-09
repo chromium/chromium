@@ -124,6 +124,7 @@ source_set("gbm") {
     "//build/config/linux/libdrm",
     "//gpu/vulkan:buildflags",
     "//ipc",
+    "//media:media_buildflags",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
     "//skia",

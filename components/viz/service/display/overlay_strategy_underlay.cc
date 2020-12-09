@@ -117,7 +117,10 @@ void OverlayStrategyUnderlay::ProposePrioritized(
     // Filters read back the framebuffer to get the pixel values that need to
     // be filtered.  This is a problem when there are hardware planes because
     // the planes are not composited until they are on the display controller.
-    if (OverlayCandidate::IsOccludedByFilteredQuad(
+    // If we are requiring an overlay, then we should not block it due to this
+    // condition.
+    if (!candidate.requires_overlay &&
+        OverlayCandidate::IsOccludedByFilteredQuad(
             candidate, quad_list.begin(), it, render_pass_backdrop_filters)) {
       continue;
     }

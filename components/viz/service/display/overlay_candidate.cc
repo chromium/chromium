@@ -5,6 +5,7 @@
 #include "components/viz/service/display/overlay_candidate.h"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 
 #include "build/build_config.h"
@@ -18,6 +19,7 @@
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/gfx/video_types.h"
@@ -398,6 +400,9 @@ bool OverlayCandidate::FromTextureQuad(
   }
   candidate->resource_size_in_pixels = quad->resource_size_in_pixels();
   candidate->uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
+  // Only handle clip rect for required overlays
+  if (candidate->requires_overlay)
+    HandleClipAndSubsampling(candidate);
   return true;
 }
 
@@ -421,4 +426,58 @@ bool OverlayCandidate::FromStreamVideoQuad(
 #endif
   return true;
 }
+
+// static
+void OverlayCandidate::HandleClipAndSubsampling(OverlayCandidate* candidate) {
+  // The purpose of this is to enable overlays that are required (i.e. protected
+  // content) to be able to be shown in all cases. This will allow them to pass
+  // the clipping check and also the 2x alignment requirement for subsampling in
+  // the Intel DRM driver. This should not be used in cases where the surface
+  // will not always be promoted to an overlay as it will lead to shifting of
+  // the content when it switches between composition and overlay.
+  if (!candidate->is_clipped)
+    return;
+
+  // Make sure it's in a format we can deal with, we only support YUV and P010.
+  if (candidate->format != gfx::BufferFormat::YUV_420_BIPLANAR &&
+      candidate->format != gfx::BufferFormat::P010) {
+    return;
+  }
+
+  // Calculate |uv_rect| of |clip_rect| in |display_rect|
+  gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
+      candidate->uv_rect, candidate->display_rect,
+      gfx::RectF(candidate->clip_rect));
+
+  // In case that |uv_rect| of candidate is not (0, 0, 1, 1)
+  candidate->uv_rect.Intersect(uv_rect);
+
+  // Update |display_rect| to avoid unexpected scaling and the candidate should
+  // not be regarded as clippped after this.
+  candidate->display_rect.Intersect(gfx::RectF(candidate->clip_rect));
+  candidate->is_clipped = false;
+
+  // Now correct |uv_rect| if required so that the source rect aligns on a pixel
+  // boundary that is a multiple of the chrome subsampling.
+
+  // Get the rect for the source coordinates.
+  gfx::RectF src_rect = gfx::ScaleRect(
+      candidate->uv_rect, candidate->resource_size_in_pixels.width(),
+      candidate->resource_size_in_pixels.height());
+  // Make it an integral multiple of the subsampling factor.
+  constexpr int kSubsamplingFactor = 2;
+  src_rect.set_x(kSubsamplingFactor *
+                 (std::lround(src_rect.x()) / kSubsamplingFactor));
+  src_rect.set_y(kSubsamplingFactor *
+                 (std::lround(src_rect.y()) / kSubsamplingFactor));
+  src_rect.set_width(kSubsamplingFactor *
+                     (std::lround(src_rect.width()) / kSubsamplingFactor));
+  src_rect.set_height(kSubsamplingFactor *
+                      (std::lround(src_rect.height()) / kSubsamplingFactor));
+  // Scale it back into UV space and set it in the candidate.
+  candidate->uv_rect = gfx::ScaleRect(
+      src_rect, 1.0f / candidate->resource_size_in_pixels.width(),
+      1.0f / candidate->resource_size_in_pixels.height());
+}
+
 }  // namespace viz

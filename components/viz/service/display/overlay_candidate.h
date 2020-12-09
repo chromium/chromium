@@ -137,7 +137,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // is an estimate when 'EstimateOccludedDamage' function is used.
   int damage_area_estimate = 0;
 
-  // Cached result of call to 'RequiresOverlay' function.
+  // Result of call to 'RequiresOverlay' function w/ associated quad.
   bool requires_overlay = false;
 
  private:
@@ -161,6 +161,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                                 SurfaceDamageRectList* surface_damage_rect_list,
                                 const VideoHoleDrawQuad* quad,
                                 OverlayCandidate* candidate);
+  static void HandleClipAndSubsampling(OverlayCandidate* candidate);
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;
