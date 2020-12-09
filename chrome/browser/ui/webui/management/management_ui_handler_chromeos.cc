@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/management_ui_handler_chromeos.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 
 net::NetworkTrafficAnnotationTag GetManagementUICustomerLogoAnnotation() {
   return net::DefineNetworkTrafficAnnotation("management_ui_customer_logo", R"(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/management_ui_handler.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 
 #include <algorithm>
 #include <memory>
@@ -54,7 +54,7 @@
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/ui/webui/management_ui_handler_chromeos.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chromeos/network/network_state_handler.h"

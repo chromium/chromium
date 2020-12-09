@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/webui/management_ui_handler.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"

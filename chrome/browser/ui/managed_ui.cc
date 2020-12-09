@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/management_ui_handler.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 

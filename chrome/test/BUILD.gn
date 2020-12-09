@@ -1527,9 +1527,9 @@ if (!is_android) {
       "../browser/ui/webui/inspect_ui_browsertest.cc",
       "../browser/ui/webui/interstitials/interstitial_ui_browsertest.cc",
       "../browser/ui/webui/log_web_ui_url_browsertest.cc",
-      "../browser/ui/webui/management_a11y_browsertest.cc",
-      "../browser/ui/webui/management_a11y_browsertest.h",
-      "../browser/ui/webui/management_ui_browsertest.cc",
+      "../browser/ui/webui/management/management_a11y_browsertest.cc",
+      "../browser/ui/webui/management/management_a11y_browsertest.h",
+      "../browser/ui/webui/management/management_ui_browsertest.cc",
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.cc",
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.h",
       "../browser/ui/webui/new_tab_page/webui_ntp_browsertest.cc",
@@ -4663,7 +4663,7 @@ test("unit_tests") {
       "../browser/ui/webui/flags/flags_ui_unittest.cc",
       "../browser/ui/webui/history/browsing_history_handler_unittest.cc",
       "../browser/ui/webui/managed_ui_handler_unittest.cc",
-      "../browser/ui/webui/management_ui_handler_unittest.cc",
+      "../browser/ui/webui/management/management_ui_handler_unittest.cc",
       "../browser/ui/webui/new_tab_page/new_tab_page_handler_unittest.cc",
       "../browser/ui/webui/new_tab_page/promo_browser_command/promo_browser_command_handler_unittest.cc",
       "../browser/ui/webui/read_later/read_later_page_handler_unittest.cc",
@@ -6782,8 +6782,8 @@ if (!is_android) {
         sources += [
           "../browser/ui/webui/extensions/extension_settings_browsertest.cc",
           "../browser/ui/webui/extensions/extension_settings_browsertest.h",
-          "../browser/ui/webui/management_a11y_browsertest.cc",
-          "../browser/ui/webui/management_a11y_browsertest.h",
+          "../browser/ui/webui/management/management_a11y_browsertest.cc",
+          "../browser/ui/webui/management/management_a11y_browsertest.h",
         ]
       }
     }

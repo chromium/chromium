@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/management_a11y_browsertest.h"
+#include "chrome/browser/ui/webui/management/management_a11y_browsertest.h"
 
 #include "base/path_service.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
