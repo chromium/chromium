@@ -432,7 +432,7 @@ String TextCodecICU::Decode(const char* bytes,
   // ICU decodes it as U+E5E5.
   if (!strcmp(encoding_.GetName(), "GBK")) {
     if (EqualIgnoringASCIICase(encoding_.GetName(), "gb18030"))
-      resultString.Replace(0xE5E5, ideographicSpaceCharacter);
+      resultString.Replace(0xE5E5, kIdeographicSpaceCharacter);
     // Make GBK compliant to the encoding spec and align with GB18030
     resultString.Replace(0x01F9, 0xE7C8);
     // FIXME: Once https://www.w3.org/Bugs/Public/show_bug.cgi?id=28740#c3
