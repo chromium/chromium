@@ -67,13 +67,20 @@ void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update,
     last_upgraded_medium_ = upgraded_medium;
   }
 
-  it->second.amount_transferred = update->bytes_transferred;
   if (it->second.status != update->status) {
     it->second.status = update->status;
 
     NS_LOG(VERBOSE) << __func__ << ": Payload id " << update->payload_id
                     << " had status change: " << update->status;
   }
+
+  // The number of bytes transferred should never go down. That said, some
+  // status updates like cancellation might send a value of 0. In that case, we
+  // retain the last known value for use in metrics.
+  if (update->bytes_transferred > it->second.amount_transferred) {
+    it->second.amount_transferred = update->bytes_transferred;
+  }
+
   OnTransferUpdate();
 }
 

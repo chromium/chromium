@@ -325,7 +325,10 @@ class NearbySharingServiceImpl
       NearbyConnectionsManager::ConnectionsStatus status);
   void SetInHighVisibility(bool in_high_visibility);
 
-  void DoCancel(const ShareTarget& share_target,
+  // Note: |share_target| is intentionally passed by value. A share target
+  // reference could likely be invalidated by the owner during the multi-step
+  // cancellation process.
+  void DoCancel(ShareTarget share_target,
                 StatusCodesCallback status_codes_callback,
                 bool write_cancel_frame);
 
