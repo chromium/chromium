@@ -508,29 +508,36 @@ Polymer({
   getErrorMsg_() {
     if (this.error_ === ErrorType.NONE) {
       return '';
+    } else if (this.error_ === ErrorType.MISMATCHED_PIN) {
+      return this.i18n('networkSimErrorPinMismatch');
     }
+
+    let errorStringId = '';
+    switch (this.error_) {
+      case ErrorType.INCORRECT_PIN:
+        errorStringId = 'networkSimErrorIncorrectPin';
+        break;
+      case ErrorType.INCORRECT_PUK:
+        errorStringId = 'networkSimErrorIncorrectPuk';
+        break;
+      case ErrorType.INVALID_PIN:
+        errorStringId = 'networkSimErrorInvalidPin';
+        break;
+      case ErrorType.INVALID_PUK:
+        errorStringId = 'networkSimErrorInvalidPuk';
+        break;
+      default:
+        assertNotReached();
+    }
+
     const retriesLeft = (this.simUnlockSent_ && this.deviceState &&
                          this.deviceState.simLockStatus) ?
         this.deviceState.simLockStatus.retriesLeft :
         0;
-
-    if (this.error_ === ErrorType.INCORRECT_PIN) {
-      return this.i18n('networkSimErrorIncorrectPin', retriesLeft);
+    if (retriesLeft > 1) {
+      errorStringId += 'Plural';
     }
-    if (this.error_ === ErrorType.INCORRECT_PUK) {
-      return this.i18n('networkSimErrorIncorrectPuk', retriesLeft);
-    }
-    if (this.error_ === ErrorType.MISMATCHED_PIN) {
-      return this.i18n('networkSimErrorPinMismatch');
-    }
-    if (this.error_ === ErrorType.INVALID_PIN) {
-      return this.i18n('networkSimErrorInvalidPin', retriesLeft);
-    }
-    if (this.error_ === ErrorType.INVALID_PUK) {
-      return this.i18n('networkSimErrorInvalidPuk', retriesLeft);
-    }
-    assertNotReached();
-    return '';
+    return this.i18n(errorStringId, retriesLeft);
   },
 
   /**

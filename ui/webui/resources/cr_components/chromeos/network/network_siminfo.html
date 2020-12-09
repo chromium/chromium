@@ -29,7 +29,7 @@
         color: red;
         font-size: 125%;
         font-weight: 500;
-        margin-top: 10px;
+        margin-bottom: 10px;
       }
 
       .error {
@@ -181,6 +181,9 @@
             label="[[i18n('networkSimEnterPuk')]]"
             disabled="[[inProgress_]]">
         </network-password-input>
+        <div class="dialog-error">
+          [[getErrorMsg_(error_, deviceState)]]
+        </div>
         <network-password-input id="unlockPin1" value="{{pin_new1_}}"
             label="[[i18n('networkSimEnterNewPin')]]"
             disabled="[[inProgress_]]">
@@ -191,9 +194,6 @@
         </network-password-input>
         <div class="dialog-error">
           [[i18n('networkSimLockedWarning')]]
-        </div>
-        <div class="dialog-error">
-          [[getErrorMsg_(error_, deviceState)]]
         </div>
       </div>
       <div slot="button-container">
