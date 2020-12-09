@@ -171,6 +171,38 @@ TEST_F(
     });
 GEN('#endif');
 
+// eslint-disable-next-line no-var
+var OSSettingsLockScreenPageV3Test = class extends OSSettingsPrivacyPageV3Test {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/lock_screen_tests.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {disabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+TEST_F('OSSettingsLockScreenPageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
+var OSSettingsLockScreenPageV3TestWithAccountManagementFlowsV2Enabled =
+    class extends OSSettingsLockScreenPageV3Test {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+TEST_F(
+    'OSSettingsLockScreenPageV3TestWithAccountManagementFlowsV2Enabled',
+    'AllJsTests', () => {
+      mocha.run();
+    });
+
 [['AboutPage', 'os_about_page_tests.m.js'],
  ['AmbientModePage', 'ambient_mode_page_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],

@@ -340,6 +340,10 @@ cr.define('settings_people_page', function() {
       peoplePage = document.createElement('os-settings-people-page');
       document.body.appendChild(peoplePage);
 
+      if (peoplePage.isAccountManagementFlowsV2Enabled_) {
+        return;
+      }
+
       await accountManagerBrowserProxy.whenCalled('getAccounts');
       await syncBrowserProxy.whenCalled('getSyncStatus');
       quickUnlockPrivateApi = new settings.FakeQuickUnlockPrivate();

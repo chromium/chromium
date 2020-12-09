@@ -226,6 +226,48 @@ TEST_F('OSSettingsAddUsersTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+// Tests for settings-lock-screen
+// eslint-disable-next-line no-var
+var OSSettingsLockScreenPageTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'chromeos/os_people_page/lock_screen.html';
+  }
+
+  /** @override */
+  get featureList() {
+    return {disabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      '//ui/webui/resources/js/assert.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'lock_screen_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsLockScreenPageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
+var OSSettingsLockScreenPageTestWithAccountManagementFlowsV2Enabled =
+    class extends OSSettingsLockScreenPageTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+};
+
+TEST_F(
+    'OSSettingsLockScreenPageTestWithAccountManagementFlowsV2Enabled',
+    'AllJsTests', () => {
+      mocha.run();
+    });
+
 // Tests for settings-user-page
 // eslint-disable-next-line no-var
 var OSSettingsUserPageTest = class extends OSSettingsBrowserTest {
@@ -1730,6 +1772,11 @@ TEST_F('OSSettingsPeoplePageSyncControlsTest', 'AllJsTests', () => {
 // eslint-disable-next-line no-var
 var OSSettingsPeoplePageTest = class extends OSSettingsBrowserTest {
   /** @override */
+  get featureList() {
+    return {disabled: ['chromeos::features::kAccountManagementFlowsV2']};
+  }
+
+  /** @override */
   get browsePreload() {
     return super.browsePreload + 'chromeos/os_people_page/os_people_page.html';
   }
@@ -1782,7 +1829,10 @@ var OSSettingsPrivacyPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../fake_chrome_event.js',
       BROWSER_SETTINGS_PATH + '../test_util.js',
+      BROWSER_SETTINGS_PATH +
+          '../settings/chromeos/fake_quick_unlock_private.js',
       'os_privacy_page_test.js',
     ]);
   }

@@ -175,6 +175,10 @@ enum Setting {
   kRestrictSignInV2 = 1106,
   kAddToUserAllowlistV2 = 1107,
   kRemoveFromUserAllowlistV2 = 1108,
+  kLockScreenV2 = 1109,
+  kChangeAuthPinV2 = 1110,
+  kAddFingerprintV2 = 1111,
+  kRemoveFingerprintV2 = 1112,
 
   // Languages and Input section.
   kAddLanguage = 1200,

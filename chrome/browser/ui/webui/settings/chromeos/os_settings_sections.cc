@@ -105,8 +105,8 @@ OsSettingsSections::OsSettingsSections(
   sections_map_[mojom::Section::kDateAndTime] = date_time_section.get();
   sections_.push_back(std::move(date_time_section));
 
-  auto privacy_section =
-      std::make_unique<PrivacySection>(profile, search_tag_registry);
+  auto privacy_section = std::make_unique<PrivacySection>(
+      profile, search_tag_registry, profile->GetPrefs());
   sections_map_[mojom::Section::kPrivacyAndSecurity] = privacy_section.get();
   sections_.push_back(std::move(privacy_section));
 

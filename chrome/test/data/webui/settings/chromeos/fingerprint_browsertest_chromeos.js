@@ -397,17 +397,44 @@ suite('settings-fingerprint-list', function() {
         });
   });
 
-  test('Deep link to remove fingerprint', async () => {
+  test('Deep link to add fingerprint', async () => {
     loadTimeData.overrideValues({
       isDeepLinkingEnabled: true,
     });
+    const settingId =
+        fingerprintList.isAccountManagementFlowsV2Enabled_ ? '1111' : '313';
 
     browserProxy.setFingerprints(['Label 1', 'Label 2']);
     fingerprintList.updateFingerprintsList_();
     await browserProxy.whenCalled('getFingerprintsList');
 
     const params = new URLSearchParams;
-    params.append('settingId', '314');
+    params.append('settingId', settingId);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.FINGERPRINT, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = fingerprintList.$$('#addFingerprint');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Add button should be focused for settingId=' + settingId);
+  });
+
+  test('Deep link to remove fingerprint', async () => {
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+    });
+    const settingId =
+        fingerprintList.isAccountManagementFlowsV2Enabled_ ? '1112' : '314';
+
+    browserProxy.setFingerprints(['Label 1', 'Label 2']);
+    fingerprintList.updateFingerprintsList_();
+    await browserProxy.whenCalled('getFingerprintsList');
+
+    const params = new URLSearchParams;
+    params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(
         settings.routes.FINGERPRINT, params);
 
@@ -418,7 +445,7 @@ suite('settings-fingerprint-list', function() {
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
-        'Trash can button should be focused for settingId=314.');
+        'Trash can button should be focused for settingId=' + settingId);
   });
 
   test('ChangeFingerprintLabel', function() {

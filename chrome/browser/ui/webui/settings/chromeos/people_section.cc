@@ -63,34 +63,12 @@ namespace {
 const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
     std::vector<SearchConcept> all_tags({
-        {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD,
-         mojom::kSecurityAndSignInSubpagePath,
-         mojom::SearchResultIcon::kLock,
-         mojom::SearchResultDefaultRank::kMedium,
-         mojom::SearchResultType::kSetting,
-         {.setting = mojom::Setting::kChangeAuthPin},
-         {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD_ALT1,
-          SearchConcept::kAltTagEnd}},
         {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS,
          mojom::kMyAccountsSubpagePath,
          mojom::SearchResultIcon::kAvatar,
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSubpage,
          {.subpage = mojom::Subpage::kMyAccounts}},
-        {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING,
-         mojom::kSecurityAndSignInSubpagePath,
-         mojom::SearchResultIcon::kLock,
-         mojom::SearchResultDefaultRank::kMedium,
-         mojom::SearchResultType::kSetting,
-         {.setting = mojom::Setting::kLockScreen},
-         {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING_ALT1,
-          SearchConcept::kAltTagEnd}},
-        {IDS_OS_SETTINGS_TAG_LOCK_SCREEN,
-         mojom::kSecurityAndSignInSubpagePath,
-         mojom::SearchResultIcon::kLock,
-         mojom::SearchResultDefaultRank::kMedium,
-         mojom::SearchResultType::kSubpage,
-         {.subpage = mojom::Subpage::kSecurityAndSignIn}},
     });
 
     if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
@@ -158,6 +136,28 @@ const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
                mojom::SearchResultDefaultRank::kMedium,
                mojom::SearchResultType::kSetting,
                {.setting = mojom::Setting::kAddToUserAllowlist}},
+              {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD,
+               mojom::kSecurityAndSignInSubpagePath,
+               mojom::SearchResultIcon::kLock,
+               mojom::SearchResultDefaultRank::kMedium,
+               mojom::SearchResultType::kSetting,
+               {.setting = mojom::Setting::kChangeAuthPin},
+               {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD_ALT1,
+                SearchConcept::kAltTagEnd}},
+              {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING,
+               mojom::kSecurityAndSignInSubpagePath,
+               mojom::SearchResultIcon::kLock,
+               mojom::SearchResultDefaultRank::kMedium,
+               mojom::SearchResultType::kSetting,
+               {.setting = mojom::Setting::kLockScreen},
+               {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING_ALT1,
+                SearchConcept::kAltTagEnd}},
+              {IDS_OS_SETTINGS_TAG_LOCK_SCREEN,
+               mojom::kSecurityAndSignInSubpagePath,
+               mojom::SearchResultIcon::kLock,
+               mojom::SearchResultDefaultRank::kMedium,
+               mojom::SearchResultType::kSubpage,
+               {.subpage = mojom::Subpage::kSecurityAndSignIn}},
           });
     }
     return all_tags;
@@ -754,7 +754,8 @@ PeopleSection::PeopleSection(
 
   // Fingerprint search tags are added if necessary. Remove fingerprint search
   // tags update dynamically during a user session.
-  if (AreFingerprintSettingsAllowed()) {
+  if (AreFingerprintSettingsAllowed() &&
+      !chromeos::features::IsAccountManagementFlowsV2Enabled()) {
     updater.AddSearchTags(GetFingerprintSearchConcepts());
 
     fingerprint_pref_change_registrar_.Init(pref_service_);

@@ -1,6 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
@@ -9,7 +10,9 @@
 <link rel="import" href="../../settings_page/settings_subpage.html">
 <link rel="import" href="../os_people_page/users_page.html">
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="../os_people_page/lock_screen.html">
+<link rel="import" href="../os_people_page/lock_screen_password_prompt_dialog.html">
+<link rel="import" href="../os_people_page/lock_state_behavior.html">
 
 <dom-module id="os-settings-privacy-page">
   <template>
@@ -19,6 +22,13 @@
 
       <div route-path="default">
         <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+          <cr-link-row id="lockScreenSubpageTrigger" class="hr"
+              on-click="onConfigureLockTap_"
+              label="[[selectLockScreenTitleString_(hasPinLogin)]]"
+              sub-label="[[getPasswordState_(hasPin,
+                  prefs.settings.enable_screen_lock.value)]]"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
           <cr-link-row id="manageOtherPeopleSubpageTrigger" class="hr"
               label="$i18n{manageOtherPeople}"
               on-click="onManageOtherPeople_"
@@ -57,6 +67,29 @@
       </div>
 
       <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+        <template is="dom-if" route-path="/osPrivacy/lockScreen">
+          <settings-subpage
+              page-title="[[selectLockScreenTitleString_(hasPinLogin)]]"
+              associated-control="[[$$('#lockScreenSubpageTrigger')]]">
+            <settings-lock-screen id="lockScreen" set-modes="[[setModes_]]"
+                prefs="{{prefs}}" auth-token="[[authToken_]]"
+                on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
+                on-password-requested="onPasswordRequested_">
+            </settings-lock-screen>
+          </settings-subpage>
+        </template>
+        <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
+          <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint"
+              no-search>
+            <settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
+              <settings-fingerprint-list id="fingerprint-list"
+                  auth-token="[[authToken_.token]]"
+                  set-modes="[[setModes_]]"
+                  on-password-requested="onPasswordRequested_">
+              </settings-fingerprint-list>
+            </settings-subpage>
+          </template>
+        </template>
         <template is="dom-if" route-path="/osPrivacy/accounts">
           <settings-subpage
               associated-control="[[$$('#manageOtherPeopleSubpageTrigger')]]"
@@ -68,6 +101,17 @@
       </template>
 
     </settings-animated-pages>
+
+    <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+      <template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
+        <settings-lock-screen-password-prompt-dialog
+            id="passwordDialog"
+            on-close="onPasswordPromptDialogClose_"
+            on-auth-token-obtained="onAuthTokenObtained_">
+        </settings-lock-screen-password-prompt-dialog>
+      </template>
+    </template>
+
   </template>
   <script src="os_privacy_page.js"></script>
 </dom-module>

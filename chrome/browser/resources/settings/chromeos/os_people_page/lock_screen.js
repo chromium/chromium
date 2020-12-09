@@ -158,6 +158,8 @@ Polymer({
       value: () => new Set([
         chromeos.settings.mojom.Setting.kLockScreen,
         chromeos.settings.mojom.Setting.kChangeAuthPin,
+        chromeos.settings.mojom.Setting.kLockScreenV2,
+        chromeos.settings.mojom.Setting.kChangeAuthPinV2,
       ]),
     },
   },

@@ -14,6 +14,8 @@ js_library("os_privacy_page") {
     "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
+    "../os_people_page:lock_screen",
+    "../os_people_page:lock_state_behavior",
     "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//ui/webui/resources/js:load_time_data",
   ]
@@ -30,6 +32,8 @@ js_library("os_privacy_page.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
+    "../os_people_page:lock_screen.m",
+    "../os_people_page:lock_state_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]

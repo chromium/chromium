@@ -62,6 +62,8 @@ Polymer({
       value: () => new Set([
         chromeos.settings.mojom.Setting.kAddFingerprint,
         chromeos.settings.mojom.Setting.kRemoveFingerprint,
+        chromeos.settings.mojom.Setting.kAddFingerprintV2,
+        chromeos.settings.mojom.Setting.kRemoveFingerprintV2,
       ]),
     },
   },

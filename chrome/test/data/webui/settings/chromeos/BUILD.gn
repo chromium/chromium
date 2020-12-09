@@ -86,6 +86,7 @@ js_modulizer("modulize") {
     "people_page_account_manager_test.js",
     "people_page_change_picture_test.js",
     "people_page_kerberos_accounts_test.js",
+    "lock_screen_tests.js",
     "personalization_page_test.js",
     "smart_inputs_page_test.js",
     "smb_shares_page_tests.js",

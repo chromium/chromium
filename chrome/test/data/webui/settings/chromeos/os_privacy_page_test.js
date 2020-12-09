@@ -11,6 +11,7 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.m.js';
 // #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
@@ -97,6 +98,63 @@ suite('PrivacyPageTests', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Verified access toggle should be focused for settingId=1101.');
+  });
+
+  test('Fingerprint dialog closes when token expires', async () => {
+    loadTimeData.overrideValues({
+      fingerprintUnlockEnabled: true,
+    });
+
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+    await test_util.waitAfterNextRender(privacyPage);
+
+    if (!privacyPage.isAccountManagementFlowsV2Enabled_) {
+      return;
+    }
+
+    const quickUnlockPrivateApi = new settings.FakeQuickUnlockPrivate();
+    privacyPage.authToken_ = quickUnlockPrivateApi.getFakeToken();
+
+    settings.Router.getInstance().navigateTo(settings.routes.LOCK_SCREEN);
+    Polymer.dom.flush();
+
+    const subpageTrigger = privacyPage.$$('#lockScreenSubpageTrigger');
+    // Sub-page trigger navigates to the lock screen page.
+    subpageTrigger.click();
+    Polymer.dom.flush();
+
+    assertEquals(
+        settings.Router.getInstance().getCurrentRoute(),
+        settings.routes.LOCK_SCREEN);
+    const lockScreenPage = assert(privacyPage.$$('#lockScreen'));
+
+    // Password dialog should not open because the authToken_ is set.
+    assertFalse(privacyPage.showPasswordPromptDialog_);
+
+    const editFingerprintsTrigger = lockScreenPage.$$('#editFingerprints');
+    editFingerprintsTrigger.click();
+    Polymer.dom.flush();
+
+    assertEquals(
+        settings.Router.getInstance().getCurrentRoute(),
+        settings.routes.FINGERPRINT);
+    assertFalse(privacyPage.showPasswordPromptDialog_);
+
+    const fingerprintTrigger =
+        privacyPage.$$('#fingerprint-list').$$('#addFingerprint');
+    fingerprintTrigger.click();
+
+    // Invalidate the auth token by firing an event.
+    assertFalse(privacyPage.authToken_ === undefined);
+    const event = new CustomEvent('invalidate-auth-token-requested');
+    lockScreenPage.dispatchEvent(event);
+    assertTrue(privacyPage.authToken_ === undefined);
+
+    assertEquals(
+        settings.Router.getInstance().getCurrentRoute(),
+        settings.routes.FINGERPRINT);
+    assertTrue(privacyPage.showPasswordPromptDialog_);
   });
 });
 
