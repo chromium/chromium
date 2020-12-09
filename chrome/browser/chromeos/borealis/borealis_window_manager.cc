@@ -33,7 +33,21 @@ const std::string* GetWindowId(aura::Window* window) {
   return exo::GetShellStartupId(window);
 }
 
-std::string WindowToAnonymousAppId(aura::Window* window) {
+std::string WindowToAppId(Profile* profile, aura::Window* window) {
+  // TODO(b/173977876): When we have better ways of associating apps with
+  // windows we will implement them. Until then, the mapping is identical to
+  // Crostini's so just spoof the relevant information and use theirs.
+  std::string pretend_crostini_id(*GetWindowId(window));
+  base::ReplaceFirstSubstringAfterOffset(
+      &pretend_crostini_id, 0, kBorealisWindowPrefix, "org.chromium.termina.");
+  std::string crostini_equivalent_id =
+      crostini::GetCrostiniShelfAppId(profile, &pretend_crostini_id, nullptr);
+
+  // If crostini thinks this app is registered, then it actually is registered
+  // for borealis.
+  if (!crostini::IsUnmatchedCrostiniShelfAppId(crostini_equivalent_id))
+    return crostini_equivalent_id;
+
   return kBorealisAnonymousPrefix + *GetWindowId(window);
 }
 
@@ -41,6 +55,11 @@ std::string WindowToAnonymousAppId(aura::Window* window) {
 std::string AnonymousIdentifierToName(const std::string& anon_id) {
   return anon_id.substr(anon_id.find(kBorealisWindowPrefix) +
                         sizeof(kBorealisWindowPrefix) - 1);
+}
+
+bool IsAnonymousAppId(const std::string& app_id) {
+  return base::StartsWith(app_id, kBorealisAnonymousPrefix,
+                          base::CompareCase::SENSITIVE);
 }
 
 }  // namespace
@@ -59,75 +78,95 @@ BorealisWindowManager::BorealisWindowManager(Profile* profile)
     : profile_(profile) {}
 
 BorealisWindowManager::~BorealisWindowManager() {
-  for (auto& id_to_windows : anon_ids_to_windows_) {
-    for (aura::Window* window : id_to_windows.second) {
-      window->RemoveObserver(this);
-    }
-    for (auto& observer : observers_) {
-      observer.OnAnonymousAppRemoved(id_to_windows.first);
-    }
-  }
-  for (auto& observer : observers_) {
+  for (auto& observer : anon_observers_) {
     observer.OnWindowManagerDeleted(this);
   }
-  DCHECK(!observers_.might_have_observers());
+  for (auto& observer : lifetime_observers_) {
+    observer.OnWindowManagerDeleted(this);
+  }
+  DCHECK(!anon_observers_.might_have_observers());
+  DCHECK(!lifetime_observers_.might_have_observers());
 }
 
 void BorealisWindowManager::AddObserver(AnonymousAppObserver* observer) {
-  observers_.AddObserver(observer);
+  anon_observers_.AddObserver(observer);
 }
 
 void BorealisWindowManager::RemoveObserver(AnonymousAppObserver* observer) {
-  observers_.RemoveObserver(observer);
+  anon_observers_.RemoveObserver(observer);
+}
+
+void BorealisWindowManager::AddObserver(AppWindowLifetimeObserver* observer) {
+  lifetime_observers_.AddObserver(observer);
+}
+
+void BorealisWindowManager::RemoveObserver(
+    AppWindowLifetimeObserver* observer) {
+  lifetime_observers_.RemoveObserver(observer);
 }
 
 std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
   if (!IsBorealisWindow(window))
     return {};
-  // TODO(b/173977876): When we have better ways of associating apps with
-  // windows we will implement them. Until then, the mapping is identical to
-  // Crostini's so just spoof the relevant information and use theirs.
-  std::string pretend_crostini_id(*GetWindowId(window));
-  base::ReplaceFirstSubstringAfterOffset(
-      &pretend_crostini_id, 0, kBorealisWindowPrefix, "org.chromium.termina.");
-  std::string crostini_equivalent_id =
-      crostini::GetCrostiniShelfAppId(profile_, &pretend_crostini_id, nullptr);
 
-  // If crostini thinks this app is registered, then it actually is registered
-  // for borealis.
-  if (!crostini::IsUnmatchedCrostiniShelfAppId(crostini_equivalent_id))
-    return crostini_equivalent_id;
+  std::string app_id = WindowToAppId(profile_, window);
+  HandleWindow(window, app_id);
 
-  // The app has no registration, it is anonymous.
-  std::string anon_id = WindowToAnonymousAppId(window);
-  if (!anon_ids_to_windows_.contains(anon_id)) {
-    std::string anon_name = AnonymousIdentifierToName(anon_id);
-    for (auto& observer : observers_)
-      observer.OnAnonymousAppAdded(anon_id, anon_name);
-  }
-  // Add the window to the tracking set, and if it wasn't already there, add an
-  // observer.
-  if (anon_ids_to_windows_[anon_id].emplace(window).second) {
-    window->AddObserver(this);
-  }
-  return anon_id;
+  return app_id;
 }
 
 void BorealisWindowManager::OnWindowDestroying(aura::Window* window) {
-  std::string anon_id = WindowToAnonymousAppId(window);
+  std::string app_id = WindowToAppId(profile_, window);
+  for (auto& observer : lifetime_observers_) {
+    observer.OnWindowFinished(app_id, window);
+  }
+
   base::flat_map<std::string, base::flat_set<aura::Window*>>::iterator iter =
-      anon_ids_to_windows_.find(anon_id);
-
-  DCHECK(iter != anon_ids_to_windows_.end());
+      ids_to_windows_.find(app_id);
+  DCHECK(iter != ids_to_windows_.end());
   DCHECK(iter->second.contains(window));
-
   iter->second.erase(window);
   if (!iter->second.empty())
     return;
 
-  for (auto& observer : observers_)
-    observer.OnAnonymousAppRemoved(anon_id);
-  anon_ids_to_windows_.erase(iter);
+  if (IsAnonymousAppId(app_id)) {
+    for (auto& observer : anon_observers_)
+      observer.OnAnonymousAppRemoved(app_id);
+  }
+  for (auto& observer : lifetime_observers_)
+    observer.OnAppFinished(app_id);
+
+  ids_to_windows_.erase(iter);
+  if (!ids_to_windows_.empty())
+    return;
+  for (auto& observer : lifetime_observers_)
+    observer.OnSessionFinished();
+}
+
+void BorealisWindowManager::HandleWindow(aura::Window* window,
+                                         const std::string& app_id) {
+  // If this is the first window, the session has started.
+  if (ids_to_windows_.empty()) {
+    for (auto& observer : lifetime_observers_)
+      observer.OnSessionStarted();
+  }
+  // If this is the given app_id's first window, the app has started
+  if (ids_to_windows_[app_id].empty()) {
+    for (auto& observer : lifetime_observers_)
+      observer.OnAppStarted(app_id);
+    if (IsAnonymousAppId(app_id)) {
+      std::string anon_name = AnonymousIdentifierToName(app_id);
+      for (auto& observer : anon_observers_)
+        observer.OnAnonymousAppAdded(app_id, anon_name);
+    }
+  }
+  // If this window was not already in the set, observe it and notify our
+  // observers about it.
+  if (ids_to_windows_[app_id].emplace(window).second) {
+    window->AddObserver(this);
+    for (auto& observer : lifetime_observers_)
+      observer.OnWindowStarted(app_id, window);
+  }
 }
 
 }  // namespace borealis

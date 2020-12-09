@@ -15,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
+using ::testing::_;
+
 namespace borealis {
 namespace {
 
@@ -27,6 +29,30 @@ class MockAnonObserver
               ());
 
   MOCK_METHOD(void, OnAnonymousAppRemoved, (const std::string&), ());
+
+  MOCK_METHOD(void, OnWindowManagerDeleted, (BorealisWindowManager*), ());
+};
+
+class MockLifetimeObserver
+    : public borealis::BorealisWindowManager::AppWindowLifetimeObserver {
+ public:
+  MOCK_METHOD(void, OnSessionStarted, (), ());
+
+  MOCK_METHOD(void, OnSessionFinished, (), ());
+
+  MOCK_METHOD(void, OnAppStarted, (const std::string& app_id), ());
+
+  MOCK_METHOD(void, OnAppFinished, (const std::string& app_id), ());
+
+  MOCK_METHOD(void,
+              OnWindowStarted,
+              (const std::string& app_id, aura::Window*),
+              ());
+
+  MOCK_METHOD(void,
+              OnWindowFinished,
+              (const std::string& app_id, aura::Window*),
+              ());
 
   MOCK_METHOD(void, OnWindowManagerDeleted, (BorealisWindowManager*), ());
 };
@@ -60,23 +86,28 @@ TEST_F(BorealisWindowManagerTest, BorealisWindowHasAnId) {
   EXPECT_NE(window_manager.GetShelfAppId(window.get()), "");
 }
 
-TEST_F(BorealisWindowManagerTest, ObserverNotifiedOnManagerShutdown) {
-  testing::StrictMock<MockAnonObserver> observer;
+TEST_F(BorealisWindowManagerTest, ObserversNotifiedOnManagerShutdown) {
+  testing::StrictMock<MockAnonObserver> anon_observer;
+  testing::StrictMock<MockLifetimeObserver> life_observer;
 
   BorealisWindowManager window_manager(profile());
-  window_manager.AddObserver(&observer);
+  window_manager.AddObserver(&anon_observer);
+  window_manager.AddObserver(&life_observer);
 
-  EXPECT_CALL(observer, OnWindowManagerDeleted(&window_manager))
-      .WillOnce(testing::Invoke([&observer](BorealisWindowManager* wm) {
-        wm->RemoveObserver(&observer);
+  EXPECT_CALL(anon_observer, OnWindowManagerDeleted(&window_manager))
+      .WillOnce(testing::Invoke([&anon_observer](BorealisWindowManager* wm) {
+        wm->RemoveObserver(&anon_observer);
+      }));
+  EXPECT_CALL(life_observer, OnWindowManagerDeleted(&window_manager))
+      .WillOnce(testing::Invoke([&life_observer](BorealisWindowManager* wm) {
+        wm->RemoveObserver(&life_observer);
       }));
 }
 
 TEST_F(BorealisWindowManagerTest, ObserverCalledForAnonymousApp) {
   testing::StrictMock<MockAnonObserver> observer;
-  EXPECT_CALL(
-      observer,
-      OnAnonymousAppAdded(testing::ContainsRegex("anonymous_app"), testing::_));
+  EXPECT_CALL(observer,
+              OnAnonymousAppAdded(testing::ContainsRegex("anonymous_app"), _));
 
   BorealisWindowManager window_manager(profile());
   window_manager.AddObserver(&observer);
@@ -91,7 +122,55 @@ TEST_F(BorealisWindowManagerTest, ObserverCalledForAnonymousApp) {
   window_manager.RemoveObserver(&observer);
 }
 
-TEST_F(BorealisWindowManagerTest, HandlesMultipleWindows) {
+TEST_F(BorealisWindowManagerTest, LifetimeObserverTracksWindows) {
+  testing::StrictMock<MockLifetimeObserver> observer;
+  BorealisWindowManager window_manager(profile());
+  window_manager.AddObserver(&observer);
+
+  // This object forces all EXPECT_CALLs to occur in the order they are
+  // declared.
+  testing::InSequence sequence;
+
+  // A new window will start everything.
+  EXPECT_CALL(observer, OnSessionStarted());
+  EXPECT_CALL(observer, OnAppStarted(_));
+  EXPECT_CALL(observer, OnWindowStarted(_, _));
+  std::unique_ptr<aura::Window> first_foo =
+      MakeWindow("org.chromium.borealis.foo");
+  window_manager.GetShelfAppId(first_foo.get());
+
+  // A window for the same app only starts that window.
+  EXPECT_CALL(observer, OnWindowStarted(_, _));
+  std::unique_ptr<aura::Window> second_foo =
+      MakeWindow("org.chromium.borealis.foo");
+  window_manager.GetShelfAppId(second_foo.get());
+
+  // Whereas a new app starts both the app and the window.
+  EXPECT_CALL(observer, OnAppStarted(_));
+  EXPECT_CALL(observer, OnWindowStarted(_, _));
+  std::unique_ptr<aura::Window> only_bar =
+      MakeWindow("org.chromium.borealis.bar");
+  window_manager.GetShelfAppId(only_bar.get());
+
+  // Deleting an app window while one still exists does not end the app.
+  EXPECT_CALL(observer, OnWindowFinished(_, _));
+  first_foo.reset();
+
+  // But deleting them all does finish the app.
+  EXPECT_CALL(observer, OnWindowFinished(_, _));
+  EXPECT_CALL(observer, OnAppFinished(_));
+  second_foo.reset();
+
+  // And deleting all the windows finishes the session.
+  EXPECT_CALL(observer, OnWindowFinished(_, _));
+  EXPECT_CALL(observer, OnAppFinished(_));
+  EXPECT_CALL(observer, OnSessionFinished());
+  only_bar.reset();
+
+  window_manager.RemoveObserver(&observer);
+}
+
+TEST_F(BorealisWindowManagerTest, HandlesMultipleAnonymousWindows) {
   testing::StrictMock<MockAnonObserver> observer;
 
   BorealisWindowManager window_manager(profile());
@@ -99,7 +178,7 @@ TEST_F(BorealisWindowManagerTest, HandlesMultipleWindows) {
 
   // We add an anonymous window for the same app twice, but we should only see
   // one observer call.
-  EXPECT_CALL(observer, OnAnonymousAppAdded(testing::_, testing::_)).Times(1);
+  EXPECT_CALL(observer, OnAnonymousAppAdded(_, _)).Times(1);
 
   std::unique_ptr<aura::Window> window1 =
       MakeWindow("org.chromium.borealis.anonymous_app");
@@ -110,13 +189,13 @@ TEST_F(BorealisWindowManagerTest, HandlesMultipleWindows) {
 
   // We only expect to see the app removed after the last window closes.
   window1.reset();
-  EXPECT_CALL(observer, OnAnonymousAppRemoved(testing::_)).Times(1);
+  EXPECT_CALL(observer, OnAnonymousAppRemoved(_)).Times(1);
   window2.reset();
 
   window_manager.RemoveObserver(&observer);
 }
 
-TEST_F(BorealisWindowManagerTest, ObserverNotCalledForKnownApp) {
+TEST_F(BorealisWindowManagerTest, AnonymousObserverNotCalledForKnownApp) {
   // Generate a fake app.
   vm_tools::apps::ApplicationList list;
   list.set_vm_name("vm");

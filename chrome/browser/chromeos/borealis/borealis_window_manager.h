@@ -21,6 +21,10 @@ class Window;
 
 namespace borealis {
 
+// The borealis window manager keeps track of the association of windows to
+// borealis apps. This includes determining which windows belong to a borealis
+// app, what the lifetime of the app is relative to its windows, and the
+// presence of borealis windows with an unknown app (see go/anonymous-apps).
 class BorealisWindowManager : public aura::WindowObserver {
  public:
   // Returns true if this window belongs to a borealis VM (based on its app_id
@@ -47,6 +51,48 @@ class BorealisWindowManager : public aura::WindowObserver {
         BorealisWindowManager* window_manager) = 0;
   };
 
+  // An observer for tracking window/app lifetimes. The key concepts are:
+  //  - "Session", which refers to all borealis windows.
+  //  - "App", which refers to the subset of windows belonging to a single
+  //    identified app.
+  //  - "Window", which refers to single windows.
+  // These concepts are nested, all apps belong to one session, and each window
+  // belongs to a single app.
+  class AppWindowLifetimeObserver : public base::CheckedObserver {
+   public:
+    // Called when the first UI element of any borealis app becomes visible.
+    virtual void OnSessionStarted() {}
+
+    // Called when the last UI element of any borealis app disappears. This
+    // implies that there are no more borealis windows until the next
+    // OnSessionStarted() is called.
+    virtual void OnSessionFinished() {}
+
+    // Called when the first window for an app with this |app_id| becomes
+    // visible.
+    virtual void OnAppStarted(const std::string& app_id) {}
+
+    // Called when the last window for |app_id|'s app goes away, implying the
+    // app has no visible windows until OnAppStarted() is called again.
+    virtual void OnAppFinished(const std::string& app_id) {}
+
+    // Called when a window associated with |app_id|'s app comes into existence.
+    // Note that this has nothing to do with the visible state of |window|,
+    // only that it exists in memory.
+    virtual void OnWindowStarted(const std::string& app_id,
+                                 aura::Window* window) {}
+
+    // Called when |window|, associated with |app_id|'s app, is about to be
+    // closed.
+    virtual void OnWindowFinished(const std::string& app_id,
+                                  aura::Window* window) {}
+
+    // Called when the window manager is being deleted. Observers should
+    // unregister themselves from it.
+    virtual void OnWindowManagerDeleted(
+        BorealisWindowManager* window_manager) = 0;
+  };
+
   explicit BorealisWindowManager(Profile* profile);
 
   ~BorealisWindowManager() override;
@@ -54,16 +100,27 @@ class BorealisWindowManager : public aura::WindowObserver {
   void AddObserver(AnonymousAppObserver* observer);
   void RemoveObserver(AnonymousAppObserver* observer);
 
+  void AddObserver(AppWindowLifetimeObserver* observer);
+  void RemoveObserver(AppWindowLifetimeObserver* observer);
+
+  // Returns the application ID for the given window, or "" if the window does
+  // not belong to borealis. If the window does belong to borealis, this call
+  // will also cause the manager to track the window.
+  //
+  // TODO(b/175152663): Refactor this into two methods so that it is clear which
+  // one has side-effects.
   std::string GetShelfAppId(aura::Window* window);
 
  private:
   // aura::WindowObserver overrides.
   void OnWindowDestroying(aura::Window* window) override;
 
+  void HandleWindow(aura::Window* window, const std::string& app_id);
+
   Profile* const profile_;
-  base::flat_map<std::string, base::flat_set<aura::Window*>>
-      anon_ids_to_windows_;
-  base::ObserverList<AnonymousAppObserver> observers_;
+  base::flat_map<std::string, base::flat_set<aura::Window*>> ids_to_windows_;
+  base::ObserverList<AnonymousAppObserver> anon_observers_;
+  base::ObserverList<AppWindowLifetimeObserver> lifetime_observers_;
 };
 
 }  // namespace borealis
