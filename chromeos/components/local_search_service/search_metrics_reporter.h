@@ -50,15 +50,10 @@ class SearchMetricsReporter : public mojom::SearchMetricsReporter {
   void OnSearchPerformed(IndexId index_id,
                          OnSearchPerformedCallback callback) override;
 
-  // Sets |index_id_|.
-  void SetIndexIdForTesting(IndexId index_id);
-
   // Calls ReportDailyMetrics directly.
   void ReportDailyMetricsForTesting(metrics::DailyEvent::IntervalType type);
 
-  mojo::PendingRemote<mojom::SearchMetricsReporter> BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
+  mojo::PendingRemote<mojom::SearchMetricsReporter> BindNewPipeAndPassRemote();
 
  private:
   class DailyEventObserver;
@@ -66,9 +61,6 @@ class SearchMetricsReporter : public mojom::SearchMetricsReporter {
   // Called by DailyEventObserver whenever a day has elapsed according to
   // |daily_event_|.
   void ReportDailyMetrics(metrics::DailyEvent::IntervalType type);
-
-  // Used as an index into |daily_counts_| for counting searches.
-  base::Optional<IndexId> index_id_;
 
   PrefService* pref_service_;  // Not owned.
 
@@ -81,7 +73,8 @@ class SearchMetricsReporter : public mojom::SearchMetricsReporter {
   // Initial values will be loaded from prefs service.
   std::array<int, kNumberIndexIds> daily_counts_;
 
-  mojo::Receiver<mojom::SearchMetricsReporter> receiver_{this};
+  std::vector<std::unique_ptr<mojo::Receiver<mojom::SearchMetricsReporter>>>
+      receivers_;
 };
 
 }  // namespace local_search_service

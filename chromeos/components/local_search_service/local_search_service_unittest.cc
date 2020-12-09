@@ -136,7 +136,7 @@ TEST_F(LocalSearchServiceTest, BindMultipleTimes) {
   mojo::Remote<mojom::Index> first_index_remote;
   BindIndexAndCheck(IndexId::kCrosSettings, Backend::kInvertedIndex,
                     first_index_remote.BindNewPipeAndPassReceiver(),
-                    mojo::NullRemote());
+                    reporter_->BindNewPipeAndPassRemote());
   IndexGetSizeAndCheckResults(&first_index_remote, 0u);
   const std::map<std::string, std::vector<ContentWithId>> data_to_register = {
       {"id1",
@@ -151,14 +151,14 @@ TEST_F(LocalSearchServiceTest, BindMultipleTimes) {
   mojo::Remote<mojom::Index> second_index_remote;
   BindIndexAndCheck(IndexId::kCrosSettings, Backend::kInvertedIndex,
                     second_index_remote.BindNewPipeAndPassReceiver(),
-                    mojo::NullRemote());
+                    reporter_->BindNewPipeAndPassRemote());
   IndexGetSizeAndCheckResults(&second_index_remote, 2u);
 
   // Bind the third time with different id, should get a new index.
   mojo::Remote<mojom::Index> third_index_remote;
   BindIndexAndCheck(IndexId::kHelpApp, Backend::kInvertedIndex,
                     third_index_remote.BindNewPipeAndPassReceiver(),
-                    mojo::NullRemote());
+                    reporter_->BindNewPipeAndPassRemote());
   IndexGetSizeAndCheckResults(&third_index_remote, 0u);
 }
 

@@ -30,9 +30,8 @@ class SearchMetricsReporterTest : public testing::Test {
   void TearDown() override { reporter_.reset(); }
 
  protected:
-  void SetReporter(IndexId index_id) {
+  void SetReporter() {
     reporter_ = std::make_unique<SearchMetricsReporter>(&pref_service_);
-    reporter_->SetIndexIdForTesting(index_id);
   }
 
   // Notifies |reporter_| that a search is performed.
@@ -67,18 +66,33 @@ class SearchMetricsReporterTest : public testing::Test {
 };
 
 TEST_F(SearchMetricsReporterTest, CountAndReportEvents) {
-  SetReporter(IndexId::kCrosSettings);
+  SetReporter();
+  base::HistogramTester tester;
+
   SendOnSearchPerformedAndCheck(IndexId::kCrosSettings);
   SendOnSearchPerformedAndCheck(IndexId::kCrosSettings);
   SendOnSearchPerformedAndCheck(IndexId::kCrosSettings);
-  TriggerDailyEventAndVerifyHistograms(SearchMetricsReporter::kCrosSettingsName,
-                                       3);
+  TriggerDailyEvent(metrics::DailyEvent::IntervalType::DAY_ELAPSED);
+  tester.ExpectUniqueSample(SearchMetricsReporter::kHelpAppName, 0, 1);
+  tester.ExpectUniqueSample(SearchMetricsReporter::kCrosSettingsName, 3, 1);
 
   // The next day, another two searches.
   SendOnSearchPerformedAndCheck(IndexId::kCrosSettings);
   SendOnSearchPerformedAndCheck(IndexId::kCrosSettings);
-  TriggerDailyEventAndVerifyHistograms(SearchMetricsReporter::kCrosSettingsName,
-                                       2);
+  SendOnSearchPerformedAndCheck(IndexId::kHelpApp);
+  TriggerDailyEvent(metrics::DailyEvent::IntervalType::DAY_ELAPSED);
+  tester.ExpectBucketCount(SearchMetricsReporter::kHelpAppName, 1, 1);
+  tester.ExpectBucketCount(SearchMetricsReporter::kCrosSettingsName, 2, 1);
+
+  // Next day, CLOCK_CHANGED event happens, nothing more is logged.
+  SendOnSearchPerformedAndCheck(IndexId::kHelpApp);
+  SendOnSearchPerformedAndCheck(IndexId::kCrosSettings);
+  SendOnSearchPerformedAndCheck(IndexId::kHelpApp);
+  SendOnSearchPerformedAndCheck(IndexId::kCrosSettings);
+  SendOnSearchPerformedAndCheck(IndexId::kHelpApp);
+  TriggerDailyEvent(metrics::DailyEvent::IntervalType::CLOCK_CHANGED);
+  tester.ExpectTotalCount(SearchMetricsReporter::kHelpAppName, 2);
+  tester.ExpectTotalCount(SearchMetricsReporter::kCrosSettingsName, 2);
 }
 
 TEST_F(SearchMetricsReporterTest, LoadInitialCountsFromPrefs) {
@@ -86,8 +100,7 @@ TEST_F(SearchMetricsReporterTest, LoadInitialCountsFromPrefs) {
   // prefs.
   pref_service_.SetInteger(prefs::kLocalSearchServiceMetricsCrosSettingsCount,
                            2);
-  SetReporter(IndexId::kCrosSettings);
-
+  SetReporter();
   TriggerDailyEventAndVerifyHistograms(SearchMetricsReporter::kCrosSettingsName,
                                        2);
 
@@ -98,7 +111,7 @@ TEST_F(SearchMetricsReporterTest, LoadInitialCountsFromPrefs) {
 }
 
 TEST_F(SearchMetricsReporterTest, IgnoreDailyEventFirstRun) {
-  SetReporter(IndexId::kCrosSettings);
+  SetReporter();
   // metrics::DailyEvent notifies observers immediately on first run. Histograms
   // shouldn't be sent in this case.
   base::HistogramTester tester;
@@ -107,7 +120,7 @@ TEST_F(SearchMetricsReporterTest, IgnoreDailyEventFirstRun) {
 }
 
 TEST_F(SearchMetricsReporterTest, IgnoreDailyEventClockChanged) {
-  SetReporter(IndexId::kCrosSettings);
+  SetReporter();
   SendOnSearchPerformedAndCheck(IndexId::kCrosSettings);
 
   // metrics::DailyEvent notifies observers if it sees that the system clock has

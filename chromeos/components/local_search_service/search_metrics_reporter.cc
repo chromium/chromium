@@ -96,19 +96,11 @@ SearchMetricsReporter::~SearchMetricsReporter() = default;
 void SearchMetricsReporter::OnSearchPerformed(
     IndexId index_id,
     OnSearchPerformedCallback callback) {
-  if (!index_id_)
-    index_id_ = index_id;
-  const size_t index = static_cast<size_t>(*index_id_);
+  const size_t index = static_cast<size_t>(index_id);
   const char* daily_count_pref = kDailyCountPrefs[index];
   ++daily_counts_[index];
   pref_service_->SetInteger(daily_count_pref, daily_counts_[index]);
   std::move(callback).Run();
-}
-
-void SearchMetricsReporter::SetIndexIdForTesting(IndexId index_id) {
-  DCHECK(!index_id_);
-  index_id_ = index_id;
-  DCHECK_LT(static_cast<size_t>(index_id), kDailyCountPrefs.size());
 }
 
 void SearchMetricsReporter::ReportDailyMetricsForTesting(
@@ -116,16 +108,25 @@ void SearchMetricsReporter::ReportDailyMetricsForTesting(
   ReportDailyMetrics(type);
 }
 
+mojo::PendingRemote<mojom::SearchMetricsReporter>
+SearchMetricsReporter::BindNewPipeAndPassRemote() {
+  receivers_.push_back(
+      std::make_unique<mojo::Receiver<mojom::SearchMetricsReporter>>(this));
+  return receivers_.back()->BindNewPipeAndPassRemote();
+}
+
 void SearchMetricsReporter::ReportDailyMetrics(
     metrics::DailyEvent::IntervalType type) {
-  if (!index_id_)
+  // Do nothing on the first run.
+  if (type == metrics::DailyEvent::IntervalType::FIRST_RUN)
     return;
 
-  // Don't send metrics on first run or if the clock is changed.
+  // Only send metrics for DAY_ELAPSED event.
   if (type == metrics::DailyEvent::IntervalType::DAY_ELAPSED) {
-    const size_t index = static_cast<size_t>(*index_id_);
-    base::UmaHistogramCounts1000(kDailyCountHistograms[index],
-                                 daily_counts_[index]);
+    for (size_t index = 0; index < kDailyCountPrefs.size(); ++index) {
+      base::UmaHistogramCounts1000(kDailyCountHistograms[index],
+                                   daily_counts_[index]);
+    }
   }
 
   for (size_t i = 0; i < kDailyCountPrefs.size(); ++i) {

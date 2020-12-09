@@ -36,20 +36,20 @@ void LocalSearchService::BindIndex(
                                         index_id, /*local_state*/ nullptr))
                  .first;
     }
+    if (!it->second) {
+      std::move(callback).Run("Returned Index is null.");
+      return;
+    }
+    if (reporter_remote)
+      it->second->SetReporterRemote(std::move(reporter_remote));
   }
 
   if (it == indices_.end()) {
     std::move(callback).Run("Error creating an Index.");
     return;
   }
-  if (!it->second) {
-    std::move(callback).Run("Returned Index is null.");
-    return;
-  }
 
   it->second->BindReceiver(std::move(index_receiver));
-  if (reporter_remote)
-    it->second->SetReporterRemote(std::move(reporter_remote));
   std::move(callback).Run(base::nullopt);
 }
 
