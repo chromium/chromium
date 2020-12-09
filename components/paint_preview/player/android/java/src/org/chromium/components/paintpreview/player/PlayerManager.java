@@ -13,10 +13,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
+import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.frame.PlayerFrameCoordinator;
 import org.chromium.url.GURL;
@@ -71,7 +74,8 @@ public class PlayerManager {
         void onLinkClick(GURL url);
     }
 
-    private static PlayerCompositorDelegate.Factory sCompositorDelegateFactoryForTesting;
+    private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
+            new CompositorDelegateFactory();
 
     private Context mContext;
     private PlayerCompositorDelegate mDelegate;
@@ -103,7 +107,7 @@ public class PlayerManager {
         mContext = context;
         mListener = listener;
         mDelegate = getCompositorDelegateFactory().create(nativePaintPreviewServiceProvider, url,
-                directoryKey, this::onCompositorReady, mListener::onCompositorError);
+                directoryKey, false, this::onCompositorReady, mListener::onCompositorError);
         mHostView = new FrameLayout(mContext);
         mPlayerSwipeRefreshHandler =
                 new PlayerSwipeRefreshHandler(mContext, mListener::onPullToRefresh);
@@ -241,9 +245,29 @@ public class PlayerManager {
         return mHostView;
     }
 
+    static class CompositorDelegateFactory implements PlayerCompositorDelegate.Factory {
+        @Override
+        public PlayerCompositorDelegate create(NativePaintPreviewServiceProvider service, GURL url,
+                String directoryKey, boolean mainFrameMode,
+                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                Callback<Integer> compositorErrorCallback) {
+            return new PlayerCompositorDelegateImpl(service, null, url, directoryKey, mainFrameMode,
+                    compositorListener, compositorErrorCallback);
+        }
+
+        @Override
+        public PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
+                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
+                boolean mainFrameMode,
+                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                Callback<Integer> compositorErrorCallback) {
+            return new PlayerCompositorDelegateImpl(service, proto, url, directoryKey,
+                    mainFrameMode, compositorListener, compositorErrorCallback);
+        }
+    }
+
     private PlayerCompositorDelegate.Factory getCompositorDelegateFactory() {
-        return (sCompositorDelegateFactoryForTesting != null) ? sCompositorDelegateFactoryForTesting
-                                                              : PlayerCompositorDelegateImpl::new;
+        return sCompositorDelegateFactory;
     }
 
     @VisibleForTesting
@@ -254,6 +278,10 @@ public class PlayerManager {
     @VisibleForTesting
     public static void overrideCompositorDelegateFactoryForTesting(
             PlayerCompositorDelegate.Factory factory) {
-        sCompositorDelegateFactoryForTesting = factory;
+        if (factory == null) {
+            sCompositorDelegateFactory = new CompositorDelegateFactory();
+            return;
+        }
+        sCompositorDelegateFactory = factory;
     }
 }

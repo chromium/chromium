@@ -64,16 +64,18 @@ jlong JNI_PlayerCompositorDelegateImpl_Initialize(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_object,
     jlong paint_preview_service,
+    const JavaParamRef<jbyteArray>& j_proto,
     const JavaParamRef<jstring>& j_url_spec,
     const JavaParamRef<jstring>& j_directory_key,
+    jboolean j_main_frame_mode,
     const JavaParamRef<jobject>& j_compositor_error_callback,
     jboolean j_is_low_mem) {
   PlayerCompositorDelegateAndroid* delegate =
       new PlayerCompositorDelegateAndroid(
           env, j_object,
           reinterpret_cast<PaintPreviewBaseService*>(paint_preview_service),
-          j_url_spec, j_directory_key, j_compositor_error_callback,
-          j_is_low_mem);
+          j_proto, j_url_spec, j_directory_key, j_main_frame_mode,
+          j_compositor_error_callback, j_is_low_mem);
   return reinterpret_cast<intptr_t>(delegate);
 }
 
@@ -81,18 +83,33 @@ PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_object,
     PaintPreviewBaseService* paint_preview_service,
+    const JavaParamRef<jbyteArray>& j_proto,
     const JavaParamRef<jstring>& j_url_spec,
     const JavaParamRef<jstring>& j_directory_key,
+    jboolean j_main_frame_mode,
     const JavaParamRef<jobject>& j_compositor_error_callback,
     jboolean j_is_low_mem)
     : PlayerCompositorDelegate(),
       request_id_(0),
       startup_timestamp_(base::TimeTicks::Now()) {
+  if (j_proto) {
+    std::string serialized_proto;
+    base::android::JavaByteArrayToString(env, j_proto, &serialized_proto);
+    auto proto = std::make_unique<PaintPreviewProto>();
+    if (!proto->ParseFromString(serialized_proto)) {
+      base::android::RunIntCallbackAndroid(
+          j_compositor_error_callback,
+          static_cast<int>(CompositorStatus::PROTOBUF_DESERIALIZATION_ERROR));
+      return;
+    }
+    PlayerCompositorDelegate::SetProto(std::move(proto));
+  }
   PlayerCompositorDelegate::Initialize(
       paint_preview_service,
       GURL(base::android::ConvertJavaStringToUTF8(env, j_url_spec)),
       DirectoryKey{
           base::android::ConvertJavaStringToUTF8(env, j_directory_key)},
+      static_cast<bool>(j_main_frame_mode),
       base::BindOnce(&base::android::RunIntCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_compositor_error_callback)),
       base::TimeDelta::FromSeconds(15),
@@ -224,20 +241,23 @@ jint PlayerCompositorDelegateAndroid::RequestBitmap(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "paint_preview", "PlayerCompositorDelegateAndroid::RequestBitmap",
       TRACE_ID_LOCAL(request_id_));
-
-  int32_t id = PlayerCompositorDelegate::RequestBitmap(
-      base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
-          env, j_frame_guid),
-      gfx::Rect(j_clip_x, j_clip_y, j_clip_width, j_clip_height),
-      j_scale_factor,
-      base::BindOnce(&PlayerCompositorDelegateAndroid::OnBitmapCallback,
-                     weak_factory_.GetWeakPtr(),
-                     ScopedJavaGlobalRef<jobject>(j_bitmap_callback),
-                     ScopedJavaGlobalRef<jobject>(j_error_callback),
-                     request_id_));
+  gfx::Rect rect(j_clip_x, j_clip_y, j_clip_width, j_clip_height);
+  auto callback = base::BindOnce(
+      &PlayerCompositorDelegateAndroid::OnBitmapCallback,
+      weak_factory_.GetWeakPtr(),
+      ScopedJavaGlobalRef<jobject>(j_bitmap_callback),
+      ScopedJavaGlobalRef<jobject>(j_error_callback), request_id_);
   ++request_id_;
 
-  return static_cast<jint>(id);
+  base::Optional<base::UnguessableToken> frame_guid;
+  if (j_frame_guid) {
+    frame_guid =
+        base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
+            env, j_frame_guid);
+  }
+
+  return static_cast<jint>(PlayerCompositorDelegate::RequestBitmap(
+      frame_guid, rect, j_scale_factor, std::move(callback)));
 }
 
 jboolean PlayerCompositorDelegateAndroid::CancelBitmapRequest(

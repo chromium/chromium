@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerManager;
@@ -53,12 +55,37 @@ public class TabbedPaintPreviewTest {
 
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
 
+    /**
+     * Implementation of {@link PlayerCompositorDelegate.Factory} for tests.
+     */
+    public static class TestCompositorDelegateFactory implements PlayerCompositorDelegate.Factory {
+        @Override
+        public PlayerCompositorDelegate create(NativePaintPreviewServiceProvider service, GURL url,
+                String directoryKey, boolean mainFrameMode,
+                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                Callback<Integer> compositorErrorCallback) {
+            return new TestCompositorDelegate(service, null, url, directoryKey, mainFrameMode,
+                    compositorListener, compositorErrorCallback);
+        }
+
+        @Override
+        public PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
+                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
+                boolean mainFrameMode,
+                @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
+                Callback<Integer> compositorErrorCallback) {
+            Assert.fail("createForProto shouldn't be called");
+            return null;
+        }
+    }
+
     @Before
     public void setUp() {
         PaintPreviewTabService mockService = Mockito.mock(PaintPreviewTabService.class);
         Mockito.doReturn(true).when(mockService).hasCaptureForTab(Mockito.anyInt());
         TabbedPaintPreview.overridePaintPreviewTabServiceForTesting(mockService);
-        PlayerManager.overrideCompositorDelegateFactoryForTesting(TestCompositorDelegate::new);
+        PlayerManager.overrideCompositorDelegateFactoryForTesting(
+                new TestCompositorDelegateFactory());
         mActivityTestRule.startMainActivityWithURL(
                 mActivityTestRule.getTestServer().getURL(TEST_URL));
     }
@@ -296,9 +323,12 @@ public class TabbedPaintPreviewTest {
     public static class TestCompositorDelegate implements PlayerCompositorDelegate {
         private int mNextRequestId;
 
-        TestCompositorDelegate(NativePaintPreviewServiceProvider service, GURL url,
-                String directoryKey, @NonNull CompositorListener compositorListener,
+        TestCompositorDelegate(NativePaintPreviewServiceProvider service,
+                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
+                boolean mainFrameMode, @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
+            Assert.assertNull(proto);
+            Assert.assertFalse(mainFrameMode);
             new Handler().postDelayed(() -> {
                 Parcel parcel = Parcel.obtain();
                 parcel.writeLong(4577L);
@@ -324,6 +354,14 @@ public class TabbedPaintPreviewTest {
             int requestId = mNextRequestId;
             mNextRequestId++;
             return requestId;
+        }
+
+        @Override
+        public int requestBitmap(Rect clipRect, float scaleFactor, Callback<Bitmap> bitmapCallback,
+                Runnable errorCallback) {
+            Assert.fail("The GUIDless version of TestCompositorDelegate#requestBitmap() shouldn't"
+                    + " be called.");
+            return 0;
         }
 
         @Override

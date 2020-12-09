@@ -137,6 +137,7 @@ void PaintPreviewCompositorImpl::BeginSeparatedFrameComposite(
 
   // Remove any previously loaded frames, in case |BeginSeparatedFrameComposite|
   // is called multiple times.
+  root_frame_ = nullptr;
   frames_.clear();
 
   auto response = mojom::PaintPreviewBeginCompositeResponse::New();
@@ -231,11 +232,15 @@ void PaintPreviewCompositorImpl::BeginMainFrameComposite(
     BeginMainFrameCompositeCallback callback) {
   TRACE_EVENT0("paint_preview",
                "PaintPreviewCompositorImpl::BeginMainFrameComposite");
+  frames_.clear();
+  auto response = mojom::PaintPreviewBeginCompositeResponse::New();
   base::Optional<PaintPreviewProto> paint_preview =
       ParsePaintPreviewProto(request->proto);
   if (!paint_preview.has_value()) {
+    response->root_frame_guid = base::UnguessableToken::Create();
     std::move(callback).Run(mojom::PaintPreviewCompositor::
-                                BeginCompositeStatus::kDeserializingFailure);
+                                BeginCompositeStatus::kDeserializingFailure,
+                            std::move(response));
     return;
   }
 
@@ -245,8 +250,10 @@ void PaintPreviewCompositorImpl::BeginMainFrameComposite(
       paint_preview->root_frame().embedding_token_low());
   if (root_frame_guid.is_empty()) {
     DVLOG(1) << "No valid root frame guid";
+    response->root_frame_guid = base::UnguessableToken::Create();
     std::move(callback).Run(mojom::PaintPreviewCompositor::
-                                BeginCompositeStatus::kDeserializingFailure);
+                                BeginCompositeStatus::kDeserializingFailure,
+                            std::move(response));
     return;
   }
 
@@ -258,15 +265,31 @@ void PaintPreviewCompositorImpl::BeginMainFrameComposite(
                                           &recording_map, &subframes_failed);
 
   if (root_frame_ == nullptr) {
+    response->root_frame_guid = base::UnguessableToken::Create();
     std::move(callback).Run(mojom::PaintPreviewCompositor::
-                                BeginCompositeStatus::kCompositingFailure);
+                                BeginCompositeStatus::kCompositingFailure,
+                            std::move(response));
     return;
   }
+
+  response->root_frame_guid = root_frame_guid;
+  auto frame_data = mojom::FrameData::New();
+  SkRect sk_rect = root_frame_->cullRect();
+  frame_data->scroll_extents = gfx::Size(sk_rect.width(), sk_rect.height());
+  frame_data->scroll_offsets =
+      gfx::Size(paint_preview->root_frame().has_scroll_offset_x()
+                    ? paint_preview->root_frame().scroll_offset_x()
+                    : 0,
+                paint_preview->root_frame().has_scroll_offset_y()
+                    ? paint_preview->root_frame().scroll_offset_y()
+                    : 0);
+  response->frames.insert({root_frame_guid, std::move(frame_data)});
 
   std::move(callback).Run(
       subframes_failed
           ? mojom::PaintPreviewCompositor::BeginCompositeStatus::kPartialSuccess
-          : mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess);
+          : mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess,
+      std::move(response));
 }
 
 void PaintPreviewCompositorImpl::BitmapForMainFrame(

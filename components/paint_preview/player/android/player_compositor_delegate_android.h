@@ -21,8 +21,10 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_object,
       PaintPreviewBaseService* paint_preview_service,
+      const base::android::JavaParamRef<jbyteArray>& j_proto,
       const base::android::JavaParamRef<jstring>& j_url_spec,
       const base::android::JavaParamRef<jstring>& j_directory_key,
+      jboolean j_main_frame_mode,
       const base::android::JavaParamRef<jobject>& j_compositor_error_callback,
       jboolean j_is_low_mem);
 

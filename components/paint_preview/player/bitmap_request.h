@@ -6,6 +6,7 @@
 #define COMPONENTS_PAINT_PREVIEW_PLAYER_BITMAP_REQUEST_H_
 
 #include "base/callback.h"
+#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -18,7 +19,7 @@ struct BitmapRequest {
       base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
                               const SkBitmap&)>;
 
-  BitmapRequest(const base::UnguessableToken& frame_guid,
+  BitmapRequest(const base::Optional<base::UnguessableToken>& frame_guid,
                 const gfx::Rect& clip_rect,
                 float scale_factor,
                 BitmapRequestCallback callback);
@@ -27,7 +28,7 @@ struct BitmapRequest {
   BitmapRequest& operator=(BitmapRequest&& other) noexcept;
   BitmapRequest(BitmapRequest&& other) noexcept;
 
-  base::UnguessableToken frame_guid;
+  base::Optional<base::UnguessableToken> frame_guid;
   gfx::Rect clip_rect;
   float scale_factor;
   BitmapRequestCallback callback;

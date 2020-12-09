@@ -194,6 +194,14 @@ public class PlayerFrameMediatorTest {
         }
 
         @Override
+        public int requestBitmap(Rect clipRect, float scaleFactor, Callback<Bitmap> bitmapCallback,
+                Runnable errorCallback) {
+            Assert.fail("The GUIDless version of TestPlayerCompositorDelegate#requestBitmap() "
+                    + "shouldn't be called.");
+            return 0;
+        }
+
+        @Override
         public boolean cancelBitmapRequest(int requestId) {
             return false;
         }

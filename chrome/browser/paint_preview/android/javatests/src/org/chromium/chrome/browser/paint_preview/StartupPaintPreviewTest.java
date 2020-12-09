@@ -59,7 +59,7 @@ public class StartupPaintPreviewTest {
         Mockito.doReturn(true).when(mockService).hasCaptureForTab(Mockito.anyInt());
         TabbedPaintPreview.overridePaintPreviewTabServiceForTesting(mockService);
         PlayerManager.overrideCompositorDelegateFactoryForTesting(
-                TabbedPaintPreviewTest.TestCompositorDelegate::new);
+                new TabbedPaintPreviewTest.TestCompositorDelegateFactory());
     }
 
     @AfterClass

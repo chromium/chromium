@@ -45,7 +45,7 @@ namespace {
 // then also checks that;
 // - |response->root_frame_guid| == |expected_root_frame_guid|
 // - |response->subframe_rect_hierarchy| == |expected_data|
-void BeginSeparatedFrameCompositeCallbackImpl(
+void BeginCompositeCallbackImpl(
     mojom::PaintPreviewCompositor::BeginCompositeStatus expected_status,
     const base::UnguessableToken& expected_root_frame_guid,
     const base::flat_map<base::UnguessableToken, mojom::FrameDataPtr>&
@@ -76,12 +76,6 @@ void BeginSeparatedFrameCompositeCallbackImpl(
     EXPECT_THAT(response_subframes,
                 ::testing::UnorderedElementsAreArray(expected_subframes));
   }
-}
-
-void BeginMainFrameCompositeCallbackImpl(
-    mojom::PaintPreviewCompositor::BeginCompositeStatus expected_status,
-    mojom::PaintPreviewCompositor::BeginCompositeStatus status) {
-  EXPECT_EQ(status, expected_status);
 }
 
 // Checks that |status| == |expected_status|. If |expected_status| == kSuccess,
@@ -280,16 +274,22 @@ class PaintPreviewCompositorBeginCompositeTest
       case CompositeType::kSeparateFrame:
         compositor_.BeginSeparatedFrameComposite(
             std::move(request),
-            base::BindOnce(&BeginSeparatedFrameCompositeCallbackImpl,
-                           expected_status, expected_root_frame_guid,
-                           std::move(expected_data)));
+            base::BindOnce(&BeginCompositeCallbackImpl, expected_status,
+                           expected_root_frame_guid, std::move(expected_data)));
         break;
-      case CompositeType::kMainFrame:
+      case CompositeType::kMainFrame: {
+        base::flat_map<base::UnguessableToken, mojom::FrameDataPtr> root_data;
+        auto it = expected_data.find(expected_root_frame_guid);
+        if (it != expected_data.end()) {
+          root_data.insert({expected_root_frame_guid, it->second.Clone()});
+          root_data.find(expected_root_frame_guid)->second->subframes.clear();
+        }
         compositor_.BeginMainFrameComposite(
             std::move(request),
-            base::BindOnce(&BeginMainFrameCompositeCallbackImpl,
-                           expected_status));
+            base::BindOnce(&BeginCompositeCallbackImpl, expected_status,
+                           expected_root_frame_guid, std::move(root_data)));
         break;
+      }
       default:
         NOTREACHED();
         break;
@@ -592,7 +592,7 @@ TEST(PaintPreviewCompositorTest, TestComposite) {
   compositor.BeginSeparatedFrameComposite(
       std::move(request),
       base::BindOnce(
-          &BeginSeparatedFrameCompositeCallbackImpl,
+          &BeginCompositeCallbackImpl,
           mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess,
           kRootFrameID, std::move(expected_data)));
   float scale_factor = 2;
@@ -664,7 +664,7 @@ TEST(PaintPreviewCompositorTest, TestCompositeWithMemoryBuffer) {
   compositor.BeginSeparatedFrameComposite(
       std::move(request),
       base::BindOnce(
-          &BeginSeparatedFrameCompositeCallbackImpl,
+          &BeginCompositeCallbackImpl,
           mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess,
           kRootFrameID, std::move(expected_data)));
   float scale_factor = 2;
@@ -712,11 +712,9 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameNoDependencies) {
   compositor.BeginMainFrameComposite(
       std::move(request),
       base::BindOnce(
-          [](mojom::PaintPreviewCompositor::BeginCompositeStatus status) {
-            EXPECT_EQ(
-                status,
-                mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess);
-          }));
+          &BeginCompositeCallbackImpl,
+          mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess,
+          kRootFrameID, std::move(expected_data)));
   float scale_factor = 2;
   gfx::Rect rect = gfx::ScaleToEnclosingRect(
       gfx::Rect(root_frame_scroll_extent), scale_factor);
@@ -764,14 +762,14 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependency) {
       mojom::PaintPreviewBeginCompositeRequest::New();
   request->recording_map = RecordingMapFromPaintPreviewProto(proto);
   request->proto = ToReadOnlySharedMemory(proto);
+  expected_data.erase(kSubframe_0_ID);
+  expected_data.find(kRootFrameID)->second->subframes.clear();
   compositor.BeginMainFrameComposite(
       std::move(request),
       base::BindOnce(
-          [](mojom::PaintPreviewCompositor::BeginCompositeStatus status) {
-            EXPECT_EQ(
-                status,
-                mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess);
-          }));
+          &BeginCompositeCallbackImpl,
+          mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess,
+          kRootFrameID, std::move(expected_data)));
   float scale_factor = 1;
   gfx::Rect rect = gfx::ScaleToEnclosingRect(
       gfx::Rect(root_frame_scroll_extent), scale_factor);
@@ -823,14 +821,14 @@ TEST(PaintPreviewCompositorTest, TestCompositeMainFrameOneDependencyScrolled) {
       mojom::PaintPreviewBeginCompositeRequest::New();
   request->recording_map = RecordingMapFromPaintPreviewProto(proto);
   request->proto = ToReadOnlySharedMemory(proto);
+  expected_data.erase(kSubframe_0_ID);
+  expected_data.find(kRootFrameID)->second->subframes.clear();
   compositor.BeginMainFrameComposite(
       std::move(request),
       base::BindOnce(
-          [](mojom::PaintPreviewCompositor::BeginCompositeStatus status) {
-            EXPECT_EQ(
-                status,
-                mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess);
-          }));
+          &BeginCompositeCallbackImpl,
+          mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess,
+          kRootFrameID, std::move(expected_data)));
   float scale_factor = 1;
   gfx::Rect rect = gfx::ScaleToEnclosingRect(
       gfx::Rect(root_frame_scroll_extent), scale_factor);
@@ -885,14 +883,14 @@ TEST(PaintPreviewCompositorTest,
       mojom::PaintPreviewBeginCompositeRequest::New();
   request->recording_map = RecordingMapFromPaintPreviewProto(proto);
   request->proto = ToReadOnlySharedMemory(proto);
+  expected_data.erase(kSubframe_0_ID);
+  expected_data.find(kRootFrameID)->second->subframes.clear();
   compositor.BeginMainFrameComposite(
       std::move(request),
       base::BindOnce(
-          [](mojom::PaintPreviewCompositor::BeginCompositeStatus status) {
-            EXPECT_EQ(
-                status,
-                mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess);
-          }));
+          &BeginCompositeCallbackImpl,
+          mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess,
+          kRootFrameID, std::move(expected_data)));
   float scale_factor = 1;
   gfx::Rect rect =
       gfx::ScaleToEnclosingRect(root_frame_clip_rect, scale_factor);

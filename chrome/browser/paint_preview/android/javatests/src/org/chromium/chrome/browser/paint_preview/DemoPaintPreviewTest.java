@@ -60,7 +60,7 @@ public class DemoPaintPreviewTest {
         sMockService = Mockito.mock(PaintPreviewTabService.class);
         TabbedPaintPreview.overridePaintPreviewTabServiceForTesting(sMockService);
         PlayerManager.overrideCompositorDelegateFactoryForTesting(
-                TabbedPaintPreviewTest.TestCompositorDelegate::new);
+                new TabbedPaintPreviewTest.TestCompositorDelegateFactory());
     }
 
     @AfterClass

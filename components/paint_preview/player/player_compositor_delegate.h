@@ -49,12 +49,17 @@ class PlayerCompositorDelegate {
   void Initialize(PaintPreviewBaseService* paint_preview_service,
                   const GURL& url,
                   const DirectoryKey& key,
+                  bool main_frame_mode,
                   base::OnceCallback<void(int)> compositor_error,
                   base::TimeDelta timeout_duration,
                   size_t max_requests);
 
   // Returns whether initialization has happened.
   bool IsInitialized() const { return paint_preview_service_; }
+
+  void SetProto(std::unique_ptr<PaintPreviewProto> proto) {
+    proto_ = std::move(proto);
+  }
 
   // Overrides whether to compress the directory when the player is closed. By
   // default compression will happen.
@@ -71,7 +76,7 @@ class PlayerCompositorDelegate {
   // Pass this ID to `CancelBitmapRequest(int32_t)` to cancel the request if it
   // hasn't already been sent.
   int32_t RequestBitmap(
-      const base::UnguessableToken& frame_guid,
+      const base::Optional<base::UnguessableToken>& frame_guid,
       const gfx::Rect& clip_rect,
       float scale_factor,
       base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
@@ -100,6 +105,7 @@ class PlayerCompositorDelegate {
       PaintPreviewBaseService* paint_preview_service,
       const GURL& expected_url,
       const DirectoryKey& key,
+      bool main_frame_mode,
       base::OnceCallback<void(int)> compositor_error,
       base::TimeDelta timeout_duration,
       size_t max_requests,
@@ -123,6 +129,7 @@ class PlayerCompositorDelegate {
   void InitializeInternal(PaintPreviewBaseService* paint_preview_service,
                           const GURL& expected_url,
                           const DirectoryKey& key,
+                          bool main_frame_mode,
                           base::OnceCallback<void(int)> compositor_error,
                           base::TimeDelta timeout_duration,
                           size_t max_requests);
@@ -166,6 +173,7 @@ class PlayerCompositorDelegate {
 
   base::CancelableOnceClosure timeout_;
   int max_requests_{1};
+  bool main_frame_mode_{false};
 
   base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>
       hit_testers_;

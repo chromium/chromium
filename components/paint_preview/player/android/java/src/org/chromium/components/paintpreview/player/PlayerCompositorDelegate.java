@@ -8,9 +8,11 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
+import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.url.GURL;
 
@@ -22,7 +24,13 @@ public interface PlayerCompositorDelegate {
     /** An interface that creates an instance of {@link PlayerCompositorDelegate}. */
     interface Factory {
         PlayerCompositorDelegate create(NativePaintPreviewServiceProvider service, GURL url,
-                String directoryKey, @NonNull CompositorListener compositorListener,
+                String directoryKey, boolean mainFrameMode,
+                @NonNull CompositorListener compositorListener,
+                Callback<Integer> compositorErrorCallback);
+
+        PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
+                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
+                boolean mainFrameMode, @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback);
     }
 
@@ -72,7 +80,7 @@ public interface PlayerCompositorDelegate {
      * Requests a new bitmap for a frame from the Paint Preview compositor.
      * @param frameGuid The GUID of the frame.
      * @param clipRect The {@link Rect} for which the bitmap is requested.
-     * @param scaleFactor The scale factor at which the bitmap should be rendered.
+     * @param scaleFactor The scale factor at which the bitmap should be rastered.
      * @param bitmapCallback The callback that receives the bitmap once it's ready. Won't get called
      * if there are any errors.
      * @param errorCallback Gets notified if there are any errors. Won't get called otherwise.
@@ -81,6 +89,20 @@ public interface PlayerCompositorDelegate {
      */
     int requestBitmap(UnguessableToken frameGuid, Rect clipRect, float scaleFactor,
             Callback<Bitmap> bitmapCallback, Runnable errorCallback);
+
+    /**
+     * Requests a new bitmap for a frame from the Paint Preview compositor if {@link mainFrameMode}
+     * was passed as true as a parameter in the {@link Factory}
+     * @param clipRect The {@link Rect} for which the bitmap is requested.
+     * @param scaleFactor The scale factor at which the bitmap should be rastered.
+     * @param bitmapCallback The callback that receives the bitmap once it's ready. Won't get called
+     * if there are any errors.
+     * @param errorCallback Gets notified if there are any errors. Won't get called otherwise.
+     * @return an int representing the ID for the bitmap request. Can be used with {@link
+     * cancelBitmapRequest(int)} to cancel the request if possible.
+     */
+    int requestBitmap(Rect clipRect, float scaleFactor, Callback<Bitmap> bitmapCallback,
+            Runnable errorCallback);
 
     /**
      * Cancels the bitmap request for the provided ID.
