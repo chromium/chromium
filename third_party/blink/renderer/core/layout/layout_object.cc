@@ -179,26 +179,6 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
   return nullptr;
 }
 
-// Returns the parent LayoutObject, or nullptr. If this LayoutObject is a
-// LayoutView, it will return the owning LayoutObject in the containing frame,
-// with the exception that it will not traverse from the LayoutView in a frame
-// which would be throttled during a full lifecycle update, to the owning
-// LayoutObject in the containing frame. This is an optimization to avoid
-// propagating paint invalidation flags into the parent frame; it's unnecessary
-// because the to-be-throttled frame won't paint.
-LayoutObject* ParentCrossingFramesForPaintInvalidation(
-    const LayoutObject* object) {
-  if (IsA<LayoutView>(object)) {
-    LocalFrameView* frame_view = object->GetFrameView();
-    if (frame_view->CanThrottleRendering()) {
-      frame_view->SetPrePaintSkippedWhileThrottled();
-      return nullptr;
-    }
-    return object->GetFrame()->OwnerLayoutObject();
-  }
-  return object->Parent();
-}
-
 }  // namespace
 
 static int g_allow_destroying_layout_object_in_finalizer = 0;
@@ -3697,25 +3677,25 @@ void LayoutObject::SetNeedsPaintPropertyUpdatePreservingCachedRects() {
   GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
 
   bitfields_.SetNeedsPaintPropertyUpdate(true);
-  if (auto* ancestor = ParentCrossingFramesForPaintInvalidation(this))
-    ancestor->SetDescendantNeedsPaintPropertyUpdate();
+  if (Parent())
+    Parent()->SetDescendantNeedsPaintPropertyUpdate();
 }
 
 void LayoutObject::SetDescendantNeedsPaintPropertyUpdate() {
   NOT_DESTROYED();
   for (auto* ancestor = this;
        ancestor && !ancestor->DescendantNeedsPaintPropertyUpdate();
-       ancestor = ParentCrossingFramesForPaintInvalidation(ancestor)) {
+       ancestor = ancestor->Parent()) {
     ancestor->bitfields_.SetDescendantNeedsPaintPropertyUpdate(true);
   }
 }
 
-void LayoutObject::SetAncestorsNeedPaintPropertyUpdateForMainThreadScrolling() {
+void LayoutObject::ForceAllAncestorsNeedPaintPropertyUpdate() {
   NOT_DESTROYED();
-  LayoutObject* ancestor = ParentCrossingFramesForPaintInvalidation(this);
+  LayoutObject* ancestor = Parent();
   while (ancestor) {
     ancestor->SetNeedsPaintPropertyUpdate();
-    ancestor = ParentCrossingFramesForPaintInvalidation(ancestor);
+    ancestor = ancestor->Parent();
   }
 }
 
@@ -4348,10 +4328,10 @@ inline void LayoutObject::SetShouldCheckGeometryForPaintInvalidation() {
   NOT_DESTROYED();
   DCHECK(ShouldCheckForPaintInvalidation());
   bitfields_.SetShouldCheckGeometryForPaintInvalidation(true);
-  for (auto* ancestor = ParentCrossingFramesForPaintInvalidation(this);
+  for (auto* ancestor = Parent();
        ancestor &&
        !ancestor->DescendantShouldCheckGeometryForPaintInvalidation();
-       ancestor = ParentCrossingFramesForPaintInvalidation(ancestor)) {
+       ancestor = ancestor->Parent()) {
     ancestor->bitfields_.SetDescendantShouldCheckGeometryForPaintInvalidation(
         true);
   }
@@ -4417,10 +4397,10 @@ void LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange() {
   GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 
   bitfields_.SetShouldCheckForPaintInvalidation(true);
-  for (LayoutObject* parent = ParentCrossingFramesForPaintInvalidation(this);
-       parent && !parent->ShouldCheckForPaintInvalidation();
-       parent = ParentCrossingFramesForPaintInvalidation(parent)) {
-    parent->bitfields_.SetShouldCheckForPaintInvalidation(true);
+  for (LayoutObject* ancestor = Parent();
+       ancestor && !ancestor->ShouldCheckForPaintInvalidation();
+       ancestor = ancestor->Parent()) {
+    ancestor->bitfields_.SetShouldCheckForPaintInvalidation(true);
   }
 }
 
@@ -4595,13 +4575,18 @@ void LayoutObject::MarkEffectiveAllowedTouchActionChanged() {
     return;
   }
 
-  LayoutObject* obj = ParentCrossingFramesForPaintInvalidation(this);
+  if (Parent())
+    Parent()->MarkDescendantEffectiveAllowedTouchActionChanged();
+}
+
+void LayoutObject::MarkDescendantEffectiveAllowedTouchActionChanged() {
+  LayoutObject* obj = this;
   while (obj && !obj->DescendantEffectiveAllowedTouchActionChanged()) {
     obj->bitfields_.SetDescendantEffectiveAllowedTouchActionChanged(true);
     if (obj->ChildPrePaintBlockedByDisplayLock())
       break;
 
-    obj = ParentCrossingFramesForPaintInvalidation(obj);
+    obj = obj->Parent();
   }
 }
 
@@ -4616,13 +4601,18 @@ void LayoutObject::MarkBlockingWheelEventHandlerChanged() {
     return;
   }
 
-  LayoutObject* obj = ParentCrossingFramesForPaintInvalidation(this);
+  if (Parent())
+    Parent()->MarkDescendantBlockingWheelEventHandlerChanged();
+}
+
+void LayoutObject::MarkDescendantBlockingWheelEventHandlerChanged() {
+  LayoutObject* obj = this;
   while (obj && !obj->DescendantBlockingWheelEventHandlerChanged()) {
     obj->bitfields_.SetDescendantBlockingWheelEventHandlerChanged(true);
     if (obj->ChildPrePaintBlockedByDisplayLock())
       break;
 
-    obj = ParentCrossingFramesForPaintInvalidation(obj);
+    obj = obj->Parent();
   }
 }
 

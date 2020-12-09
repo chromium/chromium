@@ -2988,6 +2988,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // mark all ancestors as having a descendant that changed. This will cause a
   // PrePaint tree walk to update effective allowed touch action.
   void MarkEffectiveAllowedTouchActionChanged();
+  void MarkDescendantEffectiveAllowedTouchActionChanged();
   bool EffectiveAllowedTouchActionChanged() const {
     NOT_DESTROYED();
     return bitfields_.EffectiveAllowedTouchActionChanged();
@@ -3010,6 +3011,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // mark all ancestors as having a descendant that changed. This will cause a
   // PrePaint tree walk to update blocking wheel event handler state.
   void MarkBlockingWheelEventHandlerChanged();
+  void MarkDescendantBlockingWheelEventHandlerChanged();
   bool BlockingWheelEventHandlerChanged() const {
     // TODO(https://crbug.com/841364): This block is optimized to avoid costly
     // checks for kWheelEventRegions. It will be simplified once
@@ -3169,9 +3171,9 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return bitfields_.DescendantNeedsPaintPropertyUpdate();
   }
-  // Main thread scrolling reasons require fully updating paint propeties of all
-  // ancestors (see: ScrollPaintPropertyNode.h).
-  void SetAncestorsNeedPaintPropertyUpdateForMainThreadScrolling();
+  // Called when some change needs paint property update of all ancestors (not
+  // crossing frame boundaries).
+  void ForceAllAncestorsNeedPaintPropertyUpdate();
 
   void SetIsScrollAnchorObject() {
     NOT_DESTROYED();

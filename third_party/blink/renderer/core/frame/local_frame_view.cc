@@ -1261,25 +1261,21 @@ void LocalFrameView::AdjustMediaTypeForPrinting(bool printing) {
 
 void LocalFrameView::AddBackgroundAttachmentFixedObject(LayoutObject* object) {
   DCHECK(!background_attachment_fixed_objects_.Contains(object));
-
   background_attachment_fixed_objects_.insert(object);
 
-  // Ensure main thread scrolling reasons are recomputed.
-  SetNeedsPaintPropertyUpdate();
-  // The object's scroll properties are not affected by its own background.
-  object->SetAncestorsNeedPaintPropertyUpdateForMainThreadScrolling();
+  // Ensure main thread scrolling reasons of the ancestor scroll nodes are
+  // recomputed. The object's own scroll properties are not affected.
+  object->ForceAllAncestorsNeedPaintPropertyUpdate();
 }
 
 void LocalFrameView::RemoveBackgroundAttachmentFixedObject(
     LayoutObject* object) {
   DCHECK(background_attachment_fixed_objects_.Contains(object));
-
   background_attachment_fixed_objects_.erase(object);
 
-  // Ensure main thread scrolling reasons are recomputed.
-  SetNeedsPaintPropertyUpdate();
-  // The object's scroll properties are not affected by its own background.
-  object->SetAncestorsNeedPaintPropertyUpdateForMainThreadScrolling();
+  // Ensure main thread scrolling reasons of the ancestor scroll nodes are
+  // recomputed. The object's own scroll properties are not affected.
+  object->ForceAllAncestorsNeedPaintPropertyUpdate();
 }
 
 bool LocalFrameView::RequiresMainThreadScrollingForBackgroundAttachmentFixed()
@@ -2785,36 +2781,40 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
 #endif
   }
 
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPrePaint);
-    if (frame_view.pre_paint_skipped_while_throttled_ ||
-        frame_view.lifecycle_updates_throttled_) {
-      // We skipped pre-paint for this frame while it was throttled, or we
-      // have never run pre-paint for this frame. Either way, we're
-      // unthrottled now, so we must propagate our dirty bits into our
-      // parent frame so that pre-paint reaches into this frame.
-      if (LayoutView* layout_view = frame_view.GetLayoutView()) {
-        if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
-          if (layout_view->NeedsPaintPropertyUpdate() ||
-              layout_view->DescendantNeedsPaintPropertyUpdate()) {
-            owner->SetDescendantNeedsPaintPropertyUpdate();
-            // We may record more pre-composited layers under the frame.
-            if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-              frame_view.SetPaintArtifactCompositorNeedsUpdate();
-          }
-          if (layout_view->ShouldCheckForPaintInvalidation()) {
-            owner->SetShouldCheckForPaintInvalidation();
-          } else {
-            // TODO(szager): Remove these after diagnosing crash
-            CHECK(!layout_view->ShouldCheckGeometryForPaintInvalidation());
-            CHECK(!layout_view
-                       ->DescendantShouldCheckGeometryForPaintInvalidation());
+  ForAllNonThrottledLocalFrameViews(
+      [](LocalFrameView& frame_view) {
+        frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPrePaint);
+        // We skipped pre-paint for this frame while it was throttled, or we
+        // have never run pre-paint for this frame. Either way, we're
+        // unthrottled now, so we must propagate our dirty bits into our
+        // parent frame so that pre-paint reaches into this frame.
+        if (LayoutView* layout_view = frame_view.GetLayoutView()) {
+          if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
+            if (layout_view->NeedsPaintPropertyUpdate() ||
+                layout_view->DescendantNeedsPaintPropertyUpdate()) {
+              owner->SetDescendantNeedsPaintPropertyUpdate();
+            }
+            if (layout_view->ShouldCheckForPaintInvalidation()) {
+              owner->SetShouldCheckForPaintInvalidation();
+            } else {
+              // TODO(szager): Remove these after diagnosing crash
+              CHECK(!layout_view->ShouldCheckGeometryForPaintInvalidation());
+              CHECK(!layout_view
+                         ->DescendantShouldCheckGeometryForPaintInvalidation());
+            }
+            if (layout_view->EffectiveAllowedTouchActionChanged() ||
+                layout_view->DescendantEffectiveAllowedTouchActionChanged()) {
+              owner->MarkDescendantEffectiveAllowedTouchActionChanged();
+            }
+            if (layout_view->BlockingWheelEventHandlerChanged() ||
+                layout_view->DescendantBlockingWheelEventHandlerChanged()) {
+              owner->MarkDescendantBlockingWheelEventHandlerChanged();
+            }
           }
         }
-      }
-      frame_view.pre_paint_skipped_while_throttled_ = false;
-    }
-  });
+      },
+      // Use post-order to ensure correct flag propagation for nested frames.
+      kPostOrder);
 
   {
     SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
@@ -4576,9 +4576,6 @@ void LocalFrameView::BeginLifecycleUpdates() {
     return;
   lifecycle_updates_throttled_ = false;
   RenderThrottlingStatusChanged();
-  // TODO(wangxianzhu): The following call seems unnecessary.
-  if (auto* owner = GetLayoutEmbeddedContent())
-    owner->SetShouldCheckForPaintInvalidation();
 
   LayoutView* layout_view = GetLayoutView();
   bool layout_view_is_empty = layout_view && !layout_view->FirstChild();

@@ -333,9 +333,11 @@ TEST_P(PaintPropertyTreeUpdateTest, DescendantNeedsUpdateAcrossFrames) {
   // Marking the child div as needing a paint property update should propagate
   // up the tree and across frames.
   inner_div_with_transform->SetNeedsPaintPropertyUpdate();
-  EXPECT_TRUE(
+  // DescendantNeedsPaintPropertyUpdate flag is not propagated crossing frame
+  // boundaries until PrePaint.
+  EXPECT_FALSE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
-  EXPECT_TRUE(div_with_transform->DescendantNeedsPaintPropertyUpdate());
+  EXPECT_FALSE(div_with_transform->DescendantNeedsPaintPropertyUpdate());
   EXPECT_TRUE(child_layout_view->DescendantNeedsPaintPropertyUpdate());
   EXPECT_TRUE(inner_div_with_transform->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(inner_div_with_transform->DescendantNeedsPaintPropertyUpdate());
@@ -352,7 +354,7 @@ TEST_P(PaintPropertyTreeUpdateTest, DescendantNeedsUpdateAcrossFrames) {
   // skipped if the owning layout tree does not need an update.
   LocalFrameView* child_frame_view = ChildDocument().View();
   child_frame_view->SetNeedsPaintPropertyUpdate();
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
   frame_view->UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(

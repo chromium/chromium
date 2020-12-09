@@ -618,10 +618,6 @@ class CORE_EXPORT LocalFrameView final
                                     bool subtree_throttled,
                                     bool recurse = false) override;
 
-  void SetPrePaintSkippedWhileThrottled() {
-    pre_paint_skipped_while_throttled_ = true;
-  }
-
   void BeginLifecycleUpdates();
 
   // Shorthands of LayoutView's corresponding methods.
@@ -1143,8 +1139,6 @@ class CORE_EXPORT LocalFrameView final
   HeapHashSet<WeakMember<LifecycleNotificationObserver>> lifecycle_observers_;
 
   HeapHashSet<WeakMember<HTMLVideoElement>> fullscreen_video_elements_;
-
-  bool pre_paint_skipped_while_throttled_ = false;
 
   std::unique_ptr<OverlayInterstitialAdDetector>
       overlay_interstitial_ad_detector_;

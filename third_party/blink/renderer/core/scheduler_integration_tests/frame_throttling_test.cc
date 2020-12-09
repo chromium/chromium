@@ -4,6 +4,8 @@
 
 #include "base/callback.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "cc/layers/picture_layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -13,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
@@ -72,6 +75,11 @@ class FrameThrottlingTest : public PaintTestConfigurations, public SimTest {
   void UpdateAllLifecyclePhases() {
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
+
+  class EmptyEventListener final : public NativeEventListener {
+   public:
+    void Invoke(ExecutionContext* execution_context, Event*) override {}
+  };
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(FrameThrottlingTest);
@@ -1841,6 +1849,161 @@ TEST_P(FrameThrottlingTest, LifecycleThrottledFrameNeedsRepaint) {
       frame_document->GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
   EXPECT_FALSE(
       GetDocument().GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
+}
+
+TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  // The frame is initially throttled.
+  main_resource.Complete(R"HTML(
+    <div id="parent">
+      <iframe id="frame" sandbox src="iframe.html"></iframe>
+    </div>
+  )HTML");
+  frame_resource.Complete("<div id='child'></div>");
+  CompositeFrame();
+
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* frame_document = frame_element->contentDocument();
+  auto* parent = GetDocument().getElementById("parent");
+  auto* parent_object = parent->GetLayoutObject();
+  auto* child_layout_view = frame_document->GetLayoutView();
+  auto* child = frame_document->getElementById("child");
+  auto* child_object = child->GetLayoutObject();
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
+  EXPECT_FALSE(parent_object->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(parent_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(child_layout_view->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(child_layout_view->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(child_object->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(child_object->InsideBlockingWheelEventHandler());
+
+  // Moving the child fully outside the parent makes it invisible.
+  frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
+  CompositeFrame();
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
+
+  auto* handler = MakeGarbageCollected<EmptyEventListener>();
+  parent->addEventListener(event_type_names::kTouchstart, handler);
+  parent->addEventListener(event_type_names::kWheel, handler);
+  EXPECT_TRUE(parent_object->EffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(parent_object->BlockingWheelEventHandlerChanged());
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(parent_object->InsideBlockingTouchEventHandler());
+  EXPECT_TRUE(parent_object->InsideBlockingWheelEventHandler());
+  // Event handler status update is pending in the throttled frame.
+  EXPECT_TRUE(child_layout_view->EffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(child_layout_view->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(child_layout_view->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(child_layout_view->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(child_object->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(child_object->InsideBlockingWheelEventHandler());
+
+  // Move the child back to the visible viewport.
+  frame_element->setAttribute(kStyleAttr,
+                              "transform: translate(-50px, 0px, 0px)");
+  // Update throttling, which will schedule visual update on unthrottling of the
+  // frame.
+  CompositeFrame();
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
+  CompositeFrame();
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
+  EXPECT_TRUE(parent_object->InsideBlockingTouchEventHandler());
+  EXPECT_TRUE(parent_object->InsideBlockingWheelEventHandler());
+  // Event handler status is updated in the unthrottled frame.
+  EXPECT_FALSE(child_layout_view->EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(child_layout_view->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(child_layout_view->InsideBlockingTouchEventHandler());
+  EXPECT_TRUE(child_layout_view->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(child_object->InsideBlockingTouchEventHandler());
+  EXPECT_TRUE(child_object->InsideBlockingWheelEventHandler());
+}
+
+TEST_P(FrameThrottlingTest, DescendantTouchActionAndWheelEventHandlers) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  // The frame is initially throttled.
+  main_resource.Complete(R"HTML(
+    <div id="parent">
+      <iframe id="frame" sandbox src="iframe.html"></iframe>
+    </div>
+  )HTML");
+  frame_resource.Complete("<div id='child'></div>");
+  CompositeFrame();
+
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* frame_document = frame_element->contentDocument();
+  auto* parent = GetDocument().getElementById("parent");
+  auto* parent_object = parent->GetLayoutObject();
+  auto* child_layout_view = frame_document->GetLayoutView();
+  auto* child = frame_document->getElementById("child");
+  auto* child_object = child->GetLayoutObject();
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
+  EXPECT_FALSE(parent_object->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(parent_object->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(child_layout_view->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(child_layout_view->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(child_object->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(child_object->InsideBlockingWheelEventHandler());
+
+  // Moving the child fully outside the parent makes it invisible.
+  frame_element->setAttribute(kStyleAttr, "transform: translateY(480px)");
+  CompositeFrame();
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
+
+  auto* handler = MakeGarbageCollected<EmptyEventListener>();
+  child->addEventListener(event_type_names::kTouchstart, handler);
+  child->addEventListener(event_type_names::kWheel, handler);
+  EXPECT_TRUE(child_object->EffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(child_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(
+      child_layout_view->DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(child_layout_view->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(parent_object->DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(parent_object->DescendantBlockingWheelEventHandlerChanged());
+  UpdateAllLifecyclePhases();
+  // Event handler status update is pending in the throttled frame.
+  EXPECT_TRUE(child_object->EffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(child_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(
+      child_layout_view->DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(child_layout_view->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(child_layout_view->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(child_layout_view->InsideBlockingWheelEventHandler());
+  EXPECT_FALSE(child_object->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(child_object->InsideBlockingWheelEventHandler());
+
+  // Move the child back to the visible viewport.
+  frame_element->setAttribute(kStyleAttr,
+                              "transform: translate(-50px, 0px, 0px)");
+  // Update throttling, which will schedule visual update on unthrottling of the
+  // frame.
+  CompositeFrame();
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
+  CompositeFrame();
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
+  // Event handler status is updated in the unthrottled frame.
+  EXPECT_FALSE(child_object->EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(child_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(
+      child_layout_view->DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(child_layout_view->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(child_layout_view->InsideBlockingTouchEventHandler());
+  EXPECT_FALSE(child_layout_view->InsideBlockingWheelEventHandler());
+  EXPECT_TRUE(child_object->InsideBlockingTouchEventHandler());
+  EXPECT_TRUE(child_object->InsideBlockingWheelEventHandler());
 }
 
 }  // namespace blink
