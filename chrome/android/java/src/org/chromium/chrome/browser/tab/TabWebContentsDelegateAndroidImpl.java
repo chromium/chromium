@@ -212,11 +212,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     public void webContentsCreated(WebContents sourceWebContents, long openerRenderProcessId,
             long openerRenderFrameId, String frameName, String targetUrl,
             WebContents newWebContents) {
-        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) {
-            observers.next().webContentsCreated(mTab, sourceWebContents, openerRenderProcessId,
-                    openerRenderFrameId, frameName, targetUrl, newWebContents);
-        }
         mDelegate.webContentsCreated(sourceWebContents, openerRenderProcessId, openerRenderFrameId,
                 frameName, targetUrl, newWebContents);
     }

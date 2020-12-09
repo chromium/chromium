@@ -212,12 +212,11 @@ public interface TabObserver {
     /**
      * Called when an error occurs while loading a page and/or the page fails to load.
      * @param tab               The notifying {@link Tab}.
-     * @param isProvisionalLoad Whether the failed load occurred during the provisional load.
      * @param isMainFrame       Whether failed load happened for the main frame.
      * @param errorCode         Code for the occurring error.
      * @param failingUrl        The url that was loading when the error occurred.
      */
-    void onDidFailLoad(Tab tab, boolean isMainFrame, int errorCode, String failingUrl);
+    void onDidFailLoad(Tab tab, boolean isMainFrame, int errorCode, GURL failingUrl);
 
     /**
      * Called when a navigation is started in the WebContents.
@@ -262,20 +261,6 @@ public interface TabObserver {
      * @param color The current background color.
      */
     void onBackgroundColorChanged(Tab tab, int color);
-
-    /**
-     * Called when a {@link WebContents} object has been created.
-     * @param tab                    The notifying {@link Tab}.
-     * @param sourceWebContents      The {@link WebContents} that triggered the creation.
-     * @param openerRenderProcessId  The opener render process id.
-     * @param openerRenderFrameId    The opener render frame id.
-     * @param frameName              The name of the frame.
-     * @param targetUrl              The target url.
-     * @param newWebContents         The newly created {@link WebContents}.
-     */
-    void webContentsCreated(Tab tab, WebContents sourceWebContents, long openerRenderProcessId,
-            long openerRenderFrameId, String frameName, String targetUrl,
-            WebContents newWebContents);
 
     /**
      * Called when the Tab is attached or detached from an {@code Activity}.

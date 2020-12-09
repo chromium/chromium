@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
+import org.chromium.url.GURL;
 
 /**
  * Monitor changes that indicate a theme color change may be needed from tab contents.
@@ -40,7 +41,7 @@ public class TabThemeColorHelper extends EmptyTabObserver {
     }
 
     @Override
-    public void onDidFailLoad(Tab tab, boolean isMainFrame, int errorCode, String failingUrl) {
+    public void onDidFailLoad(Tab tab, boolean isMainFrame, int errorCode, GURL failingUrl) {
         updateIfNeeded();
     }
 
