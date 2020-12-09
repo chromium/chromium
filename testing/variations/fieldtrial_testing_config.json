@@ -1764,7 +1764,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_16K",
+                    "params": {
+                        "size": "16384"
+                    },
                     "enable_features": [
                         "CodeCacheDeduplicationStudy"
                     ]
