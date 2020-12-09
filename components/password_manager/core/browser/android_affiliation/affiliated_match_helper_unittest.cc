@@ -152,7 +152,7 @@ PasswordForm GetTestAndroidCredentials(const char* signon_realm) {
   return form;
 }
 
-PasswordForm GetTestBlacklistedAndroidCredentials(const char* signon_realm) {
+PasswordForm GetTestBlocklistedAndroidCredentials(const char* signon_realm) {
   PasswordForm form = GetTestAndroidCredentials(signon_realm);
   form.blocked_by_user = true;
   return form;
@@ -210,7 +210,7 @@ class AffiliatedMatchHelperTest : public testing::Test {
   void AddAndroidAndNonAndroidTestLogins() {
     AddLogin(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
     AddLogin(GetTestAndroidCredentials(kTestAndroidRealmBeta2));
-    AddLogin(GetTestBlacklistedAndroidCredentials(kTestAndroidRealmBeta3));
+    AddLogin(GetTestBlocklistedAndroidCredentials(kTestAndroidRealmBeta3));
     AddLogin(GetTestAndroidCredentials(kTestAndroidRealmGamma));
 
     AddLogin(GetTestAndroidCredentials(kTestWebRealmAlpha1));
@@ -220,7 +220,7 @@ class AffiliatedMatchHelperTest : public testing::Test {
   void RemoveAndroidAndNonAndroidTestLogins() {
     RemoveLogin(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
     RemoveLogin(GetTestAndroidCredentials(kTestAndroidRealmBeta2));
-    RemoveLogin(GetTestBlacklistedAndroidCredentials(kTestAndroidRealmBeta3));
+    RemoveLogin(GetTestBlocklistedAndroidCredentials(kTestAndroidRealmBeta3));
     RemoveLogin(GetTestAndroidCredentials(kTestAndroidRealmGamma));
 
     RemoveLogin(GetTestAndroidCredentials(kTestWebRealmAlpha1));
