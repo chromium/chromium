@@ -576,13 +576,23 @@ bool Compositor::HasObserver(const CompositorObserver* observer) const {
 }
 
 void Compositor::AddAnimationObserver(CompositorAnimationObserver* observer) {
+  if (!animation_observer_list_.has_observers()) {
+    for (auto& obs : observer_list_)
+      obs.OnFirstAnimationStarted(this);
+  }
   animation_observer_list_.AddObserver(observer);
   host_->SetNeedsAnimate();
 }
 
 void Compositor::RemoveAnimationObserver(
     CompositorAnimationObserver* observer) {
+  if (!animation_observer_list_.HasObserver(observer))
+    return;
   animation_observer_list_.RemoveObserver(observer);
+  if (!animation_observer_list_.has_observers()) {
+    for (auto& obs : observer_list_)
+      obs.OnLastAnimationEnded(this);
+  }
 }
 
 bool Compositor::HasAnimationObserver(

@@ -40,8 +40,11 @@ class AnimationThroughputReporterTestBase : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-      base::test::TaskEnvironment::MainThreadType::UI};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+#endif
+        base::test::TaskEnvironment::MainThreadType::UI
+  };
 
   std::unique_ptr<TestContextFactories> context_factories_;
   std::unique_ptr<TestCompositorHost> host_;

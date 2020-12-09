@@ -12,6 +12,10 @@
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/gfx/geometry/rect.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/threading/thread_task_runner_handle.h"
+#endif
+
 namespace ui {
 
 AnimationThroughputReporterTestBase::AnimationThroughputReporterTestBase() =
@@ -30,7 +34,7 @@ void AnimationThroughputReporterTestBase::SetUp() {
   compositor()->SetRootLayer(&root_);
 
   frame_generation_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(50), this,
+      FROM_HERE, base::TimeDelta::FromMilliseconds(16), this,
       &AnimationThroughputReporterTestBase::GenerateOneFrame);
 }
 
@@ -42,7 +46,14 @@ void AnimationThroughputReporterTestBase::TearDown() {
 
 void AnimationThroughputReporterTestBase::Advance(
     const base::TimeDelta& delta) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   task_environment_.FastForwardBy(delta);
+#else
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), delta);
+  run_loop.Run();
+#endif
 }
 
 }  // namespace ui
