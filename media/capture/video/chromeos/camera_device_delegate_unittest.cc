@@ -111,11 +111,13 @@ constexpr int32_t kJpegMaxBufferSize = 1024;
 constexpr size_t kDefaultWidth = 1280, kDefaultHeight = 720;
 constexpr int32_t kDefaultMinFrameRate = 1, kDefaultMaxFrameRate = 30;
 
-VideoCaptureParams GetDefaultCaptureParams() {
+base::flat_map<ClientType, VideoCaptureParams> GetDefaultCaptureParams() {
   VideoCaptureParams params;
+  base::flat_map<ClientType, VideoCaptureParams> capture_params;
   params.requested_format = {gfx::Size(kDefaultWidth, kDefaultHeight),
                              float{kDefaultMaxFrameRate}, PIXEL_FORMAT_I420};
-  return params;
+  capture_params[ClientType::kPreviewClient] = params;
+  return capture_params;
 }
 
 }  // namespace
@@ -162,7 +164,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
 
     camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
         devices_info[0].descriptor, camera_hal_delegate_,
-        device_delegate_thread_.task_runner(), nullptr, client_type_);
+        device_delegate_thread_.task_runner(), nullptr);
   }
 
   void GetNumberOfFakeCameras(
