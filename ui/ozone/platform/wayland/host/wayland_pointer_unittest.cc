@@ -234,7 +234,7 @@ TEST_P(WaylandPointerTest, AxisHorizontal) {
   ASSERT_TRUE(event);
   ASSERT_TRUE(event->IsMouseWheelEvent());
   auto* mouse_wheel_event = event->AsMouseWheelEvent();
-  EXPECT_EQ(gfx::Vector2d(MouseWheelEvent::kWheelDelta, 0),
+  EXPECT_EQ(gfx::Vector2d(-MouseWheelEvent::kWheelDelta, 0),
             mouse_wheel_event->offset());
   EXPECT_EQ(EF_LEFT_MOUSE_BUTTON, mouse_wheel_event->button_flags());
   EXPECT_EQ(0, mouse_wheel_event->changed_button_flags());
@@ -340,11 +340,11 @@ TEST_P(WaylandPointerTest, FlingVertical) {
   EXPECT_EQ(ET_SCROLL_FLING_START, scroll_event->type());
   EXPECT_EQ(gfx::PointF(50, 75), scroll_event->location_f());
   EXPECT_EQ(0.0f, scroll_event->x_offset());
+  EXPECT_EQ(0.0f, scroll_event->x_offset_ordinal());
   // Initial vertical velocity depends on the implementation outside of
   // WaylandPointer, but it should be negative value based on the direction of
   // recent two axis events.
   EXPECT_GT(0.0f, scroll_event->y_offset());
-  EXPECT_EQ(0.0f, scroll_event->x_offset_ordinal());
   EXPECT_GT(0.0f, scroll_event->y_offset_ordinal());
 }
 
@@ -393,13 +393,13 @@ TEST_P(WaylandPointerTest, FlingHorizontal) {
   auto* scroll_event = event3->AsScrollEvent();
   EXPECT_EQ(ET_SCROLL_FLING_START, scroll_event->type());
   EXPECT_EQ(gfx::PointF(50, 75), scroll_event->location_f());
-  // Initial horizontal velocity depends on the implementation outside of
-  // WaylandPointer, but it should be positive value based on the direction of
-  // recent two axis events.
-  EXPECT_LT(0.0f, scroll_event->x_offset());
   EXPECT_EQ(0.0f, scroll_event->y_offset());
-  EXPECT_LT(0.0f, scroll_event->x_offset_ordinal());
   EXPECT_EQ(0.0f, scroll_event->y_offset_ordinal());
+  // Initial horizontal velocity depends on the implementation outside of
+  // WaylandPointer, but it should be negative value based on the direction of
+  // recent two axis events.
+  EXPECT_GT(0.0f, scroll_event->x_offset());
+  EXPECT_GT(0.0f, scroll_event->x_offset_ordinal());
 }
 
 TEST_P(WaylandPointerTest, FlingCancel) {
@@ -518,10 +518,10 @@ TEST_P(WaylandPointerTest, FlingDiagonal) {
   auto* scroll_event = event5->AsScrollEvent();
   EXPECT_EQ(ET_SCROLL_FLING_START, scroll_event->type());
   EXPECT_EQ(gfx::PointF(50, 75), scroll_event->location_f());
-  // Check the offset direction. It should non-zero in both directions.
-  EXPECT_LT(0.0f, scroll_event->x_offset());
+  // Check the offset direction. It should non-zero in both axes.
+  EXPECT_GT(0.0f, scroll_event->x_offset());
   EXPECT_GT(0.0f, scroll_event->y_offset());
-  EXPECT_LT(0.0f, scroll_event->x_offset_ordinal());
+  EXPECT_GT(0.0f, scroll_event->x_offset_ordinal());
   EXPECT_GT(0.0f, scroll_event->y_offset_ordinal());
   // Horizontal offset should be larger than vertical one, given the scroll
   // offset in each direction.

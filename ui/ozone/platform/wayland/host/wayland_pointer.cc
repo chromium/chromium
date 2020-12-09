@@ -130,7 +130,7 @@ void WaylandPointer::Axis(void* data,
     offset.set_y(-wl_fixed_to_double(value) / kAxisValueScale *
                  MouseWheelEvent::kWheelDelta);
   } else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
-    offset.set_x(wl_fixed_to_double(value) / kAxisValueScale *
+    offset.set_x(-wl_fixed_to_double(value) / kAxisValueScale *
                  MouseWheelEvent::kWheelDelta);
   } else {
     return;
