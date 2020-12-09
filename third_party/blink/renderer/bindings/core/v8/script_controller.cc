@@ -255,10 +255,19 @@ void ScriptController::ExecuteJavaScriptURL(
 
   UseCounter::Count(window_.Get(),
                     WebFeature::kReplaceDocumentViaJavaScriptURL);
+
+  // From the browser process point of view, committing a javascript-URL, an
+  // XSLT document or a document.open are all a no-op. All the security
+  // properties of the document must be preserved.
   auto params = std::make_unique<WebNavigationParams>();
   params->url = window_->Url();
+  // TODO(https://crbug.com/1151954): Consider inheriting the feature-policy
+  // from the previous document. Here we might miss the one defined from the
+  // original network request.
+  params->frame_policy = FramePolicy();
   if (auto* owner = window_->GetFrame()->Owner())
     params->frame_policy = owner->GetFramePolicy();
+  params->frame_policy->sandbox_flags = window_->GetSandboxFlags();
   params->origin_to_commit = window_->GetSecurityOrigin();
 
   String result = ToCoreString(v8::Local<v8::String>::Cast(v8_result));
