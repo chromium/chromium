@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"

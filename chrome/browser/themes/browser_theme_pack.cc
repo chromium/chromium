@@ -12,13 +12,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

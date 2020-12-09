@@ -5,9 +5,9 @@
 #include "chrome/browser/sync_file_system/local/local_file_sync_service.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/file_change.h"

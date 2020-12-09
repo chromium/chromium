@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
@@ -18,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"

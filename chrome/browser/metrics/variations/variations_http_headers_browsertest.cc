@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"

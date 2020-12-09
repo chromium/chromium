@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/pattern.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/log.h"

@@ -10,12 +10,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"

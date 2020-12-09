@@ -11,11 +11,11 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

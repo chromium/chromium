@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"

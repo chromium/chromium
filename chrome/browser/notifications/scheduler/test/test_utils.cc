@@ -7,8 +7,8 @@
 #include <sstream>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"

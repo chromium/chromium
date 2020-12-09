@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

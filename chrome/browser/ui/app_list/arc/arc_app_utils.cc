@@ -10,12 +10,12 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

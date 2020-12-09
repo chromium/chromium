@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"

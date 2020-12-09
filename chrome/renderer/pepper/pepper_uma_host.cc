@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_content_client.h"

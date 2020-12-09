@@ -9,8 +9,8 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"

@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_split.h"

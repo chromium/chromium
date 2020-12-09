@@ -5,8 +5,8 @@
 #include "chrome/browser/profiling_host/background_profiling_triggers.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"

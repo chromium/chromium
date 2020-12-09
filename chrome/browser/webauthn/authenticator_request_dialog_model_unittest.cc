@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"

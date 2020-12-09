@@ -4,11 +4,11 @@
 
 #include "chrome/browser/web_applications/web_app_migration_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

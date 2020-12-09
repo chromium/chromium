@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service.h"

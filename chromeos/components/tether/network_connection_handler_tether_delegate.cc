@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/tether/active_host.h"
 #include "chromeos/components/tether/tether_connector.h"

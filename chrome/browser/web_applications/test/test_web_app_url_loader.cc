@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace web_app {

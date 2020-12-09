@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/task_runner_util.h"
 #include "chrome/browser/sync_file_system/file_change.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"

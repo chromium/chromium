@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/scoped_observation.h"
-#include "base/stl_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"

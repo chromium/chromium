@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/window_properties.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"

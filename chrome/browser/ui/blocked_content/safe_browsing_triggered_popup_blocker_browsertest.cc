@@ -10,10 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"

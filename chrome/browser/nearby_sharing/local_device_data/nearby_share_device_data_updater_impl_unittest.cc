@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"

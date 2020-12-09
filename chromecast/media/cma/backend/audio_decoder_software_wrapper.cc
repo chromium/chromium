@@ -7,8 +7,8 @@
 #include <ostream>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/decoder_config_logging.h"

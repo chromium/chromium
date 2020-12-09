@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"

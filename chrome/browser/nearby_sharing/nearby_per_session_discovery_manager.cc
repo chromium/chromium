@@ -7,8 +7,8 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_confirmation_manager.h"

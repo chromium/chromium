@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"

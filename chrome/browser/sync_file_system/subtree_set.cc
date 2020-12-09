@@ -5,8 +5,8 @@
 #include "chrome/browser/sync_file_system/subtree_set.h"
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "storage/common/file_system/file_system_util.h"
 
 namespace sync_file_system {

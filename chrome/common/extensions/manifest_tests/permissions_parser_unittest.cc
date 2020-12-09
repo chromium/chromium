@@ -4,7 +4,7 @@
 
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"

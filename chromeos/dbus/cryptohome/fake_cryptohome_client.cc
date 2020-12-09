@@ -10,13 +10,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"

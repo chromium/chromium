@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 
+#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"

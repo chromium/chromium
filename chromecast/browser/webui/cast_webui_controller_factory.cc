@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <mutex>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chromecast/browser/webui/cast_resource_data_source.h"
 #include "chromecast/browser/webui/cast_webui.h"
 #include "chromecast/browser/webui/constants.h"

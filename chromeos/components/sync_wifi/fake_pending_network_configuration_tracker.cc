@@ -4,8 +4,8 @@
 
 #include "chromeos/components/sync_wifi/fake_pending_network_configuration_tracker.h"
 
+#include "base/containers/contains.h"
 #include "base/guid.h"
-#include "base/stl_util.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_update.h"
 
 namespace chromeos {

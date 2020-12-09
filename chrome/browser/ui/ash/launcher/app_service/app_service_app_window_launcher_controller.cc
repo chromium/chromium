@@ -11,7 +11,7 @@
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/borealis/borealis_service.h"

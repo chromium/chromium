@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

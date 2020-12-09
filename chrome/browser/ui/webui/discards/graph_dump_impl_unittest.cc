@@ -8,9 +8,9 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"

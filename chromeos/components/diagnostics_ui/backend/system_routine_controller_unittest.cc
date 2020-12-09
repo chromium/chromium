@@ -4,12 +4,12 @@
 
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"

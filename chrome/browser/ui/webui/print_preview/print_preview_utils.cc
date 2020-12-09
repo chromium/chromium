@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"

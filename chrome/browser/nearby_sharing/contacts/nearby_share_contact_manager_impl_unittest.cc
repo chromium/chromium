@@ -6,9 +6,9 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"

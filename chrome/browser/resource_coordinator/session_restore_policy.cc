@@ -11,11 +11,11 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/engagement/site_engagement_service.h"

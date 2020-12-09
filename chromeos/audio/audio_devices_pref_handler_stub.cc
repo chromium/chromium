@@ -4,7 +4,7 @@
 
 #include "chromeos/audio/audio_devices_pref_handler_stub.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chromeos/audio/audio_device.h"
 
 namespace chromeos {

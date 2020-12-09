@@ -4,7 +4,7 @@
 
 #include "chromecast/device/bluetooth/le/scan_filter.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "third_party/re2/src/re2/re2.h"
 

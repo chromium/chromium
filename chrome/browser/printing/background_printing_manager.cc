@@ -4,9 +4,9 @@
 
 #include "chrome/browser/printing/background_printing_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"

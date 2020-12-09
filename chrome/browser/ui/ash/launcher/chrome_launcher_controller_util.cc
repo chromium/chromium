@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"

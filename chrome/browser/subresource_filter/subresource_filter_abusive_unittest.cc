@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"

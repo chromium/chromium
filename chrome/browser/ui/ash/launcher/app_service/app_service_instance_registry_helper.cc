@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

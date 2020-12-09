@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"

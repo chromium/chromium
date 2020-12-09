@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "base/version.h"
 #include "chrome/updater/registration_data.h"
 #include "components/prefs/testing_pref_service.h"

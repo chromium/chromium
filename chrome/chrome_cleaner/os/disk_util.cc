@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/file_version_info.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -20,7 +21,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

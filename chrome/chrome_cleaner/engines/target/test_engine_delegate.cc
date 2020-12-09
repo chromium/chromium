@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"

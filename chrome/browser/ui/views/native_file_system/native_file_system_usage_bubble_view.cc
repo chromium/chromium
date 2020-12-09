@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/native_file_system/native_file_system_usage_bubble_view.h"
 
+#include "base/containers/contains.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
 #include "base/metrics/user_metrics.h"

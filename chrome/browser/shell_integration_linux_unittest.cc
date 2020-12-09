@@ -13,11 +13,11 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"

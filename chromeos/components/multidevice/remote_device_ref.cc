@@ -7,7 +7,7 @@
 #include <sstream>
 
 #include "base/base64.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace chromeos {
 

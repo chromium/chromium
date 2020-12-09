@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"

@@ -4,7 +4,7 @@
 
 #include "chromeos/components/multidevice/expiring_remote_device_cache.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 
 namespace chromeos {

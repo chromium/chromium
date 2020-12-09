@@ -8,13 +8,13 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "storage/browser/file_system/file_system_context.h"

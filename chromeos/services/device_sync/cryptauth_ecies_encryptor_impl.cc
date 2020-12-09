@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"

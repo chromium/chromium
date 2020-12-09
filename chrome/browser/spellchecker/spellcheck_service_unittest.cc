@@ -7,8 +7,8 @@
 #include <ostream>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"

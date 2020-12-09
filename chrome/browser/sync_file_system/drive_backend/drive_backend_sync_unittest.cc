@@ -8,12 +8,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"

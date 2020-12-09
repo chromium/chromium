@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"

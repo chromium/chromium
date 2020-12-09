@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"

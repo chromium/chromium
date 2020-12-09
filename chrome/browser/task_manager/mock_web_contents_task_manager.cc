@@ -4,7 +4,7 @@
 
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 
 namespace task_manager {

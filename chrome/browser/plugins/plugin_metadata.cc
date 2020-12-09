@@ -7,8 +7,8 @@
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/webplugininfo.h"

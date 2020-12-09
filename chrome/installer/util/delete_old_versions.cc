@@ -9,13 +9,13 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/file_version_info.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/version.h"
 #include "chrome/installer/util/util_constants.h"
 

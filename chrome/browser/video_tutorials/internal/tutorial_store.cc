@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 
 namespace leveldb_proto {
 

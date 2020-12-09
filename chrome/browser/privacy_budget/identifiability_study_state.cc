@@ -14,12 +14,12 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/crc32.h"
 #include "base/numerics/ranges.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"

@@ -4,8 +4,8 @@
 
 #include "chromecast/graphics/cast_focus_client_aura.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "ui/aura/window.h"
 
 #define LOG_WINDOW_INFO(top_level, window)                              \

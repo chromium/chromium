@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -14,7 +15,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"

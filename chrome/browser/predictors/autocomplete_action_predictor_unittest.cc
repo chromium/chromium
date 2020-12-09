@@ -11,12 +11,12 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
