@@ -1189,6 +1189,9 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
   if (!node || !node->isConnected())
     return;
 
+  // Ignore attached nodes that are not elements, including text nodes and
+  // #shadow-root nodes. This matches previous implementations that worked,
+  // but it is not clear if that could potentially lead to missing content.
   Element* element = DynamicTo<Element>(node);
   if (!element)
     return;
@@ -1210,6 +1213,12 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
     HandleAttributeChangedWithCleanLayout(html_names::kAriaOwnsAttr, element);
 
   MaybeNewRelationTarget(node, Get(node));
+
+  // Even if the node or parent are ignored, an ancestor may need to include
+  // descendants of the attached node, thus ChildrenChangedWithCleanLayout()
+  // must be called. It handles ignored logic, ensuring that the first ancestor
+  // that should have this as a child will be updated.
+  ChildrenChangedWithCleanLayout(NodeTraversal::Parent(*node));
 }
 
 void AXObjectCacheImpl::DidInsertChildrenOfNode(Node* node) {
