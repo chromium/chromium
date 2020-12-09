@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -48,6 +49,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowsingDataType;
 import org.chromium.weblayer.ContextMenuParams;
@@ -460,7 +462,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
         // when the shell is rotated in the foreground).
         fragment.setRetainInstance(true);
         mBrowser = Browser.fromFragment(fragment);
-        Display display = getDisplay();
+        Display display = getDefaultDisplay();
         Point point = new Point();
         display.getRealSize(point);
         mBrowser.setMinimumSurfaceSize(point.x, point.y);
@@ -816,5 +818,13 @@ public class WebLayerShellActivity extends AppCompatActivity {
                     .setImageBitmap(mTabToPerTabState.get(tab)
                                             .mFaviconFetcher.getFaviconForCurrentNavigation());
         }
+    }
+
+    private Display getDefaultDisplay() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return ApiHelperForR.getDisplay(this);
+        }
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        return windowManager.getDefaultDisplay();
     }
 }
