@@ -128,8 +128,11 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
-    public void testProactiveHelpDisabledIfMsbbDisabled() {
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
+            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB)
+    public void
+    testProactiveHelpDisabledIfMsbbDisabled() {
         final AutofillAssistantPreferenceFragment prefs =
                 startAutofillAssistantPreferenceFragment();
 
@@ -151,6 +154,7 @@ public class AutofillAssistantPreferenceFragmentTest {
     @LargeTest
     @Feature({"Sync"})
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
+            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP,
             ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB})
     public void
     testProactiveHelpNotLinkedToMsbbIfLinkDisabled() {
@@ -174,17 +178,22 @@ public class AutofillAssistantPreferenceFragmentTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
-    public void testProactiveHelpDisabledIfAutofillAssistantDisabled() {
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
+            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB)
+    public void
+    testProactiveHelpDisabledIfAutofillAssistantDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setAutofillAssistantSwitchValue(true); });
         final AutofillAssistantPreferenceFragment prefs =
                 startAutofillAssistantPreferenceFragment();
 
-        ChromeSwitchPreference proactiveHelpSwitch = (ChromeSwitchPreference) prefs.findPreference(
-                AutofillAssistantPreferenceFragment.PREF_ASSISTANT_PROACTIVE_HELP_SWITCH);
-        Preference syncAndServicesLink = prefs.findPreference(
-                AutofillAssistantPreferenceFragment.PREF_GOOGLE_SERVICES_SETTINGS_LINK);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeSwitchPreference proactiveHelpSwitch =
+                    (ChromeSwitchPreference) prefs.findPreference(
+                            AutofillAssistantPreferenceFragment
+                                    .PREF_ASSISTANT_PROACTIVE_HELP_SWITCH);
+            Preference syncAndServicesLink = prefs.findPreference(
+                    AutofillAssistantPreferenceFragment.PREF_GOOGLE_SERVICES_SETTINGS_LINK);
             assertFalse(proactiveHelpSwitch.isEnabled());
 
             assertTrue(syncAndServicesLink.isVisible());
