@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_concept.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_result_icon.mojom.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/local_search_service/local_search_service_sync.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
@@ -44,14 +44,16 @@ SearchHandler::SearchHandler(
     SearchTagRegistry* search_tag_registry,
     OsSettingsSections* sections,
     Hierarchy* hierarchy,
-    local_search_service::LocalSearchServiceSync* local_search_service)
+    local_search_service::LocalSearchServiceProxy* local_search_service_proxy)
     : search_tag_registry_(search_tag_registry),
       sections_(sections),
-      hierarchy_(hierarchy),
-      index_(local_search_service->GetIndexSync(
-          local_search_service::IndexId::kCrosSettings,
-          local_search_service::Backend::kLinearMap,
-          g_browser_process ? g_browser_process->local_state() : nullptr)) {
+      hierarchy_(hierarchy) {
+  local_search_service_proxy->GetIndex(
+      local_search_service::IndexId::kCrosSettings,
+      local_search_service::Backend::kLinearMap,
+      index_remote_.BindNewPipeAndPassReceiver());
+  DCHECK(index_remote_.is_bound());
+
   search_tag_registry_->AddObserver(this);
 }
 
@@ -64,10 +66,10 @@ void SearchHandler::BindInterface(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
-std::vector<mojom::SearchResultPtr> SearchHandler::Search(
-    const base::string16& query,
-    uint32_t max_num_results,
-    mojom::ParentResultBehavior parent_result_behavior) {
+void SearchHandler::Search(const base::string16& query,
+                           uint32_t max_num_results,
+                           mojom::ParentResultBehavior parent_result_behavior,
+                           SearchCallback callback) {
   // Search for 5x the maximum set of results. If there are many matches for
   // a query, it may be the case that |index_| returns some matches with higher
   // SearchResultDefaultRank values later in the list. Requesting up to 5x the
@@ -75,27 +77,11 @@ std::vector<mojom::SearchResultPtr> SearchHandler::Search(
   // accordingly when sorted.
   uint32_t max_local_search_service_results = 5 * max_num_results;
 
-  std::vector<local_search_service::Result> local_search_service_results;
-  local_search_service::ResponseStatus response_status = index_->FindSync(
-      query, max_local_search_service_results, &local_search_service_results);
-
-  if (response_status != local_search_service::ResponseStatus::kSuccess) {
-    LOG(ERROR) << "Cannot search; LocalSearchServiceSync returned "
-               << static_cast<int>(response_status)
-               << ". Returning empty results array.";
-    return {};
-  }
-
-  return GenerateSearchResultsArray(local_search_service_results,
-                                    max_num_results, parent_result_behavior);
-}
-
-void SearchHandler::Search(const base::string16& query,
-                           uint32_t max_num_results,
-                           mojom::ParentResultBehavior parent_result_behavior,
-                           SearchCallback callback) {
-  std::move(callback).Run(
-      Search(query, max_num_results, parent_result_behavior));
+  index_remote_->Find(
+      query, max_local_search_service_results,
+      base::BindOnce(&SearchHandler::OnFindComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     max_num_results, parent_result_behavior));
 }
 
 void SearchHandler::Observe(
@@ -133,6 +119,26 @@ std::vector<mojom::SearchResultPtr> SearchHandler::GenerateSearchResultsArray(
   }
 
   return search_results;
+}
+
+void SearchHandler::OnFindComplete(
+    SearchCallback callback,
+    uint32_t max_num_results,
+    mojom::ParentResultBehavior parent_result_behavior,
+    local_search_service::ResponseStatus response_status,
+    const base::Optional<std::vector<local_search_service::Result>>&
+        local_search_service_results) {
+  if (response_status != local_search_service::ResponseStatus::kSuccess) {
+    LOG(ERROR) << "Cannot search; LocalSearchService returned "
+               << static_cast<int>(response_status)
+               << ". Returning empty results array.";
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::move(callback).Run(
+      GenerateSearchResultsArray(local_search_service_results.value(),
+                                 max_num_results, parent_result_behavior));
 }
 
 void SearchHandler::AddParentResults(

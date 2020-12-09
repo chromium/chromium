@@ -13,21 +13,18 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
-#include "chromeos/components/local_search_service/index_sync.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
-
-namespace local_search_service {
-class IndexSync;
-class LocalSearchServiceSync;
-}  // namespace local_search_service
 
 namespace settings {
 
 struct SearchConcept;
 
 // Processes all registered search tags by adding/removing them from
-// LocalSearchServiceSync and providing metadata via GetTagMetadata().
+// LocalSearchService and providing metadata via GetTagMetadata().
 class SearchTagRegistry {
  public:
   class Observer : public base::CheckedObserver {
@@ -63,8 +60,8 @@ class SearchTagRegistry {
     std::unordered_map<std::string, ConceptWithShouldAddBool> pending_updates_;
   };
 
-  SearchTagRegistry(
-      local_search_service::LocalSearchServiceSync* local_search_service);
+  SearchTagRegistry(local_search_service::LocalSearchServiceProxy*
+                        local_search_service_proxy);
   SearchTagRegistry(const SearchTagRegistry& other) = delete;
   SearchTagRegistry& operator=(const SearchTagRegistry& other) = delete;
   virtual ~SearchTagRegistry();
@@ -79,7 +76,7 @@ class SearchTagRegistry {
   ScopedTagUpdater StartUpdate();
 
   // Returns the tag metadata associated with |result_id|, which is the ID
-  // returned by the LocalSearchServiceSync. If no metadata is available, null
+  // returned by the LocalSearchService. If no metadata is available, null
   // is returned.
   const SearchConcept* GetTagMetadata(const std::string& result_id) const;
  private:
@@ -93,16 +90,19 @@ class SearchTagRegistry {
   std::vector<local_search_service::Data> ConceptVectorToDataVector(
       const std::vector<const SearchConcept*>& search_tags);
   void NotifyRegistryUpdated();
+  void NotifyRegistryAdded();
+  void NotifyRegistryDeleted(uint32_t /*num_deleted*/);
 
-  // Index used by the LocalSearchServiceSync for string matching.
-  local_search_service::IndexSync* index_;
+  // Index used by the LocalSearchService for string matching.
+  mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
   // In-memory cache of all results which have been added to the
-  // LocalSearchServiceSync. Contents are kept in sync with |index_|.
+  // LocalSearchService. Contents are kept in sync with |index_remote_|.
   std::unordered_map<std::string, const SearchConcept*>
       result_id_to_metadata_list_map_;
 
   base::ObserverList<Observer> observer_list_;
+  base::WeakPtrFactory<SearchTagRegistry> weak_ptr_factory_{this};
 };
 
 }  // namespace settings

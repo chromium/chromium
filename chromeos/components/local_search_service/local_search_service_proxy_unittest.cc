@@ -18,11 +18,8 @@ namespace local_search_service {
 class LocalSearchServiceProxyTest : public testing::Test {
  public:
   void SetUp() override {
-    service_proxy_ = std::make_unique<LocalSearchServiceProxy>();
-
-    // Swap providers for testing purpose.
-    provider_ = std::make_unique<LocalSearchServiceProviderForTesting>();
-    provider_.swap(service_proxy_->local_search_service_provider_);
+    service_proxy_ =
+        std::make_unique<LocalSearchServiceProxy>(/*for_testing=*/true);
   }
 
  protected:

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chromeos/components/local_search_service/local_search_service_provider_for_testing.h"
 #include "chromeos/components/local_search_service/oop_local_search_service_provider.h"
 #include "components/prefs/pref_service.h"
 
@@ -22,11 +23,16 @@ void OnBindIndexDone(const base::Optional<std::string>& error) {
 
 }  // namespace
 
-LocalSearchServiceProxy::LocalSearchServiceProxy() {
-  // Create an instance of OopLocalSearchServiceProvider.
-  // This will set |g_provider|.
-  local_search_service_provider_ =
-      std::make_unique<OopLocalSearchServiceProvider>();
+LocalSearchServiceProxy::LocalSearchServiceProxy(bool for_testing) {
+  if (!for_testing) {
+    // Create an instance of OopLocalSearchServiceProvider.
+    // This will set |g_provider|.
+    local_search_service_provider_ =
+        std::make_unique<OopLocalSearchServiceProvider>();
+  } else {
+    local_search_service_provider_ =
+        std::make_unique<LocalSearchServiceProviderForTesting>();
+  }
 }
 
 LocalSearchServiceProxy::~LocalSearchServiceProxy() = default;

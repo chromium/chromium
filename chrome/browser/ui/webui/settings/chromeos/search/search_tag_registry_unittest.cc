@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 
 #include "base/no_destructor.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_concept.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/local_search_service/index_sync.h"
-#include "chromeos/components/local_search_service/local_search_service_sync.h"
+#include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -63,23 +63,46 @@ const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
 
 class SearchTagRegistryTest : public testing::Test {
  protected:
-  SearchTagRegistryTest() : search_tag_registry_(&local_search_service_) {}
+  SearchTagRegistryTest()
+      : search_tag_registry_(local_search_service_proxy_.get()) {}
+
   ~SearchTagRegistryTest() override = default;
 
   // testing::Test:
   void SetUp() override {
     search_tag_registry_.AddObserver(&observer_);
-    index_ = local_search_service_.GetIndexSync(
+
+    local_search_service_proxy_->GetIndex(
         local_search_service::IndexId::kCrosSettings,
-        local_search_service::Backend::kLinearMap, nullptr /* local_state */);
+        local_search_service::Backend::kLinearMap,
+        index_remote_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override { search_tag_registry_.RemoveObserver(&observer_); }
 
-  local_search_service::LocalSearchServiceSync local_search_service_;
+  void IndexGetSizeAndCheckResults(uint32_t expected_num_items) {
+    bool callback_done = false;
+    uint32_t num_items = 0;
+    index_remote_->GetSize(base::BindOnce(
+        [](bool* callback_done, uint32_t* num_items, uint64_t size) {
+          *callback_done = true;
+          *num_items = size;
+        },
+        &callback_done, &num_items));
+    task_environment_.RunUntilIdle();
+    ASSERT_TRUE(callback_done);
+    EXPECT_EQ(num_items, expected_num_items);
+  }
+
+  // This line should be before search_tag_registry_ is declared.
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<local_search_service::LocalSearchServiceProxy>
+      local_search_service_proxy_ =
+          std::make_unique<local_search_service::LocalSearchServiceProxy>(
+              /*for_testing=*/true);
   SearchTagRegistry search_tag_registry_;
   FakeObserver observer_;
-  local_search_service::IndexSync* index_;
+  mojo::Remote<local_search_service::mojom::Index> index_remote_;
 };
 
 TEST_F(SearchTagRegistryTest, AddAndRemove) {
@@ -91,11 +114,11 @@ TEST_F(SearchTagRegistryTest, AddAndRemove) {
 
     // Nothing should have happened yet, since |updater| has not gone out of
     // scope.
-    EXPECT_EQ(0u, index_->GetSizeSync());
+    IndexGetSizeAndCheckResults(0u);
     EXPECT_EQ(0u, observer_.num_calls());
   }
   // Now that it went out of scope, the update should have occurred.
-  EXPECT_EQ(3u, index_->GetSizeSync());
+  IndexGetSizeAndCheckResults(3u);
   EXPECT_EQ(1u, observer_.num_calls());
 
   std::string first_tag_id =
@@ -115,11 +138,11 @@ TEST_F(SearchTagRegistryTest, AddAndRemove) {
 
     // Tags should not have been removed yet, since |updater| has not gone out
     // of scope.
-    EXPECT_EQ(3u, index_->GetSizeSync());
+    IndexGetSizeAndCheckResults(3u);
     EXPECT_EQ(1u, observer_.num_calls());
   }
   // Now that it went out of scope, the update should have occurred.
-  EXPECT_EQ(0u, index_->GetSizeSync());
+  IndexGetSizeAndCheckResults(0u);
   EXPECT_EQ(2u, observer_.num_calls());
 
   // The tag should no longer be accessible via GetTagMetadata().

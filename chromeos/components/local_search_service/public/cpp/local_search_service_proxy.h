@@ -20,7 +20,7 @@ namespace local_search_service {
 
 class LocalSearchServiceProxy : public KeyedService {
  public:
-  LocalSearchServiceProxy();
+  explicit LocalSearchServiceProxy(bool for_testing = false);
   ~LocalSearchServiceProxy() override;
 
   LocalSearchServiceProxy(const LocalSearchServiceProxy&) = delete;

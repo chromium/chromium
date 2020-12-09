@@ -273,8 +273,8 @@ const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables LocalSearchService to be initialized.
-const base::Feature kEnableLocalSearchService{
-    "EnableLocalSearchService", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableLocalSearchService{"EnableLocalSearchService",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the OOBE ChromeVox hint dialog and announcement feature.
 const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",

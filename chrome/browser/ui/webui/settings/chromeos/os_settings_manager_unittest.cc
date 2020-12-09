@@ -7,6 +7,16 @@
 #include "base/metrics/histogram_base.h"
 #include "base/no_destructor.h"
 #include "base/test/metrics/histogram_enum_reader.h"
+#include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
+#include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager_factory.h"
+#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
+#include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
@@ -15,6 +25,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
+#include "chromeos/components/local_search_service/search_metrics_reporter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,12 +48,36 @@ class OsSettingsManagerTest : public testing::Test {
     TestingProfile* profile =
         profile_manager_.CreateTestingProfile("TestingProfile");
 
-    manager_ = OsSettingsManagerFactory::GetForProfile(profile);
+    local_search_service::SearchMetricsReporter::RegisterLocalStatePrefs(
+        pref_service_.registry());
+    local_search_service::LocalSearchServiceProxyFactory::GetInstance()
+        ->SetLocalState(&pref_service_);
+    KerberosCredentialsManager* kerberos_credentials_manager =
+        ProfileHelper::IsPrimaryProfile(profile)
+            ? KerberosCredentialsManagerFactory::Get(profile)
+            : nullptr;
+    manager_ = std::make_unique<OsSettingsManager>(
+        profile, local_search_service_proxy_.get(),
+        multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
+            profile),
+        phonehub::PhoneHubManagerFactory::GetForProfile(profile),
+        ProfileSyncServiceFactory::GetForProfile(profile),
+        SupervisedUserServiceFactory::GetForProfile(profile),
+        kerberos_credentials_manager,
+        ArcAppListPrefsFactory::GetForBrowserContext(profile),
+        IdentityManagerFactory::GetForProfile(profile),
+        android_sms::AndroidSmsServiceFactory::GetForBrowserContext(profile),
+        CupsPrintersManagerFactory::GetForBrowserContext(profile));
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   TestingProfileManager profile_manager_;
-  OsSettingsManager* manager_;
+  std::unique_ptr<local_search_service::LocalSearchServiceProxy>
+      local_search_service_proxy_ =
+          std::make_unique<local_search_service::LocalSearchServiceProxy>(
+              /*for_testing=*/true);
+  std::unique_ptr<OsSettingsManager> manager_;
 };
 
 TEST_F(OsSettingsManagerTest, Initialization) {

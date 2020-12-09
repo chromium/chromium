@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom-test-utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/local_search_service/local_search_service_sync.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -90,12 +90,12 @@ mojom::SearchResultPtr CreateDummyResult() {
 class SearchHandlerTest : public testing::Test {
  protected:
   SearchHandlerTest()
-      : search_tag_registry_(&local_search_service_),
+      : search_tag_registry_(local_search_service_proxy_.get()),
         fake_hierarchy_(&fake_sections_),
         handler_(&search_tag_registry_,
                  &fake_sections_,
                  &fake_hierarchy_,
-                 &local_search_service_) {}
+                 local_search_service_proxy_.get()) {}
   ~SearchHandlerTest() override = default;
 
   // testing::Test:
@@ -129,7 +129,10 @@ class SearchHandlerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  local_search_service::LocalSearchServiceSync local_search_service_;
+  std::unique_ptr<local_search_service::LocalSearchServiceProxy>
+      local_search_service_proxy_ =
+          std::make_unique<local_search_service::LocalSearchServiceProxy>(
+              /*for_testing=*/true);
   SearchTagRegistry search_tag_registry_;
   FakeOsSettingsSections fake_sections_;
   FakeHierarchy fake_hierarchy_;
@@ -142,6 +145,7 @@ TEST_F(SearchHandlerTest, AddAndRemove) {
   // Add printing search tags to registry and search for "Print".
   AddSearchTags(GetPrintingSearchConcepts());
   handler_remote_.FlushForTesting();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1u, observer_.num_calls());
 
   std::vector<mojom::SearchResultPtr> search_results;
