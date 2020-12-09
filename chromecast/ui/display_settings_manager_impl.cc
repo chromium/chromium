@@ -4,7 +4,10 @@
 
 #include "chromecast/ui/display_settings_manager_impl.h"
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/ui/display_settings/brightness_animation.h"
 #include "chromecast/ui/display_settings/color_temperature_animation.h"
@@ -21,23 +24,19 @@ namespace chromecast {
 namespace {
 
 constexpr base::TimeDelta kAnimationDuration = base::TimeDelta::FromSeconds(2);
-constexpr base::TimeDelta kScreenOnOffDuration =
-    base::TimeDelta::FromMilliseconds(200);
-
-#if defined(USE_AURA)
-// These delays are needed to ensure there are no visible artifacts due to the
-// backlight turning on prior to the LCD fully initializing or vice-versa.
-// TODO(b/161140301): Make this configurable for different products
-// TODO(b/161268188): Remove these if the delays can be handled by the kernel
-constexpr base::TimeDelta kDisplayPowerOnDelay =
-    base::TimeDelta::FromMilliseconds(35);
-constexpr base::TimeDelta kDisplayPowerOffDelay =
-    base::TimeDelta::FromMilliseconds(85);
-#endif  // defined(USE_AURA)
 
 const float kMinApiBrightness = 0.0f;
 const float kMaxApiBrightness = 1.0f;
 const float kDefaultApiBrightness = kMaxApiBrightness;
+
+bool CheckDisplayStatus(const base::flat_map<int64_t, bool>& statuses) {
+  for (const auto& status : statuses) {
+    if (!status.second) {
+      return false;
+    }
+  }
+  return true;
+}
 
 }  // namespace
 
@@ -56,11 +55,7 @@ DisplaySettingsManagerImpl::DisplaySettingsManagerImpl(
       display_configurator_(nullptr),
 #endif  // defined(USE_AURA)
       brightness_(-1.0f),
-      screen_on_(true),
-#if defined(USE_AURA)
-      screen_power_on_(true),
-      allow_screen_power_off_(false),
-#endif  // defined(USE_AURA)
+      screen_power_controller_(ScreenPowerController::Create(this)),
       color_temperature_animation_(std::make_unique<ColorTemperatureAnimation>(
           window_manager_,
           display_configurator_,
@@ -110,6 +105,23 @@ void DisplaySettingsManagerImpl::AddReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
+void DisplaySettingsManagerImpl::SetScreenPowerOn(PowerToggleCallback callback) {
+  display_configurator_->EnableDisplay(
+      base::BindOnce(&CheckDisplayStatus).Then(std::move(callback)));
+}
+
+void DisplaySettingsManagerImpl::SetScreenPowerOff(PowerToggleCallback callback) {
+  display_configurator_->DisableDisplay(
+      base::BindOnce(&CheckDisplayStatus).Then(std::move(callback)));
+}
+
+void DisplaySettingsManagerImpl::SetScreenBrightnessOn(
+    bool brightness_on,
+    base::TimeDelta duration) {
+  UpdateBrightness(brightness_on ? brightness_ : 0, duration);
+  window_manager_->SetTouchInputDisabled(!brightness_on);
+}
+
 void DisplaySettingsManagerImpl::SetColorTemperature(float temperature) {
   DVLOG(4) << "Setting color temperature to " << temperature << " Kelvin.";
   color_temperature_animation_->AnimateToNewValue(temperature,
@@ -151,101 +163,28 @@ void DisplaySettingsManagerImpl::SetBrightnessSmooth(float brightness,
   brightness_ = brightness;
 
   // If the screen is off, keep the new brightness but don't apply it
-  if (!screen_on_) {
+  if (!screen_power_controller_->IsScreenOn()) {
     return;
   }
 
-  UpdateBrightness(duration);
+  UpdateBrightness(brightness_, duration);
 }
 
 void DisplaySettingsManagerImpl::ResetBrightness() {
   SetBrightness(kDefaultApiBrightness);
 }
 
-#if defined(USE_AURA)
-void DisplaySettingsManagerImpl::OnDisplayOn(
-    const base::flat_map<int64_t, bool>& statuses) {
-  for (const auto& status : statuses) {
-    bool display_success = status.second;
-    if (!display_success) {
-      // Fatal since the user has no other way of turning the screen on if this
-      // failed.
-      LOG(FATAL) << "Failed to enable screen";
-      return;
-    }
-  }
-  screen_power_on_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&DisplaySettingsManagerImpl::OnDisplayOnTimeoutCompleted,
-                     weak_factory_.GetWeakPtr()),
-      kDisplayPowerOnDelay);
-}
-
-void DisplaySettingsManagerImpl::OnDisplayOnTimeoutCompleted() {
-  UpdateBrightness(kScreenOnOffDuration);
-  window_manager_->SetTouchInputDisabled(false /* since screen_on = true */);
-}
-
-void DisplaySettingsManagerImpl::OnDisplayOffTimeoutCompleted() {
-  display_configurator_->DisableDisplay(
-      base::BindOnce([](const base::flat_map<int64_t, bool>& statuses) {
-        for (const auto& status : statuses) {
-          bool display_success = status.second;
-          LOG_IF(FATAL, !display_success) << "Failed to disable display";
-        }
-      }));
-  screen_power_on_ = false;
-}
-
 void DisplaySettingsManagerImpl::SetScreenOn(bool screen_on) {
-  // Allow this to run if screen_on == screen_on_ == false IF
-  // previously, the screen was turned off without powering off the screen
-  // and we want to power it off this time
-  if (screen_on == screen_on_ &&
-      !(!screen_on && allow_screen_power_off_ && screen_power_on_)) {
-    return;
-  }
-
-  LOG(INFO) << "Setting screen on to " << screen_on;
-  screen_on_ = screen_on;
-
-  // TODO(b/161268188): This can be simplified and the delays removed
-  // if backlight timing is handled by the kernel
-  if (screen_on && !screen_power_on_) {
-    display_configurator_->EnableDisplay(base::BindOnce(
-        &DisplaySettingsManagerImpl::OnDisplayOn, weak_factory_.GetWeakPtr()));
+  if (screen_on) {
+    screen_power_controller_->SetScreenOn();
   } else {
-    UpdateBrightness(kScreenOnOffDuration);
-    window_manager_->SetTouchInputDisabled(!screen_on_);
-    if (!screen_on && allow_screen_power_off_) {
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              &DisplaySettingsManagerImpl::OnDisplayOffTimeoutCompleted,
-              weak_factory_.GetWeakPtr()),
-          kDisplayPowerOffDelay + kScreenOnOffDuration);
-    }
+    screen_power_controller_->SetScreenOff();
   }
 }
 
 void DisplaySettingsManagerImpl::SetAllowScreenPowerOff(bool allow_power_off) {
-  allow_screen_power_off_ = allow_power_off;
+  screen_power_controller_->SetAllowScreenPowerOff(allow_power_off);
 }
-#else
-void DisplaySettingsManagerImpl::SetScreenOn(bool screen_on) {
-  if (screen_on == screen_on_) {
-    return;
-  }
-
-  LOG(INFO) << "Setting screen on to " << screen_on;
-  screen_on_ = screen_on;
-
-  UpdateBrightness(kScreenOnOffDuration);
-  window_manager_->SetTouchInputDisabled(!screen_on_);
-}
-void DisplaySettingsManagerImpl::SetAllowScreenPowerOff(bool allow_power_off) {}
-#endif
 
 void DisplaySettingsManagerImpl::AddDisplaySettingsObserver(
     mojo::PendingRemote<mojom::DisplaySettingsObserver> observer) {
@@ -254,9 +193,8 @@ void DisplaySettingsManagerImpl::AddDisplaySettingsObserver(
   observers_.Add(std::move(observer_remote));
 }
 
-void DisplaySettingsManagerImpl::UpdateBrightness(base::TimeDelta duration) {
-  float brightness = screen_on_ ? brightness_ : 0;
-
+void DisplaySettingsManagerImpl::UpdateBrightness(float brightness,
+                                                  base::TimeDelta duration) {
   if (brightness_animation_)
     brightness_animation_->AnimateToNewValue(brightness, duration);
 }

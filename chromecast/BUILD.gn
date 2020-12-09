@@ -82,6 +82,7 @@ cast_test_group("cast_tests") {
     "//chromecast/media:cast_media_unittests",
     "//chromecast/metrics:cast_metrics_unittest",
     "//chromecast/net:cast_net_unittests",
+    "//chromecast/ui/display_settings:cast_display_settings_unittests",
     "//chromecast/system/reboot:cast_reboot_unittests",
     "//content/test:content_unittests",
     "//crypto:crypto_unittests",

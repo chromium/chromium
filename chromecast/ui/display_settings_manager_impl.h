@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chromecast/ui/display_settings/screen_power_controller.h"
 #include "chromecast/ui/display_settings_manager.h"
 #include "chromecast/ui/mojom/display_settings.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,6 +33,7 @@ class CastDisplayConfigurator;
 }
 
 class DisplaySettingsManagerImpl : public DisplaySettingsManager,
+                                   public ScreenPowerController::Delegate,
                                    public mojom::DisplaySettings {
  public:
   DisplaySettingsManagerImpl(
@@ -54,6 +56,12 @@ class DisplaySettingsManagerImpl : public DisplaySettingsManager,
   void AddReceiver(
       mojo::PendingReceiver<mojom::DisplaySettings> receiver) override;
 
+  // ScreenPowerController::Delegate implementation:
+  void SetScreenPowerOn(PowerToggleCallback callback) override;
+  void SetScreenPowerOff(PowerToggleCallback callback) override;
+  void SetScreenBrightnessOn(bool brightness_on,
+                             base::TimeDelta duration) override;
+
   // mojom::DisplaySettings implementation:
   void SetColorTemperature(float temperature) override;
   void SetColorTemperatureSmooth(float temperature,
@@ -66,16 +74,11 @@ class DisplaySettingsManagerImpl : public DisplaySettingsManager,
   void SetAllowScreenPowerOff(bool allow_power_off) override;
 
  private:
-  // mojom::DisplaySettingsObserver implementation
+  // mojom::DisplaySettingsObserver implementation:
   void AddDisplaySettingsObserver(
       mojo::PendingRemote<mojom::DisplaySettingsObserver> observer) override;
 
-  void UpdateBrightness(base::TimeDelta duration);
-#if defined(USE_AURA)
-  void OnDisplayOn(const base::flat_map<int64_t, bool>& statuses);
-  void OnDisplayOnTimeoutCompleted();
-  void OnDisplayOffTimeoutCompleted();
-#endif  // defined(USE_AURA)
+  void UpdateBrightness(float brightness, base::TimeDelta duration);
 
   CastWindowManager* const window_manager_;
   shell::CastDisplayConfigurator* const display_configurator_;
@@ -85,12 +88,8 @@ class DisplaySettingsManagerImpl : public DisplaySettingsManager,
 #endif  // defined(USE_AURA)
 
   float brightness_;
-  bool screen_on_;
-#if defined(USE_AURA)
-  bool screen_power_on_;
-  bool allow_screen_power_off_;
-#endif  // defined(USE_AURA)
 
+  std::unique_ptr<ScreenPowerController> screen_power_controller_;
   std::unique_ptr<ColorTemperatureAnimation> color_temperature_animation_;
   std::unique_ptr<BrightnessAnimation> brightness_animation_;
 

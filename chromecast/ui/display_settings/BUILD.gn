@@ -11,6 +11,7 @@ cast_source_set("display_settings") {
     "brightness_animation.h",
     "color_temperature_animation.cc",
     "color_temperature_animation.h",
+    "screen_power_controller.h",
   ]
 
   deps = [
@@ -30,6 +31,61 @@ cast_source_set("display_settings") {
       "gamma_configurator.h",
     ]
 
-    deps += [ "//ui/aura" ]
+    deps += [
+      ":screen_power_controller_aura",
+      "//ui/aura"
+    ]
+  } else {
+    deps += [
+      ":screen_power_controller_default",
+    ]
+  }
+}
+
+cast_source_set("screen_power_controller_default") {
+  sources = [
+    "screen_power_controller.h",
+    "screen_power_controller_default.h",
+    "screen_power_controller_default.cc",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
+cast_source_set("screen_power_controller_aura") {
+  sources = [
+    "screen_power_controller.h",
+    "screen_power_controller_aura.h",
+    "screen_power_controller_aura.cc",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
+test("cast_display_settings_unittests") {
+  testonly = true
+
+  sources = []
+
+  deps = [
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (use_aura) {
+    sources += [
+      "screen_power_controller_aura_unittest.cc",
+    ]
+
+    deps += [
+      ":screen_power_controller_aura",
+    ]
   }
 }
