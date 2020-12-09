@@ -8,47 +8,26 @@ namespace chromeos {
 
 FileChangeService::FileChangeService() = default;
 
-FileChangeService::~FileChangeService() {
-  DCHECK(!observer_list_.might_have_observers());
-}
+FileChangeService::~FileChangeService() = default;
 
-void FileChangeService::AddObserver(storage::FileChangeObserver* observer) {
+void FileChangeService::AddObserver(FileChangeServiceObserver* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void FileChangeService::RemoveObserver(storage::FileChangeObserver* observer) {
+void FileChangeService::RemoveObserver(FileChangeServiceObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void FileChangeService::OnCreateFile(const storage::FileSystemURL& url) {
-  for (storage::FileChangeObserver& observer : observer_list_)
-    observer.OnCreateFile(url);
+void FileChangeService::NotifyFileCopied(const storage::FileSystemURL& src,
+                                         const storage::FileSystemURL& dst) {
+  for (FileChangeServiceObserver& observer : observer_list_)
+    observer.OnFileCopied(src, dst);
 }
 
-void FileChangeService::OnCreateFileFrom(const storage::FileSystemURL& url,
-                                         const storage::FileSystemURL& src) {
-  for (storage::FileChangeObserver& observer : observer_list_)
-    observer.OnCreateFileFrom(url, src);
-}
-
-void FileChangeService::OnRemoveFile(const storage::FileSystemURL& url) {
-  for (storage::FileChangeObserver& observer : observer_list_)
-    observer.OnRemoveFile(url);
-}
-
-void FileChangeService::OnModifyFile(const storage::FileSystemURL& url) {
-  for (storage::FileChangeObserver& observer : observer_list_)
-    observer.OnModifyFile(url);
-}
-
-void FileChangeService::OnCreateDirectory(const storage::FileSystemURL& url) {
-  for (storage::FileChangeObserver& observer : observer_list_)
-    observer.OnCreateDirectory(url);
-}
-
-void FileChangeService::OnRemoveDirectory(const storage::FileSystemURL& url) {
-  for (storage::FileChangeObserver& observer : observer_list_)
-    observer.OnRemoveDirectory(url);
+void FileChangeService::NotifyFileMoved(const storage::FileSystemURL& src,
+                                        const storage::FileSystemURL& dst) {
+  for (FileChangeServiceObserver& observer : observer_list_)
+    observer.OnFileMoved(src, dst);
 }
 
 }  // namespace chromeos

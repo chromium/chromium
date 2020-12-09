@@ -44,10 +44,20 @@ class AsyncFileTestHelper {
       const FileSystemURL& dest,
       const CopyProgressCallback& progress_callback);
 
+  // Performs CopyFileLocal from |src| to |dest| and returns the status code.
+  static base::File::Error CopyFileLocal(FileSystemContext* context,
+                                         const FileSystemURL& src,
+                                         const FileSystemURL& dest);
+
   // Performs Move from |src| to |dest| and returns the status code.
   static base::File::Error Move(FileSystemContext* context,
                                 const FileSystemURL& src,
                                 const FileSystemURL& dest);
+
+  // Performs MoveFileLocal from |src| to |dest| and returns the status code.
+  static base::File::Error MoveFileLocal(FileSystemContext* context,
+                                         const FileSystemURL& src,
+                                         const FileSystemURL& dest);
 
   // Removes the given |url|.
   static base::File::Error Remove(FileSystemContext* context,

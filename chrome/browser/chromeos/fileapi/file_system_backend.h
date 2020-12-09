@@ -15,9 +15,12 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "components/account_id/account_id.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/common/file_system/file_system_types.h"
+
+class Profile;
 
 namespace storage {
 class CopyOrMoveFileValidatorFactory;
@@ -73,6 +76,7 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
 
   // |system_mount_points| should outlive FileSystemBackend instance.
   FileSystemBackend(
+      Profile* profile,
       std::unique_ptr<FileSystemBackendDelegate> file_system_provider_delegate,
       std::unique_ptr<FileSystemBackendDelegate> mtp_delegate,
       std::unique_ptr<FileSystemBackendDelegate> arc_content_delegate,
@@ -146,6 +150,8 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
       const base::FilePath& entry_path) const override;
 
  private:
+  const AccountId account_id_;
+
   std::unique_ptr<FileAccessPermissions> file_access_permissions_;
   std::unique_ptr<storage::AsyncFileUtil> local_file_util_;
 

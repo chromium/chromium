@@ -105,13 +105,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
     return file_system_context_.get();
   }
 
- private:
-  friend class FileSystemOperation;
-
+ protected:
   FileSystemOperationImpl(
       const FileSystemURL& url,
       FileSystemContext* file_system_context,
       std::unique_ptr<FileSystemOperationContext> operation_context);
+
+ private:
+  friend class FileSystemOperation;
 
   // Queries the quota and usage and then runs the given |task|.
   // If an error occurs during the quota query it runs |error_callback| instead.

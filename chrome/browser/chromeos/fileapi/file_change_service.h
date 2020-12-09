@@ -6,37 +6,35 @@
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_FILE_CHANGE_SERVICE_H_
 
 #include "base/observer_list.h"
+#include "chrome/browser/chromeos/fileapi/file_change_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "storage/browser/file_system/file_observers.h"
 
 namespace chromeos {
 
 // A service which notifies observers of file change events from external file
 // systems. This serves as a bridge to allow for observation of file system
 // changes across all file system contexts within a browser context.
-class FileChangeService : public KeyedService,
-                          public storage::FileChangeObserver {
+class FileChangeService : public KeyedService {
  public:
   FileChangeService();
   FileChangeService(const FileChangeService& other) = delete;
   FileChangeService& operator=(const FileChangeService& other) = delete;
   ~FileChangeService() override;
 
-  // Adds/removes the specified `observer` for file change events.
-  void AddObserver(storage::FileChangeObserver* observer);
-  void RemoveObserver(storage::FileChangeObserver* observer);
+  // Adds/removes the specified `observer` for service events.
+  void AddObserver(FileChangeServiceObserver* observer);
+  void RemoveObserver(FileChangeServiceObserver* observer);
+
+  // Notifies the service that a file has been copied from `src` to `dst`.
+  void NotifyFileCopied(const storage::FileSystemURL& src,
+                        const storage::FileSystemURL& dst);
+
+  // Notifies the service that a file has been moved from `src` to `dst`.
+  void NotifyFileMoved(const storage::FileSystemURL& src,
+                       const storage::FileSystemURL& dst);
 
  private:
-  // storage::FileChangeObserver:
-  void OnCreateFile(const storage::FileSystemURL& url) override;
-  void OnCreateFileFrom(const storage::FileSystemURL& url,
-                        const storage::FileSystemURL& src) override;
-  void OnRemoveFile(const storage::FileSystemURL& url) override;
-  void OnModifyFile(const storage::FileSystemURL& url) override;
-  void OnCreateDirectory(const storage::FileSystemURL& url) override;
-  void OnRemoveDirectory(const storage::FileSystemURL& url) override;
-
-  base::ObserverList<storage::FileChangeObserver>::Unchecked observer_list_;
+  base::ObserverList<FileChangeServiceObserver> observer_list_;
 };
 
 }  // namespace chromeos

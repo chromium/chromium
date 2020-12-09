@@ -19,6 +19,8 @@
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/chromeos/fileapi/file_access_permissions.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
+#include "chrome/browser/chromeos/fileapi/observable_file_system_operation_impl.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -48,6 +50,13 @@ const char* kOemAccessibleExtensions[] = {
     "klimoghijjogocdbaikffefjfcfheiel",  // Retail Demo (OOBE),
 };
 
+// Returns the `AccountId` associated with the specified `profile`.
+AccountId GetAccountId(Profile* profile) {
+  user_manager::User* user =
+      profile ? ProfileHelper::Get()->GetUserByProfile(profile) : nullptr;
+  return user ? user->GetAccountId() : AccountId();
+}
+
 }  // namespace
 
 // static
@@ -65,6 +74,7 @@ bool FileSystemBackend::CanHandleURL(const storage::FileSystemURL& url) {
 }
 
 FileSystemBackend::FileSystemBackend(
+    Profile* profile,
     std::unique_ptr<FileSystemBackendDelegate> file_system_provider_delegate,
     std::unique_ptr<FileSystemBackendDelegate> mtp_delegate,
     std::unique_ptr<FileSystemBackendDelegate> arc_content_delegate,
@@ -73,7 +83,8 @@ FileSystemBackend::FileSystemBackend(
     std::unique_ptr<FileSystemBackendDelegate> smbfs_delegate,
     scoped_refptr<storage::ExternalMountPoints> mount_points,
     storage::ExternalMountPoints* system_mount_points)
-    : file_access_permissions_(new FileAccessPermissions()),
+    : account_id_(GetAccountId(profile)),
+      file_access_permissions_(new FileAccessPermissions()),
       local_file_util_(storage::AsyncFileUtil::CreateForLocalFileSystem()),
       file_system_provider_delegate_(std::move(file_system_provider_delegate)),
       mtp_delegate_(std::move(mtp_delegate)),
@@ -340,8 +351,8 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
 
   if (url.type() == storage::kFileSystemTypeDeviceMediaAsFileStorage) {
     // MTP file operations run on MediaTaskRunner.
-    return storage::FileSystemOperation::Create(
-        url, context,
+    return new ObservableFileSystemOperationImpl(
+        account_id_, url, context,
         std::make_unique<storage::FileSystemOperationContext>(
             context, MediaFileSystemBackend::MediaTaskRunner().get()));
   }
@@ -349,8 +360,8 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
       url.type() == storage::kFileSystemTypeRestrictedNativeLocal ||
       url.type() == storage::kFileSystemTypeDriveFs ||
       url.type() == storage::kFileSystemTypeSmbFs) {
-    return storage::FileSystemOperation::Create(
-        url, context,
+    return new ObservableFileSystemOperationImpl(
+        account_id_, url, context,
         std::make_unique<storage::FileSystemOperationContext>(
             context, base::ThreadPool::CreateSequencedTaskRunner(
                          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
@@ -360,8 +371,8 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
   DCHECK(url.type() == storage::kFileSystemTypeProvided ||
          url.type() == storage::kFileSystemTypeArcContent ||
          url.type() == storage::kFileSystemTypeArcDocumentsProvider);
-  return storage::FileSystemOperation::Create(
-      url, context,
+  return new ObservableFileSystemOperationImpl(
+      account_id_, url, context,
       std::make_unique<storage::FileSystemOperationContext>(context));
 }
 
