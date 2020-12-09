@@ -23,14 +23,14 @@ class SequenceAffine {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-#if defined(NCTEST_ACCESS_WITHOUT_CHECK)  // [r"fatal error: writing variable 'counter_' requires holding mutex 'sequence_checker_' exclusively"]
+#if defined(NCTEST_ACCESS_WITHOUT_CHECK)  // [r"fatal error: writing variable 'counter_' requires holding context 'sequence_checker_' exclusively"]
 
 void SequenceAffine::BuggyIncrement() {
   // Member access without sequence_checker_ assertion.
   ++counter_;
 }
 
-#elif defined(NCTEST_CALL_WITHOUT_CHECK)  // [r"fatal error: calling function 'Increment' requires holding mutex 'sequence_checker_' exclusively"]
+#elif defined(NCTEST_CALL_WITHOUT_CHECK)  // [r"fatal error: calling function 'Increment' requires holding context 'sequence_checker_' exclusively"]
 
 void SequenceAffine::BuggyIncrement() {
   // Function call without sequence_checker_ assertion.
