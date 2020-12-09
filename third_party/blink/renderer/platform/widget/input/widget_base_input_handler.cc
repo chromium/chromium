@@ -346,8 +346,12 @@ void WidgetBaseInputHandler::HandleInputEvent(
     // This would later be useful in creating `cc::EventMetrics` objects for
     // injected scroll events.
     cloned_metrics = metrics->Clone();
+    metrics->SetDispatchStageTimestamp(
+        cc::EventMetrics::DispatchStage::kRendererMainStarted);
     done_callback = base::BindOnce(
         [](std::unique_ptr<cc::EventMetrics> metrics, bool handled) {
+          metrics->SetDispatchStageTimestamp(
+              cc::EventMetrics::DispatchStage::kRendererMainFinished);
           std::unique_ptr<cc::EventMetrics> result =
               handled ? std::move(metrics) : nullptr;
           return result;
@@ -673,12 +677,16 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
               original_metrics);
       cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
       if (metrics) {
+        metrics->SetDispatchStageTimestamp(
+            cc::EventMetrics::DispatchStage::kRendererMainStarted);
         // Since we don't need `metrics` for this event beyond this point (i.e.
         // we don't intend to add further breakdowns to the metrics while
         // processing the event, at least for now), it is safe to move the
         // metrics object to the callback.
         done_callback = base::BindOnce(
             [](std::unique_ptr<cc::EventMetrics> metrics, bool handled) {
+              metrics->SetDispatchStageTimestamp(
+                  cc::EventMetrics::DispatchStage::kRendererMainFinished);
               std::unique_ptr<cc::EventMetrics> result =
                   handled ? std::move(metrics) : nullptr;
               return result;

@@ -78,7 +78,9 @@ class CC_EXPORT EventMetrics {
     kArrivedInRendererCompositor,
     kRendererCompositorStarted,
     kRendererCompositorFinished,
-    kMaxValue = kRendererCompositorFinished,
+    kRendererMainStarted,
+    kRendererMainFinished,
+    kMaxValue = kRendererMainFinished,
   };
 
   // Returns a new instance if the event is of a type we are interested in.
@@ -129,8 +131,8 @@ class CC_EXPORT EventMetrics {
   void SetDispatchStageTimestamp(DispatchStage stage);
   base::TimeTicks GetDispatchStageTimestamp(DispatchStage stage) const;
 
-  // Resets the metris object to dispatch stage `stage` by setting timestamps of
-  // dispatch stages after `stage` to null timestamp,
+  // Resets the metrics object to dispatch stage `stage` by setting timestamps
+  // of dispatch stages after `stage` to null timestamp,
   void ResetToDispatchStage(DispatchStage stage);
 
   std::unique_ptr<EventMetrics> Clone() const;
