@@ -74,6 +74,9 @@ class AppBrowserController : public TabStripModelObserver,
   // Returns a theme built from the current page or app's theme color.
   const ui::ThemeProvider* GetThemeProvider() const;
 
+  // Returns the text to flash in the title bar on app launch.
+  base::string16 GetLaunchFlashText() const;
+
   // Returns whether this controller was created for an installed PWA.
   virtual bool IsHostedApp() const;
 

@@ -30,7 +30,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   label_ = std::make_unique<views::Label>(
-               browser->app_controller()->GetFormattedUrlOrigin(),
+               browser->app_controller()->GetLaunchFlashText(),
                ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
                ChromeTextStyle::STYLE_EMPHASIZED)
                .release();

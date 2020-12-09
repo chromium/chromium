@@ -415,6 +415,9 @@ extern const char kDesktopPWAsAppIconShortcutsMenuDescription[];
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
 
+extern const char kDesktopPWAsFlashAppNameInsteadOfOriginName[];
+extern const char kDesktopPWAsFlashAppNameInsteadOfOriginDescription[];
+
 extern const char kDesktopPWAsTabStripName[];
 extern const char kDesktopPWAsTabStripDescription[];
 

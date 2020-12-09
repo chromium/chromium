@@ -332,6 +332,14 @@ bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
   return false;
 }
 
+base::string16 AppBrowserController::GetLaunchFlashText() const {
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFlashAppNameInsteadOfOrigin)) {
+    return GetAppShortName();
+  }
+  return GetFormattedUrlOrigin();
+}
+
 bool AppBrowserController::IsHostedApp() const {
   return false;
 }

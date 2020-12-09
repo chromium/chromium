@@ -248,6 +248,11 @@ const base::Feature kDesktopPWAsCacheDuringDefaultInstall{
 const base::Feature kDesktopPWAsElidedExtensionsMenu{
     "DesktopPWAsElidedExtensionsMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Replaces the origin text flash in web app titlebars with the name of the app.
+const base::Feature kDesktopPWAsFlashAppNameInsteadOfOrigin{
+    "DesktopPWAsFlashAppNameInsteadOfOrigin",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables local PWA installs to update their app manifest data if the site
 // changes its manifest.
 const base::Feature kDesktopPWAsLocalUpdating{"DesktopPWAsLocalUpdating",

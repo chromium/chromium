@@ -43593,6 +43593,8 @@ from previous Chrome versions.
       label="OmniboxGroupSuggestionsBySearchVsUrl:disabled"/>
   <int value="-498740735" label="ArcUsbHost:disabled"/>
   <int value="-498463128" label="MacSystemShareMenu:enabled"/>
+  <int value="-496989565"
+      label="DesktopPWAsFlashAppNameInsteadOfOrigin:disabled"/>
   <int value="-496119023" label="WebXR:enabled"/>
   <int value="-495585885" label="enable-spdy-proxy-dev-auth-origin"/>
   <int value="-494722408" label="ContentSuggestionsLargeThumbnail:enabled"/>
@@ -45573,6 +45575,8 @@ from previous Chrome versions.
   <int value="1414918327" label="enable-accelerated-video-decode"/>
   <int value="1416592483" label="ash-enable-mirrored-screen"/>
   <int value="1418054870" label="SpecialLocale:enabled"/>
+  <int value="1419984081"
+      label="DesktopPWAsFlashAppNameInsteadOfOrigin:enabled"/>
   <int value="1421620678" label="simple-clear-browsing-data-support-string"/>
   <int value="1424775876" label="ToolbarIphAndroid:enabled"/>
   <int value="1427905064" label="CreditCardAutofillTouchBar:enabled"/>

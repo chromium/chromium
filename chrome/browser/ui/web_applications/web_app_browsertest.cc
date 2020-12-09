@@ -1089,6 +1089,28 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_HideOrigin, OriginTextRemoved) {
   EXPECT_FALSE(app_browser->app_controller()->HasTitlebarAppOriginText());
 }
 
+class WebAppBrowserTest_AppNameInsteadOfOrigin : public WebAppBrowserTest {
+ public:
+  WebAppBrowserTest_AppNameInsteadOfOrigin() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDesktopPWAsFlashAppNameInsteadOfOrigin);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Web apps should flash the app name with this feature on.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_AppNameInsteadOfOrigin,
+                       AppNameInsteadOfOrigin) {
+  const GURL app_url = GetInstallableAppURL();
+  const AppId app_id = InstallPWA(app_url);
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
+  EXPECT_TRUE(app_browser->app_controller()->HasTitlebarAppOriginText());
+  EXPECT_EQ(app_browser->app_controller()->GetLaunchFlashText(),
+            base::UTF8ToUTF16("A Web App"));
+}
+
 // Check that a subframe on a regular web page can navigate to a URL that
 // redirects to a web app.  https://crbug.com/721949.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SubframeRedirectsToWebApp) {
