@@ -44,7 +44,7 @@ enum class OriginTrialTokenStatus {
 // provided tokens.
 //
 // More documentation on the token format can be found at
-// https://docs.google.com/document/d/1v5fi0EUV_QHckVHVF2K4P72iNywnrJtNhNZ6i2NPt0M
+// origin_trials_token_structure.md
 
 class BLINK_COMMON_EXPORT TrialToken {
  public:
