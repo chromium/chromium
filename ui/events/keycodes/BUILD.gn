@@ -21,6 +21,7 @@ source_set("xkb") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/events:dom_keycode_converter",
   ]
 }

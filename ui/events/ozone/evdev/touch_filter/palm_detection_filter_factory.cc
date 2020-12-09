@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_filter/heuristic_stylus_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
@@ -62,7 +63,7 @@ std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
   }
 
   // TODO(robsc): Remove this when comfortable.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // We should really only be running in chromeos anyway; We do a check here
   // temporarily for hatch and reef.  These numbers should live in config on
   // chromeos side but for now during experiment are hard-coded here.

@@ -26,6 +26,7 @@ component("x11") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//skia",
     "//ui/display",
     "//ui/events:events_base",

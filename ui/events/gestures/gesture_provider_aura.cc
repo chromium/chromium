@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -18,11 +19,11 @@ namespace ui {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr bool kDoubleTapPlatformSupport = true;
 #else
 constexpr bool kDoubleTapPlatformSupport = false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 

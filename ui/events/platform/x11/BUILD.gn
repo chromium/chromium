@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 
@@ -33,11 +34,12 @@ component("x11") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/base:features",
     "//ui/events/keycodes:x11",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//ui/events/ozone" ]
   }
 

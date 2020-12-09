@@ -7,16 +7,17 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/event_switches.h"
 
 namespace ui {
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr bool kDoubleTapAuraSupport = true;
 #else
 constexpr bool kDoubleTapAuraSupport = false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class GestureConfigurationAura : public GestureConfiguration {
  public:
@@ -29,7 +30,7 @@ class GestureConfigurationAura : public GestureConfiguration {
 
  private:
   GestureConfigurationAura() : GestureConfiguration() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // On ChromeOS, use 6 which is derived from the android's default(8),
     // multiplied by base dpi ratio(0.75).  See crbug.com/1083120 for more
     // details.

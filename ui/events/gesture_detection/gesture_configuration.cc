@@ -5,6 +5,8 @@
 #include "build/build_config.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace ui {
 namespace {
 
@@ -49,16 +51,16 @@ GestureConfiguration::GestureConfiguration()
       // See crbug.com/357237 for details.
       min_scaling_span_in_pixels_(125),
       min_swipe_velocity_(20),
-      // TODO(jdduke): Disable and remove entirely when issues with intermittent
-      // scroll end detection on the Pixel are resolved, crbug.com/353702.
-#if defined(OS_CHROMEOS)
+// TODO(jdduke): Disable and remove entirely when issues with intermittent
+// scroll end detection on the Pixel are resolved, crbug.com/353702.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       scroll_debounce_interval_in_ms_(30),
 #else
       scroll_debounce_interval_in_ms_(0),
 #endif
       semi_long_press_time_in_ms_(400),
       show_press_delay_in_ms_(150),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       single_pointer_cancel_enabled_(true),
 #else
       single_pointer_cancel_enabled_(false),

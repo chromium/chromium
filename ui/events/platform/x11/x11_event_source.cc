@@ -13,6 +13,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event_utils.h"
@@ -35,7 +36,7 @@
 #include "ui/events/platform/x11/x11_event_watcher_fdwatch.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/events/ozone/chromeos/cursor_controller.h"
 #endif
 
@@ -323,7 +324,7 @@ void X11EventSource::ProcessXEvent(x11::Event* xevent) {
     return;
   }
   if (translated_event && translated_event->type() != ET_UNKNOWN) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (translated_event->IsLocatedEvent()) {
       ui::CursorController::GetInstance()->SetCursorLocation(
           translated_event->AsLocatedEvent()->location_f());

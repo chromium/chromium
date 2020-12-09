@@ -11,6 +11,7 @@
 #include "base/numerics/ranges.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_listeners.h"
 #include "ui/events/gesture_detection/motion_event.h"
@@ -52,7 +53,7 @@ GestureDetector::Config::Config()
       two_finger_tap_max_separation(300),
       two_finger_tap_timeout(base::TimeDelta::FromMilliseconds(700)),
       single_tap_repeat_interval(1),
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       stylus_button_accelerated_longpress_enabled(true),
 #else
       stylus_button_accelerated_longpress_enabled(false),

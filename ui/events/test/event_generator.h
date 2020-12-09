@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -224,7 +225,7 @@ class EventGenerator {
     MoveMouseToInHost(gfx::Point(x, y));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Generates a mouse move event at the point given in the host
   // coordinates, with a native event with |point_for_natve|.
   void MoveMouseToWithNative(const gfx::Point& point_in_host,

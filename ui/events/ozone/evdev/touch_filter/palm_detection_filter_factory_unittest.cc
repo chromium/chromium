@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
@@ -51,7 +52,7 @@ class PalmDetectionFilterFactoryTest : public testing::Test {
 class PalmDetectionFilterFactoryDeathTest
     : public PalmDetectionFilterFactoryTest {};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PalmDetectionFilterFactoryTest, RadiusesFromLSBRelease) {
   {
     base::test::ScopedChromeOSVersionInfo version(

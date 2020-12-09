@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "base/task_runner.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/keycodes/scoped_xkb.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/xkb/xkb_key_code_converter.h"
@@ -75,7 +76,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   // kept.
   base::flat_map<uint32_t, uint32_t> xkb_keysym_map_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Flag mask for num lock, which is always considered enabled in ChromeOS.
   xkb_mod_mask_t num_lock_mod_mask_ = 0;
 #endif

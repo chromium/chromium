@@ -14,6 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -161,7 +162,7 @@ int GetEventFlagsFromXKeyEvent(const x11::Event& xev) {
   DCHECK(key);
   const auto state = static_cast<int>(key->state);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const int ime_fabricated_flag = 0;
 #else
   // XIM fabricates key events for the character compositions by XK_Multi_key.
@@ -563,7 +564,7 @@ gfx::Point EventLocationFromXEvent(const x11::Event& xev) {
   if (auto* xievent = xev.As<x11::Input::DeviceEvent>()) {
     float x = Fp1616ToDouble(xievent->event_x);
     float y = Fp1616ToDouble(xievent->event_y);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     switch (xievent->opcode) {
       case x11::Input::DeviceEvent::TouchBegin:
       case x11::Input::DeviceEvent::TouchUpdate:
@@ -574,7 +575,7 @@ gfx::Point EventLocationFromXEvent(const x11::Event& xev) {
       default:
         break;
     }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return gfx::Point(static_cast<int>(x), static_cast<int>(y));
   }
   return gfx::Point();

@@ -21,6 +21,7 @@
 #include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -610,7 +611,7 @@ const PrintableSimpleEntry kSimpleMap[] = {
     {0x0259, VKEY_OEM_3},      // schwa
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void LoadKeymap(const std::string& layout_name,
                 scoped_refptr<base::SingleThreadTaskRunner> reply_runner,
                 LoadKeymapCallback reply_callback) {
@@ -669,7 +670,7 @@ XkbKeyboardLayoutEngine::~XkbKeyboardLayoutEngine() {
 }
 
 bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;
@@ -678,7 +679,7 @@ bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 
 bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
     const std::string& layout_name) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   current_layout_name_ = layout_name;
   for (const auto& entry : xkb_keymaps_) {
     if (entry.layout_name == layout_name) {
@@ -696,7 +697,7 @@ bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
                      std::move(reply_callback)));
 #else
   NOTIMPLEMENTED();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 }
 
@@ -877,7 +878,7 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
   }
 
   layout_index_ = 0;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Update num lock mask.
   num_lock_mod_mask_ = num_lock_mask;
 #endif
@@ -892,7 +893,7 @@ xkb_mod_mask_t XkbKeyboardLayoutEngine::EventFlagsToXkbFlags(
     if (ui_flags & entry.ui_flag)
       xkb_flags |= entry.xkb_flag;
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ChromeOS NumLock is always on.
   xkb_flags |= num_lock_mod_mask_;
 #endif

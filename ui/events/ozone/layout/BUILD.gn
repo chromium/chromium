@@ -48,7 +48,10 @@ component("layout") {
       "xkb/xkb_keyboard_layout_engine.h",
     ]
 
-    deps += [ "//ui/events/keycodes:xkb" ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//ui/events/keycodes:xkb",
+    ]
   }
 }
 

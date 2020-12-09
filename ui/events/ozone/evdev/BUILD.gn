@@ -107,6 +107,7 @@ component("evdev") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/display",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
@@ -186,6 +187,7 @@ source_set("unittests") {
     ":evdev",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/events",
