@@ -870,30 +870,7 @@ class BrowserTestWithTabGroupsAutoCreateEnabled : public BrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
-                       NewTabFromLinkInGroupedTabOpensInGroup) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Add a grouped tab.
-  TabStripModel* const model = browser()->tab_strip_model();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/empty.html"));
-  const tab_groups::TabGroupId group_id = model->AddToNewGroup({0});
-
-  // Open a new background tab.
-  WebContents* const contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  OpenURLFromTab(
-      contents,
-      OpenURLParams(embedded_test_server()->GetURL("/empty.html"), Referrer(),
-                    WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                    ui::PAGE_TRANSITION_TYPED, false));
-
-  // It should have inherited the tab group from the first tab.
-  EXPECT_EQ(group_id, model->GetTabGroupForTab(1));
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
-                       NewTabFromLinkWithSameDomainCreatesGroup) {
+                       FirstNewTabFromLinkWithSameDomainDoesNotCreateGroup) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open a tab not in a group.
@@ -912,13 +889,47 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
                     ui::PAGE_TRANSITION_TYPED, false));
 
   // The new tab which has the same domain as the tab it originated from should
-  // be grouped with its parent tab.
-  EXPECT_TRUE(model->GetTabGroupForTab(0).has_value());
-  EXPECT_TRUE(model->GetTabGroupForTab(1).has_value());
-  EXPECT_EQ(model->GetTabGroupForTab(0).value(),
-            model->GetTabGroupForTab(1).value());
+  // not create a new group.
+  EXPECT_FALSE(model->GetTabGroupForTab(0).has_value());
+  EXPECT_FALSE(model->GetTabGroupForTab(1).has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
+                       SecondNewTabFromLinkWithSameDomainCreatesGroup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Open a tab not in a group.
+  TabStripModel* const model = browser()->tab_strip_model();
+  GURL url1("http://www.example.com/empty.html");
+  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_FALSE(model->GetTabGroupForTab(0).has_value());
+
+  // Open two new background tabs with the same domain as the active tab.
+  WebContents* const contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url2("http://www.example.com/");
+  OpenURLFromTab(
+      contents,
+      OpenURLParams(url2, Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                    ui::PAGE_TRANSITION_TYPED, false));
+  OpenURLFromTab(
+      contents,
+      OpenURLParams(url2, Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                    ui::PAGE_TRANSITION_TYPED, false));
+
+  // Opening the second tab from the source will result in the source tab and
+  // the two tabs opened from the source to be added in a new group.
+  ASSERT_EQ(model->count(), 3);
+  EXPECT_TRUE(model->GetTabGroupForTab(0).has_value());
+  EXPECT_TRUE(model->GetTabGroupForTab(1).has_value());
+  EXPECT_TRUE(model->GetTabGroupForTab(2).has_value());
+  EXPECT_EQ(model->GetTabGroupForTab(0).value(),
+            model->GetTabGroupForTab(1).value());
+  EXPECT_EQ(model->GetTabGroupForTab(0).value(),
+            model->GetTabGroupForTab(2).value());
+}
+
+// TODO(crbug.com/997344): Test this with implicitly-created links.
 IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
                        NewTabFromLinkWithDifferentDomainDoesNotCreateGroup) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -944,6 +955,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
   EXPECT_FALSE(model->GetTabGroupForTab(1).has_value());
 }
 
+// TODO(crbug.com/997344): Test this with implicitly-created links.
 IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -964,8 +976,27 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
   EXPECT_EQ(group_id, browser()->tab_strip_model()->GetTabGroupForTab(1));
 }
 
-// TODO(crbug.com/997344): Test the above two scenarios with implicitly-created
-// links, if still applicable.
+IN_PROC_BROWSER_TEST_F(BrowserTest, NewTabFromLinkInGroupedTabOpensInGroup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Add a grouped tab.
+  TabStripModel* const model = browser()->tab_strip_model();
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/empty.html"));
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({0});
+
+  // Open a new background tab.
+  WebContents* const contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  OpenURLFromTab(
+      contents,
+      OpenURLParams(embedded_test_server()->GetURL("/empty.html"), Referrer(),
+                    WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                    ui::PAGE_TRANSITION_TYPED, false));
+
+  // It should have inherited the tab group from the first tab.
+  EXPECT_EQ(group_id, model->GetTabGroupForTab(1));
+}
 
 // BeforeUnloadAtQuitWithTwoWindows is a regression test for
 // http://crbug.com/11842. It opens two windows, one of which has a

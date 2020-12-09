@@ -117,15 +117,41 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
   if (nav_params->disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
       nav_params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     nav_params->group = model->GetTabGroupForTab(source_index);
-    if (base::FeatureList::IsEnabled(features::kTabGroupsAutoCreate) &&
-        !nav_params->group.has_value() && !model->IsTabPinned(source_index)) {
-      const GURL& source_url =
-          nav_params->source_contents->GetLastCommittedURL();
-      const GURL& target_url = nav_params->url;
-      if (target_url.DomainIs(source_url.host_piece()))
-        nav_params->group = model->AddToNewGroup({source_index});
+
+    // Because the target tab has not opened yet, adding the source tab, and the
+    // tab immediately to the right of the source tab will also result in the
+    // target tab getting added to this group.
+    if (ShouldAutoCreateGroupForNavigation(nav_params)) {
+      nav_params->group =
+          model->AddToNewGroup({source_index, source_index + 1});
     }
   }
+}
+
+bool ShouldAutoCreateGroupForNavigation(NavigateParams* nav_params) {
+  TabStripModel* model = nav_params->browser->tab_strip_model();
+  const int source_index =
+      model->GetIndexOfWebContents(nav_params->source_contents);
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsAutoCreate) ||
+      nav_params->group.has_value() || model->IsTabPinned(source_index)) {
+    return false;
+  }
+  const GURL& source_url = nav_params->source_contents->GetLastCommittedURL();
+  const GURL& target_url = nav_params->url;
+
+  // If the opener of the tab to the right has the same domain as the
+  // souce URL, create a new group.
+  if (target_url.DomainIs(source_url.host_piece()) &&
+      model->ContainsIndex(source_index + 1)) {
+    content::WebContents* neighbor_opener_contents =
+        model->GetOpenerOfWebContentsAt(source_index + 1);
+    if (neighbor_opener_contents &&
+        source_url.DomainIs(
+            neighbor_opener_contents->GetLastCommittedURL().host_piece())) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace chrome
