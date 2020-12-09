@@ -18,15 +18,13 @@ class ScopedHardwareBufferFenceSync;
 }  // namespace base
 
 namespace gpu {
-class SharedImageRepresentationGLTexture;
 class SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync;
-class SharedImageRepresentationSkia;
-struct Mailbox;
+class
+    SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync;
 
 // Backing which wraps ScopedHardwareBufferFenceSync object and allows
 // producing/using different representations from it. This backing is not thread
 // safe.
-// TODO(vikassoni): Add support for passthrough textures.
 class GPU_GLES2_EXPORT SharedImageBackingScopedHardwareBufferFenceSync
     : public SharedImageBackingAndroid {
  public:
@@ -66,12 +64,18 @@ class GPU_GLES2_EXPORT SharedImageBackingScopedHardwareBufferFenceSync
 
  private:
   friend class SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync;
+  friend class
+      SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync;
   friend class SharedImageRepresentationSkiaVkScopedHardwareBufferFenceSync;
 
   std::unique_ptr<
       SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync>
   GenGLTextureRepresentation(SharedImageManager* manager,
                              MemoryTypeTracker* tracker);
+  std::unique_ptr<
+      SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync>
+  GenGLTexturePassthroughRepresentation(SharedImageManager* manager,
+                                        MemoryTypeTracker* tracker);
   bool BeginGLReadAccess();
   void EndGLReadAccess();
   void EndSkiaReadAccess();

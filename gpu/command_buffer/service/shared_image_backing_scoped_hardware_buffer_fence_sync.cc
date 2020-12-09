@@ -164,6 +164,57 @@ class SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync
       SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync);
 };
 
+class SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync
+    : public SharedImageRepresentationGLTexturePassthrough {
+ public:
+  SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync(
+      SharedImageManager* manager,
+      SharedImageBackingScopedHardwareBufferFenceSync* backing,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<gles2::TexturePassthrough> texture)
+      : SharedImageRepresentationGLTexturePassthrough(manager,
+                                                      backing,
+                                                      tracker),
+        texture_(std::move(texture)) {
+    DCHECK(texture_);
+  }
+
+  ~SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync()
+      override {
+    if (!has_context())
+      texture_->MarkContextLost();
+  }
+
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
+      override {
+    return texture_;
+  }
+
+  bool BeginAccess(GLenum mode) override {
+    // This representation only supports read access.
+    DCHECK_EQ(mode,
+              static_cast<GLenum>(GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM));
+
+    return ahb_backing()->BeginGLReadAccess();
+  }
+
+  void EndAccess() override { ahb_backing()->EndGLReadAccess(); }
+
+ private:
+  SharedImageBackingScopedHardwareBufferFenceSync* ahb_backing() {
+    auto* ahb_backing =
+        static_cast<SharedImageBackingScopedHardwareBufferFenceSync*>(
+            backing());
+    DCHECK(ahb_backing);
+    return ahb_backing;
+  }
+
+  scoped_refptr<gles2::TexturePassthrough> texture_;
+
+  DISALLOW_COPY_AND_ASSIGN(
+      SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync);
+};
+
 class SharedImageRepresentationSkiaVkScopedHardwareBufferFenceSync
     : public SharedImageRepresentationSkiaVkAndroid {
  public:
@@ -231,8 +282,8 @@ std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
 SharedImageBackingScopedHardwareBufferFenceSync::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  NOTREACHED();
-  return nullptr;
+  return GenGLTexturePassthroughRepresentation(manager, tracker);
+  ;
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>
@@ -262,7 +313,12 @@ SharedImageBackingScopedHardwareBufferFenceSync::ProduceSkia(
 
   DCHECK(context_state->GrContextIsGL());
 
-  auto gl_representation = GenGLTextureRepresentation(manager, tracker);
+  std::unique_ptr<SharedImageRepresentationGLTextureBase> gl_representation;
+  if (context_state->feature_info()->is_passthrough_cmd_decoder()) {
+    gl_representation = GenGLTexturePassthroughRepresentation(manager, tracker);
+  } else {
+    gl_representation = GenGLTextureRepresentation(manager, tracker);
+  }
   if (!gl_representation)
     return nullptr;
   return SharedImageRepresentationSkiaGL::Create(std::move(gl_representation),
@@ -282,6 +338,21 @@ SharedImageBackingScopedHardwareBufferFenceSync::GenGLTextureRepresentation(
   return std::make_unique<
       SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync>(
       manager, this, tracker, texture);
+}
+
+std::unique_ptr<
+    SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync>
+SharedImageBackingScopedHardwareBufferFenceSync::
+    GenGLTexturePassthroughRepresentation(SharedImageManager* manager,
+                                          MemoryTypeTracker* tracker) {
+  auto texture = GenGLTexturePassthrough(
+      scoped_hardware_buffer_->buffer(), GL_TEXTURE_EXTERNAL_OES, color_space(),
+      size(), estimated_size(), ClearedRect());
+  if (!texture)
+    return nullptr;
+  return std::make_unique<
+      SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync>(
+      manager, this, tracker, std::move(texture));
 }
 
 }  // namespace gpu
