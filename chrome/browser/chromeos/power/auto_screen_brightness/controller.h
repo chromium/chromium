@@ -17,7 +17,7 @@ namespace power {
 namespace auto_screen_brightness {
 
 class Adapter;
-class AlsReaderImpl;
+class AlsReader;
 class BrightnessMonitorImpl;
 class MetricsReporter;
 class ModelConfigLoaderImpl;
@@ -48,7 +48,7 @@ class Controller : public session_manager::SessionManagerObserver {
   bool observing_session_manager_ = false;
 
   std::unique_ptr<MetricsReporter> metrics_reporter_;
-  std::unique_ptr<AlsReaderImpl> als_reader_;
+  std::unique_ptr<AlsReader> als_reader_;
   std::unique_ptr<BrightnessMonitorImpl> brightness_monitor_;
   std::unique_ptr<ModelConfigLoaderImpl> model_config_loader_;
   std::unique_ptr<ModellerImpl> modeller_;

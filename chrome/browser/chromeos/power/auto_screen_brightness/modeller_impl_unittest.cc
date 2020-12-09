@@ -15,8 +15,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/chromeos/power/auto_screen_brightness/fake_als_reader.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/fake_brightness_monitor.h"
+#include "chrome/browser/chromeos/power/auto_screen_brightness/fake_light_provider.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/fake_model_config_loader.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/monotone_cubic_spline.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/trainer.h"
@@ -184,6 +184,10 @@ class ModellerImplTest : public testing::Test {
     test_initial_global_curve_ = MonotoneCubicSpline::CreateMonotoneCubicSpline(
         test_model_config_.log_lux, test_model_config_.brightness);
     DCHECK(test_initial_global_curve_);
+
+    als_reader_ = std::make_unique<AlsReader>();
+    fake_light_provider_ =
+        std::make_unique<FakeLightProvider>(als_reader_.get());
   }
 
   ~ModellerImplTest() override {
@@ -196,7 +200,7 @@ class ModellerImplTest : public testing::Test {
                      bool return_new_curve,
                      double curve_error) {
     modeller_ = ModellerImpl::CreateForTesting(
-        profile_.get(), &fake_als_reader_, &fake_brightness_monitor_,
+        profile_.get(), als_reader_.get(), &fake_brightness_monitor_,
         &fake_model_config_loader_, &user_activity_detector_,
         std::make_unique<FakeTrainer>(is_trainer_configured,
                                       is_personal_curve_valid, return_new_curve,
@@ -221,7 +225,7 @@ class ModellerImplTest : public testing::Test {
           features::kAutoScreenBrightness, params);
     }
 
-    fake_als_reader_.set_als_init_status(als_reader_status);
+    fake_light_provider_->set_als_init_status(als_reader_status);
     fake_brightness_monitor_.set_status(brightness_monitor_status);
     if (model_config) {
       fake_model_config_loader_.set_model_config(model_config.value());
@@ -271,7 +275,8 @@ class ModellerImplTest : public testing::Test {
   ModelConfig test_model_config_;
   base::Optional<MonotoneCubicSpline> test_initial_global_curve_;
 
-  FakeAlsReader fake_als_reader_;
+  std::unique_ptr<FakeLightProvider> fake_light_provider_;
+  std::unique_ptr<AlsReader> als_reader_;
   FakeBrightnessMonitor fake_brightness_monitor_;
   FakeModelConfigLoader fake_model_config_loader_;
 
@@ -317,8 +322,9 @@ TEST_F(ModellerImplTest, AlsReaderDisabledOnNotification) {
 
   test_observer_->CheckStatus(false /* is_model_initialized */, Model());
 
-  fake_als_reader_.set_als_init_status(AlsReader::AlsInitStatus::kDisabled);
-  fake_als_reader_.ReportReaderInitialized();
+  fake_light_provider_->set_als_init_status(
+      AlsReader::AlsInitStatus::kDisabled);
+  fake_light_provider_->ReportReaderInitialized();
   task_environment_.RunUntilIdle();
 
   // Model should be empty if modeller is disabled.
@@ -332,8 +338,8 @@ TEST_F(ModellerImplTest, AlsReaderEnabledOnNotification) {
 
   test_observer_->CheckStatus(false /* is_model_initialized */, Model());
 
-  fake_als_reader_.set_als_init_status(AlsReader::AlsInitStatus::kSuccess);
-  fake_als_reader_.ReportReaderInitialized();
+  fake_light_provider_->set_als_init_status(AlsReader::AlsInitStatus::kSuccess);
+  fake_light_provider_->ReportReaderInitialized();
   task_environment_.RunUntilIdle();
 
   const Model expected_model(test_initial_global_curve_, base::nullopt, 0);
@@ -490,7 +496,7 @@ TEST_F(ModellerImplTest, OnAmbientLightUpdated) {
   for (int i = 0; i < horizon_in_seconds; ++i) {
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
     const int lux = i == 0 ? first_lux : i;
-    fake_als_reader_.ReportAmbientLightUpdate(lux);
+    fake_light_provider_->ReportAmbientLightUpdate(lux);
     running_sum += ConvertToLog(lux);
     EXPECT_DOUBLE_EQ(
         modeller_->AverageAmbientForTesting(task_environment_.NowTicks())
@@ -501,7 +507,7 @@ TEST_F(ModellerImplTest, OnAmbientLightUpdated) {
 
   // Add another one should push the oldest |first_lux| out of the horizon.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
-  fake_als_reader_.ReportAmbientLightUpdate(100);
+  fake_light_provider_->ReportAmbientLightUpdate(100);
   running_sum = running_sum + ConvertToLog(100) - ConvertToLog(first_lux);
   EXPECT_DOUBLE_EQ(
       modeller_->AverageAmbientForTesting(task_environment_.NowTicks()).value(),
@@ -530,7 +536,7 @@ TEST_F(ModellerImplTest, OnUserBrightnessChanged) {
     task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
     const base::TimeTicks now = task_environment_.NowTicks();
     const int lux = i * 20;
-    fake_als_reader_.ReportAmbientLightUpdate(lux);
+    fake_light_provider_->ReportAmbientLightUpdate(lux);
     const double brightness_old = 10.0 + i;
     const double brightness_new = 20.0 + i;
     modeller_->OnUserBrightnessChanged(brightness_old, brightness_new);
@@ -579,14 +585,14 @@ TEST_F(ModellerImplTest, MultipleUserActivities) {
   test_observer_->CheckStatus(true /* is_model_initialized */, expected_model);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
-  fake_als_reader_.ReportAmbientLightUpdate(30);
+  fake_light_provider_->ReportAmbientLightUpdate(30);
   std::vector<TrainingDataPoint> expected_data;
   for (size_t i = 0; i < 10; ++i) {
     EXPECT_EQ(i, modeller_->NumberTrainingDataPointsForTesting());
     task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
     const base::TimeTicks now = task_environment_.NowTicks();
     const int lux = i * 20;
-    fake_als_reader_.ReportAmbientLightUpdate(lux);
+    fake_light_provider_->ReportAmbientLightUpdate(lux);
     const double brightness_old = 10.0 + i;
     const double brightness_new = 20.0 + i;
     modeller_->OnUserBrightnessChanged(brightness_old, brightness_new);
@@ -643,7 +649,7 @@ TEST_F(ModellerImplTest, ZeroTrainingDelay) {
   const Model expected_model(test_initial_global_curve_, base::nullopt, 0);
   test_observer_->CheckStatus(true /* is_model_initialized */, expected_model);
 
-  fake_als_reader_.ReportAmbientLightUpdate(30);
+  fake_light_provider_->ReportAmbientLightUpdate(30);
   const ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
                                    gfx::Point(0, 0), base::TimeTicks(), 0, 0);
   modeller_->OnUserActivity(&mouse_event);
@@ -667,7 +673,7 @@ TEST_F(ModellerImplTest, CurveUnchanged) {
   const Model expected_model(test_initial_global_curve_, base::nullopt, 0);
   test_observer_->CheckStatus(true /* is_model_initialized */, expected_model);
 
-  fake_als_reader_.ReportAmbientLightUpdate(30);
+  fake_light_provider_->ReportAmbientLightUpdate(30);
 
   modeller_->OnUserBrightnessChanged(10, 20);
   task_environment_.RunUntilIdle();
@@ -690,7 +696,7 @@ TEST_F(ModellerImplTest, CurveChangedLargeError) {
   const Model expected_model(test_initial_global_curve_, base::nullopt, 0);
   test_observer_->CheckStatus(true /* is_model_initialized */, expected_model);
 
-  fake_als_reader_.ReportAmbientLightUpdate(30);
+  fake_light_provider_->ReportAmbientLightUpdate(30);
 
   modeller_->OnUserBrightnessChanged(10, 20);
   task_environment_.RunUntilIdle();
@@ -713,7 +719,7 @@ TEST_F(ModellerImplTest, CurveChangedSmallError) {
   const Model expected_model(test_initial_global_curve_, base::nullopt, 0);
   test_observer_->CheckStatus(true /* is_model_initialized */, expected_model);
 
-  fake_als_reader_.ReportAmbientLightUpdate(30);
+  fake_light_provider_->ReportAmbientLightUpdate(30);
   modeller_->OnUserBrightnessChanged(10, 20);
   task_environment_.RunUntilIdle();
 

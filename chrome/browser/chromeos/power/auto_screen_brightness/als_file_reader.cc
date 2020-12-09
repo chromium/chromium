@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/power/auto_screen_brightness/als_reader_impl.h"
+#include "chrome/browser/chromeos/power/auto_screen_brightness/als_file_reader.h"
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -81,79 +81,66 @@ std::string ReadAlsFromFile(const base::FilePath& ambient_light_path) {
 }
 }  // namespace
 
-constexpr base::TimeDelta AlsReaderImpl::kAlsFileCheckingInterval;
-constexpr int AlsReaderImpl::kMaxInitialAttempts;
-constexpr base::TimeDelta AlsReaderImpl::kAlsPollInterval;
+constexpr base::TimeDelta AlsFileReader::kAlsFileCheckingInterval;
+constexpr int AlsFileReader::kMaxInitialAttempts;
+constexpr base::TimeDelta AlsFileReader::kAlsPollInterval;
 
-AlsReaderImpl::AlsReaderImpl()
-    : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+AlsFileReader::AlsFileReader(AlsReader* als_reader)
+    : LightProviderInterface(als_reader),
+      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
 
-AlsReaderImpl::~AlsReaderImpl() {
+AlsFileReader::~AlsFileReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void AlsReaderImpl::AddObserver(Observer* const observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  observers_.AddObserver(observer);
-  if (status_ != AlsInitStatus::kInProgress)
-    observer->OnAlsReaderInitialized(status_);
-}
-
-void AlsReaderImpl::RemoveObserver(Observer* const observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer);
-  observers_.RemoveObserver(observer);
-}
-
-void AlsReaderImpl::Init() {
+void AlsFileReader::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::PostTaskAndReplyWithResult(
       blocking_task_runner_.get(), FROM_HERE, base::BindOnce(&IsAlsEnabled),
-      base::BindOnce(&AlsReaderImpl::OnAlsEnableCheckDone,
+      base::BindOnce(&AlsFileReader::OnAlsEnableCheckDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AlsReaderImpl::SetTaskRunnerForTesting(
+void AlsFileReader::SetTaskRunnerForTesting(
     const scoped_refptr<base::SequencedTaskRunner> test_blocking_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   blocking_task_runner_ = test_blocking_task_runner;
 }
 
-void AlsReaderImpl::InitForTesting(const base::FilePath& ambient_light_path) {
+void AlsFileReader::InitForTesting(const base::FilePath& ambient_light_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!ambient_light_path.empty());
+  DCHECK(als_reader_);
   ambient_light_path_ = ambient_light_path;
-  status_ = AlsInitStatus::kSuccess;
-  OnInitializationComplete();
+  als_reader_->SetAlsInitStatus(AlsReader::AlsInitStatus::kSuccess);
   ReadAlsPeriodically();
 }
 
-void AlsReaderImpl::FailForTesting() {
+void AlsFileReader::FailForTesting() {
   OnAlsEnableCheckDone(false);
   for (int i = 0; i <= kMaxInitialAttempts; i++)
     OnAlsPathReadAttempted("");
 }
 
-void AlsReaderImpl::OnAlsEnableCheckDone(const bool is_enabled) {
+void AlsFileReader::OnAlsEnableCheckDone(const bool is_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(als_reader_);
   if (!is_enabled) {
-    status_ = AlsInitStatus::kDisabled;
-    OnInitializationComplete();
+    als_reader_->SetAlsInitStatus(AlsReader::AlsInitStatus::kDisabled);
     return;
   }
 
   RetryAlsPath();
 }
 
-void AlsReaderImpl::OnAlsPathReadAttempted(const std::string& path) {
+void AlsFileReader::OnAlsPathReadAttempted(const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(als_reader_);
   if (!path.empty()) {
     ambient_light_path_ = base::FilePath(path);
-    status_ = AlsInitStatus::kSuccess;
-    OnInitializationComplete();
+    als_reader_->SetAlsInitStatus(AlsReader::AlsInitStatus::kSuccess);
     ReadAlsPeriodically();
     return;
   }
@@ -161,42 +148,34 @@ void AlsReaderImpl::OnAlsPathReadAttempted(const std::string& path) {
   ++num_failed_initialization_;
 
   if (num_failed_initialization_ == kMaxInitialAttempts) {
-    status_ = AlsInitStatus::kMissingPath;
-    OnInitializationComplete();
+    als_reader_->SetAlsInitStatus(AlsReader::AlsInitStatus::kMissingPath);
     return;
   }
 
   als_timer_.Start(FROM_HERE, kAlsFileCheckingInterval, this,
-                   &AlsReaderImpl::RetryAlsPath);
+                   &AlsFileReader::RetryAlsPath);
 }
 
-void AlsReaderImpl::RetryAlsPath() {
+void AlsFileReader::RetryAlsPath() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::PostTaskAndReplyWithResult(
       blocking_task_runner_.get(), FROM_HERE, base::BindOnce(&GetAlsPath),
-      base::BindOnce(&AlsReaderImpl::OnAlsPathReadAttempted,
+      base::BindOnce(&AlsFileReader::OnAlsPathReadAttempted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AlsReaderImpl::OnInitializationComplete() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(status_, AlsInitStatus::kInProgress);
-  for (auto& observer : observers_)
-    observer.OnAlsReaderInitialized(status_);
-  UMA_HISTOGRAM_ENUMERATION("AutoScreenBrightness.AlsReaderStatus", status_);
-}
-
-void AlsReaderImpl::ReadAlsPeriodically() {
+void AlsFileReader::ReadAlsPeriodically() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::PostTaskAndReplyWithResult(
       blocking_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ReadAlsFromFile, ambient_light_path_),
-      base::BindOnce(&AlsReaderImpl::OnAlsRead,
+      base::BindOnce(&AlsFileReader::OnAlsRead,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AlsReaderImpl::OnAlsRead(const std::string& data) {
+void AlsFileReader::OnAlsRead(const std::string& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(als_reader_);
   std::string trimmed_data;
   base::TrimWhitespaceASCII(data, base::TRIM_ALL, &trimmed_data);
   int value = 0;
@@ -205,11 +184,11 @@ void AlsReaderImpl::OnAlsRead(const std::string& data) {
       LogDataError(DataError::kAlsValue);
       value = 0;
     }
-    for (auto& observer : observers_)
-      observer.OnAmbientLightUpdated(value);
+
+    als_reader_->SetLux(value);
   }
   als_timer_.Start(FROM_HERE, kAlsPollInterval, this,
-                   &AlsReaderImpl::ReadAlsPeriodically);
+                   &AlsFileReader::ReadAlsPeriodically);
 }
 
 }  // namespace auto_screen_brightness

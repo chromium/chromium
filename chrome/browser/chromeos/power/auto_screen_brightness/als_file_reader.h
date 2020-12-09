@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_READER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_READER_IMPL_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_FILE_READER_H_
+#define CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_FILE_READER_H_
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task_runner_util.h"
@@ -20,12 +19,11 @@ namespace chromeos {
 namespace power {
 namespace auto_screen_brightness {
 
-// Real implementation of AlsReader.
 // It periodically reads lux values from the ambient light sensor (ALS)
 // if powerd has been configured to use it.
 // An object of this class must be used on the same sequence that created this
 // object.
-class AlsReaderImpl : public AlsReader {
+class AlsFileReader : public LightProviderInterface {
  public:
   // ALS file location may not be ready immediately, so we retry every
   // |kAlsFileCheckingInterval| until |kMaxInitialAttempts| is reached, then
@@ -35,14 +33,10 @@ class AlsReaderImpl : public AlsReader {
   static constexpr int kMaxInitialAttempts = 20;
 
   static constexpr base::TimeDelta kAlsPollInterval =
-      base::TimeDelta::FromSecondsD(1.0 / kAlsPollFrequency);
+      base::TimeDelta::FromSecondsD(1.0 / AlsReader::kAlsPollFrequency);
 
-  AlsReaderImpl();
-  ~AlsReaderImpl() override;
-
-  // AlsReader overrides:
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  explicit AlsFileReader(AlsReader* als_reader);
+  ~AlsFileReader() override;
 
   // Checks if an ALS is enabled, and if the config is valid . Also
   // reads ambient light file path.
@@ -61,7 +55,7 @@ class AlsReaderImpl : public AlsReader {
   void FailForTesting();
 
  private:
-  friend class AlsReaderImplTest;
+  friend class AlsFileReaderTest;
 
   // Called when we've checked whether ALS is enabled.
   void OnAlsEnableCheckDone(bool is_enabled);
@@ -73,9 +67,6 @@ class AlsReaderImpl : public AlsReader {
   // Tries to read ALS path.
   void RetryAlsPath();
 
-  // Notifies all observers with |status_| after AlsReaderImpl is initialized.
-  void OnInitializationComplete();
-
   // Polls ambient light periodically and notifies all observers if a sample is
   // read.
   void ReadAlsPeriodically();
@@ -85,7 +76,6 @@ class AlsReaderImpl : public AlsReader {
   // next sample.
   void OnAlsRead(const std::string& data);
 
-  AlsInitStatus status_ = AlsInitStatus::kInProgress;
   base::FilePath ambient_light_path_;
   int num_failed_initialization_ = 0;
 
@@ -95,17 +85,16 @@ class AlsReaderImpl : public AlsReader {
 
   // Background task runner for checking ALS status and reading ALS values.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-  base::ObserverList<Observer> observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<AlsReaderImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AlsFileReader> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(AlsReaderImpl);
+  DISALLOW_COPY_AND_ASSIGN(AlsFileReader);
 };
 
 }  // namespace auto_screen_brightness
 }  // namespace power
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_READER_IMPL_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_FILE_READER_H_

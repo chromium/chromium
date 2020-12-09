@@ -17,8 +17,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/power/auto_screen_brightness/fake_als_reader.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/fake_brightness_monitor.h"
+#include "chrome/browser/chromeos/power/auto_screen_brightness/fake_light_provider.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/fake_model_config_loader.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/modeller.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/monotone_cubic_spline.h"
@@ -136,6 +136,10 @@ class AdapterTest : public testing::Test {
   ~AdapterTest() override = default;
 
   void SetUp() override {
+    als_reader_ = std::make_unique<AlsReader>();
+    fake_light_provider_ =
+        std::make_unique<FakeLightProvider>(als_reader_.get());
+
     chromeos::PowerManagerClient::InitializeFake();
     power_manager::SetBacklightBrightnessRequest request;
     request.set_percent(1);
@@ -201,7 +205,7 @@ class AdapterTest : public testing::Test {
     }
 
     adapter_ = Adapter::CreateForTesting(
-        profile_.get(), &fake_als_reader_, &fake_brightness_monitor_,
+        profile_.get(), als_reader_.get(), &fake_brightness_monitor_,
         &fake_modeller_, &fake_model_config_loader_,
         nullptr /* metrics_reporter */, task_environment_.GetMockTickClock());
     adapter_->Init();
@@ -215,7 +219,7 @@ class AdapterTest : public testing::Test {
             const base::Optional<ModelConfig>& model_config,
             const std::map<std::string, std::string>& params,
             bool brightness_set_by_policy = false) {
-    fake_als_reader_.set_als_init_status(als_reader_status);
+    fake_light_provider_->set_als_init_status(als_reader_status);
     fake_brightness_monitor_.set_status(brightness_monitor_status);
     fake_modeller_.InitModellerWithModel(model);
     if (model_config) {
@@ -253,7 +257,7 @@ class AdapterTest : public testing::Test {
   }
 
   void ReportAls(int als_value) {
-    fake_als_reader_.ReportAmbientLightUpdate(als_value);
+    fake_light_provider_->ReportAmbientLightUpdate(als_value);
     task_environment_.RunUntilIdle();
   }
 
@@ -288,7 +292,8 @@ class AdapterTest : public testing::Test {
   base::Optional<MonotoneCubicSpline> global_curve_;
   base::Optional<MonotoneCubicSpline> personal_curve_;
 
-  FakeAlsReader fake_als_reader_;
+  std::unique_ptr<FakeLightProvider> fake_light_provider_;
+  std::unique_ptr<AlsReader> als_reader_;
   FakeBrightnessMonitor fake_brightness_monitor_;
   FakeModeller fake_modeller_;
   FakeModelConfigLoader fake_model_config_loader_;
@@ -357,8 +362,9 @@ TEST_F(AdapterTest, AlsReaderDisabledOnNotification) {
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kInitializing);
 
-  fake_als_reader_.set_als_init_status(AlsReader::AlsInitStatus::kDisabled);
-  fake_als_reader_.ReportReaderInitialized();
+  fake_light_provider_->set_als_init_status(
+      AlsReader::AlsInitStatus::kDisabled);
+  fake_light_provider_->ReportReaderInitialized();
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kDisabled);
 }
 
@@ -371,8 +377,8 @@ TEST_F(AdapterTest, AlsReaderEnabledOnNotification) {
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kInitializing);
 
-  fake_als_reader_.set_als_init_status(AlsReader::AlsInitStatus::kSuccess);
-  fake_als_reader_.ReportReaderInitialized();
+  fake_light_provider_->set_als_init_status(AlsReader::AlsInitStatus::kSuccess);
+  fake_light_provider_->ReportReaderInitialized();
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
@@ -415,7 +421,7 @@ TEST_F(AdapterTest, BrightnessMonitorEnabledOnNotification) {
 
 // Modeller is |kDisabled| on later notification.
 TEST_F(AdapterTest, ModellerDisabledOnNotification) {
-  fake_als_reader_.set_als_init_status(AlsReader::AlsInitStatus::kSuccess);
+  fake_light_provider_->set_als_init_status(AlsReader::AlsInitStatus::kSuccess);
   fake_brightness_monitor_.set_status(BrightnessMonitor::Status::kSuccess);
   fake_model_config_loader_.set_model_config(GetTestModelConfig());
   SetUpAdapter(default_params_);
@@ -431,7 +437,7 @@ TEST_F(AdapterTest, ModellerDisabledOnNotification) {
 
 // Modeller is |kSuccess| on later notification.
 TEST_F(AdapterTest, ModellerEnabledOnNotification) {
-  fake_als_reader_.set_als_init_status(AlsReader::AlsInitStatus::kSuccess);
+  fake_light_provider_->set_als_init_status(AlsReader::AlsInitStatus::kSuccess);
   fake_brightness_monitor_.set_status(BrightnessMonitor::Status::kSuccess);
   fake_model_config_loader_.set_model_config(GetTestModelConfig());
   SetUpAdapter(default_params_);

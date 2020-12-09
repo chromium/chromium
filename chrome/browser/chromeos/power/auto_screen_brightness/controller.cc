@@ -8,7 +8,7 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/adapter.h"
-#include "chrome/browser/chromeos/power/auto_screen_brightness/als_reader_impl.h"
+#include "chrome/browser/chromeos/power/auto_screen_brightness/als_reader.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/brightness_monitor_impl.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/gaussian_trainer.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/metrics_reporter.h"
@@ -71,7 +71,7 @@ void Controller::InitializeComponents() {
   metrics_reporter_ = std::make_unique<MetricsReporter>(
       power_manager_client, g_browser_process->local_state());
 
-  als_reader_ = std::make_unique<AlsReaderImpl>();
+  als_reader_ = std::make_unique<AlsReader>();
   als_reader_->Init();
 
   brightness_monitor_ = std::make_unique<BrightnessMonitorImpl>();
