@@ -346,6 +346,8 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalWithGLDisabled) {
 #endif  // OS_MAC
 
 #if BUILDFLAG(ENABLE_VULKAN)
+// TODO(crbug.com/1155622): enable tests when Vulkan is supported on LaCrOS.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithUseVulkanFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kUseVulkan, switches::kVulkanImplementationNameNative);
@@ -412,6 +414,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
 }
 #endif  // !OS_ANDROID && !OS_CHROMEOS
 #endif  // !OS_FUCHSIA
+#endif  // !IS_CHROMEOS_LACROS
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
 }  // namespace content

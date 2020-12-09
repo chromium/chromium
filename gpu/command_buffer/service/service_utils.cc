@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "build/chromeos_buildflags.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -200,6 +201,13 @@ VulkanImplementationName ParseVulkanImplementationName(
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // LACROS doesn't support Vulkan right now, to avoid LACROS picking up Linux
+  // finch, kNone is returned for LACROS.
+  // TODO(https://crbug.com/1155622): When LACROS is separated from Linux finch
+  // config.
+  return VulkanImplementationName::kNone;
+#else
   if (command_line->HasSwitch(switches::kUseVulkan)) {
     auto value = command_line->GetSwitchValueASCII(switches::kUseVulkan);
     if (value.empty() || value == switches::kVulkanImplementationNameNative) {
@@ -219,6 +227,7 @@ VulkanImplementationName ParseVulkanImplementationName(
              features::kVulkan.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE)
              ? VulkanImplementationName::kForcedNative
              : VulkanImplementationName::kNative;
+#endif
 }
 
 }  // namespace gles2
