@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.services.service_manager.InterfaceProvider;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
 
 /**
  * Handles the Link To Text action in the Sharing Hub.
@@ -108,7 +109,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     // Discard results if tab content is changed by typing new URL in omnibox.
     @Override
-    public void onUpdateUrl(Tab tab, String url) {
+    public void onUpdateUrl(Tab tab, GURL url) {
         LinkToTextMetricsBridge.logGenerateErrorOmniboxNavigation();
         cleanup();
     }

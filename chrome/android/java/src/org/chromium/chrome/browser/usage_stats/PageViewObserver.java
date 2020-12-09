@@ -8,8 +8,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
-import android.net.Uri;
-import android.webkit.URLUtil;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -58,7 +60,7 @@ public class PageViewObserver {
             @Override
             public void onShown(Tab tab, @TabSelectionType int type) {
                 if (!tab.isLoading() && !tab.isBeingRestored()) {
-                    updateUrl(tab.getUrlString());
+                    updateUrl(tab.getUrl());
                 }
             }
 
@@ -68,7 +70,7 @@ public class PageViewObserver {
             }
 
             @Override
-            public void onUpdateUrl(Tab tab, String url) {
+            public void onUpdateUrl(Tab tab, GURL url) {
                 assert tab == mCurrentTab;
                 String newFqdn = getValidFqdnOrEmptyString(url);
                 // We don't call updateUrl() here to avoid reporting start events for domains
@@ -82,7 +84,7 @@ public class PageViewObserver {
             public void didFirstVisuallyNonEmptyPaint(Tab tab) {
                 assert tab == mCurrentTab;
 
-                updateUrl(tab.getUrlString());
+                updateUrl(tab.getUrl());
             }
 
             @Override
@@ -143,10 +145,10 @@ public class PageViewObserver {
      * 2. Reporting a stop event for mLastFqdn.
      * 3. Reporting a start event for the fqdn of {@code newUrl}.
      */
-    private void updateUrl(String newUrl) {
+    private void updateUrl(@Nullable GURL newUrl) {
         String newFqdn = getValidFqdnOrEmptyString(newUrl);
         boolean isSameDomain = newFqdn.equals(mLastFqdn);
-        boolean isValidProtocol = URLUtil.isHttpUrl(newUrl) || URLUtil.isHttpsUrl(newUrl);
+        boolean isValidProtocol = newUrl != null && UrlUtilities.isHttpOrHttps(newUrl);
 
         boolean isSuspended = mSuspensionTracker.isWebsiteSuspended(newFqdn);
         boolean didSuspend = checkSuspendedTabState(isSuspended, newFqdn);
@@ -205,7 +207,7 @@ public class PageViewObserver {
         // If the newly active tab is hidden, we don't want to check its URL yet; we'll wait until
         // the onShown event fires.
         if (mCurrentTab != null && !tab.isHidden()) {
-            updateUrl(tab.getUrlString());
+            updateUrl(tab.getUrl());
         }
     }
 
@@ -242,9 +244,8 @@ public class PageViewObserver {
         });
     }
 
-    private static String getValidFqdnOrEmptyString(String url) {
-        if (url == null) return "";
-        String host = Uri.parse(url).getHost();
-        return host == null ? "" : host;
+    private static String getValidFqdnOrEmptyString(GURL url) {
+        if (GURL.isEmptyOrInvalid(url)) return "";
+        return url.getHost();
     }
 }

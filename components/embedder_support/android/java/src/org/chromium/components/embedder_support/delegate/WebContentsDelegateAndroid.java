@@ -11,6 +11,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.url.GURL;
 
 /**
  * Java peer of the native class of the same name.
@@ -73,7 +74,7 @@ public class WebContentsDelegateAndroid {
     }
 
     @CalledByNative
-    public void onUpdateUrl(String url) {}
+    public void onUpdateUrl(GURL url) {}
 
     @CalledByNative
     public boolean takeFocus(boolean reverse) {

@@ -26,6 +26,7 @@
 #include "ui/android/view_android.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
@@ -267,9 +268,8 @@ void WebContentsDelegateAndroid::UpdateTargetURL(WebContents* source,
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null())
     return;
-  ScopedJavaLocalRef<jstring> java_url =
-      ConvertUTF8ToJavaString(env, source->GetURL().spec());
-  Java_WebContentsDelegateAndroid_onUpdateUrl(env, obj, java_url);
+  Java_WebContentsDelegateAndroid_onUpdateUrl(
+      env, obj, url::GURLAndroid::FromNativeGURL(env, source->GetURL()));
 }
 
 bool WebContentsDelegateAndroid::HandleKeyboardEvent(

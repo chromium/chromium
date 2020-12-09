@@ -169,6 +169,7 @@ static_library("web_contents_delegate") {
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//url:gurl_android",
   ]
 }
 
@@ -198,6 +199,7 @@ android_library("web_contents_delegate_java") {
     "//third_party/android_deps:androidx_core_core_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.embedder_support.delegate"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

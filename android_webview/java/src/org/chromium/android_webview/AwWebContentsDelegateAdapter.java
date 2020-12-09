@@ -25,6 +25,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.content_public.browser.InvalidateTypes;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.url.GURL;
 
 /**
  * Adapts the AwWebContentsDelegate interface to the AwContentsClient interface.
@@ -153,7 +154,7 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     }
 
     @Override
-    public void onUpdateUrl(String url) {
+    public void onUpdateUrl(GURL url) {
         // TODO: implement
     }
 

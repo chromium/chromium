@@ -205,7 +205,7 @@ public interface TabObserver {
      * @param tab The notifying {@link Tab}.
      * @param url The new URL.
      */
-    void onUpdateUrl(Tab tab, String url);
+    void onUpdateUrl(Tab tab, GURL url);
 
     // WebContentsObserver methods ---------------------------------------------------------
 
