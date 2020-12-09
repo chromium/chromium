@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -36,6 +37,7 @@ import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentShippingType;
 import org.chromium.payments.mojom.PaymentValidationErrors;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -285,6 +287,28 @@ public class PaymentRequestService
         /** @return The PaymentAppService that is used to create payment app for this service. */
         default PaymentAppService getPaymentAppService() {
             return PaymentAppService.getInstance();
+        }
+
+        /**
+         * @return The context of the current activity, can be null when WebContents has been
+         *         destroyed, the activity is gone, the window is closed, etc.
+         */
+        @Nullable
+        default Context getContext(RenderFrameHost renderFrameHost) {
+            WindowAndroid window = getWindowAndroid(renderFrameHost);
+            if (window == null) return null;
+            return window.getContext().get();
+        }
+
+        /**
+         * @return The WindowAndroid of the current activity, can be null when WebContents has
+         *          been destroyed, the activity is gone, etc.
+         */
+        @Nullable
+        default WindowAndroid getWindowAndroid(RenderFrameHost renderFrameHost) {
+            WebContents webContents = PaymentRequestServiceUtil.getLiveWebContents(renderFrameHost);
+            if (webContents == null) return null;
+            return webContents.getTopLevelNativeWindow();
         }
     }
 

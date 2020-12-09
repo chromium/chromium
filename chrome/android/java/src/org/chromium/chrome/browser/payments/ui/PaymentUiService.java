@@ -37,6 +37,9 @@ import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator;
+import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator.ConfirmObserver;
+import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator.DismissObserver;
+import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator.ReadyObserver;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.FocusChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
@@ -79,6 +82,7 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -467,24 +471,25 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
     /**
      * Triggers the minimal UI.
-     * @param chromeActivity The Android activity for the Chrome UI that will host the minimal UI.
+     * @param windowAndroid The window of the main activity.
      * @param mRawTotal The raw total of the payment item.
      * @param readyObserver The onMinimalUIReady function.
      * @param confirmObserver The onMinimalUiConfirmed function.
      * @param dismissObserver The onMinimalUiDismissed function.
+     * @return Whether the triggering is successful.
      */
-    public boolean triggerMinimalUI(ChromeActivity chromeActivity, PaymentItem mRawTotal,
-            MinimalUICoordinator.ReadyObserver readyObserver,
-            MinimalUICoordinator.ConfirmObserver confirmObserver,
-            MinimalUICoordinator.DismissObserver dismissObserver) {
+    public boolean triggerMinimalUI(WindowAndroid windowAndroid, PaymentItem mRawTotal,
+            ReadyObserver readyObserver, ConfirmObserver confirmObserver,
+            DismissObserver dismissObserver) {
+        Context context = windowAndroid.getContext().get();
+        if (context == null) return false;
         // Do not show the Payment Request UI dialog even if the minimal UI is suppressed.
         mPaymentUisShowStateReconciler.onBottomSheetShown();
         mMinimalUi = new MinimalUICoordinator();
         PaymentApp selectedApp = getSelectedPaymentApp();
-        return mMinimalUi.show(chromeActivity,
-                BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()), selectedApp,
-                mCurrencyFormatterMap.get(mRawTotal.amount.currency), mUiShoppingCart.getTotal(),
-                readyObserver, confirmObserver, dismissObserver);
+        return mMinimalUi.show(context, BottomSheetControllerProvider.from(windowAndroid),
+                selectedApp, mCurrencyFormatterMap.get(mRawTotal.amount.currency),
+                mUiShoppingCart.getTotal(), readyObserver, confirmObserver, dismissObserver);
     }
 
     /**
@@ -985,9 +990,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     @Nullable
     public WebContents showPaymentHandlerUI(GURL url, boolean isOffTheRecord) {
         if (mPaymentHandlerUi != null) return null;
-        ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-        if (chromeActivity == null) return null;
-
         PaymentHandlerCoordinator paymentHandlerUi = new PaymentHandlerCoordinator();
         WebContents paymentHandlerWebContents = paymentHandlerUi.show(
                 /*paymentRequestWebContents=*/mWebContents, url, isOffTheRecord,
