@@ -759,6 +759,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.SharePageLatency" units="ms" expires_after="M77">
+  <obsolete>
+    Deprecated 12/2020 as it is no longer used for analysis.
+  </obsolete>
   <owner>pkl@chromium.org</owner>
   <summary>
     The latency in milliseconds between the start of the Share Page operation
