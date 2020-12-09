@@ -1757,9 +1757,6 @@ extern const char kPageInfoPerformanceHintsDescription[];
 extern const char kPageInfoV2Name[];
 extern const char kPageInfoV2Description[];
 
-extern const char kPasswordCheckName[];
-extern const char kPasswordCheckDescription[];
-
 extern const char kPhotoPickerVideoSupportName[];
 extern const char kPhotoPickerVideoSupportDescription[];
 

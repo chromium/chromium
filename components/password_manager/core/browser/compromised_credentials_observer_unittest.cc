@@ -8,9 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/password_store_change.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,19 +32,12 @@ PasswordForm TestForm(base::StringPiece username) {
 
 class CompromisedCredentialsObserverTest : public testing::Test {
  public:
-  CompromisedCredentialsObserverTest() {
-    feature_list_.InitAndEnableFeature(features::kPasswordCheck);
-  }
-
-  ~CompromisedCredentialsObserverTest() override = default;
-
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   base::MockCallback<RemoveCompromisedCallback>& remove_callback() {
     return remove_callback_;
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   base::MockCallback<RemoveCompromisedCallback> remove_callback_;
 };

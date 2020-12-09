@@ -12,11 +12,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -143,9 +141,6 @@ PrefService* SetPrefService() {
 class SafetyCheckMediatorTest : public PlatformTest {
  public:
   SafetyCheckMediatorTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordCheck);
-
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -231,7 +226,6 @@ class SafetyCheckMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;
   AuthenticationServiceFake* auth_service_;

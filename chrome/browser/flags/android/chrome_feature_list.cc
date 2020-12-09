@@ -275,7 +275,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &omnibox::kOmniboxSearchReadyIncognito,
     &password_manager::features::kEditPasswordsInSettings,
     &password_manager::features::kPasswordScriptsFetching,
-    &password_manager::features::kPasswordCheck,
     &password_manager::features::kRecoverFromNeverSaveAndroid,
     &performance_hints::features::kContextMenuPerformanceInfo,
     &performance_hints::features::kPageInfoPerformanceHints,

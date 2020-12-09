@@ -29,7 +29,6 @@ extern const base::Feature kFillingPasswordsFromAnyOrigin;
 extern const base::Feature kFillOnAccountSelect;
 extern const base::Feature kPasswordChange;
 extern const base::Feature kPasswordChangeInSettings;
-extern const base::Feature kPasswordCheck;
 extern const base::Feature kPasswordImport;
 extern const base::Feature kPasswordReuseDetectionEnabled;
 extern const base::Feature kPasswordScriptsFetching;

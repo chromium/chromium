@@ -47,7 +47,6 @@ import androidx.appcompat.app.AlertDialog;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -61,15 +60,12 @@ import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper.ReauthReason;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -80,7 +76,6 @@ import org.chromium.url.GURL;
  * properly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.PASSWORD_CHECK)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class PasswordCheckControllerTest {
     private static final CompromisedCredential ANA =
@@ -104,9 +99,6 @@ public class PasswordCheckControllerTest {
             "PasswordManager.BulkCheck.PasswordCheckReferrerAndroid";
     private static final String PASSWORD_CHECK_USER_ACTION_HISTOGRAM =
             "PasswordManager.BulkCheck.UserActionAndroid";
-
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Rule
     public final JniMocker mJniMocker = new JniMocker();

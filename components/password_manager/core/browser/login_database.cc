@@ -15,7 +15,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -40,8 +39,6 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sql_table_builder.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"

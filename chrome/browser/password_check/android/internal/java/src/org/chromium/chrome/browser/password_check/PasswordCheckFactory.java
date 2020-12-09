@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.password_check;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 
 /**
@@ -25,7 +24,6 @@ public class PasswordCheckFactory {
      * @return A {@link PasswordCheckImpl} or null if the feature is disabled.
      */
     public static @Nullable PasswordCheck getOrCreate(SettingsLauncher settingsLauncher) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHECK)) return null;
         if (sPasswordCheck == null) {
             sPasswordCheck = new PasswordCheckImpl(settingsLauncher);
         }

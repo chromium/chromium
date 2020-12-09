@@ -164,13 +164,6 @@ TEST(CredentialLeakDialogUtilsTest, ShouldShowCancelButton) {
 
 class BulkCheckCredentialLeakDialogUtilsTest
     : public testing::TestWithParam<BulkCheckParams> {
- public:
-  BulkCheckCredentialLeakDialogUtilsTest() {
-    feature_list_.InitAndEnableFeature(features::kPasswordCheck);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(BulkCheckCredentialLeakDialogUtilsTest, ShouldCheckPasswords) {

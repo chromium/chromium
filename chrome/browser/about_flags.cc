@@ -6246,12 +6246,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLegacyTLSEnforcedDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kLegacyTLSEnforced)},
 
-#if defined(OS_ANDROID)
-    {"password-check", flag_descriptions::kPasswordCheckName,
-     flag_descriptions::kPasswordCheckDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::kPasswordCheck)},
-#endif  // defined(OS_ANDROID)
-
     {"double-buffer-compositing",
      flag_descriptions::kDoubleBufferCompositingName,
      flag_descriptions::kDoubleBufferCompositingDescription, kOsCrOS,

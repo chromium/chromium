@@ -108,7 +108,6 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
@@ -723,36 +722,17 @@ public class PasswordSettingsTest {
     }
 
     /**
-     * Check that the check passwords preference is shown when the corresponding feature is enabled.
+     * Check that the check passwords preference is shown.
      */
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_CHECK)
     public void testCheckPasswordsEnabled() {
         startPasswordSettingsFromMainSettings();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PasswordSettings passwordPrefs = mSettingsActivityTestRule.getFragment();
             Assert.assertNotNull(
                     passwordPrefs.findPreference(PasswordSettings.PREF_CHECK_PASSWORDS));
-        });
-    }
-
-    /**
-     * Check that the check passwords preference is not shown when the corresponding feature is
-     * disabled.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.PASSWORD_CHECK)
-    public void testCheckPasswordsDisabled() {
-        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
-        startPasswordSettingsFromMainSettings();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PasswordSettings passwordPrefs = mSettingsActivityTestRule.getFragment();
-            Assert.assertNull(passwordPrefs.findPreference(PasswordSettings.PREF_CHECK_PASSWORDS));
         });
     }
 
@@ -2051,7 +2031,6 @@ public class PasswordSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @EnableFeatures({ChromeFeatureList.PASSWORD_CHECK})
     @DisabledTest(message = "crbug.com/1110965")
     public void testDestroysPasswordCheckIfFirstInSettingsStack() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
@@ -2064,7 +2043,6 @@ public class PasswordSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @EnableFeatures({ChromeFeatureList.PASSWORD_CHECK})
     public void testDoesNotDestroyPasswordCheckIfNotFirstInSettingsStack() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         SettingsActivity activity = startPasswordSettingsFromMainSettings();

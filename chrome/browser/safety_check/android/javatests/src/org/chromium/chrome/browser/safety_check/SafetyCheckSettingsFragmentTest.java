@@ -43,7 +43,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests {@link SafetyCheckSettingsFragment} together with {@link SafetyCheckViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.PASSWORD_CHECK})
+@Features.EnableFeatures(ChromeFeatureList.SAFETY_CHECK_ANDROID)
 public class SafetyCheckSettingsFragmentTest {
     private static final String PASSWORDS = "passwords";
     private static final String SAFE_BROWSING = "safe_browsing";

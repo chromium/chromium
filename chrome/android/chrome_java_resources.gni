@@ -705,8 +705,6 @@ chrome_java_resources = [
   "java/res/drawable/mir_card.xml",
   "java/res/drawable/modern_toolbar_text_box_background_with_primary_color.xml",
   "java/res/drawable/new_tab_icon.xml",
-  "java/res/drawable/password_check_warning.xml",
-  "java/res/drawable/password_check_warning_dark_mode.xml",
   "java/res/drawable/popup_bg_bottom_tinted.xml",
   "java/res/drawable/qr_code.xml",
   "java/res/drawable/rating_bar.xml",

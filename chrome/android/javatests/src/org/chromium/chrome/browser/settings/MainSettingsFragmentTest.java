@@ -277,7 +277,7 @@ public class MainSettingsFragmentTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.PASSWORD_CHECK, ChromeFeatureList.SAFETY_CHECK_ANDROID})
+    @EnableFeatures(ChromeFeatureList.SAFETY_CHECK_ANDROID)
     @DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testStartup() {
         launchSettingsActivity();
@@ -326,8 +326,8 @@ public class MainSettingsFragmentTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY,
-            ChromeFeatureList.PASSWORD_CHECK, ChromeFeatureList.SAFETY_CHECK_ANDROID})
+    @EnableFeatures(
+            {ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY, ChromeFeatureList.SAFETY_CHECK_ANDROID})
     public void
     testStartupWithMobileIdentityConsistency() {
         launchSettingsActivity();
@@ -397,16 +397,6 @@ public class MainSettingsFragmentTest {
                 () -> { SigninTestUtil.signinAndEnableSync(account, ProfileSyncService.get()); });
         launchSettingsActivity();
         onView(withText(R.string.sync_data_types_off)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.SAFETY_CHECK_ANDROID)
-    @DisableFeatures(ChromeFeatureList.PASSWORD_CHECK)
-    public void testSafetyCheckWithoutPasswordCheck() {
-        launchSettingsActivity();
-        Assert.assertNull("Safety check section should be hidden",
-                mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
     }
 
     @Test
@@ -542,7 +532,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.PASSWORD_CHECK})
     @DisabledTest(message = "crbug.com/1110965")
     public void testDestroysPasswordCheck() {
         launchSettingsActivity();

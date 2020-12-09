@@ -3030,10 +3030,6 @@ const char kPageInfoV2Name[] = "Page info version two";
 const char kPageInfoV2Description[] =
     "Enable the second version of the page info menu.";
 
-const char kPasswordCheckName[] = "Bulk Password Check";
-const char kPasswordCheckDescription[] =
-    "Enables the Bulk Password Check feature for signed-in users.";
-
 const char kPhotoPickerVideoSupportName[] = "Photo Picker Video Support";
 const char kPhotoPickerVideoSupportDescription[] =
     "Enables video files to be shown in the Photo Picker dialog";

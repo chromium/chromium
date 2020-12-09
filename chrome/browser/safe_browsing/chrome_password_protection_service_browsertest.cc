@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,7 +27,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -72,8 +70,6 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordCheck);
   }
 
   void SetUpOnMainThread() override {
@@ -172,8 +168,6 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
-  base::test::ScopedFeatureList feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(ChromePasswordProtectionServiceBrowserTest);
 };
 

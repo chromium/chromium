@@ -8,7 +8,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerDialogContents;
 import org.chromium.chrome.browser.password_manager.PasswordManagerDialogCoordinator;
 import org.chromium.ui.base.WindowAndroid;
@@ -58,10 +57,6 @@ public class SafeBrowsingPasswordReuseDialogBridge {
 
     private PasswordManagerDialogContents createDialogContents(
             String credentialLeakTitle, String credentialLeakDetails, String positiveButton) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHECK)) {
-            return new PasswordManagerDialogContents(credentialLeakTitle, credentialLeakDetails,
-                    R.drawable.password_check_warning, positiveButton, null, this::onClick);
-        }
         return new PasswordManagerDialogContents(credentialLeakTitle, credentialLeakDetails,
                 R.drawable.password_checkup_warning, positiveButton, null, this::onClick);
     }

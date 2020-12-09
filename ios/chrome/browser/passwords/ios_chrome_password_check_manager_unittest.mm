@@ -16,13 +16,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/mock_bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -163,8 +161,6 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
         store_(CreateAndUseTestPasswordStore(browser_state_.get())) {
     manager_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
         browser_state_.get());
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordCheck);
   }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
@@ -177,7 +173,6 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
   IOSChromePasswordCheckManager& manager() { return *manager_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_env_{
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

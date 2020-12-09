@@ -6451,7 +6451,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PasswordCheck",
                         "SafetyCheckAndroid"
                     ]
                 }

@@ -325,8 +325,6 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
 }
 
 TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPasswordCheck);
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 

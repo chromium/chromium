@@ -49,7 +49,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link SafetyCheckMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.PASSWORD_CHECK})
+@Features.EnableFeatures(ChromeFeatureList.SAFETY_CHECK_ANDROID)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class SafetyCheckMediatorTest {
     private static final String SAFETY_CHECK_INTERACTIONS_HISTOGRAM =

@@ -44,7 +44,6 @@
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -984,8 +983,7 @@ void ChromePasswordProtectionService::OpenChangePasswordUrl(
     // Opens accounts.google.com in a new tab.
     OpenUrl(web_contents, GetDefaultChangePasswordURL(), content::Referrer(),
             /*in_new_tab=*/true);
-  } else if (base::FeatureList::IsEnabled(
-                 password_manager::features::kPasswordCheck)) {
+  } else {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     // Opens chrome://settings/passwords/check in a new tab.
     chrome::ShowPasswordCheck(chrome::FindBrowserWithWebContents(web_contents));
@@ -1164,29 +1162,10 @@ ChromePasswordProtectionService::GetWarningDetailTextForSavedPasswords(
       GetPlaceholdersForSavedPasswordWarningText();
   // If showing the saved passwords domain experiment is not on or if there is
   // are no saved domains, default to original saved passwords reuse warning.
-  if (placeholders.size() == 0) {
-    return l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED);
-  }
-
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordCheck)) {
-    return GetWarningDetailTextToCheckSavedPasswords(placeholder_offsets);
-  }
-
-  if (placeholders.size() == 1) {
-    return l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_1_DOMAIN, placeholders,
-        placeholder_offsets);
-  } else if (placeholders.size() == 2) {
-    return l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_2_DOMAINS, placeholders,
-        placeholder_offsets);
-  } else {
-    return l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_3_DOMAINS, placeholders,
-        placeholder_offsets);
-  }
+  return placeholders.empty()
+             ? l10n_util::GetStringUTF16(
+                   IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED)
+             : GetWarningDetailTextToCheckSavedPasswords(placeholder_offsets);
 }
 
 base::string16

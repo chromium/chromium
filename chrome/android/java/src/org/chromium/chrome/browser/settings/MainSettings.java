@@ -205,9 +205,8 @@ public class MainSettings extends PreferenceFragmentCompat
             TemplateUrlServiceFactory.get().load();
         }
 
-        // Only show the Safety check section if both Safety check and Password check flags are on.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_CHECK_ANDROID)
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHECK)) {
+        // Only show the Safety check section if the Safety check flag is on.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_CHECK_ANDROID)) {
             getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));
         } else {
             findPreference(PREF_SAFETY_CHECK)

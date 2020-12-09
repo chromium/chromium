@@ -5,11 +5,9 @@
 #include "components/password_manager/core/browser/leak_detection_delegate_helper.h"
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 
 namespace password_manager {
 
@@ -52,7 +50,6 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
     return;
 
   base::flat_set<std::string> distinct_origins;
-  if (base::FeatureList::IsEnabled(features::kPasswordCheck)) {
     base::string16 canonicalized_username = CanonicalizeUsername(username_);
     for (const auto& form : partial_results_) {
       if (CanonicalizeUsername(form->username_value) ==
@@ -65,7 +62,6 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
             CompromiseType::kLeaked, false));
       }
     }
-  }
 
   IsSaved is_saved(
       base::ranges::any_of(partial_results_, [this](const auto& form) {
