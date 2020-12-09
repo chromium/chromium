@@ -20,7 +20,7 @@
 namespace content {
 
 class MediaSessionImpl;
-class WebContents;
+class WebContentsImpl;
 
 // Helper class for controlling a single player's MediaSession instance.  Sends
 // browser side MediaSession commands back to a player hosted in the renderer
@@ -32,7 +32,8 @@ class WebContents;
 class CONTENT_EXPORT MediaSessionController
     : public MediaSessionPlayerObserver {
  public:
-  MediaSessionController(const MediaPlayerId& id, WebContents* web_contents);
+  MediaSessionController(const MediaPlayerId& id,
+                         WebContentsImpl* web_contents);
   ~MediaSessionController() override;
 
   // Must be called when media player metadata changes.
@@ -100,7 +101,7 @@ class CONTENT_EXPORT MediaSessionController
   const MediaPlayerId id_;
 
   // Outlives |this|.
-  WebContents* const web_contents_;
+  WebContentsImpl* const web_contents_;
 
   // Outlives |this|.
   MediaSessionImpl* const media_session_;

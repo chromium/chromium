@@ -24,6 +24,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/javascript_dialog_type.h"
+#include "media/mojo/mojom/media_player.mojom.h"
 #include "media/mojo/services/media_metrics_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -240,6 +241,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Return this object cast to a WebContents, if it is one. If the object is
   // not a WebContents, returns null.
   virtual WebContents* GetAsWebContents();
+
+  // Creates a MediaPlayerHost object associated to |frame_host| via its
+  // associated MediaWebContentsObserver, and binds |receiver| to it.
+  virtual void CreateMediaPlayerHostForRenderFrameHost(
+      RenderFrameHost* frame_host,
+      mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {}
 
   // The render frame has requested access to media devices listed in
   // |request|, and the client should grant or deny that permission by

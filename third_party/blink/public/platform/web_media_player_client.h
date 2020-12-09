@@ -95,7 +95,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   virtual void AddTextTrack(WebInbandTextTrack*) = 0;
   virtual void RemoveTextTrack(WebInbandTextTrack*) = 0;
   virtual void MediaSourceOpened(WebMediaSource*) = 0;
-  virtual void RequestSeek(double) = 0;
   virtual void RemotePlaybackCompatibilityChanged(const WebURL&,
                                                   bool is_compatible) = 0;
 

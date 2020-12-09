@@ -6,6 +6,7 @@
 
 #include "base/stl_util.h"
 #include "content/browser/media/session/media_session_controller.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/features.h"
 
@@ -22,7 +23,7 @@ bool IsMediaSessionEnabled() {
 }  // namespace
 
 MediaSessionControllersManager::MediaSessionControllersManager(
-    WebContents* web_contents)
+    WebContentsImpl* web_contents)
     : web_contents_(web_contents) {}
 
 MediaSessionControllersManager::~MediaSessionControllersManager() = default;

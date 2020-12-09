@@ -30,7 +30,9 @@
 #include <memory>
 
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
@@ -44,6 +46,8 @@
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -88,6 +92,7 @@ class CORE_EXPORT HTMLMediaElement
       public Supplementable<HTMLMediaElement>,
       public ActiveScriptWrappable<HTMLMediaElement>,
       public ExecutionContextLifecycleStateObserver,
+      public media::mojom::blink::MediaPlayer,
       private WebMediaPlayerClient {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(HTMLMediaElement, Dispose);
@@ -433,7 +438,6 @@ class CORE_EXPORT HTMLMediaElement
   void AddTextTrack(WebInbandTextTrack*) final;
   void RemoveTextTrack(WebInbandTextTrack*) final;
   void MediaSourceOpened(WebMediaSource*) final;
-  void RequestSeek(double) final;
   void RemotePlaybackCompatibilityChanged(const WebURL&,
                                           bool is_compatible) final;
   void OnBecamePersistentVideo(bool) override {}
@@ -454,6 +458,15 @@ class CORE_EXPORT HTMLMediaElement
   void RequestPause() final;
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
+
+  // Returns a reference to the mojo remote for the MediaPlayerHost interface,
+  // requesting it first from the BrowserInterfaceBroker if needed. It is an
+  // error to call this method before having access to the document's frame.
+  media::mojom::blink::MediaPlayerHost& GetMediaPlayerHostRemote();
+
+  // media::mojom::MediaPlayer  implementation.
+  void RequestSeekForward(base::TimeDelta seek_time) override;
+  void RequestSeekBackward(base::TimeDelta seek_time) override;
 
   void LoadTimerFired(TimerBase*);
   void ProgressEventTimerFired(TimerBase*);
@@ -770,6 +783,16 @@ class CORE_EXPORT HTMLMediaElement
   Member<HTMLMediaElementControlsList> controls_list_;
 
   Member<IntersectionObserver> lazy_load_intersection_observer_;
+
+  HeapMojoRemote<media::mojom::blink::MediaPlayerHost>
+      media_player_host_remote_;
+
+  // A receiver set is needed here as there will be different objects in the
+  // browser communicating with this object. This is done this way to avoid
+  // routing everything through a single class (e.g. RFHI) and to keep this
+  // logic contained inside MediaPlayer-related classes.
+  HeapMojoReceiverSet<media::mojom::blink::MediaPlayer, HTMLMediaElement>
+      media_player_receiver_set_;
 };
 
 template <>

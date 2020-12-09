@@ -1,0 +1,27 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Implemented by HTMLMediaElement in the renderer process.
+interface MediaPlayer {
+  // Requests the media player to move forward the media playback position.
+  RequestSeekForward(mojo_base.mojom.TimeDelta seek_time);
+
+  // Requests the media player to move backward the media playback position.
+  RequestSeekBackward(mojo_base.mojom.TimeDelta seek_time);
+};
+
+// Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser
+// process.
+interface MediaPlayerHost {
+  // Sends a message to the browser notifying the render frame associated to the
+  // document owning the HTMLMediaElement that a new MediaPlayer is available,
+  // passing a pending remote (i.e. |player_remote|) that will be used in the
+  // browser process to establish a channel with the HTMLMediaElement.
+  OnMediaPlayerAdded(pending_remote<MediaPlayer> player_remote,
+                     int32 player_id);
+};

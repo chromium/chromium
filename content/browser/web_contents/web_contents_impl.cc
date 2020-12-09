@@ -3887,6 +3887,13 @@ RenderWidgetHostView* WebContentsImpl::GetCreatedWidget(int process_id,
   return widget_host_view;
 }
 
+void WebContentsImpl::CreateMediaPlayerHostForRenderFrameHost(
+    RenderFrameHost* frame_host,
+    mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {
+  media_web_contents_observer()->BindMediaPlayerHost(frame_host,
+                                                     std::move(receiver));
+}
+
 void WebContentsImpl::RequestMediaAccessPermission(
     const MediaStreamRequest& request,
     MediaResponseCallback callback) {

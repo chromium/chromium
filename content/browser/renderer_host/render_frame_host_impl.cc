@@ -7742,6 +7742,11 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
           : media::MediaMetricsProvider::Source::kUnknown);
 }
 
+void RenderFrameHostImpl::CreateMediaPlayerHost(
+    mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {
+  delegate_->CreateMediaPlayerHostForRenderFrameHost(this, std::move(receiver));
+}
+
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 void RenderFrameHostImpl::BindMediaRemoterFactoryReceiver(
     mojo::PendingReceiver<media::mojom::RemoterFactory> receiver) {

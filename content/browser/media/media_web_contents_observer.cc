@@ -138,7 +138,8 @@ class MediaWebContentsObserver::PlayerInfo {
   bool is_playing_ = false;
 };
 
-MediaWebContentsObserver::MediaWebContentsObserver(WebContents* web_contents)
+MediaWebContentsObserver::MediaWebContentsObserver(
+    WebContentsImpl* web_contents)
     : WebContentsObserver(web_contents),
       audible_metrics_(GetAudibleMetrics()),
       session_controllers_manager_(web_contents),
@@ -284,6 +285,34 @@ bool MediaWebContentsObserver::IsPlayerActive(
     return player_info->is_playing();
 
   return false;
+}
+
+MediaWebContentsObserver::MediaPlayerHostImpl::MediaPlayerHostImpl(
+    RenderFrameHost* render_frame_host,
+    MediaWebContentsObserver* media_web_contents_observer)
+    : render_frame_host_(render_frame_host),
+      media_web_contents_observer_(media_web_contents_observer) {}
+
+MediaWebContentsObserver::MediaPlayerHostImpl::~MediaPlayerHostImpl() = default;
+
+void MediaWebContentsObserver::MediaPlayerHostImpl::BindMediaPlayerHostReceiver(
+    mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
+
+  // Both |media_web_contents_observer_| and |render_frame_host_| outlive
+  // MediaPlayerHostImpl, so it's safe to use base::Unretained().
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&MediaWebContentsObserver::OnMediaPlayerHostDisconnected,
+                     base::Unretained(media_web_contents_observer_),
+                     base::Unretained(render_frame_host_)));
+}
+
+void MediaWebContentsObserver::MediaPlayerHostImpl::OnMediaPlayerAdded(
+    mojo::PendingRemote<media::mojom::MediaPlayer> media_player,
+    int32_t player_id) {
+  media_web_contents_observer_->OnMediaPlayerAdded(
+      std::move(media_player), MediaPlayerId(render_frame_host_, player_id));
 }
 
 MediaWebContentsObserver::PlayerInfo* MediaWebContentsObserver::GetPlayerInfo(
@@ -441,6 +470,13 @@ void MediaWebContentsObserver::OnReceivedTranslatedDeviceId(
       MediaPlayerId(render_frame_host, delegate_id), raw_device_id);
 }
 
+mojo::Remote<media::mojom::MediaPlayer>&
+MediaWebContentsObserver::GetMediaPlayerRemote(const MediaPlayerId& player_id) {
+  DCHECK(media_player_remotes_.contains(player_id));
+  DCHECK(media_player_remotes_[player_id].is_bound());
+  return media_player_remotes_[player_id];
+}
+
 void MediaWebContentsObserver::OnAudioOutputSinkChangingDisabled(
     RenderFrameHost* render_frame_host,
     int delegate_id) {
@@ -459,6 +495,12 @@ void MediaWebContentsObserver::OnSeek(RenderFrameHost* render_frame_host,
                                       int delegate_id) {
   const MediaPlayerId id(render_frame_host, delegate_id);
   web_contents_impl()->MediaPlayerSeek(id);
+}
+
+void MediaWebContentsObserver::OnMediaPlayerHostDisconnected(
+    RenderFrameHost* host) {
+  DCHECK(media_player_hosts_.contains(host));
+  media_player_hosts_.erase(host);
 }
 
 device::mojom::WakeLock* MediaWebContentsObserver::GetAudioWakeLock() {
@@ -506,6 +548,35 @@ void MediaWebContentsObserver::OnMediaPositionStateChanged(
 
 WebContentsImpl* MediaWebContentsObserver::web_contents_impl() const {
   return static_cast<WebContentsImpl*>(web_contents());
+}
+
+void MediaWebContentsObserver::BindMediaPlayerHost(
+    RenderFrameHost* host,
+    mojo::PendingReceiver<media::mojom::MediaPlayerHost> player_receiver) {
+  if (!media_player_hosts_.contains(host)) {
+    media_player_hosts_[host] =
+        std::make_unique<MediaPlayerHostImpl>(host, this);
+  }
+
+  media_player_hosts_[host]->BindMediaPlayerHostReceiver(
+      std::move(player_receiver));
+}
+
+void MediaWebContentsObserver::OnMediaPlayerAdded(
+    mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
+    MediaPlayerId player_id) {
+  if (!media_player_remotes_.contains(player_id)) {
+    media_player_remotes_[player_id] =
+        mojo::Remote<media::mojom::MediaPlayer>();
+  }
+
+  media_player_remotes_[player_id].reset();
+  media_player_remotes_[player_id].Bind(std::move(player_remote));
+  media_player_remotes_[player_id].set_disconnect_handler(base::BindOnce(
+      [](MediaWebContentsObserver* observer, const MediaPlayerId& player_id) {
+        observer->media_player_remotes_.erase(player_id);
+      },
+      base::Unretained(this), player_id));
 }
 
 #if defined(OS_ANDROID)

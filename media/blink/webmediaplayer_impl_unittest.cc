@@ -138,7 +138,6 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_METHOD1(AddTextTrack, void(blink::WebInbandTextTrack*));
   MOCK_METHOD1(RemoveTextTrack, void(blink::WebInbandTextTrack*));
   MOCK_METHOD1(MediaSourceOpened, void(blink::WebMediaSource*));
-  MOCK_METHOD1(RequestSeek, void(double));
   MOCK_METHOD2(RemotePlaybackCompatibilityChanged,
                void(const blink::WebURL&, bool));
   MOCK_METHOD1(OnBecamePersistentVideo, void(bool));

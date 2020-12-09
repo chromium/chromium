@@ -600,7 +600,6 @@ class WebMediaPlayerMSTest
   void AddTextTrack(WebInbandTextTrack*) override {}
   void RemoveTextTrack(WebInbandTextTrack*) override {}
   void MediaSourceOpened(WebMediaSource*) override {}
-  void RequestSeek(double) override {}
   void RemotePlaybackCompatibilityChanged(const WebURL& url,
                                           bool is_compatible) override {}
   void OnBecamePersistentVideo(bool) override {}

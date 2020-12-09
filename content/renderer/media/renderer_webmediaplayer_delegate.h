@@ -101,8 +101,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
  private:
   void OnMediaDelegatePause(int player_id, bool triggered_by_user);
   void OnMediaDelegatePlay(int player_id);
-  void OnMediaDelegateSeekForward(int player_id, base::TimeDelta seek_time);
-  void OnMediaDelegateSeekBackward(int player_id, base::TimeDelta seek_time);
   void OnMediaDelegateSuspendAllMediaPlayers();
   void OnMediaDelegateVolumeMultiplierUpdate(int player_id, double multiplier);
   void OnMediaDelegateBecamePersistentVideo(int player_id, bool value);

@@ -803,6 +803,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ShowCreatedWidget(int process_id,
                          int widget_route_id,
                          const gfx::Rect& initial_rect) override;
+  void CreateMediaPlayerHostForRenderFrameHost(
+      RenderFrameHost* frame_host,
+      mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) override;
   void RequestMediaAccessPermission(const MediaStreamRequest& request,
                                     MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(RenderFrameHost* render_frame_host,

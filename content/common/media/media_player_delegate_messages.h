@@ -46,14 +46,6 @@ IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_Pause,
 IPC_MESSAGE_ROUTED1(MediaPlayerDelegateMsg_Play,
                     int /* delegate_id, distinguishes instances */)
 
-IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_SeekForward,
-                    int /* delegate_id, distinguishes instances */,
-                    base::TimeDelta /* seek_time */)
-
-IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_SeekBackward,
-                    int /* delegate_id, distinguishes instances */,
-                    base::TimeDelta /* seek_time */)
-
 IPC_MESSAGE_ROUTED0(MediaPlayerDelegateMsg_SuspendAllMediaPlayers)
 
 IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_UpdateVolumeMultiplier,

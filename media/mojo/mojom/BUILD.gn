@@ -29,6 +29,7 @@ mojom("mojom") {
     "key_system_support.mojom",
     "media_log.mojom",
     "media_metrics_provider.mojom",
+    "media_player.mojom",
     "media_service.mojom",
     "media_types.mojom",
     "output_protection.mojom",

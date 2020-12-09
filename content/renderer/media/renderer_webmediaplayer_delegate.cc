@@ -276,10 +276,6 @@ bool RendererWebMediaPlayerDelegate::OnMessageReceived(
   IPC_BEGIN_MESSAGE_MAP(RendererWebMediaPlayerDelegate, msg)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_Pause, OnMediaDelegatePause)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_Play, OnMediaDelegatePlay)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SeekForward,
-                        OnMediaDelegateSeekForward)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SeekBackward,
-                        OnMediaDelegateSeekBackward)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SuspendAllMediaPlayers,
                         OnMediaDelegateSuspendAllMediaPlayers)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_UpdateVolumeMultiplier,
@@ -354,26 +350,6 @@ void RendererWebMediaPlayerDelegate::OnMediaDelegatePlay(int player_id) {
     }
     observer->OnPlay();
   }
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateSeekForward(
-    int player_id,
-    base::TimeDelta seek_time) {
-  RecordAction(base::UserMetricsAction("Media.Controls.RemoteSeekForward"));
-
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnSeekForward(seek_time.InSecondsF());
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateSeekBackward(
-    int player_id,
-    base::TimeDelta seek_time) {
-  RecordAction(base::UserMetricsAction("Media.Controls.RemoteSeekBackward"));
-
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnSeekBackward(seek_time.InSecondsF());
 }
 
 void RendererWebMediaPlayerDelegate::OnMediaDelegateSuspendAllMediaPlayers() {
