@@ -157,7 +157,8 @@ bool SearchingForNodeTool::HandleInputEvent(LocalFrameView* frame_view,
                                             const WebInputEvent& input_event,
                                             bool* swallow_next_mouse_up) {
   if (input_event.GetType() == WebInputEvent::Type::kGestureScrollBegin ||
-      input_event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
+      input_event.GetType() == WebInputEvent::Type::kGestureScrollUpdate ||
+      input_event.GetType() == WebInputEvent::Type::kMouseLeave) {
     hovered_node_.Clear();
     event_target_node_.Clear();
     overlay_->ScheduleUpdate();
