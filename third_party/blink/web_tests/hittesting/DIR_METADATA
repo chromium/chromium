@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>HitTesting"
+}
+team_email: "paint-dev@chromium.org"
