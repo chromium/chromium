@@ -57,6 +57,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/2x/filetype_placeholder_image.png",
     "foreground/images/files/ui/filetype_placeholder_video.png",
     "foreground/images/files/ui/2x/filetype_placeholder_video.png",
+    "foreground/images/files/ui/holding_space_welcome_image.svg",
     "foreground/images/files/ui/info.svg",
     "foreground/images/files/ui/list_check.svg",
     "foreground/images/files/ui/menu_ng.svg",

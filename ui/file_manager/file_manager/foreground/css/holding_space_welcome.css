@@ -32,9 +32,8 @@
   height: 71px;
 }
 
-/* TODO(crbug.com/1154347): Add icon. */
 .holding-space-welcome .holding-space-welcome-icon {
-  background-color: rgba(0, 0, 0, 0.12);
+  background-image: url(../images/files/ui/holding_space_welcome_image.svg);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 32px 32px;
