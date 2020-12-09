@@ -1261,7 +1261,7 @@ void ChromePasswordManagerClient::DidFinishNavigation(
   // whether to record PasswordManager.SaveUIDismissalReasonAfterUnblacklisting.
   // Therefore it is sufficient to save it only once on navigation and not
   // every time the user changes the UI toggle.
-  password_manager_.MarkWasUnblacklistedInFormManagers(&credential_cache_);
+  password_manager_.MarkWasUnblocklistedInFormManagers(&credential_cache_);
   credential_cache_.ClearCredentials();
 #endif  // defined(OS_ANDROID)
 

@@ -61,7 +61,7 @@ PasswordFormMetricsRecorder::BubbleDismissalReason GetBubbleDismissalReason(
     // These should not reach here:
     case metrics_util::CLICKED_DONE_OBSOLETE:
     case metrics_util::CLICKED_OK_OBSOLETE:
-    case metrics_util::CLICKED_UNBLACKLIST_OBSOLETE:
+    case metrics_util::CLICKED_UNBLOCKLIST_OBSOLETE:
     case metrics_util::CLICKED_CREDENTIAL_OBSOLETE:
     case metrics_util::AUTO_SIGNIN_TOAST_CLICKED_OBSOLETE:
     case metrics_util::CLICKED_BRAND_NAME_OBSOLETE:
@@ -171,7 +171,7 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
 // Returns whether any value of |submitted_form| is listed in the
 // |interactions_stats| has having been prompted to save as a credential and
 // being ignored too often.
-bool BlacklistedBySmartBubble(
+bool BlocklistedBySmartBubble(
     const FormData& submitted_form,
     const std::vector<InteractionsStats>& interactions_stats) {
   const int show_threshold =
@@ -516,7 +516,7 @@ void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
         saved_usernames,
     const std::set<std::pair<base::string16, PasswordForm::Store>>&
         saved_passwords,
-    bool is_blacklisted,
+    bool is_blocklisted,
     const std::vector<InteractionsStats>& interactions_stats,
     metrics_util::PasswordAccountStorageUsageLevel
         account_storage_usage_level) {
@@ -532,15 +532,15 @@ void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
 #endif
   account_storage_usage_level_ = account_storage_usage_level;
 
-  if (saved_passwords.empty() && is_blacklisted) {
-    filling_assistance_ = FillingAssistance::kNoSavedCredentialsAndBlacklisted;
+  if (saved_passwords.empty() && is_blocklisted) {
+    filling_assistance_ = FillingAssistance::kNoSavedCredentialsAndBlocklisted;
     return;
   }
 
   if (saved_passwords.empty()) {
     filling_assistance_ =
-        BlacklistedBySmartBubble(submitted_form, interactions_stats)
-            ? FillingAssistance::kNoSavedCredentialsAndBlacklistedBySmartBubble
+        BlocklistedBySmartBubble(submitted_form, interactions_stats)
+            ? FillingAssistance::kNoSavedCredentialsAndBlocklistedBySmartBubble
             : FillingAssistance::kNoSavedCredentials;
     return;
   }
@@ -675,7 +675,7 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
       return;
 
     // Obsolte display dispositions:
-    case metrics_util::MANUAL_BLACKLISTED_OBSOLETE:
+    case metrics_util::MANUAL_BLOCKLISTED_OBSOLETE:
     case metrics_util::AUTOMATIC_CREDENTIAL_REQUEST_OBSOLETE:
     case metrics_util::NUM_DISPLAY_DISPOSITIONS:
       NOTREACHED();

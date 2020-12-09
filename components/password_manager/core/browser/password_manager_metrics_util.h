@@ -27,7 +27,7 @@ enum UIDisplayDisposition {
   AUTOMATIC_WITH_PASSWORD_PENDING = 0,
   MANUAL_WITH_PASSWORD_PENDING = 1,
   MANUAL_MANAGE_PASSWORDS = 2,
-  MANUAL_BLACKLISTED_OBSOLETE = 3,  // obsolete.
+  MANUAL_BLOCKLISTED_OBSOLETE = 3,  // obsolete.
   AUTOMATIC_GENERATED_PASSWORD_CONFIRMATION = 4,
   AUTOMATIC_CREDENTIAL_REQUEST_OBSOLETE = 5,  // obsolete
   AUTOMATIC_SIGNIN_TOAST = 6,
@@ -52,7 +52,7 @@ enum UIDismissalReason {
   CLICKED_NEVER = 3,
   CLICKED_MANAGE = 4,
   CLICKED_DONE_OBSOLETE = 5,         // obsolete
-  CLICKED_UNBLACKLIST_OBSOLETE = 6,  // obsolete.
+  CLICKED_UNBLOCKLIST_OBSOLETE = 6,  // obsolete.
   CLICKED_OK_OBSOLETE = 7,           // obsolete
   CLICKED_CREDENTIAL_OBSOLETE = 8,   // obsolete.
   AUTO_SIGNIN_TOAST_TIMEOUT = 9,
@@ -522,8 +522,8 @@ void LogSaveUIDismissalReason(
     base::Optional<PasswordAccountStorageUserState> user_state);
 
 // Log the |reason| a user dismissed the save password prompt after previously
-// having unblacklisted the origin while on the page.
-void LogSaveUIDismissalReasonAfterUnblacklisting(UIDismissalReason reason);
+// having unblocklisted the origin while on the page.
+void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason);
 
 // Log the |reason| a user dismissed the update password bubble.
 void LogUpdateUIDismissalReason(UIDismissalReason reason);

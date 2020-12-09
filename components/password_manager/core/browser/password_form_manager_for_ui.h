@@ -58,8 +58,8 @@ class PasswordFormManagerForUI {
   // Determines if the user opted to 'never remember' passwords for this form.
   virtual bool IsBlocklisted() const = 0;
 
-  // Checks if the user unblacklisted the origin of the form for saving.
-  virtual bool WasUnblacklisted() const = 0;
+  // Checks if the user unblocklisted the origin of the form for saving.
+  virtual bool WasUnblocklisted() const = 0;
 
   // Determines whether the submitted credentials returned by
   // GetPendingCredentials() can be moved to the signed in account store.

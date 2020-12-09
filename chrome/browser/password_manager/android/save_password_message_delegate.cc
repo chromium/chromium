@@ -121,10 +121,8 @@ void SavePasswordMessageDelegate::RecordMessageShownMetrics() {
 void SavePasswordMessageDelegate::RecordDismissalReasonMetrics() {
   password_manager::metrics_util::LogSaveUIDismissalReason(
       ui_dismissal_reason_, /*user_state=*/base::nullopt);
-  // TODO(crbug.com/1147799): Update WasUnblacklisted to use incluse
-  // terminology.
-  if (form_to_save_->WasUnblacklisted()) {
-    password_manager::metrics_util::LogSaveUIDismissalReasonAfterUnblacklisting(
+  if (form_to_save_->WasUnblocklisted()) {
+    password_manager::metrics_util::LogSaveUIDismissalReasonAfterUnblocklisting(
         ui_dismissal_reason_);
   }
   if (auto* recorder = form_to_save_->GetMetricsRecorder()) {

@@ -64,7 +64,7 @@ class PasswordFormMetricsRecorder
   enum ManagerAction {
     kManagerActionNone = 0,
     kManagerActionAutofilled,
-    kManagerActionBlacklisted_Obsolete,
+    kManagerActionBlocklisted_Obsolete,
     kManagerActionMax
   };
 
@@ -255,12 +255,12 @@ class PasswordFormMetricsRecorder
     kNoSavedCredentials = 5,
     // Neither user input nor filling.
     kNoUserInputNoFillingInPasswordFields = 6,
-    // Domain is blacklisted and no other credentials exist.
-    kNoSavedCredentialsAndBlacklisted = 7,
+    // Domain is blocklisted and no other credentials exist.
+    kNoSavedCredentialsAndBlocklisted = 7,
     // No credentials exist and the user has ignored the save bubble too often,
     // meaning that they won't be asked to save credentials anymore.
-    kNoSavedCredentialsAndBlacklistedBySmartBubble = 8,
-    kMaxValue = kNoSavedCredentialsAndBlacklistedBySmartBubble,
+    kNoSavedCredentialsAndBlocklistedBySmartBubble = 8,
+    kMaxValue = kNoSavedCredentialsAndBlocklistedBySmartBubble,
   };
 
   // Records which store(s) a filled password came from.
@@ -379,7 +379,7 @@ class PasswordFormMetricsRecorder
           saved_usernames,
       const std::set<std::pair<base::string16, PasswordForm::Store>>&
           saved_passwords,
-      bool is_blacklisted,
+      bool is_blocklisted,
       const std::vector<InteractionsStats>& interactions_stats,
       metrics_util::PasswordAccountStorageUsageLevel
           account_storage_usage_level);

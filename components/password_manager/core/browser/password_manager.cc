@@ -311,7 +311,7 @@ void PasswordManager::SetGenerationElementAndTypeForForm(
   }
 }
 
-void PasswordManager::MarkWasUnblacklistedInFormManagers(
+void PasswordManager::MarkWasUnblocklistedInFormManagers(
     CredentialCache* credential_cache) {
   if (owned_submitted_form_manager_) {
     const OriginCredentialStore& credential_store =
@@ -319,7 +319,7 @@ void PasswordManager::MarkWasUnblacklistedInFormManagers(
             url::Origin::Create(owned_submitted_form_manager_->GetURL()));
     if (credential_store.GetBlocklistedStatus() ==
         BlocklistedStatus::kWasBlocklisted) {
-      owned_submitted_form_manager_->MarkWasUnblacklisted();
+      owned_submitted_form_manager_->MarkWasUnblocklisted();
     }
   }
 
@@ -329,7 +329,7 @@ void PasswordManager::MarkWasUnblacklistedInFormManagers(
             url::Origin::Create(form_manager->GetURL()));
     if (credential_store.GetBlocklistedStatus() ==
         BlocklistedStatus::kWasBlocklisted) {
-      form_manager->MarkWasUnblacklisted();
+      form_manager->MarkWasUnblocklisted();
     }
   }
 }

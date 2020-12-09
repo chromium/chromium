@@ -274,11 +274,11 @@ PasswordFormManager::GetCompromisedCredentials() const {
 }
 
 bool PasswordFormManager::IsBlocklisted() const {
-  return form_fetcher_->IsBlocklisted() || newly_blacklisted_;
+  return form_fetcher_->IsBlocklisted() || newly_blocklisted_;
 }
 
-bool PasswordFormManager::WasUnblacklisted() const {
-  return was_unblacklisted_while_on_page_;
+bool PasswordFormManager::WasUnblocklisted() const {
+  return was_unblocklisted_while_on_page_;
 }
 
 bool PasswordFormManager::IsMovableToAccountStore() const {
@@ -311,7 +311,7 @@ void PasswordFormManager::Save() {
   DCHECK(!client_->IsIncognito());
   if (IsBlocklisted()) {
     password_save_manager_->Unblocklist(ConstructObservedFormDigest());
-    newly_blacklisted_ = false;
+    newly_blocklisted_ = false;
   }
 
   password_save_manager_->Save(observed_form(), *parsed_submitted_form_);
@@ -411,7 +411,7 @@ void PasswordFormManager::OnNoInteraction(bool is_update) {
 void PasswordFormManager::Blocklist() {
   DCHECK(!client_->IsIncognito());
   password_save_manager_->Blocklist(ConstructObservedFormDigest());
-  newly_blacklisted_ = true;
+  newly_blocklisted_ = true;
 }
 
 PasswordStore::FormDigest PasswordFormManager::ConstructObservedFormDigest()
@@ -646,7 +646,7 @@ PasswordFormManager::PasswordFormManager(
 void PasswordFormManager::OnFetchCompleted() {
   received_stored_credentials_time_ = TimeTicks::Now();
 
-  newly_blacklisted_ = false;
+  newly_blocklisted_ = false;
   autofills_left_ = kMaxTimesAutofill;
 
   if (IsCredentialAPISave()) {
@@ -869,8 +869,8 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
   password_save_manager_->GeneratedPasswordAccepted(*parsed_form, driver_);
 }
 
-void PasswordFormManager::MarkWasUnblacklisted() {
-  was_unblacklisted_while_on_page_ = true;
+void PasswordFormManager::MarkWasUnblocklisted() {
+  was_unblocklisted_while_on_page_ = true;
 }
 
 PasswordFormManager::PasswordFormManager(

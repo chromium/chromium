@@ -620,7 +620,7 @@ struct TestCaseFieldInfo {
 struct FillingAssistanceTestCase {
   const char* description_for_logging;
 
-  bool is_blacklisted = false;
+  bool is_blocklisted = false;
   bool submission_detected = true;
   bool submission_is_successful = true;
 
@@ -746,7 +746,7 @@ void CheckFillingAssistanceTestCase(
         sub_case.is_main_frame_secure, &pref_service);
     if (test_case.submission_detected) {
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, test_case.is_blacklisted,
+          form_data, saved_usernames, saved_passwords, test_case.is_blocklisted,
           test_case.interactions_stats, sub_case.account_storage_usage_level);
     }
 
@@ -1044,24 +1044,24 @@ TEST(PasswordFormMetricsRecorder,
        .expectation = PasswordFormMetricsRecorder::FillingAssistance::kManual});
 }
 
-TEST(PasswordFormMetricsRecorder, FillingAssistanceBlacklistedDomain) {
+TEST(PasswordFormMetricsRecorder, FillingAssistanceBlocklistedDomain) {
   CheckFillingAssistanceTestCase(
-      {.description_for_logging = "Submission while domain is blacklisted",
-       .is_blacklisted = true,
+      {.description_for_logging = "Submission while domain is blocklisted",
+       .is_blocklisted = true,
        .fields = {{.value = "user1"},
                   {.value = "password1", .is_password = true}},
        .saved_usernames = {},
        .saved_passwords = {},
        .expectation = PasswordFormMetricsRecorder::FillingAssistance::
-           kNoSavedCredentialsAndBlacklisted});
+           kNoSavedCredentialsAndBlocklisted});
 }
 
 TEST(PasswordFormMetricsRecorder,
-     FillingAssistanceBlacklistedDomainWithCredential) {
+     FillingAssistanceBlocklistedDomainWithCredential) {
   CheckFillingAssistanceTestCase(
       {.description_for_logging =
-           "Submission while domain is blacklisted but a credential is stored",
-       .is_blacklisted = true,
+           "Submission while domain is blocklisted but a credential is stored",
+       .is_blocklisted = true,
        .fields = {{.value = "user1", .automatically_filled = true},
                   {
                       .value = "password1",
@@ -1074,7 +1074,7 @@ TEST(PasswordFormMetricsRecorder,
            PasswordFormMetricsRecorder::FillingAssistance::kAutomatic});
 }
 
-TEST(PasswordFormMetricsRecorder, FillingAssistanceBlacklistedBySmartBubble) {
+TEST(PasswordFormMetricsRecorder, FillingAssistanceBlocklistedBySmartBubble) {
   CheckFillingAssistanceTestCase(
       {.description_for_logging = "Submission without saved credentials while "
                                   "smart bubble suppresses saving",
@@ -1085,7 +1085,7 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceBlacklistedBySmartBubble) {
        .interactions_stats = {{.username_value = ASCIIToUTF16("user1"),
                                .dismissal_count = 10}},
        .expectation = PasswordFormMetricsRecorder::FillingAssistance::
-           kNoSavedCredentialsAndBlacklistedBySmartBubble});
+           kNoSavedCredentialsAndBlocklistedBySmartBubble});
 }
 
 TEST(PasswordFormMetricsRecorder, FilledPasswordMatchesSavedUsername) {
@@ -1146,7 +1146,7 @@ void CheckFillingSourceTestCase(const FillingSourceTestCase& test_case) {
     auto recorder = CreatePasswordFormMetricsRecorder(
         /*is_main_frame_secure=*/true, &pref_service);
     recorder->CalculateFillingAssistanceMetric(
-        form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+        form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
         /*interactions_stats=*/{},
         PasswordAccountStorageUsageLevel::kUsingAccountStorage);
     recorder->LogSubmitPassed();
@@ -1262,7 +1262,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28Days) {
       auto recorder = CreatePasswordFormMetricsRecorder(
           /*is_main_frame_secure=*/true, &pref_service);
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+          form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
           /*interactions_stats=*/{},
           PasswordAccountStorageUsageLevel::kUsingAccountStorage);
       recorder->LogSubmitPassed();
@@ -1292,7 +1292,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28Days) {
       auto recorder = CreatePasswordFormMetricsRecorder(
           /*is_main_frame_secure=*/true, &pref_service);
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+          form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
           /*interactions_stats=*/{},
           PasswordAccountStorageUsageLevel::kUsingAccountStorage);
       recorder->LogSubmitPassed();
@@ -1322,7 +1322,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28Days) {
       auto recorder = CreatePasswordFormMetricsRecorder(
           /*is_main_frame_secure=*/true, &pref_service);
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+          form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
           /*interactions_stats=*/{},
           PasswordAccountStorageUsageLevel::kUsingAccountStorage);
       recorder->LogSubmitPassed();
@@ -1352,7 +1352,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28Days) {
       auto recorder = CreatePasswordFormMetricsRecorder(
           /*is_main_frame_secure=*/true, &pref_service);
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+          form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
           /*interactions_stats=*/{},
           PasswordAccountStorageUsageLevel::kUsingAccountStorage);
       recorder->LogSubmitPassed();
@@ -1398,7 +1398,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
           /*is_main_frame_secure=*/true, &pref_service);
       recorder->set_clock_for_testing(&clock);
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+          form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
           /*interactions_stats=*/{},
           PasswordAccountStorageUsageLevel::kUsingAccountStorage);
       recorder->LogSubmitPassed();
@@ -1431,7 +1431,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
           /*is_main_frame_secure=*/true, &pref_service);
       recorder->set_clock_for_testing(&clock);
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+          form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
           /*interactions_stats=*/{},
           PasswordAccountStorageUsageLevel::kUsingAccountStorage);
       recorder->LogSubmitPassed();
@@ -1466,7 +1466,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
           /*is_main_frame_secure=*/true, &pref_service);
       recorder->set_clock_for_testing(&clock);
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+          form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
           /*interactions_stats=*/{},
           PasswordAccountStorageUsageLevel::kUsingAccountStorage);
       recorder->LogSubmitPassed();
@@ -1499,7 +1499,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
           /*is_main_frame_secure=*/true, &pref_service);
       recorder->set_clock_for_testing(&clock);
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+          form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
           /*interactions_stats=*/{},
           PasswordAccountStorageUsageLevel::kUsingAccountStorage);
       recorder->LogSubmitPassed();
@@ -1533,7 +1533,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
           /*is_main_frame_secure=*/true, &pref_service);
       recorder->set_clock_for_testing(&clock);
       recorder->CalculateFillingAssistanceMetric(
-          form_data, saved_usernames, saved_passwords, /*is_blacklisted=*/false,
+          form_data, saved_usernames, saved_passwords, /*is_blocklisted=*/false,
           /*interactions_stats=*/{},
           PasswordAccountStorageUsageLevel::kUsingAccountStorage);
       recorder->LogSubmitPassed();

@@ -51,7 +51,7 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   base::span<const CompromisedCredentials> GetCompromisedCredentials()
       const override;
   bool IsBlocklisted() const override;
-  bool WasUnblacklisted() const override;
+  bool WasUnblocklisted() const override;
   bool IsMovableToAccountStore() const override;
   void Save() override;
   void Update(const PasswordForm& credentials_to_update) override;
@@ -137,7 +137,7 @@ bool PasswordDataForUI::IsBlocklisted() const {
   return false;
 }
 
-bool PasswordDataForUI::WasUnblacklisted() const {
+bool PasswordDataForUI::WasUnblocklisted() const {
   // This information should not be relevant hereconst.
   return false;
 }

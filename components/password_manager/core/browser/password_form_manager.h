@@ -143,8 +143,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       autofill::FieldRendererId generation_element_id,
       const base::string16& password);
 
-  // Sets |was_unblacklisted_while_on_page| to true.
-  void MarkWasUnblacklisted();
+  // Sets |was_unblocklisted_while_on_page| to true.
+  void MarkWasUnblocklisted();
 
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
@@ -157,7 +157,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   base::span<const CompromisedCredentials> GetCompromisedCredentials()
       const override;
   bool IsBlocklisted() const override;
-  bool WasUnblacklisted() const override;
+  bool WasUnblocklisted() const override;
   bool IsMovableToAccountStore() const override;
 
   void Save() override;
@@ -346,16 +346,16 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // of a variant.
   FormOrDigest observed_form_or_digest_;
 
-  // If the observed form gets blacklisted through |this|, we keep the
+  // If the observed form gets blocklisted through |this|, we keep the
   // information in this boolean flag until data is potentially refreshed by
   // reading from PasswordStore again. Upon reading from the store again, we set
   // this boolean to false again.
-  bool newly_blacklisted_ = false;
+  bool newly_blocklisted_ = false;
 
-  // Set to true when the user unblacklists the origin while on the page.
+  // Set to true when the user unblocklists the origin while on the page.
   // This is used to decide when to record
   // |PasswordManager.ResultOfSavingAfterUnblacklisting|.
-  bool was_unblacklisted_while_on_page_ = false;
+  bool was_unblocklisted_while_on_page_ = false;
 
   // Takes care of recording metrics and events for |*this|.
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;

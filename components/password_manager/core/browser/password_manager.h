@@ -133,7 +133,7 @@ class PasswordManager : public PasswordManagerInterface {
   // Called upon navigation to persist the state from |CredentialCache|
   // used to decide when to record
   // |PasswordManager.ResultOfSavingFlowAfterUnblacklistin|.
-  void MarkWasUnblacklistedInFormManagers(CredentialCache* credential_cache);
+  void MarkWasUnblocklistedInFormManagers(CredentialCache* credential_cache);
 
   // Handles a password form being submitted, assumes that submission is
   // successful and does not do any checks on success of submission. For
