@@ -58,10 +58,10 @@ TestJSRunner::PendingCall::PendingCall() {}
 TestJSRunner::PendingCall::~PendingCall() = default;
 TestJSRunner::PendingCall::PendingCall(PendingCall&& other) = default;
 
-TestJSRunner::TestJSRunner() {}
-TestJSRunner::TestJSRunner(const base::Closure& will_call_js)
+TestJSRunner::TestJSRunner() = default;
+TestJSRunner::TestJSRunner(const base::RepeatingClosure& will_call_js)
     : will_call_js_(will_call_js) {}
-TestJSRunner::~TestJSRunner() {}
+TestJSRunner::~TestJSRunner() = default;
 
 void TestJSRunner::RunJSFunction(v8::Local<v8::Function> function,
                                  v8::Local<v8::Context> context,

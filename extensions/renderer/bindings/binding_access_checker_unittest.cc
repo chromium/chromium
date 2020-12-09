@@ -62,7 +62,7 @@ TEST_F(BindingAccessCheckerTest, TestHasAccessOrThrowError) {
 
 TEST_F(BindingAccessCheckerTest, TestHasPromiseAccess) {
   bool context_allows_promises = true;
-  auto promises_available = base::Bind(
+  auto promises_available = base::BindRepeating(
       [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
       &context_allows_promises);
 

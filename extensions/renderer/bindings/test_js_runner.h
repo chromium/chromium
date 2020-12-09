@@ -71,7 +71,7 @@ class TestJSRunner : public JSRunner {
 
   TestJSRunner();
   // Provides a callback to be called just before JS will be executed.
-  explicit TestJSRunner(const base::Closure& will_call_js);
+  explicit TestJSRunner(const base::RepeatingClosure& will_call_js);
   ~TestJSRunner() override;
 
   // JSRunner:
@@ -104,7 +104,7 @@ class TestJSRunner : public JSRunner {
   // Runs all pending calls.
   void Flush();
 
-  base::Closure will_call_js_;
+  base::RepeatingClosure will_call_js_;
   std::vector<PendingCall> pending_calls_;
 
   DISALLOW_COPY_AND_ASSIGN(TestJSRunner);
