@@ -49,13 +49,16 @@ void AutofillSaveCardInfoBar::OnLegalMessageLinkClicked(JNIEnv* env,
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-AutofillSaveCardInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+AutofillSaveCardInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
       GetSaveCardDelegate();
 
   base::android::ScopedJavaLocalRef<jobject> java_delegate =
       Java_AutofillSaveCardInfoBar_create(
-          env, reinterpret_cast<intptr_t>(this), GetJavaIconId(),
+          env, reinterpret_cast<intptr_t>(this),
+          resource_id_mapper.Run(delegate->GetIconId()),
           ScopedJavaLocalRef<jobject>(),
           base::android::ConvertUTF16ToJavaString(env,
                                                   delegate->GetMessageText()),

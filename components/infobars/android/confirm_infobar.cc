@@ -18,11 +18,10 @@ using base::android::ScopedJavaLocalRef;
 
 namespace infobars {
 
-ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate,
-                               const ResourceIdMapper& resource_id_mapper)
-    : InfoBarAndroid(std::move(delegate), resource_id_mapper) {}
+ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
+    : InfoBarAndroid(std::move(delegate)) {}
 
-ConfirmInfoBar::~ConfirmInfoBar() {}
+ConfirmInfoBar::~ConfirmInfoBar() = default;
 
 base::string16 ConfirmInfoBar::GetTextFor(
     ConfirmInfoBarDelegate::InfoBarButton button) {
@@ -35,7 +34,9 @@ ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() {
   return delegate()->AsConfirmInfoBarDelegate();
 }
 
-ScopedJavaLocalRef<jobject> ConfirmInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+ScopedJavaLocalRef<jobject> ConfirmInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   ScopedJavaLocalRef<jstring> ok_button_text =
       base::android::ConvertUTF16ToJavaString(
           env, GetTextFor(ConfirmInfoBarDelegate::BUTTON_OK));
@@ -54,9 +55,9 @@ ScopedJavaLocalRef<jobject> ConfirmInfoBar::CreateRenderInfoBar(JNIEnv* env) {
     java_bitmap = gfx::ConvertToJavaBitmap(*delegate->GetIcon().ToSkBitmap());
   }
 
-  return Java_ConfirmInfoBar_create(env, GetJavaIconId(), java_bitmap,
-                                    message_text, link_text, ok_button_text,
-                                    cancel_button_text);
+  return Java_ConfirmInfoBar_create(
+      env, resource_id_mapper.Run(delegate->GetIconId()), java_bitmap,
+      message_text, link_text, ok_button_text, cancel_button_text);
 }
 
 void ConfirmInfoBar::OnLinkClicked(JNIEnv* env,

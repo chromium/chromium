@@ -20,7 +20,8 @@ class InstantAppsInfoBar : public ChromeConfirmInfoBar {
  private:
   // ConfimInfoBar:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_infobar_;
 

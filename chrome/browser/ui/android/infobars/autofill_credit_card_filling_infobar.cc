@@ -26,7 +26,9 @@ AutofillCreditCardFillingInfoBar::AutofillCreditCardFillingInfoBar(
 AutofillCreditCardFillingInfoBar::~AutofillCreditCardFillingInfoBar() {}
 
 base::android::ScopedJavaLocalRef<jobject>
-AutofillCreditCardFillingInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+AutofillCreditCardFillingInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   autofill::AutofillCreditCardFillingInfoBarDelegateMobile* delegate =
       static_cast<autofill::AutofillCreditCardFillingInfoBarDelegateMobile*>(
           GetDelegate());
@@ -38,7 +40,8 @@ AutofillCreditCardFillingInfoBar::CreateRenderInfoBar(JNIEnv* env) {
 
   base::android::ScopedJavaLocalRef<jobject> java_delegate =
       Java_AutofillCreditCardFillingInfoBar_create(
-          env, reinterpret_cast<intptr_t>(this), GetJavaIconId(), java_bitmap,
+          env, reinterpret_cast<intptr_t>(this),
+          resource_id_mapper.Run(delegate->GetIconId()), java_bitmap,
           base::android::ConvertUTF16ToJavaString(env,
                                                   delegate->GetMessageText()),
           base::android::ConvertUTF16ToJavaString(

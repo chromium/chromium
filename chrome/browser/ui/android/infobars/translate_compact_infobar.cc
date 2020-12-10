@@ -14,7 +14,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
 #include "chrome/android/chrome_jni_headers/TranslateCompactInfoBar_jni.h"
-#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "components/translate/content/android/translate_utils.h"
@@ -40,10 +39,7 @@ std::unique_ptr<infobars::InfoBar> ChromeTranslateClient::CreateInfoBar(
 
 TranslateCompactInfoBar::TranslateCompactInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
-    : infobars::InfoBarAndroid(
-          std::move(delegate),
-          base::BindRepeating(&ResourceMapper::MapToJavaDrawableId)),
-      action_flags_(FLAG_NONE) {
+    : infobars::InfoBarAndroid(std::move(delegate)), action_flags_(FLAG_NONE) {
   GetDelegate()->AddObserver(this);
 
   // Flip the translate bit if auto translate is enabled.
@@ -56,7 +52,8 @@ TranslateCompactInfoBar::~TranslateCompactInfoBar() {
 }
 
 ScopedJavaLocalRef<jobject> TranslateCompactInfoBar::CreateRenderInfoBar(
-    JNIEnv* env) {
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   translate::TranslateInfoBarDelegate* delegate = GetDelegate();
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_languages =

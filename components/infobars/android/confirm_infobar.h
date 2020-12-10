@@ -15,8 +15,7 @@ namespace infobars {
 
 class ConfirmInfoBar : public InfoBarAndroid {
  public:
-  ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate,
-                 const ResourceIdMapper& resource_id_mapper);
+  explicit ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate);
   ~ConfirmInfoBar() override;
 
  protected:
@@ -25,7 +24,8 @@ class ConfirmInfoBar : public InfoBarAndroid {
 
   // InfoBarAndroid overrides.
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 
   void OnLinkClicked(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj) override;

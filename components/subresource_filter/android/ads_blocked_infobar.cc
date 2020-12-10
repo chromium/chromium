@@ -10,19 +10,18 @@
 #include "base/android/jni_string.h"
 #include "components/subresource_filter/android/subresource_filter_jni_headers/AdsBlockedInfoBar_jni.h"
 
-using base::android::JavaParamRef;
-
 namespace subresource_filter {
 
 AdsBlockedInfoBar::AdsBlockedInfoBar(
-    std::unique_ptr<AdsBlockedInfobarDelegate> delegate,
-    const ResourceIdMapper& resource_id_mapper)
-    : infobars::ConfirmInfoBar(std::move(delegate), resource_id_mapper) {}
+    std::unique_ptr<AdsBlockedInfobarDelegate> delegate)
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
-AdsBlockedInfoBar::~AdsBlockedInfoBar() {}
+AdsBlockedInfoBar::~AdsBlockedInfoBar() = default;
 
 base::android::ScopedJavaLocalRef<jobject>
-AdsBlockedInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+AdsBlockedInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   using base::android::ConvertUTF16ToJavaString;
   using base::android::ScopedJavaLocalRef;
   AdsBlockedInfobarDelegate* ads_blocked_delegate =
@@ -38,9 +37,9 @@ AdsBlockedInfoBar::CreateRenderInfoBar(JNIEnv* env) {
 
   ScopedJavaLocalRef<jstring> toggle_text =
       ConvertUTF16ToJavaString(env, ads_blocked_delegate->GetToggleText());
-  return Java_AdsBlockedInfoBar_show(env, GetJavaIconId(), message_text,
-                                     ok_button_text, reload_button_text,
-                                     toggle_text, explanation_message);
+  return Java_AdsBlockedInfoBar_show(
+      env, resource_id_mapper.Run(delegate()->GetIconId()), message_text,
+      ok_button_text, reload_button_text, toggle_text, explanation_message);
 }
 
 }  // namespace subresource_filter

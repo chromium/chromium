@@ -23,10 +23,12 @@ SavePasswordInfoBar::SavePasswordInfoBar(
   account_info_ = account_info;
 }
 
-SavePasswordInfoBar::~SavePasswordInfoBar() {}
+SavePasswordInfoBar::~SavePasswordInfoBar() = default;
 
 base::android::ScopedJavaLocalRef<jobject>
-SavePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+SavePasswordInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   using base::android::ConvertUTF16ToJavaString;
   using base::android::ScopedJavaLocalRef;
   SavePasswordInfoBarDelegate* save_password_delegate =
@@ -47,8 +49,8 @@ SavePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
 
   base::android::ScopedJavaLocalRef<jobject> infobar;
   infobar.Reset(Java_SavePasswordInfoBar_show(
-      env, GetJavaIconId(), message_text, details_message_text, ok_button_text,
-      cancel_button_text, account_info));
+      env, resource_id_mapper.Run(delegate()->GetIconId()), message_text,
+      details_message_text, ok_button_text, cancel_button_text, account_info));
 
   java_infobar_.Reset(env, infobar.obj());
   return infobar;

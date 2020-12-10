@@ -32,7 +32,8 @@ class AutofillSaveCardInfoBar : public ChromeConfirmInfoBar {
  private:
   // ConfirmInfoBar:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 
   // Returns the infobar delegate.
   autofill::AutofillSaveCardInfoBarDelegateMobile* GetSaveCardDelegate();

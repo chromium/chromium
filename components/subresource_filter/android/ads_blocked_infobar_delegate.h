@@ -25,9 +25,7 @@ class AdsBlockedInfobarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a subresource filter infobar and delegate and adds the infobar to
   // |infobar_manager|.
-  static void Create(
-      infobars::ContentInfoBarManager* infobar_manager,
-      const infobars::InfoBarAndroid::ResourceIdMapper& resource_id_mapper);
+  static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
   ~AdsBlockedInfobarDelegate() override;
 

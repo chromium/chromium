@@ -28,7 +28,8 @@ class InstallableAmbientBadgeInfoBar : public infobars::InfoBarAndroid {
 
   // infobars::InfoBarAndroid:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
   void ProcessButton(int action) override;
 
   DISALLOW_COPY_AND_ASSIGN(InstallableAmbientBadgeInfoBar);

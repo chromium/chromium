@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/android/chrome_jni_headers/GeneratedPasswordSavedInfoBarDelegate_jni.h"
-#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -29,20 +28,20 @@ void GeneratedPasswordSavedInfoBarDelegateAndroid::Create(
 
 GeneratedPasswordSavedInfoBar::GeneratedPasswordSavedInfoBar(
     std::unique_ptr<GeneratedPasswordSavedInfoBarDelegateAndroid> delegate)
-    : infobars::InfoBarAndroid(
-          std::move(delegate),
-          base::BindRepeating(&ResourceMapper::MapToJavaDrawableId)) {}
+    : infobars::InfoBarAndroid(std::move(delegate)) {}
 
 GeneratedPasswordSavedInfoBar::~GeneratedPasswordSavedInfoBar() {
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-GeneratedPasswordSavedInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+GeneratedPasswordSavedInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   GeneratedPasswordSavedInfoBarDelegateAndroid* infobar_delegate =
       static_cast<GeneratedPasswordSavedInfoBarDelegateAndroid*>(delegate());
 
   return Java_GeneratedPasswordSavedInfoBarDelegate_show(
-      env, GetJavaIconId(),
+      env, resource_id_mapper.Run(delegate()->GetIconId()),
       base::android::ConvertUTF16ToJavaString(env,
                                               infobar_delegate->message_text()),
       base::android::ConvertUTF16ToJavaString(

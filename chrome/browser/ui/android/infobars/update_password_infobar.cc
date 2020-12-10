@@ -33,7 +33,9 @@ int UpdatePasswordInfoBar::GetIdOfSelectedUsername() const {
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-UpdatePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+UpdatePasswordInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   using base::android::ConvertUTF16ToJavaString;
   using base::android::ScopedJavaLocalRef;
   UpdatePasswordInfoBarDelegate* update_password_delegate =
@@ -56,8 +58,9 @@ UpdatePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
 
   base::android::ScopedJavaLocalRef<jobject> infobar;
   infobar.Reset(Java_UpdatePasswordInfoBar_show(
-      env, GetJavaIconId(), display_usernames, selected_username, message_text,
-      details_message_text, ok_button_text, account_info));
+      env, resource_id_mapper.Run(delegate()->GetIconId()), display_usernames,
+      selected_username, message_text, details_message_text, ok_button_text,
+      account_info));
 
   java_infobar_.Reset(env, infobar.obj());
   return infobar;

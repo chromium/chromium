@@ -65,7 +65,8 @@ class TranslateCompactInfoBar
  private:
   // infobars::InfoBarAndroid:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
   void ProcessButton(int action) override;
   void SetJavaInfoBar(
       const base::android::JavaRef<jobject>& java_info_bar) override;

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "content/public/browser/web_contents.h"
@@ -25,15 +24,9 @@ std::unique_ptr<infobars::InfoBar> InfoBarService::CreateConfirmInfoBar(
 
 ChromeConfirmInfoBar::ChromeConfirmInfoBar(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate)
-    : infobars::ConfirmInfoBar(std::move(delegate), GetResourceIdMapper()) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
-ChromeConfirmInfoBar::~ChromeConfirmInfoBar() {}
-
-// static
-infobars::InfoBarAndroid::ResourceIdMapper
-ChromeConfirmInfoBar::GetResourceIdMapper() {
-  return base::BindRepeating(&ResourceMapper::MapToJavaDrawableId);
-}
+ChromeConfirmInfoBar::~ChromeConfirmInfoBar() = default;
 
 TabAndroid* ChromeConfirmInfoBar::GetTab() {
   content::WebContents* web_contents =

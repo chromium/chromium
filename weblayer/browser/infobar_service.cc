@@ -9,7 +9,6 @@
 #if defined(OS_ANDROID)
 #include "base/bind.h"
 #include "components/infobars/android/confirm_infobar.h"
-#include "weblayer/browser/android/resource_mapper.h"
 #endif
 
 namespace weblayer {
@@ -22,14 +21,7 @@ InfoBarService::~InfoBarService() {}
 #if defined(OS_ANDROID)
 std::unique_ptr<infobars::InfoBar> InfoBarService::CreateConfirmInfoBar(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
-  return std::make_unique<infobars::ConfirmInfoBar>(std::move(delegate),
-                                                    GetResourceIdMapper());
-}
-
-// static
-infobars::InfoBarAndroid::ResourceIdMapper
-InfoBarService::GetResourceIdMapper() {
-  return base::BindRepeating(&MapToJavaDrawableId);
+  return std::make_unique<infobars::ConfirmInfoBar>(std::move(delegate));
 }
 #endif  // if defined(OS_ANDROID)
 

@@ -30,7 +30,9 @@ KnownInterceptionDisclosureInfoBar::KnownInterceptionDisclosureInfoBar(
     : ChromeConfirmInfoBar(std::move(delegate)) {}
 
 ScopedJavaLocalRef<jobject>
-KnownInterceptionDisclosureInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+KnownInterceptionDisclosureInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   KnownInterceptionDisclosureInfoBarDelegate* delegate = GetDelegate();
   ScopedJavaLocalRef<jstring> ok_button_text =
       base::android::ConvertUTF16ToJavaString(
@@ -51,8 +53,8 @@ KnownInterceptionDisclosureInfoBar::CreateRenderInfoBar(JNIEnv* env) {
   }
 
   return Java_KnownInterceptionDisclosureInfoBar_create(
-      env, GetJavaIconId(), java_bitmap, message_text, link_text,
-      ok_button_text, description_text);
+      env, resource_id_mapper.Run(delegate->GetIconId()), java_bitmap,
+      message_text, link_text, ok_button_text, description_text);
 }
 
 KnownInterceptionDisclosureInfoBarDelegate*

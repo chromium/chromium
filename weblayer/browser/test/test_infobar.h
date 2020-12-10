@@ -32,9 +32,8 @@ class TestInfoBar : public infobars::InfoBarAndroid {
   // infobars::InfoBarAndroid overrides.
   void ProcessButton(int action) override;
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
-
- private:
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 };
 
 }  // namespace weblayer

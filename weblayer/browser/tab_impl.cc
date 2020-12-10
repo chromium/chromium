@@ -965,9 +965,8 @@ void TabImpl::CreateSmsPrompt(content::RenderFrameHost* render_frame_host,
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   sms::SmsInfoBar::Create(
-      web_contents, InfoBarService::FromWebContents(web_contents),
-      InfoBarService::GetResourceIdMapper(), origin, one_time_code,
-      std::move(on_confirm), std::move(on_cancel));
+      web_contents, InfoBarService::FromWebContents(web_contents), origin,
+      one_time_code, std::move(on_confirm), std::move(on_cancel));
 #else
   NOTREACHED();
 #endif

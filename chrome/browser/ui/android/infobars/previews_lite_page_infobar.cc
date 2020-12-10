@@ -24,12 +24,15 @@ std::unique_ptr<infobars::InfoBar> PreviewsLitePageInfoBar::CreateInfoBar(
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-PreviewsLitePageInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+PreviewsLitePageInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   ConfirmInfoBarDelegate* delegate = GetDelegate();
   base::android::ScopedJavaLocalRef<jstring> message_text =
       base::android::ConvertUTF16ToJavaString(env, delegate->GetMessageText());
   base::android::ScopedJavaLocalRef<jstring> link_text =
       base::android::ConvertUTF16ToJavaString(env, delegate->GetLinkText());
-  return Java_PreviewsLitePageInfoBar_show(env, GetJavaIconId(), message_text,
-                                           link_text);
+  return Java_PreviewsLitePageInfoBar_show(
+      env, resource_id_mapper.Run(delegate->GetIconId()), message_text,
+      link_text);
 }

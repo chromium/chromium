@@ -34,7 +34,8 @@ class FramebustBlockInfoBar : public infobars::InfoBarAndroid {
 
   // infobars::InfoBarAndroid:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
   void ProcessButton(int action) override;
   void OnLinkClicked(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj) override;

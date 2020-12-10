@@ -22,10 +22,9 @@ namespace subresource_filter {
 
 // static
 void AdsBlockedInfobarDelegate::Create(
-    infobars::ContentInfoBarManager* infobar_manager,
-    const infobars::InfoBarAndroid::ResourceIdMapper& resource_id_mapper) {
+    infobars::ContentInfoBarManager* infobar_manager) {
   infobar_manager->AddInfoBar(std::make_unique<AdsBlockedInfoBar>(
-      base::WrapUnique(new AdsBlockedInfobarDelegate()), resource_id_mapper));
+      base::WrapUnique(new AdsBlockedInfobarDelegate())));
 }
 
 AdsBlockedInfobarDelegate::~AdsBlockedInfobarDelegate() = default;

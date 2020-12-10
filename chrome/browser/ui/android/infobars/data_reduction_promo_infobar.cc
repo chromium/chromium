@@ -23,7 +23,9 @@ DataReductionPromoInfoBar::~DataReductionPromoInfoBar() {
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-DataReductionPromoInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+DataReductionPromoInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   return GetDelegate()->CreateRenderInfoBar(env);
 }
 

@@ -20,8 +20,6 @@ class ChromeConfirmInfoBar : public infobars::ConfirmInfoBar {
   ChromeConfirmInfoBar(const ChromeConfirmInfoBar&) = delete;
   ChromeConfirmInfoBar& operator=(const ChromeConfirmInfoBar&) = delete;
 
-  static ResourceIdMapper GetResourceIdMapper();
-
  protected:
   TabAndroid* GetTab();
 };

@@ -26,7 +26,6 @@ class SmsInfoBarDelegate;
 class SmsInfoBar : public infobars::ConfirmInfoBar {
  public:
   SmsInfoBar(content::WebContents* web_contents,
-             const ResourceIdMapper& resource_mapper,
              std::unique_ptr<SmsInfoBarDelegate> delegate);
   ~SmsInfoBar() override;
 
@@ -34,16 +33,16 @@ class SmsInfoBar : public infobars::ConfirmInfoBar {
   // |infobar_service|.
   static void Create(content::WebContents* web_contents,
                      infobars::InfoBarManager* manager,
-                     const ResourceIdMapper& resource_mapper,
                      const url::Origin& origin,
                      const std::string& one_time_code,
-                     base::OnceCallback<void()> on_confirm,
-                     base::OnceCallback<void()> on_cancel);
+                     base::OnceClosure on_confirm,
+                     base::OnceClosure on_cancel);
 
  private:
   // ConfirmInfoBar:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 
   content::WebContents* web_contents_;
 

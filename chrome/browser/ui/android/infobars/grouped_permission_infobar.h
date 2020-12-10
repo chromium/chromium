@@ -20,7 +20,8 @@ class GroupedPermissionInfoBar : public ChromeConfirmInfoBar {
  private:
   // infobars::InfoBarAndroid:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 
   GroupedPermissionInfoBarDelegate* GetDelegate();
 

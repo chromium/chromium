@@ -9,17 +9,14 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "chrome/android/chrome_jni_headers/InstallableAmbientBadgeInfoBar_jni.h"
-#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/installable/installable_ambient_badge_infobar_delegate.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 InstallableAmbientBadgeInfoBar::InstallableAmbientBadgeInfoBar(
     std::unique_ptr<InstallableAmbientBadgeInfoBarDelegate> delegate)
-    : infobars::InfoBarAndroid(
-          std::move(delegate),
-          base::BindRepeating(&ResourceMapper::MapToJavaDrawableId)) {}
+    : infobars::InfoBarAndroid(std::move(delegate)) {}
 
-InstallableAmbientBadgeInfoBar::~InstallableAmbientBadgeInfoBar() {}
+InstallableAmbientBadgeInfoBar::~InstallableAmbientBadgeInfoBar() = default;
 
 InstallableAmbientBadgeInfoBarDelegate*
 InstallableAmbientBadgeInfoBar::GetDelegate() {
@@ -34,7 +31,9 @@ void InstallableAmbientBadgeInfoBar::AddToHomescreen(
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-InstallableAmbientBadgeInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+InstallableAmbientBadgeInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   InstallableAmbientBadgeInfoBarDelegate* delegate = GetDelegate();
   base::android::ScopedJavaLocalRef<jstring> java_message_text =
       base::android::ConvertUTF16ToJavaString(env, delegate->GetMessageText());

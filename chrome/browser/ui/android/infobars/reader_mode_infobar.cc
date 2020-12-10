@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "chrome/android/chrome_jni_headers/ReaderModeInfoBar_jni.h"
-#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -21,7 +20,7 @@ using base::android::ScopedJavaLocalRef;
 
 class ReaderModeInfoBarDelegate : public infobars::InfoBarDelegate {
  public:
-  ~ReaderModeInfoBarDelegate() override {}
+  ~ReaderModeInfoBarDelegate() override = default;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
     return InfoBarDelegate::InfoBarIdentifier::READER_MODE_INFOBAR_ANDROID;
@@ -34,18 +33,17 @@ class ReaderModeInfoBarDelegate : public infobars::InfoBarDelegate {
 
 ReaderModeInfoBar::ReaderModeInfoBar(
     std::unique_ptr<ReaderModeInfoBarDelegate> delegate)
-    : infobars::InfoBarAndroid(
-          std::move(delegate),
-          base::BindRepeating(&ResourceMapper::MapToJavaDrawableId)) {}
+    : infobars::InfoBarAndroid(std::move(delegate)) {}
 
-ReaderModeInfoBar::~ReaderModeInfoBar() {}
+ReaderModeInfoBar::~ReaderModeInfoBar() = default;
 
 infobars::InfoBarDelegate* ReaderModeInfoBar::GetDelegate() {
   return delegate();
 }
 
 ScopedJavaLocalRef<jobject> ReaderModeInfoBar::CreateRenderInfoBar(
-    JNIEnv* env) {
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   return Java_ReaderModeInfoBar_create(env);
 }
 

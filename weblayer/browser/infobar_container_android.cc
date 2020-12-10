@@ -11,6 +11,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
+#include "weblayer/browser/android/resource_mapper.h"
 #include "weblayer/browser/infobar_service.h"
 #include "weblayer/browser/java/jni/InfoBarContainer_jni.h"
 
@@ -75,7 +76,8 @@ void InfoBarContainerAndroid::PlatformSpecificAddInfoBar(
   }
 
   base::android::ScopedJavaLocalRef<jobject> java_infobar =
-      android_bar->CreateRenderInfoBar(env);
+      android_bar->CreateRenderInfoBar(
+          env, base::BindRepeating(&MapToJavaDrawableId));
   android_bar->SetJavaInfoBar(java_infobar);
   Java_InfoBarContainer_addInfoBar(env, weak_java_infobar_container_.get(env),
                                    java_infobar);

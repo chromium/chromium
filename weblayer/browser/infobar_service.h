@@ -37,10 +37,6 @@ class InfoBarService : public infobars::ContentInfoBarManager,
   std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate> delegate) override;
 
-#if defined(OS_ANDROID)
-  static infobars::InfoBarAndroid::ResourceIdMapper GetResourceIdMapper();
-#endif
-
  protected:
   explicit InfoBarService(content::WebContents* web_contents);
 

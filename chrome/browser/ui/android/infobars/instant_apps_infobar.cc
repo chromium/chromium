@@ -17,7 +17,9 @@ InstantAppsInfoBar::InstantAppsInfoBar(
 InstantAppsInfoBar::~InstantAppsInfoBar() {}
 
 base::android::ScopedJavaLocalRef<jobject>
-InstantAppsInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+InstantAppsInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   InstantAppsInfoBarDelegate* delegate =
       static_cast<InstantAppsInfoBarDelegate*>(GetDelegate());
   base::android::ScopedJavaLocalRef<jobject> infobar;

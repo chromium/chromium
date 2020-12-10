@@ -19,7 +19,8 @@ class DataReductionPromoInfoBar : public ChromeConfirmInfoBar {
  private:
   // ConfirmInfoBar:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 
   DataReductionPromoInfoBarDelegateAndroid* GetDelegate();
 

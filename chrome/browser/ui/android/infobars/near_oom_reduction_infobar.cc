@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/android/chrome_jni_headers/NearOomReductionInfoBar_jni.h"
-#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/interventions/intervention_delegate.h"
@@ -22,12 +21,10 @@
 #include "content/public/browser/web_contents.h"
 
 NearOomReductionInfoBar::NearOomReductionInfoBar(InterventionDelegate* delegate)
-    : infobars::InfoBarAndroid(
-          std::make_unique<InterventionInfoBarDelegate>(
-              infobars::InfoBarDelegate::InfoBarIdentifier::
-                  NEAR_OOM_REDUCTION_INFOBAR_ANDROID,
-              delegate),
-          base::BindRepeating(&ResourceMapper::MapToJavaDrawableId)),
+    : infobars::InfoBarAndroid(std::make_unique<InterventionInfoBarDelegate>(
+          infobars::InfoBarDelegate::InfoBarIdentifier::
+              NEAR_OOM_REDUCTION_INFOBAR_ANDROID,
+          delegate)),
       delegate_(delegate) {
   DCHECK(delegate_);
 }
@@ -39,7 +36,9 @@ void NearOomReductionInfoBar::ProcessButton(int action) {
 }
 
 base::android::ScopedJavaLocalRef<jobject>
-NearOomReductionInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+NearOomReductionInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   return Java_NearOomReductionInfoBar_create(env);
 }
 

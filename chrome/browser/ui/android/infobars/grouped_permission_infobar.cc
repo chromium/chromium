@@ -69,7 +69,9 @@ GroupedPermissionInfoBar::GroupedPermissionInfoBar(
 GroupedPermissionInfoBar::~GroupedPermissionInfoBar() {}
 
 base::android::ScopedJavaLocalRef<jobject>
-GroupedPermissionInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+GroupedPermissionInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   GroupedPermissionInfoBarDelegate* delegate = GetDelegate();
 
   base::string16 compact_message_text = delegate->GetCompactMessageText();

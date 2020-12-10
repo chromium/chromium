@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/android/chrome_jni_headers/InfoBarContainer_jni.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/infobars/core/infobar.h"
@@ -74,7 +75,8 @@ void InfoBarContainerAndroid::PlatformSpecificAddInfoBar(
   }
 
   base::android::ScopedJavaLocalRef<jobject> java_infobar =
-      android_bar->CreateRenderInfoBar(env);
+      android_bar->CreateRenderInfoBar(
+          env, base::BindRepeating(&ResourceMapper::MapToJavaDrawableId));
   android_bar->SetJavaInfoBar(java_infobar);
   Java_InfoBarContainer_addInfoBar(env, weak_java_infobar_container_.get(env),
                                    java_infobar);

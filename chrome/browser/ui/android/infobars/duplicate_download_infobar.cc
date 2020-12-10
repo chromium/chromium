@@ -28,7 +28,9 @@ DuplicateDownloadInfoBar::DuplicateDownloadInfoBar(
     : ChromeConfirmInfoBar(std::move(delegate)) {}
 
 base::android::ScopedJavaLocalRef<jobject>
-DuplicateDownloadInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+DuplicateDownloadInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   DuplicateDownloadInfoBarDelegate* delegate = GetDelegate();
 
   base::android::ScopedJavaLocalRef<jstring> j_file_path =

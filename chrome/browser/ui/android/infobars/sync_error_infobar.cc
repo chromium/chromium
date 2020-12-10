@@ -11,7 +11,9 @@ SyncErrorInfoBar::SyncErrorInfoBar(
 SyncErrorInfoBar::~SyncErrorInfoBar() {}
 
 base::android::ScopedJavaLocalRef<jobject>
-SyncErrorInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+SyncErrorInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   return static_cast<SyncErrorInfoBarDelegateAndroid*>(delegate())
       ->CreateRenderInfoBar(env);
 }
