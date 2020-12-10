@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -199,8 +200,7 @@ void UserManagerProfileDialog::ShowUnlockDialogWithProfilePath(
   GURL url = signin::GetEmbeddedReauthURLWithEmail(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::Reason::REASON_UNLOCK, email);
-  g_user_manager_view->SetSigninProfilePath(profile_path);
-  g_user_manager_view->ShowDialog(browser_context, url);
+  g_user_manager_view->ShowDialog(browser_context, url, profile_path);
 }
 
 // static
@@ -209,23 +209,21 @@ void UserManagerProfileDialog::ShowForceSigninDialog(
     const base::FilePath& profile_path) {
   if (!UserManager::IsShowing())
     return;
-  g_user_manager_view->SetSigninProfilePath(profile_path);
   GURL url = signin::GetEmbeddedPromoURL(
       signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
       signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT, true);
-  g_user_manager_view->ShowDialog(browser_context, url);
+  g_user_manager_view->ShowDialog(browser_context, url, profile_path);
 }
 
 void UserManagerProfileDialog::ShowDialogAndDisplayErrorMessage(
     content::BrowserContext* browser_context) {
   if (!UserManager::IsShowing())
     return;
-  // The error occurred before sign in happened, reset |signin_profile_path_|
+  // The error occurred before sign in happened, use an empty profile path
   // so that the error page will show the error message that is assoicated with
   // the system profile.
-  g_user_manager_view->SetSigninProfilePath(base::FilePath());
-  g_user_manager_view->ShowDialog(browser_context,
-                                  GURL(chrome::kChromeUISigninErrorURL));
+  g_user_manager_view->ShowDialog(
+      browser_context, GURL(chrome::kChromeUISigninErrorURL), base::FilePath());
 }
 
 // static
@@ -280,9 +278,10 @@ void UserManagerView::OnSystemProfileCreated(
 }
 
 void UserManagerView::ShowDialog(content::BrowserContext* browser_context,
-                                 const GURL& url) {
+                                 const GURL& url,
+                                 const base::FilePath& profile_path) {
   gfx::NativeView parent = GetWidget()->GetNativeView();
-  dialog_host_.ShowDialog(browser_context, url, parent);
+  dialog_host_.ShowDialog(browser_context, url, profile_path, parent);
 }
 
 void UserManagerView::HideDialog() {
@@ -399,10 +398,6 @@ void UserManagerView::WindowClosing() {
     g_user_manager_view = nullptr;
 }
 
-void UserManagerView::SetSigninProfilePath(const base::FilePath& profile_path) {
-  signin_profile_path_ = profile_path;
-}
-
 base::FilePath UserManagerView::GetSigninProfilePath() {
-  return signin_profile_path_;
+  return dialog_host_.GetForceSigninProfilePath();
 }

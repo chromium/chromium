@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_HOST_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_HOST_H_
 
+#include "base/files/file_path.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
@@ -29,6 +30,7 @@ class UserManagerProfileDialogHost {
   // creates a new one.
   void ShowDialog(content::BrowserContext* browser_context,
                   const GURL& url,
+                  const base::FilePath& profile_path,
                   gfx::NativeView parent);
 
   // Hides the reauth dialog if it is showing.
@@ -39,6 +41,10 @@ class UserManagerProfileDialogHost {
   // nothing.
   void DisplayErrorMessage();
 
+  // Getter of the path of profile which is selected in profile picker for force
+  // signin.
+  base::FilePath GetForceSigninProfilePath();
+
  private:
   friend class UserManagerProfileDialogDelegate;
 
@@ -47,6 +53,9 @@ class UserManagerProfileDialogHost {
 
   // Owned by the view hierarchy.
   UserManagerProfileDialogDelegate* delegate_ = nullptr;
+
+  // The path of profile that is being force signed in.
+  base::FilePath force_signin_profile_path_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_HOST_H_

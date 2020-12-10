@@ -12,8 +12,15 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
+class GURL;
+
 namespace base {
 class CommandLine;
+class FilePath;
+}  // namespace base
+
+namespace content {
+class BrowserContext;
 }
 
 namespace views {
@@ -63,6 +70,25 @@ class ProfilePicker {
   // Finishes the sign-in flow by moving to the sync confirmation screen. It
   // uses the same new profile created by `SwitchToSignIn()`.
   static void SwitchToSyncConfirmation();
+
+  // Shows a dialog where the user can auth the profile or see the
+  // auth error message. If a dialog is already shown, this destroys the current
+  // dialog and creates a new one.
+  static void ShowDialog(content::BrowserContext* browser_context,
+                         const GURL& url,
+                         const base::FilePath& profile_path);
+
+  // Hides the dialog if it is showing.
+  static void HideDialog();
+
+  // Displays sign in error message that is created by Chrome but not GAIA
+  // without browser window. If the dialog is not currently shown, this does
+  // nothing.
+  static void DisplayErrorMessage();
+
+  // Getter of the path of profile which is selected in profile picker for force
+  // signin.
+  static base::FilePath GetForceSigninProfilePath();
 
   // Hides the profile picker.
   static void Hide();

@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -17,6 +18,10 @@
 
 struct AccountInfo;
 class Browser;
+
+namespace base {
+class FilePath;
+}
 
 namespace content {
 struct ContextMenuParams;
@@ -122,6 +127,25 @@ class ProfilePickerView : public views::DialogDelegateView,
   // on Windows).
   void ConfigureAccelerators();
 
+  // Shows a dialog where the user can auth the profile or see the
+  // auth error message. If a dialog is already shown, this destroys the current
+  // dialog and creates a new one.
+  void ShowDialog(content::BrowserContext* browser_context,
+                  const GURL& url,
+                  const base::FilePath& profile_path);
+
+  // Hides the dialog if it is showing.
+  void HideDialog();
+
+  // Displays sign in error message that is created by Chrome but not GAIA
+  // without browser window. If the dialog is not currently shown, this does
+  // nothing.
+  void DisplayErrorMessage();
+
+  // Getter of the path of profile which is selected in profile picker for force
+  // signin.
+  base::FilePath GetForceSigninProfilePath();
+
   ScopedKeepAlive keep_alive_;
   State state_ = State::kNotStarted;
 
@@ -159,6 +183,9 @@ class ProfilePickerView : public views::DialogDelegateView,
   // Creation time of the picker, to measure performance on startup. Only set
   // when the picker is shown on startup.
   base::TimeTicks creation_time_on_startup_;
+
+  // Hosts dialog displayed when a locked profile is selected in ProfilePicker.
+  UserManagerProfileDialogHost dialog_host_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 

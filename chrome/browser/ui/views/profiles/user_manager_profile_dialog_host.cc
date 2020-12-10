@@ -14,8 +14,10 @@ UserManagerProfileDialogHost::UserManagerProfileDialogHost() = default;
 void UserManagerProfileDialogHost::ShowDialog(
     content::BrowserContext* browser_context,
     const GURL& url,
+    const base::FilePath& profile_path,
     gfx::NativeView parent) {
   HideDialog();
+  force_signin_profile_path_ = profile_path;
   auto delegate = std::make_unique<UserManagerProfileDialogDelegate>(
       this, std::make_unique<views::WebView>(browser_context), url);
   delegate_ = delegate.get();
@@ -29,10 +31,16 @@ void UserManagerProfileDialogHost::HideDialog() {
     delegate_->CloseDialog();
     DCHECK(!delegate_);
   }
+  force_signin_profile_path_.clear();
+}
+
+base::FilePath UserManagerProfileDialogHost::GetForceSigninProfilePath() {
+  return force_signin_profile_path_;
 }
 
 void UserManagerProfileDialogHost::OnDialogDestroyed() {
   delegate_ = nullptr;
+  force_signin_profile_path_.clear();
 }
 
 void UserManagerProfileDialogHost::DisplayErrorMessage() {

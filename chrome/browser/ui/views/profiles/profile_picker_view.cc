@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,6 +40,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -50,6 +52,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 #if defined(OS_WIN)
@@ -118,6 +121,38 @@ void ProfilePicker::SwitchToSyncConfirmation() {
   if (g_profile_picker_view) {
     g_profile_picker_view->SwitchToSyncConfirmation();
   }
+}
+
+// static
+void ProfilePicker::ShowDialog(content::BrowserContext* browser_context,
+                               const GURL& url,
+                               const base::FilePath& profile_path) {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->ShowDialog(browser_context, url, profile_path);
+  }
+}
+
+// static
+void ProfilePicker::HideDialog() {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->HideDialog();
+  }
+}
+
+// static
+void ProfilePicker::DisplayErrorMessage() {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->DisplayErrorMessage();
+  }
+}
+
+// static
+base::FilePath ProfilePicker::GetForceSigninProfilePath() {
+  if (g_profile_picker_view) {
+    return g_profile_picker_view->GetForceSigninProfilePath();
+  }
+
+  return base::FilePath();
 }
 
 // static
@@ -657,4 +692,23 @@ void ProfilePickerView::ConfigureAccelerators() {
     }
   }
 #endif  // OS_MAC
+}
+
+void ProfilePickerView::ShowDialog(content::BrowserContext* browser_context,
+                                   const GURL& url,
+                                   const base::FilePath& profile_path) {
+  gfx::NativeView parent = GetWidget()->GetNativeView();
+  dialog_host_.ShowDialog(browser_context, url, profile_path, parent);
+}
+
+void ProfilePickerView::HideDialog() {
+  dialog_host_.HideDialog();
+}
+
+void ProfilePickerView::DisplayErrorMessage() {
+  dialog_host_.DisplayErrorMessage();
+}
+
+base::FilePath ProfilePickerView::GetForceSigninProfilePath() {
+  return dialog_host_.GetForceSigninProfilePath();
 }
