@@ -334,6 +334,12 @@ const char kOmniboxOnFocusSuggestionsDescription[] =
     "before the user has typed any input. This provides overrides for the "
     "default suggestion locations.";
 
+const char kOmniboxLocalHistoryZeroSuggestName[] =
+    "Omnibox local zero-prefix suggestions";
+const char kOmniboxLocalHistoryZeroSuggestDescription[] =
+    "Configures the omnibox zero-prefix suggestion to use local search "
+    "history.";
+
 const char kRefactoredNTPName[] = "Enables refactored new tab page";
 const char kRefactoredNTPDescription[] =
     "When enabled, the new tab page is replaced with the refactored version, "

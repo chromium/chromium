@@ -58,17 +58,22 @@ base::string16 GetSearchTermsFromURL(const GURL& url,
 // Whether zero suggest suggestions are allowed in the given context.
 // Invoked early, confirms all the conditions for zero suggestions are met.
 bool AllowLocalHistoryZeroSuggestSuggestions(const AutocompleteInput& input) {
+  // TODO: The default-enabling on Android predated the
+  // omnibox::kNewSearchFeatures flag, so Android is not gated by it. Because
+  // of that, the new kLocalHistoryZeroSuggest flag can't control Android
+  // behavior. Once the kNewSearchFeatures flag is removed,
+  // kLocalHistoryZeroSuggest can control the feature on all plattforms.
 #if defined(OS_ANDROID)  // Default-enabled on Android.
   return true;
 #else
   if (!base::FeatureList::IsEnabled(omnibox::kNewSearchFeatures))
     return false;
-#endif
 
-#if !defined(OS_IOS)  // Enabled by default on Desktop if not disabled by
-                      // kNewSearchFeatures.
-  return true;
-#else
+  // Flag is default-enabled on Android and Desktop.
+  if (base::FeatureList::IsEnabled(omnibox::kLocalHistoryZeroSuggest)) {
+    return true;
+  }
+
   const auto current_page_classification = input.current_page_classification();
   // Reactive Zero-Prefix Suggestions (rZPS) and basically all remote ZPS on the
   // NTP are expected to be displayed alongside local history zero-prefix
@@ -79,12 +84,6 @@ bool AllowLocalHistoryZeroSuggestSuggestions(const AutocompleteInput& input) {
            OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS) &&
       base::FeatureList::IsEnabled(
           omnibox::kReactiveZeroSuggestionsOnNTPOmnibox)) {
-    return true;
-  }
-  // NTP Realbox.
-  if (current_page_classification == OmniboxEventProto::NTP_REALBOX &&
-      base::FeatureList::IsEnabled(
-          omnibox::kReactiveZeroSuggestionsOnNTPRealbox)) {
     return true;
   }
 
