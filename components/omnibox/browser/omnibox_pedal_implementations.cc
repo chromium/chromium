@@ -82,6 +82,11 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
   void Execute(ExecutionContext& context) const override {
     context.client_.NewIncognitoWindow();
   }
+  bool IsReadyToTrigger(
+      const AutocompleteInput& input,
+      const AutocompleteProviderClient& client) const override {
+    return client.IsIncognitoModeAvailable();
+  }
 };
 
 // =============================================================================
