@@ -17,9 +17,18 @@ CodecLogger::CodecLogger(
     ExecutionContext* context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(context);
-  parent_media_log_ = Platform::Current()->GetMediaLog(
-      MediaInspectorContextImpl::From(*context), task_runner);
 
+  // Owners of |this| should be ExecutionLifeCycleObservers, and should call
+  // Neuter() if |context| is destroyed. The MediaInspectorContextImpl must
+  // outlive |parent_media_log_|. If |context| is already destroyed, owners
+  // might never call Neuter(), and MediaInspectorContextImpl* could be garbage
+  // collected before |parent_media_log_| is destroyed.
+  if (!context->IsContextDestroyed()) {
+    parent_media_log_ = Platform::Current()->GetMediaLog(
+        MediaInspectorContextImpl::From(*context), task_runner);
+  }
+
+  // NullMediaLog silently and safely does nothing.
   if (!parent_media_log_)
     parent_media_log_ = std::make_unique<media::NullMediaLog>();
 
