@@ -10,7 +10,7 @@
 
 #import "ios/web/web_state/ui/crw_web_view_handler.h"
 
-@class CRWContextMenuController;
+@class CRWLegacyContextMenuController;
 @protocol CRWWKUIHandlerDelegate;
 
 // Object handling the WKUIDelegate callbacks for the WKWebView.
@@ -20,7 +20,8 @@
 @property(nonatomic, weak) id<CRWWKUIHandlerDelegate> delegate;
 
 // Context menu controller, to be set when the WebView is created.
-@property(nonatomic, strong) CRWContextMenuController* contextMenuController;
+@property(nonatomic, strong)
+    CRWLegacyContextMenuController* contextMenuController;
 
 @end
 

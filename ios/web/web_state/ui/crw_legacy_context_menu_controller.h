@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_WEB_STATE_UI_CRW_CONTEXT_MENU_CONTROLLER_H_
-#define IOS_WEB_WEB_STATE_UI_CRW_CONTEXT_MENU_CONTROLLER_H_
+#ifndef IOS_WEB_WEB_STATE_UI_CRW_LEGACY_CONTEXT_MENU_CONTROLLER_H_
+#define IOS_WEB_WEB_STATE_UI_CRW_LEGACY_CONTEXT_MENU_CONTROLLER_H_
 
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
@@ -16,9 +16,11 @@ class WebStateImpl;
 // controller will rely on a long press gesture recognizer and JavaScript to
 // determine the element on which context menu is triggered.
 // The trigger delay is slightly shorter that ths system's one.
-@interface CRWContextMenuController : NSObject
+// This is a Legacy interface as it is relying on ActionSheet whereas the new
+// interface is using the iOS 13 ContextMenu.
+@interface CRWLegacyContextMenuController : NSObject
 
-// Installs the |CRWContextMenuController| on |webView|.
+// Installs the |CRWLegacyContextMenuController| on |webView|.
 // - |webView| cannot be nil. |webView| is not retained and caller is
 //   responsible for keeping it alive.
 // - This class relies on the pre-injection of base.js in webView.
@@ -38,4 +40,4 @@ class WebStateImpl;
 
 @end
 
-#endif  // IOS_WEB_WEB_STATE_UI_CRW_CONTEXT_MENU_CONTROLLER_H_
+#endif  // IOS_WEB_WEB_STATE_UI_CRW_LEGACY_CONTEXT_MENU_CONTROLLER_H_

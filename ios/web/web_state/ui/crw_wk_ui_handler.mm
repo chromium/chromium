@@ -10,7 +10,7 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/web_state/ui/crw_context_menu_controller.h"
+#import "ios/web/web_state/ui/crw_legacy_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/web_state/ui/crw_context_menu_controller.h"
+#import "ios/web/web_state/ui/crw_legacy_context_menu_controller.h"
 
 #import <objc/runtime.h>
 #include <stddef.h>
@@ -172,8 +172,8 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 
 }  // namespace
 
-@interface CRWContextMenuController () <CRWWebStateObserver,
-                                        UIGestureRecognizerDelegate>
+@interface CRWLegacyContextMenuController () <CRWWebStateObserver,
+                                              UIGestureRecognizerDelegate>
 
 // The |webView|.
 @property(nonatomic, readonly, weak) WKWebView* webView;
@@ -210,7 +210,7 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
 - (void)cancelContextMenuDisplay;
 @end
 
-@implementation CRWContextMenuController {
+@implementation CRWLegacyContextMenuController {
   std::unique_ptr<web::WebStateObserverBridge> _observer;
   // Long press recognizer that allows showing context menus.
   UILongPressGestureRecognizer* _contextMenuRecognizer;
@@ -280,12 +280,13 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
             webState->GetBrowserState());
     CRWWKScriptMessageRouter* messageRouter =
         configurationProvider.GetScriptMessageRouter();
-    __weak CRWContextMenuController* weakSelf = self;
-    [messageRouter setScriptMessageHandler:^(WKScriptMessage* message) {
-      [weakSelf didReceiveScriptMessage:message];
-    }
-                                      name:kFindElementResultHandlerName
-                                   webView:webView];
+    __weak CRWLegacyContextMenuController* weakSelf = self;
+    [messageRouter
+        setScriptMessageHandler:^(WKScriptMessage* message) {
+          [weakSelf didReceiveScriptMessage:message];
+        }
+                           name:kFindElementResultHandlerName
+                        webView:webView];
   }
   return self;
 }
@@ -433,7 +434,7 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
       _pendingElementFetchRequests[requestID];
   // Do not process the message if a fetch request with a matching |requestID|
   // was not found. This ensures that the response matches a request made by
-  // this CRWContextMenuController instance.
+  // this CRWLegacyContextMenuController instance.
   if (fetchRequest) {
     [_pendingElementFetchRequests removeObjectForKey:requestID];
     [fetchRequest runHandlerWithResponse:response];
@@ -483,7 +484,7 @@ void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
   [self setDOMElementForLastTouch:nil];
   [self cancelContextMenuDisplay];
 
-  __weak CRWContextMenuController* weakSelf = self;
+  __weak CRWLegacyContextMenuController* weakSelf = self;
   [self fetchDOMElementAtPoint:[touch locationInView:_webView]
              completionHandler:^(NSDictionary* element) {
                [weakSelf setDOMElementForLastTouch:element];
