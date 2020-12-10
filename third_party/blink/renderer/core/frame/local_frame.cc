@@ -2081,7 +2081,7 @@ bool LocalFrame::NeedsOcclusionTracking() const {
 
 void LocalFrame::ForceSynchronousDocumentInstall(
     const AtomicString& mime_type,
-    scoped_refptr<SharedBuffer> data) {
+    scoped_refptr<const SharedBuffer> data) {
   CHECK(GetDocument()->IsInitialEmptyDocument());
   DCHECK(!Client()->IsLocalFrameClientImpl());
 
@@ -2090,20 +2090,20 @@ void LocalFrame::ForceSynchronousDocumentInstall(
   GetDocument()->Shutdown();
   DomWindow()->ClearForReuse();
 
-  DomWindow()->InstallNewDocument(DocumentInit::Create()
-                                      .WithWindow(DomWindow(), nullptr)
-                                      .WithTypeFrom(mime_type));
-
-  GetDocument()->OpenForNavigation(kForceSynchronousParsing, mime_type,
-                                   AtomicString("UTF-8"));
+  Document* document =
+      DomWindow()->InstallNewDocument(DocumentInit::Create()
+                                          .WithWindow(DomWindow(), nullptr)
+                                          .WithTypeFrom(mime_type));
+  DocumentParser* parser = document->OpenForNavigation(
+      kForceSynchronousParsing, mime_type, AtomicString("UTF-8"));
   for (const auto& segment : *data)
-    GetDocument()->Parser()->AppendBytes(segment.data(), segment.size());
-  GetDocument()->Parser()->Finish();
+    parser->AppendBytes(segment.data(), segment.size());
+  parser->Finish();
 
   // Upon loading of SVGImages, log PageVisits in UseCounter.
   // Do not track PageVisits for inspector, web page popups, and validation
   // message overlays (the other callers of this method).
-  if (GetDocument()->IsSVGDocument())
+  if (document->IsSVGDocument())
     loader_.GetDocumentLoader()->GetUseCounterHelper().DidCommitLoad(this);
 }
 
