@@ -90,6 +90,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
+#include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #else
 #include "chrome/browser/ui/browser_list.h"
 #endif
@@ -1747,6 +1748,14 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
             kMarkSiteAsLegitimate);
   }
 }
+
+#if defined(OS_ANDROID)
+LoginReputationClientRequest::ReferringAppInfo
+ChromePasswordProtectionService::GetReferringAppInfo(
+    content::WebContents* web_contents) {
+  return safe_browsing::GetReferringAppInfo(web_contents);
+}
+#endif
 
 password_manager::PasswordStore*
 ChromePasswordProtectionService::GetProfilePasswordStore() const {

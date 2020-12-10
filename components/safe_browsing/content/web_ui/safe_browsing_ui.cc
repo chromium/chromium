@@ -1152,6 +1152,32 @@ base::Value SerializeUrlDisplayExperiment(
   return std::move(d);
 }
 
+base::Value SerializeReferringAppInfo(
+    const LoginReputationClientRequest::ReferringAppInfo& info) {
+  base::DictionaryValue dict;
+
+  std::string source;
+  switch (info.referring_app_source()) {
+    case LoginReputationClientRequest::ReferringAppInfo::
+        REFERRING_APP_SOURCE_UNSPECIFIED:
+      source = "REFERRING_APP_SOURCE_UNSPECIFIED";
+      break;
+    case LoginReputationClientRequest::ReferringAppInfo::KNOWN_APP_ID:
+      source = "KNOWN_APP_ID";
+      break;
+    case LoginReputationClientRequest::ReferringAppInfo::UNKNOWN_APP_ID:
+      source = "UNKNOWN_APP_ID";
+      break;
+    case LoginReputationClientRequest::ReferringAppInfo::ACTIVITY_REFERRER:
+      source = "ACTIVITY_REFERRER";
+      break;
+  }
+  dict.SetString("referring_app_source", source);
+  dict.SetString("referring_app_info", info.referring_app_name());
+
+  return std::move(dict);
+}
+
 std::string SerializePGPing(const LoginReputationClientRequest& request) {
   base::DictionaryValue request_dict;
 
@@ -1206,6 +1232,12 @@ std::string SerializePGPing(const LoginReputationClientRequest& request) {
     request_dict.SetKey(
         "url_display_experiment",
         SerializeUrlDisplayExperiment(request.url_display_experiment()));
+  }
+
+  if (request.has_referring_app_info()) {
+    request_dict.SetKey(
+        "referring_app_info",
+        SerializeReferringAppInfo(request.referring_app_info()));
   }
 
   std::string request_serialized;

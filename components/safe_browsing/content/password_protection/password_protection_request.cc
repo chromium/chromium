@@ -277,6 +277,12 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
   }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
+#if defined(OS_ANDROID)
+  LoginReputationClientRequest::ReferringAppInfo referring_app_info =
+      password_protection_service_->GetReferringAppInfo(web_contents_);
+  *request_proto_->mutable_referring_app_info() = std::move(referring_app_info);
+#endif  // defined(OS_ANDROID)
+
   switch (trigger_type_) {
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE: {
       LoginReputationClientRequest::Frame::Form* password_form;

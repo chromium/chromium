@@ -3152,6 +3152,8 @@ static_library("browser") {
       "reputation/safety_tip_infobar_delegate.h",
       "safe_browsing/android/password_reuse_controller_android.cc",
       "safe_browsing/android/password_reuse_controller_android.h",
+      "safe_browsing/android/safe_browsing_referring_app_bridge_android.cc",
+      "safe_browsing/android/safe_browsing_referring_app_bridge_android.h",
       "safe_browsing/android/safe_browsing_settings_launcher_android.cc",
       "safe_browsing/android/safe_browsing_settings_launcher_android.h",
       "search/contextual_search_policy_handler_android.cc",

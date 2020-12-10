@@ -197,6 +197,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/policy/EnterpriseInfoTest.java",
   "junit/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplTest.java",
   "junit/src/org/chromium/chrome/browser/reengagement/ReengagementNotificationControllerTest.java",
+  "junit/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingReferringAppBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetricsTest.java",
   "junit/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceNotificationTest.java",
   "junit/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapterTest.java",

@@ -239,6 +239,11 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials) override;
 
+#if defined(OS_ANDROID)
+  LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
+      content::WebContents* web_contents) override;
+#endif
+
   // Returns the profile PasswordStore associated with this instance.
   password_manager::PasswordStore* GetProfilePasswordStore() const;
 
