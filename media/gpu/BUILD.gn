@@ -170,6 +170,8 @@ component("gpu") {
   if (is_win) {
     sources += [
       "windows/av1_guids.h",
+      "windows/d3d11_av1_accelerator.cc",
+      "windows/d3d11_av1_accelerator.h",
       "windows/d3d11_com_defs.h",
       "windows/d3d11_copying_texture_wrapper.cc",
       "windows/d3d11_copying_texture_wrapper.h",
@@ -309,7 +311,7 @@ source_set("common") {
     "//ui/gfx/geometry",
   ]
 
-  if (is_ash && use_vaapi) {
+  if ((is_ash && use_vaapi) || is_win) {
     assert(use_libgav1_parser)
     sources += [
       "av1_decoder.cc",
@@ -537,7 +539,7 @@ source_set("unit_tests") {
     sources += [ "vp8_decoder_unittest.cc" ]
   }
 
-  if (is_ash && use_vaapi) {
+  if ((is_ash && use_vaapi) || is_win) {
     sources += [ "av1_decoder_unittest.cc" ]
     deps += [ "//third_party/ffmpeg" ]
   }

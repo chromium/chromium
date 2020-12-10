@@ -76,7 +76,8 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
 }  // namespace
 
 AV1Decoder::AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
-                       VideoCodecProfile profile)
+                       VideoCodecProfile profile,
+                       const VideoColorSpace& container_color_space)
     : buffer_pool_(std::make_unique<libgav1::BufferPool>(
           /*on_frame_buffer_size_changed=*/nullptr,
           /*get_frame_buffer=*/nullptr,
@@ -84,7 +85,8 @@ AV1Decoder::AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
           /*callback_private_data=*/nullptr)),
       state_(std::make_unique<libgav1::DecoderState>()),
       accelerator_(std::move(accelerator)),
-      profile_(profile) {
+      profile_(profile),
+      container_color_space_(container_color_space) {
   ref_frames_.fill(nullptr);
 }
 
@@ -364,8 +366,21 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
 
     pic->set_visible_rect(current_visible_rect);
     pic->set_bitstream_id(stream_id_);
+
+    // For AV1, prefer the frame color space over the config.
+    const auto& cc = current_sequence_header_->color_config;
+    const auto cs = VideoColorSpace(
+        cc.color_primary, cc.transfer_characteristics, cc.matrix_coefficients,
+        cc.color_range == libgav1::kColorRangeStudio
+            ? gfx::ColorSpace::RangeID::LIMITED
+            : gfx::ColorSpace::RangeID::FULL);
+    if (cs.IsSpecified())
+      pic->set_colorspace(cs);
+    else if (container_color_space_.IsSpecified())
+      pic->set_colorspace(container_color_space_);
+
     pic->frame_header = frame_header;
-    // TODO(hiroh): Set color space and decrypt config.
+    // TODO(hiroh): Set decrypt config.
     if (!DecodeAndOutputPicture(std::move(pic), parser_->tile_buffers()))
       return kDecodeError;
   }

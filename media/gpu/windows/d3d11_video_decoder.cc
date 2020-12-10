@@ -28,6 +28,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/base/win/hresult_status_helper.h"
+#include "media/gpu/windows/d3d11_av1_accelerator.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
@@ -176,6 +177,11 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
         std::make_unique<D3D11H264Accelerator>(
             this, media_log_.get(), video_device_, std::move(video_context)),
         profile_, config.color_space_info());
+  } else if (config.codec() == kCodecAV1) {
+    accelerated_video_decoder_ = std::make_unique<AV1Decoder>(
+        std::make_unique<D3D11AV1Accelerator>(
+            this, media_log_.get(), video_device_, std::move(video_context)),
+        profile_, config.color_space_info());
   } else {
     return E_FAIL;
   }
@@ -241,8 +247,9 @@ D3D11VideoDecoder::CreateD3D11Decoder() {
           .AddCause(HresultToStatus(hr));
     }
 
-    if (config_.codec() == kCodecVP9 && dec_config.ConfigBitstreamRaw == 1) {
-      // DXVA VP9 specification mentions ConfigBitstreamRaw "shall be 1".
+    if ((config_.codec() == kCodecVP9 || config_.codec() == kCodecAV1) &&
+        dec_config.ConfigBitstreamRaw == 1) {
+      // DXVA VP9 and AV1 specifications say ConfigBitstreamRaw "shall be 1".
       found = true;
       break;
     }
@@ -775,6 +782,13 @@ D3D11PictureBuffer* D3D11VideoDecoder::GetPicture() {
   return nullptr;
 }
 
+void D3D11VideoDecoder::UpdateTimestamp(D3D11PictureBuffer* picture_buffer) {
+  // A picture is being reused with a different timestamp; since we've already
+  // generated a VideoFrame from the previous picture buffer, we can just stamp
+  // the new timestamp directly onto the buffer.
+  picture_buffer->timestamp_ = current_timestamp_;
+}
+
 bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
                                      D3D11PictureBuffer* picture_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -950,11 +964,9 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
       continue;
     }
 
-    // TODO(liberato): Add VP8 and AV1 support to D3D11VideoDecoder.
-    if (profile == VP8PROFILE_ANY ||
-        (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX)) {
+    // TODO(liberato): Add VP8 support to D3D11VideoDecoder.
+    if (profile == VP8PROFILE_ANY)
       continue;
-    }
 
     const auto& resolution_range = kv.second;
     configs.emplace_back(profile, profile, resolution_range.min_resolution,

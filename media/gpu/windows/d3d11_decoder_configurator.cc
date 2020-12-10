@@ -5,12 +5,15 @@
 #include "media/gpu/windows/d3d11_decoder_configurator.h"
 
 #include <d3d11.h>
+#include <d3d9.h>
+#include <dxva2api.h>
 
 #include "base/feature_list.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/status_codes.h"
 #include "media/base/win/hresult_status_helper.h"
+#include "media/gpu/windows/av1_guids.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/direct_composition_surface_win.h"
@@ -37,24 +40,35 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
   bool supports_nv12_decode_swap_chain =
       gl::DirectCompositionSurfaceWin::IsDecodeSwapChainSupported();
 
-  DXGI_FORMAT decoder_dxgi_format = DXGI_FORMAT_NV12;
+  // Note: All profiles of AV1 can contain 8 or 10 bit content. The professional
+  // profile may contain up to 12-bits. Eventually we will need a way to defer
+  // the output format selection until we've parsed the bitstream.
+  DXGI_FORMAT decoder_dxgi_format =
+      config.color_space_info().ToGfxColorSpace().IsHDR() ? DXGI_FORMAT_P010
+                                                          : DXGI_FORMAT_NV12;
   GUID decoder_guid = {};
   if (config.codec() == kCodecH264) {
-    MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is using h264 / NV12";
     decoder_guid = D3D11_DECODER_PROFILE_H264_VLD_NOFGT;
   } else if (config.profile() == VP9PROFILE_PROFILE0) {
-    MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is using vp9p0 / NV12";
     decoder_guid = D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0;
   } else if (config.profile() == VP9PROFILE_PROFILE2) {
-    MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is using vp9p2 / P010";
+    decoder_dxgi_format = DXGI_FORMAT_P010;  // Profile2 is always 10-bit.
     decoder_guid = D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2;
-    decoder_dxgi_format = DXGI_FORMAT_P010;
+  } else if (config.profile() == AV1PROFILE_PROFILE_MAIN) {
+    decoder_guid = DXVA_ModeAV1_VLD_Profile0;
+  } else if (config.profile() == AV1PROFILE_PROFILE_HIGH) {
+    decoder_guid = DXVA_ModeAV1_VLD_Profile1;
+  } else if (config.profile() == AV1PROFILE_PROFILE_PRO) {
+    decoder_guid = DXVA_ModeAV1_VLD_Profile2;
   } else {
-    // TODO(tmathmeyer) support other profiles in the future.
     MEDIA_LOG(INFO, media_log)
         << "D3D11VideoDecoder does not support codec " << config.codec();
     return nullptr;
   }
+
+  MEDIA_LOG(INFO, media_log)
+      << "D3D11VideoDecoder is using " << GetProfileName(config.profile())
+      << " / " << (decoder_dxgi_format == DXGI_FORMAT_NV12 ? "NV12" : "P010");
 
   return std::make_unique<D3D11DecoderConfigurator>(
       decoder_dxgi_format, decoder_guid, config.coded_size(),

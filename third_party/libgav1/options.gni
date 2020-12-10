@@ -9,5 +9,6 @@ declare_args() {
   # Enable libgav1 decoder.
   enable_libgav1_decoder =
       is_ash && (target_cpu == "arm" || target_cpu == "arm64")
-  use_libgav1_parser = is_ash && (target_cpu == "x86" || target_cpu == "x64")
+  use_libgav1_parser =
+      (is_ash || is_win) && (target_cpu == "x86" || target_cpu == "x64")
 }

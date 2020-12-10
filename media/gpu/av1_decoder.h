@@ -93,7 +93,8 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   };
 
   AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
-             VideoCodecProfile profile);
+             VideoCodecProfile profile,
+             const VideoColorSpace& container_color_space = VideoColorSpace());
   ~AV1Decoder() override;
   AV1Decoder(const AV1Decoder&) = delete;
   AV1Decoder& operator=(const AV1Decoder&) = delete;
@@ -138,6 +139,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   gfx::Rect visible_rect_;
   gfx::Size frame_size_;
   VideoCodecProfile profile_;
+  VideoColorSpace container_color_space_;
   uint8_t bit_depth_ = 0;
 
   int32_t stream_id_ = 0;

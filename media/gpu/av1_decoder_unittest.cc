@@ -1,6 +1,7 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "media/gpu/av1_decoder.h"
 
 #include <string.h>
@@ -24,11 +25,6 @@
 #include "third_party/libgav1/src/src/obu_parser.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
 #include "third_party/libgav1/src/src/utils/types.h"
-
-#if !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#error "This test requires Chrome OS media acceleration"
-#endif
-#include "media/gpu/chromeos/fourcc.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -139,8 +135,8 @@ class AV1DecoderTest : public ::testing::Test {
 
  protected:
   base::FilePath GetTestFilePath(const std::string& fname) {
-    base::FilePath file_path(base::FilePath(base::FilePath::kCurrentDirectory)
-                                 .Append(base::FilePath::StringType(fname)));
+    base::FilePath file_path(
+        base::FilePath(base::FilePath::kCurrentDirectory).AppendASCII(fname));
     if (base::PathExists(file_path)) {
       return file_path;
     }
@@ -198,7 +194,7 @@ std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadIVF(
   EXPECT_TRUE(
       ivf_parser.Initialize(reinterpret_cast<const uint8_t*>(ivf_data.data()),
                             ivf_data.size(), &ivf_header));
-  EXPECT_EQ(ivf_header.fourcc, ComposeFourcc('A', 'V', '0', '1'));
+  EXPECT_EQ(ivf_header.fourcc, /*AV01=*/0x31305641u);
 
   std::vector<scoped_refptr<DecoderBuffer>> buffers;
   IvfFrameHeader ivf_frame_header{};
