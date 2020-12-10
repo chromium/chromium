@@ -30,6 +30,7 @@ import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentMethodData;
+import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
 
@@ -432,6 +433,51 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         updateWith(service);
         assertNoError();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1)).continueShow(Mockito.anyBoolean());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testCallUpdateWithBeforeShowFailsPayment() {
+        PaymentRequestService service = defaultBuilder().build();
+        assertNoError();
+
+        updateWith(service);
+        assertErrorAndReason(
+                ErrorStrings.CANNOT_UPDATE_WITHOUT_SHOW, PaymentErrorReason.USER_CANCEL);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testCallUpdateWithWithoutRequestingAnyInfoFailsPayment() {
+        PaymentRequestService service = defaultBuilder().setOptions(new PaymentOptions()).build();
+        assertNoError();
+
+        show(service);
+        assertNoError();
+
+        updateWith(service);
+        assertErrorAndReason(ErrorStrings.INVALID_STATE, PaymentErrorReason.USER_CANCEL);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testCallOnPaymentDetailsNotUpdatedBeforeShowFailsPayment() {
+        PaymentRequestService service = defaultBuilder().build();
+        assertNoError();
+
+        service.onPaymentDetailsNotUpdated();
+        assertErrorAndReason(
+                ErrorStrings.CANNOT_UPDATE_WITHOUT_SHOW, PaymentErrorReason.USER_CANCEL);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testOnConnectionErrorFailsPayment() {
+        PaymentRequestService service = defaultBuilder().build();
+        Assert.assertFalse(mIsOnCloseListenerInvoked);
+
+        service.onConnectionError(null);
+        Assert.assertTrue(mIsOnCloseListenerInvoked);
     }
 
     @Test
