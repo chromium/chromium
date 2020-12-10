@@ -113,6 +113,10 @@
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameAura
 #endif
 
+#if defined(OS_WIN)
+#include "ui/base/ui_base_features.h"
+#endif
+
 using content::WebContents;
 using display::Display;
 using ui_test_utils::GetDisplays;
@@ -440,7 +444,16 @@ class DetachToBrowserTabDragControllerTest
       public ::testing::WithParamInterface<const char*> {
  public:
   DetachToBrowserTabDragControllerTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kWebUITabStrip);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+          features::kWebUITabStrip,
+#if defined(OS_WIN)
+              // Disable NativeWinOcclusion to avoid it interfering with test
+              // for dragging over occluded browser window.
+              features::kCalculateNativeWinOcclusion,
+#endif  // OS_WIN
+        });
   }
   DetachToBrowserTabDragControllerTest(
       const DetachToBrowserTabDragControllerTest&) = delete;
@@ -1416,6 +1429,41 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(tab_strip->GetWidget()->HasCapture());
   EXPECT_FALSE(tab_strip2->GetWidget()->HasCapture());
 }
+
+#if defined(OS_WIN)
+
+// Create two browsers, with the second one occluded, and drag from first over
+// second. This should create a third browser, w/o bringing forward the second
+// browser, because it's occluded.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DragToOccludedWindow) {
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  AddTabsAndResetBrowser(browser(), 1);
+
+  // Create another browser.
+  Browser* browser2 = CreateAnotherBrowserAndResize();
+  TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
+
+  // Mark the second brower as occluded. NativeWindow occlusion calculation has
+  // been disabled in test constructor, so we don't need an actual occluding
+  // window.
+  browser2->window()
+      ->GetNativeWindow()
+      ->GetHost()
+      ->SetNativeWindowOcclusionState(aura::Window::OcclusionState::OCCLUDED);
+
+  // Drag a tab from first browser to middle of first tab of the second,
+  // occluded browser, and drop. This should create a third browser window.
+  ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(1))));
+  ASSERT_TRUE(
+      DragInputToAsync(GetCenterInScreenCoordinates(tab_strip2->tab_at(0))));
+  ASSERT_TRUE(ReleaseInput());
+
+  EXPECT_EQ(3u, browser_list->size());
+}
+
+#endif  // OS_WIN
 
 namespace {
 

@@ -239,6 +239,11 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // showing.
     bool showing_thumbnails_ = false;
 
+    // Used to keep track of the window that's currently moving. That window
+    // is ignored for calculation occlusion so that tab dragging won't
+    // ignore windows occluded by the dragged window.
+    HWND moving_window_ = 0;
+
     // Only used on Win10+.
     Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager_;
 

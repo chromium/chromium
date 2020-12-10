@@ -16,7 +16,7 @@ gfx::NativeWindow LocalProcessWindowFinder::GetProcessWindowAtPoint(
     const gfx::Point& screen_loc,
     const std::set<HWND>& ignore,
     ScreenWin* screen_win) {
-  LocalProcessWindowFinder finder(screen_loc, ignore);
+  LocalProcessWindowFinder finder(screen_loc, screen_win, ignore);
   // Windows 8 has a window that appears first in the list of iterated
   // windows, yet is not visually on top of everything.
   // TODO(sky): figure out a better way to ignore this window.
@@ -44,15 +44,22 @@ bool LocalProcessWindowFinder::ShouldStopIterating(HWND hwnd) {
 
   if (IsWindowVisible(hwnd) && GetWindowRect(hwnd, &r) &&
       PtInRect(&r, screen_loc_.ToPOINT())) {
-    result_ = hwnd;
+    // Don't set result_ if the window is occluded, because there is at least
+    // one window covering the browser window. E.g., tab drag drop shouldn't
+    // drop on an occluded browser window.
+    gfx::NativeWindow native_window =
+        screen_win_->GetNativeWindowFromHWND(hwnd);
+    if (!native_window || !screen_win_->IsNativeWindowOccluded(native_window))
+      result_ = hwnd;
     return true;
   }
   return false;
 }
 
 LocalProcessWindowFinder::LocalProcessWindowFinder(const gfx::Point& screen_loc,
+                                                   ScreenWin* screen_win,
                                                    const std::set<HWND>& ignore)
-    : BaseWindowFinderWin(ignore), result_(nullptr) {
+    : BaseWindowFinderWin(ignore), result_(nullptr), screen_win_(screen_win) {
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
                        IID_PPV_ARGS(&virtual_desktop_manager_));

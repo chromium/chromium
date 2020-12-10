@@ -662,6 +662,11 @@ gfx::NativeWindow ScreenWin::GetNativeWindowFromHWND(HWND hwnd) const {
   return nullptr;
 }
 
+bool ScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {
+  NOTREACHED();
+  return false;
+}
+
 ScreenWin::ScreenWin(bool initialize) {
   DCHECK(!g_instance);
   g_instance = this;

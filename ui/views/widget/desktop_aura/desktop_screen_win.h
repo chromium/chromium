@@ -21,6 +21,7 @@ class VIEWS_EXPORT DesktopScreenWin : public display::win::ScreenWin {
   // display::win::ScreenWin:
   HWND GetHWNDFromNativeWindow(gfx::NativeWindow window) const override;
   gfx::NativeWindow GetNativeWindowFromHWND(HWND hwnd) const override;
+  bool IsNativeWindowOccluded(gfx::NativeWindow window) const override;
 
   display::Screen* const old_screen_ = display::Screen::SetScreenInstance(this);
 };

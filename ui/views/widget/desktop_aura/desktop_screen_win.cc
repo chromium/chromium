@@ -28,6 +28,11 @@ gfx::NativeWindow DesktopScreenWin::GetNativeWindowFromHWND(HWND hwnd) const {
              : gfx::kNullNativeWindow;
 }
 
+bool DesktopScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {
+  return window->GetHost()->GetNativeWindowOcclusionState() ==
+         aura::Window::OcclusionState::OCCLUDED;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 display::Screen* CreateDesktopScreen() {

@@ -351,6 +351,8 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     DisableOcclusionTrackingForWindow(HWND hwnd) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   root_window_hwnds_occlusion_state_.erase(hwnd);
+  if (moving_window_ == hwnd)
+    moving_window_ = 0;
   if (root_window_hwnds_occlusion_state_.empty()) {
     UnregisterEventHooks();
     if (occlusion_update_timer_.IsRunning())
@@ -612,6 +614,10 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     return true;
   }
 
+  // Ignore moving windows when deciding if windows under it are occluded.
+  if (hwnd == moving_window_)
+    return true;
+
   // Check if |hwnd| is a root window; if so, we're done figuring out
   // if it's occluded because we've seen all the windows "over" it.
   auto it = root_window_hwnds_occlusion_state_.find(hwnd);
@@ -688,22 +694,31 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
       // Let occlusion calculation fix occlusion state.
     }
   }
-
-  // Don't continually calculate occlusion while a window is moving, but rather
-  // once at the beginning and once at the end.
-  if (event == EVENT_SYSTEM_MOVESIZESTART) {
-    window_is_moving_ = true;
+  // Don't continually calculate occlusion while a window is moving (unless it's
+  // a root window), but instead once at the beginning and once at the end.
+  // Remember the window being moved so if it's a root window, we can ignore
+  // it when deciding if windows under it are occluded.
+  else if (event == EVENT_SYSTEM_MOVESIZESTART) {
+    moving_window_ = hwnd;
   } else if (event == EVENT_SYSTEM_MOVESIZEEND) {
-    window_is_moving_ = false;
-  } else if (window_is_moving_) {
+    moving_window_ = 0;
+  } else if (moving_window_ != 0) {
     if (event == EVENT_OBJECT_LOCATIONCHANGE ||
         event == EVENT_OBJECT_STATECHANGE) {
-      return;
+      // Ignore move events if it's not a root window that's being moved. If it
+      // is a root window, we want to calculate occlusion to support tab
+      // dragging to windows that were occluded when the drag was started but
+      // are no longer occluded.
+      if (root_window_hwnds_occlusion_state_.find(hwnd) ==
+          root_window_hwnds_occlusion_state_.end()) {
+        return;
+      }
+    } else {
+      // If we get an event that isn't a location/state change, then we probably
+      // missed the movesizeend notification, or got events out of order. In
+      // that case, we want to go back to normal occlusion calculation.
+      moving_window_ = 0;
     }
-    // If we get an event that isn't a location/state change, then we probably
-    // missed the movesizeend notification, or got events out of order. In
-    // that case, we want to go back to calculating occlusion.
-    window_is_moving_ = false;
   }
 
   // ProcessEventHookCallback is called from the task_runner's PeekMessage

@@ -154,6 +154,9 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Returns the NativeWindow associated with the HWND.
   virtual gfx::NativeWindow GetNativeWindowFromHWND(HWND hwnd) const;
 
+  // Returns true if the native window is occluded.
+  virtual bool IsNativeWindowOccluded(gfx::NativeWindow window) const;
+
  protected:
   ScreenWin(bool initialize);
 
