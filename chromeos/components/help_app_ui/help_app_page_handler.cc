@@ -16,8 +16,11 @@ HelpAppPageHandler::HelpAppPageHandler(
     mojo::PendingReceiver<help_app_ui::mojom::PageHandler> receiver)
     : receiver_(this, std::move(receiver)),
       help_app_ui_(help_app_ui),
-      is_lss_enabled_(base::FeatureList::IsEnabled(
-          chromeos::features::kHelpAppSearchServiceIntegration)) {}
+      is_lss_enabled_(
+          base::FeatureList::IsEnabled(
+              chromeos::features::kHelpAppSearchServiceIntegration) &&
+          base::FeatureList::IsEnabled(
+              chromeos::features::kEnableLocalSearchService)) {}
 
 HelpAppPageHandler::~HelpAppPageHandler() = default;
 

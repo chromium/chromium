@@ -38,6 +38,7 @@ var HelpAppUIBrowserTest = class extends testing.Test {
     return {
       enabled: [
         'chromeos::features::kHelpAppSearchServiceIntegration',
+        'chromeos::features::kEnableLocalSearchService',
       ]
     };
   }

@@ -25,8 +25,8 @@ static_library("help_app_ui") {
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
-    "//chromeos/components/local_search_service:local_search_service_proxy",
-    "//chromeos/components/local_search_service/public/mojom:mojom",
+    "//chromeos/components/local_search_service/public/cpp",
+    "//chromeos/components/local_search_service/public/mojom",
     "//chromeos/components/local_search_service/public/mojom:mojom_js",
     "//chromeos/components/web_applications",
     "//chromeos/constants",

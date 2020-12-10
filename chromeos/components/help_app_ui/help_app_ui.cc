@@ -9,9 +9,10 @@
 #include "chromeos/components/help_app_ui/help_app_page_handler.h"
 #include "chromeos/components/help_app_ui/help_app_untrusted_ui.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
-#include "chromeos/components/local_search_service/local_search_service_sync_proxy.h"
-#include "chromeos/components/local_search_service/local_search_service_sync_proxy_factory.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
+#include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/components/local_search_service/public/mojom/types.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/grit/chromeos_help_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -39,8 +40,8 @@ content::WebUIDataSource* CreateHostDataSource() {
                           IDR_HELP_APP_HELP_APP_MOJOM_JS);
   source->AddResourcePath("local_search_service_types.mojom-lite.js",
                           IDR_HELP_APP_LOCAL_SEARCH_SERVICE_TYPES_MOJOM_JS);
-  source->AddResourcePath("local_search_service_proxy.mojom-lite.js",
-                          IDR_HELP_APP_LOCAL_SEARCH_SERVICE_PROXY_MOJOM_JS);
+  source->AddResourcePath("local_search_service_index.mojom-lite.js",
+                          IDR_HELP_APP_LOCAL_SEARCH_SERVICE_INDEX_MOJOM_JS);
   source->AddLocalizedString("appTitle", IDS_HELP_APP_EXPLORE);
   return source;
 }
@@ -91,13 +92,18 @@ void HelpAppUI::BindInterface(
 }
 
 void HelpAppUI::BindInterface(
-    mojo::PendingReceiver<chromeos::local_search_service::mojom::IndexSyncProxy>
+    mojo::PendingReceiver<chromeos::local_search_service::mojom::Index>
         index_receiver) {
-  chromeos::local_search_service::LocalSearchServiceSyncProxyFactory::
-      GetForBrowserContext(web_ui()->GetWebContents()->GetBrowserContext())
-          ->GetIndex(chromeos::local_search_service::IndexId::kHelpApp,
-                     chromeos::local_search_service::Backend::kInvertedIndex,
-                     delegate_->GetLocalState(), std::move(index_receiver));
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kEnableLocalSearchService)) {
+    auto* const factory = chromeos::local_search_service::
+        LocalSearchServiceProxyFactory::GetForBrowserContext(
+            web_ui()->GetWebContents()->GetBrowserContext());
+    factory->SetLocalState(delegate_->GetLocalState());
+    factory->GetIndex(chromeos::local_search_service::IndexId::kHelpApp,
+                      chromeos::local_search_service::Backend::kInvertedIndex,
+                      std::move(index_receiver));
+  }
 }
 
 void HelpAppUI::CreatePageHandler(
