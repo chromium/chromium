@@ -91,6 +91,10 @@ class ResultSinkClient(object):
         'expected': expected,
         'status': status,
         'summaryHtml': test_log_formatted,
+        'tags': [{
+            'key': 'test_name',
+            'value': test_id,
+        }],
         'testId': test_id,
     }
     artifacts = artifacts or {}
