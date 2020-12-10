@@ -225,7 +225,7 @@ void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
     }
   }
 
-  NGMarginStrut end_margin_strut = child_layout_result.EndMarginStrut();
+  const NGMarginStrut end_margin_strut = child_layout_result.EndMarginStrut();
   // No margins should pierce outside formatting-context roots.
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
@@ -295,17 +295,51 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
                                 : end_margin_strut.Sum();
       }
 
+      // Use the original offset (*without* relative-positioning applied).
       NGFragment fragment(GetWritingDirection(), child);
+      LogicalRect bounds = {child_offset, fragment.Size()};
 
-      // Use the original offset (*without* relative-positioning applied), and
-      // clamp any negative margins to zero.
-      margins.ClampNegativeToZero();
-      LogicalRect bounds = {
-          LogicalOffset(child_offset.inline_offset - margins.inline_start,
-                        child_offset.block_offset - margins.block_start),
-          LogicalSize(
-              margins.inline_start + fragment.InlineSize() + margins.inline_end,
-              margins.block_start + fragment.BlockSize() + margins.block_end)};
+      // Margins affect the inflow-bounds in interesting ways.
+      //
+      // For the margin which is closest to the direction which we are
+      // scrolling, we allow negative margins, but only up to the size of the
+      // fragment. For the margin furthest away we disallow negative margins.
+      if (!margins.IsEmpty()) {
+        // Convert the physical overflow directions to logical.
+        const bool has_top_overflow = Node().HasTopOverflow();
+        const bool has_left_overflow = Node().HasLeftOverflow();
+        PhysicalToLogical<bool> converter(GetWritingDirection(),
+                                          has_top_overflow, !has_left_overflow,
+                                          !has_top_overflow, has_left_overflow);
+
+        if (converter.InlineStart()) {
+          margins.inline_end = margins.inline_end.ClampNegativeToZero();
+          margins.inline_start =
+              std::max(margins.inline_start, -fragment.InlineSize());
+        } else {
+          margins.inline_start = margins.inline_start.ClampNegativeToZero();
+          margins.inline_end =
+              std::max(margins.inline_end, -fragment.InlineSize());
+        }
+        if (converter.BlockStart()) {
+          margins.block_end = margins.block_end.ClampNegativeToZero();
+          margins.block_start =
+              std::max(margins.block_start, -fragment.BlockSize());
+        } else {
+          margins.block_start = margins.block_start.ClampNegativeToZero();
+          margins.block_end =
+              std::max(margins.block_end, -fragment.BlockSize());
+        }
+
+        // Shift the bounds by the (potentially clamped) margins.
+        bounds.offset -= {margins.inline_start, margins.block_start};
+        bounds.size.inline_size += margins.InlineSum();
+        bounds.size.block_size += margins.BlockSum();
+
+        // Our bounds size should never go negative.
+        DCHECK_GE(bounds.size.inline_size, LayoutUnit());
+        DCHECK_GE(bounds.size.block_size, LayoutUnit());
+      }
 
       // Even an empty (0x0) fragment contributes to the inflow-bounds.
       if (!inflow_bounds_)

@@ -199,7 +199,13 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedLayoutAlgorithm::Layout() {
     if (!result)
       return nullptr;
 
-    AddChildFragment(child_link, result->PhysicalFragment());
+    const NGMarginStrut end_margin_strut = result->EndMarginStrut();
+    // No margins should pierce outside formatting-context roots.
+    DCHECK(!result->PhysicalFragment().IsFormattingContextRoot() ||
+           end_margin_strut.IsEmpty());
+
+    AddChildFragment(child_link, result->PhysicalFragment(), &end_margin_strut,
+                     result->IsSelfCollapsing());
   }
 
   // Iterate through all our OOF-positioned children and add them as candidates.
@@ -256,7 +262,9 @@ NGSimplifiedLayoutAlgorithm::LayoutWithItemsBuilder() {
 
 void NGSimplifiedLayoutAlgorithm::AddChildFragment(
     const NGLink& old_fragment,
-    const NGPhysicalContainerFragment& new_fragment) {
+    const NGPhysicalContainerFragment& new_fragment,
+    const NGMarginStrut* margin_strut,
+    bool is_self_collapsing) {
   DCHECK_EQ(old_fragment->Size(), new_fragment.Size());
 
   // Determine the previous position in the logical coordinate system.
@@ -275,7 +283,9 @@ void NGSimplifiedLayoutAlgorithm::AddChildFragment(
   }
 
   // Add the new fragment to the builder.
-  container_builder_.AddChild(new_fragment, child_offset);
+  container_builder_.AddChild(new_fragment, child_offset,
+                              /* inline_container */ nullptr, margin_strut,
+                              is_self_collapsing);
 }
 
 }  // namespace blink
