@@ -103,6 +103,21 @@ void ApplyBlockElementCommand::DoApply(EditingState* editing_state) {
   ContainerNode* end_scope = nullptr;
   int end_index = IndexForVisiblePosition(end_of_selection, end_scope);
 
+  // Due to visible position canonicalization, start and end positions could
+  // move to different selection contexts one of which could be inside an
+  // element that is not editable. e.g. <pre contenteditable>
+  //   hello^
+  // <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  // <foreignObject x="20" y="20" width="80" height="80">
+  //  L|orem
+  // </foreignObject>
+  // </svg>
+  // </pre>
+  if (!IsEditablePosition(start_of_selection.DeepEquivalent()) ||
+      !IsEditablePosition(end_of_selection.DeepEquivalent())) {
+    return;
+  }
+
   FormatSelection(start_of_selection, end_of_selection, editing_state);
   if (editing_state->IsAborted())
     return;
