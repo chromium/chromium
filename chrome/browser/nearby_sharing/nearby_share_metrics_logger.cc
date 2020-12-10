@@ -13,11 +13,6 @@
 
 namespace {
 
-const char kStartAdvertisingResultMetricPrefix[] =
-    "Nearby.Share.StartAdvertising.Result";
-const char kStartAdvertisingResultFailureReasonMetricPrefix[] =
-    "Nearby.Share.StartAdvertising.Result.FailureReason";
-const char kTransferMetricPrefix[] = "Nearby.Share.Transfer";
 const size_t kBytesPerKilobyte = 1024;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -162,7 +157,7 @@ std::string GetShareTargetTypeSubcategoryName(
     nearby_share::mojom::ShareTargetType type) {
   switch (type) {
     case nearby_share::mojom::ShareTargetType::kUnknown:
-      return ".Unknown";
+      return ".UnknownDeviceType";
     case nearby_share::mojom::ShareTargetType::kPhone:
       return ".Phone";
     case nearby_share::mojom::ShareTargetType::kTablet:
@@ -183,7 +178,7 @@ std::string GetPayloadStatusSubcategoryName(
       return ".Cancelled";
     case location::nearby::connections::mojom::PayloadStatus::kInProgress:
       NOTREACHED();
-      return ".Cancelled";
+      return ".Failed";
   }
 }
 
@@ -235,146 +230,6 @@ void RecordNearbyShareEnabledMetric(const PrefService* pref_service) {
   base::UmaHistogramEnumeration("Nearby.Share.Enabled", state);
 }
 
-void RecordNearbyShareTransferCompletionStatusMetric(
-    bool is_incoming,
-    nearby_share::mojom::ShareTargetType type,
-    TransferMetadata::Status status) {
-  DCHECK(TransferMetadata::IsFinalStatus(status));
-
-  const std::string kPrefix =
-      kTransferMetricPrefix + std::string(".CompletionStatus");
-  std::string send_or_receive = GetDirectionSubcategoryName(is_incoming);
-  std::string share_target_type = GetShareTargetTypeSubcategoryName(type);
-
-  bool is_complete = status == TransferMetadata::Status::kComplete;
-  base::UmaHistogramBoolean(kPrefix, is_complete);
-  base::UmaHistogramBoolean(kPrefix + send_or_receive, is_complete);
-  base::UmaHistogramBoolean(kPrefix + share_target_type, is_complete);
-  base::UmaHistogramBoolean(kPrefix + send_or_receive + share_target_type,
-                            is_complete);
-  if (!is_complete) {
-    const std::string kReasonInfix = ".NotCompletedReason";
-    TransferNotCompletedReason reason =
-        TransferMetadataStatusToTransferNotCompletedReason(status);
-    base::UmaHistogramEnumeration(kPrefix + kReasonInfix, reason);
-    base::UmaHistogramEnumeration(kPrefix + kReasonInfix + send_or_receive,
-                                  reason);
-    base::UmaHistogramEnumeration(kPrefix + kReasonInfix + share_target_type,
-                                  reason);
-    base::UmaHistogramEnumeration(
-        kPrefix + kReasonInfix + send_or_receive + share_target_type, reason);
-  }
-}
-
-void RecordNearbyShareTransferSizeMetric(
-    bool is_incoming,
-    nearby_share::mojom::ShareTargetType type,
-    base::Optional<location::nearby::connections::mojom::Medium>
-        last_upgraded_medium,
-    location::nearby::connections::mojom::PayloadStatus status,
-    uint64_t payload_size_bytes) {
-  DCHECK_NE(status,
-            location::nearby::connections::mojom::PayloadStatus::kInProgress);
-
-  int kilobytes =
-      base::saturated_cast<int>(payload_size_bytes / kBytesPerKilobyte);
-  for (const std::string& direction_name :
-       {std::string(), GetDirectionSubcategoryName(is_incoming)}) {
-    for (const std::string& share_target_type_name :
-         {std::string(), GetShareTargetTypeSubcategoryName(type)}) {
-      for (const std::string& last_upgraded_medium_name :
-           {std::string(),
-            GetUpgradedMediumSubcategoryName(last_upgraded_medium)}) {
-        for (const std::string& payload_status_name :
-             {std::string(), GetPayloadStatusSubcategoryName(status)}) {
-          base::UmaHistogramCounts1M(
-              kTransferMetricPrefix + std::string(".TotalSize") +
-                  direction_name + share_target_type_name +
-                  last_upgraded_medium_name + payload_status_name,
-              kilobytes);
-        }
-      }
-    }
-  }
-}
-
-void RecordNearbyShareTransferRateMetric(
-    bool is_incoming,
-    nearby_share::mojom::ShareTargetType type,
-    base::Optional<location::nearby::connections::mojom::Medium>
-        last_upgraded_medium,
-    location::nearby::connections::mojom::PayloadStatus status,
-    uint64_t transferred_payload_bytes,
-    base::TimeDelta time_elapsed) {
-  DCHECK_NE(status,
-            location::nearby::connections::mojom::PayloadStatus::kInProgress);
-
-  int kilobytes_per_second = base::saturated_cast<int>(base::ClampDiv(
-      base::ClampDiv(transferred_payload_bytes, time_elapsed.InSecondsF()),
-      kBytesPerKilobyte));
-  for (const std::string& direction_name :
-       {std::string(), GetDirectionSubcategoryName(is_incoming)}) {
-    for (const std::string& share_target_type_name :
-         {std::string(), GetShareTargetTypeSubcategoryName(type)}) {
-      for (const std::string& last_upgraded_medium_name :
-           {std::string(),
-            GetUpgradedMediumSubcategoryName(last_upgraded_medium)}) {
-        for (const std::string& payload_status_name :
-             {std::string(), GetPayloadStatusSubcategoryName(status)}) {
-          base::UmaHistogramCounts100000(
-              kTransferMetricPrefix + std::string(".Rate") + direction_name +
-                  share_target_type_name + last_upgraded_medium_name +
-                  payload_status_name,
-              kilobytes_per_second);
-        }
-      }
-    }
-  }
-}
-
-void RecordNearbyShareTransferNumAttachmentsMetric(
-    size_t num_text_attachments,
-    size_t num_file_attachments) {
-  const std::string kAttachmentInfix = ".NumAttachments";
-  base::UmaHistogramCounts100(kTransferMetricPrefix + kAttachmentInfix,
-                              num_text_attachments + num_file_attachments);
-  base::UmaHistogramCounts100(
-      kTransferMetricPrefix + kAttachmentInfix + ".Text", num_text_attachments);
-  base::UmaHistogramCounts100(
-      kTransferMetricPrefix + kAttachmentInfix + ".File", num_file_attachments);
-}
-
-void RecordNearbyShareStartAdvertisingResultMetric(
-    bool is_high_visibility,
-    location::nearby::connections::mojom::Status status) {
-  const std::string mode_suffix =
-      is_high_visibility ? ".HighVisibility" : ".BLE";
-  const bool success =
-      status == location::nearby::connections::mojom::Status::kSuccess;
-
-  base::UmaHistogramBoolean(kStartAdvertisingResultMetricPrefix, success);
-  base::UmaHistogramBoolean(kStartAdvertisingResultMetricPrefix + mode_suffix,
-                            success);
-  if (!success) {
-    StartAdvertisingFailureReason reason =
-        NearbyConnectionsStatusToStartAdvertisingFailureReason(status);
-    base::UmaHistogramEnumeration(
-        kStartAdvertisingResultFailureReasonMetricPrefix, reason);
-    base::UmaHistogramEnumeration(
-        kStartAdvertisingResultFailureReasonMetricPrefix + mode_suffix, reason);
-  }
-}
-
-void RecordNearbyShareFinalPayloadStatusForUpgradedMedium(
-    location::nearby::connections::mojom::PayloadStatus status,
-    base::Optional<location::nearby::connections::mojom::Medium> medium) {
-  DCHECK_NE(status,
-            location::nearby::connections::mojom::PayloadStatus::kInProgress);
-  base::UmaHistogramEnumeration("Nearby.Share.Medium.FinalPayloadStatus" +
-                                    GetUpgradedMediumSubcategoryName(medium),
-                                PayloadStatusToFinalStatus(status));
-}
-
 void RecordNearbyShareEstablishConnectionMetrics(
     bool success,
     bool cancelled,
@@ -390,4 +245,132 @@ void RecordNearbyShareEstablishConnectionMetrics(
   }
   base::UmaHistogramEnumeration(
       "Nearby.Share.Connection.EstablishOutgoingConnectionStatus", status);
+}
+
+void RecordNearbySharePayloadFinalStatusMetric(
+    location::nearby::connections::mojom::PayloadStatus status,
+    base::Optional<location::nearby::connections::mojom::Medium> medium) {
+  DCHECK_NE(status,
+            location::nearby::connections::mojom::PayloadStatus::kInProgress);
+  base::UmaHistogramEnumeration("Nearby.Share.Payload.FinalStatus",
+                                PayloadStatusToFinalStatus(status));
+  base::UmaHistogramEnumeration("Nearby.Share.Payload.FinalStatus" +
+                                    GetUpgradedMediumSubcategoryName(medium),
+                                PayloadStatusToFinalStatus(status));
+}
+
+void RecordNearbySharePayloadNumAttachmentsMetric(size_t num_text_attachments,
+                                                  size_t num_file_attachments) {
+  base::UmaHistogramCounts100("Nearby.Share.Payload.NumAttachments",
+                              num_text_attachments + num_file_attachments);
+  base::UmaHistogramCounts100("Nearby.Share.Payload.NumAttachments.Text",
+                              num_text_attachments);
+  base::UmaHistogramCounts100("Nearby.Share.Payload.NumAttachments.File",
+                              num_file_attachments);
+}
+
+void RecordNearbySharePayloadSizeMetric(
+    bool is_incoming,
+    nearby_share::mojom::ShareTargetType type,
+    base::Optional<location::nearby::connections::mojom::Medium>
+        last_upgraded_medium,
+    location::nearby::connections::mojom::PayloadStatus status,
+    uint64_t payload_size_bytes) {
+  DCHECK_NE(status,
+            location::nearby::connections::mojom::PayloadStatus::kInProgress);
+
+  int kilobytes =
+      base::saturated_cast<int>(payload_size_bytes / kBytesPerKilobyte);
+
+  const std::string prefix = "Nearby.Share.Payload.TotalSize";
+  base::UmaHistogramCounts1M(prefix, kilobytes);
+  base::UmaHistogramCounts1M(prefix + GetDirectionSubcategoryName(is_incoming),
+                             kilobytes);
+  base::UmaHistogramCounts1M(prefix + GetShareTargetTypeSubcategoryName(type),
+                             kilobytes);
+  base::UmaHistogramCounts1M(
+      prefix + GetUpgradedMediumSubcategoryName(last_upgraded_medium),
+      kilobytes);
+  base::UmaHistogramCounts1M(prefix + GetPayloadStatusSubcategoryName(status),
+                             kilobytes);
+}
+
+void RecordNearbySharePayloadTransferRateMetric(
+    bool is_incoming,
+    nearby_share::mojom::ShareTargetType type,
+    base::Optional<location::nearby::connections::mojom::Medium>
+        last_upgraded_medium,
+    location::nearby::connections::mojom::PayloadStatus status,
+    uint64_t transferred_payload_bytes,
+    base::TimeDelta time_elapsed) {
+  DCHECK_NE(status,
+            location::nearby::connections::mojom::PayloadStatus::kInProgress);
+
+  int kilobytes_per_second = base::saturated_cast<int>(base::ClampDiv(
+      base::ClampDiv(transferred_payload_bytes, time_elapsed.InSecondsF()),
+      kBytesPerKilobyte));
+
+  const std::string prefix = "Nearby.Share.Payload.TransferRate";
+  base::UmaHistogramCounts100000(prefix, kilobytes_per_second);
+  base::UmaHistogramCounts100000(
+      prefix + GetDirectionSubcategoryName(is_incoming), kilobytes_per_second);
+  base::UmaHistogramCounts100000(
+      prefix + GetShareTargetTypeSubcategoryName(type), kilobytes_per_second);
+  base::UmaHistogramCounts100000(
+      prefix + GetUpgradedMediumSubcategoryName(last_upgraded_medium),
+      kilobytes_per_second);
+  base::UmaHistogramCounts100000(
+      prefix + GetPayloadStatusSubcategoryName(status), kilobytes_per_second);
+}
+
+void RecordNearbyShareStartAdvertisingResultMetric(
+    bool is_high_visibility,
+    location::nearby::connections::mojom::Status status) {
+  const std::string mode_suffix =
+      is_high_visibility ? ".HighVisibility" : ".BLE";
+  const bool success =
+      status == location::nearby::connections::mojom::Status::kSuccess;
+
+  const std::string result_prefix = "Nearby.Share.StartAdvertising.Result";
+  base::UmaHistogramBoolean(result_prefix, success);
+  base::UmaHistogramBoolean(result_prefix + mode_suffix, success);
+
+  if (!success) {
+    const std::string failure_prefix =
+        "Nearby.Share.StartAdvertising.Result.FailureReason";
+    StartAdvertisingFailureReason reason =
+        NearbyConnectionsStatusToStartAdvertisingFailureReason(status);
+    base::UmaHistogramEnumeration(failure_prefix, reason);
+    base::UmaHistogramEnumeration(failure_prefix + mode_suffix, reason);
+  }
+}
+
+void RecordNearbyShareTransferCompletionStatusMetric(
+    bool is_incoming,
+    nearby_share::mojom::ShareTargetType type,
+    TransferMetadata::Status status) {
+  DCHECK(TransferMetadata::IsFinalStatus(status));
+
+  bool is_complete = status == TransferMetadata::Status::kComplete;
+  std::string send_or_receive = GetDirectionSubcategoryName(is_incoming);
+  std::string share_target_type = GetShareTargetTypeSubcategoryName(type);
+
+  const std::string status_prefix = "Nearby.Share.Transfer.CompletionStatus";
+  base::UmaHistogramBoolean(status_prefix, is_complete);
+  base::UmaHistogramBoolean(status_prefix + send_or_receive, is_complete);
+  base::UmaHistogramBoolean(status_prefix + share_target_type, is_complete);
+  base::UmaHistogramBoolean(status_prefix + send_or_receive + share_target_type,
+                            is_complete);
+  if (!is_complete) {
+    TransferNotCompletedReason reason =
+        TransferMetadataStatusToTransferNotCompletedReason(status);
+
+    const std::string reason_prefix =
+        "Nearby.Share.Transfer.CompletionStatus.NotCompletedReason";
+    base::UmaHistogramEnumeration(reason_prefix, reason);
+    base::UmaHistogramEnumeration(reason_prefix + send_or_receive, reason);
+    base::UmaHistogramEnumeration(reason_prefix + share_target_type, reason);
+    base::UmaHistogramEnumeration(
+        reason_prefix + send_or_receive + share_target_type, reason);
+  }
 }

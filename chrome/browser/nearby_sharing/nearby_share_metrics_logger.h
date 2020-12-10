@@ -14,18 +14,28 @@
 class PrefService;
 
 void RecordNearbyShareEnabledMetric(const PrefService* pref_service);
-void RecordNearbyShareTransferCompletionStatusMetric(
-    bool is_incoming,
-    nearby_share::mojom::ShareTargetType type,
-    TransferMetadata::Status status);
-void RecordNearbyShareTransferSizeMetric(
+
+void RecordNearbyShareEstablishConnectionMetrics(
+    bool success,
+    bool cancelled,
+    base::TimeDelta time_to_connect);
+
+void RecordNearbySharePayloadFinalStatusMetric(
+    location::nearby::connections::mojom::PayloadStatus status,
+    base::Optional<location::nearby::connections::mojom::Medium> medium);
+
+void RecordNearbySharePayloadNumAttachmentsMetric(size_t num_text_attachments,
+                                                  size_t num_file_attachments);
+
+void RecordNearbySharePayloadSizeMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
     base::Optional<location::nearby::connections::mojom::Medium>
         last_upgraded_medium,
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t payload_size_bytes);
-void RecordNearbyShareTransferRateMetric(
+
+void RecordNearbySharePayloadTransferRateMetric(
     bool is_incoming,
     nearby_share::mojom::ShareTargetType type,
     base::Optional<location::nearby::connections::mojom::Medium>
@@ -33,17 +43,14 @@ void RecordNearbyShareTransferRateMetric(
     location::nearby::connections::mojom::PayloadStatus status,
     uint64_t transferred_payload_bytes,
     base::TimeDelta time_elapsed);
-void RecordNearbyShareTransferNumAttachmentsMetric(size_t num_text_attachments,
-                                                   size_t num_file_attachments);
+
 void RecordNearbyShareStartAdvertisingResultMetric(
     bool is_high_visibility,
     location::nearby::connections::mojom::Status status);
-void RecordNearbyShareFinalPayloadStatusForUpgradedMedium(
-    location::nearby::connections::mojom::PayloadStatus status,
-    base::Optional<location::nearby::connections::mojom::Medium> medium);
-void RecordNearbyShareEstablishConnectionMetrics(
-    bool success,
-    bool cancelled,
-    base::TimeDelta time_to_connect);
+
+void RecordNearbyShareTransferCompletionStatusMetric(
+    bool is_incoming,
+    nearby_share::mojom::ShareTargetType type,
+    TransferMetadata::Status status);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
