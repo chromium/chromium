@@ -82,9 +82,7 @@ bool BrowserControlsContainerView::IsFullyVisible() const {
   return controls_layer_ && controls_layer_->position().y() == 0;
 }
 
-void BrowserControlsContainerView::CreateControlsLayer(
-    JNIEnv* env,
-    int id) {
+void BrowserControlsContainerView::CreateControlsLayer(JNIEnv* env, int id) {
   controls_resource_id_ = id;
   controls_layer_ = cc::UIResourceLayer::Create();
   // Real size is sent in SetControlsSize().
@@ -123,10 +121,9 @@ void BrowserControlsContainerView::SetBottomControlsOffset(JNIEnv* env) {
   DoSetBottomControlsOffset();
 }
 
-void BrowserControlsContainerView::SetControlsSize(
-    JNIEnv* env,
-    int width,
-    int height) {
+void BrowserControlsContainerView::SetControlsSize(JNIEnv* env,
+                                                   int width,
+                                                   int height) {
   DCHECK(controls_layer_);
   controls_layer_->SetBounds(gfx::Size(width, height));
   // It's assumed the caller handles triggering SynchronizeVisualProperties()

@@ -44,7 +44,7 @@ namespace content {
 class RenderWidgetHostView;
 class WebContents;
 struct ContextMenuParams;
-}
+}  // namespace content
 
 namespace gfx {
 class Rect;

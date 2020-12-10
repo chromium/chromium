@@ -215,9 +215,7 @@ void NavigationControllerImpl::Navigate(
 }
 
 ScopedJavaLocalRef<jstring>
-NavigationControllerImpl::GetNavigationEntryDisplayUri(
-    JNIEnv* env,
-    int index) {
+NavigationControllerImpl::GetNavigationEntryDisplayUri(JNIEnv* env, int index) {
   return ScopedJavaLocalRef<jstring>(base::android::ConvertUTF8ToJavaString(
       env, GetNavigationEntryDisplayURL(index).spec()));
 }

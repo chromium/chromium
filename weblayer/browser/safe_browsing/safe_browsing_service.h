@@ -17,7 +17,7 @@ namespace content {
 class NavigationHandle;
 class NavigationThrottle;
 class RenderProcessHost;
-}
+}  // namespace content
 
 namespace blink {
 class URLLoaderThrottle;
@@ -28,7 +28,7 @@ namespace mojom {
 class NetworkContext;
 }
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
 namespace safe_browsing {
 class UrlCheckerDelegate;

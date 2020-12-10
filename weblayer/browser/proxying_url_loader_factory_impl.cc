@@ -108,7 +108,6 @@ bool IsCachedResponseValid(net::HttpResponseHeaders* headers,
                                      base::Time::Now()) == net::VALIDATION_NONE;
 }
 
-
 // A ResponseDelegate for AndroidStreamReaderURLLoader which will cache the
 // response if it's successful. This allows back-forward navigations to reuse an
 // InputStream.

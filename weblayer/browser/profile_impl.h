@@ -26,7 +26,7 @@
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace weblayer {
 class BrowserContextImpl;

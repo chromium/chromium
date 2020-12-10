@@ -15,7 +15,7 @@ class WebContents;
 namespace safe_browsing {
 class BaseBlockingPage;
 class PingManager;
-}
+}  // namespace safe_browsing
 
 namespace weblayer {
 class SafeBrowsingService;

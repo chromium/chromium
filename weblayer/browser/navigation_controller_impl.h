@@ -24,7 +24,7 @@
 namespace content {
 class NavigationHandle;
 class NavigationThrottle;
-}
+}  // namespace content
 
 namespace weblayer {
 class NavigationImpl;

@@ -53,8 +53,7 @@ public final class GeolocationTest {
     private TestWebServer mTestServer;
     private int mLocationPermission = PackageManager.PERMISSION_GRANTED;
 
-    private static final String RAW_JAVASCRIPT =
-            "var positionCount = 0;"
+    private static final String RAW_JAVASCRIPT = "var positionCount = 0;"
             + "var errorCount = 0;"
             + "function gotPos(position) {"
             + "  positionCount++;"

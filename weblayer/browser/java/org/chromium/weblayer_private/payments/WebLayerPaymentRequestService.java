@@ -48,13 +48,11 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     // Implements BrowserPaymentRequest:
     @Override
     public void onPaymentDetailsUpdated(
-            PaymentDetails details, boolean hasNotifiedInvokedPaymentApp) {
-    }
+            PaymentDetails details, boolean hasNotifiedInvokedPaymentApp) {}
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void onPaymentDetailsNotUpdated(String selectedShippingOptionError) {
-    }
+    public void onPaymentDetailsNotUpdated(String selectedShippingOptionError) {}
 
     // Implements BrowserPaymentRequest:
     @Override

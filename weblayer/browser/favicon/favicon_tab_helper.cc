@@ -59,8 +59,7 @@ FaviconTabHelper::RegisterFaviconFetcherDelegate(
 }
 
 FaviconTabHelper::FaviconTabHelper(content::WebContents* contents)
-    : WebContentsObserver(contents) {
-}
+    : WebContentsObserver(contents) {}
 
 void FaviconTabHelper::AddDelegate(FaviconFetcherDelegate* delegate) {
   delegates_.AddObserver(delegate);

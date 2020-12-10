@@ -16,7 +16,7 @@ class WebContents;
 namespace security_interstitials {
 class MetricsHelper;
 class SettingsPageHelper;
-}
+}  // namespace security_interstitials
 
 namespace weblayer {
 

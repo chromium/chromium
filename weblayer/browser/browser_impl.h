@@ -67,11 +67,9 @@ class BrowserImpl : public Browser {
     return java_impl_;
   }
 
-  void AddTab(JNIEnv* env,
-              long native_tab);
+  void AddTab(JNIEnv* env, long native_tab);
   base::android::ScopedJavaLocalRef<jobjectArray> GetTabs(JNIEnv* env);
-  void SetActiveTab(JNIEnv* env,
-                    long native_tab);
+  void SetActiveTab(JNIEnv* env, long native_tab);
   base::android::ScopedJavaLocalRef<jobject> GetActiveTab(JNIEnv* env);
   void PrepareForShutdown(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetPersistenceId(JNIEnv* env);

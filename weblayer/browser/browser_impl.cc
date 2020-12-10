@@ -103,8 +103,7 @@ bool BrowserImpl::CompositorHasSurface() {
                                                java_impl_);
 }
 
-void BrowserImpl::AddTab(JNIEnv* env,
-                         long native_tab) {
+void BrowserImpl::AddTab(JNIEnv* env, long native_tab) {
   AddTab(reinterpret_cast<TabImpl*>(native_tab));
 }
 
@@ -122,8 +121,7 @@ ScopedJavaLocalRef<jobjectArray> BrowserImpl::GetTabs(JNIEnv* env) {
   return ScopedJavaLocalRef<jobjectArray>(env, tabs);
 }
 
-void BrowserImpl::SetActiveTab(JNIEnv* env,
-                               long native_tab) {
+void BrowserImpl::SetActiveTab(JNIEnv* env, long native_tab) {
   SetActiveTab(reinterpret_cast<TabImpl*>(native_tab));
 }
 

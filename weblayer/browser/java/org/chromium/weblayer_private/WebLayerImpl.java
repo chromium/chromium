@@ -213,9 +213,9 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 && !remoteContext.getClassLoader().equals(WebLayerImpl.class.getClassLoader());
         if (mIsWebViewCompatMode) {
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-              // Load the library with the crazy linker.
-              LibraryLoader.getInstance().setLinkerImplementation(true, false);
-              WebViewCompatibilityHelperImpl.setRequiresManualJniRegistration(true);
+                // Load the library with the crazy linker.
+                LibraryLoader.getInstance().setLinkerImplementation(true, false);
+                WebViewCompatibilityHelperImpl.setRequiresManualJniRegistration(true);
             }
             notifyWebViewRunningInProcess(remoteContext.getClassLoader());
         }

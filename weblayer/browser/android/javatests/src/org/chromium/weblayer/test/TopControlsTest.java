@@ -59,5 +59,4 @@ public class TopControlsTest {
                 () -> { mBrowser.setSupportsEmbedding(true, (result) -> helper.notifyCalled()); });
         helper.waitForCallback(0);
     }
-
 }

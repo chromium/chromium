@@ -63,7 +63,6 @@ public class WebLayerBrowserTestsActivity extends NativeBrowserTestActivity {
         } catch (Exception e) {
             throw new RuntimeException("failed loading WebLayer", e);
         }
-
     }
 
     protected void createShell() {

@@ -37,9 +37,9 @@ void SafeBrowsingUIManager::SendSerializedThreatDetails(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!ping_manager_) {
-    ping_manager_ = ::safe_browsing::PingManager::Create(
-        safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
-                                           false /* auto_update */));
+    ping_manager_ =
+        ::safe_browsing::PingManager::Create(safe_browsing::GetV4ProtocolConfig(
+            GetProtocolConfigClientName(), false /* auto_update */));
   }
 
   if (serialized.empty())

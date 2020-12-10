@@ -54,8 +54,7 @@ class BrowserControlsContainerView : public content::WebContentsObserver {
   bool IsFullyVisible() const;
 
   // Creates |controls_layer_|.
-  void CreateControlsLayer(JNIEnv* env,
-                           int id);
+  void CreateControlsLayer(JNIEnv* env, int id);
 
   // Deletes |this|.
   void DeleteBrowserControlsContainerView(JNIEnv* env);
@@ -69,9 +68,7 @@ class BrowserControlsContainerView : public content::WebContentsObserver {
   void SetBottomControlsOffset(JNIEnv* env);
 
   // Sets the size of |controls_layer_|.
-  void SetControlsSize(JNIEnv* env,
-                       int width,
-                       int height);
+  void SetControlsSize(JNIEnv* env, int width, int height);
 
   // Triggers updating the resource (bitmap) shown in |controls_layer_|.
   void UpdateControlsResource(JNIEnv* env);

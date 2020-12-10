@@ -20,9 +20,7 @@ const char kWeblayerWebViewCompatMode[] = "WEBLAYER_WEB_VIEW_COMPAT_MODE";
 
 // clang-format off
 const char* const kWebLayerCrashKeyAllowList[] = {
-    kAppPackageName,
-    kAppPackageVersionCode,
-    kAndroidSdkInt,
+    kAppPackageName, kAppPackageVersionCode, kAndroidSdkInt,
     kWeblayerWebViewCompatMode,
 
     // process type
@@ -32,26 +30,18 @@ const char* const kWebLayerCrashKeyAllowList[] = {
     "exception_info",
 
     // gpu
-    "gpu-driver",
-    "gpu-psver",
-    "gpu-vsver",
-    "gpu-gl-vendor",
-    "gpu-gl-renderer",
+    "gpu-driver", "gpu-psver", "gpu-vsver", "gpu-gl-vendor", "gpu-gl-renderer",
     "oop_read_failure",
 
     // content/:
-    "bad_message_reason",
-    "discardable-memory-allocated",
-    "discardable-memory-free",
-    "mojo-message-error",
+    "bad_message_reason", "discardable-memory-allocated",
+    "discardable-memory-free", "mojo-message-error",
     "total-discardable-memory-allocated",
 
     // crash keys needed for recording finch trials
-    "variations",
-    "num-experiments",
+    "variations", "num-experiments",
 
-    nullptr
-};
+    nullptr};
 // clang-format on
 
 }  // namespace crash_keys
