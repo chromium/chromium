@@ -217,12 +217,12 @@ TEST_F(SameSiteDataRemoverImplTest, TestCookieRemovalUnaffectedByParameters) {
   net::CookieOptions options;
   options.set_include_httponly();
   bool result_out = false;
-  net::CanonicalCookie cookie1("TestCookie1", "20", "google.com", "/",
-                               base::Time::Now(), base::Time(), base::Time(),
-                               true, true, net::CookieSameSite::NO_RESTRICTION,
-                               net::COOKIE_PRIORITY_HIGH, /*same_party=*/true);
+  auto cookie1 = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "TestCookie1", "20", "google.com", "/", base::Time::Now(), base::Time(),
+      base::Time(), true, true, net::CookieSameSite::NO_RESTRICTION,
+      net::COOKIE_PRIORITY_HIGH, /*same_party=*/true);
   cookie_manager->SetCanonicalCookie(
-      cookie1, net::cookie_util::SimulatedCookieSource(cookie1, "https"),
+      *cookie1, net::cookie_util::SimulatedCookieSource(*cookie1, "https"),
       options, base::BindLambdaForTesting([&](net::CookieAccessResult result) {
         result_out = result.status.IsInclude();
         run_loop1.Quit();
@@ -236,12 +236,12 @@ TEST_F(SameSiteDataRemoverImplTest, TestCookieRemovalUnaffectedByParameters) {
           net::CookieOptions::SameSiteCookieContext::ContextType::
               SAME_SITE_LAX));
   result_out = false;
-  net::CanonicalCookie cookie2("TestCookie2", "10", "gmail.google.com", "/",
-                               base::Time(), base::Time::Max(), base::Time(),
-                               false, true, net::CookieSameSite::LAX_MODE,
-                               net::COOKIE_PRIORITY_HIGH, false);
+  auto cookie2 = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "TestCookie2", "10", "gmail.google.com", "/", base::Time(),
+      base::Time::Max(), base::Time(), false, true,
+      net::CookieSameSite::LAX_MODE, net::COOKIE_PRIORITY_HIGH, false);
   cookie_manager->SetCanonicalCookie(
-      cookie2, net::cookie_util::SimulatedCookieSource(cookie2, "https"),
+      *cookie2, net::cookie_util::SimulatedCookieSource(*cookie2, "https"),
       options, base::BindLambdaForTesting([&](net::CookieAccessResult result) {
         result_out = result.status.IsInclude();
         run_loop2.Quit();

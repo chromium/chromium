@@ -37,13 +37,13 @@ void CreateCookieForTest(
   net::CookieOptions options;
   options.set_same_site_cookie_context(cookie_context);
   bool result_out;
-  net::CanonicalCookie cookie(cookie_name, "1", cookie_domain, "/",
-                              base::Time(), base::Time(), base::Time(),
-                              is_cookie_secure, false, same_site,
-                              net::COOKIE_PRIORITY_LOW, false);
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      cookie_name, "1", cookie_domain, "/", base::Time(), base::Time(),
+      base::Time(), is_cookie_secure, false, same_site,
+      net::COOKIE_PRIORITY_LOW, false);
   GetCookieManager(browser_context)
       ->SetCanonicalCookie(
-          cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
+          *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
           options,
           base::BindLambdaForTesting([&](net::CookieAccessResult result) {
             result_out = result.status.IsInclude();
