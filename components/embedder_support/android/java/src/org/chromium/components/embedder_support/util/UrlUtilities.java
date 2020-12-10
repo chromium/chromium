@@ -220,12 +220,15 @@ public class UrlUtilities {
     }
 
     /**
+     * This variation of #isNTPUrl is for already parsed URLs, not for direct use on user-provided
+     * url input. Do not do isNTPUrl(new GURL(user_string)), as this will not handle legacy schemes
+     * like about: correctly. You should use {@link #isNTPUrl(String)} instead, or call
+     * {@link UrlFormatter#fixupUrl(String)} to create the GURL instead.
+     *
      * @param gurl The GURL to check whether it is for the NTP.
      * @return Whether the passed in URL is used to render the NTP.
      */
     public static boolean isNTPUrl(GURL gurl) {
-        // TODO(crbug.com/1139437): isNTPUrl(new GURL("about:newtab")) returns false though
-        // it should return true for this legacy URL.
         if (!gurl.isValid() || !isInternalScheme(gurl)) return false;
         return UrlConstants.NTP_HOST.equals(gurl.getHost());
     }
@@ -233,7 +236,11 @@ public class UrlUtilities {
     /**
      * @param url The URL to check whether it is for the NTP.
      * @return Whether the passed in URL is used to render the NTP.
+     * @deprecated For URLs coming from c++, those URLs should passed around in Java as a GURL.
+     *     For URLs created in Java, coming from third parties or users, those URLs should be
+     *     parsed into a GURL at their source using {@link UrlFormatter#fixupUrl(String)}.
      */
+    @Deprecated
     public static boolean isNTPUrl(String url) {
         // Also handle the legacy chrome://newtab and about:newtab URLs since they will redirect to
         // chrome-native://newtab natively.

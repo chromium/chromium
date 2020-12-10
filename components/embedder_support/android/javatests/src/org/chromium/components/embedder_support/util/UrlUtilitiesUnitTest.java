@@ -211,7 +211,8 @@ public class UrlUtilitiesUnitTest {
         Assert.assertTrue(UrlUtilities.isNTPUrl(new GURL("chrome-native://newtab")));
         Assert.assertTrue(UrlUtilities.isNTPUrl(new GURL("chrome://newtab")));
 
-        // TODO(crbug.com/1139437): Differs from UrlUtilities#isNTPUrl(String)
+        // Note that this intentionally differs from UrlUtilities#isNTPUrl(String) (see comments on
+        // method).
         Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("about:newtab")));
 
         Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("http://www.example.com")));
