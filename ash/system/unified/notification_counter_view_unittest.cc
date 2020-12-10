@@ -66,8 +66,7 @@ class NotificationCounterViewTest : public AshTestBase {
 
 TEST_F(NotificationCounterViewTest, CountForDisplay) {
   // VM camera/mic notifications are ignored by the counter.
-  AddNotification("camera", kVmCameraNotifierId);
-  AddNotification("mic", kVmMicNotifierId);
+  AddNotification("camera & mic", kVmCameraMicNotifierId);
 
   // Not visible when count == 0.
   notification_counter_view()->Update();

@@ -181,8 +181,7 @@ void VmCameraMicManager::OpenNotification(VmType vm, NotificationType type) {
     return;
   }
 
-  // TODO(b/167491603): Rename this notifier id and remove useless ones.
-  const char* notifier_id = ash::kVmCameraNotifierId;
+  const char* notifier_id = ash::kVmCameraMicNotifierId;
 
   const gfx::VectorIcon* source_icon = nullptr;
   int source_id;

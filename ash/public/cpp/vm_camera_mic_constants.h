@@ -11,8 +11,7 @@ namespace ash {
 
 // Notifier Ids used by VM mic/camera notifiations to avoid being counted by
 // `NotificationCounterView`.
-ASH_PUBLIC_EXPORT extern const char kVmMicNotifierId[];
-ASH_PUBLIC_EXPORT extern const char kVmCameraNotifierId[];
+ASH_PUBLIC_EXPORT extern const char kVmCameraMicNotifierId[];
 
 }  // namespace ash
 

@@ -120,7 +120,7 @@ void NotificationCounterView::Update() {
         const std::string& notifier = notification->notifier_id().id;
         // Don't count these notifications since we have `CameraMicTrayItemView`
         // to show indicators on the systray.
-        if (notifier == kVmCameraNotifierId || notifier == kVmMicNotifierId) {
+        if (notifier == kVmCameraMicNotifierId) {
           return false;
         }
         if (dont_count_media_notification &&

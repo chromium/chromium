@@ -6,7 +6,6 @@
 
 namespace ash {
 
-const char kVmMicNotifierId[] = "ash.vm_camera_mic.mic";
-const char kVmCameraNotifierId[] = "ash.vm_camera_mic.camera";
+const char kVmCameraMicNotifierId[] = "ash.vm_camera_mic";
 
 }  // namespace ash
