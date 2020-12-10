@@ -27,7 +27,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -162,6 +161,11 @@ public class ShareIntentTest {
         }
 
         @Override
+        public String getSystemServiceName(Class<?> serviceClass) {
+            return mActivity.getSystemServiceName(serviceClass);
+        }
+
+        @Override
         public Resources getResources() {
             return mActivity.getResources();
         }
@@ -174,7 +178,6 @@ public class ShareIntentTest {
 
     @Test
     @LargeTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1154180")
     public void testShareIntent() throws ExecutionException, InterruptedException {
         MockChromeActivity mockActivity = TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Sets a test component as last shared and "shareDirectly" option is set so that
