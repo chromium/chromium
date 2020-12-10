@@ -31,7 +31,6 @@ LoginScreenExtensionsStorageCleaner::LoginScreenExtensionsStorageCleaner() {
       extensions::pref_names::kInstallForceList,
       base::BindRepeating(&LoginScreenExtensionsStorageCleaner::OnPolicyUpdated,
                           base::Unretained(this)));
-  ClearPersistentDataForUninstalledExtensions();
 }
 
 LoginScreenExtensionsStorageCleaner::~LoginScreenExtensionsStorageCleaner() =
