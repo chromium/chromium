@@ -84,8 +84,7 @@ class BASE_EXPORT PathService {
 
   // Removes an override for a special directory or file. Returns true if there
   // was an override to remove or false if none was present.
-  // NOTE: This function is intended to be used by tests only!
-  static bool RemoveOverride(int key);
+  static bool RemoveOverrideForTests(int key);
 
   // Returns whether an override is present for a special directory or file.
   static bool IsOverriddenForTests(int key);

@@ -284,7 +284,7 @@ bool PathService::OverrideAndCreateIfNeeded(int key,
 }
 
 // static
-bool PathService::RemoveOverride(int key) {
+bool PathService::RemoveOverrideForTests(int key) {
   PathData* path_data = GetPathData();
   DCHECK(path_data);
 

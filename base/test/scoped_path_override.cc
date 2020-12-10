@@ -42,18 +42,18 @@ void ScopedPathOverride::SaveOriginal() {
 }
 
 ScopedPathOverride::~ScopedPathOverride() {
-   bool result = PathService::RemoveOverride(key_);
-   CHECK(result) << "The override seems to have been removed already!";
-   if (original_override_) {
-     // PathService::Override, by default, does some (blocking) checks to ensure
-     // that the path is absolute and exists. As the original override must have
-     // already gone through these checks, we can skip these checks here.
-     // This is needed for some tests which use ScopedPathOverride in scopes
-     // that disallow blocking.
-     result = PathService::OverrideAndCreateIfNeeded(
-         key_, *original_override_, /*is_absolute=*/true, /*create=*/false);
-     CHECK(result);
-   }
+  bool result = PathService::RemoveOverrideForTests(key_);
+  CHECK(result) << "The override seems to have been removed already!";
+  if (original_override_) {
+    // PathService::Override, by default, does some (blocking) checks to ensure
+    // that the path is absolute and exists. As the original override must have
+    // already gone through these checks, we can skip these checks here.
+    // This is needed for some tests which use ScopedPathOverride in scopes that
+    // disallow blocking.
+    result = PathService::OverrideAndCreateIfNeeded(
+        key_, *original_override_, /*is_absolute=*/true, /*create=*/false);
+    CHECK(result);
+  }
 }
 
 }  // namespace base

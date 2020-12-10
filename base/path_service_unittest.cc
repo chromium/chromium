@@ -242,11 +242,11 @@ TEST_F(PathServiceTest, OverrideMultiple) {
 TEST_F(PathServiceTest, RemoveOverride) {
   // Before we start the test we have to call RemoveOverride at least once to
   // clear any overrides that might have been left from other tests.
-  PathService::RemoveOverride(DIR_TEMP);
+  PathService::RemoveOverrideForTests(DIR_TEMP);
 
   FilePath original_user_data_dir;
   EXPECT_TRUE(PathService::Get(DIR_TEMP, &original_user_data_dir));
-  EXPECT_FALSE(PathService::RemoveOverride(DIR_TEMP));
+  EXPECT_FALSE(PathService::RemoveOverrideForTests(DIR_TEMP));
 
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -255,7 +255,7 @@ TEST_F(PathServiceTest, RemoveOverride) {
   EXPECT_TRUE(PathService::Get(DIR_TEMP, &new_user_data_dir));
   EXPECT_NE(original_user_data_dir, new_user_data_dir);
 
-  EXPECT_TRUE(PathService::RemoveOverride(DIR_TEMP));
+  EXPECT_TRUE(PathService::RemoveOverrideForTests(DIR_TEMP));
   EXPECT_TRUE(PathService::Get(DIR_TEMP, &new_user_data_dir));
   EXPECT_EQ(original_user_data_dir, new_user_data_dir);
 }
