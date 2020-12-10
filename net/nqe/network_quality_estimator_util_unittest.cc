@@ -214,8 +214,6 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_Localhost) {
   EXPECT_TRUE(IsPrivateHostForTesting(
       resolver.get(), HostPortPair("localhost", 443), NetworkIsolationKey()));
   EXPECT_TRUE(IsPrivateHostForTesting(
-      resolver.get(), HostPortPair("localhost6", 443), NetworkIsolationKey()));
-  EXPECT_TRUE(IsPrivateHostForTesting(
       resolver.get(), HostPortPair("127.0.0.1", 80), NetworkIsolationKey()));
   EXPECT_TRUE(IsPrivateHostForTesting(
       resolver.get(), HostPortPair("0.0.0.0", 80), NetworkIsolationKey()));
@@ -223,6 +221,13 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_Localhost) {
                                       NetworkIsolationKey()));
   EXPECT_FALSE(IsPrivateHostForTesting(
       resolver.get(), HostPortPair("google.com", 80), NetworkIsolationKey()));
+
+  // Legacy localhost names.
+  EXPECT_FALSE(IsPrivateHostForTesting(
+      resolver.get(), HostPortPair("localhost6", 443), NetworkIsolationKey()));
+  EXPECT_FALSE(IsPrivateHostForTesting(
+      resolver.get(), HostPortPair("localhost6.localdomain6", 443),
+      NetworkIsolationKey()));
 }
 
 }  // namespace

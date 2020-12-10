@@ -521,11 +521,9 @@ class NET_EXPORT HostResolverManager
   DISALLOW_COPY_AND_ASSIGN(HostResolverManager);
 };
 
-// Resolves a local hostname (such as "localhost" or "localhost6") into
+// Resolves a local hostname (such as "localhost" or "vhost.localhost") into
 // IP endpoints (with port 0). Returns true if |host| is a local
-// hostname and false otherwise. Special IPv6 names (e.g. "localhost6")
-// will resolve to an IPv6 address only, whereas other names will
-// resolve to both IPv4 and IPv6.
+// hostname and false otherwise. Names will resolve to both IPv4 and IPv6.
 // This function is only exposed so it can be unit-tested.
 // TODO(tfarina): It would be better to change the tests so this function
 // gets exercised indirectly through HostResolverManager.

@@ -466,14 +466,11 @@ void NetLogHostCacheEntry(const NetLogWithSource& net_log,
 bool ResolveLocalHostname(base::StringPiece host, AddressList* address_list) {
   address_list->clear();
 
-  bool is_local6;
-  if (!IsLocalHostname(host, &is_local6))
+  if (!IsLocalHostname(host))
     return false;
 
   address_list->push_back(IPEndPoint(IPAddress::IPv6Localhost(), 0));
-  if (!is_local6) {
-    address_list->push_back(IPEndPoint(IPAddress::IPv4Localhost(), 0));
-  }
+  address_list->push_back(IPEndPoint(IPAddress::IPv4Localhost(), 0));
 
   return true;
 }

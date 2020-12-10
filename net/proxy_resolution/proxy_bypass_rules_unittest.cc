@@ -57,8 +57,6 @@ void ExpectBypassLocalhost(
     "localhost",
     "localhost.",
     "foo.localhost",
-    "localhost6",
-    "localhost6.localdomain6",
     "127.0.0.1",
     "127.100.0.2",
     "[::1]",
@@ -366,10 +364,8 @@ TEST(ProxyBypassRulesTest, BypassSimpleHostnames) {
   EXPECT_FALSE(rules.Matches(GURL("http://[dead::beef]/")));
   EXPECT_FALSE(rules.Matches(GURL("http://192.168.1.1/")));
 
-  // Confusingly, <local> rule is NOT about localhost names. There is however
-  // overlap on "localhost6?" as it is both a simple hostname and a localhost
-  // name
-  ExpectBypassLocalhost(rules, false, {"localhost", "localhost6", "loopback"});
+  // Confusingly, <local> rule is NOT about localhost names.
+  ExpectBypassLocalhost(rules, false, {"localhost", "loopback"});
 
   // Should NOT bypass link-local addresses.
   ExpectBypassLinkLocal(rules, false);

@@ -523,8 +523,7 @@ localhost
 ```
 
 The complete rules are slightly more complicated. For instance on
-Windows we will also recognize `loopback`, and there is special casing of
-`localhost6` and `localhost6.localdomain6` in Chrome's localhost matching.
+Windows we will also recognize `loopback`.
 
 This concept of implicit proxy bypass rules is consistent with the
 platform-level proxy support on Windows and macOS (albeit with some differences

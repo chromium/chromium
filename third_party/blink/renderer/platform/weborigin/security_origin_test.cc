@@ -145,9 +145,11 @@ TEST_F(SecurityOriginTest, IsPotentiallyTrustworthy) {
       {false, false, "http://[::127.0.0.1]"},
 
       // TODO(eroman): Not documented why these are recognized.
-      {true, true, "http://localhost6"},
-      {true, true, "ftp://localhost6.localdomain6"},
       {true, true, "http://localhost.localdomain"},
+
+      // Legacy localhost names.
+      {false, false, "http://localhost6"},
+      {false, false, "ftp://localhost6.localdomain6"},
 
       // Secure transports are considered trustworthy.
       {true, false, "https://foobar.com"},

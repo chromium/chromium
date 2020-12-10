@@ -203,11 +203,8 @@ NET_EXPORT_PRIVATE bool IsGoogleHost(base::StringPiece host);
 NET_EXPORT_PRIVATE bool IsTLS13ExperimentHost(base::StringPiece host);
 
 // This function tests |host| to see if it is of any local hostname form.
-// |host| is normalized before being tested and if |is_local6| is not NULL then
-// it it will be set to true if the localhost name implies an IPv6 interface (
-// for instance localhost6.localdomain6).
-NET_EXPORT_PRIVATE bool IsLocalHostname(base::StringPiece host,
-                                        bool* is_local6);
+// |host| is normalized before being tested.
+NET_EXPORT_PRIVATE bool IsLocalHostname(base::StringPiece host);
 
 }  // namespace net
 

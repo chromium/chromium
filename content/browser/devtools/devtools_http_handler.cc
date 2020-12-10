@@ -113,7 +113,7 @@ bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info) {
   if (header.empty())
     return true;
   GURL url = GURL("https://" + header);
-  return url.HostIsIPAddress() || net::IsLocalHostname(url.host(), nullptr);
+  return url.HostIsIPAddress() || net::IsLocalHostname(url.host());
 }
 
 }  // namespace

@@ -493,13 +493,6 @@ void TestBothLoopbackIPs(const std::string& host) {
   EXPECT_TRUE(HasAddress(IPAddress::IPv6Localhost(), addresses));
 }
 
-void TestIPv6LoopbackOnly(const std::string& host) {
-  AddressList addresses;
-  EXPECT_TRUE(ResolveLocalHostname(host, &addresses));
-  EXPECT_EQ(1u, addresses.size());
-  EXPECT_TRUE(HasAddress(IPAddress::IPv6Localhost(), addresses));
-}
-
 }  // namespace
 
 class HostResolverManagerTest : public TestWithTaskEnvironment {
@@ -756,30 +749,6 @@ TEST_F(HostResolverManagerTest, DnsQueryType) {
 
 TEST_F(HostResolverManagerTest, LocalhostIPV4IPV6Lookup) {
   HostResolver::ResolveHostParameters parameters;
-
-  parameters.dns_query_type = DnsQueryType::A;
-  ResolveHostResponseHelper v6_v4_response(resolver_->CreateRequest(
-      HostPortPair("localhost6", 80), NetworkIsolationKey(), NetLogWithSource(),
-      parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  EXPECT_THAT(v6_v4_response.result_error(), IsOk());
-  EXPECT_THAT(v6_v4_response.request()->GetAddressResults().value().endpoints(),
-              testing::IsEmpty());
-
-  parameters.dns_query_type = DnsQueryType::AAAA;
-  ResolveHostResponseHelper v6_v6_response(resolver_->CreateRequest(
-      HostPortPair("localhost6", 80), NetworkIsolationKey(), NetLogWithSource(),
-      parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  EXPECT_THAT(v6_v6_response.result_error(), IsOk());
-  EXPECT_THAT(v6_v6_response.request()->GetAddressResults().value().endpoints(),
-              testing::ElementsAre(CreateExpected("::1", 80)));
-
-  ResolveHostResponseHelper v6_unsp_response(resolver_->CreateRequest(
-      HostPortPair("localhost6", 80), NetworkIsolationKey(), NetLogWithSource(),
-      base::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
-  EXPECT_THAT(v6_unsp_response.result_error(), IsOk());
-  EXPECT_THAT(
-      v6_unsp_response.request()->GetAddressResults().value().endpoints(),
-      testing::ElementsAre(CreateExpected("::1", 80)));
 
   parameters.dns_query_type = DnsQueryType::A;
   ResolveHostResponseHelper v4_v4_response(resolver_->CreateRequest(
@@ -7005,11 +6974,12 @@ TEST_F(HostResolverManagerTest, ResolveLocalHostname) {
   TestBothLoopbackIPs("foo.localhost.");
   TestBothLoopbackIPs("foo.localhOSt.");
 
-  TestIPv6LoopbackOnly("localhost6");
-  TestIPv6LoopbackOnly("localhoST6");
-  TestIPv6LoopbackOnly("localhost6.");
-  TestIPv6LoopbackOnly("localhost6.localdomain6");
-  TestIPv6LoopbackOnly("localhost6.localdomain6.");
+  // Legacy localhost names.
+  EXPECT_FALSE(ResolveLocalHostname("localhost6", &addresses));
+  EXPECT_FALSE(ResolveLocalHostname("localhoST6", &addresses));
+  EXPECT_FALSE(ResolveLocalHostname("localhost6.", &addresses));
+  EXPECT_FALSE(ResolveLocalHostname("localhost6.localdomain6", &addresses));
+  EXPECT_FALSE(ResolveLocalHostname("localhost6.localdomain6.", &addresses));
 
   EXPECT_FALSE(ResolveLocalHostname("127.0.0.1", &addresses));
   EXPECT_FALSE(ResolveLocalHostname("::1", &addresses));

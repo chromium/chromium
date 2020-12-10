@@ -240,8 +240,6 @@ bool ProxyBypassRules::MatchesImplicitRules(const GURL& url) {
   //     localhost
   //     localhost.
   //     *.localhost
-  //     localhost6
-  //     localhost6.localdomain6
   //     loopback  [Windows only]
   //     loopback. [Windows only]
   //     [::1]

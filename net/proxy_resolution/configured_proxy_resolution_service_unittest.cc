@@ -3967,8 +3967,6 @@ const char* kImplicityBypassedHosts[] = {
     "localhost",
     "localhost.",
     "foo.localhost",
-    "localhost6",
-    "localhost6.localdomain6",
     "127.0.0.1",
     "127.100.0.2",
     "[::1]",

@@ -380,7 +380,7 @@ bool HostStringIsLocalhost(base::StringPiece host) {
   IPAddress ip_address;
   if (ip_address.AssignFromIPLiteral(host))
     return ip_address.IsLoopback();
-  return IsLocalHostname(host, nullptr);
+  return IsLocalHostname(host);
 }
 
 GURL SimplifyUrlForRequest(const GURL& url) {
@@ -444,21 +444,12 @@ bool IsTLS13ExperimentHost(base::StringPiece host) {
          host == "gmail.com";
 }
 
-bool IsLocalHostname(base::StringPiece host, bool* is_local6) {
+bool IsLocalHostname(base::StringPiece host) {
   std::string normalized_host = base::ToLowerASCII(host);
   // Remove any trailing '.'.
   if (!normalized_host.empty() && *normalized_host.rbegin() == '.')
     normalized_host.resize(normalized_host.size() - 1);
 
-  if (normalized_host == "localhost6" ||
-      normalized_host == "localhost6.localdomain6") {
-    if (is_local6)
-      *is_local6 = true;
-    return true;
-  }
-
-  if (is_local6)
-    *is_local6 = false;
   return normalized_host == "localhost" ||
          normalized_host == "localhost.localdomain" ||
          IsNormalizedLocalhostTLD(normalized_host);

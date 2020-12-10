@@ -452,10 +452,6 @@ TEST(UrlUtilTest, IsLocalhost) {
   EXPECT_TRUE(HostStringIsLocalhost("localhost.localdomain"));
   EXPECT_TRUE(HostStringIsLocalhost("localhost.localDOMain"));
   EXPECT_TRUE(HostStringIsLocalhost("localhost.localdomain."));
-  EXPECT_TRUE(HostStringIsLocalhost("localhost6"));
-  EXPECT_TRUE(HostStringIsLocalhost("localhost6."));
-  EXPECT_TRUE(HostStringIsLocalhost("localhost6.localdomain6"));
-  EXPECT_TRUE(HostStringIsLocalhost("localhost6.localdomain6."));
   EXPECT_TRUE(HostStringIsLocalhost("127.0.0.1"));
   EXPECT_TRUE(HostStringIsLocalhost("127.0.1.0"));
   EXPECT_TRUE(HostStringIsLocalhost("127.1.0.0"));
@@ -468,6 +464,11 @@ TEST(UrlUtilTest, IsLocalhost) {
   EXPECT_TRUE(HostStringIsLocalhost("foo.localhost."));
   EXPECT_TRUE(HostStringIsLocalhost("foo.localhoST"));
   EXPECT_TRUE(HostStringIsLocalhost("foo.localhoST."));
+
+  EXPECT_FALSE(HostStringIsLocalhost("localhost6"));
+  EXPECT_FALSE(HostStringIsLocalhost("localhost6."));
+  EXPECT_FALSE(HostStringIsLocalhost("localhost6.localdomain6"));
+  EXPECT_FALSE(HostStringIsLocalhost("localhost6.localdomain6."));
 
   EXPECT_FALSE(HostStringIsLocalhost("localhostx"));
   EXPECT_FALSE(HostStringIsLocalhost("localhost.x"));

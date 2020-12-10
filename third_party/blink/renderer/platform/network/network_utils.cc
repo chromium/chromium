@@ -52,11 +52,6 @@ bool IsReservedIPAddress(const String& host) {
   return !address.IsPubliclyRoutable();
 }
 
-bool IsLocalHostname(const String& host, bool* is_local6) {
-  StringUTF8Adaptor utf8(host);
-  return net::IsLocalHostname(utf8.AsStringPiece(), is_local6);
-}
-
 String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
   StringUTF8Adaptor host_utf8(host);
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
