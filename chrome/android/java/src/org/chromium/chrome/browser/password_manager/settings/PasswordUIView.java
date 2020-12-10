@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.password_manager.settings;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.base.annotations.CalledByNative;
@@ -47,6 +49,13 @@ public final class PasswordUIView implements PasswordManagerHandler {
     @CalledByNative
     private void passwordExceptionListAvailable(int count) {
         mObserver.passwordExceptionListAvailable(count);
+    }
+
+    @Override
+    @VisibleForTesting
+    public void insertPasswordEntryForTesting(String origin, String username, String password) {
+        PasswordUIViewJni.get().insertPasswordEntryForTesting(
+                mNativePasswordUIViewAndroid, origin, username, password);
     }
 
     // Calls native to refresh password and exception lists. The native code calls back into
@@ -121,6 +130,8 @@ public final class PasswordUIView implements PasswordManagerHandler {
     @NativeMethods
     interface Natives {
         long init(PasswordUIView caller);
+        void insertPasswordEntryForTesting(
+                long nativePasswordUIViewAndroid, String origin, String username, String password);
         void updatePasswordLists(long nativePasswordUIViewAndroid, PasswordUIView caller);
         SavedPasswordEntry getSavedPasswordEntry(
                 long nativePasswordUIViewAndroid, PasswordUIView caller, int index);

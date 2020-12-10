@@ -61,6 +61,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.preference.PreferenceViewHolder;
@@ -224,6 +225,12 @@ public class PasswordSettingsTest {
          */
         public FakePasswordManagerHandler(PasswordListObserver observer) {
             mObserver = observer;
+        }
+
+        @Override
+        @VisibleForTesting
+        public void insertPasswordEntryForTesting(String origin, String username, String password) {
+            mSavedPasswords.add(new SavedPasswordEntry(origin, username, password));
         }
 
         // Pretends that the updated lists are |mSavedPasswords| for the saved passwords and an

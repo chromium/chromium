@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.password_manager.settings;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 
@@ -31,6 +33,12 @@ public interface PasswordManagerHandler {
          */
         void passwordExceptionListAvailable(int count);
     }
+
+    /**
+     * Called to insert a password entry into the password store.
+     */
+    @VisibleForTesting
+    public void insertPasswordEntryForTesting(String origin, String username, String password);
 
     /**
      * Called to start fetching password and exception lists.

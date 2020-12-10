@@ -31,12 +31,14 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
+#include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
@@ -92,6 +94,20 @@ void PasswordUIViewAndroid::SetPasswordExceptionList(
     Java_PasswordUIView_passwordExceptionListAvailable(
         env, ui_controller, static_cast<int>(password_exception_list.size()));
   }
+}
+
+void PasswordUIViewAndroid::InsertPasswordEntryForTesting(
+    JNIEnv* env,
+    const JavaRef<jstring>& origin,
+    const JavaRef<jstring>& username,
+    const JavaRef<jstring>& password) {
+  password_manager::PasswordForm form;
+  form.url = GURL(ConvertJavaStringToUTF16(env, origin));
+  form.signon_realm = password_manager::GetSignonRealm(form.url);
+  form.username_value = ConvertJavaStringToUTF16(env, username);
+  form.password_value = ConvertJavaStringToUTF16(env, password);
+
+  password_manager_presenter_.AddLogin(form);
 }
 
 void PasswordUIViewAndroid::UpdatePasswordLists(JNIEnv* env,

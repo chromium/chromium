@@ -65,6 +65,11 @@ class PasswordUIViewAndroid : public PasswordUIView {
       JNIEnv* env,
       const base::android::JavaRef<jobject>&,
       int index);
+  void InsertPasswordEntryForTesting(
+      JNIEnv* env,
+      const base::android::JavaRef<jstring>& origin,
+      const base::android::JavaRef<jstring>& username,
+      const base::android::JavaRef<jstring>& password);
   void UpdatePasswordLists(JNIEnv* env, const base::android::JavaRef<jobject>&);
   void HandleRemoveSavedPasswordEntry(JNIEnv* env,
                                       const base::android::JavaRef<jobject>&,
