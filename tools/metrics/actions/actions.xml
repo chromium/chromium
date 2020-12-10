@@ -1651,6 +1651,43 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.BookmarkPage.ReadingList.MarkAsRead">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <description>
+    User marked an item as read in the Reading List page from the Android
+    bookmark page by clicking &quot;Mark As Read&quot; from the &quot;more&quot;
+    menu.
+  </description>
+</action>
+
+<action name="Android.BookmarkPage.ReadingList.OpenReadingList">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <description>
+    User navigated to the Reading List page from the Android bookmark page by
+    clicking on reading list folder.
+  </description>
+</action>
+
+<action name="Android.BookmarkPage.ReadingList.RemoveItem">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <description>
+    User removed an item from the Reading List page from the Android bookmarks
+    page by clicking &quot;delete&quot; from the &quot;more&quot; menu.
+  </description>
+</action>
+
+<action name="Android.BookmarkPage.ReadingList.SelectFromMenu">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <description>
+    User selected an item from the Reading List page from the Android bookmark
+    page by clicking &quot;select&quot; from the &quot;more&quot; menu.
+  </description>
+</action>
+
 <action name="Android.BookmarkPage.RemoveItem">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -1666,6 +1703,16 @@ should be able to be added at any place in this file.
   <description>
     User selected an item on the native Android bookmark page by clicking
     &quot;select&quot; from the &quot;more&quot; menu.
+  </description>
+</action>
+
+<action name="Android.Bookmarks.BottomSheet.Open">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <description>
+    User tapped on the star icon from the app menu to bookmark a page. This
+    resulted in opening the bookmarks bottom sheet that presents a list of
+    destination folders to choose from for saving the bookmark.
   </description>
 </action>
 

@@ -8,11 +8,13 @@ import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
@@ -24,8 +26,13 @@ import java.util.List;
 
 /** Unit tests for {@link ReadingListSectionHeader}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class ReadingListSectionHeaderTest {
+    @Before
+    public void setup() {
+        ShadowRecordHistogram.reset();
+    }
+
     @Test
     public void testListWithReadUnreadItems() {
         Context context = ContextUtils.getApplicationContext();
@@ -51,6 +58,12 @@ public class ReadingListSectionHeaderTest {
                 "Expected a different item", 1, listItems.get(3).getBookmarkItem().getId().getId());
         assertEquals(
                 "Expected a different item", 2, listItems.get(4).getBookmarkItem().getId().getId());
+        assertEquals("Incorrect histogram value for unread items", 1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Bookmarks.ReadingList.NumberOfUnreadItems", 1));
+        assertEquals("Incorrect histogram value for read items", 1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        "Bookmarks.ReadingList.NumberOfReadItems", 2));
     }
 
     @Test

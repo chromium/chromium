@@ -182,6 +182,9 @@ public abstract class BookmarkRow
             if (textId == R.string.bookmark_item_select) {
                 setChecked(mDelegate.getSelectionDelegate().toggleSelectionForItem(mBookmarkId));
                 RecordUserAction.record("Android.BookmarkPage.SelectFromMenu");
+                if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
+                    RecordUserAction.record("Android.BookmarkPage.ReadingList.SelectFromMenu");
+                }
             } else if (textId == R.string.bookmark_item_edit) {
                 BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
                 if (bookmarkItem.isFolder()) {
@@ -194,7 +197,7 @@ public abstract class BookmarkRow
                 BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
                 mDelegate.getModel().setReadStatusForReadingList(
                         bookmarkItem.getUrl(), true /*read*/);
-                // TODO(crbug/1140277): Add metrics.
+                RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsRead");
             } else if (textId == R.string.bookmark_item_move) {
                 BookmarkFolderSelectActivity.startFolderSelectActivity(getContext(), mBookmarkId);
                 RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
@@ -202,6 +205,9 @@ public abstract class BookmarkRow
                 if (mDelegate != null && mDelegate.getModel() != null) {
                     mDelegate.getModel().deleteBookmarks(mBookmarkId);
                     RecordUserAction.record("Android.BookmarkPage.RemoveItem");
+                    if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
+                        RecordUserAction.record("Android.BookmarkPage.ReadingList.RemoveItem");
+                    }
                 }
             } else if (textId == R.string.bookmark_show_in_folder) {
                 BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
