@@ -3214,7 +3214,8 @@ const char kAndroidNightModeTabReparentingDescription[] =
 
 const char kSwipeToMoveCursorName[] = "Swipe to move cursor";
 const char kSwipeToMoveCursorDescription[] =
-    "Allows user to use touch gestures to move the text cursor around.";
+    "Allows user to use touch gestures to move the text cursor around. This "
+    "flag will only take effect on Android 11 and above.";
 
 const char kTabbedAppOverflowMenuIconsName[] =
     "Android tabbed app overflow menu icons";
