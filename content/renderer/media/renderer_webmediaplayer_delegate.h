@@ -71,7 +71,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
                                              bool available) override;
   void DidAudioOutputSinkChange(int delegate_id,
                                 const std::string& hashed_device_id) override;
-  void DidDisableAudioOutputSinkChanges(int delegate_id) override;
   void DidBufferUnderflow(int player_id) override;
   void DidSeek(int player_id) override;
 

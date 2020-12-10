@@ -171,6 +171,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
                                                  base::TimeDelta duration,
                                                  base::TimeDelta position) = 0;
 
+  // Notify the client that the audio sink cannot be changed.
+  virtual void DidDisableAudioOutputSinkChanges() = 0;
+
   // Notify the client that one of the state used by Picture-in-Picture has
   // changed. The client will then have to poll the states from the associated
   // WebMediaPlayer.

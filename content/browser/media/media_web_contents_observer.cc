@@ -244,9 +244,6 @@ bool MediaWebContentsObserver::OnMessageReceived(
         OnPictureInPictureAvailabilityChanged)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
                         OnAudioOutputSinkChanged);
-    IPC_MESSAGE_HANDLER(
-        MediaPlayerDelegateHostMsg_OnAudioOutputSinkChangingDisabled,
-        OnAudioOutputSinkChangingDisabled)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnBufferUnderflow,
                         OnBufferUnderflow)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnSeek, OnSeek)
@@ -344,6 +341,12 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
         const media_session::MediaPosition& media_position) {
   media_web_contents_observer_->session_controllers_manager()
       ->OnMediaPositionStateChanged(media_player_id_, media_position);
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnAudioOutputSinkChangingDisabled() {
+  media_web_contents_observer_->session_controllers_manager()
+      ->OnAudioOutputSinkChangingDisabled(media_player_id_);
 }
 
 MediaWebContentsObserver::PlayerInfo* MediaWebContentsObserver::GetPlayerInfo(
@@ -506,13 +509,6 @@ MediaWebContentsObserver::GetMediaPlayerRemote(const MediaPlayerId& player_id) {
   DCHECK(media_player_remotes_.contains(player_id));
   DCHECK(media_player_remotes_[player_id].is_bound());
   return media_player_remotes_[player_id];
-}
-
-void MediaWebContentsObserver::OnAudioOutputSinkChangingDisabled(
-    RenderFrameHost* render_frame_host,
-    int delegate_id) {
-  session_controllers_manager_.OnAudioOutputSinkChangingDisabled(
-      MediaPlayerId(render_frame_host, delegate_id));
 }
 
 void MediaWebContentsObserver::OnBufferUnderflow(

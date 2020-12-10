@@ -40,6 +40,10 @@ interface MediaPlayerObserver {
   // Notifies the browser process that the media playback position has changed,
   // and reports the new current position via |media_position|.
   OnMediaPositionStateChanged(media_session.mojom.MediaPosition media_position);
+
+  // Notifies the browser process that the ability to switch audio output
+  // devices for the associated media player has been disabled.
+  OnAudioOutputSinkChangingDisabled();
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

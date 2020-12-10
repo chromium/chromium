@@ -186,10 +186,6 @@ class FakeWebMediaPlayerDelegate
     EXPECT_EQ(delegate_id_, delegate_id);
   }
 
-  void DidDisableAudioOutputSinkChanges(int delegate_id) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
  private:
   int delegate_id_ = 1234;
   Observer* observer_ = nullptr;
@@ -613,6 +609,7 @@ class WebMediaPlayerMSTest
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
                                          base::TimeDelta position) override {}
+  void DidDisableAudioOutputSinkChanges() override {}
   Features GetFeatures() override { return Features(); }
 
   // Implementation of cc::VideoFrameProvider::Client

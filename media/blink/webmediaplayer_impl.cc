@@ -430,12 +430,12 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
 
   auto on_audio_source_provider_set_client_callback = base::BindOnce(
       [](base::WeakPtr<WebMediaPlayerImpl> self,
-         blink::WebMediaPlayerDelegate* const delegate, int delegate_id) {
+         blink::WebMediaPlayerClient* const client) {
         if (!self)
           return;
-        delegate->DidDisableAudioOutputSinkChanges(self->delegate_id_);
+        client->DidDisableAudioOutputSinkChanges();
       },
-      weak_this_, delegate_, delegate_id_);
+      weak_this_, client_);
 
   // TODO(xhwang): When we use an external Renderer, many methods won't work,
   // e.g. GetCurrentFrameFromCompositor(). See http://crbug.com/434861

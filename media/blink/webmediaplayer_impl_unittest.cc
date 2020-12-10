@@ -157,6 +157,7 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_METHOD0(PausePlayback, void());
   MOCK_METHOD3(DidPlayerMediaPositionStateChange,
                void(double, base::TimeDelta, base::TimeDelta position));
+  MOCK_METHOD0(DidDisableAudioOutputSinkChanges, void());
   MOCK_METHOD0(GetFeatures, Features(void));
   MOCK_METHOD0(OnRequestVideoFrameCallback, void());
   MOCK_METHOD0(GetTextTrackMetadata, std::vector<blink::TextTrackMetadata>());
@@ -279,8 +280,6 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
   MOCK_METHOD2(DidPictureInPictureAvailabilityChange, void(int, bool));
 
   MOCK_METHOD2(DidAudioOutputSinkChange, void(int, const std::string&));
-
-  MOCK_METHOD1(DidDisableAudioOutputSinkChanges, void(int));
 
  private:
   Observer* observer_ = nullptr;
