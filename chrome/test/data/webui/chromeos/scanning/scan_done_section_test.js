@@ -42,11 +42,19 @@ export function scanDoneSectionTest() {
 
   test('pageNumberUpdatesTitleText', () => {
     scanDoneSection.pageNumber = 1;
-    assertEquals(
-        'Scanned file saved!', scanDoneSection.$.title.textContent.trim());
-    scanDoneSection.pageNumber = 2;
-    assertEquals(
-        'Scanned files saved!', scanDoneSection.$.title.textContent.trim());
+    return flushTasks()
+        .then(() => {
+          assertEquals(
+              'Scanned file saved!',
+              scanDoneSection.$.title.textContent.trim());
+          scanDoneSection.pageNumber = 2;
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(
+              'Scanned files saved!',
+              scanDoneSection.$.title.textContent.trim());
+        });
   });
 
   test('showFileLocation', () => {

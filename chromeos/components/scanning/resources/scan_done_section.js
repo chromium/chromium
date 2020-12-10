@@ -30,25 +30,22 @@ Polymer({
 
   properties: {
     /** @type {number} */
-    pageNumber: Number,
+    pageNumber: {
+      type: Number,
+      observer: 'onPageNumberChange_',
+    },
 
     /** @type {?mojoBase.mojom.FilePath} */
     lastScannedFilePath: Object,
+
+    /** @private {string} */
+    titleText_: String,
   },
 
   /** @override */
   created() {
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getTitleText_() {
-    return this.i18n(
-        this.pageNumber > 1 ? 'fileSavedTextPlural' : 'fileSavedText');
   },
 
   /** @private */
@@ -65,5 +62,13 @@ Polymer({
                 this.fire('file-not-found');
               }
             });
+  },
+
+  /** @private */
+  onPageNumberChange_() {
+    this.browserProxy_.getPluralString('fileSavedText', this.pageNumber)
+        .then(
+            /* @type {string} */ (pluralString) => this.titleText_ =
+                pluralString);
   },
 });

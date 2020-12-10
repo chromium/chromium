@@ -35,6 +35,14 @@ export class ScanningBrowserProxy {
    * @return {!Promise<boolean>} True if the file is found and Files app opens.
    */
   showFileInLocation(pathToFile) {}
+
+  /**
+   * Returns a localized, pluralized string for |name| based on |count|.
+   * @param {string} name
+   * @param {number} count
+   * @return {!Promise<string>}
+   */
+  getPluralString(name, count) {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -52,6 +60,11 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   showFileInLocation(pathToFile) {
     return sendWithPromise('showFileInLocation', pathToFile);
+  }
+
+  /** @override */
+  getPluralString(name, count) {
+    return sendWithPromise('getPluralString', name, count);
   }
 }
 

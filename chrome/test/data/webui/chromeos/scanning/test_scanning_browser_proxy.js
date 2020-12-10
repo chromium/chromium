@@ -17,6 +17,7 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
       'initialize',
       'requestScanToLocation',
       'showFileInLocation',
+      'getPluralString',
     ]);
 
     /** @private {?SelectedPath} */
@@ -44,6 +45,16 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   showFileInLocation(pathToFile) {
     this.methodCalled('showFileInLocation');
     return Promise.resolve(this.pathToFile_ === pathToFile);
+  }
+
+  /**
+   * @param {string} name
+   * @param {number} count
+   */
+  getPluralString(name, count) {
+    this.methodCalled('getPluralString');
+    return Promise.resolve(
+        count === 1 ? 'Scanned file saved!' : 'Scanned files saved!');
   }
 
   /** @param {!SelectedPath} selectedPath */

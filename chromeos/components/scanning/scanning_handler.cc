@@ -46,6 +46,11 @@ void ScanningHandler::RegisterMessages() {
       "showFileInLocation",
       base::BindRepeating(&ScanningHandler::HandleShowFileInLocation,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "getPluralString",
+      base::BindRepeating(&ScanningHandler::HandleGetPluralString,
+                          base::Unretained(this)));
 }
 
 void ScanningHandler::HandleInitialize(const base::ListValue* args) {
@@ -99,6 +104,26 @@ void ScanningHandler::FileSelectionCanceled(void* params) {
 
   ResolveJavascriptCallback(base::Value(scan_location_callback_id_),
                             CreateSelectedPathValue(base::FilePath()));
+}
+
+void ScanningHandler::AddStringToPluralMap(const std::string& name,
+                                           int string_id) {
+  string_id_map_[name] = string_id;
+}
+
+void ScanningHandler::HandleGetPluralString(const base::ListValue* args) {
+  if (!IsJavascriptAllowed())
+    return;
+
+  CHECK_EQ(3U, args->GetSize());
+  const std::string callback = args->GetList()[0].GetString();
+  const std::string name = args->GetList()[1].GetString();
+  const int count = args->GetList()[2].GetInt();
+
+  const base::string16 localized_string = l10n_util::GetPluralStringFUTF16(
+      string_id_map_.find(name)->second, count);
+  ResolveJavascriptCallback(base::Value(callback),
+                            base::Value(localized_string));
 }
 
 // Uses the full filepath and the base directory (lowest level directory in the

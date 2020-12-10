@@ -63,8 +63,6 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"defaultSourceOptionText", IDS_SCANNING_APP_DEFAULT_SOURCE_OPTION_TEXT},
       {"doneButtonText", IDS_SCANNING_APP_DONE_BUTTON_TEXT},
       {"fileNotFoundToastText", IDS_SCANNING_APP_FILE_NOT_FOUND_TOAST_TEXT},
-      {"fileSavedText", IDS_SCANNING_APP_FILE_SAVED_TEXT},
-      {"fileSavedTextPlural", IDS_SCANNING_APP_FILE_SAVED_TEXT_PLURAL},
       {"fileTypeDropdownLabel", IDS_SCANNING_APP_FILE_TYPE_DROPDOWN_LABEL},
       {"fitToScanAreaOptionText",
        IDS_SCANNING_APP_FIT_TO_SCAN_AREA_OPTION_TEXT},
@@ -109,6 +107,14 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
   html_source->UseStringsJs();
 }
 
+void AddScanningAppPluralStrings(ScanningHandler* handler) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"fileSavedText", IDS_SCANNING_APP_FILE_SAVED_TEXT}};
+
+  for (const auto& str : kLocalizedStrings)
+    handler->AddStringToPluralMap(str.name, str.id);
+}
+
 }  // namespace
 
 ScanningUI::ScanningUI(
@@ -138,9 +144,12 @@ ScanningUI::ScanningUI(
 
   AddScanningAppStrings(html_source.get());
 
-  web_ui->AddMessageHandler(std::make_unique<ScanningHandler>(
+  auto handler = std::make_unique<ScanningHandler>(
       select_file_policy_creator, std::move(scanning_paths_provider),
-      open_files_app_fn));
+      open_files_app_fn);
+  AddScanningAppPluralStrings(handler.get());
+
+  web_ui->AddMessageHandler(std::move(handler));
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 }

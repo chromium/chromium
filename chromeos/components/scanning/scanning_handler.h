@@ -58,6 +58,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
 
   base::Value CreateSelectedPathValue(const base::FilePath& path);
 
+  // Adds to map of string IDs for pluralization.
+  void AddStringToPluralMap(const std::string& name, int id);
+
   void SetWebUIForTest(content::WebUI* web_ui);
 
  private:
@@ -71,6 +74,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // Opens the Files app to the show the saved scan file.
   void HandleShowFileInLocation(const base::ListValue* args);
 
+  // Returns a localized, pluralized string.
+  void HandleGetPluralString(const base::ListValue* args);
+
   SelectFilePolicyCreator select_file_policy_creator_;
 
   std::string scan_location_callback_id_;
@@ -82,6 +88,8 @@ class ScanningHandler : public content::WebUIMessageHandler,
 
   // Opens Files app to the desired file location.
   OpenFilesAppFunction open_files_app_fn_;
+
+  std::map<std::string, int> string_id_map_;
 };
 
 }  // namespace chromeos
