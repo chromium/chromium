@@ -21,7 +21,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
-#include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -327,13 +326,11 @@
   self.NTPMediator.headerCollectionInteractionHandler =
       self.headerCollectionInteractionHandler;
 
-  if (DragAndDropIsEnabled()) {
-    self.dragDropHandler = [[URLDragDropHandler alloc] init];
-    self.dragDropHandler.dropDelegate = self;
-    [self.suggestionsViewController.collectionView
-        addInteraction:[[UIDropInteraction alloc]
-                           initWithDelegate:self.dragDropHandler]];
-  }
+  self.dragDropHandler = [[URLDragDropHandler alloc] init];
+  self.dragDropHandler.dropDelegate = self;
+  [self.suggestionsViewController.collectionView
+      addInteraction:[[UIDropInteraction alloc]
+                         initWithDelegate:self.dragDropHandler]];
 }
 
 - (void)stop {

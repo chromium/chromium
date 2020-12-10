@@ -16,7 +16,6 @@
 #include "components/variations/net/variations_http_headers.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
@@ -221,14 +220,12 @@
 
   self.started = YES;
 
-  if (DragAndDropIsEnabled()) {
     self.dragDropHandler = [[URLDragDropHandler alloc] init];
     self.dragDropHandler.origin = WindowActivityLocationBarSteadyViewOrigin;
     self.dragDropHandler.dragDataSource = self;
     [self.viewController.view
         addInteraction:[[UIDragInteraction alloc]
                            initWithDelegate:self.dragDropHandler]];
-  }
 }
 
 - (void)stop {

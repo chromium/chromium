@@ -18,7 +18,6 @@
 #include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
@@ -495,15 +494,13 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.sharedState.observer = self;
   self.sharedState.currentlyShowingSearchResults = NO;
 
-  if (DragAndDropIsEnabled()) {
-    self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
-    self.dragDropHandler.origin = WindowActivityBookmarksOrigin;
-    self.dragDropHandler.dragDataSource = self;
-    self.dragDropHandler.dropDelegate = self;
-    self.tableView.dragDelegate = self.dragDropHandler;
-    self.tableView.dropDelegate = self.dragDropHandler;
-    self.tableView.dragInteractionEnabled = true;
-  }
+  self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
+  self.dragDropHandler.origin = WindowActivityBookmarksOrigin;
+  self.dragDropHandler.dragDataSource = self;
+  self.dragDropHandler.dropDelegate = self;
+  self.tableView.dragDelegate = self.dragDropHandler;
+  self.tableView.dropDelegate = self.dragDropHandler;
+  self.tableView.dragInteractionEnabled = true;
 
   // Configure the table view.
   self.sharedState.tableView.accessibilityIdentifier =

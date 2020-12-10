@@ -51,10 +51,6 @@ extern const base::Feature kUseDefaultUserAgentInWebClient;
 // of properties using hard coded logic.
 extern const base::Feature kPreserveScrollViewProperties;
 
-// When enabled, supports dropping URLs on the web content area to navigate to
-// the URL.
-extern const base::Feature kAddWebContentDropInteraction;
-
 // When enabled, opening a URL with a text fragment (e.g.,
 // example.com/#:~:text=examples) will cause matching text in the page to be
 // highlighted and scrolled into view.

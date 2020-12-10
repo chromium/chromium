@@ -11,11 +11,6 @@
 
 namespace flag_descriptions {
 
-// Title and description for the flag to add a custom drop interaction to web
-// content.
-extern const char kAddWebContentDropInteractionName[];
-extern const char kAddWebContentDropInteractionDescription[];
-
 // Title and description for the flag to control the autofill query cache.
 extern const char kAutofillCacheQueryResponsesName[];
 extern const char kAutofillCacheQueryResponsesDescription[];
@@ -146,10 +141,6 @@ extern const char kDisableProgressBarAnimationDescription[];
 // Discover feed in the Bling NTP.
 extern const char kDiscoverFeedInNtpName[];
 extern const char kDiscoverFeedInNtpDescription[];
-
-// Title and description for the flag to enable drag and drop.
-extern const char kDragAndDropName[];
-extern const char kDragAndDropDescription[];
 
 // Title and description for the flag to enable EditBookmarks enterprise
 // policy on iOS.

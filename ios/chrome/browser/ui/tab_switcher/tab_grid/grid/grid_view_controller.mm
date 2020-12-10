@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #import "base/numerics/safe_conversions.h"
-#include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #include "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
@@ -70,14 +69,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // ID of the last item to be inserted. This is used to track if the active tab
 // was newly created when building the animation layout for transitions.
 @property(nonatomic, copy) NSString* lastInsertedItemID;
-// The gesture recognizer used for interactive item reordering.
-@property(nonatomic, strong)
-    UILongPressGestureRecognizer* itemReorderRecognizer;
-// The touch location of an interactively reordering item, expressed as an
-// offset from its center. This is subtracted from the location that is passed
-// to -updateInteractiveMovementTargetPosition: so that the moving item will
-// keep them same relative location to the user's touch.
-@property(nonatomic, assign) CGPoint itemReorderTouchPoint;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The current layout for the tab switcher.
@@ -86,11 +77,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, strong) GridLayout* gridLayout;
 // The layout for the thumb strip.
 @property(nonatomic, strong) HorizontalLayout* horizontalLayout;
-// The layout used while the grid is being reordered.
-@property(nonatomic, strong) UICollectionViewLayout* reorderingLayout;
-// The layout used while the thumb strip is being reordered.
-@property(nonatomic, strong) UICollectionViewLayout* horizontalReorderingLayout;
-// YES if, when reordering is enabled, the order of the cells has changed.
+// YES if, the cells have been reordered.
 @property(nonatomic, assign) BOOL hasChangedOrder;
 // By how much the user scrolled past the view's content size. A negative value
 // means the user hasn't scrolled past the end of the scroll view.
@@ -157,28 +144,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // behavior. Multiple selection will not actually be possible since
   // |-collectionView:shouldSelectItemAtIndexPath:| returns NO.
   collectionView.allowsMultipleSelection = YES;
-
-  if (DragAndDropIsEnabled()) {
-    collectionView.dragDelegate = self;
-    collectionView.dropDelegate = self;
-    collectionView.dragInteractionEnabled = YES;
-  } else {
-    self.reorderingLayout = [[GridReorderingLayout alloc] init];
-    if (IsThumbStripEnabled()) {
-      self.horizontalReorderingLayout =
-          [[HorizontalReorderingLayout alloc] init];
-    }
-    self.itemReorderRecognizer = [[UILongPressGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(handleItemReorderingWithGesture:)];
-    // The collection view cells will by default get touch events in parallel
-    // with the reorder recognizer. When this happens, long-pressing on a
-    // non-selected cell will cause the selected cell to briefly become
-    // unselected and then selected again. To avoid this, the recognizer delays
-    // touchesBegan: calls until it fails to recognize a long-press.
-    self.itemReorderRecognizer.delaysTouchesBegan = YES;
-    [collectionView addGestureRecognizer:self.itemReorderRecognizer];
-  }
+  collectionView.dragDelegate = self;
+  collectionView.dropDelegate = self;
+  collectionView.dragInteractionEnabled = YES;
 
 #if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
@@ -594,16 +562,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 #pragma mark - GridCellDelegate
 
 - (void)closeButtonTappedForCell:(GridCell*)cell {
-  if (!DragAndDropIsEnabled()) {
-    // Disable the reordering recognizer to cancel any in-flight reordering. The
-    // DCHECK below ensures that the gesture is re-enabled after being cancelled
-    // in |-handleItemReorderingWithGesture:|.
-    if (self.itemReorderRecognizer.state != UIGestureRecognizerStatePossible) {
-      self.itemReorderRecognizer.enabled = NO;
-      DCHECK(self.itemReorderRecognizer.enabled);
-    }
-  }
-
   [self.delegate gridViewController:self
                  didCloseItemWithID:cell.itemIdentifier];
   // Record when a tab is closed via the X.
@@ -710,17 +668,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)removeItemWithID:(NSString*)removedItemID
           selectedItemID:(NSString*)selectedItemID {
-  if (!DragAndDropIsEnabled()) {
-    // Disable the reordering recognizer to cancel any in-flight reordering. The
-    // DCHECK below ensures that the gesture is re-enabled after being cancelled
-    // in |-handleItemReorderingWithGesture:|.
-    if (self.itemReorderRecognizer.state != UIGestureRecognizerStatePossible &&
-        self.itemReorderRecognizer.state != UIGestureRecognizerStateCancelled) {
-      self.itemReorderRecognizer.enabled = NO;
-      DCHECK(self.itemReorderRecognizer.enabled);
-    }
-  }
-
   NSUInteger index = [self indexOfItemWithID:removedItemID];
   auto modelUpdates = ^{
     [self.items removeObjectAtIndex:index];
@@ -1021,104 +968,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         [self.collectionView cellForItemAtIndexPath:indexPath];
     cell.layer.zPosition = self.items.count - indexPath.item;
   }
-}
-
-#pragma mark - Custom Gesture-based Reordering
-
-// Handle the long-press gesture used to reorder cells in the collection view.
-- (void)handleItemReorderingWithGesture:(UIGestureRecognizer*)gesture {
-  DCHECK(gesture == self.itemReorderRecognizer);
-  CGPoint location = [gesture locationInView:self.collectionView];
-  switch (gesture.state) {
-    case UIGestureRecognizerStateBegan: {
-      NSIndexPath* path =
-          [self.collectionView indexPathForItemAtPoint:location];
-      BOOL moving =
-          [self.collectionView beginInteractiveMovementForItemAtIndexPath:path];
-      if (!moving) {
-        gesture.enabled = NO;
-      } else {
-        base::RecordAction(
-            base::UserMetricsAction("MobileTabGridBeganReordering"));
-        CGPoint cellCenter =
-            [self.collectionView cellForItemAtIndexPath:path].center;
-        self.itemReorderTouchPoint =
-            CGPointMake(location.x - cellCenter.x, location.y - cellCenter.y);
-        // Switch to the reordering layout.
-        if (IsThumbStripEnabled() &&
-            self.currentLayout == self.horizontalLayout) {
-          [self.collectionView
-              setCollectionViewLayout:self.horizontalReorderingLayout
-                             animated:YES];
-        } else {
-          [self.collectionView setCollectionViewLayout:self.reorderingLayout
-                                              animated:YES];
-        }
-        // Immediately update the position of the moving item; otherwise, the
-        // collection view may relayout its subviews and briefly show the moving
-        // item at position (0,0).
-        [self updateItemReorderingForPosition:location];
-      }
-      break;
-    }
-    case UIGestureRecognizerStateChanged:
-      // Offset the location so it's the touch point that moves, not the cell
-      // center.
-      [self updateItemReorderingForPosition:location];
-      break;
-    case UIGestureRecognizerStateEnded: {
-      self.itemReorderTouchPoint = CGPointZero;
-      // End the interactive movement and transition the layout back to the
-      // defualt layout. These can't be simultaneous, because that will produce
-      // a copy of the moving cell in its final position while it animates from
-      // under thr user's touch. In order to fire the animated switch to the
-      // defualt layout at the correct time, a CATransaction is used to wrap the
-      // -endInteractiveMovement call which will generate the animations on the
-      // moving cell. The -setCollectionViewLayout: call can then be added as a
-      // completion block.
-      [CATransaction begin];
-      // Note: The completion block must be added *before* any animations are
-      // added in the transaction.
-      [CATransaction setCompletionBlock:^{
-        [self.collectionView setCollectionViewLayout:self.currentLayout
-                                            animated:YES];
-      }];
-      [self.collectionView endInteractiveMovement];
-      [self recordInteractiveReordering];
-      [CATransaction commit];
-      break;
-    }
-    case UIGestureRecognizerStateCancelled:
-      self.itemReorderTouchPoint = CGPointZero;
-      [self.collectionView cancelInteractiveMovement];
-      [self recordInteractiveReordering];
-      [self.collectionView setCollectionViewLayout:self.currentLayout
-                                          animated:YES];
-      // Re-enable cancelled gesture.
-      gesture.enabled = YES;
-      break;
-    case UIGestureRecognizerStatePossible:
-    case UIGestureRecognizerStateFailed:
-      NOTREACHED() << "Unexpected long-press recognizer state";
-  }
-}
-
-- (void)updateItemReorderingForPosition:(CGPoint)position {
-  CGPoint targetLocation =
-      CGPointMake(position.x - self.itemReorderTouchPoint.x,
-                  position.y - self.itemReorderTouchPoint.y);
-
-  [self.collectionView updateInteractiveMovementTargetPosition:targetLocation];
-}
-
-- (void)recordInteractiveReordering {
-  if (self.hasChangedOrder) {
-    base::RecordAction(base::UserMetricsAction("MobileTabGridReordered"));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("MobileTabGridEndedWithoutReordering"));
-  }
-  self.hasChangedOrder = NO;
 }
 
 @end

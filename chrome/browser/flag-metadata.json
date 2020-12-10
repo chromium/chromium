@@ -49,11 +49,6 @@
     "expiry_milestone": 91
   },
   {
-    "name": "add-web-content-drop-interaction",
-    "owners": [ "edchin", "bling-flags@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "aggregated-ml-app-ranking",
     "owners": [ "pdyson", "jiameng" ],
     "expiry_milestone": 81
@@ -1064,11 +1059,6 @@
     "name": "download-later-debug-on-wifi",
     "owners": [ "xingliu", "dtrainor" ],
     "expiry_milestone": 89
-  },
-  {
-    "name": "drag_and_drop",
-    "owners": [ "//ios/chrome/browser/drag_and_drop/OWNERS", "bling-flags@google.com" ],
-    "expiry_milestone": 90
   },
   {
     "name": "drag-to-snap-in-clamshell-mode",

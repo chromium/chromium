@@ -32,8 +32,6 @@ source_set("grid_ui") {
     "horizontal_layout.mm",
     "plus_sign_cell.h",
     "plus_sign_cell.mm",
-    "reordering_layout_util.h",
-    "reordering_layout_util.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

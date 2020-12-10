@@ -8,7 +8,6 @@
 #include "components/google/core/common/google_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -155,12 +154,10 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   if (self) {
     _URLLoader = URLLoader;
 
-    if (DragAndDropIsEnabled()) {
       _dragDropHandler = [[URLDragDropHandler alloc] init];
       _dragDropHandler.dropDelegate = self;
       [self addInteraction:[[UIDropInteraction alloc]
                                initWithDelegate:_dragDropHandler]];
-    }
 
     self.alwaysBounceVertical = YES;
     // The bottom safe area is taken care of with the bottomUnsafeArea guides.

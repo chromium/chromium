@@ -11,9 +11,4 @@
 @interface GridLayout : FlowLayout
 @end
 
-// A specialization of GridLayout that shows the UI in its "reordering" state,
-// with the moving cell enlarged and the non-moving cells transparent.
-@interface GridReorderingLayout : GridLayout
-@end
-
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_LAYOUT_H_

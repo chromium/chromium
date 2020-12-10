@@ -13,7 +13,6 @@
 #include "base/stl_util.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
-#include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -230,13 +229,11 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [self.tableView addGestureRecognizer:longPressRecognizer];
   }
 
-  if (DragAndDropIsEnabled()) {
     self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
     self.dragDropHandler.origin = WindowActivityReadingListOrigin;
     self.dragDropHandler.dragDataSource = self;
     self.tableView.dragDelegate = self.dragDropHandler;
     self.tableView.dragInteractionEnabled = true;
-  }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size

@@ -1009,10 +1009,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 // Adds a custom drop interaction to the same subview of |self.webScrollView|
 // that already has a default drop interaction.
 - (void)addCustomURLDropInteractionIfNeeded {
-  if (!base::FeatureList::IsEnabled(
-          web::features::kAddWebContentDropInteraction))
-    return;
-
   BOOL subviewWithDefaultInteractionFound = NO;
   for (UIView* subview in self.webScrollView.subviews) {
     BOOL defaultInteractionFound = NO;

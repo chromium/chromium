@@ -17,10 +17,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
-#import "ios/chrome/browser/drag_and_drop/drop_and_navigate_delegate.h"
-#import "ios/chrome/browser/drag_and_drop/drop_and_navigate_interaction.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
@@ -174,8 +171,7 @@ UIColor* BackgroundColor() {
 
 @end
 
-@interface TabStripController () <DropAndNavigateDelegate,
-                                  CRWWebStateObserver,
+@interface TabStripController () <CRWWebStateObserver,
                                   TabStripViewLayoutDelegate,
                                   TabViewDelegate,
                                   ViewRevealingAnimatee,
@@ -267,8 +263,6 @@ UIColor* BackgroundColor() {
   // by the TabStripController.
   std::unique_ptr<AllWebStateObservationForwarder>
       _allWebStateObservationForwarder;
-
-  DropAndNavigateInteraction* _buttonNewTabInteraction;
 }
 
 @property(nonatomic, readonly, retain) TabStripView* tabStripView;
@@ -531,18 +525,10 @@ UIColor* BackgroundColor() {
                object:nil];
     }
 
-    if (DragAndDropIsEnabled()) {
       self.dragDropHandler = [[URLDragDropHandler alloc] init];
       self.dragDropHandler.dropDelegate = self;
       [_view addInteraction:[[UIDropInteraction alloc]
                                 initWithDelegate:self.dragDropHandler]];
-    } else {
-      // TODO(crbug.com/1101363): Remove old codepath once new DragAndDrop is
-      // fully launched.
-      _buttonNewTabInteraction =
-          [[DropAndNavigateInteraction alloc] initWithDelegate:self];
-      [_buttonNewTab addInteraction:_buttonNewTabInteraction];
-    }
   }
   return self;
 }
@@ -1710,19 +1696,6 @@ UIColor* BackgroundColor() {
 - (void)setNeedsLayoutWithAnimation {
   _animateLayout = YES;
   [_tabStripView setNeedsLayout];
-}
-
-#pragma mark - DropAndNavigateDelegate
-
-- (void)URLWasDropped:(GURL const&)url {
-  // Called when a URL is dropped on the new tab button.
-  OpenNewTabCommand* command =
-      [[OpenNewTabCommand alloc] initWithURL:url
-                                    referrer:web::Referrer()
-                                 inIncognito:_isIncognito
-                                inBackground:NO
-                                    appendTo:kLastTab];
-  [[self applicationCommandsHandler] openURLInNewTab:command];
 }
 
 #pragma mark - TabViewDelegate

@@ -11,12 +11,6 @@
 
 namespace flag_descriptions {
 
-const char kAddWebContentDropInteractionName[] =
-    "Add Web Content Drop Interaction";
-const char kAddWebContentDropInteractionDescription[] =
-    "When enabled, adds ability to drop a URL on the web content area to "
-    "navigate to that URL.";
-
 const char kAutofillCacheQueryResponsesName[] =
     "Cache Autofill Query Responses";
 const char kAutofillCacheQueryResponsesDescription[] =
@@ -164,9 +158,6 @@ const char kDiscoverFeedInNtpName[] = "Enable new content Suggestion Feed";
 const char kDiscoverFeedInNtpDescription[] =
     "When enabled, replaces articles feed with new content Suggestion Feed in "
     "the NTP.";
-
-const char kDragAndDropName[] = "Drag and Drop";
-const char kDragAndDropDescription[] = "Enable support for drag and drop.";
 
 const char kEditBookmarksIOSName[] = "Edit Bookmarks IOS";
 const char kEditBookmarksIOSDescription[] =

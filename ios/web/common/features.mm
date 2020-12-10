@@ -41,9 +41,6 @@ const base::Feature kUseDefaultUserAgentInWebClient{
 const base::Feature kPreserveScrollViewProperties{
     "PreserveScrollViewProperties", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kAddWebContentDropInteraction{
-    "AddWebContentDropInteraction", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kScrollToTextIOS{"ScrollToTextIOS",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIOSLegacyTLSInterstitial{
