@@ -895,6 +895,7 @@ extern const char kBrowserGuestModeEnabled[];
 extern const char kBrowserGuestModeEnforced[];
 extern const char kBrowserAddPersonEnabled[];
 extern const char kForceBrowserSignin[];
+extern const char kBrowserProfilePickerAvailabilityOnStartup[];
 extern const char kBrowserShowProfilePickerOnStartup[];
 extern const char kSigninAllowedOnNextStartup[];
 

@@ -23617,6 +23617,53 @@ If you disable this policy, web page scrolling to specific text fragments via UR
 
       If this policy is unset, the user cannot use the Lacros browser.''',
     },
+    {
+      'name': 'ProfilePickerOnStartupAvailability',
+      'owners': ['file://components/policy/resources/OWNERS'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 0, 1, 2 ],
+      },
+      'items': [
+        {
+          'name': 'Enabled',
+          'value': 0,
+          'caption': '''Profile picker available at startup''',
+        },
+        {
+          'name': 'Disabled',
+          'value': 1,
+          'caption': '''Profile picker disabled at startup''',
+        },
+        {
+          'name': 'Forced',
+          'value': 2,
+          'caption': '''Profile picker forced at startup''',
+        },
+      ],
+      'supported_on': [
+        'chrome.*:88-',
+      ],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'default': 0,
+      'example_value': 0,
+      'id': 810,
+      'caption': '''Profile picker availabily on startup''',
+      'tags': [],
+      'desc': '''Specifies whether the profile picker is enabled, disabled or forced at the browser startup.
+
+      By default the profile picker is not shown if the browser starts in guest or incognito mode, a profile directory and/or urls are specified by command line, an app is explicitly requested to open, the browser was launched by a native notification, there is only one profile available or the policy ForceBrowserSignin is set to true.
+
+      If 'Enabled' (0) is selected or the policy is left unset, the profile picker will be shown at startup by default, but users will be able to enable/disable it.
+
+      If 'Disabled' (1) is selected, the profile picker will never be shown, and users will not be able to change the setting.
+
+      If 'Forced' (2) is selected, the profile picker cannot be suppressed by the user. The profile picker will be shown even if there is only one profile available.''',
+    },
   ],
 
   'messages': {
@@ -24537,8 +24584,8 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
+  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 807, 808, 809],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 806,
+  'highest_id_currently_used': 810,
   'highest_atomic_group_id_currently_used': 40
 }

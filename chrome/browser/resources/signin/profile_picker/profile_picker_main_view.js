@@ -58,6 +58,14 @@ Polymer({
         return loadTimeData.getBoolean('askOnStartup');
       }
     },
+
+    /** @private */
+    disableAskOnStartup_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('disableAskOnStartup');
+      }
+    },
   },
 
   /** @private {?ManageProfilesBrowserProxy} */
@@ -153,6 +161,7 @@ Polymer({
    * @private
    */
   computeHideAskOnStartup_() {
-    return !this.profilesList_ || (this.profilesList_.length < 2);
+    return this.disableAskOnStartup_ || !this.profilesList_ ||
+        this.profilesList_.length < 2;
   },
 });

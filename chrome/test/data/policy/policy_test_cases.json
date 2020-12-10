@@ -8217,5 +8217,17 @@
         }
       }
     ]
+  },
+  "ProfilePickerOnStartupAvailability": {
+    "os": ["win", "linux", "mac"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "ProfilePickerOnStartupAvailability": 2 },
+        "prefs": {
+          "profile.picker_availability_on_startup": { "local_state": true, "value": 2 }
+        }
+      }
+    ]
   }
 }

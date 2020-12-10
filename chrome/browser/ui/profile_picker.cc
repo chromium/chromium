@@ -24,10 +24,32 @@
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #endif
 
+namespace {
+
+ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
+  int availability_on_startup = g_browser_process->local_state()->GetInteger(
+      prefs::kBrowserProfilePickerAvailabilityOnStartup);
+  switch (availability_on_startup) {
+    case 0:
+      return ProfilePicker::AvailabilityOnStartup::kEnabled;
+    case 1:
+      return ProfilePicker::AvailabilityOnStartup::kDisabled;
+    case 2:
+      return ProfilePicker::AvailabilityOnStartup::kForced;
+    default:
+      NOTREACHED();
+  }
+  return ProfilePicker::AvailabilityOnStartup::kEnabled;
+}
+
+}  // namespace
+
 // static
 bool ProfilePicker::ShouldShowAtLaunch(
     const base::CommandLine& command_line,
     const std::vector<GURL>& urls_to_launch) {
+  AvailabilityOnStartup availability_on_startup = GetAvailabilityOnStartup();
+
   // Don't show the picker if a certain profile (or an incognito window in the
   // default profile) is explicitly requested.
   if (profiles::IsGuestModeRequested(command_line,
@@ -64,15 +86,26 @@ bool ProfilePicker::ShouldShowAtLaunch(
     return false;
   }
 
+  if (signin_util::IsForceSigninEnabled())
+    return false;
+
+  if (!base::FeatureList::IsEnabled(features::kNewProfilePicker))
+    return false;
+
+  // TODO (crbug/1155158): Move this over the urls check once the
+  // profile picker can forward urls specified in command line.
+  if (availability_on_startup == AvailabilityOnStartup::kForced)
+    return true;
+
   size_t number_of_profiles = g_browser_process->profile_manager()
                                   ->GetProfileAttributesStorage()
                                   .GetNumberOfProfiles();
-  if (signin_util::IsForceSigninEnabled() || number_of_profiles == 1)
+
+  if (number_of_profiles == 1)
     return false;
 
   bool pref_enabled = g_browser_process->local_state()->GetBoolean(
       prefs::kBrowserShowProfilePickerOnStartup);
   base::UmaHistogramBoolean("ProfilePicker.AskOnStartup", pref_enabled);
-  return pref_enabled &&
-         base::FeatureList::IsEnabled(features::kNewProfilePicker);
+  return pref_enabled;
 }

@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/profile_creation_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
@@ -119,6 +120,13 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  ProfilePicker::AvailabilityOnStartup availability_on_startup =
+      static_cast<ProfilePicker::AvailabilityOnStartup>(
+          g_browser_process->local_state()->GetInteger(
+              prefs::kBrowserProfilePickerAvailabilityOnStartup));
+  html_source->AddBoolean("disableAskOnStartup",
+                          availability_on_startup !=
+                              ProfilePicker::AvailabilityOnStartup::kEnabled);
   html_source->AddBoolean("askOnStartup",
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
