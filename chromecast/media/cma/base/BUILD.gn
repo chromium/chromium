@@ -24,8 +24,6 @@ cast_source_set("base") {
     "decoder_buffer_adapter.h",
     "decoder_config_adapter.cc",
     "decoder_config_adapter.h",
-    "decoder_config_logging.cc",
-    "decoder_config_logging.h",
     "demuxer_stream_adapter.cc",
     "demuxer_stream_adapter.h",
     "media_task_runner.cc",
@@ -34,7 +32,10 @@ cast_source_set("base") {
     "simple_media_task_runner.h",
   ]
 
-  public_deps = [ "//chromecast/public/media" ]
+  public_deps = [
+    "//chromecast/media/common/base",
+    "//chromecast/public/media",
+  ]
 
   deps = [
     "//base",

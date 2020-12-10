@@ -13,7 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/media/base/decrypt_context_impl.h"
 #include "chromecast/media/base/media_caps.h"
-#include "chromecast/media/base/media_resource_tracker.h"
+#include "chromecast/media/common/media_resource_tracker.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/decryptor.h"

@@ -21,7 +21,7 @@ cast_source_set("cdm") {
     "//base",
     "//chromecast/base/metrics",
     "//chromecast/media/base",
-    "//chromecast/media/base:media_resource_tracker",
+    "//chromecast/media/common:media_resource_tracker",
     "//media",
     "//url",
   ]

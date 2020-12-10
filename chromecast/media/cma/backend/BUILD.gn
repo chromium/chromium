@@ -14,18 +14,8 @@ declare_args() {
 
 cast_source_set("backend") {
   sources = [
-    "audio_decoder_software_wrapper.cc",
-    "audio_decoder_software_wrapper.h",
-    "audio_decoder_wrapper.cc",
-    "audio_decoder_wrapper.h",
     "cma_backend_factory_impl.cc",
     "cma_backend_factory_impl.h",
-    "media_pipeline_backend_manager.cc",
-    "media_pipeline_backend_manager.h",
-    "media_pipeline_backend_wrapper.cc",
-    "media_pipeline_backend_wrapper.h",
-    "video_decoder_wrapper.cc",
-    "video_decoder_wrapper.h",
   ]
 
   public_deps = [
@@ -39,9 +29,10 @@ cast_source_set("backend") {
     "//chromecast:chromecast_buildflags",
     "//chromecast/base/metrics:metrics",
     "//chromecast/media:libcast_media",
-    "//chromecast/media/base:media_resource_tracker",
     "//chromecast/media/cma/base",
     "//chromecast/media/cma/decoder",
+    "//chromecast/media/common:media_pipeline_backend_manager",
+    "//chromecast/media/common:media_resource_tracker",
   ]
 
   if (enable_chromium_runtime_cast_renderer) {

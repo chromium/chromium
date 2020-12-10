@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/cma/backend/audio_decoder_software_wrapper.h"
+#include "chromecast/media/common/audio_decoder_software_wrapper.h"
 
 #include "base/test/task_environment.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
@@ -11,9 +11,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::Field;
 using ::testing::Return;
-using ::testing::_;
 
 namespace chromecast {
 namespace media {

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "chromecast/media/base/key_systems_common.h"
-#include "chromecast/media/base/media_resource_tracker.h"
+#include "chromecast/media/common/media_resource_tracker.h"
 #include "media/base/cdm_factory.h"
 #include "url/origin.h"
 

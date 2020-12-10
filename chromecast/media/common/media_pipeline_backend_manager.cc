@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/cma/backend/media_pipeline_backend_manager.h"
+#include "chromecast/media/common/media_pipeline_backend_manager.h"
 
 #include <algorithm>
 #include <limits>
@@ -15,8 +15,8 @@
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/api/cma_backend.h"
-#include "chromecast/media/cma/backend/audio_decoder_wrapper.h"
-#include "chromecast/media/cma/backend/media_pipeline_backend_wrapper.h"
+#include "chromecast/media/common/audio_decoder_wrapper.h"
+#include "chromecast/media/common/media_pipeline_backend_wrapper.h"
 #include "chromecast/public/volume_control.h"
 
 #define RUN_ON_MEDIA_THREAD(method, ...)                              \

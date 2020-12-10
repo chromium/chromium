@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CMA_BASE_DECODER_CONFIG_LOGGING_H_
-#define CHROMECAST_MEDIA_CMA_BASE_DECODER_CONFIG_LOGGING_H_
+#ifndef CHROMECAST_MEDIA_COMMON_BASE_DECODER_CONFIG_LOGGING_H_
+#define CHROMECAST_MEDIA_COMMON_BASE_DECODER_CONFIG_LOGGING_H_
 
 #include <ostream>
 
@@ -14,4 +14,4 @@ std::ostream& operator<<(std::ostream& stream,
 std::ostream& operator<<(std::ostream& stream,
                          ::chromecast::media::SampleFormat format);
 
-#endif  // CHROMECAST_MEDIA_CMA_BASE_DECODER_CONFIG_LOGGING_H_
+#endif  // CHROMECAST_MEDIA_COMMON_BASE_DECODER_CONFIG_LOGGING_H_

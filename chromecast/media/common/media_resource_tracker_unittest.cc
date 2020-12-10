@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/base/media_resource_tracker.h"
+#include "chromecast/media/common/media_resource_tracker.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromecast/media/base/test_media_resource_tracker.h"
+#include "chromecast/media/common/test_media_resource_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

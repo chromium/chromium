@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_DECODER_WRAPPER_H_
-#define CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_DECODER_WRAPPER_H_
+#ifndef CHROMECAST_MEDIA_COMMON_AUDIO_DECODER_WRAPPER_H_
+#define CHROMECAST_MEDIA_COMMON_AUDIO_DECODER_WRAPPER_H_
 
 #include <memory>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/cma_backend.h"
-#include "chromecast/media/cma/backend/audio_decoder_software_wrapper.h"
-#include "chromecast/media/cma/backend/media_pipeline_backend_manager.h"
+#include "chromecast/media/common/audio_decoder_software_wrapper.h"
+#include "chromecast/media/common/media_pipeline_backend_manager.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 
 namespace chromecast {
@@ -98,4 +98,4 @@ class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_DECODER_WRAPPER_H_
+#endif  // CHROMECAST_MEDIA_COMMON_AUDIO_DECODER_WRAPPER_H_

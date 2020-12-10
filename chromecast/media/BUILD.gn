@@ -26,9 +26,9 @@ group("media") {
   public_deps = [
     "//chromecast/media/audio",
     "//chromecast/media/base",
-    "//chromecast/media/base:media_resource_tracker",
     "//chromecast/media/cdm",
     "//chromecast/media/cma",
+    "//chromecast/media/common:media_resource_tracker",
   ]
 }
 
@@ -61,10 +61,10 @@ test("cast_media_unittests") {
     "audio/cast_audio_manager_unittest.cc",
     "audio/cast_audio_mixer_unittest.cc",
     "audio/cast_audio_output_stream_unittest.cc",
-    "base/media_resource_tracker_unittest.cc",
     "base/slew_volume_unittests.cc",
     "base/supported_codec_profile_levels_memo_unittest.cc",
-    "cma/backend/audio_decoder_software_wrapper_unittest.cc",
+    "common/audio_decoder_software_wrapper_unittest.cc",
+    "common/media_resource_tracker_unittest.cc",
     "test/run_all_unittests.cc",
   ]
 
@@ -86,9 +86,10 @@ test("cast_media_unittests") {
     "//chromecast/media/audio/capture_service:unittests",
     "//chromecast/media/base:monotonic_clock",
     "//chromecast/media/base:slew_volume",
-    "//chromecast/media/base:test_media_resource_tracker",
     "//chromecast/media/cma:test_support",
     "//chromecast/media/cma:unittests",
+    "//chromecast/media/common:media_pipeline_backend_manager",
+    "//chromecast/media/common:test_media_resource_tracker",
     "//chromecast/public",
     "//content/test:test_support",
     "//media:test_support",

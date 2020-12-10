@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CMA_BACKEND_MEDIA_PIPELINE_BACKEND_WRAPPER_H_
-#define CHROMECAST_MEDIA_CMA_BACKEND_MEDIA_PIPELINE_BACKEND_WRAPPER_H_
+#ifndef CHROMECAST_MEDIA_COMMON_MEDIA_PIPELINE_BACKEND_WRAPPER_H_
+#define CHROMECAST_MEDIA_COMMON_MEDIA_PIPELINE_BACKEND_WRAPPER_H_
 
 #include <stdint.h>
 
@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/cma_backend.h"
-#include "chromecast/media/base/media_resource_tracker.h"
+#include "chromecast/media/common/media_resource_tracker.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 
 namespace chromecast {
@@ -66,4 +66,4 @@ class MediaPipelineBackendWrapper : public CmaBackend {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_BACKEND_MEDIA_PIPELINE_BACKEND_WRAPPER_H_
+#endif  // CHROMECAST_MEDIA_COMMON_MEDIA_PIPELINE_BACKEND_WRAPPER_H_

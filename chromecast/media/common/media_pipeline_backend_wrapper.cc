@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/cma/backend/media_pipeline_backend_wrapper.h"
+#include "chromecast/media/common/media_pipeline_backend_wrapper.h"
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "chromecast/media/cma/backend/audio_decoder_wrapper.h"
-#include "chromecast/media/cma/backend/media_pipeline_backend_manager.h"
-#include "chromecast/media/cma/backend/video_decoder_wrapper.h"
+#include "chromecast/media/common/audio_decoder_wrapper.h"
+#include "chromecast/media/common/media_pipeline_backend_manager.h"
+#include "chromecast/media/common/video_decoder_wrapper.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/volume_control.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/cma/base/decoder_config_logging.h"
+#include "chromecast/media/common/base/decoder_config_logging.h"
 
 #include "base/notreached.h"
 

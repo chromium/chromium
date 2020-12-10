@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/cma/backend/audio_decoder_software_wrapper.h"
+#include "chromecast/media/common/audio_decoder_software_wrapper.h"
 
 #include <ostream>
 
@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
-#include "chromecast/media/cma/base/decoder_config_logging.h"
+#include "chromecast/media/common/base/decoder_config_logging.h"
 
 namespace chromecast {
 namespace media {
@@ -36,7 +36,10 @@ bool IsChannelLayoutSupported(AudioConfig config) {
 
 // Codecs that cannot be decoded on the device and must be passed through.
 constexpr media::AudioCodec kPassthroughCodecs[] = {
-    kCodecEAC3, kCodecAC3, kCodecDTS, kCodecMpegHAudio,
+    kCodecEAC3,
+    kCodecAC3,
+    kCodecDTS,
+    kCodecMpegHAudio,
 };
 
 }  // namespace

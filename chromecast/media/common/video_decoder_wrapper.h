@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CMA_BACKEND_VIDEO_DECODER_WRAPPER_H_
-#define CHROMECAST_MEDIA_CMA_BACKEND_VIDEO_DECODER_WRAPPER_H_
+#ifndef CHROMECAST_MEDIA_COMMON_VIDEO_DECODER_WRAPPER_H_
+#define CHROMECAST_MEDIA_COMMON_VIDEO_DECODER_WRAPPER_H_
 
 #include <memory>
 
@@ -48,4 +48,4 @@ class VideoDecoderWrapper : public CmaBackend::VideoDecoder {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_BACKEND_VIDEO_DECODER_WRAPPER_H_
+#endif  // CHROMECAST_MEDIA_COMMON_VIDEO_DECODER_WRAPPER_H_
