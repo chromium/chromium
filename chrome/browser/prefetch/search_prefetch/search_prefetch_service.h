@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
@@ -19,10 +20,11 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "url/gurl.h"
 
+class AutocompleteController;
+struct OmniboxLog;
 class Profile;
 class SearchPrefetchURLLoader;
 
-class AutocompleteController;
 
 class SearchPrefetchService : public KeyedService,
                               public TemplateURLServiceObserver {
@@ -64,6 +66,11 @@ class SearchPrefetchService : public KeyedService,
   // Records the current time to prevent prefetches for a set duration.
   void ReportError();
 
+  // If the navigation URL matches with a prefetch that can be served, this
+  // function marks that prefetch as clicked to prevent deletion when omnibox
+  // closes.
+  void OnURLOpenedFromOmnibox(OmniboxLog* log);
+
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old
   // prefetch expires.
@@ -79,6 +86,10 @@ class SearchPrefetchService : public KeyedService,
 
   // The current state of the DSE.
   base::Optional<TemplateURLData> template_url_service_data_;
+
+  // A subscription to the omnibox log service to track when a navigation is
+  // about to happen.
+  base::CallbackListSubscription omnibox_subscription_;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       observer_{this};
