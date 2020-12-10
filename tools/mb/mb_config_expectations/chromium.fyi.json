@@ -609,17 +609,6 @@
       "use_goma": true
     }
   },
-  "linux-inverse-fieldtrials-fyi-rel": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "invert_fieldtrials": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "linux-lacros-builder-fyi-rel": {
     "gn_args": {
       "also_build_ash_chrome": true,
@@ -829,17 +818,6 @@
       "is_debug": false,
       "symbol_level": 0,
       "use_clang_coverage": true,
-      "use_goma": true
-    }
-  },
-  "win10-inverse-fieldtrials-fyi-rel": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "invert_fieldtrials": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
       "use_goma": true
     }
   },

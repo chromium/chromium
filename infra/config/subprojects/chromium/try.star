@@ -694,6 +694,10 @@ try_.chromium_chromiumos_builder(
 )
 
 try_.chromium_chromiumos_builder(
+    name = "linux-chromeos-inverse-fieldtrials-fyi-rel",
+)
+
+try_.chromium_chromiumos_builder(
     name = "linux-chromeos-rel",
     branch_selector = branches.ALL_BRANCHES,
     builderless = not settings.is_master,
@@ -1260,6 +1264,11 @@ try_.chromium_mac_builder(
 )
 
 try_.chromium_mac_builder(
+    name = "mac-inverse-fieldtrials-fyi-rel",
+    os = os.MAC_DEFAULT,
+)
+
+try_.chromium_mac_builder(
     name = "mac-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     use_clang_coverage = True,
@@ -1381,6 +1390,10 @@ try_.chromium_mac_ios_builder(
             ".+/[+]/ios/.+",
         ],
     ),
+)
+
+try_.chromium_mac_ios_builder(
+    name = "ios-simulator-inverse-fieldtrials-fyi",
 )
 
 try_.chromium_mac_ios_builder(
@@ -1531,6 +1544,11 @@ try_.chromium_win_builder(
 )
 
 try_.chromium_win_builder(
+    name = "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
+    os = os.WINDOWS_10,
+)
+
+try_.chromium_win_builder(
     name = "win10_chromium_x64_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,
     goma_jobs = goma.jobs.J150,
@@ -1548,11 +1566,6 @@ try_.chromium_win_builder(
     name = "win10_chromium_x64_rel_ng_exp",
     builderless = False,
     os = os.WINDOWS_ANY,
-)
-
-try_.chromium_win_builder(
-    name = "win10-inverse-fieldtrials-fyi-rel",
-    os = os.WINDOWS_10,
 )
 
 try_.chromium_win_builder(

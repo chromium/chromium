@@ -3,15 +3,15 @@
 # This is consumed by presubmit checks that need to validate the config
 
 {
-  # 61750 (scheduler total) + 344750 (weighted CQ total)
+  # 61510 (scheduler total) + 344750 (weighted CQ total)
   # (weighted CQ total) = 6895 (CQ total) * 50 (CQ weight)
-  '*weighted total*': 406500,
+  '*weighted total*': 406260,
   'scheduler': {
-    '*total*': 61750,
+    '*total*': 61510,
     'triggered': {
-      '*total*': 59840,
+      '*total*': 59600,
       ('https://chromium.googlesource.com/chromium/src', 'regexp:refs/heads/master'): {
-        '*total*': 58960,
+        '*total*': 58720,
         # 4 concurrent builds x 80 jobs
         'ci/ASAN Debug': 320,
         # 5 concurrent builds x 80 jobs
@@ -245,7 +245,6 @@
         'ci/android-cronet-x86-dbg': 150,
         'ci/android-cronet-x86-rel': 150,
         'ci/android-incremental-dbg': 150,
-        'ci/android-inverse-fieldtrials-pie-x86-fyi-rel': 80,
         'ci/android-lollipop-arm-rel': 150,
         'ci/android-marshmallow-arm64-rel': 150,
         'ci/android-marshmallow-x86-rel': 150,
@@ -314,7 +313,6 @@
         'ci/linux-chromium-tests-staging-builder': 80,
         'ci/linux-fieldtrial-rel': 80,
         'ci/linux-gcc-rel': 500,
-        'ci/linux-inverse-fieldtrials-fyi-rel': 80,
         'ci/linux-lacros-builder-fyi-rel': 80,
         'ci/linux-lacros-builder-rel': 80,
         'ci/linux-official': 200,
@@ -373,7 +371,6 @@
         'ci/win-updater-builder-dbg': 80,
         'ci/win-updater-builder-rel': 80,
         'ci/win10-code-coverage': 200,
-        'ci/win10-inverse-fieldtrials-fyi-rel': 80,
         'ci/win32-archive-dbg': 200,
         'ci/win32-archive-rel': 200,
         'ci/win32-arm64-rel': 150,

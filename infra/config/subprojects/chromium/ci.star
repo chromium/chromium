@@ -1001,14 +1001,6 @@ ci.android_builder(
 )
 
 ci.android_fyi_builder(
-    name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "builder_tester|x86",
-        short_name = "P-IFT",
-    ),
-)
-
-ci.android_fyi_builder(
     name = "android-weblayer-10-x86-rel-tests",
     console_view_entry = ci.console_view_entry(
         category = "tester|weblayer",
@@ -2606,13 +2598,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "linux-inverse-fieldtrials-fyi-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "linux",
-    ),
-)
-
-ci.fyi_builder(
     name = "linux-fieldtrial-rel",
     console_view_entry = ci.console_view_entry(
         category = "linux",
@@ -3311,16 +3296,6 @@ ci.fyi_windows_builder(
     ),
     execution_timeout = 16 * time.hour,
     notifies = ["annotator-rel"],
-)
-
-ci.fyi_windows_builder(
-    name = "win10-inverse-fieldtrials-fyi-rel",
-    builderless = True,
-    console_view_entry = ci.console_view_entry(
-        category = "win10",
-        short_name = "IFT",
-    ),
-    os = os.WINDOWS_10,
 )
 
 ci.gpu_linux_builder(

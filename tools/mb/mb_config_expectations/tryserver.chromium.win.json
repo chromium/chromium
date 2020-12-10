@@ -282,9 +282,10 @@
       "use_libfuzzer": true
     }
   },
-  "win10-inverse-fieldtrials-fyi-rel": {
+  "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng": {
     "gn_args": {
       "dcheck_always_on": true,
+      "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
       "invert_fieldtrials": true,
       "is_component_build": false,

@@ -133,7 +133,6 @@
     'chromium.android.fyi': {
       'Android WebView P FYI (rel)': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-11-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_invert_fieldtrials',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-weblayer-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
     },
@@ -337,10 +336,6 @@
       'win32-archive-rel-goma-rbe-canary': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-rel-goma-rbe-latest': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-arm64-rel': 'win32_arm64_release_bot',
-
-      # Builders to test inversed fieldtrials
-      'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_bot_minimal_symbols_invert_fieldtrials',
-      'win10-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_bot_minimal_symbols_invert_fieldtrials',
     },
 
     'chromium.goma.fyi': {
@@ -899,6 +894,7 @@
       'chromeos-kevin-rel': 'chromeos_kevin',
       'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
       'gpu-fyi-try-chromeos-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
+      'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
@@ -1043,6 +1039,7 @@
       'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
+      'ios-simulator-inverse-fieldtrials-fyi': 'ios_simulator_debug_static_bot_invert_fieldtrials_xctest',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_multi_window_xctest',
       'mac-osxbeta-rel': 'gpu_tests_release_trybot_deterministic_mac',
@@ -1059,6 +1056,7 @@
       'mac_chromium_dbg_ng': 'gpu_tests_debug_bot',
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot',
       'mac_upload_clang': 'release_bot',
+      'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_deterministic_mac_invert_fieldtrials',
       'mac-rel': 'gpu_tests_release_trybot_deterministic_mac_code_coverage',
       'mac-arm64-rel': 'mac_arm64_release_trybot',
     },
@@ -1116,10 +1114,10 @@
       'gpu-fyi-try-win10-nvidia-rel-32': 'gpu_fyi_tests_release_trybot_x86',
       'gpu-fyi-try-win10-nvidia-rel-64': 'gpu_fyi_tests_release_trybot',
       'gpu-fyi-try-win10-nvidia-sk-dawn-rel-64': 'gpu_tests_sk_dawn_release_trybot',
+      'win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng': 'gpu_tests_release_trybot_resource_whitelisting_invert_fieldtrials',
       'win10_chromium_x64_dbg_ng': 'gpu_tests_debug_bot',
       'win10_chromium_x64_rel_ng': 'gpu_tests_release_trybot_resource_whitelisting_code_coverage',
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
-      'win10-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
       'win-annotator-rel': 'release_trybot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
       'win-celab-try-rel': 'release_bot_minimal_symbols',
@@ -1373,12 +1371,6 @@
     'android_release_bot_minimal_symbols_x86_fastbuild_webview_google': [
       'android', 'release_bot', 'minimal_symbols', 'x86',
       'strip_debug_info', 'android_fastbuild', 'webview_google',
-    ],
-
-    'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_invert_fieldtrials': [
-      'android', 'release_bot', 'minimal_symbols', 'x86',
-      'strip_debug_info', 'android_fastbuild', 'webview_google',
-      'invert_fieldtrials',
     ],
 
     'android_release_trybot': [
@@ -1693,6 +1685,10 @@
     'chromeos_with_codecs_release_trybot_code_coverage': [
       'chromeos_with_codecs', 'release_trybot', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    'chromeos_with_codecs_release_trybot_invert_fieldtrials': [
+      'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'invert_fieldtrials',
     ],
 
     'clang_code_coverage': [
@@ -2023,10 +2019,6 @@
       'partial_code_coverage_instrumentation',
     ],
 
-    'gpu_tests_release_bot_minimal_symbols_invert_fieldtrials': [
-      'gpu_tests', 'release_bot', 'minimal_symbols', 'invert_fieldtrials',
-    ],
-
     'gpu_tests_release_bot_minimal_symbols_no_nacl': [
       'gpu_tests', 'release_bot', 'minimal_symbols', 'disable_nacl',
     ],
@@ -2054,8 +2046,8 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
-    'gpu_tests_release_trybot_invert_fieldtrials': [
-      'gpu_tests', 'release_trybot', 'invert_fieldtrials',
+    'gpu_tests_release_trybot_deterministic_mac_invert_fieldtrials': [
+      'gpu_tests', 'release_trybot', 'mac_deterministic_build', 'invert_fieldtrials',
     ],
 
     'gpu_tests_release_trybot_resource_whitelisting': [
@@ -2068,6 +2060,10 @@
     'gpu_tests_release_trybot_resource_whitelisting_code_coverage': [
       'gpu_tests', 'release_trybot', 'resource_whitelisting',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    'gpu_tests_release_trybot_resource_whitelisting_invert_fieldtrials': [
+      'gpu_tests', 'release_trybot', 'resource_whitelisting', 'invert_fieldtrials',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange': [
@@ -2132,6 +2128,10 @@
 
     'ios_simulator_debug_static_bot_xctest': [
         'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
+    ],
+
+    'ios_simulator_debug_static_bot_invert_fieldtrials_xctest': [
+        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'invert_fieldtrials', 'xctest',
     ],
 
     'ios_simulator_debug_static_bot_multi_window_xctest': [

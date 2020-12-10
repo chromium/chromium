@@ -112,6 +112,19 @@
       "use_goma": true
     }
   },
+  "linux-chromeos-inverse-fieldtrials-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "ChromeOS",
+      "invert_fieldtrials": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux-chromeos-rel": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",

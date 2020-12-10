@@ -2658,14 +2658,6 @@
           'gtest_tests': 'fieldtrial_browser_tests',
         },
       },
-      'linux-inverse-fieldtrials-fyi-rel': {
-        'mixins': [
-          'linux-xenial',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-        },
-      },
       'linux-lacros-tester-fyi-rel': {
         'additional_compile_targets': [
           'chrome',
@@ -2951,14 +2943,6 @@
       'win10-code-coverage': {
         'mixins': [
           'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
-        },
-      },
-      'win10-inverse-fieldtrials-fyi-rel': {
-        'mixins': [
-          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
