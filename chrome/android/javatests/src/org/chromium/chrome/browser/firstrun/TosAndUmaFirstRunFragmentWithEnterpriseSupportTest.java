@@ -41,6 +41,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -429,6 +430,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "FirstRun"})
+    @DisabledTest(message = "https://crbug.com/1157521")
     public void testRenderWithPolicy() throws Exception {
         setAppRestrictionsMockInitialized(true);
         setEnterpriseInfoInitializedWithDeviceOwner(true);
