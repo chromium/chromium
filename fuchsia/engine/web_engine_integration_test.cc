@@ -2,8 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuchsia/mem/cpp/fidl.h>
+#include <zircon/rights.h>
+#include <zircon/types.h>
+
+#include <lib/zx/vmo.h>
+
 #include "fuchsia/base/fit_adapter.h"
 #include "fuchsia/base/frame_test_util.h"
+#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/result_receiver.h"
 #include "fuchsia/base/test_devtools_list_fetcher.h"
 #include "fuchsia/engine/web_engine_integration_test_base.h"
@@ -173,6 +180,38 @@ TEST_F(WebEngineIntegrationUserAgentTest, UseLegacyAndroidUserAgent) {
       ExecuteJavaScriptWithStringResult("document.body.innerText;");
   EXPECT_TRUE(result.find(kLegacyAndroidUserAgentContents) !=
               std::string::npos);
+}
+
+TEST_F(WebEngineIntegrationTest, CreateFrameWithUnclonableFrameParamsFails) {
+  CreateContext(DefaultContextParams());
+
+  zx_rights_t kReadRightsWithoutDuplicate =
+      ZX_RIGHT_TRANSFER | ZX_RIGHT_READ | ZX_RIGHT_MAP | ZX_RIGHT_GET_PROPERTY;
+
+  // Create a buffer and remove the ability clone it by changing its rights to
+  // not include ZX_RIGHT_DUPLICATE.
+  auto buffer = cr_fuchsia::MemBufferFromString("some data", "some name");
+  zx::vmo unclonable_readonly_vmo;
+  EXPECT_EQ(ZX_OK, buffer.vmo.duplicate(kReadRightsWithoutDuplicate,
+                                        &unclonable_readonly_vmo));
+  buffer.vmo = std::move(unclonable_readonly_vmo);
+
+  // Creation will fail, which will be reported in the error handler below.
+  fuchsia::web::CreateFrameParams create_frame_params;
+  create_frame_params.set_explicit_sites_filter_error_page(
+      fuchsia::mem::Data::WithBuffer(std::move(buffer)));
+  context_->CreateFrameWithParams(std::move(create_frame_params),
+                                  frame_.NewRequest());
+
+  base::RunLoop loop;
+  frame_.set_error_handler(
+      [quit_loop = loop.QuitClosure()](zx_status_t status) {
+        EXPECT_EQ(status, ZX_ERR_INVALID_ARGS);
+        quit_loop.Run();
+      });
+  loop.Run();
+
+  EXPECT_FALSE(frame_);
 }
 
 // Check that if the CreateContextParams has |remote_debugging_port| set then:

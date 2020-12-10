@@ -16,6 +16,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -245,9 +246,11 @@ FrameImpl* FrameImpl::FromRenderFrameHost(
 
 FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
                      ContextImpl* context,
+                     fuchsia::web::CreateFrameParams params_for_popups,
                      fidl::InterfaceRequest<fuchsia::web::Frame> frame_request)
     : web_contents_(std::move(web_contents)),
       context_(context),
+      params_for_popups_(std::move(params_for_popups)),
       navigation_controller_(web_contents_.get()),
       log_level_(kLogSeverityUnreachable),
       url_request_rewrite_rules_manager_(web_contents_.get()),
@@ -448,12 +451,19 @@ void FrameImpl::MaybeSendPopup() {
   // The PopupFrameCreationInfo won't be needed anymore, so clear it out.
   popup->SetUserData(kPopupCreationInfo, nullptr);
 
-  popup_listener_->OnPopupFrameCreated(
-      context_->CreateFrameForPopupWebContents(std::move(popup)),
-      std::move(creation_info), [this] {
-        popup_ack_outstanding_ = false;
-        MaybeSendPopup();
-      });
+  // ContextImpl::CreateFrameInternal() verified that |params_for_popups_| can
+  // be cloned, so it cannot fail here.
+  fuchsia::web::CreateFrameParams params;
+  CHECK_EQ(ZX_OK, params_for_popups_.Clone(&params));
+
+  fidl::InterfaceHandle<fuchsia::web::Frame> frame_handle;
+  context_->CreateFrameForWebContents(std::move(popup), std::move(params),
+                                      frame_handle.NewRequest());
+  popup_listener_->OnPopupFrameCreated(std::move(frame_handle),
+                                       std::move(creation_info), [this] {
+                                         popup_ack_outstanding_ = false;
+                                         MaybeSendPopup();
+                                       });
   popup_ack_outstanding_ = true;
 }
 
