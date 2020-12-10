@@ -8,9 +8,9 @@ PASS Verify a cors worker script served by a service worker fails shared worker 
 PASS Verify a no-cors cross-origin worker script served by a service worker fails dedicated worker start.
 PASS Verify a no-cors cross-origin worker script served by a service worker fails shared worker start.
 PASS Register a service worker for worker subresource interception tests.
-FAIL Requests on a dedicated worker controlled by a service worker. assert_equals: expected "This load was successfully intercepted." but got "{\"error\": {\"message\": \"\", \"code\": 404}}"
+FAIL Requests on a dedicated worker controlled by a service worker. assert_equals: expected "This load was successfully intercepted." but got "{\"error\": {\"code\": 404, \"message\": \"\"}}"
 PASS Requests on a shared worker controlled by a service worker.
-FAIL Requests on a dedicated worker nested in a dedicated worker and controlled by a service worker assert_equals: expected "This load was successfully intercepted." but got "{\"error\": {\"message\": \"\", \"code\": 404}}"
+FAIL Requests on a dedicated worker nested in a dedicated worker and controlled by a service worker assert_equals: expected "This load was successfully intercepted." but got "{\"error\": {\"code\": 404, \"message\": \"\"}}"
 FAIL Requests on a dedicated worker nested in a shared worker and controlled by a service worker assert_equals: expected "This load was successfully intercepted." but got "Unexpected error! Worker is not defined"
 PASS Unregister a service worker for subresource interception tests.
 Harness: the test ran to completion.

@@ -62,8 +62,14 @@ class WPTServe(server_base.ServerBase):
                                       'handlers')
         wpt_script = fs.join(path_to_wpt_root, 'wpt')
         start_cmd = [
-            self._port_obj.host.executable, '-u', wpt_script, 'serve',
-            '--config', self._config_file, '--doc_root', path_to_wpt_tests,
+            self._port_obj.python3_command(),
+            '-u',
+            wpt_script,
+            'serve',
+            '--config',
+            self._config_file,
+            '--doc_root',
+            path_to_wpt_tests,
             '--no-h2',
         ]
 

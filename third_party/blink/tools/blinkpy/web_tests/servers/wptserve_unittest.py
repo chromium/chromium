@@ -25,7 +25,7 @@ class TestWPTServe(LoggingTestCase):
     def test_init_start_cmd_without_ws_handlers(self):
         server = WPTServe(self.port, '/foo')
         self.assertEqual(server._start_cmd, [
-            'python',
+            'python3',
             '-u',
             '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
             'serve',
@@ -41,7 +41,7 @@ class TestWPTServe(LoggingTestCase):
             '/test.checkout/wtests/external/wpt/websockets/handlers')
         server = WPTServe(self.port, '/foo')
         self.assertEqual(server._start_cmd, [
-            'python',
+            'python3',
             '-u',
             '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
             'serve',

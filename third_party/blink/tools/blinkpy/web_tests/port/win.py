@@ -29,6 +29,7 @@
 
 import errno
 import logging
+import os
 import tempfile
 
 # The _winreg library is only available on Windows.
@@ -39,6 +40,7 @@ except ImportError:
     _winreg = None  # pylint: disable=invalid-name
 
 from blinkpy.common import exit_codes
+from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.breakpad.dump_reader_win import DumpReaderWin
 from blinkpy.web_tests.models import test_run_results
 from blinkpy.web_tests.port import base
@@ -168,6 +170,24 @@ class WinPort(base.Port):
 
     def operating_system(self):
         return 'win'
+
+    @memoized
+    def python3_command(self):
+        # The subprocess module on Windows does not look at PATHEXT, so we
+        # cannot rely on 'python3' working. Instead, we must check each possible
+        # program name to find the working one.
+        _log.debug('Searching for Python 3 command name')
+
+        exts = filter(len, os.getenv('PATHEXT', '').split(';'))
+        for ext in [''] + exts:
+            python = 'python3%s' % ext
+            _log.debug('Trying "%s"' % python)
+            try:
+                self._executive.run_command([python, '--version'])
+                return python
+            except WindowsError:
+                pass
+        raise WindowsError('Unable to find a valid python3 command name')
 
     def relative_test_filename(self, filename):
         path = filename[len(self.web_tests_dir()) + 1:]

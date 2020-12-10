@@ -10,17 +10,17 @@ def main(request, response):
 
     token = "ArQvBL/jhDJ62HaUm/ak0dIUYDjZAfeCQTXwa92cOrHZbL7R+bhb3qrVO2pHWkgJPgvIzvLX5m3wfaUJfOKY0Q4AAABqeyJvcmlnaW4iOiAiaHR0cHM6Ly93d3cud2ViLXBsYXRmb3JtLnRlc3Q6ODQ0NCIsICJmZWF0dXJlIjogIk9yaWdpbklzb2xhdGlvbkhlYWRlciIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ=="
 
-    header_order = request.GET.first("headerOrder")
-    if header_order == "otoi":
-        response.headers.set("Origin-Trial", token)
-        response.headers.set("Origin-Isolation", "?1")
-    elif header_order == "oiot":
-        response.headers.set("Origin-Isolation", "?1")
-        response.headers.set("Origin-Trial", token)
+    header_order = request.GET.first(b"headerOrder")
+    if header_order == b"otoi":
+        response.headers.set(b"Origin-Trial", token)
+        response.headers.set(b"Origin-Isolation", b"?1")
+    elif header_order == b"oiot":
+        response.headers.set(b"Origin-Isolation", b"?1")
+        response.headers.set(b"Origin-Trial", token)
     else:
         raise AssertionError("Invalid headerOrder")
 
-    response.headers.set("Content-Type", "text/html")
+    response.headers.set(b"Content-Type", b"text/html")
 
     return """
     <!DOCTYPE html>

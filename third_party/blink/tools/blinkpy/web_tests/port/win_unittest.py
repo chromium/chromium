@@ -26,7 +26,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import functools
+import mock
 import optparse
+import sys
+import unittest
 
 from blinkpy.common.system import output_capture
 from blinkpy.common.system.executive_mock import MockExecutive
@@ -107,6 +111,41 @@ class WinPortTest(port_testcase.PortTestCase):
 
     def test_operating_system(self):
         self.assertEqual('win', self.make_port().operating_system())
+
+    @unittest.skipIf(sys.platform != 'win32',
+                     'Needs WindowsError to be defined')
+    def test_python3_command(self):
+        def run_command_fn(valid_python, args):
+            if args[0] != valid_python:
+                raise WindowsError('%s != %s' % (valid_python, args[0]))
+            return 0
+
+        with mock.patch('os.getenv', return_value='.BAT;.EXE;.COM'):
+            # Simple case: one of the extensions match.
+            port = self.make_port()
+            port._executive = MockExecutive(run_command_fn=functools.partial(
+                run_command_fn, 'python3.EXE'))
+            self.assertEqual('python3.EXE', port.python3_command())
+
+            # Ensure that the code checks for python3 without an extension.
+            port = self.make_port()
+            port._executive = MockExecutive(
+                run_command_fn=functools.partial(run_command_fn, 'python3'))
+            self.assertEqual('python3', port.python3_command())
+
+            # If there are no matches, a WindowsError should be raised.
+            port = self.make_port()
+            port._executive = MockExecutive(
+                run_command_fn=functools.partial(run_command_fn, None))
+            with self.assertRaises(WindowsError):
+                port.python3_command()
+
+    @unittest.skipIf(sys.platform != 'win32', 'Smoketest for Windows only')
+    def test_python3_command_smoketest(self):
+        # This is a smoketest to make sure that depot_tools has ensured a valid
+        # Python 3 is available. If this test fails on a machine, it means that
+        # there is something wrong with the Python 3 setup.
+        self.assertIsNotNone(self.make_port().python3_command())
 
     def test_driver_name_option(self):
         self.assertTrue(

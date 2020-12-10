@@ -9,6 +9,27 @@ for more details about the presubmit API built into depot_tools.
 """
 
 
+def python3_command(input_api):
+    if not input_api.is_windows:
+        return 'python3'
+
+    # The subprocess module on Windows does not look at PATHEXT, so we cannot
+    # rely on 'python3' working. Instead we must check each possible name to
+    # find the working one.
+    input_api.logging.debug('Searching for Python 3 command name')
+
+    exts = filter(len, input_api.environ.get('PATHEXT', '').split(';'))
+    for ext in [''] + exts:
+        python = 'python3%s' % ext
+        input_api.logging.debug('Trying "%s"' % python)
+        try:
+            input_api.subprocess.check_output([python, '--version'])
+            return python
+        except WindowsError:
+            pass
+    raise WindowsError('Unable to find a valid python3 command name')
+
+
 def _LintWPT(input_api, output_api):
     """Lint functionality duplicated from web-platform-tests upstream.
 
@@ -32,7 +53,7 @@ def _LintWPT(input_api, output_api):
         return []
 
     args = [
-        input_api.python_executable,
+        python3_command(input_api),
         linter_path,
         'lint',
         '--repo-root=%s' % wpt_path,

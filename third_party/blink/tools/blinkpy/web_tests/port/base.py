@@ -1221,6 +1221,18 @@ class Port(object):
     def architecture(self):
         return self._architecture
 
+    def python3_command(self):
+        """Returns the correct command to use to run python3.
+
+        This exists because Windows has inconsistent behavior between the bots
+        and local developer machines, such that determining which python3 name
+        to use is non-trivial. See https://crbug.com/155616.
+
+        Once blinkpy runs under python3, this can be removed in favour of
+        callers using sys.executable.
+        """
+        return 'python3'
+
     def get_option(self, name, default_value=None):
         return getattr(self._options, name, default_value)
 
