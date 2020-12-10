@@ -9806,6 +9806,12 @@ histogram as enum -->
   <int value="2" label="Startup"/>
 </enum>
 
+<enum name="ChromeLabsSelectedLab">
+  <int value="0" label="User selected an unspecified lab"/>
+  <int value="1" label="User selected the Read Later lab"/>
+  <int value="2" label="User selected the Tab Search lab"/>
+</enum>
+
 <enum name="ChromeMLServiceDecisionTreePredictionResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="True"/>

@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/grit/generated_resources.h"
@@ -18,6 +20,49 @@
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ChromeLabsSelectedLab {
+  kUnspecifiedSelected = 0,
+  kReadLaterSelected = 1,
+  kTabSearchSelected = 2,
+  kMaxValue = kTabSearchSelected,
+};
+
+void EmitToHistogram(const base::string16& selected_lab_state,
+                     const std::string& internal_name) {
+  const auto get_histogram_name = [](const base::string16& selected_lab_state) {
+    if (selected_lab_state == base::ASCIIToUTF16(base::StringPiece(
+                                  flags_ui::kGenericExperimentChoiceDefault))) {
+      return "Toolbar.ChromeLabs.DefaultLabAction";
+    } else if (selected_lab_state ==
+               base::ASCIIToUTF16(base::StringPiece(
+                   flags_ui::kGenericExperimentChoiceEnabled))) {
+      return "Toolbar.ChromeLabs.EnableLabAction";
+    } else if (selected_lab_state ==
+               base::ASCIIToUTF16(base::StringPiece(
+                   flags_ui::kGenericExperimentChoiceDisabled))) {
+      return "Toolbar.ChromeLabs.DisableLabAction";
+    } else {
+      return "";
+    }
+  };
+
+  const auto get_enum = [](const std::string& internal_name) {
+    if (internal_name == flag_descriptions::kReadLaterFlagId) {
+      return ChromeLabsSelectedLab::kReadLaterSelected;
+    } else if (internal_name == flag_descriptions::kEnableTabSearchFlagId) {
+      return ChromeLabsSelectedLab::kTabSearchSelected;
+    } else {
+      return ChromeLabsSelectedLab::kUnspecifiedSelected;
+    }
+  };
+
+  const std::string histogram_name = get_histogram_name(selected_lab_state);
+  if (!histogram_name.empty())
+    base::UmaHistogramEnumeration(histogram_name, get_enum(internal_name));
+}
 
 ChromeLabsBubbleView* g_chrome_labs_bubble = nullptr;
 
@@ -130,6 +175,9 @@ std::unique_ptr<ChromeLabsItemView> ChromeLabsBubbleView::CreateLabItem(
         bubble_view->flags_storage_.get(),
         internal_name + "@" + base::NumberToString(selected_index), true);
     bubble_view->ShowRelaunchPrompt();
+    EmitToHistogram(
+        item_view->GetFeatureEntry()->DescriptionForOption(selected_index),
+        internal_name);
   };
 
   std::unique_ptr<ChromeLabsItemView> item_view =
