@@ -361,6 +361,7 @@ public class MediaSessionTest {
     @Test
     @MediumTest
     @Feature({"MediaSession"})
+    @DisabledTest(message = "crbug.com/1157494")
     public void testAudioStopsIfLostFocus() throws Exception {
         Assert.assertEquals(
                 AudioManager.AUDIOFOCUS_LOSS, mAudioFocusChangeListener.getAudioFocusState());
@@ -384,6 +385,7 @@ public class MediaSessionTest {
     @Test
     @SmallTest
     @Feature({"MediaSession"})
+    @DisabledTest(message = "crbug.com/1157494")
     public void testVideoStopsIfLostFocus() throws Exception {
         Assert.assertEquals(
                 AudioManager.AUDIOFOCUS_LOSS, mAudioFocusChangeListener.getAudioFocusState());
@@ -481,6 +483,7 @@ public class MediaSessionTest {
     @Test
     @MediumTest
     @Feature({"MediaSession"})
+    @DisabledTest(message = "crbug.com/1157494")
     public void testSessionSuspendedAfterFocusLossWhenPlaying() throws Exception {
         ArrayList<StateRecord> expectedStates = new ArrayList<StateRecord>();
         expectedStates.add(new StateRecord(true, false));
