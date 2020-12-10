@@ -40,6 +40,42 @@ TEST(DequeTest, Basic) {
   EXPECT_EQ(0ul, int_deque.size());
 }
 
+TEST(DequeTest, Iterators) {
+  Deque<int, 2> deque;
+  deque.push_back(0);
+  deque.push_back(1);
+
+  {
+    auto it = deque.begin();
+    EXPECT_EQ(*it, 0);
+    EXPECT_EQ(*++it, 1);
+    EXPECT_EQ(++it, deque.end());
+  }
+
+  {
+    auto it = deque.begin();
+    EXPECT_EQ(*it++, 0);
+    EXPECT_EQ(*it++, 1);
+    EXPECT_EQ(it, deque.end());
+  }
+
+  {
+    const Deque<int, 2>& c_deque = deque;
+    auto c_it = c_deque.begin();
+    EXPECT_EQ(*c_it, 0);
+    EXPECT_EQ(*++c_it, 1);
+    EXPECT_EQ(++c_it, c_deque.end());
+  }
+
+  {
+    const Deque<int, 2>& c_deque = deque;
+    auto c_it = c_deque.begin();
+    EXPECT_EQ(*c_it++, 0);
+    EXPECT_EQ(*c_it++, 1);
+    EXPECT_EQ(c_it, c_deque.end());
+  }
+}
+
 template <wtf_size_t inlineCapacity>
 void CheckNumberSequence(Deque<int, inlineCapacity>& deque,
                          int from,

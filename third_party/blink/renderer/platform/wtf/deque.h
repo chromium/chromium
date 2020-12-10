@@ -264,12 +264,23 @@ class DequeIterator : public DequeIteratorBase<T, inlineCapacity, Allocator> {
     Base::Increment();
     return *this;
   }
-  // postfix ++ intentionally omitted
+
+  Iterator operator++(int) {
+    Iterator tmp = *this;
+    ++*this;
+    return tmp;
+  }
+
   Iterator& operator--() {
     Base::Decrement();
     return *this;
   }
-  // postfix -- intentionally omitted
+
+  Iterator operator--(int) {
+    Iterator tmp = *this;
+    --*this;
+    return tmp;
+  }
 };
 
 template <typename T,
@@ -314,12 +325,23 @@ class DequeConstIterator
     Base::Increment();
     return *this;
   }
-  // postfix ++ intentionally omitted
+
+  Iterator operator++(int) {
+    Iterator tmp = *this;
+    ++*this;
+    return tmp;
+  }
+
   Iterator& operator--() {
     Base::Decrement();
     return *this;
   }
-  // postfix -- intentionally omitted
+
+  Iterator operator--(int) {
+    Iterator tmp = *this;
+    --*this;
+    return tmp;
+  }
 };
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
