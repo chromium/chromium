@@ -36,17 +36,17 @@
       'chromeos-kevin-chrome-lts': 'chromeos_kevin_include_unwind_tables_official',
       'chromeos-kevin-chrome-stable': 'chromeos_kevin_include_unwind_tables_official',
       'lacros-chrome': 'chromeos_amd64-generic_lacros_official',
-      # Don't include unwind tables for the remaining three builders since
-      # they monitor binary size growth, which may be affected by the tables.
+      # Don't include unwind tables for linux-/mac-/win-/win64-chrome builders.
+      # They monitor binary size growth, which may be affected by the tables.
       'linux-chrome': 'official_goma',
       'linux64-trunk': 'official_goma',
       'linux-chrome-beta': 'official_goma',
       'linux-chrome-stable': 'official_goma',
       'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
-      'linux-chromeos-beta': 'official_goma_chromeos',
-      'linux-chromeos-ltc': 'official_goma_chromeos',
-      'linux-chromeos-lts': 'official_goma_chromeos',
-      'linux-chromeos-stable': 'official_goma_chromeos',
+      'linux-chromeos-beta': 'official_goma_chromeos_include_unwind_tables',
+      'linux-chromeos-ltc': 'official_goma_chromeos_include_unwind_tables',
+      'linux-chromeos-lts': 'official_goma_chromeos_include_unwind_tables',
+      'linux-chromeos-stable': 'official_goma_chromeos_include_unwind_tables',
       'mac-chrome': 'official_goma_mac',
       'mac-chrome-beta': 'official_goma_mac',
       'mac-chrome-stable': 'official_goma_mac',
@@ -2255,10 +2255,6 @@
 
     'official_goma': [
       'official', 'goma',
-    ],
-
-    'official_goma_chromeos': [
-      'official', 'goma', 'chromeos','minimal_symbols',
     ],
 
     'official_goma_mac': [
