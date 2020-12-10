@@ -16,6 +16,9 @@ android_library("java") {
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/externalauth/ExternalAuthUtils.java",
+    "java/src/org/chromium/chrome/browser/externalauth/LegacyExternalAuthUtils.java",
+    "java/src/org/chromium/chrome/browser/externalauth/LegacyUserRecoverableErrorHandler.java",
+    "java/src/org/chromium/chrome/browser/externalauth/LegacyVerifiedHandler.java",
     "java/src/org/chromium/chrome/browser/externalauth/UserRecoverableErrorHandler.java",
     "java/src/org/chromium/chrome/browser/externalauth/VerifiedHandler.java",
   ]
