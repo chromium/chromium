@@ -364,12 +364,17 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
         // Scaling mode.
         libyuv::NV12Scale(input->visible_data(VideoFrame::kYPlane),
                           input->stride(VideoFrame::kYPlane),
-                          input->visible_data(VideoFrame::kUPlane),
-                          input->stride(VideoFrame::kUPlane),
+                          input->visible_data(VideoFrame::kUVPlane),
+                          input->stride(VideoFrame::kUVPlane),
                           input->visible_rect().width(),
-                          input->visible_rect().height(), Y_UV_DATA(output),
+                          input->visible_rect().height(),
+                          output->visible_data(VideoFrame::kYPlane),
+                          output->stride(VideoFrame::kYPlane),
+                          output->visible_data(VideoFrame::kUVPlane),
+                          output->stride(VideoFrame::kUVPlane),
                           output->visible_rect().width(),
-                          output->visible_rect().height(), libyuv::kFilterBox);
+                          output->visible_rect().height(),
+                          libyuv::kFilterBilinear);
         return 0;
       default:
         VLOGF(1) << "Unexpected input format: " << input->format();
