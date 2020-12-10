@@ -25,4 +25,9 @@ Polymer({
       dialog.close();
     }
   },
+
+  /** @private */
+  onManageContactsTap_() {
+    window.open(loadTimeData.getString('nearbyShareManageContactsUrl'));
+  }
 });

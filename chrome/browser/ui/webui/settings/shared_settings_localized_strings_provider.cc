@@ -256,6 +256,8 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareEditDeviceName", IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME},
       {"nearbyShareDeviceNameAriaDescription",
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION},
+      {"nearbyShareManageContactsLabel",
+       IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_LABEL},
       {"nearbyShareManageContactsRowTitle",
        IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_ROW_TITLE},
       {"nearbyShareEditDataUsage", IDS_SETTINGS_NEARBY_SHARE_EDIT_DATA_USAGE},

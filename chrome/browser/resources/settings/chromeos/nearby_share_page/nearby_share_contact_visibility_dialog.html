@@ -30,6 +30,15 @@
         padding-block-end: 16px;
         padding-inline-start: 20px;
       }
+
+      #manageContactsButton iron-icon {
+        --iron-icon-fill-color: var(--text-color);
+        margin-inline-end: 8px;
+      }
+
+      #flex {
+        flex: 1;
+      }
     </style>
     <cr-dialog id="dialog" show-on-attach>
       <h1 slot="title" class="title">
@@ -43,6 +52,11 @@
         </nearby-contact-visibility>
       </div>
       <div class="layout horizontal center" slot="button-container">
+        <cr-button id="manageContactsButton" on-click="onManageContactsTap_">
+          <iron-icon icon="cr:open-in-new"></iron-icon>
+          <span>$i18n{nearbyShareManageContactsLabel}</span>
+        </cr-button>
+        <div id="flex"></div>
         <cr-button class="action-button" on-click="onDoneClick_">
           $i18n{done}
         </cr-button>
