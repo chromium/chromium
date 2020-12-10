@@ -329,8 +329,13 @@ void DataTypeManagerImpl::Restart() {
 }
 
 void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
-  // TODO(crbug.com/1102837): Should we handle |needs_reconfigure_| here,
-  // before even starting the configuration?
+  // If a reconfigure was requested while the data types were loading, process
+  // it now.
+  if (needs_reconfigure_) {
+    configuration_types_queue_ = base::queue<ModelTypeSet>();
+    ProcessReconfigure();
+    return;
+  }
   // TODO(pavely): By now some of datatypes in |configuration_types_queue_|
   // could have failed loading and should be excluded from configuration. I need
   // to adjust |configuration_types_queue_| for such types.

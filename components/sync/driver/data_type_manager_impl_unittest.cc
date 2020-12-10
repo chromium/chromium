@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/sync/base/model_type.h"
@@ -520,15 +519,8 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThenSwitch) {
   EXPECT_TRUE(configurer_.activated_types().Empty());
 }
 
-// Set up a DTM with two controllers.  Then:
-//   1) Configure with first controller (model stays loading).
-//   2) Configure with both controllers, which gets postponed because there's an
-//      ongoing configuration that cannot complete before the model loads.
-//   3) Finish starting the first controller.
-//   4) Finish the download of the first controller.
-//   5) Finish the download of the second controller.
-//   6) Stop the DTM.
 TEST_F(SyncDataTypeManagerImplTest, ConfigureModelLoading) {
+  // Set up a DTM with two controllers.
   AddController(BOOKMARKS);
   AddController(PREFERENCES);
 
@@ -537,38 +529,40 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureModelLoading) {
   SetConfigureStartExpectation();
   SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
 
-  // Step 1.
+  // Step 1: Configure with first controller (model stays loading).
   Configure(ModelTypeSet(BOOKMARKS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
 
-  // Step 2: this one gets postponed because the first configuration is ongoing.
+  // Step 2: Configure with both controllers, which gets postponed because
+  //         there's an ongoing configuration that cannot complete before the
+  //         model loads.
   ASSERT_EQ(DataTypeController::MODEL_STARTING,
             GetController(BOOKMARKS)->state());
+  ASSERT_FALSE(dtm_->needs_reconfigure_for_test());
   Configure(ModelTypeSet(BOOKMARKS, PREFERENCES));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+  EXPECT_TRUE(dtm_->needs_reconfigure_for_test());
 
-  // Step 3.
+  // Step 3: Finish starting the first controller. This triggers a
+  //         reconfiguration with both data types.
   ASSERT_EQ(DataTypeController::MODEL_STARTING,
             GetController(BOOKMARKS)->state());
   GetController(BOOKMARKS)->model()->SimulateModelStartFinished();
+  EXPECT_FALSE(dtm_->needs_reconfigure_for_test());
 
-  // Step 4.
+  // Step 4: Finish the download of both data types. This completes the
+  //         configuration.
   ASSERT_EQ(DataTypeController::RUNNING, GetController(BOOKMARKS)->state());
+  ASSERT_EQ(DataTypeController::RUNNING, GetController(PREFERENCES)->state());
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
-  FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
-  EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
-
-  // Step 5.
-  ASSERT_EQ(DataTypeController::RUNNING, GetController(PREFERENCES)->state());
-  FinishDownload(ModelTypeSet(PREFERENCES), ModelTypeSet());
-
+  FinishDownload(ModelTypeSet(BOOKMARKS, PREFERENCES), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(ModelTypeSet(BOOKMARKS, PREFERENCES),
             configurer_.activated_types());
 
-  // Step 6.
+  // Step 5: Stop the DTM.
   dtm_->Stop(STOP_SYNC);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.activated_types().Empty());
@@ -1201,7 +1195,7 @@ TEST_F(SyncDataTypeManagerImplTest, ModelLoadError) {
                        ModelTypeSet()));
   Configure(ModelTypeSet(BOOKMARKS));
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
-  FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
+  // No need to finish the download of BOOKMARKS since it was never started.
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 

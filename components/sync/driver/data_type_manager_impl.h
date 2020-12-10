@@ -58,6 +58,8 @@ class DataTypeManagerImpl : public DataTypeManager,
   void OnSingleDataTypeWillStop(ModelType type,
                                 const SyncError& error) override;
 
+  bool needs_reconfigure_for_test() const { return needs_reconfigure_; }
+
  protected:
   // Returns the priority types (control + priority user types).
   // Virtual for overriding during tests.
@@ -157,8 +159,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeSet last_requested_types_;
 
   // Context information (e.g. the reason) for the last reconfigure attempt.
-  // Note: this will be set to a valid value only when |needs_reconfigure_| is
-  // set.
   ConfigureContext last_requested_context_;
 
   // A set of types that were enabled at the time of Restart().
