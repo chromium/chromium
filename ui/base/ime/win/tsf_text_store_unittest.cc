@@ -366,6 +366,23 @@ class TSFTextStoreTestCallback {
                                                      acp_end, &rect, &clipped));
   }
 
+  void ResetCompositionStateTest() {
+    EXPECT_TRUE(text_store_->previous_composition_string_.empty());
+    EXPECT_EQ(0u, text_store_->previous_composition_start_);
+    EXPECT_EQ(gfx::Range::InvalidRange(),
+              text_store_->previous_composition_selection_range_);
+    EXPECT_TRUE(text_store_->previous_text_spans_.empty());
+
+    EXPECT_TRUE(text_store_->string_pending_insertion_.empty());
+    EXPECT_FALSE(text_store_->has_composition_range_);
+    EXPECT_TRUE(text_store_->composition_range_.is_empty());
+    EXPECT_EQ(text_store_->composition_from_client_.end(),
+              text_store_->selection_.start());
+    EXPECT_EQ(text_store_->composition_from_client_.end(),
+              text_store_->selection_.end());
+    EXPECT_EQ(text_store_->selection_.end(), text_store_->composition_start_);
+  }
+
   void SetHasCompositionText(bool compText) {
     has_composition_text_ = compText;
   }
@@ -3844,6 +3861,105 @@ TEST_F(TSFTextStoreTest, RegressionTest10) {
   EXPECT_EQ(S_OK, result);
 
   text_store_->ConfirmComposition();
+
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+}
+
+// |CancelComposition| should reset all tracking composition state.
+class RegressionTest11Callback : public TSFTextStoreTestCallback {
+ public:
+  explicit RegressionTest11Callback(TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"abcd", S_OK);
+    SetSelectionTest(0, 4, S_OK);
+
+    text_spans()->clear();
+    ImeTextSpan text_span;
+    text_span.start_offset = 0;
+    text_span.end_offset = 4;
+    text_span.underline_color = SK_ColorBLACK;
+    text_span.thickness = ImeTextSpan::Thickness::kThin;
+    text_span.background_color = SK_ColorTRANSPARENT;
+    text_spans()->push_back(text_span);
+    *edit_flag() = true;
+    *composition_start() = 0;
+    composition_range()->set_start(0);
+    composition_range()->set_end(4);
+    text_store_->OnKeyTraceDown(65u, 1966081u);
+    *has_composition_range() = true;
+
+    return S_OK;
+  }
+
+  void SetCompositionText(const ui::CompositionText& composition) {
+    EXPECT_EQ(L"abcd", composition.text);
+    EXPECT_EQ(0u, composition.selection.start());
+    EXPECT_EQ(4u, composition.selection.end());
+    ASSERT_EQ(1u, composition.ime_text_spans.size());
+    EXPECT_EQ(0u, composition.ime_text_spans[0].start_offset);
+    EXPECT_EQ(4u, composition.ime_text_spans[0].end_offset);
+    SetHasCompositionText(true);
+    SetCompositionTextRange(0, 4);
+  }
+
+  HRESULT LockGranted2(DWORD flags) {
+    *edit_flag() = false;
+    return S_OK;
+  }
+
+  HRESULT LockGranted3(DWORD flags) {
+    ResetCompositionStateTest();
+    return S_OK;
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(RegressionTest11Callback);
+};
+
+TEST_F(TSFTextStoreTest, RegressionTest11) {
+  RegressionTest11Callback callback(text_store_.get());
+  EXPECT_CALL(text_input_client_, SetCompositionText(_))
+      .WillOnce(
+          Invoke(&callback, &RegressionTest11Callback::SetCompositionText));
+
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(&callback, &RegressionTest11Callback::LockGranted1))
+      .WillOnce(Invoke(&callback, &RegressionTest11Callback::LockGranted2))
+      .WillOnce(Invoke(&callback, &RegressionTest11Callback::LockGranted3));
+
+  ON_CALL(text_input_client_, GetCompositionTextRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetCompositionTextRange));
+
+  ON_CALL(text_input_client_, GetTextRange(_))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextRange));
+
+  ON_CALL(text_input_client_, GetTextFromRange(_, _))
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::GetTextFromRange));
+
+  ON_CALL(text_input_client_, GetEditableSelectionRange(_))
+      .WillByDefault(Invoke(
+          &callback, &TSFTextStoreTestCallback::GetEditableSelectionRange));
+
+  ON_CALL(text_input_client_, HasCompositionText())
+      .WillByDefault(
+          Invoke(&callback, &TSFTextStoreTestCallback::HasCompositionText));
+
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+
+  text_store_->CancelComposition();
 
   result = kInvalidResult;
   EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));

@@ -977,15 +977,8 @@ HRESULT TSFTextStore::OnEndEdit(ITfContext* context,
   }
 
   composition_start_ = selection_.start();
-  if (has_composition_range_) {
-    has_composition_range_ = false;
-    composition_range_.set_start(0);
-    composition_range_.set_end(0);
-    previous_composition_string_.clear();
-    previous_composition_start_ = 0;
-    previous_composition_selection_range_ = gfx::Range::InvalidRange();
-    previous_text_spans_.clear();
-  }
+  if (has_composition_range_)
+    ResetCompositionState();
 
   return S_OK;
 }
@@ -1098,6 +1091,22 @@ bool TSFTextStore::GetCompositionStatus(
     }
   }
   return true;
+}
+
+void TSFTextStore::ResetCompositionState() {
+  previous_composition_string_.clear();
+  previous_composition_start_ = 0;
+  previous_composition_selection_range_ = gfx::Range::InvalidRange();
+  previous_text_spans_.clear();
+
+  string_pending_insertion_.clear();
+  has_composition_range_ = false;
+  composition_range_.set_start(0);
+  composition_range_.set_end(0);
+
+  selection_ = gfx::Range(composition_from_client_.end(),
+                          composition_from_client_.end());
+  composition_start_ = selection_.end();
 }
 
 bool TSFTextStore::TerminateComposition() {
@@ -1286,8 +1295,14 @@ bool TSFTextStore::CancelComposition() {
   // TODO(IME): Check other platforms to see if |CancelComposition()| is
   //            actually working or not.
 
+  if (edit_flag_ || !text_input_client_)
+    return false;
+
   TRACE_EVENT0("ime", "TSFTextStore::CancelComposition");
-  return ConfirmComposition();
+  
+  ResetCompositionState();
+
+  return TerminateComposition();
 }
 
 bool TSFTextStore::ConfirmComposition() {
@@ -1301,14 +1316,7 @@ bool TSFTextStore::ConfirmComposition() {
   if (!text_input_client_)
     return false;
 
-  previous_composition_string_.clear();
-  previous_composition_start_ = 0;
-  previous_composition_selection_range_ = gfx::Range::InvalidRange();
-  previous_text_spans_.clear();
-  string_pending_insertion_.clear();
-  selection_ = gfx::Range(composition_from_client_.end(),
-                          composition_from_client_.end());
-  composition_start_ = selection_.end();
+  ResetCompositionState();
 
   return TerminateComposition();
 }
