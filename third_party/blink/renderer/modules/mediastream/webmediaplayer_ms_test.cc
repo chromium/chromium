@@ -115,10 +115,6 @@ class FakeWebMediaPlayerDelegate
     is_gone_ = false;
   }
 
-  void DidPlayerMutedStatusChange(int delegate_id, bool muted) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
   void DidPause(int delegate_id, bool reached_end_of_stream) override {
     EXPECT_EQ(delegate_id_, delegate_id);
     EXPECT_FALSE(reached_end_of_stream);
@@ -601,6 +597,7 @@ class WebMediaPlayerMSTest
   void MediaRemotingStopped(int error_code) override {}
   void ResumePlayback() override {}
   void PausePlayback() override {}
+  void DidPlayerMutedStatusChange(bool muted) override {}
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
                                          base::TimeDelta position) override {}

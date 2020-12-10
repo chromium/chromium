@@ -108,9 +108,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
   // Notify that the size of the media player is changed.
   virtual void DidPlayerSizeChange(int delegate_id, const gfx::Size& size) = 0;
 
-  // Notify that the muted status of the media player has changed.
-  virtual void DidPlayerMutedStatusChange(int delegate_id, bool muted) = 0;
-
   // Notify that the audio output sink has changed
   virtual void DidAudioOutputSinkChange(
       int delegate_id,

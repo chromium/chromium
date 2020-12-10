@@ -117,12 +117,6 @@ void RendererWebMediaPlayerDelegate::DidPlay(int player_id) {
   ScheduleUpdateTask();
 }
 
-void RendererWebMediaPlayerDelegate::DidPlayerMutedStatusChange(int delegate_id,
-                                                                bool muted) {
-  Send(new MediaPlayerDelegateHostMsg_OnMutedStatusChanged(routing_id(),
-                                                           delegate_id, muted));
-}
-
 void RendererWebMediaPlayerDelegate::DidPause(int player_id,
                                               bool reached_end_of_stream) {
   DVLOG(2) << __func__ << "(" << player_id << ", " << reached_end_of_stream

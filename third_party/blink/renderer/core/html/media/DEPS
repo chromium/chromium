@@ -3,3 +3,10 @@ include_rules = [
     "+media/base/media_switches.h",
     "+media/mojo/mojom/media_player.mojom-blink.h",
 ]
+
+specific_include_rules = {
+    # Tests need to wait to check mojo messages are correctly sent.
+    "html_media_element_test\.cc": [
+        "+base/run_loop.h",
+    ],
+}

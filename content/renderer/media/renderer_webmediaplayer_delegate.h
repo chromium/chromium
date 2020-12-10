@@ -66,7 +66,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
       int player_id,
       blink::WebFullscreenVideoStatus fullscreen_video_status) override;
   void DidPlayerSizeChange(int delegate_id, const gfx::Size& size) override;
-  void DidPlayerMutedStatusChange(int delegate_id, bool muted) override;
   void DidAudioOutputSinkChange(int delegate_id,
                                 const std::string& hashed_device_id) override;
   void DidBufferUnderflow(int player_id) override;

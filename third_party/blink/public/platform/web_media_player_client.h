@@ -166,6 +166,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Request the player to pause playback.
   virtual void PausePlayback() = 0;
 
+  // Notify the client that the muted status of the media player has changed.
+  virtual void DidPlayerMutedStatusChange(bool muted) = 0;
+
   // Notify the client that the playback position has changed.
   virtual void DidPlayerMediaPositionStateChange(double playback_rate,
                                                  base::TimeDelta duration,

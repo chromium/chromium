@@ -191,6 +191,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
     BindMediaPlayerObserverReceiverAndPassRemote();
 
     // media::mojom::MediaPlayerObserver implementation.
+    void OnMutedStatusChanged(bool muted) override;
     void OnMediaPositionStateChanged(
         const media_session::MediaPosition& media_position) override;
     void OnPictureInPictureAvailabilityChanged(bool available) override;
@@ -232,9 +233,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   void OnMediaSizeChanged(RenderFrameHost* render_frame_host,
                           int delegate_id,
                           const gfx::Size& size);
-  void OnMediaMutedStatusChanged(RenderFrameHost* render_frame_host,
-                                 int delegate_id,
-                                 bool muted);
   void OnAudioOutputSinkChanged(RenderFrameHost* render_frame_host,
                                 int delegate_id,
                                 std::string hashed_device_id);

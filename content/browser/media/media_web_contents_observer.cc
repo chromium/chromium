@@ -232,8 +232,6 @@ bool MediaWebContentsObserver::OnMessageReceived(
                         OnMediaMetadataChanged)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaPlaying,
                         OnMediaPlaying)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMutedStatusChanged,
-                        OnMediaMutedStatusChanged)
     IPC_MESSAGE_HANDLER(
         MediaPlayerDelegateHostMsg_OnMediaEffectivelyFullscreenChanged,
         OnMediaEffectivelyFullscreenChanged)
@@ -331,6 +329,12 @@ MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       base::Unretained(media_web_contents_observer_), media_player_id_));
 
   return pending_remote;
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnMutedStatusChanged(bool muted) {
+  media_web_contents_observer_->web_contents_impl()->MediaMutedStatusChanged(
+      media_player_id_, muted);
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
@@ -556,14 +560,6 @@ void MediaWebContentsObserver::LockAudio() {
 void MediaWebContentsObserver::CancelAudioLock() {
   GetAudioWakeLock()->CancelWakeLock();
   has_audio_wake_lock_for_testing_ = false;
-}
-
-void MediaWebContentsObserver::OnMediaMutedStatusChanged(
-    RenderFrameHost* render_frame_host,
-    int delegate_id,
-    bool muted) {
-  const MediaPlayerId id(render_frame_host, delegate_id);
-  web_contents_impl()->MediaMutedStatusChanged(id, muted);
 }
 
 WebContentsImpl* MediaWebContentsObserver::web_contents_impl() const {

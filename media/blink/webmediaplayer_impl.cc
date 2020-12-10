@@ -1021,7 +1021,7 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
   pipeline_controller_->SetVolume(volume_ * volume_multiplier_);
   if (watch_time_reporter_)
     watch_time_reporter_->OnVolumeChange(volume);
-  delegate_->DidPlayerMutedStatusChange(delegate_id_, volume == 0.0);
+  client_->DidPlayerMutedStatusChange(volume == 0.0);
 
   if (delegate_has_audio_ != HasUnmutedAudio()) {
     delegate_has_audio_ = HasUnmutedAudio();

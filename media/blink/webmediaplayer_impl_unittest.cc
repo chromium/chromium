@@ -155,6 +155,7 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_CONST_METHOD0(CouldPlayIfEnoughData, bool());
   MOCK_METHOD0(ResumePlayback, void());
   MOCK_METHOD0(PausePlayback, void());
+  MOCK_METHOD1(DidPlayerMutedStatusChange, void(bool));
   MOCK_METHOD3(DidPlayerMediaPositionStateChange,
                void(double, base::TimeDelta, base::TimeDelta position));
   MOCK_METHOD0(DidDisableAudioOutputSinkChanges, void());
@@ -218,10 +219,6 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
   bool IsIdle(int player_id) override {
     DCHECK_EQ(player_id_, player_id);
     return is_idle_;
-  }
-
-  void DidPlayerMutedStatusChange(int delegate_id, bool muted) override {
-    DCHECK_EQ(player_id_, delegate_id);
   }
 
   void ClearStaleFlag(int player_id) override {

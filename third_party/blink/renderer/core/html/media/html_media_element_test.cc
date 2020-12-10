@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 
+#include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
@@ -78,6 +80,58 @@ class WebMediaStubLocalFrameClient : public EmptyLocalFrameClient {
   std::unique_ptr<WebMediaPlayer> player_;
 };
 
+// Helper class that provides an implementation of the MediaPlayerObserver mojo
+// interface to allow checking that messages sent over mojo are received with
+// the right values in the other end.
+//
+// Note this relies on HTMLMediaElement::SetMediaPlayerObserverForTesting() to
+// provide the HTMLMediaElement instance owned by the test with a valid mojo
+// remote, that will be bound to the mojo receiver provided by this class
+// instead of the real one used in production that would be owned by
+// MediaSessionController instead.
+class MockMediaPlayerObserverReceiverForTesting
+    : public media::mojom::blink::MediaPlayerObserver {
+ public:
+  explicit MockMediaPlayerObserverReceiverForTesting(
+      HTMLMediaElement* html_media_element) {
+    // Bind the remote to the receiver, so that we can intercept incoming
+    // messages sent via the different methods that use the remote.
+    html_media_element->SetMediaPlayerObserverForTesting(
+        receiver_.BindNewPipeAndPassRemote());
+  }
+
+  // Needs to be called from tests after invoking a method from the MediaPlayer
+  // mojo interface, so that we have enough time to process the message.
+  void WaitUntilReceivedMessage() {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+
+  // media::mojom::blink::MediaPlayerObserver implementation.
+  void OnMutedStatusChanged(bool muted) override {
+    received_muted_status_type_ = muted;
+    run_loop_->Quit();
+  }
+
+  void OnMediaPositionStateChanged(
+      ::media_session::mojom::blink::MediaPositionPtr) override {}
+
+  void OnPictureInPictureAvailabilityChanged(bool available) override {}
+
+  void OnAudioOutputSinkChangingDisabled() override {}
+
+  // Getters used from HTMLMediaElementTest.
+  const base::Optional<bool>& received_muted_status() const {
+    return received_muted_status_type_;
+  }
+
+ private:
+  std::unique_ptr<base::RunLoop> run_loop_;
+  mojo::Receiver<media::mojom::blink::MediaPlayerObserver> receiver_{this};
+  base::Optional<bool> received_muted_status_type_;
+};
+
 enum class MediaTestParam { kAudio, kVideo };
 
 }  // namespace
@@ -119,6 +173,9 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
       media_ = MakeGarbageCollected<HTMLVideoElement>(
           dummy_page_holder_->GetDocument());
     }
+
+    media_player_observer_receiver_ =
+        std::make_unique<MockMediaPlayerObserverReceiverForTesting>(Media());
   }
 
   HTMLMediaElement* Media() const { return media_.Get(); }
@@ -162,12 +219,27 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     return dummy_page_holder_->GetFrame().DomWindow();
   }
 
+ protected:
+  // Helpers to call MediaPlayerObserver mojo methods and check their results.
+  void NotifyMutedStatusChange(bool muted) {
+    media_->DidPlayerMutedStatusChange(muted);
+    media_player_observer_receiver_->WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedMessageMutedStatusChange(bool muted) {
+    return media_player_observer_receiver_->received_muted_status() == muted;
+  }
+
  private:
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   Persistent<HTMLMediaElement> media_;
 
   // Owned by WebMediaStubLocalFrameClient.
   MockWebMediaPlayer* media_player_;
+
+  // Used to check that mojo messages are received in the other end.
+  std::unique_ptr<MockMediaPlayerObserverReceiverForTesting>
+      media_player_observer_receiver_;
 };
 
 INSTANTIATE_TEST_SUITE_P(Audio,
@@ -792,6 +864,14 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterPlayBeforeReady) {
   EXPECT_FALSE(Media()->paused());
   EXPECT_TRUE(PotentiallyPlaying());
   EXPECT_FALSE(Media()->IsShowPosterFlagSet());
+}
+
+TEST_P(HTMLMediaElementTest, SendMutedStatusChangeToObserver) {
+  NotifyMutedStatusChange(true);
+  EXPECT_TRUE(ReceivedMessageMutedStatusChange(true));
+
+  NotifyMutedStatusChange(false);
+  EXPECT_TRUE(ReceivedMessageMutedStatusChange(false));
 }
 
 }  // namespace blink

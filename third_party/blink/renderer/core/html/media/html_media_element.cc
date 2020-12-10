@@ -1469,6 +1469,11 @@ bool HTMLMediaElement::PausedWhenVisible() const {
          !GetWebMediaPlayer()->PausedWhenHidden();
 }
 
+void HTMLMediaElement::SetMediaPlayerObserverForTesting(
+    mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer) {
+  SetMediaPlayerObserver(std::move(observer));
+}
+
 bool HTMLMediaElement::TextTracksAreReady() const {
   // 4.8.12.11.1 Text track model
   // ...
@@ -4377,6 +4382,14 @@ void HTMLMediaElement::ResumePlayback() {
 
 void HTMLMediaElement::PausePlayback() {
   RequestPause(false);
+}
+
+void HTMLMediaElement::DidPlayerMutedStatusChange(bool muted) {
+  // The remote to the MediaPlayerObserver could be not set yet.
+  if (!media_player_observer_remote_.is_bound())
+    return;
+
+  media_player_observer_remote_->OnMutedStatusChanged(muted);
 }
 
 void HTMLMediaElement::DidPlayerMediaPositionStateChange(

@@ -348,6 +348,10 @@ class CORE_EXPORT HTMLMediaElement
 
   void SetCcLayerForTesting(cc::Layer* layer) { SetCcLayer(layer); }
 
+  // Required by tests set mock receivers to check that messages are delivered.
+  void SetMediaPlayerObserverForTesting(
+      mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer);
+
   bool IsShowPosterFlagSet() const { return show_poster_flag_; }
 
  protected:
@@ -389,8 +393,9 @@ class CORE_EXPORT HTMLMediaElement
  private:
   // Friend class for testing.
   friend class ContextMenuControllerTest;
-  friend class VideoWakeLockTest;
+  friend class HTMLMediaElementTest;
   friend class PictureInPictureControllerTest;
+  friend class VideoWakeLockTest;
 
   bool HasPendingActivityInternal() const;
 
@@ -465,6 +470,7 @@ class CORE_EXPORT HTMLMediaElement
   bool IsInAutoPIP() const override { return false; }
   void ResumePlayback() final;
   void PausePlayback() final;
+  void DidPlayerMutedStatusChange(bool muted) override;
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
                                          base::TimeDelta position) override;

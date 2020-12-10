@@ -69,10 +69,6 @@ IPC_MESSAGE_ROUTED4(MediaPlayerDelegateHostMsg_OnMediaMetadataChanged,
 IPC_MESSAGE_ROUTED1(MediaPlayerDelegateHostMsg_OnMediaPlaying,
                     int /* delegate_id, distinguishes instances */)
 
-IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnMutedStatusChanged,
-                    int /* delegate_id, distinguishes instances */,
-                    bool /* the new muted status */)
-
 IPC_MESSAGE_ROUTED2(
     MediaPlayerDelegateHostMsg_OnMediaEffectivelyFullscreenChanged,
     int /* delegate_id, distinguishes instances */,
