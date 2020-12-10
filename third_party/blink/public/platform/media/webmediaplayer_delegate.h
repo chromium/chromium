@@ -8,10 +8,6 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 
-namespace gfx {
-class Size;
-}  // namespace gfx
-
 namespace media {
 enum class MediaContentType;
 }  // namespace media
@@ -105,16 +101,10 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
   // so that we can do the right thing with media that starts paused.
   virtual void DidPause(int player_id, bool reached_end_of_stream) = 0;
 
-  // Notify that the size of the media player is changed.
-  virtual void DidPlayerSizeChange(int delegate_id, const gfx::Size& size) = 0;
-
   // Notify that the audio output sink has changed
   virtual void DidAudioOutputSinkChange(
       int delegate_id,
       const std::string& hashed_device_id) = 0;
-
-  // Notify that a buffer underflow event happened for the media player.
-  virtual void DidBufferUnderflow(int player_id) = 0;
 
   // Notify that a playback seek event happened for the media player.
   virtual void DidSeek(int player_id) = 0;

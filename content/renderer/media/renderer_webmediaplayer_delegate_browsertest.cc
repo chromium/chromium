@@ -166,22 +166,6 @@ TEST_F(RendererWebMediaPlayerDelegateTest, SendsMessagesCorrectly) {
         MediaPlayerDelegateHostMsg_OnMediaDestroyed::Read(msg, &result));
     EXPECT_EQ(delegate_id, std::get<0>(result));
   }
-
-  // Verify the resize message.
-  {
-    test_sink().ClearMessages();
-    delegate_manager_->DidPlayerSizeChange(delegate_id, gfx::Size(16, 9));
-    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(
-        MediaPlayerDelegateHostMsg_OnMediaSizeChanged::ID);
-    ASSERT_TRUE(msg);
-
-    std::tuple<int, gfx::Size> result;
-    ASSERT_TRUE(
-        MediaPlayerDelegateHostMsg_OnMediaSizeChanged::Read(msg, &result));
-    EXPECT_EQ(delegate_id, std::get<0>(result));
-    EXPECT_EQ(16, std::get<1>(result).width());
-    EXPECT_EQ(9, std::get<1>(result).height());
-  }
 }
 
 TEST_F(RendererWebMediaPlayerDelegateTest, DeliversObserverNotifications) {

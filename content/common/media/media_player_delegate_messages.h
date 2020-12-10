@@ -74,16 +74,9 @@ IPC_MESSAGE_ROUTED2(
     int /* delegate_id, distinguishes instances */,
     blink::WebFullscreenVideoStatus /* fullscreen_video_status */)
 
-IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnMediaSizeChanged,
-                    int /* delegate_id, distinguishes instances */,
-                    gfx::Size /* new size of video */)
-
 IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
                     int /* delegate_id, distinguishes instances */,
                     std::string /* hashed_device_id */)
-
-IPC_MESSAGE_ROUTED1(MediaPlayerDelegateHostMsg_OnBufferUnderflow,
-                    int /* delegate_id, distinguishes instances */)
 
 IPC_MESSAGE_ROUTED1(MediaPlayerDelegateHostMsg_OnSeek,
                     int /* delegate_id, distinguishes instances */)

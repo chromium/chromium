@@ -177,6 +177,13 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Notify the client that the audio sink cannot be changed.
   virtual void DidDisableAudioOutputSinkChanges() = 0;
 
+  // Notify the client that the size of the media player has changed.
+  // TODO(crbug.com/1039252): Remove by merging this method into SizeChanged().
+  virtual void DidPlayerSizeChange(const gfx::Size& size) = 0;
+
+  // Notify the client that a buffer underflow happened for the media player.
+  virtual void DidBufferUnderflow() = 0;
+
   // Notify the client that one of the state used by Picture-in-Picture has
   // changed. The client will then have to poll the states from the associated
   // WebMediaPlayer.

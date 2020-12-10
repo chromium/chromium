@@ -2271,7 +2271,7 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
         !seeking_) {
       underflow_timer_ = std::make_unique<base::ElapsedTimer>();
       watch_time_reporter_->OnUnderflow();
-      delegate_->DidBufferUnderflow(delegate_id_);
+      client_->DidBufferUnderflow();
 
       if (playback_events_recorder_)
         playback_events_recorder_->OnBuffering();
@@ -2406,7 +2406,7 @@ void WebMediaPlayerImpl::OnVideoNaturalSizeChange(const gfx::Size& size) {
   if (observer_)
     observer_->OnMetadataChanged(pipeline_metadata_);
 
-  delegate_->DidPlayerSizeChange(delegate_id_, NaturalSize());
+  client_->DidPlayerSizeChange(NaturalSize());
 }
 
 void WebMediaPlayerImpl::OnVideoOpacityChange(bool opaque) {
@@ -3047,7 +3047,7 @@ void WebMediaPlayerImpl::SetDelegateState(DelegateState new_state,
       break;
     case DelegateState::PLAYING: {
       if (HasVideo())
-        delegate_->DidPlayerSizeChange(delegate_id_, NaturalSize());
+        client_->DidPlayerSizeChange(NaturalSize());
       delegate_->DidPlay(delegate_id_);
       break;
     }

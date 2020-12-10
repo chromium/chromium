@@ -661,7 +661,7 @@ void WebMediaPlayerMS::ReloadVideo() {
 
   DCHECK_NE(renderer_action, RendererReloadAction::KEEP_RENDERER);
   if (!paused_)
-    delegate_->DidPlayerSizeChange(delegate_id_, NaturalSize());
+    client_->DidPlayerSizeChange(NaturalSize());
 
   // TODO(perkj, magjed): We use OneShot focus type here so that it takes
   // audio focus once it starts, and then will not respond to further audio
@@ -745,7 +745,7 @@ void WebMediaPlayerMS::Play() {
     audio_renderer_->Play();
 
   if (HasVideo())
-    delegate_->DidPlayerSizeChange(delegate_id_, NaturalSize());
+    client_->DidPlayerSizeChange(NaturalSize());
 
   delegate_->DidPlay(delegate_id_);
 
@@ -1321,7 +1321,7 @@ void WebMediaPlayerMS::TriggerResize() {
   if (HasVideo())
     get_client()->SizeChanged();
 
-  delegate_->DidPlayerSizeChange(delegate_id_, NaturalSize());
+  client_->DidPlayerSizeChange(NaturalSize());
 }
 
 void WebMediaPlayerMS::SetGpuMemoryBufferVideoForTesting(

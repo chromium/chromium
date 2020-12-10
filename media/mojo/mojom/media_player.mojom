@@ -6,6 +6,7 @@ module media.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Implemented by HTMLMediaElement in the renderer process.
 interface MediaPlayer {
@@ -44,12 +45,18 @@ interface MediaPlayerObserver {
   // and reports the new current position via |media_position|.
   OnMediaPositionStateChanged(media_session.mojom.MediaPosition media_position);
 
+  // Notifies that the size of the media player has changed.
+  OnMediaSizeChanged(gfx.mojom.Size size);
+
   // Notifies the browser process of PictureinPicture playback's availability.
   OnPictureInPictureAvailabilityChanged(bool available);
 
   // Notifies the browser process that the ability to switch audio output
   // devices for the associated media player has been disabled.
   OnAudioOutputSinkChangingDisabled();
+
+  // Notifies that a buffer underflow event happened for the media player.
+  OnBufferUnderflow();
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

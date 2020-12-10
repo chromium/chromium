@@ -123,14 +123,6 @@ class FakeWebMediaPlayerDelegate
     playing_ = false;
   }
 
-  void DidPlayerSizeChange(int delegate_id, const gfx::Size& size) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
-  void DidBufferUnderflow(int delegate_id) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
   void DidSeek(int delegate_id) override {
     EXPECT_EQ(delegate_id_, delegate_id);
   }
@@ -602,6 +594,9 @@ class WebMediaPlayerMSTest
                                          base::TimeDelta duration,
                                          base::TimeDelta position) override {}
   void DidDisableAudioOutputSinkChanges() override {}
+  void DidPlayerSizeChange(const gfx::Size& size) override {}
+  void DidBufferUnderflow() override {}
+
   Features GetFeatures() override { return Features(); }
 
   // Implementation of cc::VideoFrameProvider::Client

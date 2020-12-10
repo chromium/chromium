@@ -235,12 +235,8 @@ bool MediaWebContentsObserver::OnMessageReceived(
     IPC_MESSAGE_HANDLER(
         MediaPlayerDelegateHostMsg_OnMediaEffectivelyFullscreenChanged,
         OnMediaEffectivelyFullscreenChanged)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaSizeChanged,
-                        OnMediaSizeChanged)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
                         OnAudioOutputSinkChanged);
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnBufferUnderflow,
-                        OnBufferUnderflow)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnSeek, OnSeek)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -344,6 +340,12 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       ->OnMediaPositionStateChanged(media_player_id_, media_position);
 }
 
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaSizeChanged(
+    const ::gfx::Size& size) {
+  media_web_contents_observer_->web_contents_impl()->MediaResized(
+      size, media_player_id_);
+}
+
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnPictureInPictureAvailabilityChanged(bool available) {
   media_web_contents_observer_->session_controllers_manager()
@@ -354,6 +356,12 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnAudioOutputSinkChangingDisabled() {
   media_web_contents_observer_->session_controllers_manager()
       ->OnAudioOutputSinkChangingDisabled(media_player_id_);
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnBufferUnderflow() {
+  media_web_contents_observer_->web_contents_impl()->MediaBufferUnderflow(
+      media_player_id_);
 }
 
 MediaWebContentsObserver::PlayerInfo* MediaWebContentsObserver::GetPlayerInfo(
@@ -459,14 +467,6 @@ void MediaWebContentsObserver::OnMediaEffectivelyFullscreenChanged(
   web_contents_impl()->MediaEffectivelyFullscreenChanged(is_fullscreen);
 }
 
-void MediaWebContentsObserver::OnMediaSizeChanged(
-    RenderFrameHost* render_frame_host,
-    int delegate_id,
-    const gfx::Size& size) {
-  const MediaPlayerId id(render_frame_host, delegate_id);
-  web_contents_impl()->MediaResized(size, id);
-}
-
 void MediaWebContentsObserver::OnAudioOutputSinkChanged(
     RenderFrameHost* render_frame_host,
     int delegate_id,
@@ -508,13 +508,6 @@ MediaWebContentsObserver::GetMediaPlayerRemote(const MediaPlayerId& player_id) {
   DCHECK(media_player_remotes_.contains(player_id));
   DCHECK(media_player_remotes_[player_id].is_bound());
   return media_player_remotes_[player_id];
-}
-
-void MediaWebContentsObserver::OnBufferUnderflow(
-    RenderFrameHost* render_frame_host,
-    int delegate_id) {
-  const MediaPlayerId id(render_frame_host, delegate_id);
-  web_contents_impl()->MediaBufferUnderflow(id);
 }
 
 void MediaWebContentsObserver::OnSeek(RenderFrameHost* render_frame_host,

@@ -4413,6 +4413,22 @@ void HTMLMediaElement::DidDisableAudioOutputSinkChanges() {
   media_player_observer_remote_->OnAudioOutputSinkChangingDisabled();
 }
 
+void HTMLMediaElement::DidPlayerSizeChange(const gfx::Size& size) {
+  // The remote to the MediaPlayerObserver could be not set yet.
+  if (!media_player_observer_remote_.is_bound())
+    return;
+
+  media_player_observer_remote_->OnMediaSizeChanged(size);
+}
+
+void HTMLMediaElement::DidBufferUnderflow() {
+  // The remote to the MediaPlayerObserver could be not set yet.
+  if (!media_player_observer_remote_.is_bound())
+    return;
+
+  media_player_observer_remote_->OnBufferUnderflow();
+}
+
 media::mojom::blink::MediaPlayerHost&
 HTMLMediaElement::GetMediaPlayerHostRemote() {
   // It is an error to call this before having access to the document's frame.

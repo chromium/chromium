@@ -475,6 +475,8 @@ class CORE_EXPORT HTMLMediaElement
                                          base::TimeDelta duration,
                                          base::TimeDelta position) override;
   void DidDisableAudioOutputSinkChanges() override;
+  void DidPlayerSizeChange(const gfx::Size& size) override;
+  void DidBufferUnderflow() override;
 
   // Returns a reference to the mojo remote for the MediaPlayerHost interface,
   // requesting it first from the BrowserInterfaceBroker if needed. It is an

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/size.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -117,19 +118,35 @@ class MockMediaPlayerObserverReceiverForTesting
   void OnMediaPositionStateChanged(
       ::media_session::mojom::blink::MediaPositionPtr) override {}
 
+  void OnMediaSizeChanged(const gfx::Size& size) override {
+    received_media_size_ = size;
+    run_loop_->Quit();
+  }
+
   void OnPictureInPictureAvailabilityChanged(bool available) override {}
 
   void OnAudioOutputSinkChangingDisabled() override {}
+
+  void OnBufferUnderflow() override {
+    received_buffer_underflow_ = true;
+    run_loop_->Quit();
+  }
 
   // Getters used from HTMLMediaElementTest.
   const base::Optional<bool>& received_muted_status() const {
     return received_muted_status_type_;
   }
 
+  gfx::Size received_media_size() const { return received_media_size_; }
+
+  bool received_buffer_underflow() const { return received_buffer_underflow_; }
+
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   mojo::Receiver<media::mojom::blink::MediaPlayerObserver> receiver_{this};
   base::Optional<bool> received_muted_status_type_;
+  gfx::Size received_media_size_{0, 0};
+  bool received_buffer_underflow_{false};
 };
 
 enum class MediaTestParam { kAudio, kVideo };
@@ -228,6 +245,24 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
   bool ReceivedMessageMutedStatusChange(bool muted) {
     return media_player_observer_receiver_->received_muted_status() == muted;
+  }
+
+  void NotifyMediaSizeChange(const gfx::Size& size) {
+    media_->DidPlayerSizeChange(size);
+    media_player_observer_receiver_->WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedMessageMediaSizeChange(const gfx::Size& size) {
+    return media_player_observer_receiver_->received_media_size() == size;
+  }
+
+  void NotifyBufferUnderflowEvent() {
+    media_->DidBufferUnderflow();
+    media_player_observer_receiver_->WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedMessageBufferUnderflowEvent() {
+    return media_player_observer_receiver_->received_buffer_underflow();
   }
 
  private:
@@ -872,6 +907,17 @@ TEST_P(HTMLMediaElementTest, SendMutedStatusChangeToObserver) {
 
   NotifyMutedStatusChange(false);
   EXPECT_TRUE(ReceivedMessageMutedStatusChange(false));
+}
+
+TEST_P(HTMLMediaElementTest, SendMediaSizeChangeToObserver) {
+  const gfx::Size kTestMediaSizeChangedValue(16, 9);
+  NotifyMediaSizeChange(kTestMediaSizeChangedValue);
+  EXPECT_TRUE(ReceivedMessageMediaSizeChange(kTestMediaSizeChangedValue));
+}
+
+TEST_P(HTMLMediaElementTest, SendBufferOverflowToObserver) {
+  NotifyBufferUnderflowEvent();
+  EXPECT_TRUE(ReceivedMessageBufferUnderflowEvent());
 }
 
 }  // namespace blink

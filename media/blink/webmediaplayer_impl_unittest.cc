@@ -69,6 +69,7 @@
 #include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 using ::base::test::RunClosure;
@@ -159,6 +160,8 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_METHOD3(DidPlayerMediaPositionStateChange,
                void(double, base::TimeDelta, base::TimeDelta position));
   MOCK_METHOD0(DidDisableAudioOutputSinkChanges, void());
+  MOCK_METHOD1(DidPlayerSizeChange, void(const gfx::Size&));
+  MOCK_METHOD0(DidBufferUnderflow, void());
   MOCK_METHOD0(GetFeatures, Features(void));
   MOCK_METHOD0(OnRequestVideoFrameCallback, void());
   MOCK_METHOD0(GetTextTrackMetadata, std::vector<blink::TextTrackMetadata>());
@@ -234,14 +237,6 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
   void SetIsEffectivelyFullscreen(
       int player_id,
       blink::WebFullscreenVideoStatus fullscreen_video_status) override {
-    DCHECK_EQ(player_id_, player_id);
-  }
-
-  void DidPlayerSizeChange(int player_id, const gfx::Size& size) override {
-    DCHECK_EQ(player_id_, player_id);
-  }
-
-  void DidBufferUnderflow(int player_id) override {
     DCHECK_EQ(player_id_, player_id);
   }
 
