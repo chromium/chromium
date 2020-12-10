@@ -15,7 +15,6 @@ enum SmsStatus {
   kCancelled,  // request cancelled by the new request in the same WebOTPService
   kAborted, // request aborted by API callers using AbortController
   kTimeout, // request timeout (user not responding to the prompt or not receiving an sms)
-  kUserCancelled, // request cancelled by user clicking "Deny" on the prompt
   kBackendNotAvailable // request cancelled since OTP backend was not available
 };
 

@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "content/browser/sms/sms_parser.h"
 #include "content/browser/sms/sms_queue.h"
 #include "content/browser/sms/user_consent_handler.h"
@@ -67,6 +68,9 @@ class CONTENT_EXPORT WebOTPService
   void CompleteRequest(blink::mojom::SmsStatus);
   void SetConsentHandlerForTesting(UserConsentHandler*);
 
+  // Rejects the pending request if it has not been resolved naturally yet.
+  void OnTimeout();
+
  protected:
   // content::WebContentsObserver:
   void NavigationEntryCommitted(
@@ -88,6 +92,10 @@ class CONTENT_EXPORT WebOTPService
   base::Optional<std::string> one_time_code_;
   base::TimeTicks start_time_;
   base::TimeTicks receive_time_;
+  // Timer to trigger timeout for any pending request. We (re)arm the timer
+  // every time we receive a new request.
+  base::DelayTimer timeout_timer_;
+  base::Optional<FailureType> prompt_failure_;
 
   // The ptr is valid only when we are handling an incoming otp response.
   std::unique_ptr<UserConsentHandler> consent_handler_;

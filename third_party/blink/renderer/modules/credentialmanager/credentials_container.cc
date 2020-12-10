@@ -656,21 +656,12 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
         DOMExceptionCode::kAbortError, "OTP retrieval was cancelled."));
     return;
   } else if (status == mojom::blink::SmsStatus::kTimeout) {
-    // We do not reject the promise as in other branches because the failure
-    // may not belong to the origin that sends the request. e.g. there are two
-    // origins A and B in the queue and A aborts the request. The prompt that
-    // is timeout may belong to A but we are sending the failure information to
-    // the only origin in the queue which is B. Therefore rejecting the promise
-    // may leak information. This should be rare so recording metrics is fine.
-    // TODO(crbug.com/1138454): We should improve the infrastructure to be able
-    // to handle failed requests when there are multiple pending origins
-    // simultaneously.
-    return;
-  } else if (status == mojom::blink::SmsStatus::kUserCancelled) {
-    // Similar to kTimeout, the promise is not rejected here.
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "OTP retrieval timed out."));
     return;
   } else if (status == mojom::blink::SmsStatus::kBackendNotAvailable) {
-    // Similar to kTimeout, the promise is not rejected here.
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "OTP backend unavailable."));
     return;
   }
   resolver->Resolve(MakeGarbageCollected<OTPCredential>(otp));

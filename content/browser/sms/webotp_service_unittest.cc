@@ -18,6 +18,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/sms/sms_fetcher_impl.h"
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/browser/sms/test/mock_sms_web_contents_delegate.h"
@@ -31,10 +32,12 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/sms/webotp_service_destroyed_reason.h"
+#include "third_party/blink/public/common/sms/webotp_service_outcome.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom.h"
 
@@ -56,7 +59,10 @@ namespace content {
 
 class RenderFrameHost;
 
+using Entry = ukm::builders::SMSReceiver;
+using FailureType = SmsFetcher::FailureType;
 using UserConsent = SmsFetcher::UserConsent;
+
 namespace {
 
 const char kTestUrl[] = "https://www.google.com";
@@ -111,6 +117,12 @@ class Service {
                             consent_requirement);
   }
 
+  void NotifyFailure(FailureType failure_type) {
+    service_->OnFailure(failure_type);
+  }
+
+  void ActivateTimer() { service_->OnTimeout(); }
+
  private:
   StubWebContentsDelegate contents_delegate_;
   NiceMock<MockSmsProvider> provider_;
@@ -122,7 +134,9 @@ class Service {
 
 class WebOTPServiceTest : public RenderViewHostTestHarness {
  protected:
-  WebOTPServiceTest() = default;
+  WebOTPServiceTest() {
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
   ~WebOTPServiceTest() override = default;
 
   void ExpectDestroyedReasonCount(WebOTPServiceDestroyedReason bucket,
@@ -135,8 +149,45 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
     return histogram_tester_;
   }
 
+  ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
+
+  void ExpectOutcomeUKM(const GURL& url, blink::WebOTPServiceOutcome outcome) {
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    if (entries.empty())
+      FAIL() << "No WebOTPServiceOutcome was recorded";
+
+    for (const auto* const entry : entries) {
+      const int64_t* metric = ukm_recorder()->GetEntryMetric(entry, "Outcome");
+      if (metric && *metric == static_cast<int>(outcome)) {
+        SUCCEED();
+        return;
+      }
+    }
+    FAIL() << "Expected WebOTPServiceOutcome was not recorded";
+  }
+
+  void ExpectTimingUKM(const std::string& metric_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    ASSERT_FALSE(entries.empty());
+
+    for (const auto* const entry : entries) {
+      if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
+        SUCCEED();
+        return;
+      }
+    }
+    FAIL() << "Expected UKM was not recorded";
+  }
+
+  void ExpectNoOutcomeUKM() {
+    EXPECT_TRUE(ukm_recorder()->GetEntriesByName(Entry::kEntryName).empty());
+  }
+
  private:
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(WebOTPServiceTest);
 };
@@ -802,6 +853,65 @@ TEST_F(WebOTPServiceTest, RecordMetricsForExistingPage) {
 
   ExpectDestroyedReasonCount(
       WebOTPServiceDestroyedReason::kNavigateExistingPage, 1);
+}
+
+TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeWithTimerActivation) {
+  GURL url = GURL(kTestUrl);
+  NavigateAndCommit(url);
+
+  ServiceWithPrompt service(web_contents());
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  service.NotifyFailure(FailureType::kPromptTimeout);
+  service.ActivateTimer();
+
+  ukm_loop.Run();
+
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kTimeout);
+}
+
+TEST_F(WebOTPServiceTest, NotRecordTimeoutAsOutcomeWithoutTimerActivation) {
+  GURL url = GURL(kTestUrl);
+  NavigateAndCommit(url);
+
+  ServiceWithPrompt service(web_contents());
+
+  service.NotifyFailure(FailureType::kPromptTimeout);
+
+  ExpectNoOutcomeUKM();
+}
+
+TEST_F(WebOTPServiceTest, RecordUserCancelledAsOutcome) {
+  GURL url = GURL(kTestUrl);
+  NavigateAndCommit(url);
+
+  ServiceWithPrompt service(web_contents());
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+  service.NotifyFailure(FailureType::kPromptCancelled);
+  service.ActivateTimer();
+
+  ukm_loop.Run();
+
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
+  ExpectTimingUKM("TimeUserCancelMs");
+  histogram_tester().ExpectTotalCount("Blink.Sms.Receive.TimeUserCancel", 1);
+}
+
+TEST_F(WebOTPServiceTest,
+       NotRecordUserCancelledAsOutcomeWithoutTimerActivation) {
+  GURL url = GURL(kTestUrl);
+  NavigateAndCommit(url);
+
+  ServiceWithPrompt service(web_contents());
+
+  service.NotifyFailure(FailureType::kPromptCancelled);
+
+  ExpectNoOutcomeUKM();
 }
 
 }  // namespace content
