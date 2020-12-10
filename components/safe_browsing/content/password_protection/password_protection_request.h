@@ -63,9 +63,9 @@ using DeleteOnUIThread =
 
 // A request for checking if an unfamiliar login form or a password reuse event
 // is safe. PasswordProtectionRequest objects are owned by
-// PasswordProtectionService indicated by |password_protection_service_|.
-// PasswordProtectionService is RefCountedThreadSafe such that it can post task
-// safely between IO and UI threads. It can only be destroyed on UI thread.
+// PasswordProtectionServiceBase indicated by |password_protection_service_|.
+// PasswordProtectionServiceBase is RefCountedThreadSafe such that it can post
+// task safely between IO and UI threads. It can only be destroyed on UI thread.
 //
 // PasswordProtectionRequest flow:
 // Step| Thread |                    Task
@@ -97,7 +97,7 @@ class PasswordProtectionRequest
           matching_reused_credentials,
       LoginReputationClientRequest::TriggerType type,
       bool password_field_exists,
-      PasswordProtectionService* pps,
+      PasswordProtectionServiceBase* pps,
       int request_timeout_in_ms);
 
   // Not copyable or movable
@@ -280,9 +280,9 @@ class PasswordProtectionRequest
   // SimpleURLLoader instance for sending request and receiving response.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
-  // The PasswordProtectionService instance owns |this|.
+  // The PasswordProtectionServiceBase instance owns |this|.
   // Can only be accessed on UI thread.
-  PasswordProtectionService* password_protection_service_;
+  PasswordProtectionServiceBase* password_protection_service_;
 
   // The outcome of the password protection request.
   RequestOutcome request_outcome_;

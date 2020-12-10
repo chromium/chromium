@@ -61,19 +61,19 @@ using ReusedPasswordType =
 using password_manager::metrics_util::PasswordType;
 
 // Manage password protection pings and verdicts. There is one instance of this
-// class per profile. Therefore, every PasswordProtectionService instance is
+// class per profile. Therefore, every PasswordProtectionServiceBase instance is
 // associated with a unique HistoryService instance and a unique
 // HostContentSettingsMap instance.
-class PasswordProtectionService : public history::HistoryServiceObserver {
+class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
  public:
-  PasswordProtectionService(
+  PasswordProtectionServiceBase(
       const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service);
 
-  ~PasswordProtectionService() override;
+  ~PasswordProtectionServiceBase() override;
 
-  base::WeakPtr<PasswordProtectionService> GetWeakPtr() {
+  base::WeakPtr<PasswordProtectionServiceBase> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -186,12 +186,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   virtual bool UserClickedThroughSBInterstitial(
       PasswordProtectionRequest* request) = 0;
 
-  // Called when a new navigation is starting. Create throttle if there is a
-  // pending sync password reuse ping or if there is a modal warning dialog
-  // showing in the corresponding web contents.
-  std::unique_ptr<PasswordProtectionNavigationThrottle>
-  MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
-
   // Returns if the warning UI is enabled.
   bool IsWarningEnabled(ReusedPasswordAccountType password_type);
 
@@ -294,6 +288,9 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
 
   virtual AccountInfo GetAccountInfo() const = 0;
 
+  // Returns the URL where PasswordProtectionRequest instances send requests.
+  static GURL GetPasswordProtectionRequestUrl();
+
  protected:
   friend class PasswordProtectionRequest;
 
@@ -335,9 +332,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() {
     return url_loader_factory_;
   }
-
-  // Returns the URL where PasswordProtectionRequest instances send requests.
-  static GURL GetPasswordProtectionRequestUrl();
 
   // Gets the request timeout in milliseconds.
   static int GetRequestTimeoutInMS();
@@ -405,10 +399,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
       PasswordType password_type,
       const LoginReputationClientResponse*) = 0;
 
-  void RemoveWarningRequestsByWebContents(content::WebContents* web_contents);
-
-  bool IsModalWarningShowingInWebContents(content::WebContents* web_contents);
-
   // Determines if we should show chrome://reset-password interstitial based on
   // the reused |password_type| and the |main_frame_url|.
   virtual bool CanShowInterstitial(ReusedPasswordAccountType password_type,
@@ -436,6 +426,13 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   const std::list<std::string>& common_spoofed_domains() const {
     return common_spoofed_domains_;
   }
+
+  // Set of pending PasswordProtectionRequests that are still waiting for
+  // verdict.
+  std::set<scoped_refptr<PasswordProtectionRequest>> pending_requests_;
+
+  // Set of PasswordProtectionRequests that are triggering modal warnings.
+  std::set<scoped_refptr<PasswordProtectionRequest>> warning_requests_;
 
  private:
   friend class PasswordProtectionServiceTest;
@@ -509,13 +506,6 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   // cookie store.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Set of pending PasswordProtectionRequests that are still waiting for
-  // verdict.
-  std::set<scoped_refptr<PasswordProtectionRequest>> pending_requests_;
-
-  // Set of PasswordProtectionRequests that are triggering modal warnings.
-  std::set<scoped_refptr<PasswordProtectionRequest>> warning_requests_;
-
   // List of most commonly spoofed domains to default to on the password warning
   // dialog.
   std::list<std::string> common_spoofed_domains_;
@@ -528,8 +518,24 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   // we need CancelableTaskTracker to cancel tasks posted to IO thread.
   base::CancelableTaskTracker tracker_;
 
-  base::WeakPtrFactory<PasswordProtectionService> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PasswordProtectionService);
+  base::WeakPtrFactory<PasswordProtectionServiceBase> weak_factory_{this};
+  DISALLOW_COPY_AND_ASSIGN(PasswordProtectionServiceBase);
+};
+
+class PasswordProtectionService : public PasswordProtectionServiceBase {
+  using PasswordProtectionServiceBase::PasswordProtectionServiceBase;
+
+ public:
+  // Called when a new navigation is starting. Create throttle if there is a
+  // pending sync password reuse ping or if there is a modal warning dialog
+  // showing in the corresponding web contents.
+  std::unique_ptr<PasswordProtectionNavigationThrottle>
+  MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
+
+ protected:
+  void RemoveWarningRequestsByWebContents(content::WebContents* web_contents);
+
+  bool IsModalWarningShowingInWebContents(content::WebContents* web_contents);
 };
 
 }  // namespace safe_browsing
