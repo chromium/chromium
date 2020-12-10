@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.ProfileDataCache;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;

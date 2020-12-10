@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * The native ProfileDownloader requires its access to be in the UI thread.
  * See chrome/browser/profiles/profile_downloader.h/cc for more details.
  */
-public class ProfileDownloader {
+class ProfileDownloader {
     private static final Object LOCK = new Object();
 
     private static ProfileDownloader sInstance;
@@ -32,7 +32,7 @@ public class ProfileDownloader {
     /**
      * Get the instance of ProfileDownloader.
      */
-    public static ProfileDownloader get() {
+    static ProfileDownloader get() {
         synchronized (LOCK) {
             if (sInstance == null) {
                 sInstance = new ProfileDownloader();

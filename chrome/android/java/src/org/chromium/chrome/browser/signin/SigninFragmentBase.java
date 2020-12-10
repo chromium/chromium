@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.ui.ConsentTextTracker;
 import org.chromium.chrome.browser.sync.SyncUserDataWiper;
 import org.chromium.components.signin.AccountManagerDelegateException;

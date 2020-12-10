@@ -134,13 +134,6 @@
     <!-- Slop value for allowing slight misses on the compositor button. -->
     <dimen name="compositor_button_slop">10dp</dimen>
 
-    <!-- User Picture Dimensions -->
-    <dimen name="user_picture_size">40dp</dimen>
-    <dimen name="badge_position_x">26dp</dimen>
-    <dimen name="badge_position_y">20dp</dimen>
-    <dimen name="badge_border_size">1.3dp</dimen>
-    <dimen name="badge_size">20dp</dimen>
-
     <!-- First Run Experience dimensions -->
     <dimen name="fre_content_margin">24dp</dimen>
     <dimen name="fre_vertical_spacing">32dp</dimen>

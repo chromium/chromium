@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.services;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -26,11 +26,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.ProfileDownloader;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ProfileDataSource;
