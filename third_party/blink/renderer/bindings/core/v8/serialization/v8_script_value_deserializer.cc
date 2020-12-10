@@ -358,14 +358,12 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       if (!ReadUint32(&width) || !ReadUint32(&height) ||
           !ReadUint32(&byte_length) || !ReadRawBytes(byte_length, &pixels))
         return nullptr;
-      CanvasColorParams color_params =
-          SerializedColorParams(canvas_color_space, canvas_pixel_format,
-                                canvas_opacity_mode,
-                                SerializedImageDataStorageFormat::kUint8Clamped)
-              .GetCanvasColorParams();
-      base::CheckedNumeric<uint32_t> computed_byte_length = width;
-      computed_byte_length *= height;
-      computed_byte_length *= color_params.BytesPerPixel();
+      SkImageInfo info =
+          SerializedImageBitmapSettings(canvas_color_space, canvas_pixel_format,
+                                        canvas_opacity_mode, is_premultiplied)
+              .GetSkImageInfo(width, height);
+      base::CheckedNumeric<uint32_t> computed_byte_length =
+          info.computeMinByteSize();
       if (!computed_byte_length.IsValid() ||
           computed_byte_length.ValueOrDie() != byte_length)
         return nullptr;
@@ -374,10 +372,6 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         // been deprecated.
         return nullptr;
       }
-      SkImageInfo info = SkImageInfo::Make(
-          width, height, color_params.GetSkColorType(),
-          is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
-          color_params.GetSkColorSpace());
       SkPixmap pixmap(info, pixels, info.minRowBytes());
       return MakeGarbageCollected<ImageBitmap>(pixmap, origin_clean);
     }
@@ -434,10 +428,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       }
 
-      SerializedColorParams color_params(
-          canvas_color_space, SerializedPixelFormat::kNative8_LegacyObsolete,
-          SerializedOpacityMode::kNonOpaque, image_data_storage_format);
-      ImageDataStorageFormat storage_format = color_params.GetStorageFormat();
+      SerializedImageDataSettings settings(canvas_color_space,
+                                           image_data_storage_format);
+      ImageDataStorageFormat storage_format = settings.GetStorageFormat();
       base::CheckedNumeric<size_t> computed_byte_length = width;
       computed_byte_length *= height;
       computed_byte_length *=
@@ -446,7 +439,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           computed_byte_length.ValueOrDie() != byte_length)
         return nullptr;
       ImageData* image_data = ImageData::Create(
-          IntSize(width, height), color_params.GetColorSpace(), storage_format);
+          IntSize(width, height), settings.GetColorSpace(), storage_format);
       if (!image_data)
         return nullptr;
       DOMArrayBufferBase* pixel_buffer = image_data->BufferBase();

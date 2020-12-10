@@ -8,45 +8,45 @@
 
 namespace blink {
 
-SerializedColorParams::SerializedColorParams() = default;
+namespace {
 
-SerializedColorParams::SerializedColorParams(CanvasColorParams color_params)
-    : SerializedColorParams(color_params.ColorSpace(),
-                            kUint8ClampedArrayStorageFormat) {
-  switch (color_params.PixelFormat()) {
-    case CanvasPixelFormat::kF16:
-      pixel_format_ = SerializedPixelFormat::kF16;
-      break;
-    case CanvasPixelFormat::kRGBA8:
-      pixel_format_ = SerializedPixelFormat::kRGBA8;
-      break;
-    case CanvasPixelFormat::kBGRA8:
-      pixel_format_ = SerializedPixelFormat::kBGRA8;
-      break;
-    case CanvasPixelFormat::kRGBX8:
-      pixel_format_ = SerializedPixelFormat::kRGBX8;
-      break;
-  }
-
-  opacity_mode_ = SerializedOpacityMode::kNonOpaque;
-  if (color_params.GetOpacityMode() == blink::kOpaque)
-    opacity_mode_ = SerializedOpacityMode::kOpaque;
-}
-
-SerializedColorParams::SerializedColorParams(
-    CanvasColorSpace color_space,
-    ImageDataStorageFormat storage_format) {
+SerializedColorSpace SerializeColorSpace(CanvasColorSpace color_space) {
   switch (color_space) {
     case CanvasColorSpace::kSRGB:
-      color_space_ = SerializedColorSpace::kSRGB;
-      break;
+      return SerializedColorSpace::kSRGB;
     case CanvasColorSpace::kRec2020:
-      color_space_ = SerializedColorSpace::kRec2020;
-      break;
+      return SerializedColorSpace::kRec2020;
     case CanvasColorSpace::kP3:
-      color_space_ = SerializedColorSpace::kP3;
-      break;
+      return SerializedColorSpace::kP3;
   }
+  NOTREACHED();
+  return SerializedColorSpace::kSRGB;
+}
+
+CanvasColorSpace DeserializeColorSpace(
+    SerializedColorSpace serialized_color_space) {
+  switch (serialized_color_space) {
+    case SerializedColorSpace::kLegacyObsolete:
+    case SerializedColorSpace::kSRGB:
+      return CanvasColorSpace::kSRGB;
+    case SerializedColorSpace::kRec2020:
+      return CanvasColorSpace::kRec2020;
+    case SerializedColorSpace::kP3:
+      return CanvasColorSpace::kP3;
+  }
+  NOTREACHED();
+  return CanvasColorSpace::kSRGB;
+}
+
+}  // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// SerializedImageDataSettings
+
+SerializedImageDataSettings::SerializedImageDataSettings(
+    CanvasColorSpace color_space,
+    ImageDataStorageFormat storage_format)
+    : color_space_(SerializeColorSpace(color_space)) {
   switch (storage_format) {
     case kUint8ClampedArrayStorageFormat:
       storage_format_ = SerializedImageDataStorageFormat::kUint8Clamped;
@@ -60,66 +60,16 @@ SerializedColorParams::SerializedColorParams(
   }
 }
 
-SerializedColorParams::SerializedColorParams(
+SerializedImageDataSettings::SerializedImageDataSettings(
     SerializedColorSpace color_space,
-    SerializedPixelFormat pixel_format,
-    SerializedOpacityMode opacity_mode,
     SerializedImageDataStorageFormat storage_format)
-    : color_space_(color_space),
-      pixel_format_(pixel_format),
-      opacity_mode_(opacity_mode),
-      storage_format_(storage_format) {}
+    : color_space_(color_space), storage_format_(storage_format) {}
 
-CanvasColorParams SerializedColorParams::GetCanvasColorParams() const {
-  CanvasColorSpace color_space = CanvasColorSpace::kSRGB;
-  switch (color_space_) {
-    case SerializedColorSpace::kLegacyObsolete:
-    case SerializedColorSpace::kSRGB:
-      color_space = CanvasColorSpace::kSRGB;
-      break;
-    case SerializedColorSpace::kRec2020:
-      color_space = CanvasColorSpace::kRec2020;
-      break;
-    case SerializedColorSpace::kP3:
-      color_space = CanvasColorSpace::kP3;
-      break;
-  }
-
-  CanvasPixelFormat pixel_format = CanvasPixelFormat::kRGBA8;
-  switch (pixel_format_) {
-    case SerializedPixelFormat::kNative8_LegacyObsolete:
-#if defined(OS_ANDROID)
-      pixel_format = CanvasPixelFormat::kRGBA8;
-#else
-      pixel_format = CanvasPixelFormat::kBGRA8;
-#endif
-      break;
-    case SerializedPixelFormat::kF16:
-      pixel_format = CanvasPixelFormat::kF16;
-      break;
-    case SerializedPixelFormat::kRGBA8:
-      pixel_format = CanvasPixelFormat::kRGBA8;
-      break;
-    case SerializedPixelFormat::kBGRA8:
-      pixel_format = CanvasPixelFormat::kBGRA8;
-      break;
-    case SerializedPixelFormat::kRGBX8:
-      pixel_format = CanvasPixelFormat::kRGBX8;
-      break;
-  }
-
-  blink::OpacityMode opacity_mode = blink::kNonOpaque;
-  if (opacity_mode_ == SerializedOpacityMode::kOpaque)
-    opacity_mode = blink::kOpaque;
-
-  return CanvasColorParams(color_space, pixel_format, opacity_mode);
+CanvasColorSpace SerializedImageDataSettings::GetColorSpace() const {
+  return DeserializeColorSpace(color_space_);
 }
 
-CanvasColorSpace SerializedColorParams::GetColorSpace() const {
-  return GetCanvasColorParams().ColorSpace();
-}
-
-ImageDataStorageFormat SerializedColorParams::GetStorageFormat() const {
+ImageDataStorageFormat SerializedImageDataSettings::GetStorageFormat() const {
   switch (storage_format_) {
     case SerializedImageDataStorageFormat::kUint8Clamped:
       return kUint8ClampedArrayStorageFormat;
@@ -130,6 +80,100 @@ ImageDataStorageFormat SerializedColorParams::GetStorageFormat() const {
   }
   NOTREACHED();
   return kUint8ClampedArrayStorageFormat;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// SerializedImageBitmapSettings
+
+SerializedImageBitmapSettings::SerializedImageBitmapSettings() = default;
+
+SerializedImageBitmapSettings::SerializedImageBitmapSettings(SkImageInfo info) {
+  color_space_ =
+      SerializeColorSpace(CanvasColorSpaceFromSkColorSpace(info.colorSpace()));
+
+  switch (info.colorType()) {
+    default:
+    case kRGBA_8888_SkColorType:
+      pixel_format_ = SerializedPixelFormat::kRGBA8;
+      break;
+    case kBGRA_8888_SkColorType:
+      pixel_format_ = SerializedPixelFormat::kBGRA8;
+      break;
+    case kRGB_888x_SkColorType:
+      pixel_format_ = SerializedPixelFormat::kRGBX8;
+      break;
+    case kRGBA_F16_SkColorType:
+      pixel_format_ = SerializedPixelFormat::kF16;
+      break;
+  }
+
+  switch (info.alphaType()) {
+    case kUnknown_SkAlphaType:
+    case kPremul_SkAlphaType:
+      opacity_mode_ = SerializedOpacityMode::kNonOpaque;
+      is_premultiplied_ = true;
+      break;
+    case kUnpremul_SkAlphaType:
+      opacity_mode_ = SerializedOpacityMode::kNonOpaque;
+      is_premultiplied_ = false;
+      break;
+    case kOpaque_SkAlphaType:
+      opacity_mode_ = SerializedOpacityMode::kOpaque;
+      is_premultiplied_ = true;
+      break;
+  }
+}
+
+SerializedImageBitmapSettings::SerializedImageBitmapSettings(
+    SerializedColorSpace color_space,
+    SerializedPixelFormat pixel_format,
+    SerializedOpacityMode opacity_mode,
+    uint32_t is_premultiplied)
+    : color_space_(color_space),
+      pixel_format_(pixel_format),
+      opacity_mode_(opacity_mode),
+      is_premultiplied_(is_premultiplied) {}
+
+SkImageInfo SerializedImageBitmapSettings::GetSkImageInfo(
+    uint32_t width,
+    uint32_t height) const {
+  sk_sp<SkColorSpace> sk_color_space =
+      CanvasColorSpaceToSkColorSpace(DeserializeColorSpace(color_space_));
+
+  SkColorType sk_color_type = kRGBA_8888_SkColorType;
+  switch (pixel_format_) {
+    case SerializedPixelFormat::kNative8_LegacyObsolete:
+      sk_color_type = kN32_SkColorType;
+      break;
+    case SerializedPixelFormat::kRGBA8:
+      sk_color_type = kRGBA_8888_SkColorType;
+      break;
+    case SerializedPixelFormat::kBGRA8:
+      sk_color_type = kBGRA_8888_SkColorType;
+      break;
+    case SerializedPixelFormat::kRGBX8:
+      sk_color_type = kRGB_888x_SkColorType;
+      break;
+    case SerializedPixelFormat::kF16:
+      sk_color_type = kRGBA_F16_SkColorType;
+      break;
+  }
+
+  SkAlphaType sk_alpha_type = kPremul_SkAlphaType;
+  if (opacity_mode_ == SerializedOpacityMode::kOpaque) {
+    sk_alpha_type = kOpaque_SkAlphaType;
+  } else if (is_premultiplied_) {
+    sk_alpha_type = kPremul_SkAlphaType;
+  } else {
+    sk_alpha_type = kUnpremul_SkAlphaType;
+  }
+
+  blink::OpacityMode opacity_mode = blink::kNonOpaque;
+  if (opacity_mode_ == SerializedOpacityMode::kOpaque)
+    opacity_mode = blink::kOpaque;
+
+  return SkImageInfo::Make(width, height, sk_color_type, sk_alpha_type,
+                           std::move(sk_color_space));
 }
 
 }  // namespace blink

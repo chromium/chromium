@@ -43,6 +43,27 @@ sk_sp<SkColorSpace> CanvasColorSpaceToSkColorSpace(
   return CanvasColorSpaceToGfxColorSpace(color_space).ToSkColorSpace();
 }
 
+CanvasColorSpace CanvasColorSpaceFromSkColorSpace(
+    const SkColorSpace* sk_color_space) {
+  // TODO(https://crbug.com/1121448): This function returns sRGB if
+  // |sk_color_space| does not exactly match one of the named color spaces. It
+  // should find the best named match.
+  CanvasColorSpace color_spaces[] = {
+      CanvasColorSpace::kSRGB,
+      CanvasColorSpace::kRec2020,
+      CanvasColorSpace::kP3,
+  };
+  for (const auto& color_space : color_spaces) {
+    if (SkColorSpace::Equals(sk_color_space,
+                             CanvasColorSpaceToGfxColorSpace(color_space)
+                                 .ToSkColorSpace()
+                                 .get())) {
+      return color_space;
+    }
+  }
+  return CanvasColorSpace::kSRGB;
+}
+
 CanvasColorSpace CanvasColorSpaceFromName(const String& color_space_name) {
   if (color_space_name == kRec2020CanvasColorSpaceName)
     return CanvasColorSpace::kRec2020;
@@ -184,23 +205,8 @@ viz::ResourceFormat CanvasColorParams::TransferableResourceFormat() const {
 
 CanvasColorParams::CanvasColorParams(const sk_sp<SkColorSpace> sk_color_space,
                                      SkColorType sk_color_type) {
-  color_space_ = CanvasColorSpace::kSRGB;
+  color_space_ = CanvasColorSpaceFromSkColorSpace(sk_color_space.get());
   pixel_format_ = GetNativeCanvasPixelFormat();
-
-  CanvasColorSpace color_spaces[] = {
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kRec2020,
-      CanvasColorSpace::kP3,
-  };
-  for (const auto& color_space : color_spaces) {
-    if (SkColorSpace::Equals(sk_color_space.get(),
-                             CanvasColorSpaceToGfxColorSpace(color_space)
-                                 .ToSkColorSpace()
-                                 .get())) {
-      color_space_ = color_space;
-      break;
-    }
-  }
 
   if (sk_color_type == kRGBA_F16_SkColorType)
     pixel_format_ = CanvasPixelFormat::kF16;

@@ -305,7 +305,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     }
     WriteTag(kImageBitmapTag);
     SkImageInfo info = image_bitmap->GetBitmapSkImageInfo();
-    SerializedColorParams color_params((CanvasColorParams(info)));
+    SerializedImageBitmapSettings color_params(info);
     WriteUint32Enum(ImageSerializationTag::kCanvasColorSpaceTag);
     WriteUint32Enum(color_params.GetSerializedColorSpace());
     WriteUint32Enum(ImageSerializationTag::kCanvasPixelFormatTag);
@@ -315,7 +315,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     WriteUint32Enum(ImageSerializationTag::kOriginCleanTag);
     WriteUint32(image_bitmap->OriginClean());
     WriteUint32Enum(ImageSerializationTag::kIsPremultipliedTag);
-    WriteUint32(image_bitmap->IsPremultiplied());
+    WriteUint32(color_params.IsPremultiplied());
     WriteUint32Enum(ImageSerializationTag::kEndTag);
     WriteUint32(image_bitmap->width());
     WriteUint32(image_bitmap->height());
@@ -335,12 +335,13 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
   if (wrapper_type_info == V8ImageData::GetWrapperTypeInfo()) {
     ImageData* image_data = wrappable->ToImpl<ImageData>();
     WriteTag(kImageDataTag);
-    SerializedColorParams color_params(image_data->GetCanvasColorSpace(),
-                                       image_data->GetImageDataStorageFormat());
+    SerializedImageDataSettings settings(
+        image_data->GetCanvasColorSpace(),
+        image_data->GetImageDataStorageFormat());
     WriteUint32Enum(ImageSerializationTag::kCanvasColorSpaceTag);
-    WriteUint32Enum(color_params.GetSerializedColorSpace());
+    WriteUint32Enum(settings.GetSerializedColorSpace());
     WriteUint32Enum(ImageSerializationTag::kImageDataStorageFormatTag);
-    WriteUint32Enum(color_params.GetSerializedImageDataStorageFormat());
+    WriteUint32Enum(settings.GetSerializedImageDataStorageFormat());
     WriteUint32Enum(ImageSerializationTag::kEndTag);
     WriteUint32(image_data->width());
     WriteUint32(image_data->height());

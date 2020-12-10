@@ -50,6 +50,10 @@ CanvasColorSpaceFromName(const String& color_space_name);
 sk_sp<SkColorSpace> PLATFORM_EXPORT
 CanvasColorSpaceToSkColorSpace(CanvasColorSpace color_space);
 
+// Return the named CanvasColorSpace that best matches |sk_color_space|.
+CanvasColorSpace PLATFORM_EXPORT
+CanvasColorSpaceFromSkColorSpace(const SkColorSpace* sk_color_space);
+
 class PLATFORM_EXPORT CanvasColorParams {
   DISALLOW_NEW();
 
