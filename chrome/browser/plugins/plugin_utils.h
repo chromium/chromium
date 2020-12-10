@@ -37,14 +37,6 @@ class PluginUtils {
       bool* is_default,
       bool* is_managed);
 
-  // Returns the content setting for Flash. This is the same as
-  // |GetPluginContentSetting| but flash-specific.
-  static ContentSetting GetFlashPluginContentSetting(
-      const HostContentSettingsMap* host_content_settings_map,
-      const url::Origin& main_frame_origin,
-      const GURL& plugin_url,
-      bool* is_managed);
-
   // If there's an extension that is allowed to handle |mime_type|, returns its
   // ID. Otherwise returns an empty string.
   static std::string GetExtensionIdForMimeType(

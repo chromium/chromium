@@ -253,7 +253,6 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
       &is_managed);
 
   DCHECK(plugin_setting != CONTENT_SETTING_DEFAULT);
-  DCHECK(plugin_setting != CONTENT_SETTING_ASK);
 
   if (*status == chrome::mojom::PluginStatus::kFlashHiddenPreferHtml) {
     if (plugin_setting == CONTENT_SETTING_BLOCK) {
@@ -295,7 +294,7 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  if (plugin_setting == CONTENT_SETTING_DETECT_IMPORTANT_CONTENT ||
+  if (plugin_setting == CONTENT_SETTING_ASK ||
       (plugin_setting == CONTENT_SETTING_ALLOW &&
        !run_all_flash_in_allow_mode_.GetValue())) {
     *status = chrome::mojom::PluginStatus::kPlayImportantContent;

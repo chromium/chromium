@@ -142,30 +142,6 @@ class PluginInfoHostImplTest : public ::testing::Test {
     return host_content_settings_map_;
   }
 
-  void VerifyPluginContentSetting(const GURL& url,
-                                  const std::string& plugin,
-                                  ContentSetting expected_setting,
-                                  bool expected_is_default,
-                                  bool expected_is_managed) {
-    ContentSetting setting = expected_setting == CONTENT_SETTING_DEFAULT
-                                 ? CONTENT_SETTING_BLOCK
-                                 : CONTENT_SETTING_DEFAULT;
-    bool is_default = !expected_is_default;
-    bool is_managed = !expected_is_managed;
-
-    // Pass in a fake Flash plugin info.
-    content::WebPluginInfo plugin_info(
-        base::ASCIIToUTF16("Shockwave Flash"), base::FilePath(),
-        base::ASCIIToUTF16("1"), base::ASCIIToUTF16("Fake Flash"));
-
-    PluginUtils::GetPluginContentSetting(
-        host_content_settings_map_, plugin_info, url::Origin::Create(url), url,
-        plugin, &setting, &is_default, &is_managed);
-    EXPECT_EQ(expected_setting, setting);
-    EXPECT_EQ(expected_is_default, is_default);
-    EXPECT_EQ(expected_is_managed, is_managed);
-  }
-
   base::FilePath foo_plugin_path_;
   base::FilePath bar_plugin_path_;
   base::FilePath fake_flash_path_;

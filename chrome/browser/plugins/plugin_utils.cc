@@ -25,50 +25,30 @@
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #endif
 
-namespace {
-
-const char kFlashPluginID[] = "adobe-flash-player";
-
-void GetPluginContentSettingInternal(
+// static
+void PluginUtils::GetPluginContentSetting(
     const HostContentSettingsMap* host_content_settings_map,
-    bool use_javascript_setting,
+    const content::WebPluginInfo& plugin,
     const url::Origin& main_frame_origin,
     const GURL& plugin_url,
     const std::string& resource,
     ContentSetting* setting,
     bool* is_default,
     bool* is_managed) {
+  // Not JS means Flash. Flash is deprecated.
+  if (!ShouldUseJavaScriptSettingForPlugin(plugin)) {
+    *is_default = true;
+    *setting = CONTENT_SETTING_BLOCK;
+    return;
+  }
+
   GURL main_frame_url = main_frame_origin.GetURL();
   std::unique_ptr<base::Value> value;
   content_settings::SettingInfo info;
   bool uses_plugin_specific_setting = false;
-  if (use_javascript_setting) {
-    value = host_content_settings_map->GetWebsiteSetting(
-        main_frame_url, main_frame_url, ContentSettingsType::JAVASCRIPT, &info);
-  } else {
-    content_settings::SettingInfo specific_info;
-    std::unique_ptr<base::Value> specific_setting =
-        host_content_settings_map->GetWebsiteSetting(
-            main_frame_url, plugin_url, ContentSettingsType::PLUGINS,
-            &specific_info);
-    content_settings::SettingInfo general_info;
-    std::unique_ptr<base::Value> general_setting =
-        host_content_settings_map->GetWebsiteSetting(
-            main_frame_url, plugin_url, ContentSettingsType::PLUGINS,
-            &general_info);
-    // If there is a plugin-specific setting, we use it, unless the general
-    // setting was set by policy, in which case it takes precedence.
-    uses_plugin_specific_setting =
-        specific_setting &&
-        general_info.source != content_settings::SETTING_SOURCE_POLICY;
-    if (uses_plugin_specific_setting) {
-      value = std::move(specific_setting);
-      info = specific_info;
-    } else {
-      value = std::move(general_setting);
-      info = general_info;
-    }
-  }
+  value = host_content_settings_map->GetWebsiteSetting(
+      main_frame_url, main_frame_url, ContentSettingsType::JAVASCRIPT, &info);
+
   *setting = content_settings::ValueToContentSetting(value.get());
 
   bool uses_default_content_setting =
@@ -80,59 +60,6 @@ void GetPluginContentSettingInternal(
     *is_default = uses_default_content_setting;
   if (is_managed)
     *is_managed = info.source == content_settings::SETTING_SOURCE_POLICY;
-
-  // Special behavior for non-JavaScript treated plugins (Flash):
-  if (!use_javascript_setting) {
-    // ALLOW-by-default is obsolete and should be treated as DETECT.
-    if (*setting == CONTENT_SETTING_ALLOW && uses_default_content_setting)
-      *setting = CONTENT_SETTING_DETECT_IMPORTANT_CONTENT;
-
-    // Unless the setting is explicitly ALLOW, return BLOCK for any scheme that
-    // is not HTTP, HTTPS, FILE, or chrome-extension.
-    if (*setting != CONTENT_SETTING_ALLOW &&
-        !main_frame_url.SchemeIsHTTPOrHTTPS() &&
-        !main_frame_url.SchemeIsFile() &&
-        !main_frame_url.SchemeIs(extensions::kExtensionScheme)) {
-      *setting = CONTENT_SETTING_BLOCK;
-    }
-  }
-
-  // For Plugins, ASK is obsolete. Show as DETECT_IMPORTANT_CONTENT to reflect
-  // actual behavior.
-  if (*setting == ContentSetting::CONTENT_SETTING_ASK)
-    *setting = ContentSetting::CONTENT_SETTING_DETECT_IMPORTANT_CONTENT;
-}
-
-}  // namespace
-
-// static
-void PluginUtils::GetPluginContentSetting(
-    const HostContentSettingsMap* host_content_settings_map,
-    const content::WebPluginInfo& plugin,
-    const url::Origin& main_frame_origin,
-    const GURL& plugin_url,
-    const std::string& resource,
-    ContentSetting* setting,
-    bool* uses_default_content_setting,
-    bool* is_managed) {
-  GetPluginContentSettingInternal(
-      host_content_settings_map, ShouldUseJavaScriptSettingForPlugin(plugin),
-      main_frame_origin, plugin_url, resource, setting,
-      uses_default_content_setting, is_managed);
-}
-
-// static
-ContentSetting PluginUtils::GetFlashPluginContentSetting(
-    const HostContentSettingsMap* host_content_settings_map,
-    const url::Origin& main_frame_origin,
-    const GURL& plugin_url,
-    bool* is_managed) {
-  ContentSetting plugin_setting = CONTENT_SETTING_DEFAULT;
-  GetPluginContentSettingInternal(host_content_settings_map,
-                                  false /* use_javascript_setting */,
-                                  main_frame_origin, plugin_url, kFlashPluginID,
-                                  &plugin_setting, nullptr, is_managed);
-  return plugin_setting;
 }
 
 // static
