@@ -4,7 +4,7 @@
 
 // Helper tool that is built and run during a build to pull strings from
 // the GRD files and generate the InfoPlist.strings files needed for
-// Mac OS X app bundles.
+// macOS app bundles.
 
 #include <stdint.h>
 #include <stdio.h>
@@ -87,139 +87,128 @@ const char kAppType_Helper[] = "helper";  // Helper app
 }  // namespace
 
 int main(int argc, char* const argv[]) {
-  // FIXME: Remove the local block in a follow-up. Keeping it for now to keep
-  // the diff cleaner.
-  {
-    const char* version_string = nullptr;
-    const char* grit_output_dir = nullptr;
-    const char* branding_strings_name = nullptr;
-    const char* output_dir = nullptr;
-    const char* app_type = kAppType_Main;
+  const char* version_string = nullptr;
+  const char* grit_output_dir = nullptr;
+  const char* branding_strings_name = nullptr;
+  const char* output_dir = nullptr;
+  std::string app_type = kAppType_Main;
 
-    // Process the args
-    int ch;
-    while ((ch = getopt(argc, argv, "t:v:g:b:o:")) != -1) {
-      switch (ch) {
-        case 't':
-          app_type = optarg;
-          break;
-        case 'v':
-          version_string = optarg;
-          break;
-        case 'g':
-          grit_output_dir = optarg;
-          break;
-        case 'b':
-          branding_strings_name = optarg;
-          break;
-        case 'o':
-          output_dir = optarg;
-          break;
-        default:
-          LOG(FATAL) << "bad command line arg";
-          break;
-      }
+  // Process the args
+  int ch;
+  while ((ch = getopt(argc, argv, "t:v:g:b:o:")) != -1) {
+    switch (ch) {
+      case 't':
+        app_type = optarg;
+        break;
+      case 'v':
+        version_string = optarg;
+        break;
+      case 'g':
+        grit_output_dir = optarg;
+        break;
+      case 'b':
+        branding_strings_name = optarg;
+        break;
+      case 'o':
+        output_dir = optarg;
+        break;
+      default:
+        LOG(FATAL) << "bad command line arg";
+        break;
     }
-    argc -= optind;
-    argv += optind;
+  }
+  argc -= optind;
+  argv += optind;
 
-#define CHECK_ARG(a, b)      \
-  do {                       \
-    LOG_IF(FATAL, (a)) << b; \
-  } while (false)
+  // Check our args
+  CHECK(version_string) << "Missing version string";
+  CHECK(grit_output_dir) << "Missing grit output dir path";
+  CHECK(output_dir) << "Missing path to write InfoPlist.strings files";
+  CHECK(branding_strings_name) << "Missing branding strings file name";
+  CHECK(argc) << "Missing language list";
+  CHECK(app_type == kAppType_Main || app_type == kAppType_Helper)
+      << "Unknown app type";
 
-    // Check our args
-    CHECK_ARG(!version_string, "Missing version string");
-    CHECK_ARG(!grit_output_dir, "Missing grit output dir path");
-    CHECK_ARG(!output_dir, "Missing path to write InfoPlist.strings files");
-    CHECK_ARG(!branding_strings_name, "Missing branding strings file name");
-    CHECK_ARG(argc == 0, "Missing language list");
-    CHECK_ARG((strcmp(app_type, kAppType_Main) != 0 &&
-               strcmp(app_type, kAppType_Helper) != 0),
-              "Unknown app type");
+  char* const* lang_list = argv;
+  int lang_list_count = argc;
 
-    char* const* lang_list = argv;
-    int lang_list_count = argc;
+  base::i18n::InitializeICU();
 
-    base::i18n::InitializeICU();
+  for (int loop = 0; loop < lang_list_count; ++loop) {
+    std::string cur_lang = lang_list[loop];
 
-    for (int loop = 0; loop < lang_list_count; ++loop) {
-      std::string cur_lang = lang_list[loop];
+    // Open the branded string pak file
+    std::unique_ptr<ui::DataPack> branded_data_pack(
+        LoadResourceDataPack(grit_output_dir, branding_strings_name, cur_lang));
+    CHECK(branded_data_pack)
+        << "failed to load branded pak for language: " << cur_lang;
 
-      // Open the branded string pak file
-      std::unique_ptr<ui::DataPack> branded_data_pack(LoadResourceDataPack(
-          grit_output_dir, branding_strings_name, cur_lang));
-      CHECK(branded_data_pack)
-          << "failed to load branded pak for language: " << cur_lang;
-
-      uint32_t name_id = IDS_PRODUCT_NAME;
-      const char* name_id_str = "IDS_PRODUCT_NAME";
-      if (strcmp(app_type, kAppType_Helper) == 0) {
-        name_id = IDS_HELPER_NAME;
-        name_id_str = "IDS_HELPER_NAME";
-      }
-
-      // Fetch the strings.
-      std::string name = LoadStringFromDataPack(branded_data_pack.get(),
-                                                cur_lang, name_id, name_id_str);
-      std::string copyright_format = LoadStringFromDataPack(
-          branded_data_pack.get(), cur_lang, IDS_ABOUT_VERSION_COPYRIGHT,
-          "IDS_ABOUT_VERSION_COPYRIGHT");
-
-      std::string copyright = base::UTF16ToUTF8(
-          base::i18n::MessageFormatter::FormatWithNumberedArgs(
-              base::UTF8ToUTF16(copyright_format), base::Time::Now()));
-
-      std::string permission_reason =
-          LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
-                                 IDS_RUNTIME_PERMISSION_OS_REASON_TEXT,
-                                 "IDS_RUNTIME_PERMISSION_OS_REASON_TEXT");
-
-      // For now, assume this is ok for all languages. If we need to, this could
-      // be moved into generated_resources.grd and fetched.
-      std::string get_info = base::StringPrintf(
-          "%s %s, %s", name.c_str(), version_string, copyright.c_str());
-
-      // Generate the InfoPlist.strings file contents.
-      std::map<std::string, std::string> infoplist_strings = {
-          {"CFBundleGetInfoString", get_info},
-          {"NSHumanReadableCopyright", copyright},
-
-          {"NSBluetoothAlwaysUsageDescription", permission_reason},
-          {"NSBluetoothPeripheralUsageDescription", permission_reason},
-          {"NSCameraUsageDescription", permission_reason},
-          {"NSLocationUsageDescription", permission_reason},
-          {"NSMicrophoneUsageDescription", permission_reason},
-      };
-      std::string strings_file_contents_string;
-      for (const auto& kv : infoplist_strings) {
-        strings_file_contents_string +=
-            base::StringPrintf("%s = \"%s\";\n", kv.first.c_str(),
-                               EscapeForStringsFileValue(kv.second).c_str());
-      }
-
-      // For Cocoa to find the locale at runtime, it needs to use '_' instead of
-      // '-' (http://crbug.com/20441).  Also, 'en-US' should be represented
-      // simply as 'en' (http://crbug.com/19165, http://crbug.com/25578).
-      if (cur_lang == "en-US")
-        cur_lang = "en";
-      base::ReplaceChars(cur_lang, "-", "_", &cur_lang);
-
-      // Make sure the lproj we write to exists
-      std::string output_path =
-          base::StringPrintf("%s/%s.lproj", output_dir, cur_lang.c_str());
-      CHECK(base::CreateDirectory(base::FilePath(output_path)))
-          << "failed to create '" << output_path << "'";
-
-      // Write out the file
-      // We set up Xcode projects expecting strings files to be UTF8, so make
-      // sure we write the data in that form.  When Xcode copies them it will
-      // put the final runtime encoding.
-      output_path += "/InfoPlist.strings";
-      CHECK(base::WriteFile(base::FilePath(output_path),
-                            strings_file_contents_string))
-          << "failed to write out '" << output_path << "'";
+    uint32_t name_id = IDS_PRODUCT_NAME;
+    const char* name_id_str = "IDS_PRODUCT_NAME";
+    if (app_type == kAppType_Helper) {
+      name_id = IDS_HELPER_NAME;
+      name_id_str = "IDS_HELPER_NAME";
     }
-    return 0;
+
+    // Fetch the strings.
+    std::string name = LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
+                                              name_id, name_id_str);
+    std::string copyright_format = LoadStringFromDataPack(
+        branded_data_pack.get(), cur_lang, IDS_ABOUT_VERSION_COPYRIGHT,
+        "IDS_ABOUT_VERSION_COPYRIGHT");
+
+    std::string copyright =
+        base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            base::UTF8ToUTF16(copyright_format), base::Time::Now()));
+
+    std::string permission_reason =
+        LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
+                               IDS_RUNTIME_PERMISSION_OS_REASON_TEXT,
+                               "IDS_RUNTIME_PERMISSION_OS_REASON_TEXT");
+
+    // For now, assume this is ok for all languages. If we need to, this could
+    // be moved into generated_resources.grd and fetched.
+    std::string get_info = base::StringPrintf(
+        "%s %s, %s", name.c_str(), version_string, copyright.c_str());
+
+    // Generate the InfoPlist.strings file contents.
+    std::map<std::string, std::string> infoplist_strings = {
+        {"CFBundleGetInfoString", get_info},
+        {"NSHumanReadableCopyright", copyright},
+
+        {"NSBluetoothAlwaysUsageDescription", permission_reason},
+        {"NSBluetoothPeripheralUsageDescription", permission_reason},
+        {"NSCameraUsageDescription", permission_reason},
+        {"NSLocationUsageDescription", permission_reason},
+        {"NSMicrophoneUsageDescription", permission_reason},
+    };
+    std::string strings_file_contents_string;
+    for (const auto& kv : infoplist_strings) {
+      strings_file_contents_string +=
+          base::StringPrintf("%s = \"%s\";\n", kv.first.c_str(),
+                             EscapeForStringsFileValue(kv.second).c_str());
+    }
+
+    // For Cocoa to find the locale at runtime, it needs to use '_' instead of
+    // '-' (http://crbug.com/20441).  Also, 'en-US' should be represented
+    // simply as 'en' (http://crbug.com/19165, http://crbug.com/25578).
+    if (cur_lang == "en-US")
+      cur_lang = "en";
+    base::ReplaceChars(cur_lang, "-", "_", &cur_lang);
+
+    // Make sure the lproj we write to exists
+    std::string output_path =
+        base::StringPrintf("%s/%s.lproj", output_dir, cur_lang.c_str());
+    CHECK(base::CreateDirectory(base::FilePath(output_path)))
+        << "failed to create '" << output_path << "'";
+
+    // Write out the file
+    // We set up Xcode projects expecting strings files to be UTF8, so make
+    // sure we write the data in that form.  When Xcode copies them it will
+    // put the final runtime encoding.
+    output_path += "/InfoPlist.strings";
+    CHECK(base::WriteFile(base::FilePath(output_path),
+                          strings_file_contents_string))
+        << "failed to write out '" << output_path << "'";
   }
 }
