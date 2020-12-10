@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   // In scope navigation should open app window.
   NavigateMainBrowser(in_scope_1_);
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_TRUE(AppBrowserController::IsForWebAppBrowser(app_browser, app_id_));
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_1_});
 
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   // When no app window is open one should be created.
   NavigateMainBrowser(in_scope_1_);
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_TRUE(AppBrowserController::IsForWebAppBrowser(app_browser, app_id_));
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   ExpectTabs(browser(), {NtpUrl()});
   ExpectTabs(app_browser, {in_scope_1_});
   EXPECT_EQ(reparent_web_contents,

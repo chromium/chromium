@@ -120,7 +120,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 
   if (registrar.IsInExperimentalTabbedWindowMode(app_id)) {
     for (Browser* browser : *BrowserList::GetInstance()) {
-      if (AppBrowserController::IsForWebAppBrowser(browser, app_id))
+      if (AppBrowserController::IsForWebApp(browser, app_id))
         return ::ReparentWebContentsIntoAppBrowser(contents, browser);
     }
   }

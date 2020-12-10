@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWASizeIsCorrectlyRestored) {
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
-  EXPECT_TRUE(AppBrowserController::IsForWebAppBrowser(app_browser));
+  EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
   NavigateToURLAndWait(app_browser, app_url);
 
   const gfx::Rect bounds = gfx::Rect(50, 50, 500, 500);
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
-  EXPECT_TRUE(AppBrowserController::IsForWebAppBrowser(app_browser));
+  EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
   NavigateToURLAndWait(app_browser, app_url);
 
   const gfx::Rect bounds = gfx::Rect(50, 50, 500, 500);
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OffScopePWAPopupsHaveCorrectSize) {
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
 
-  EXPECT_TRUE(AppBrowserController::IsForWebAppBrowser(app_browser));
+  EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
 
   const GURL offscope_url("https://example.com");
   const gfx::Size size(500, 500);
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OffScopePWAPopupsHaveCorrectSize) {
   EXPECT_NE(popup_browser, app_browser);
 
   // The popup browser should be a PWA.
-  EXPECT_TRUE(AppBrowserController::IsForWebAppBrowser(popup_browser));
+  EXPECT_TRUE(AppBrowserController::IsWebApp(popup_browser));
 
   // Toolbar should be shown, as the popup is out of scope.
   EXPECT_TRUE(popup_browser->app_controller()->ShouldShowCustomTabBar());
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InScopePWAPopupsHaveCorrectSize) {
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
 
-  EXPECT_TRUE(AppBrowserController::IsForWebAppBrowser(app_browser));
+  EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
 
   const gfx::Size size(500, 500);
   Browser* const popup_browser = OpenPopupAndWait(app_browser, app_url, size);
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InScopePWAPopupsHaveCorrectSize) {
   EXPECT_NE(popup_browser, app_browser);
 
   // The popup browser should be a PWA.
-  EXPECT_TRUE(AppBrowserController::IsForWebAppBrowser(popup_browser));
+  EXPECT_TRUE(AppBrowserController::IsWebApp(popup_browser));
 
   // Toolbar should not be shown, as the popup is in scope.
   EXPECT_FALSE(popup_browser->app_controller()->ShouldShowCustomTabBar());

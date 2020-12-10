@@ -108,7 +108,7 @@ gfx::ImageSkia HostedAppBrowserController::GetWindowAppIcon() const {
 }
 
 gfx::ImageSkia HostedAppBrowserController::GetWindowIcon() const {
-  if (IsForWebAppBrowser(browser()))
+  if (IsWebApp(browser()))
     return GetWindowAppIcon();
 
   return browser()->GetCurrentPageIcon().AsImageSkia();

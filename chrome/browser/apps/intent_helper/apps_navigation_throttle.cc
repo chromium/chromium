@@ -170,7 +170,7 @@ AppsNavigationThrottle::CaptureExperimentalTabStripWebAppScopeNavigations(
     return base::nullopt;
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (web_app::AppBrowserController::IsForWebAppBrowser(browser, *app_id)) {
+  if (web_app::AppBrowserController::IsForWebApp(browser, *app_id)) {
     // Already in the app window; navigation already captured.
     return base::nullopt;
   }

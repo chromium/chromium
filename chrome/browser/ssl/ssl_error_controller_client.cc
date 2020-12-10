@@ -116,7 +116,7 @@ void SSLErrorControllerClient::Proceed() {
   // certificate. So, when users click proceed on an interstitial, move the tab
   // to a regular Chrome window and proceed as usual there.
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  if (web_app::AppBrowserController::IsForWebAppBrowser(browser))
+  if (web_app::AppBrowserController::IsWebApp(browser))
     chrome::OpenInChrome(browser);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

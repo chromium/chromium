@@ -1039,7 +1039,7 @@ void BrowserCommandController::InitCommandState() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       browser_->is_type_custom_tab() ||
 #endif
-      web_app::AppBrowserController::IsForWebAppBrowser(browser_);
+      web_app::AppBrowserController::IsWebApp(browser_);
   // Hosted app browser commands.
   command_updater_.UpdateCommandEnabled(IDC_COPY_URL, is_web_app_or_custom_tab);
   command_updater_.UpdateCommandEnabled(IDC_OPEN_IN_CHROME,
@@ -1369,9 +1369,8 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
 }
 
 void BrowserCommandController::UpdateCommandsForHostedAppAvailability() {
-  bool has_toolbar =
-      browser_->is_type_normal() ||
-      web_app::AppBrowserController::IsForWebAppBrowser(browser_);
+  bool has_toolbar = browser_->is_type_normal() ||
+                     web_app::AppBrowserController::IsWebApp(browser_);
   if (window() && window()->ShouldHideUIForFullscreen())
     has_toolbar = false;
   command_updater_.UpdateCommandEnabled(IDC_FOCUS_TOOLBAR, has_toolbar);

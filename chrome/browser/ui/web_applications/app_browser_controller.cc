@@ -141,14 +141,14 @@ AppBrowserController::MaybeCreateWebAppController(Browser* browser) {
 }
 
 // static
-bool AppBrowserController::IsForWebAppBrowser(const Browser* browser) {
+bool AppBrowserController::IsWebApp(const Browser* browser) {
   return browser && browser->app_controller();
 }
 
 // static
-bool AppBrowserController::IsForWebAppBrowser(const Browser* browser,
-                                              const AppId& app_id) {
-  return IsForWebAppBrowser(browser) && browser->app_controller()->HasAppId() &&
+bool AppBrowserController::IsForWebApp(const Browser* browser,
+                                       const AppId& app_id) {
+  return IsWebApp(browser) && browser->app_controller()->HasAppId() &&
          browser->app_controller()->GetAppId() == app_id;
 }
 

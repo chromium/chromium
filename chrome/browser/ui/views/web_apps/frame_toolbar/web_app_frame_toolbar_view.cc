@@ -29,8 +29,7 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
                                                BrowserView* browser_view)
     : browser_view_(browser_view) {
   DCHECK(browser_view_);
-  DCHECK(web_app::AppBrowserController::IsForWebAppBrowser(
-      browser_view_->browser()));
+  DCHECK(web_app::AppBrowserController::IsWebApp(browser_view_->browser()));
   SetID(VIEW_ID_WEB_APP_FRAME_TOOLBAR);
 
   {

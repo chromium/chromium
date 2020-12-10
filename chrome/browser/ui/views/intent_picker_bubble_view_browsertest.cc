@@ -109,8 +109,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   intent_picker_bubble()->AcceptDialog();
 
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_TRUE(web_app::AppBrowserController::IsForWebAppBrowser(
-      app_browser, test_web_app_id()));
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
+                                                         test_web_app_id()));
 }
 
 // Tests that clicking a link from a tabbed browser to outside the scope of an

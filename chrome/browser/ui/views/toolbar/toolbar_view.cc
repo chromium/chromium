@@ -122,7 +122,7 @@ ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
 
   // Checked in this order because even tabbed PWAs use the CUSTOM_TAB
   // display mode.
-  if (web_app::AppBrowserController::IsForWebAppBrowser(browser))
+  if (web_app::AppBrowserController::IsWebApp(browser))
     return ToolbarView::DisplayMode::CUSTOM_TAB;
 
   if (browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP))

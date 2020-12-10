@@ -340,8 +340,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   intent_picker_bubble()->AcceptDialog();
   WaitForAppService();
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_TRUE(
-      web_app::AppBrowserController::IsForWebAppBrowser(app_browser, app_id));
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
 }
 
 // Test that intent picker bubble will not pop up for non-link navigation.

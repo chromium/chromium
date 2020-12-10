@@ -52,11 +52,10 @@ class AppBrowserController : public TabStripModelObserver,
   static std::unique_ptr<AppBrowserController> MaybeCreateWebAppController(
       Browser* browser);
 
-  // Returns whether |browser| uses the experimental hosted app experience.
-  // Convenience wrapper for checking IsForExperimentalWebAppBrowser() on
-  // |browser|'s HostedAppBrowserController if it exists.
-  static bool IsForWebAppBrowser(const Browser* browser);
-  static bool IsForWebAppBrowser(const Browser* browser, const AppId& app_id);
+  // Returns whether |browser| is a web app window/pop-up.
+  static bool IsWebApp(const Browser* browser);
+  // Returns whether |browser| is a web app window/pop-up for |app_id|.
+  static bool IsForWebApp(const Browser* browser, const AppId& app_id);
 
   // Renders |url|'s origin as Unicode.
   static base::string16 FormatUrlOrigin(

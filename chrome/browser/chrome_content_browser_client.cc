@@ -1123,8 +1123,7 @@ void MaybeAddThrottles(
 bool IsInHostedApp(WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  return (browser &&
-          web_app::AppBrowserController::IsForWebAppBrowser(browser));
+  return web_app::AppBrowserController::IsWebApp(browser);
 #else
   return false;
 #endif

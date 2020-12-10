@@ -251,8 +251,8 @@ bool WebAppUiManagerImpl::IsInAppWindow(content::WebContents* web_contents,
                                         const AppId* app_id) const {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (app_id)
-    return AppBrowserController::IsForWebAppBrowser(browser, *app_id);
-  return AppBrowserController::IsForWebAppBrowser(browser);
+    return AppBrowserController::IsForWebApp(browser, *app_id);
+  return AppBrowserController::IsWebApp(browser);
 }
 
 void WebAppUiManagerImpl::NotifyOnAssociatedAppChanged(

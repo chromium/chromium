@@ -273,8 +273,7 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
         provider_->registrar().IsInExperimentalTabbedWindowMode(
             params.app_id)) {
       for (Browser* open_browser : *BrowserList::GetInstance()) {
-        if (AppBrowserController::IsForWebAppBrowser(open_browser,
-                                                     params.app_id)) {
+        if (AppBrowserController::IsForWebApp(open_browser, params.app_id)) {
           browser = open_browser;
           break;
         }

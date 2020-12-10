@@ -2709,7 +2709,7 @@ StatusBubble* Browser::GetStatusBubble() {
   // In kiosk and exclusive app mode we want to always hide the status bubble.
   if (chrome::IsRunningInAppMode() ||
       (base::FeatureList::IsEnabled(features::kRemoveStatusBarInWebApps) &&
-       web_app::AppBrowserController::IsForWebAppBrowser(this))) {
+       web_app::AppBrowserController::IsWebApp(this))) {
     return nullptr;
   }
 

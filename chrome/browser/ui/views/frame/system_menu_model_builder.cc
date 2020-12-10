@@ -100,7 +100,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
   model->AddItemWithStringId(IDC_BACK, IDS_CONTENT_CONTEXT_BACK);
   model->AddItemWithStringId(IDC_FORWARD, IDS_CONTENT_CONTEXT_FORWARD);
   model->AddItemWithStringId(IDC_RELOAD, IDS_APP_MENU_RELOAD);
-  if (!web_app::AppBrowserController::IsForWebAppBrowser(browser())) {
+  if (!web_app::AppBrowserController::IsWebApp(browser())) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     if (browser()->deprecated_is_app())
       model->AddItemWithStringId(IDC_NEW_TAB, IDS_APP_MENU_NEW_WEB_PAGE);

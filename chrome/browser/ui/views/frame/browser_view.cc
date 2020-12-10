@@ -814,7 +814,7 @@ bool BrowserView::CanSupportTabStrip() const {
 }
 
 bool BrowserView::IsBrowserTypeWebApp() const {
-  return web_app::AppBrowserController::IsForWebAppBrowser(browser_.get());
+  return web_app::AppBrowserController::IsWebApp(browser_.get());
 }
 
 bool BrowserView::IsTopControlsSlideBehaviorEnabled() const {
