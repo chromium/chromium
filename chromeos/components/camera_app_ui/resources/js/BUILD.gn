@@ -93,6 +93,7 @@ js_library("compile_resources") {
     "mojo/image_capture.js",
     "nav.js",
     "perf.js",
+    "snackbar.js",
     "sound.js",
     "state.js",
     "test_bridge.js",

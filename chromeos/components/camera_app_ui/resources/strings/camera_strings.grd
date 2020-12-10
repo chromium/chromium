@@ -339,6 +339,9 @@
       <message desc="Label for expert mode option: scan barcode." name="IDS_EXPERT_SCAN_BARCODE">
         Scan barcode
       </message>
+      <message desc="Label for snackbar message when a link is copied" name="IDS_SNACKBAR_LINK_COPIED">
+        Link copied
+      </message>
       <message desc="Error message when the device does not support expert mode but tries to enable it." name="IDS_ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED">
         Expert mode is not supported on this device
       </message>

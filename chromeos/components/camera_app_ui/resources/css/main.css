@@ -1578,3 +1578,47 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   width: var(--chip-height);
   z-index: 50;
 }
+
+/* TODO(b/172879638): Tune the position and layout after we finalized the
+ * responsive window design. */
+.snackbar {
+  align-items: center;
+  background: rgb(32, 33, 36);
+  border-radius: 4px;
+  bottom: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  color: rgb(232, 234, 237);
+  display: flex;
+  font-family: Roboto;
+  font-size: 13px;
+  height: 48px;
+  left: 4px;
+  opacity: 0;
+  padding: 14px 16px;
+  position: absolute;
+  visibility: hidden;
+  width: 256px;
+}
+
+.snackbar.animate {
+  animation: 3s show-snackbar linear;
+  visibility: visible;
+}
+
+@keyframes show-snackbar {
+  0% {
+    opacity: 0;
+  }
+  /* 100ms fade-in */
+  3.33% {
+    opacity: 1;
+  }
+  97.33% {
+    opacity: 1;
+  }
+  /* 80ms fade-out */
+  100% {
+    opacity: 0;
+  }
+}

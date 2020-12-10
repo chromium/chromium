@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as dom from './dom.js';
+import * as snackbar from './snackbar.js';
 import * as toast from './toast.js';
 import * as util from './util.js';
 
@@ -43,8 +44,7 @@ function showUrl(url) {
       dom.getFrom(container, '.barcode-copy-button', HTMLButtonElement);
   copyButton.onclick = async () => {
     await navigator.clipboard.writeText(url);
-    // TODO(b/172879638): Show "Link copied" in a snackbar.
-    toast.showDebugMessage('Link copied');
+    snackbar.show('snackbar_link_copied');
   };
 
   // TODO(b/172879638): Handle a11y.

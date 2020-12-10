@@ -70,6 +70,7 @@
       <structure name="IDR_CAMERA_RESULT_SAVER_JS" file="js/models/result_saver.js" type="chrome_html" />
       <structure name="IDR_CAMERA_REVIEW_RESULT_JS" file="js/views/camera/review_result.js" type="chrome_html" />
       <structure name="IDR_CAMERA_SETTINGS_JS" file="js/views/settings.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_SNACKBAR_JS" file="js/snackbar.js" type="chrome_html" />
       <structure name="IDR_CAMERA_SOUND_JS" file="js/sound.js" type="chrome_html" />
       <structure name="IDR_CAMERA_STATE_JS" file="js/state.js" type="chrome_html" />
       <structure name="IDR_CAMERA_TEST_BRIDGE_JS" file="js/test_bridge.js" type="chrome_html" />

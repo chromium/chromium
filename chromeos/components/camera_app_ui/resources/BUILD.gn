@@ -87,6 +87,7 @@ copy("chrome_camera_app_js") {
     "js/metrics.js",
     "js/nav.js",
     "js/perf.js",
+    "js/snackbar.js",
     "js/sound.js",
     "js/state.js",
     "js/test_bridge.js",
