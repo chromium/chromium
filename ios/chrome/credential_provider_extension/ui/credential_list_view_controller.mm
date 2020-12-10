@@ -8,6 +8,7 @@
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 
@@ -219,7 +220,7 @@ const CGFloat kHeaderHeight = 70;
   UIImage* image = [UIImage imageNamed:@"info_icon"];
   image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+  HighlightButton* button = [HighlightButton buttonWithType:UIButtonTypeCustom];
   button.frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height);
   [button setBackgroundImage:image forState:UIControlStateNormal];
   [button setTintColor:[UIColor colorNamed:kBlueColor]];

@@ -11,6 +11,7 @@
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/tooltip_view.h"
 
@@ -216,7 +217,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
                                              : @"password_reveal_icon"];
   image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+  HighlightButton* button = [HighlightButton buttonWithType:UIButtonTypeCustom];
   button.frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height);
   button.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   [button setBackgroundImage:image forState:UIControlStateNormal];

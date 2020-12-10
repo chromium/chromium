@@ -34,6 +34,7 @@ source_set("ui") {
     "//ios/chrome/common/credential_provider:ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/resources:default_world_favicon",
     "//ios/chrome/common/ui/util",
