@@ -1364,5 +1364,51 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentation) {
   EXPECT_EQ(expectation, dump);
 }
 
+// Fragmented OOF with `height: auto` and positioned with the bottom property.
+TEST_F(NGOutOfFlowLayoutPartTest,
+       PositionedFragmentationWithBottomPropertyAndHeightAuto) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative;
+        }
+        .abs {
+          position:absolute; bottom:0; width:5px; height:auto;
+        }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div class="rel" style="height: 60px; width: 32px;">
+            <div class="abs">
+              <div style="width: 2px; height: 10px"></div>
+              <div style="width: 3px; height: 20px"></div>
+              <div style="width: 4px; height: 10px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:1000x40
+      offset:0,0 size:492x40
+        offset:0,0 size:32x40
+        offset:0,20 size:5x20
+          offset:0,0 size:2x10
+          offset:0,10 size:3x10
+      offset:508,0 size:492x40
+        offset:0,0 size:32x20
+        offset:0,0 size:5x20
+          offset:0,0 size:3x10
+          offset:0,10 size:4x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
 }  // namespace
 }  // namespace blink

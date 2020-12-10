@@ -1024,8 +1024,7 @@ virtual/layout_ng_block_frag/fast/multicol/vertical-rl/float-edge.html [ Pass ]
 virtual/layout_ng_block_frag/fast/multicol/vertical-rl/nested-columns.html [ Pass ]
 
 ### Tests failing with LayoutNGBlockFragmentation enabled:
-crbug.com/1079031 virtual/layout_ng_block_frag/external/wpt/css/css-break/block-end-aligned-abspos-nested.html [ Failure ]
-crbug.com/1079031 virtual/layout_ng_block_frag/external/wpt/css/css-break/block-end-aligned-abspos-with-overflow.html [ Failure ]
+crbug.com/1079031 virtual/layout_ng_block_frag/external/wpt/css/css-break/block-end-aligned-abspos-nested.html [ Failure Crash ]
 crbug.com/1113911 virtual/layout_ng_block_frag/external/wpt/css/css-break/fieldset-001.html [ Failure ]
 crbug.com/1154585 virtual/layout_ng_block_frag/external/wpt/css/css-break/ink-overflow-002.html [ Failure ]
 crbug.com/1146973 virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-009.html [ Failure ]
@@ -1072,6 +1071,7 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/forced-break-too-sho
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/hit-test-above-or-below.html [ Failure ]
 crbug.com/1066629 virtual/layout_ng_block_frag/fast/multicol/hit-test-translate-z.html [ Failure ]
 crbug.com/829181 virtual/layout_ng_block_frag/fast/multicol/infinitely-tall-content-in-outer-crash.html [ Skip ]
+crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/insane-column-count-and-padding-nested-crash.html [ Skip ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/insane-column-gap.html [ Failure ]
 crbug.com/1066626 virtual/layout_ng_block_frag/fast/multicol/layers-split-across-columns.html [ Failure ]
 crbug.com/1066626 virtual/layout_ng_block_frag/fast/multicol/mixed-opacity-fixed-test.html [ Failure ]
@@ -1104,7 +1104,6 @@ crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/transform-with-fixe
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/composited-relpos-overlapping-will-change.html [ Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/vertical-rl/composited-relpos-overlapping-will-change.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/widows.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/auto-scrollbar-shrink-to-fit.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/content-preceding-first-fragmentainer.html [ Crash Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/relayout-abspos.html [ Failure ]
 

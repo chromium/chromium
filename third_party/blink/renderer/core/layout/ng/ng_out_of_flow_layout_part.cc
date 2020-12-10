@@ -838,8 +838,6 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
                                  node_dimensions.size.inline_size));
   }
 
-  // TODO(almaher): Handle fragmentation separately for the case where
-  // |absolute_needs_child_block_size| is true.
   if (absolute_needs_child_block_size) {
     DCHECK(!has_computed_block_dimensions);
     layout_result = GenerateFragment(
@@ -938,6 +936,10 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     }
   }
 
+  // Reset the |layout_result| computed earlier to allow fragmentation in the
+  // next layout pass, if needed.
+  if (is_fragmentainer_descendant)
+    layout_result = nullptr;
   const NGBlockBreakToken* break_token = nullptr;
   do {
     if (break_token) {
@@ -954,8 +956,8 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
       offset.block_offset = LayoutUnit();
     }
 
-    // Skip this step if we produced a fragment when estimating the
-    // block-size.
+    // Skip this step if we produced a fragment that can be reused when
+    // estimating the block-size.
     if (!layout_result) {
       block_estimate = node_dimensions.size.block_size;
       const NGConstraintSpace* fragmentainer_constraint_space =
