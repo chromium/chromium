@@ -191,7 +191,11 @@ TEST_F(VideoDecoderTest, ResetMidStream) {
   EXPECT_TRUE(tvp->WaitForFlushDone());
 
   EXPECT_EQ(tvp->GetResetDoneCount(), 1u);
-  EXPECT_EQ(tvp->GetFlushDoneCount(), 1u);
+  // In the case of a very short clip the decoder may be able
+  // to decode all the frames before a reset is sent.
+  // A flush occurs after the last frame, so in this situation
+  // there will be 2 flushes that occur.
+  EXPECT_TRUE(tvp->GetFlushDoneCount() == 1u || tvp->GetFlushDoneCount() == 2u);
   EXPECT_EQ(tvp->GetFrameDecodedCount(),
             numFramesDecoded + g_env->Video()->NumFrames());
   EXPECT_TRUE(tvp->WaitForFrameProcessors());
