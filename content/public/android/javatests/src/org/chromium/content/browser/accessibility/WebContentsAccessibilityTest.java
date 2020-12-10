@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.view.accessibility.AccessibilityNodeProvider;
 
 import androidx.test.filters.LargeTest;
@@ -53,6 +54,8 @@ public class WebContentsAccessibilityTest {
     private static final String TIMEOUT_ERROR =
             "TYPE_ANNOUNCEMENT event not received before timeout.";
     private static final String COMBOBOX_ERROR = "expanded combobox announcement was incorrect.";
+    private static final String LONG_CLICK_ERROR =
+            "node should not have the ACTION_LONG_CLICK action as an available action";
 
     private interface AccessibilityNodeInfoMatcher {
         public boolean matches(AccessibilityNodeInfo node);
@@ -438,6 +441,31 @@ public class WebContentsAccessibilityTest {
     private void executeJS(String method) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getWebContents().evaluateJavaScriptForTests(method, null));
+    }
+
+    /**
+     * Ensure we are not adding ACTION_LONG_CLICK to nodes due to verbose utterances issue.
+     */
+    @Test
+    @MediumTest
+    public void testAccessibilityNodeInfo_noLongClickAction() {
+        // Build a simple web page with a node.
+        String data = "<p>Example paragraph</p>";
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(data));
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mNodeProvider = enableAccessibilityAndWaitForNodeProvider();
+
+        int textNodeVirtualViewId = waitForNodeWithText(mNodeProvider, "Example paragraph");
+        mNodeInfo = mNodeProvider.createAccessibilityNodeInfo(textNodeVirtualViewId);
+
+        // Assert we have the correct node.
+        Assert.assertNotNull(mNodeInfo);
+        Assert.assertEquals("Example paragraph", mNodeInfo.getText().toString());
+
+        // Confirm the ACTION_LONG_CLICK action has not been added to the node.
+        Assert.assertFalse(LONG_CLICK_ERROR,
+                mNodeInfo.getActionList().contains(
+                        new AccessibilityAction(AccessibilityNodeInfo.ACTION_LONG_CLICK, null)));
     }
 
     /**

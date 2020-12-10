@@ -1455,7 +1455,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         addAction(node, AccessibilityNodeInfo.ACTION_PREVIOUS_HTML_ELEMENT);
         addAction(node, ACTION_SHOW_ON_SCREEN);
         addAction(node, ACTION_CONTEXT_CLICK);
-        addAction(node, AccessibilityNodeInfo.ACTION_LONG_CLICK);
+
+        // We choose to not add ACTION_LONG_CLICK to nodes to prevent verbose utterances.
+        // addAction(node, AccessibilityNodeInfo.ACTION_LONG_CLICK);
 
         if (hasNonEmptyInnerText) {
             addAction(node, AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
