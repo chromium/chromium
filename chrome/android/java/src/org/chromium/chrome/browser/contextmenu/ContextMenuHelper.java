@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.contextmenu;
 import android.util.Pair;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtilsJni;
@@ -32,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * A helper class that handles generating context menus for {@link WebContents}s.
  */
 public class ContextMenuHelper {
-    public static Callback<RevampedContextMenuCoordinator> sRevampedContextMenuShownCallback;
+    private static Callback<RevampedContextMenuCoordinator> sMenuShownCallbackForTests;
 
     private static final String TAG = "ContextMenuHelper";
 
@@ -201,6 +203,9 @@ public class ContextMenuHelper {
         List<Pair<Integer, ModelList>> items = mCurrentPopulator.buildContextMenu();
         if (items.isEmpty()) {
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, mOnMenuClosed);
+            if (sMenuShownCallbackForTests != null) {
+                sMenuShownCallbackForTests.onResult(null);
+            }
             return;
         }
 
@@ -216,8 +221,8 @@ public class ContextMenuHelper {
                     mCallback, mOnMenuShown, mOnMenuClosed);
         }
 
-        if (sRevampedContextMenuShownCallback != null) {
-            sRevampedContextMenuShownCallback.onResult(menuCoordinator);
+        if (sMenuShownCallbackForTests != null) {
+            sMenuShownCallbackForTests.onResult(menuCoordinator);
         }
     }
 
@@ -235,6 +240,12 @@ public class ContextMenuHelper {
             RecordHistogram.recordTimesHistogram(
                     histogramName + ".PerformanceClassFast", timeToTakeActionMs);
         }
+    }
+
+    @VisibleForTesting
+    public static void setMenuShownCallbackForTests(
+            Callback<RevampedContextMenuCoordinator> callback) {
+        sMenuShownCallbackForTests = callback;
     }
 
     @NativeMethods

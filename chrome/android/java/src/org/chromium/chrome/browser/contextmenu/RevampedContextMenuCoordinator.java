@@ -342,7 +342,9 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     public ListItem findItem(int id) {
         for (int i = 0; i < getCount(); i++) {
             final ListItem item = getItem(i);
-            if (item.model.get(MENU_ID) == id) {
+            // If the item is a title/divider, its model does not have MENU_ID as key.
+            if (item.model.getAllSetProperties().contains(MENU_ID)
+                    && item.model.get(MENU_ID) == id) {
                 return item;
             }
         }

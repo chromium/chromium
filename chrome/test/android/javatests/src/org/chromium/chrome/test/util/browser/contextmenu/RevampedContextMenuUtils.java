@@ -68,9 +68,9 @@ public class RevampedContextMenuUtils {
     private static RevampedContextMenuCoordinator openContextMenuByJs(Tab tab, String jsCode)
             throws TimeoutException {
         final OnContextMenuShownHelper helper = new OnContextMenuShownHelper();
-        ContextMenuHelper.sRevampedContextMenuShownCallback = ((coordinator) -> {
+        ContextMenuHelper.setMenuShownCallbackForTests((coordinator) -> {
             helper.notifyCalled(coordinator);
-            ContextMenuHelper.sRevampedContextMenuShownCallback = null;
+            ContextMenuHelper.setMenuShownCallbackForTests(null);
         });
 
         int callCount = helper.getCallCount();

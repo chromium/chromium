@@ -49,6 +49,7 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -161,7 +162,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * Instrumentation tests for app menu, context menu, and toolbar of a {@link CustomTabActivity}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CustomTabActivityTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
@@ -348,6 +348,12 @@ public class CustomTabActivityTest {
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(mCustomTabActivityTestRule.getActivity());
     }
 
+    private void assertAppMenuItemNotVisible(Menu menu, @IdRes int id, String itemName) {
+        MenuItem item = menu.findItem(id);
+        Assert.assertNotNull(String.format("Cannot find <%s>", itemName), item);
+        Assert.assertFalse(String.format("<%s> is visible", itemName), item.isVisible());
+    }
+
     /**
      * @return The number of visible and enabled items in the given menu.
      */
@@ -498,6 +504,33 @@ public class CustomTabActivityTest {
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_save_video));
     }
 
+    @Test
+    @SmallTest
+    public void testContextMenuEntriesBeforeFirstRun() throws Exception {
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        // Mark the first run as not completed. This has to be done after we start the intent,
+        // otherwise we are going to hit the FRE.
+        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+
+        // The context menu for images should not be built when the first run is not completed.
+        RevampedContextMenuCoordinator imageMenu = RevampedContextMenuUtils.openContextMenu(
+                mCustomTabActivityTestRule.getActivity().getActivityTab(), "logo");
+        Assert.assertNull(
+                "Context menu for images should not be built when first run is not finished.",
+                imageMenu);
+
+        // Options on the context menu for links should be limited when the first run is not
+        // completed.
+        RevampedContextMenuCoordinator linkMenu = RevampedContextMenuUtils.openContextMenu(
+                mCustomTabActivityTestRule.getActivity().getActivityTab(), "aboutLink");
+        final int expectedMenuItems = 4;
+        Assert.assertEquals("Menu item count does not match expectation.", expectedMenuItems,
+                linkMenu.getCount());
+
+        Assert.assertNotNull(linkMenu.findItem(R.id.contextmenu_copy_link_text));
+        Assert.assertNotNull(linkMenu.findItem(R.id.contextmenu_copy_link_address));
+    }
+
     /**
      * Test the entries in the app menu.
      */
@@ -603,6 +636,36 @@ public class CustomTabActivityTest {
         Assert.assertNotNull(icon_row_menu.findItem(R.id.bookmark_this_page_id));
         Assert.assertNotNull(icon_row_menu.findItem(R.id.info_menu_id));
         Assert.assertNotNull(icon_row_menu.findItem(R.id.reload_menu_id));
+    }
+
+    @Test
+    @SmallTest
+    public void testAppMenuBeforeFirstRun() throws Exception {
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
+        // Mark the first run as not completed. This has to be done after we start the intent,
+        // otherwise we are going to hit the FRE.
+        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+
+        openAppMenuAndAssertMenuShown();
+        Menu menu = mCustomTabActivityTestRule.getMenu();
+        final int expectedMenuSize = 3;
+
+        Assert.assertNotNull("App menu is not initialized: ", menu);
+        assertEquals(expectedMenuSize, getActualMenuSize(menu));
+        assertEquals(expectedMenuSize, getVisibleMenuSize(menu));
+
+        // Checks the first row (icons).
+        Assert.assertNotNull(menu.findItem(R.id.forward_menu_id));
+        Assert.assertNotNull(menu.findItem(R.id.info_menu_id));
+        Assert.assertNotNull(menu.findItem(R.id.reload_menu_id));
+        assertAppMenuItemNotVisible(menu, R.id.offline_page_id, "offline_page");
+        assertAppMenuItemNotVisible(menu, R.id.bookmark_this_page_id, "bookmark_this_page");
+
+        // Following rows.
+        Assert.assertNotNull(menu.findItem(R.id.find_in_page_id));
+        Assert.assertNotNull(menu.findItem(R.id.request_desktop_site_row_menu_id));
+        assertAppMenuItemNotVisible(menu, R.id.open_in_browser_id, "open_in_browser");
+        assertAppMenuItemNotVisible(menu, R.id.add_to_homescreen_id, "add_to_homescreen");
     }
 
     /**

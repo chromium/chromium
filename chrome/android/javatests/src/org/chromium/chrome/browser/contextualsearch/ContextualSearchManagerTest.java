@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStat
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
@@ -3316,6 +3317,33 @@ public class ContextualSearchManagerTest {
         assertNoWebContents();
         assertNoSearchesLoaded();
         mManager.onAccessibilityModeChanged(false);
+    }
+
+    /**
+     * Tests when FirstRun is not completed: Tap and Long-press don't activate CS.
+     */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    public void testFirstRunNotCompleted(@EnabledFeature int enabledFeature) throws Exception {
+        // Store the original value in a temp, and mark the first run as not completed
+        // for this test case.
+        boolean originalIsFirstRunComplete = FirstRunStatus.getFirstRunFlowComplete();
+        FirstRunStatus.setFirstRunFlowComplete(false);
+
+        // Simulate a tap that resolves to show the Bar.
+        clickNode("intelligence");
+        assertNoWebContents();
+        assertNoSearchesLoaded();
+
+        // Simulate a Long-press.
+        longPressNodeWithoutWaiting("states");
+        assertNoWebContents();
+        assertNoSearchesLoaded();
+
+        // Restore the original shared preference value before this test case ends.
+        FirstRunStatus.setFirstRunFlowComplete(originalIsFirstRunComplete);
     }
 
     //============================================================================================
