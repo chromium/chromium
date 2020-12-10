@@ -215,6 +215,21 @@ class AccountConsistencyServiceTest : public PlatformTest {
                        /*domain=*/std::string()));
   }
 
+  void CheckDomainHasChromeConnectedCookieWithUpdateTime(
+      const std::string& domain,
+      base::Time time) {
+    CheckDomainHasChromeConnectedCookie(domain);
+    EXPECT_EQ(time,
+              account_consistency_service_->last_cookie_update_map_[domain]);
+  }
+
+  // Verifies the time that the Gaia cookie was last updated for google.com.
+  void CheckGaiaCookieWithUpdateTime(base::Time time) {
+    EXPECT_EQ(
+        time,
+        account_consistency_service_->last_gaia_cookie_verification_time_);
+  }
+
   // Navigation APIs.
   void SimulateNavigateToURL(NSURLResponse* response,
                              id<ManageAccountsDelegate> delegate) {
@@ -240,14 +255,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
   }
 
   // Cookie APIs.
-  void CheckDomainHasChromeConnectedCookieWithUpdateTime(
-      const std::string& domain,
-      base::Time time) {
-    CheckDomainHasChromeConnectedCookie(domain);
-    EXPECT_EQ(time,
-              account_consistency_service_->last_cookie_update_map_[domain]);
-  }
-
   void WaitUntilAllCookieRequestsAreApplied() {
     // Spinning the runloop is needed to ensure that the cookie manager requests
     // are executed.
@@ -276,17 +283,6 @@ class AccountConsistencyServiceTest : public PlatformTest {
         base::Optional<std::vector<std::string>>({kGoogleDomain});
     cookie_manager->DeleteCookies(std::move(filter),
                                   base::OnceCallback<void(uint)>());
-  }
-
-  // Simulates updating the Gaia cookie on the Google domain at the designated
-  // time interval. Returns the time at which the cookie was updated.
-  void SimulateUpdateGaiaCookie(base::OnceClosure callback) {
-    account_consistency_service_->SetGaiaCookiesIfDeleted(std::move(callback));
-  }
-
-  // Returns time the Gaia cookie was last updated for Google domains.
-  base::Time GetGaiaLastUpdateTime() {
-    return account_consistency_service_->last_gaia_cookie_verification_time_;
   }
 
   // Properties available for tests.
@@ -543,7 +539,6 @@ TEST_F(AccountConsistencyServiceTest,
        HTTPVersion:@"HTTP/1.1"
       headerFields:headersAddAccount];
 
-  account_consistency_service_->RemoveWebStateHandler(&web_state_);
   SimulateNavigateToURLWithInterruption(responseAddAccount, delegate);
 
   EXPECT_OCMOCK_VERIFY(delegate);
@@ -648,6 +643,9 @@ TEST_F(AccountConsistencyServiceTest, DomainsClearedOnBrowsingDataRemoved) {
           ->size());
 }
 
+// Tests that the CHROME_CONNECTED cookie is set on Google-associated domains,
+// but not on Google domains if the account consistency service runs before the
+// scheduled cookie update time.
 TEST_F(AccountConsistencyServiceTest,
        SetChromeConnectedCookieBeforeUpdateTime) {
   SignIn();
@@ -676,6 +674,9 @@ TEST_F(AccountConsistencyServiceTest,
   CheckNoChromeConnectedCookieForDomain(kGoogleDomain);
 }
 
+// Tests that the CHROME_CONNECTED cookie is set on Google and Google-associated
+// domains when the
+// account consistency service runs at the scheduled cookie update time.
 TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookieAtUpdateTime) {
   SignIn();
 
@@ -700,80 +701,76 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookieAtUpdateTime) {
 
   CheckDomainHasChromeConnectedCookieWithUpdateTime(kGoogleDomain,
                                                     base::Time::Now());
+  CheckDomainHasChromeConnectedCookieWithUpdateTime(kYoutubeDomain,
+                                                    base::Time::Now());
 }
 
+// Tests that the GAIA cookie update time is not updated before the scheduled
+// interval.
 TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateNotUpdateTime) {
   SignIn();
-  SimulateUpdateGaiaCookie(base::OnceClosure());
+
+  // HTTP response URL is eligible for Mirror (the test does not use google.com
+  // since the CHROME_CONNECTED cookie is generated for it by default.
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://youtube.com"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:@{}];
+
+  SimulateNavigateToURL(response, nil);
 
   // Advance clock, but stay within the one-hour Gaia update time.
-  const base::Time first_update_time = base::Time::Now();
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
-  SimulateUpdateGaiaCookie(base::OnceClosure());
+  base::TimeDelta oneMinuteDelta = base::TimeDelta::FromMinutes(1);
+  task_environment_.FastForwardBy(oneMinuteDelta);
+  SimulateNavigateToURL(response, nil);
 
-  EXPECT_EQ(first_update_time, GetGaiaLastUpdateTime());
+  CheckGaiaCookieWithUpdateTime(base::Time::Now() - oneMinuteDelta);
 }
 
+// Tests that the GAIA cookie update time is updated at the scheduled interval.
 TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAtUpdateTime) {
   SignIn();
-  SimulateUpdateGaiaCookie(base::OnceClosure());
+
+  // HTTP response URL is eligible for Mirror (the test does not use google.com
+  // since the CHROME_CONNECTED cookie is generated for it by default.
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://youtube.com"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:@{}];
+
+  SimulateNavigateToURL(response, nil);
 
   // Advance clock past one-hour Gaia update time.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(2));
-  const base::Time second_update_time = base::Time::Now();
-  SimulateUpdateGaiaCookie(base::OnceClosure());
+  SimulateNavigateToURL(response, nil);
 
-  EXPECT_EQ(second_update_time, GetGaiaLastUpdateTime());
+  CheckGaiaCookieWithUpdateTime(base::Time::Now());
 }
 
 // Ensures that the presence or absence of GAIA cookies is logged even if the
 // |kRestoreGAIACookiesIfDeleted| experiment is disabled.
 TEST_F(AccountConsistencyServiceTest, GAIACookieStatusLoggedProperly) {
-  base::HistogramTester histogram_tester;
-  __block bool cookie_updated = false;
-  base::OnceClosure callback = base::BindOnce(^() {
-    cookie_updated = true;
-  });
-
-  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
-
-  SimulateUpdateGaiaCookie(std::move(callback));
-  base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
-  ASSERT_FALSE(cookie_updated);
-
-  SignIn();
-  SimulateUpdateGaiaCookie(std::move(callback));
-  base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 1);
-  ASSERT_FALSE(cookie_updated);
-}
-
-// Ensures that in the case Gaia cookies are restored the restoration callback
-// is completed.
-TEST_F(AccountConsistencyServiceTest, GAIACookieRestoreCallbackFinished) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      signin::kRestoreGaiaCookiesIfDeleted);
+  // HTTP response URL is eligible for Mirror (the test does not use google.com
+  // since the CHROME_CONNECTED cookie is generated for it by default.
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://youtube.com"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:@{}];
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
 
-  __block bool cookie_updated = false;
-  SimulateUpdateGaiaCookie(base::BindOnce(^{
-    cookie_updated = true;
-  }));
+  SimulateNavigateToURL(response, nil);
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 0);
-  ASSERT_FALSE(cookie_updated);
 
   SignIn();
-  SimulateUpdateGaiaCookie(base::BindOnce(^{
-    cookie_updated = true;
-  }));
+  SimulateNavigateToURL(response, nil);
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectTotalCount(kGAIACookieOnNavigationHistogram, 1);
-  ASSERT_TRUE(cookie_updated);
 }
 
 // Tests that navigating to accounts.google.com without a GAIA cookie is logged
