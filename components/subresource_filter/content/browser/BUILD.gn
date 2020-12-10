@@ -18,6 +18,8 @@ static_library("browser") {
     "navigation_console_logger.h",
     "page_load_statistics.cc",
     "page_load_statistics.h",
+    "profile_interaction_manager.cc",
+    "profile_interaction_manager.h",
     "ruleset_publisher.h",
     "ruleset_publisher_impl.cc",
     "ruleset_publisher_impl.h",
