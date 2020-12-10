@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/web_applications/chrome_file_manager_ui_delegate.h"
+
 #include "chrome/browser/chromeos/file_manager/file_manager_string_util.h"
 
-ChromeFileManagerUIDelegate::ChromeFileManagerUIDelegate() = default;
+ChromeFileManagerUIDelegate::ChromeFileManagerUIDelegate(content::WebUI* web_ui)
+    : web_ui_(web_ui) {
+  DCHECK(web_ui_);
+}
 
 std::unique_ptr<base::DictionaryValue>
 ChromeFileManagerUIDelegate::GetFileManagerAppStrings() const {

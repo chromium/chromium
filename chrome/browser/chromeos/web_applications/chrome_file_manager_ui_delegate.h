@@ -11,13 +11,14 @@
 
 #include "base/values.h"
 
-/**
- * Implementation of the FileManagerUIDelegate interface. Provides the file
- * manager code in //chromeos with functions that only exist in //chrome.
- */
+namespace content {
+class WebUI;
+}  // namespace content
+
+// Chrome browser FileManagerUIDelegate implementation.
 class ChromeFileManagerUIDelegate : public FileManagerUIDelegate {
  public:
-  ChromeFileManagerUIDelegate();
+  explicit ChromeFileManagerUIDelegate(content::WebUI* web_ui);
 
   ChromeFileManagerUIDelegate(const ChromeFileManagerUIDelegate&) = delete;
   ChromeFileManagerUIDelegate& operator=(const ChromeFileManagerUIDelegate&) =
@@ -26,6 +27,9 @@ class ChromeFileManagerUIDelegate : public FileManagerUIDelegate {
   // Returns a map from message labels to actual messages used by Files app.
   std::unique_ptr<base::DictionaryValue> GetFileManagerAppStrings()
       const override;
+
+ private:
+  content::WebUI* web_ui_;  // Owns |this|.
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_WEB_APPLICATIONS_CHROME_FILE_MANAGER_UI_DELEGATE_H_

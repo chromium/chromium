@@ -352,7 +352,7 @@ template <>
 WebUIController* NewWebUI<chromeos::file_manager::FileManagerUI>(
     WebUI* web_ui,
     const GURL& url) {
-  auto delegate = std::make_unique<ChromeFileManagerUIDelegate>();
+  auto delegate = std::make_unique<ChromeFileManagerUIDelegate>(web_ui);
   return new chromeos::file_manager::FileManagerUI(web_ui, std::move(delegate));
 }
 #endif  // !defined(OFFICIAL_BUILD)

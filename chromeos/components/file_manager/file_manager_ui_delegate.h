@@ -6,11 +6,10 @@
 #define CHROMEOS_COMPONENTS_FILE_MANAGER_FILE_MANAGER_UI_DELEGATE_H_
 
 #include <memory>
-#include <string>
+
 #include "base/values.h"
 
-// A delegate which exposes browser functionality from //chrome to the
-// FileManagerUI handler.
+// Delegate to expose //chrome services to //components FileManagerUI.
 class FileManagerUIDelegate {
  public:
   virtual ~FileManagerUIDelegate() = default;
