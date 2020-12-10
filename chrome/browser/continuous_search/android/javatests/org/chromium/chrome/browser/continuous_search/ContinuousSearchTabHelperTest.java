@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -133,6 +134,7 @@ public class ContinuousSearchTabHelperTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1157325")
     public void testContinuousSearchFakeResults() throws TimeoutException {
         WaitableSearchResultUserDataObserver observer = new WaitableSearchResultUserDataObserver();
 
