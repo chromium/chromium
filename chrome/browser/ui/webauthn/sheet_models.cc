@@ -970,6 +970,19 @@ base::string16 AuthenticatorGenericErrorSheetModel::GetCancelButtonLabel()
   return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
 
+bool AuthenticatorGenericErrorSheetModel::IsAcceptButtonVisible() const {
+  return dialog_model()->offer_try_again_in_ui();
+}
+
+bool AuthenticatorGenericErrorSheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+base::string16 AuthenticatorGenericErrorSheetModel::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_RETRY);
+}
+
 const gfx::VectorIcon& AuthenticatorGenericErrorSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
   return color_scheme == ImageColorScheme::kDark ? kWebauthnErrorDarkIcon
@@ -982,6 +995,10 @@ base::string16 AuthenticatorGenericErrorSheetModel::GetStepTitle() const {
 
 base::string16 AuthenticatorGenericErrorSheetModel::GetStepDescription() const {
   return description_;
+}
+
+void AuthenticatorGenericErrorSheetModel::OnAccept() {
+  dialog_model()->StartOver();
 }
 
 // AuthenticatorResidentCredentialConfirmationSheetView -----------------------

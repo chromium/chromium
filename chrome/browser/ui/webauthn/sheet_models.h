@@ -388,8 +388,7 @@ class AuthenticatorRetryUvSheetModel : public AuthenticatorSheetModelBase {
   base::string16 GetError() const override;
 };
 
-// Generic error dialog that can only be dismissed. Backwards navigation is
-// not visible.
+// Generic error dialog that allows starting the request over.
 class AuthenticatorGenericErrorSheetModel : public AuthenticatorSheetModelBase {
  public:
   static std::unique_ptr<AuthenticatorGenericErrorSheetModel>
@@ -411,12 +410,16 @@ class AuthenticatorGenericErrorSheetModel : public AuthenticatorSheetModelBase {
       base::string16 description);
 
   // AuthenticatorSheetModelBase:
+  bool IsAcceptButtonVisible() const override;
+  bool IsAcceptButtonEnabled() const override;
+  base::string16 GetAcceptButtonLabel() const override;
   bool IsBackButtonVisible() const override;
   base::string16 GetCancelButtonLabel() const override;
   const gfx::VectorIcon& GetStepIllustration(
       ImageColorScheme color_scheme) const override;
   base::string16 GetStepTitle() const override;
   base::string16 GetStepDescription() const override;
+  void OnAccept() override;
 
   base::string16 title_;
   base::string16 description_;
