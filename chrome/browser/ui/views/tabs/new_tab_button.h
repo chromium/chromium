@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -93,8 +94,8 @@ class NewTabButton : public views::ImageButton,
   // Contains our ink drop layer so it can paint above our background.
   views::InkDropContainerView* ink_drop_container_;
 
-  // were we destroyed?
-  bool* destroyed_ = nullptr;
+  // For tracking whether this object has been destroyed. Must be last.
+  base::WeakPtrFactory<NewTabButton> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_

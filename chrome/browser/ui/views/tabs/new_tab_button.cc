@@ -80,8 +80,6 @@ NewTabButton::NewTabButton(TabStrip* tab_strip, PressedCallback callback)
 }
 
 NewTabButton::~NewTabButton() {
-  if (destroyed_)
-    *destroyed_ = true;
 }
 
 void NewTabButton::FrameColorsChanged() {
@@ -129,15 +127,11 @@ void NewTabButton::OnMouseReleased(const ui::MouseEvent& event) {
   gfx::Point point = event.location();
   views::View::ConvertPointToScreen(this, &point);
   point = display::win::ScreenWin::DIPToScreenPoint(point);
-  bool destroyed = false;
-  destroyed_ = &destroyed;
+  auto weak_this = weak_factory_.GetWeakPtr();
   views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(this), point);
-  if (!destroyed) {
-    SetState(views::Button::STATE_NORMAL);
-    // Zero this pointer to avoid dangling references to the local that will
-    // soon go out of scope. Only do this if the object was not destroyed.
-    destroyed_ = nullptr;
-  }
+  if (!weak_this)
+    return;
+  SetState(views::Button::STATE_NORMAL);
 }
 #endif
 

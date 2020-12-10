@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
@@ -122,7 +123,8 @@ class GFX_EXPORT WindowImpl : public MessageMapInterface {
   // TODO(sky): nuke this when get crash data.
   bool got_create_ = false;
   bool got_valid_hwnd_ = false;
-  bool* destroyed_ = nullptr;
+  // For tracking whether this object has been destroyed. Must be last.
+  base::WeakPtrFactory<WindowImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowImpl);
 };

@@ -170,8 +170,6 @@ WindowImpl::WindowImpl(const std::string& debugging_id)
     : debugging_id_(debugging_id), class_style_(CS_DBLCLKS) {}
 
 WindowImpl::~WindowImpl() {
-  if (destroyed_)
-    *destroyed_ = true;
   ClearUserData();
 }
 
@@ -208,8 +206,7 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
   }
 
   ATOM atom = GetWindowClassAtom();
-  bool destroyed = false;
-  destroyed_ = &destroyed;
+  auto weak_this = weak_factory_.GetWeakPtr();
   HWND hwnd = CreateWindowEx(window_ex_style_,
                              reinterpret_cast<wchar_t*>(atom), NULL,
                              window_style_, x, y, width, height,
@@ -226,7 +223,8 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
   }
 
   if (!hwnd_ && create_window_error == 0) {
-    base::debug::Alias(&destroyed);
+    bool still_alive = !!weak_this;
+    base::debug::Alias(&still_alive);
     base::debug::Alias(&hwnd);
     bool got_create = got_create_;
     base::debug::Alias(&got_create);
@@ -244,8 +242,6 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
     base::debug::Alias(&procs_match);
     CHECK(false);
   }
-  if (!destroyed)
-    destroyed_ = nullptr;
 
   CheckWindowCreated(hwnd_, create_window_error);
 

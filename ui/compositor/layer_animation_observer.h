@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer_animation_element.h"
 
@@ -162,18 +163,17 @@ class COMPOSITOR_EXPORT ImplicitAnimationObserver
   AnimationStatus AnimationStatusForProperty(
       LayerAnimationElement::AnimatableProperty property) const;
 
-  bool active_;
-
-  // Set to true in the destructor (if non-NULL). Used to detect deletion while
-  // calling out.
-  bool* destroyed_;
+  bool active_ = false;
 
   typedef std::map<LayerAnimationElement::AnimatableProperty,
                    AnimationStatus> PropertyAnimationStatusMap;
   PropertyAnimationStatusMap property_animation_status_;
 
   // True if OnLayerAnimationScheduled() has been called at least once.
-  bool first_sequence_scheduled_;
+  bool first_sequence_scheduled_ = false;
+
+  // For tracking whether this object has been destroyed. Must be last.
+  base::WeakPtrFactory<ImplicitAnimationObserver> weak_factory_{this};
 };
 
 }  // namespace ui

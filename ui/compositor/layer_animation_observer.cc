@@ -58,13 +58,9 @@ void LayerAnimationObserver::DetachedFromSequence(
 ////////////////////////////////////////////////////////////////////////////////
 // ImplicitAnimationObserver
 
-ImplicitAnimationObserver::ImplicitAnimationObserver()
-    : active_(false), destroyed_(nullptr), first_sequence_scheduled_(false) {}
+ImplicitAnimationObserver::ImplicitAnimationObserver() = default;
 
-ImplicitAnimationObserver::~ImplicitAnimationObserver() {
-  if (destroyed_)
-    *destroyed_ = true;
-}
+ImplicitAnimationObserver::~ImplicitAnimationObserver() = default;
 
 void ImplicitAnimationObserver::SetActive(bool active) {
   active_ = active;
@@ -89,12 +85,10 @@ bool ImplicitAnimationObserver::WasAnimationCompletedForProperty(
 void ImplicitAnimationObserver::OnLayerAnimationEnded(
     LayerAnimationSequence* sequence) {
   UpdatePropertyAnimationStatus(sequence, ANIMATION_STATUS_COMPLETED);
-  bool destroyed = false;
-  destroyed_ = &destroyed;
+  auto weak_this = weak_factory_.GetWeakPtr();
   sequence->RemoveObserver(this);
-  if (destroyed)
+  if (!weak_this)
     return;
-  destroyed_ = nullptr;
   DCHECK(attached_sequences().find(sequence) == attached_sequences().end());
   CheckCompleted();
 }
@@ -102,12 +96,10 @@ void ImplicitAnimationObserver::OnLayerAnimationEnded(
 void ImplicitAnimationObserver::OnLayerAnimationAborted(
     LayerAnimationSequence* sequence) {
   UpdatePropertyAnimationStatus(sequence, ANIMATION_STATUS_ABORTED);
-  bool destroyed = false;
-  destroyed_ = &destroyed;
+  auto weak_this = weak_factory_.GetWeakPtr();
   sequence->RemoveObserver(this);
-  if (destroyed)
+  if (!weak_this)
     return;
-  destroyed_ = nullptr;
   DCHECK(attached_sequences().find(sequence) == attached_sequences().end());
   CheckCompleted();
 }
