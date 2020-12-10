@@ -74,7 +74,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
             }
             long startTime = SystemClock.uptimeMillis();
             Context context = super.createContextForSplit(name);
-            RecordHistogram.recordTimesHistogram("Android.IsolatedSplits.CreateContextTime." + name,
+            RecordHistogram.recordTimesHistogram("Android.IsolatedSplits.ContextCreateTime." + name,
                     SystemClock.uptimeMillis() - startTime);
             return context;
         }
