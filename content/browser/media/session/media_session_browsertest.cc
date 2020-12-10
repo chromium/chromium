@@ -317,7 +317,14 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_WebContents_Muted) {
 
 #if !defined(OS_ANDROID)
 // On Android, System Audio Focus would break this test.
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultipleTabsPlayPause) {
+
+// Flaky on Linux (at least). http://crbug.com/1157263
+#if defined(OS_LINUX)
+#define MAYBE_MultipleTabsPlayPause DISABLED_MultipleTabsPlayPause
+#else
+#define MAYBE_MultipleTabsPlayPause MultipleTabsPlayPause
+#endif
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_MultipleTabsPlayPause) {
   Shell* other_shell = CreateBrowser();
 
   EXPECT_TRUE(NavigateToURL(shell(),
