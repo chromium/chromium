@@ -247,8 +247,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithoutInternalMediaSession,
   EXPECT_TRUE(IsPlaying(shell(), "long-video"));
 }
 
-// Flaky on Linux. http://crbug.com/1157239
-#if defined(OS_LINUX)
+// Flaky on Linux and Android. http://crbug.com/1157239,
+// http://crbug.com/1157319
+#if defined(OS_LINUX) || defined(OS_ANDROID)
 #define MAYBE_SimplePlayPause DISABLED_SimplePlayPause
 #else
 #define MAYBE_SimplePlayPause SimplePlayPause
@@ -271,8 +272,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_SimplePlayPause) {
   EXPECT_TRUE(IsPlaying(shell(), "long-video"));
 }
 
-// Flaky on Linux. http://crbug.com/1157241
-#if defined(OS_LINUX)
+// Flaky on Linux and Android. http://crbug.com/1157239,
+// http://crbug.com/1157319
+#if defined(OS_LINUX) || defined(OS_ANDROID)
 #define MAYBE_MultiplePlayersPlayPause DISABLED_MultiplePlayersPlayPause
 #else
 #define MAYBE_MultiplePlayersPlayPause MultiplePlayersPlayPause
