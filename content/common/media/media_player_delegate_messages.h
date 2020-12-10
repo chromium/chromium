@@ -16,20 +16,12 @@
 #include "content/common/content_export.h"
 #include "ipc/ipc_message_macros.h"
 #include "media/base/media_content_type.h"
-#include "services/media_session/public/cpp/media_position.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 #define IPC_MESSAGE_START MediaPlayerDelegateMsgStart
-
-IPC_STRUCT_TRAITS_BEGIN(media_session::MediaPosition)
-  IPC_STRUCT_TRAITS_MEMBER(playback_rate_)
-  IPC_STRUCT_TRAITS_MEMBER(duration_)
-  IPC_STRUCT_TRAITS_MEMBER(position_)
-  IPC_STRUCT_TRAITS_MEMBER(last_updated_time_)
-IPC_STRUCT_TRAITS_END()
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::MediaContentType, media::MediaContentType::Max)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::WebFullscreenVideoStatus,
@@ -80,10 +72,6 @@ IPC_MESSAGE_ROUTED1(MediaPlayerDelegateHostMsg_OnMediaPlaying,
 IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnMutedStatusChanged,
                     int /* delegate_id, distinguishes instances */,
                     bool /* the new muted status */)
-
-IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnMediaPositionStateChanged,
-                    int /* delegate_id, distinguishes instances */,
-                    media_session::MediaPosition /* the new position state */)
 
 IPC_MESSAGE_ROUTED2(
     MediaPlayerDelegateHostMsg_OnMediaEffectivelyFullscreenChanged,

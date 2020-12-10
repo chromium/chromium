@@ -16,10 +16,6 @@ namespace media {
 enum class MediaContentType;
 }  // namespace media
 
-namespace media_session {
-struct MediaPosition;
-}  // namespace media_session
-
 namespace blink {
 
 enum class WebFullscreenVideoStatus;
@@ -114,11 +110,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
 
   // Notify that the muted status of the media player has changed.
   virtual void DidPlayerMutedStatusChange(int delegate_id, bool muted) = 0;
-
-  // Notify that the media position state of the media player has changed.
-  virtual void DidPlayerMediaPositionStateChange(
-      int delegate_id,
-      const media_session::MediaPosition& position) = 0;
 
   // Notify that picture-in-picture availability has changed.
   virtual void DidPictureInPictureAvailabilityChange(int delegate_id,

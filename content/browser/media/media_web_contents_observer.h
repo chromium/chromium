@@ -115,11 +115,16 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   mojo::Remote<media::mojom::MediaPlayer>& GetMediaPlayerRemote(
       const MediaPlayerId& player_id);
 
-  // Creates a new MediaPlayerHostImpl associated to |host| if needed, and then
-  // passes |player_receiver| to it to establish a communication channel.
+  // Creates a new MediaPlayerObserverHostImpl associated to |player_id| if
+  // needed, and then passes |player_receiver| to it to establish a
+  // communication channel.
   void BindMediaPlayerHost(
       RenderFrameHost* host,
       mojo::PendingReceiver<media::mojom::MediaPlayerHost> player_receiver);
+
+  // Establishes a MediaPlayerObserver for |player_id|, allowing the MediaPlayer
+  // element in the renderer process to communicate back with the browser.
+  void SetMediaPlayerObserverForMediaPlayer(const MediaPlayerId& player_id);
 
   // Communicates with the MediaSessionControllerManager to find or create (if
   // needed) a MediaSessionController identified by |player_id|, in order to
@@ -172,8 +177,35 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
     mojo::Receiver<media::mojom::MediaPlayerHost> receiver_{this};
   };
 
+  // Helper class providing a per-MediaPlayerId object implementing the
+  // media::mojom::MediaPlayerObserver mojo interface.
+  class MediaPlayerObserverHostImpl : public media::mojom::MediaPlayerObserver {
+   public:
+    MediaPlayerObserverHostImpl(
+        const MediaPlayerId& media_player_id,
+        MediaWebContentsObserver* media_web_contents_observer);
+    ~MediaPlayerObserverHostImpl() override;
+
+    // Used to bind the receiver via the BrowserInterfaceBroker.
+    mojo::PendingRemote<media::mojom::MediaPlayerObserver>
+    BindMediaPlayerObserverReceiverAndPassRemote();
+
+    // media::mojom::MediaPlayerObserver implementation.
+    void OnMediaPositionStateChanged(
+        const media_session::MediaPosition& media_position) override;
+
+   private:
+    MediaPlayerId media_player_id_;
+    MediaWebContentsObserver* media_web_contents_observer_;
+    mojo::Receiver<media::mojom::MediaPlayerObserver>
+        media_player_observer_receiver_{this};
+  };
+
   using MediaPlayerHostImplMap =
       base::flat_map<RenderFrameHost*, std::unique_ptr<MediaPlayerHostImpl>>;
+  using MediaPlayerObserverHostImplMap =
+      base::flat_map<MediaPlayerId,
+                     std::unique_ptr<MediaPlayerObserverHostImpl>>;
   using MediaPlayerRemotesMap =
       base::flat_map<MediaPlayerId, mojo::Remote<media::mojom::MediaPlayer>>;
 
@@ -201,10 +233,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   void OnMediaMutedStatusChanged(RenderFrameHost* render_frame_host,
                                  int delegate_id,
                                  bool muted);
-  void OnMediaPositionStateChanged(
-      RenderFrameHost* render_frame_host,
-      int delegate_id,
-      const media_session::MediaPosition& position);
   void OnPictureInPictureAvailabilityChanged(RenderFrameHost* render_frame_host,
                                              int delegate_id,
                                              bool available);
@@ -219,6 +247,10 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // Used to notify when the renderer -> browser mojo connection via the
   // interface media::mojom::MediaPlayerHost gets disconnected.
   void OnMediaPlayerHostDisconnected(RenderFrameHost* host);
+
+  // Used to notify when the renderer -> browser mojo connection via the
+  // interface media::mojom::MediaPlayerObserver gets disconnected.
+  void OnMediaPlayerObserverDisconnected(const MediaPlayerId& player_id);
 
   device::mojom::WakeLock* GetAudioWakeLock();
 
@@ -260,6 +292,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   media::UseAfterFreeChecker use_after_free_checker_;
 
   MediaPlayerHostImplMap media_player_hosts_;
+  MediaPlayerObserverHostImplMap media_player_observer_hosts_;
 
   // Map of remote endpoints for the media::mojom::MediaPlayer mojo interface,
   // indexed by MediaPlayerId.

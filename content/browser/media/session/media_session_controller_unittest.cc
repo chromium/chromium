@@ -81,6 +81,9 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
   }
 
   // media::mojom::MediaPlayer implementation.
+  void SetMediaPlayerObserver(
+      mojo::PendingRemote<media::mojom::MediaPlayerObserver>) override {}
+
   void RequestPlay() override {
     received_play_ = true;
     run_loop_->Quit();

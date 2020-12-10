@@ -234,8 +234,6 @@ bool MediaWebContentsObserver::OnMessageReceived(
                         OnMediaPlaying)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMutedStatusChanged,
                         OnMediaMutedStatusChanged)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaPositionStateChanged,
-                        OnMediaPositionStateChanged);
     IPC_MESSAGE_HANDLER(
         MediaPlayerDelegateHostMsg_OnMediaEffectivelyFullscreenChanged,
         OnMediaEffectivelyFullscreenChanged)
@@ -313,6 +311,39 @@ void MediaWebContentsObserver::MediaPlayerHostImpl::OnMediaPlayerAdded(
     int32_t player_id) {
   media_web_contents_observer_->OnMediaPlayerAdded(
       std::move(media_player), MediaPlayerId(render_frame_host_, player_id));
+}
+
+MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    MediaPlayerObserverHostImpl(
+        const MediaPlayerId& media_player_id,
+        MediaWebContentsObserver* media_web_contents_observer)
+    : media_player_id_(media_player_id),
+      media_web_contents_observer_(media_web_contents_observer) {}
+
+MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    ~MediaPlayerObserverHostImpl() = default;
+
+mojo::PendingRemote<media::mojom::MediaPlayerObserver>
+MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    BindMediaPlayerObserverReceiverAndPassRemote() {
+  media_player_observer_receiver_.reset();
+  mojo::PendingRemote<media::mojom::MediaPlayerObserver> pending_remote =
+      media_player_observer_receiver_.BindNewPipeAndPassRemote();
+
+  // |media_web_contents_observer_| outlives MediaPlayerHostImpl, so it's safe
+  // to use base::Unretained().
+  media_player_observer_receiver_.set_disconnect_handler(base::BindOnce(
+      &MediaWebContentsObserver::OnMediaPlayerObserverDisconnected,
+      base::Unretained(media_web_contents_observer_), media_player_id_));
+
+  return pending_remote;
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnMediaPositionStateChanged(
+        const media_session::MediaPosition& media_position) {
+  media_web_contents_observer_->session_controllers_manager()
+      ->OnMediaPositionStateChanged(media_player_id_, media_position);
 }
 
 MediaWebContentsObserver::PlayerInfo* MediaWebContentsObserver::GetPlayerInfo(
@@ -503,6 +534,12 @@ void MediaWebContentsObserver::OnMediaPlayerHostDisconnected(
   media_player_hosts_.erase(host);
 }
 
+void MediaWebContentsObserver::OnMediaPlayerObserverDisconnected(
+    const MediaPlayerId& player_id) {
+  DCHECK(media_player_observer_hosts_.contains(player_id));
+  media_player_observer_hosts_.erase(player_id);
+}
+
 device::mojom::WakeLock* MediaWebContentsObserver::GetAudioWakeLock() {
   // Here is a lazy binding, and will not reconnect after connection error.
   if (!audio_wake_lock_) {
@@ -538,14 +575,6 @@ void MediaWebContentsObserver::OnMediaMutedStatusChanged(
   web_contents_impl()->MediaMutedStatusChanged(id, muted);
 }
 
-void MediaWebContentsObserver::OnMediaPositionStateChanged(
-    RenderFrameHost* render_frame_host,
-    int delegate_id,
-    const media_session::MediaPosition& position) {
-  const MediaPlayerId id(render_frame_host, delegate_id);
-  session_controllers_manager_.OnMediaPositionStateChanged(id, position);
-}
-
 WebContentsImpl* MediaWebContentsObserver::web_contents_impl() const {
   return static_cast<WebContentsImpl*>(web_contents());
 }
@@ -560,6 +589,19 @@ void MediaWebContentsObserver::BindMediaPlayerHost(
 
   media_player_hosts_[host]->BindMediaPlayerHostReceiver(
       std::move(player_receiver));
+}
+
+void MediaWebContentsObserver::SetMediaPlayerObserverForMediaPlayer(
+    const MediaPlayerId& player_id) {
+  if (!media_player_observer_hosts_.contains(player_id)) {
+    media_player_observer_hosts_[player_id] =
+        std::make_unique<MediaPlayerObserverHostImpl>(player_id, this);
+  }
+
+  DCHECK(media_player_remotes_[player_id]);
+  media_player_remotes_[player_id]->SetMediaPlayerObserver(
+      media_player_observer_hosts_[player_id]
+          ->BindMediaPlayerObserverReceiverAndPassRemote());
 }
 
 void MediaWebContentsObserver::OnMediaPlayerAdded(
@@ -577,6 +619,10 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
         observer->media_player_remotes_.erase(player_id);
       },
       base::Unretained(this), player_id));
+
+  // Create a new MediaPlayerObserverHostImpl to be able to receive messages
+  // from the renderer process via the MediaPlayerObserver mojo interface.
+  SetMediaPlayerObserverForMediaPlayer(player_id);
 }
 
 #if defined(OS_ANDROID)

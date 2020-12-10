@@ -3025,8 +3025,8 @@ void WebMediaPlayerImpl::OnTimeUpdate() {
 
   DVLOG(2) << __func__ << "(" << new_position.ToString() << ")";
   media_position_state_ = new_position;
-  delegate_->DidPlayerMediaPositionStateChange(delegate_id_,
-                                               media_position_state_);
+  client_->DidPlayerMediaPositionStateChange(effective_playback_rate, duration,
+                                             current_time);
 }
 
 void WebMediaPlayerImpl::SetDelegateState(DelegateState new_state,

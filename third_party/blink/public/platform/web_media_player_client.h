@@ -166,6 +166,11 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Request the player to pause playback.
   virtual void PausePlayback() = 0;
 
+  // Notify the client that the playback position has changed.
+  virtual void DidPlayerMediaPositionStateChange(double playback_rate,
+                                                 base::TimeDelta duration,
+                                                 base::TimeDelta position) = 0;
+
   // Notify the client that one of the state used by Picture-in-Picture has
   // changed. The client will then have to poll the states from the associated
   // WebMediaPlayer.

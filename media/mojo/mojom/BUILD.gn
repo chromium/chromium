@@ -64,6 +64,7 @@ mojom("mojom") {
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
     "//mojo/public/mojom/base",
+    "//services/media_session/public/mojom",
     "//services/network/public/mojom",
     "//services/service_manager/public/mojom",
     "//ui/gfx/geometry/mojom",

@@ -176,12 +176,6 @@ class FakeWebMediaPlayerDelegate
 
   int delegate_id() { return delegate_id_; }
 
-  void DidPlayerMediaPositionStateChange(
-      int delegate_id,
-      const media_session::MediaPosition& position) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
   void DidPictureInPictureAvailabilityChange(int delegate_id,
                                              bool available) override {
     EXPECT_EQ(delegate_id_, delegate_id);
@@ -616,6 +610,9 @@ class WebMediaPlayerMSTest
   void MediaRemotingStopped(int error_code) override {}
   void ResumePlayback() override {}
   void PausePlayback() override {}
+  void DidPlayerMediaPositionStateChange(double playback_rate,
+                                         base::TimeDelta duration,
+                                         base::TimeDelta position) override {}
   Features GetFeatures() override { return Features(); }
 
   // Implementation of cc::VideoFrameProvider::Client

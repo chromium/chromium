@@ -123,13 +123,6 @@ void RendererWebMediaPlayerDelegate::DidPlayerMutedStatusChange(int delegate_id,
                                                            delegate_id, muted));
 }
 
-void RendererWebMediaPlayerDelegate::DidPlayerMediaPositionStateChange(
-    int delegate_id,
-    const media_session::MediaPosition& position) {
-  Send(new MediaPlayerDelegateHostMsg_OnMediaPositionStateChanged(
-      routing_id(), delegate_id, position));
-}
-
 void RendererWebMediaPlayerDelegate::DidPause(int player_id,
                                               bool reached_end_of_stream) {
   DVLOG(2) << __func__ << "(" << player_id << ", " << reached_end_of_stream

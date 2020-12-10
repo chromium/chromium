@@ -461,6 +461,9 @@ class CORE_EXPORT HTMLMediaElement
   bool IsInAutoPIP() const override { return false; }
   void ResumePlayback() final;
   void PausePlayback() final;
+  void DidPlayerMediaPositionStateChange(double playback_rate,
+                                         base::TimeDelta duration,
+                                         base::TimeDelta position) override;
 
   // Returns a reference to the mojo remote for the MediaPlayerHost interface,
   // requesting it first from the BrowserInterfaceBroker if needed. It is an
@@ -468,6 +471,9 @@ class CORE_EXPORT HTMLMediaElement
   media::mojom::blink::MediaPlayerHost& GetMediaPlayerHostRemote();
 
   // media::mojom::MediaPlayer  implementation.
+  void SetMediaPlayerObserver(
+      mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer)
+      override;
   void RequestPlay() override;
   void RequestPause(bool triggered_by_user) override;
   void RequestSeekForward(base::TimeDelta seek_time) override;
@@ -793,6 +799,8 @@ class CORE_EXPORT HTMLMediaElement
 
   HeapMojoRemote<media::mojom::blink::MediaPlayerHost>
       media_player_host_remote_;
+  HeapMojoRemote<media::mojom::blink::MediaPlayerObserver>
+      media_player_observer_remote_;
 
   // A receiver set is needed here as there will be different objects in the
   // browser communicating with this object. This is done this way to avoid

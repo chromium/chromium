@@ -5,9 +5,16 @@
 module media.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "services/media_session/public/mojom/media_session.mojom";
 
 // Implemented by HTMLMediaElement in the renderer process.
 interface MediaPlayer {
+  // Sends |observer| to the renderer process so that it can be established a
+  // communication channel with the implementor of MediaPlayerObserver.
+  // TODO(crbug.com/1039252): Make this an AddMediaPlayerObserver method as soon
+  // as there is a HeapMojoRemoteSet class available for its use in Blink.
+  SetMediaPlayerObserver(pending_remote<MediaPlayerObserver> observer);
+
   // Requests the media player to start or resume media playback.
   RequestPlay();
 
@@ -25,6 +32,14 @@ interface MediaPlayer {
 
   // Requests the media player to exit the Picture-in-Picture mode.
   RequestExitPictureInPicture();
+};
+
+// Implemented by MediaWebContentsObserver::MediaPlayerObserverHostImpl in the
+// browser process.
+interface MediaPlayerObserver {
+  // Notifies the browser process that the media playback position has changed,
+  // and reports the new current position via |media_position|.
+  OnMediaPositionStateChanged(media_session.mojom.MediaPosition media_position);
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

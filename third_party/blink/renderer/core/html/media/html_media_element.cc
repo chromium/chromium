@@ -536,6 +536,7 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
       controls_list_(MakeGarbageCollected<HTMLMediaElementControlsList>(this)),
       lazy_load_intersection_observer_(nullptr),
       media_player_host_remote_(GetExecutionContext()),
+      media_player_observer_remote_(GetExecutionContext()),
       media_player_receiver_set_(this, GetExecutionContext()) {
   DVLOG(1) << "HTMLMediaElement(" << *this << ")";
 
@@ -3661,6 +3662,7 @@ void HTMLMediaElement::
     // The lifetime of the mojo endpoints are tied to the WebMediaPlayer's, so
     // we need to reset those as well.
     media_player_receiver_set_.Clear();
+    media_player_observer_remote_.reset();
   }
 }
 
@@ -4129,6 +4131,7 @@ void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(controls_list_);
   visitor->Trace(lazy_load_intersection_observer_);
   visitor->Trace(media_player_host_remote_);
+  visitor->Trace(media_player_observer_remote_);
   visitor->Trace(media_player_receiver_set_);
   Supplementable<HTMLMediaElement>::Trace(visitor);
   HTMLElement::Trace(visitor);
@@ -4369,6 +4372,19 @@ void HTMLMediaElement::PausePlayback() {
   RequestPause(false);
 }
 
+void HTMLMediaElement::DidPlayerMediaPositionStateChange(
+    double playback_rate,
+    base::TimeDelta duration,
+    base::TimeDelta position) {
+  // The remote to the MediaPlayerObserver could be not set yet.
+  if (!media_player_observer_remote_.is_bound())
+    return;
+
+  media_player_observer_remote_->OnMediaPositionStateChanged(
+      media_session::mojom::blink::MediaPosition::New(
+          playback_rate, duration, position, base::TimeTicks::Now()));
+}
+
 media::mojom::blink::MediaPlayerHost&
 HTMLMediaElement::GetMediaPlayerHostRemote() {
   // It is an error to call this before having access to the document's frame.
@@ -4379,6 +4395,14 @@ HTMLMediaElement::GetMediaPlayerHostRemote() {
             GetDocument().GetTaskRunner(TaskType::kInternalMedia)));
   }
   return *media_player_host_remote_.get();
+}
+
+void HTMLMediaElement::SetMediaPlayerObserver(
+    mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer) {
+  DCHECK(!media_player_observer_remote_.is_bound());
+  media_player_observer_remote_.Bind(
+      std::move(observer),
+      GetDocument().GetTaskRunner(TaskType::kInternalMedia));
 }
 
 void HTMLMediaElement::RequestPlay() {
