@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
@@ -24,8 +23,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
-#include "components/download/public/background_service/download_service.h"
-#include "components/download/public/background_service/logger.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/optimization_guide/optimization_guide_constants.h"
 #include "components/optimization_guide/optimization_guide_features.h"
@@ -44,9 +41,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 
 namespace {
-
-const char kOptimizationGuidePredictionModelsClient[] =
-    "OptimizationGuidePredictionModels";
 
 // Fetch and calculate the total number of samples from all the bins for
 // |histogram_name|. Note: from some browertests run (such as chromeos) there
@@ -828,41 +822,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerNoUserPermissionsTest,
       1);
 }
 
-// Implementation of a download system logger that provides the ability to wait
-// for certain events to happen, notably added and progressing downloads.
-class DownloadServiceObserver : public download::Logger::Observer {
- public:
-  using DownloadCompletedCallback = base::OnceCallback<void()>;
-
-  DownloadServiceObserver() = default;
-  ~DownloadServiceObserver() override = default;
-
-  // Sets |callback| to be invoked when a download has completed.
-  void set_download_completed_callback(DownloadCompletedCallback callback) {
-    download_completed_callback_ = std::move(callback);
-  }
-
-  // download::Logger::Observer implementation:
-  void OnServiceStatusChanged(const base::Value& service_status) override {}
-  void OnServiceDownloadsAvailable(
-      const base::Value& service_downloads) override {}
-  void OnServiceDownloadFailed(const base::Value& service_download) override {}
-  void OnServiceRequestMade(const base::Value& service_request) override {}
-  void OnServiceDownloadChanged(const base::Value& service_download) override {
-    const std::string& client = service_download.FindKey("client")->GetString();
-    const std::string& state = service_download.FindKey("state")->GetString();
-
-    if (client != kOptimizationGuidePredictionModelsClient)
-      return;
-
-    if (state == "COMPLETE" && download_completed_callback_)
-      std::move(download_completed_callback_).Run();
-  }
-
- private:
-  DownloadCompletedCallback download_completed_callback_;
-};
-
 class ModelFileObserver : public OptimizationTargetModelObserver {
  public:
   using ModelFileReceivedCallback =
@@ -893,11 +852,6 @@ class PredictionManagerModelDownloadingBrowserTest
   ~PredictionManagerModelDownloadingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    download_service_observer_ = std::make_unique<DownloadServiceObserver>();
-    DownloadServiceFactory::GetForKey(browser()->profile()->GetProfileKey())
-        ->GetLogger()
-        ->AddObserver(download_service_observer_.get());
-
     model_file_observer_ = std::make_unique<ModelFileObserver>();
 
     PredictionManagerBrowserTest::SetUpOnMainThread();
@@ -905,14 +859,6 @@ class PredictionManagerModelDownloadingBrowserTest
 
   void TearDownOnMainThread() override {
     PredictionManagerBrowserTest::TearDownOnMainThread();
-
-    DownloadServiceFactory::GetForKey(browser()->profile()->GetProfileKey())
-        ->GetLogger()
-        ->RemoveObserver(download_service_observer_.get());
-  }
-
-  DownloadServiceObserver* download_observer() {
-    return download_service_observer_.get();
   }
 
   ModelFileObserver* model_file_observer() {
@@ -948,7 +894,6 @@ class PredictionManagerModelDownloadingBrowserTest
              "scoped_feature_list_trial_for_OptimizationHintsFetching")}));
   }
 
-  std::unique_ptr<DownloadServiceObserver> download_service_observer_;
   std::unique_ptr<ModelFileObserver> model_file_observer_;
 };
 
@@ -961,17 +906,9 @@ IN_PROC_BROWSER_TEST_F(
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
                       kSuccessfulWithInvalidModelFile);
 
-  std::unique_ptr<base::RunLoop> completed_run_loop =
-      std::make_unique<base::RunLoop>();
-  download_observer()->set_download_completed_callback(
-      base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },
-                     completed_run_loop.get()));
-  // Registering should initiate the fetch and receive a response with a model
-  // containing a download URL and then subsequently downloaded.
-  RegisterModelFileObserverWithKeyedService();
-
-  // Wait until the download has completed.
-  completed_run_loop->Run();
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 1);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
