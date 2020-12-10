@@ -4907,10 +4907,16 @@ test("unit_tests") {
   if (is_chromeos_lacros) {
     assert(enable_native_notifications)
     sources += [
+      "../browser/lacros/account_manager_facade_lacros_unittest.cc",
       "../browser/lacros/lacros_chrome_service_delegate_impl_unittest.cc",
       "../browser/lacros/metrics_reporting_observer_unittest.cc",
       "../browser/notifications/notification_platform_bridge_lacros_unittest.cc",
       "../common/chrome_paths_lacros_unittest.cc",
+    ]
+
+    deps += [
+      "//components/account_manager_core",
+      "//components/account_manager_core:test_support",
     ]
   }
 

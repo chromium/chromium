@@ -24,3 +24,14 @@ component("account_manager_core") {
 
   defines = [ "IS_ACCOUNT_MANAGER_CORE_IMPL" ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "account_manager_test_util.cc",
+    "account_manager_test_util.h",
+  ]
+
+  deps = [ ":account_manager_core" ]
+}

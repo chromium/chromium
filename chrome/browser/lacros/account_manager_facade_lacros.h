@@ -19,8 +19,9 @@ class AccountManagerFacadeLacros
     : public account_manager::AccountManagerFacade,
       public crosapi::mojom::AccountManagerObserver {
  public:
-  explicit AccountManagerFacadeLacros(
-      mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote);
+  AccountManagerFacadeLacros(
+      mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
+      base::OnceClosure init_finished = base::DoNothing());
   AccountManagerFacadeLacros(const AccountManagerFacadeLacros&) = delete;
   AccountManagerFacadeLacros& operator=(const AccountManagerFacadeLacros&) =
       delete;
@@ -39,8 +40,9 @@ class AccountManagerFacadeLacros
       mojo::PendingReceiver<AccountManagerObserver> receiver);
   void OnInitialized(bool is_initialized);
 
-  bool is_initialized_ = false;
   mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
+  base::OnceClosure init_finished_;
+  bool is_initialized_ = false;
   std::unique_ptr<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>
       receiver_;
 

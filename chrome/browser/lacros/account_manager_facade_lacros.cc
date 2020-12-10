@@ -18,10 +18,15 @@ constexpr uint32_t kMinVersionWithObserver = 1;
 }  // namespace
 
 AccountManagerFacadeLacros::AccountManagerFacadeLacros(
-    mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote)
-    : account_manager_remote_(std::move(account_manager_remote)) {
-  if (!account_manager_remote_)
+    mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
+    base::OnceClosure init_finished)
+    : account_manager_remote_(std::move(account_manager_remote)),
+      init_finished_(std::move(init_finished)) {
+  DCHECK(init_finished_);
+  if (!account_manager_remote_) {
+    std::move(init_finished_).Run();
     return;
+  }
 
   account_manager_remote_.QueryVersion(base::BindOnce(
       &AccountManagerFacadeLacros::OnVersionCheck, weak_factory_.GetWeakPtr()));
@@ -34,8 +39,10 @@ bool AccountManagerFacadeLacros::IsInitialized() {
 }
 
 void AccountManagerFacadeLacros::OnVersionCheck(uint32_t version) {
-  if (version < kMinVersionWithObserver)
+  if (version < kMinVersionWithObserver) {
+    std::move(init_finished_).Run();
     return;
+  }
 
   account_manager_remote_->AddObserver(
       base::BindOnce(&AccountManagerFacadeLacros::OnReceiverReceived,
@@ -56,6 +63,7 @@ void AccountManagerFacadeLacros::OnInitialized(bool is_initialized) {
   if (is_initialized)
     is_initialized_ = true;
   // else: We will receive a notification in |OnTokenUpserted|.
+  std::move(init_finished_).Run();
 }
 
 void AccountManagerFacadeLacros::OnTokenUpserted(
