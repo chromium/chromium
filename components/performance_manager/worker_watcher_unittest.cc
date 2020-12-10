@@ -322,6 +322,13 @@ class TestServiceWorkerContext : public content::FakeServiceWorkerContext {
   std::string AddClient(int64_t version_id,
                         const content::ServiceWorkerClientInfo& client_info);
 
+  // Adds a new client to an existing service worker with the provided
+  // client UUID. Returns |client_uuid| for convenience.
+  std::string AddClientWithClientID(
+      int64_t version_id,
+      std::string client_uuid,
+      const content::ServiceWorkerClientInfo& client_info);
+
   // Removes an existing client from a worker.
   void RemoveClient(int64_t version_id, const std::string& client_uuid);
 
@@ -423,11 +430,16 @@ void TestServiceWorkerContext::StopServiceWorker(int64_t version_id) {
 std::string TestServiceWorkerContext::AddClient(
     int64_t version_id,
     const content::ServiceWorkerClientInfo& client_info) {
+  return AddClientWithClientID(version_id, base::GenerateGUID(), client_info);
+}
+
+std::string TestServiceWorkerContext::AddClientWithClientID(
+    int64_t version_id,
+    std::string client_uuid,
+    const content::ServiceWorkerClientInfo& client_info) {
   auto it = service_worker_infos_.find(version_id);
   DCHECK(it != service_worker_infos_.end());
   ServiceWorkerInfo& info = it->second;
-
-  std::string client_uuid = base::GenerateGUID();
 
   bool inserted = info.clients.insert(client_uuid).second;
   DCHECK(inserted);
@@ -898,6 +910,73 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
                                          service_worker_client_uuid);
   service_worker_context()->StopServiceWorker(service_worker_version_id);
   service_worker_context()->DestroyServiceWorker(service_worker_version_id);
+}
+
+// Ensures that the WorkerWatcher handles the case where a frame with a service
+// worker is (briefly?) an uncommitted client of two versions. This presumably
+// happens on version update or some such, or perhaps when a frame is a
+// bona-fide client of two service workers. Apparently this happens quite
+// rarely in the field.
+TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientOfTwoWorkers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kServiceWorkerRelationshipsInGraph);
+
+  int render_process_id = process_node_source()->CreateProcessNode();
+
+  // Create and start both service workers.
+  int64_t first_service_worker_version_id =
+      service_worker_context()->CreateServiceWorker();
+  service_worker_context()->StartServiceWorker(first_service_worker_version_id,
+                                               render_process_id);
+  int64_t second_service_worker_version_id =
+      service_worker_context()->CreateServiceWorker();
+  service_worker_context()->StartServiceWorker(second_service_worker_version_id,
+                                               render_process_id);
+
+  // Add a frame tree node as a client of both service workers.
+  int frame_tree_node_id = GenerateNextId();
+  std::string service_worker_client_uuid = service_worker_context()->AddClient(
+      first_service_worker_version_id,
+      content::ServiceWorkerClientInfo(frame_tree_node_id));
+  service_worker_context()->AddClientWithClientID(
+      second_service_worker_version_id, service_worker_client_uuid,
+      content::ServiceWorkerClientInfo(frame_tree_node_id));
+
+  // Check expectations on the graph.
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [process_node = process_node_source()->GetProcessNode(render_process_id),
+       first_worker_node =
+           GetServiceWorkerNode(first_service_worker_version_id),
+       second_worker_node = GetServiceWorkerNode(
+           second_service_worker_version_id)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(first_worker_node));
+        EXPECT_EQ(first_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kService);
+        EXPECT_EQ(first_worker_node->process_node(), process_node);
+        // The frame was never added as a client of the service worker.
+        EXPECT_TRUE(first_worker_node->client_frames().empty());
+
+        EXPECT_TRUE(graph->NodeInGraph(second_worker_node));
+        EXPECT_EQ(second_worker_node->worker_type(),
+                  WorkerNode::WorkerType::kService);
+        EXPECT_EQ(second_worker_node->process_node(), process_node);
+        // The frame was never added as a client of the service worker.
+        EXPECT_TRUE(second_worker_node->client_frames().empty());
+      }));
+
+  // Disconnect and clean up the service worker.
+  service_worker_context()->RemoveClient(first_service_worker_version_id,
+                                         service_worker_client_uuid);
+  service_worker_context()->StopServiceWorker(first_service_worker_version_id);
+  service_worker_context()->DestroyServiceWorker(
+      first_service_worker_version_id);
+
+  service_worker_context()->RemoveClient(second_service_worker_version_id,
+                                         service_worker_client_uuid);
+  service_worker_context()->StopServiceWorker(second_service_worker_version_id);
+  service_worker_context()->DestroyServiceWorker(
+      second_service_worker_version_id);
 }
 
 // Ensures that the WorkerWatcher handles the case where a frame with a service
