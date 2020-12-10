@@ -5,6 +5,8 @@
 #include "chrome/browser/webshare/chromeos/prepare_directory_task.h"
 
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -15,6 +17,8 @@
 using content::BrowserThread;
 
 namespace webshare {
+
+constexpr base::TimeDelta PrepareDirectoryTask::kSharedFileLifetime;
 
 PrepareDirectoryTask::PrepareDirectoryTask(
     base::FilePath directory,
@@ -45,6 +49,17 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
 
   base::File::Error result = base::File::FILE_OK;
   if (base::CreateDirectoryAndGetError(directory, &result)) {
+    // Delete any old files in |directory|.
+    const base::Time cutoff_time = base::Time::Now() - kSharedFileLifetime;
+    base::FileEnumerator enumerator(directory, /*recursive=*/false,
+                                    base::FileEnumerator::FILES);
+    for (base::FilePath name = enumerator.Next(); !name.empty();
+         name = enumerator.Next()) {
+      if (enumerator.GetInfo().GetLastModifiedTime() <= cutoff_time) {
+        base::DeleteFile(name);
+      }
+    }
+
     if (base::SysInfo::AmountOfFreeDiskSpace(directory) <
         static_cast<int64_t>(cryptohome::kMinFreeSpaceInBytes +
                              required_space)) {
@@ -55,8 +70,6 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
     DCHECK(result != base::File::FILE_OK);
     VLOG(1) << "Could not create directory for shared files";
   }
-
-  // TODO(crbug.com/1110119): Delete any old files in directory.
 
   return result;
 }

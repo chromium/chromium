@@ -4003,10 +4003,6 @@ test("unit_tests") {
     }
   }
 
-  if (is_win || is_chromeos_ash) {
-    sources += [ "../browser/webshare/share_service_unittest.cc" ]
-  }
-
   if (enable_library_cdms) {
     sources += [ "../common/media/cdm_manifest_unittest.cc" ]
   }
@@ -4270,6 +4266,10 @@ test("unit_tests") {
       "//chrome/browser/win/conflicts:unit_tests",
       "//chrome/test:credential_provider_test_utils",
     ]
+  }
+
+  if (is_win || is_chromeos_ash) {
+    deps += [ "//chrome/browser/webshare:unit_tests" ]
   }
 
   if (enable_dice_support) {
@@ -5052,7 +5052,6 @@ test("unit_tests") {
       "../browser/ui/webui/chromeos/login/fake_update_required_screen_handler.h",
       "../browser/ui/webui/chromeos/sync/os_sync_handler_unittest.cc",
       "../browser/ui/window_sizer/window_sizer_chromeos_unittest.cc",
-      "../browser/webshare/chromeos/sharesheet_client_unittest.cc",
     ]
     deps += [
       "//ash:test_support",
