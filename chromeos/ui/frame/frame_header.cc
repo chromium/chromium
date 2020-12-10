@@ -111,13 +111,17 @@ class FrameHeader::FrameAnimatorView : public views::View,
   }
 
   void StartAnimation(base::TimeDelta duration) {
-    if (layer_owner_ || !parent_->GetWidget()) {
-      // If animation is already running or the widget hasn't been initialized
-      // yet, just update the content of the new layer.
+    aura::Window* window = parent_->GetWidget()
+                               ? parent_->GetWidget()->GetNativeWindow()
+                               : nullptr;
+    if (layer_owner_ || !window ||
+        window->layer()->GetAnimator()->is_animating()) {
+      // If the frame animation is already running or the widget
+      // hasn't been initialized yet, just update the content of the
+      // new layer.
       parent_->SchedulePaint();
       return;
     }
-    aura::Window* window = parent_->GetWidget()->GetNativeWindow();
 
     // Make sure the this view is at the bottom of root view's children.
     parent_->ReorderChildView(this, 0);
