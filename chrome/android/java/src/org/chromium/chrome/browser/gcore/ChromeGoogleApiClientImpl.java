@@ -12,7 +12,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.concurrent.TimeUnit;
 

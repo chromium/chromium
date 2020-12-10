@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.externalauth;
+package org.chromium.components.externalauth;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -37,9 +37,12 @@ import org.chromium.base.test.util.Feature;
 @Config(manifest = Config.NONE)
 public class ExternalAuthUtilsTest {
     private static final int ERR = 999;
-    @Mock private Context mContext;
-    @Mock private ExternalAuthUtils mExternalAuthUtils;
-    @Mock private UserRecoverableErrorHandler mUserRecoverableErrorHandler;
+    @Mock
+    private Context mContext;
+    @Mock
+    private ExternalAuthUtils mExternalAuthUtils;
+    @Mock
+    private UserRecoverableErrorHandler mUserRecoverableErrorHandler;
 
     @Before
     public void setUp() {
@@ -52,8 +55,8 @@ public class ExternalAuthUtilsTest {
     public void testCanUseGooglePlayServicesSuccess() {
         when(mExternalAuthUtils.canUseGooglePlayServices(any(UserRecoverableErrorHandler.class)))
                 .thenCallRealMethod();
-        when(mExternalAuthUtils.checkGooglePlayServicesAvailable(mContext)).thenReturn(
-                ConnectionResult.SUCCESS);
+        when(mExternalAuthUtils.checkGooglePlayServicesAvailable(mContext))
+                .thenReturn(ConnectionResult.SUCCESS);
         assertTrue(mExternalAuthUtils.canUseGooglePlayServices(mUserRecoverableErrorHandler));
         verifyZeroInteractions(mUserRecoverableErrorHandler);
 
@@ -72,7 +75,7 @@ public class ExternalAuthUtilsTest {
         when(mExternalAuthUtils.canUseGooglePlayServices(any(UserRecoverableErrorHandler.class)))
                 .thenCallRealMethod();
         when(mExternalAuthUtils.checkGooglePlayServicesAvailable(mContext)).thenReturn(ERR);
-        when(mExternalAuthUtils.isUserRecoverableError(ERR)).thenReturn(false);  // Non-recoverable
+        when(mExternalAuthUtils.isUserRecoverableError(ERR)).thenReturn(false); // Non-recoverable
         assertFalse(mExternalAuthUtils.canUseGooglePlayServices(mUserRecoverableErrorHandler));
         verifyZeroInteractions(mUserRecoverableErrorHandler);
 
@@ -91,8 +94,8 @@ public class ExternalAuthUtilsTest {
                 .thenCallRealMethod();
         doNothing().when(mUserRecoverableErrorHandler).handleError(mContext, ERR);
         when(mExternalAuthUtils.checkGooglePlayServicesAvailable(mContext)).thenReturn(ERR);
-        when(mExternalAuthUtils.isUserRecoverableError(ERR)).thenReturn(true);  // Recoverable
-        when(mExternalAuthUtils.describeError(anyInt())).thenReturn("unused");  // For completeness
+        when(mExternalAuthUtils.isUserRecoverableError(ERR)).thenReturn(true); // Recoverable
+        when(mExternalAuthUtils.describeError(anyInt())).thenReturn("unused"); // For completeness
         assertFalse(mExternalAuthUtils.canUseGooglePlayServices(mUserRecoverableErrorHandler));
 
         // Verifying stubs can be an anti-pattern but here it is important to

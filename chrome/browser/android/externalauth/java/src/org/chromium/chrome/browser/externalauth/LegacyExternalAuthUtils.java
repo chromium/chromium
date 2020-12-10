@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.externalauth;
 
+import org.chromium.components.externalauth.ExternalAuthUtils;
+
 /**
  * Temporary class, identical to {@link ExternalAuthUtils}, for migration.
  *

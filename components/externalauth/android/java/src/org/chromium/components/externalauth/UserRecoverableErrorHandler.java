@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.externalauth;
+package org.chromium.components.externalauth;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -66,8 +66,7 @@ public abstract class UserRecoverableErrorHandler {
      */
     public static final class Silent extends UserRecoverableErrorHandler {
         @Override
-        protected final void handle(final Context context, final int errorCode) {
-        }
+        protected final void handle(final Context context, final int errorCode) {}
     }
 
     /**

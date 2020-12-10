@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.externalauth;
 
 import android.content.Context;
 
+import org.chromium.components.externalauth.VerifiedHandler;
+
 /**
  * Temporary class, identical to {@link VerifiedHandler}, for migration.
  *

@@ -17,7 +17,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.chrome.browser.AppHooksModule;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.concurrent.TimeoutException;
 

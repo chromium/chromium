@@ -11,7 +11,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Locale;
 
