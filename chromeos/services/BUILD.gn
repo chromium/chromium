@@ -35,4 +35,8 @@ source_set("unit_tests") {
     deps +=
         [ "//chromeos/services/chromebox_for_meetings/public/cpp:unit_tests" ]
   }
+
+  if (enable_cros_libassistant) {
+    deps += [ "//chromeos/services/libassistant:unit_tests" ]
+  }
 }

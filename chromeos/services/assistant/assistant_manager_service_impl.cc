@@ -34,7 +34,7 @@
 #include "chromeos/services/assistant/assistant_device_settings_delegate.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/services/assistant/platform_api_impl.h"
-#include "chromeos/services/assistant/proxy/service_controller.h"
+#include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -113,7 +113,7 @@ CommunicationErrorType CommunicationErrorTypeFromLibassistantErrorCode(
   return CommunicationErrorType::Other;
 }
 
-ServiceController::AuthTokens ToAuthTokensOrEmpty(
+ServiceControllerProxy::AuthTokens ToAuthTokensOrEmpty(
     const base::Optional<AssistantManagerService::UserInfo>& user) {
   if (!user.has_value())
     return {};
@@ -177,7 +177,14 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
           CreateLibAssistantConfig(s3_server_uri_override, device_id_override)),
       weak_factory_(this) {
   platform_api_ = delegate_->CreatePlatformApi(
-      media_session_.get(), background_thread().task_runner());
+      media_session_.get(),
+      assistant_proxy_->background_thread().task_runner());
+
+  // |assistant_proxy_| owns the background thread that |platform_api_| needs
+  // for its constructor, but it also needs a reference to |platform_api_|.
+  // To solve this chicken-and-egg problem, we need a separe Initialize() call
+  // to pass |platform_api_| to |assistant_proxy_|.
+  assistant_proxy_->Initialize(platform_api_.get(), delegate_.get());
 
   settings_delegate_ =
       std::make_unique<AssistantDeviceSettingsDelegate>(context);
@@ -273,15 +280,6 @@ void AssistantManagerServiceImpl::RegisterFallbackMediaHandler() {
           OnMediaControlAction(action_name, media_action_args_proto);
         }
       });
-}
-
-void AssistantManagerServiceImpl::WaitUntilStartIsFinishedForTesting() {
-  // First we wait until the |AssistantManager| is created on the background
-  // thread.
-  background_thread().FlushForTesting();
-  // Then we wait until |PostInitAssistant| finishes.
-  // (which runs on the main thread).
-  base::RunLoop().RunUntilIdle();
 }
 
 void AssistantManagerServiceImpl::AddMediaControllerObserver() {
@@ -988,8 +986,7 @@ void AssistantManagerServiceImpl::InitAssistant(
   DCHECK(!IsServiceStarted());
 
   service_controller().Start(
-      delegate_.get(), platform_api(), action_module_.get(),
-      &chromium_api_delegate_,
+      action_module_.get(), &chromium_api_delegate_,
       /*assistant_manager_delegate=*/this,
       /*conversation_state_listener=*/this,
       /*device_state_listener=*/this,
@@ -1391,11 +1388,11 @@ AssistantManagerServiceImpl::assistant_manager_internal() {
   return api ? api->assistant_manager_internal() : nullptr;
 }
 
-ServiceController& AssistantManagerServiceImpl::service_controller() {
+ServiceControllerProxy& AssistantManagerServiceImpl::service_controller() {
   return assistant_proxy_->service_controller();
 }
 
-const ServiceController& AssistantManagerServiceImpl::service_controller()
+const ServiceControllerProxy& AssistantManagerServiceImpl::service_controller()
     const {
   return assistant_proxy_->service_controller();
 }

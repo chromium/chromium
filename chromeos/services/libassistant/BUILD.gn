@@ -2,15 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromeos/assistant/assistant.gni")
+
+assert(enable_cros_libassistant)
+
 component("libassistant") {
   sources = [
     "libassistant_service.cc",
     "libassistant_service.h",
+    "service_controller.cc",
+    "service_controller.h",
   ]
 
   deps = [
+    "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/public",
   ]
 
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
@@ -18,5 +26,24 @@ component("libassistant") {
   # The default output name of this service, `libassistant_service.so`, already
   # exists (as build target of //chromeos/services/assistant), so we have to
   # use `lib_libassistant_service.so`.
-  output_name = "_libassistant_service"
+  output_name = "lib_libassistant_service"
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "service_controller_unittest.cc" ]
+
+  deps = [
+    ":libassistant",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/assistant/internal:test_support",
+    "//chromeos/services/assistant/public/cpp",
+    "//chromeos/services/assistant/public/cpp/migration",
+    "//chromeos/services/assistant/public/cpp/migration:test_support",
+    "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/internal_api:assistant_manager_internal",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

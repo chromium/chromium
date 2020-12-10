@@ -11,8 +11,8 @@ source_set("proxy") {
   sources = [
     "assistant_proxy.cc",
     "assistant_proxy.h",
-    "service_controller.cc",
-    "service_controller.h",
+    "service_controller_proxy.cc",
+    "service_controller_proxy.h",
   ]
 
   deps = [

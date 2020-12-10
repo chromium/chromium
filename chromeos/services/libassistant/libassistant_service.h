@@ -11,17 +11,39 @@
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace assistant_client {
+class AssistantManager;
+class AssistantManagerInternal;
+class PlatformApi;
+}  // namespace assistant_client
+
+namespace chromeos {
+namespace assistant {
+class AssistantManagerServiceDelegate;
+}  // namespace assistant
+}  // namespace chromeos
+
 namespace chromeos {
 namespace libassistant {
+
+class ServiceController;
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
     : public mojom::LibassistantService {
  public:
   explicit LibassistantService(
-      mojo::PendingReceiver<mojom::LibassistantService> receiver);
+      mojo::PendingReceiver<mojom::LibassistantService> receiver,
+      assistant_client::PlatformApi* platform_api,
+      assistant::AssistantManagerServiceDelegate* delegate);
   LibassistantService(LibassistantService&) = delete;
   LibassistantService& operator=(LibassistantService&) = delete;
   ~LibassistantService() override;
+
+  // Retrieve the |AssistantManager|. The pointer is valid as long as the
+  // |ServiceController| is in state |kStarted| (and this class is not
+  // destroyed).
+  assistant_client::AssistantManager* assistant_manager();
+  assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
  private:
   // mojom::LibassistantService implementation:
@@ -31,20 +53,13 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   void BindAudioOutputController() override {}
   void BindInteractionController() override {}
 
+  // Owned by |AssistantManagerServiceImpl| which indirectly owns us.
+  assistant_client::PlatformApi* const platform_api_;
+  // Owned by |AssistantManagerServiceImpl| which indirectly owns us.
+  assistant::AssistantManagerServiceDelegate* const delegate_;
+
   mojo::Receiver<mojom::LibassistantService> receiver_;
-  std::unique_ptr<mojom::ServiceController> service_controller_;
-};
-
-class ServiceController : public mojom::ServiceController {
- public:
-  explicit ServiceController(
-      mojo::PendingReceiver<mojom::ServiceController> receiver);
-  ServiceController(ServiceController&) = delete;
-  ServiceController& operator=(ServiceController&) = delete;
-  ~ServiceController() override;
-
- private:
-  mojo::Receiver<mojom::ServiceController> receiver_;
+  std::unique_ptr<ServiceController> service_controller_;
 };
 
 }  // namespace libassistant

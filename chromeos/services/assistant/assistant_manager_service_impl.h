@@ -64,7 +64,7 @@ class AssistantManagerServiceDelegate;
 class AssistantProxy;
 class CrosPlatformApi;
 class ServiceContext;
-class ServiceController;
+class ServiceControllerProxy;
 
 // Enumeration of Assistant query response type, also recorded in histograms.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -235,10 +235,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void MediaSessionPositionChanged(
       const base::Optional<media_session::MediaPosition>& position) override {}
 
-  // The start runs in the background. This will wait until the background
-  // thread is finished.
-  void WaitUntilStartIsFinishedForTesting();
-
   // Get the action module for testing.
   action::CrosActionModule* action_module_for_testing() {
     return action_module_.get();
@@ -299,8 +295,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
   CrosDisplayConnection* display_connection();
-  ServiceController& service_controller();
-  const ServiceController& service_controller() const;
+  ServiceControllerProxy& service_controller();
+  const ServiceControllerProxy& service_controller() const;
   base::Thread& background_thread();
 
   void SetStateAndInformObservers(State new_state);

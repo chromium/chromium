@@ -96,6 +96,54 @@ static std::vector<int> GetNonAuthenticationErrorCodes() {
   return {-99999, 0, 1};
 }
 
+// Waits until the AssistantManagerService is in the given state, or until the
+// timeout is hit.
+class StateWaiter : private AssistantManagerService::StateObserver {
+ public:
+  const base::TimeDelta kDefaultTimeout = base::TimeDelta::FromSeconds(5);
+
+  explicit StateWaiter(AssistantManagerService* service) : service_(service) {
+    service_->AddAndFireStateObserver(this);
+  }
+
+  ~StateWaiter() override { service_->RemoveStateObserver(this); }
+
+  void RunUntilState(AssistantManagerService::State expected_state) {
+    if (current_state() == expected_state)
+      return;
+
+    expected_state_ = expected_state;
+
+    // Ensure we time out after kDefaultTimeout.
+    base::test::ScopedRunLoopTimeout timeout(FROM_HERE, kDefaultTimeout);
+
+    base::RunLoop run_loop;
+    base::AutoReset<base::OnceClosure> quit_loop(&quit_loop_,
+                                                 run_loop.QuitClosure());
+
+    // And wait until we hit the expected state.
+    EXPECT_NO_FATAL_FAILURE(run_loop.Run())
+        << "Failed waiting for AssistantManagerService::State change."
+        << " Expected state " << expected_state_ << " but have "
+        << current_state();
+  }
+
+ private:
+  // StateObserver implementation:
+  void OnStateChanged(AssistantManagerService::State new_state) override {
+    if (quit_loop_ && (new_state == expected_state_))
+      std::move(quit_loop_).Run();
+  }
+
+  AssistantManagerService::State current_state() {
+    return service_->GetState();
+  }
+
+  AssistantManagerService* const service_;
+  AssistantManagerService::State expected_state_;
+  base::OnceClosure quit_loop_;
+};
+
 class AssistantAlarmTimerControllerMock
     : public ash::AssistantAlarmTimerController {
  public:
@@ -202,7 +250,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
   }
 
   FakeAssistantManagerInternal* fake_assistant_manager_internal() {
-    return delegate_->assistant_manager_internal();
+    return &fake_assistant_manager()->assistant_manager_internal();
   }
 
   FakeAlarmTimerManager* fake_alarm_timer_manager() {
@@ -231,8 +279,9 @@ class AssistantManagerServiceImplTest : public testing::Test {
     assistant_manager_service()->AddAndFireStateObserver(observer);
   }
 
-  void WaitUntilStartIsFinished() {
-    assistant_manager_service()->WaitUntilStartIsFinishedForTesting();
+  void WaitForState(AssistantManagerService::State expected_state) {
+    StateWaiter waiter(assistant_manager_service());
+    waiter.RunUntilState(expected_state);
   }
 
   // Raise all the |libassistant_error_codes| as communication errors from
@@ -241,7 +290,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
   void TestCommunicationErrors(const std::vector<int>& libassistant_error_codes,
                                CommunicationErrorType expected_error) {
     Start();
-    WaitUntilStartIsFinished();
+    WaitForState(AssistantManagerService::STARTED);
 
     auto* delegate =
         fake_assistant_manager_internal()->assistant_manager_delegate();
@@ -312,14 +361,10 @@ TEST_F(AssistantManagerServiceImplTest,
   Start();
 
   fake_assistant_manager()->BlockStartCalls();
-  RunUntilIdle();
-
-  EXPECT_STATE(AssistantManagerService::STARTING);
+  WaitForState(AssistantManagerService::STARTING);
 
   fake_assistant_manager()->UnblockStartCalls();
-  WaitUntilStartIsFinished();
-
-  EXPECT_STATE(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::STARTED);
 }
 
 TEST_F(AssistantManagerServiceImplTest,
@@ -329,20 +374,19 @@ TEST_F(AssistantManagerServiceImplTest,
       &alarm_timer_controller);
 
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   fake_assistant_manager()->device_state_listener()->OnStartFinished();
 
-  EXPECT_STATE(AssistantManagerService::RUNNING);
+  WaitForState(AssistantManagerService::RUNNING);
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldSetStateToStoppedAfterStopping) {
   Start();
-  WaitUntilStartIsFinished();
-  EXPECT_STATE(AssistantManagerService::STARTED);
+  WaitForState(AssistantManagerService::STARTED);
 
   assistant_manager_service()->Stop();
-  EXPECT_STATE(AssistantManagerService::STOPPED);
+  WaitForState(AssistantManagerService::STOPPED);
 }
 
 TEST_F(AssistantManagerServiceImplTest,
@@ -368,7 +412,8 @@ TEST_F(AssistantManagerServiceImplTest,
        ShouldPassUserInfoToAssistantManagerWhenStarting) {
   assistant_manager_service()->Start(UserInfo("<user-id>", "<access-token>"),
                                      /*enable_hotword=*/false);
-  WaitUntilStartIsFinished();
+
+  WaitForState(AssistantManagerService::STARTED);
 
   EXPECT_EQ("<user-id>", fake_assistant_manager()->user_id());
   EXPECT_EQ("<access-token>", fake_assistant_manager()->access_token());
@@ -376,7 +421,7 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest, ShouldPassUserInfoToAssistantManager) {
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   assistant_manager_service()->SetUser(
       UserInfo("<new-user-id>", "<new-access-token>"));
@@ -388,7 +433,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldPassUserInfoToAssistantManager) {
 TEST_F(AssistantManagerServiceImplTest,
        ShouldPassEmptyUserInfoToAssistantManager) {
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   assistant_manager_service()->SetUser(base::nullopt);
 
@@ -411,7 +456,7 @@ TEST_F(AssistantManagerServiceImplTest,
   CreateAssistantManagerServiceImpl("the-uri-override");
 
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   EXPECT_HAS_PATH_WITH_VALUE(delegate()->libassistant_config(),
                              "testing.s3_grpc_server_uri", "the-uri-override");
@@ -422,7 +467,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldPauseMediaManagerOnPause) {
   fake_assistant_manager()->SetMediaManager(&mock);
 
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   EXPECT_CALL(mock, Pause);
 
@@ -435,7 +480,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldResumeMediaManagerOnPlay) {
   fake_assistant_manager()->SetMediaManager(&mock);
 
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   EXPECT_CALL(mock, Resume);
 
@@ -455,7 +500,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldIgnoreOtherMediaManagerActions) {
   fake_assistant_manager()->SetMediaManager(&mock);
 
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   for (auto action : unsupported_media_session_actions) {
     // If this is not ignored, |mock| will complain about an uninterested call.
@@ -466,7 +511,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldIgnoreOtherMediaManagerActions) {
 TEST_F(AssistantManagerServiceImplTest,
        ShouldNotCrashWhenMediaManagerIsAbsent) {
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   assistant_manager_service()->UpdateInternalMediaPlayerStatus(
       media_session::mojom::MediaSessionAction::kPlay);
@@ -505,7 +550,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarted) {
   EXPECT_CALL(observer,
               OnStateChanged(AssistantManagerService::State::STARTED));
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   assistant_manager_service()->RemoveStateObserver(&observer);
 }
@@ -517,7 +562,7 @@ TEST_F(AssistantManagerServiceImplTest,
       &alarm_timer_controller);
 
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   StrictMock<StateObserverMock> observer;
   AddStateObserver(&observer);
@@ -531,7 +576,7 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStopping) {
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
 
   StrictMock<StateObserverMock> observer;
   AddStateObserver(&observer);
@@ -571,7 +616,7 @@ TEST_F(AssistantManagerServiceImplTest,
   scoped_feature_list.InitAndDisableFeature(features::kAssistantTimersV2);
 
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
   assistant_manager_service()->OnStartFinished();
 
   StrictMock<AssistantAlarmTimerControllerMock> alarm_timer_controller;
@@ -613,7 +658,7 @@ TEST_F(AssistantManagerServiceImplTest,
   EXPECT_CALL(alarm_timer_controller, OnTimerStateChanged).Times(1);
 
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
   assistant_manager_service()->OnStartFinished();
 
   testing::Mock::VerifyAndClearExpectations(&alarm_timer_controller);
@@ -668,7 +713,7 @@ TEST_F(AssistantManagerServiceImplTest,
 
   // Start LibAssistant.
   Start();
-  WaitUntilStartIsFinished();
+  WaitForState(AssistantManagerService::STARTED);
   assistant_manager_service()->OnStartFinished();
 }
 

@@ -1,0 +1,41 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.libassistant.mojom;
+
+enum ServiceState {
+  // The service has been started but is not ready yet to handle queries.
+  kStarted,
+  // The service is ready to handle queries.
+  kRunning,
+  // The service is not running.
+  kStopped,
+};
+
+// Interface managing the lifecycle of Libassistant,
+// exposing methods to start/stop and configure Libassistant.
+interface ServiceController {
+  // Start the service. Can be called multiple times, and will be a noop if 
+  // the service is already started or running.
+  // TODO(jeroendh): I feel the libassistant config is something internal to
+  // the mojom service, so we should not pass that in here. Instead, have
+  // setters on the |ServiceController| for the  fields that are non-static
+  // like the s3 server URI.
+  Start(string libassistant_config);
+
+  // Stop the service. Will be a noop if the service is already stopped.
+  Stop();
+
+  // Add a state observer. It will immediately be called with the current state,
+  // and then once for each state change.
+  AddAndFireStateObserver(pending_remote<StateObserver> observer);
+};
+
+// Observer that will be informed whenever the running state of the service
+// changes.
+interface StateObserver {
+  // Called when the running state of the service changes.
+  // Will never be called twice consecutively with the same state.
+  OnStateChanged(ServiceState new_state);
+};

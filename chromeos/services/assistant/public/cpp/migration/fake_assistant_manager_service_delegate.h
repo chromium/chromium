@@ -7,16 +7,12 @@
 
 #include "base/component_export.h"
 
-#include <memory>
-#include <string>
-
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 
 namespace chromeos {
 namespace assistant {
 
 class FakeAssistantManager;
-class FakeAssistantManagerInternal;
 
 // Implementation of |AssistantManagerServiceDelegate| that returns fake
 // instances for all of the member methods. Used during unittests.
@@ -27,11 +23,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
   FakeAssistantManagerServiceDelegate();
   ~FakeAssistantManagerServiceDelegate() override;
 
-  FakeAssistantManager* assistant_manager() { return assistant_manager_ptr_; }
-
-  FakeAssistantManagerInternal* assistant_manager_internal() {
-    return assistant_manager_internal_.get();
-  }
+  FakeAssistantManager* assistant_manager();
 
   // AssistantManagerServiceDelegate:
   std::unique_ptr<CrosPlatformApi> CreatePlatformApi(
@@ -47,11 +39,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
   std::string libassistant_config() const { return libassistant_config_; }
 
  private:
-  // Will be initialized in the constructor and moved out when
-  // |CreateAssistantManager| is called.
-  std::unique_ptr<FakeAssistantManager> assistant_manager_;
-  std::unique_ptr<FakeAssistantManagerInternal> assistant_manager_internal_;
-  FakeAssistantManager* assistant_manager_ptr_;
+  std::unique_ptr<FakeAssistantManager> pending_assistant_manager_;
+  FakeAssistantManager* current_assistant_manager_ = nullptr;
 
   // Config passed to LibAssistant when it was started.
   std::string libassistant_config_;

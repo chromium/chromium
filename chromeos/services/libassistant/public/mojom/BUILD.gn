@@ -5,5 +5,8 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "service.mojom" ]
+  sources = [
+    "service.mojom",
+    "service_controller.mojom",
+  ]
 }

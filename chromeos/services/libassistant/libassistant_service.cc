@@ -7,29 +7,41 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
+#include "chromeos/services/libassistant/service_controller.h"
 
 namespace chromeos {
 namespace libassistant {
 
 LibassistantService::LibassistantService(
-    mojo::PendingReceiver<mojom::LibassistantService> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    mojo::PendingReceiver<mojom::LibassistantService> receiver,
+    assistant_client::PlatformApi* platform_api,
+    assistant::AssistantManagerServiceDelegate* delegate)
+    : platform_api_(platform_api),
+      delegate_(delegate),
+      receiver_(this, std::move(receiver)) {}
 
 LibassistantService::~LibassistantService() = default;
 
-void LibassistantService::BindServiceController(
-    mojo::PendingReceiver<mojom::ServiceController> receiver) {
-  DCHECK(!service_controller_);
-  service_controller_ =
-      std::make_unique<ServiceController>(std::move(receiver));
+assistant_client::AssistantManager* LibassistantService::assistant_manager() {
+  DCHECK(service_controller_);
+  return service_controller_->assistant_manager();
 }
 
-ServiceController::ServiceController(
-    mojo::PendingReceiver<mojom::ServiceController> receiver)
-    : receiver_(this, std::move(receiver)) {}
+assistant_client::AssistantManagerInternal*
+LibassistantService::assistant_manager_internal() {
+  DCHECK(service_controller_);
+  return service_controller_->assistant_manager_internal();
+}
 
-ServiceController::~ServiceController() = default;
+void LibassistantService::BindServiceController(
+    mojo::PendingReceiver<mojom::ServiceController> receiver) {
+  // Cannot bind the service controller twice.
+  DCHECK(!service_controller_);
+  service_controller_ = std::make_unique<ServiceController>(
+      std::move(receiver), delegate_, platform_api_);
+}
 
 }  // namespace libassistant
 }  // namespace chromeos

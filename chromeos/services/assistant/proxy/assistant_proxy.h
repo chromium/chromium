@@ -11,10 +11,21 @@
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace assistant_client {
+class PlatformApi;
+}  // namespace assistant_client
+
+namespace chromeos {
+namespace libassistant {
+class LibassistantService;
+}  // namespace libassistant
+}  // namespace chromeos
+
 namespace chromeos {
 namespace assistant {
 
-class ServiceController;
+class AssistantManagerServiceDelegate;
+class ServiceControllerProxy;
 
 // The proxy to the Assistant service, which serves as the main
 // access point to the entire Assistant API.
@@ -25,9 +36,12 @@ class AssistantProxy {
   AssistantProxy& operator=(AssistantProxy&) = delete;
   ~AssistantProxy();
 
+  void Initialize(assistant_client::PlatformApi* platform_api,
+                  AssistantManagerServiceDelegate* delegate);
+
   // Returns the controller that manages starting and stopping of the Assistant
   // service.
-  ServiceController& service_controller();
+  ServiceControllerProxy& service_controller();
 
   // The background thread is temporary exposed until the entire Libassistant
   // API is hidden behind this proxy API.
@@ -41,24 +55,28 @@ class AssistantProxy {
 
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner();
 
-  void CreateMojomService();
-  void CreateMojomServiceOnBackgroundThread(
-      mojo::PendingReceiver<LibassistantServiceMojom>);
-  void DestroyMojomService();
-  void DestroyMojomServiceOnBackgroundThread();
+  void CreateLibassistantService(assistant_client::PlatformApi* platform_api,
+                                 AssistantManagerServiceDelegate* delegate);
+  void CreateLibassistantServiceOnBackgroundThread(
+      mojo::PendingReceiver<LibassistantServiceMojom>,
+      assistant_client::PlatformApi* platform_api,
+      AssistantManagerServiceDelegate* delegate);
+  void DestroyLibassistantService();
+  void DestroyLibassistantServiceOnBackgroundThread();
 
-  mojo::Remote<ServiceControllerMojom> BindServiceController();
+  mojo::PendingRemote<ServiceControllerMojom> BindServiceController();
 
-  // The thread on which the Mojom service (and by extension Libassistant) runs.
+  // The thread on which the Libassistant service.
   base::Thread background_thread_{"Assistant background thread"};
 
-  mojo::Remote<LibassistantServiceMojom> client_;
+  mojo::Remote<LibassistantServiceMojom> libassistant_service_remote_;
 
   // The Mojom service that runs Libassistant.
   // For now this is locally owned but it will be moved to a sandbox later.
-  std::unique_ptr<LibassistantServiceMojom> mojom_service_;
+  std::unique_ptr<chromeos::libassistant::LibassistantService>
+      libassistant_service_;
 
-  std::unique_ptr<ServiceController> service_controller_;
+  std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;
 };
 
 }  // namespace assistant
