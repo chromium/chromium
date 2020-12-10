@@ -5,6 +5,7 @@
 package org.chromium.base.library_loader;
 
 import android.annotation.SuppressLint;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
@@ -202,7 +203,7 @@ public abstract class Linker {
      *
      * @return the Linker implementation instance.
      */
-    public static Linker getInstance() {
+    public static Linker getInstance(ApplicationInfo info) {
         // A non-monochrome APK (such as ChromePublic.apk) can be installed on N+ in these
         // circumstances:
         // * installing APK manually
@@ -222,8 +223,7 @@ public abstract class Linker {
             if (sSingleton == null) {
                 // With incremental install, it's important to fall back to the "normal"
                 // library loading path in order for the libraries to be found.
-                String appClass =
-                        ContextUtils.getApplicationContext().getApplicationInfo().className;
+                String appClass = info.className;
                 boolean isIncrementalInstall =
                         appClass != null && appClass.contains("incrementalinstall");
                 if (LibraryLoader.getInstance().useModernLinker() && !isIncrementalInstall) {
@@ -235,6 +235,14 @@ public abstract class Linker {
             }
             return sSingleton;
         }
+    }
+
+    /**
+     * Version of getInstance() which will use the ApplicationInfo from
+     * ContextUtils.getApplicationContext().
+     */
+    public static Linker getInstance() {
+        return getInstance(ContextUtils.getApplicationContext().getApplicationInfo());
     }
 
     /**
