@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_PREF_NAMES_H_
 #define COMPONENTS_LANGUAGE_CORE_BROWSER_PREF_NAMES_H_
 
+#include "build/chromeos_buildflags.h"
+
 namespace language {
 namespace prefs {
 
 extern const char kAcceptLanguages[];
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kPreferredLanguages[];
 extern const char kPreferredLanguagesSyncable[];
 #endif

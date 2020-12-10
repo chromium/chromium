@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/cloud_device_description_consts.h"
 #include "components/cloud_devices/common/description_items_inl.h"
 
@@ -62,9 +63,9 @@ extern constexpr char kOptionRangeCapability[] = "range_cap";
 extern constexpr char kOptionSelectCapability[] = "select_cap";
 extern constexpr char kOptionTypedValueCapability[] = "typed_value_cap";
 extern constexpr char kOptionVendorCapability[] = "vendor_capability";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 extern constexpr char kOptionPin[] = "pin";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr char kMarginBottom[] = "bottom_microns";
 constexpr char kMarginLeft[] = "left_microns";
@@ -91,9 +92,9 @@ constexpr char kMinValue[] = "min";
 constexpr char kMaxValue[] = "max";
 constexpr char kDefaultValue[] = "default";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kPinSupported[] = "supported";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr char kTypeRangeVendorCapabilityFloat[] = "FLOAT";
 constexpr char kTypeRangeVendorCapabilityInteger[] = "INTEGER";
@@ -1437,7 +1438,7 @@ class ReverseTraits : public NoValueValidation,
   }
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PinTraits : public NoValueValidation, public ItemsTraits<kOptionPin> {
  public:
   static bool Load(const base::Value& dict, bool* option) {
@@ -1452,7 +1453,7 @@ class PinTraits : public NoValueValidation, public ItemsTraits<kOptionPin> {
     dict->SetKey(kPinSupported, base::Value(option));
   }
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace printer
 
@@ -1477,9 +1478,9 @@ template class ValueCapability<printer::Copies,
 template class EmptyCapability<printer::PageRangeTraits>;
 template class BooleanCapability<printer::CollateTraits>;
 template class BooleanCapability<printer::ReverseTraits>;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 template class ValueCapability<bool, printer::PinTraits>;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 template class TicketItem<printer::PwgRasterConfig,
                           printer::PwgRasterConfigTraits>;

@@ -14,6 +14,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/rlz/rlz_tracker_delegate.h"
 #include "net/url_request/url_request_test_util.h"
 #include "rlz/test/rlz_test_helpers.h"
@@ -24,7 +25,7 @@
 #include "ui/base/device_form_factor.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/fake_statistics_provider.h"
 #endif
 
@@ -207,7 +208,7 @@ class TestRLZTracker : public RLZTracker {
     return !assume_not_ui_thread_;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool ScheduleClearRlzState() override { return !assume_not_ui_thread_; }
 #endif
 
@@ -259,7 +260,7 @@ class RlzLibTest : public testing::Test {
   std::unique_ptr<TestRLZTracker> tracker_;
   RlzLibTestNoMachineStateHelper m_rlz_test_helper_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::system::FakeStatisticsProvider>
       statistics_provider_;
 #endif
@@ -278,7 +279,7 @@ void RlzLibTest::SetUp() {
   SetMainBrand("TEST");
   SetReactivationBrand("");
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   statistics_provider_ =
       std::make_unique<chromeos::system::FakeStatisticsProvider>();
   chromeos::system::StatisticsProvider::SetTestProvider(
@@ -286,7 +287,7 @@ void RlzLibTest::SetUp() {
   statistics_provider_->SetMachineStatistic(
       chromeos::system::kShouldSendRlzPingKey,
       chromeos::system::kShouldSendRlzPingValueTrue);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void RlzLibTest::TearDown() {
@@ -295,9 +296,9 @@ void RlzLibTest::TearDown() {
   testing::Test::TearDown();
   m_rlz_test_helper_.TearDown();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::system::StatisticsProvider::SetTestProvider(nullptr);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void RlzLibTest::SetMainBrand(const char* brand) {
@@ -420,7 +421,7 @@ const char kHomepageFirstSearch[] = "C6F";
 const char kAppListInstall[] = "C8I";
 const char kAppListSetToGoogle[] = "C8S";
 const char kAppListFirstSearch[] = "C8F";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 const char kOmniboxInstall[] = "CAI";
 const char kOmniboxSetToGoogle[] = "CAS";
 const char kOmniboxFirstSearch[] = "CAF";
@@ -911,9 +912,9 @@ TEST_F(RlzLibTest, GetAccessPointRlzIsCached) {
   EXPECT_STREQ(kOmniboxRlzString, base::UTF16ToUTF8(rlz).c_str());
 }
 
-#if !defined(OS_CHROMEOS)
-  // By design, on Chrome OS the RLZ string can only be set once.  Once set,
-  // pings cannot change int.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// By design, on Chrome OS the RLZ string can only be set once.  Once set,
+// pings cannot change int.
 TEST_F(RlzLibTest, PingUpdatesRlzCache) {
   // Set dummy RLZ string.
   rlz_lib::SetAccessPointRlz(RLZTracker::ChromeOmnibox(), kOmniboxRlzString);
@@ -969,7 +970,7 @@ TEST_F(RlzLibTest, PingUpdatesRlzCache) {
   EXPECT_STREQ(kNewAppListRlzString, base::UTF16ToUTF8(rlz).c_str());
 #endif  // !defined(OS_IOS)
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(thakis): Reactivation doesn't exist on Mac yet.
 TEST_F(RlzLibTest, ReactivationNonOrganicNonOrganic) {
@@ -1015,7 +1016,7 @@ TEST_F(RlzLibTest, ReactivationOrganicOrganic) {
   ExpectReactivationRlzPingSent(false);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(RlzLibTest, ClearRlzState) {
   RLZTracker::RecordProductEvent(rlz_lib::CHROME, RLZTracker::ChromeOmnibox(),
                                  rlz_lib::FIRST_SEARCH);
@@ -1062,6 +1063,6 @@ TEST_F(RlzLibTest, DoNotRecordEventUnlessShouldSendRlzPingKeyIsTrue) {
                                  rlz_lib::FIRST_SEARCH);
   ExpectEventRecorded(OmniboxFirstSearch(), false);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace rlz

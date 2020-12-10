@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -98,7 +99,7 @@ TEST_F(PasswordManagerPasswordBubbleExperimentTest,
             : syncer::SyncService::TransportState::
                   PENDING_DESIRED_CONFIGURATION);
     prefs()->SetBoolean(prefs::kSigninAllowed, test_case.is_signin_allowed);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     EXPECT_FALSE(ShouldShowChromeSignInPasswordPromo(prefs(), sync_service()));
 #else
     EXPECT_EQ(test_case.result,
@@ -107,7 +108,7 @@ TEST_F(PasswordManagerPasswordBubbleExperimentTest,
   }
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PasswordManagerPasswordBubbleExperimentTest, ReviveSignInPasswordPromo) {
   // If kEnablePasswordsAccountStorage is enabled, then the password manager
   // bubble never shows Sync promos, so this test doesn't apply.

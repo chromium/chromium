@@ -163,6 +163,7 @@ static_library("prefs") {
 
   deps = [
     ":arc_base_enums",
+    "//build:chromeos_buildflags",
     "//components/guest_os:prefs",
     "//components/prefs",
   ]

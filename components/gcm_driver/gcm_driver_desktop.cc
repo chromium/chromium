@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/gcm_driver/gcm_account_mapper.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client_factory.h"
@@ -28,7 +29,7 @@
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/timers/alarm_timer_chromeos.h"
 #endif
 
@@ -483,7 +484,7 @@ void GCMDriverDesktop::IOWorker::DeleteToken(
 }
 
 void GCMDriverDesktop::IOWorker::WakeFromSuspendForHeartbeat(bool wake) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
 
   std::unique_ptr<base::RetainingOneShotTimer> timer;

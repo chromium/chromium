@@ -376,7 +376,7 @@ AccountTrackerService::ComputeNewMigrationState() const {
     return MIGRATION_DONE;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Migration on ChromeOS is not started by default due to the following risks:
   // * a lot more data than on desktop is keyed by the account id
   // * bugs in the migration flow can lead to user not being able to sign in

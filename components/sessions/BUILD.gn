@@ -138,6 +138,7 @@ source_set("shared") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/dom_distiller/core",
     "//components/history/core/common",
     "//components/keyed_service/core",

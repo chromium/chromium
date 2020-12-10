@@ -136,12 +136,6 @@ source_set("unit_tests") {
     "titled_url_match_unittest.cc",
   ]
 
-  if (toolkit_views) {
-    sources += [ "bookmark_node_data_unittest.cc" ]
-  }
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":browser",
     ":unit_tests_bundle_data",
@@ -160,6 +154,13 @@ source_set("unit_tests") {
     "//ui/base/clipboard",
     "//url",
   ]
+
+  if (toolkit_views) {
+    sources += [ "bookmark_node_data_unittest.cc" ]
+    deps += [ "//build:chromeos_buildflags" ]
+  }
+
+  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
 # The fuzzer depends on code that is not built on Mac.

@@ -43,6 +43,7 @@
 #if defined(OS_ANDROID)
 #include "components/resources/android/theme_resources.h"
 #endif
+#include "build/chromeos_buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
@@ -99,7 +100,7 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::BACKGROUND_SYNC,
     ContentSettingsType::SOUND,
     ContentSettingsType::AUTOMATIC_DOWNLOADS,
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
     ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
 #endif
     ContentSettingsType::MIDI_SYSEX,
@@ -684,7 +685,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
                                ~net::CERT_STATUS_LEGACY_TLS))) {
     // HTTPS with no or minor errors.
     if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       site_identity_status_ = SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT;
 #else
       DCHECK(false) << "Policy certificates exist only on ChromeOS";

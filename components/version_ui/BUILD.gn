@@ -12,6 +12,7 @@ static_library("version_ui") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/variations",
     "//components/variations/net",
   ]

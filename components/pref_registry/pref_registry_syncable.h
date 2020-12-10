@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 
 // TODO(tfarina): Change this namespace to pref_registry.
@@ -49,7 +50,7 @@ class PrefRegistrySyncable : public PrefRegistrySimple {
     // -- they are preferred for receiving server-provided data.
     SYNCABLE_PRIORITY_PREF = 1 << 1,
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // As above, but the pref is for an OS settings (e.g. keyboard layout).
     // This distinction allows OS pref sync to be controlled independently from
     // browser pref sync in the UI.

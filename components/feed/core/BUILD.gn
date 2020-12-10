@@ -79,6 +79,8 @@ source_set("core_unit_tests") {
     ":feed_core",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//build:chromeos_buildflags",
     "//components/feed/core/common:feed_core_common",
     "//components/leveldb_proto:test_support",
     "//components/prefs:test_support",

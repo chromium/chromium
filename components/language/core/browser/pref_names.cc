@@ -4,6 +4,8 @@
 
 #include "components/language/core/browser/pref_names.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace language {
 namespace prefs {
 
@@ -11,13 +13,13 @@ namespace prefs {
 // request.
 const char kAcceptLanguages[] = "intl.accept_languages";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A string pref (comma-separated list) set to the preferred language IDs
 // (ex. "en-US,fr,ko").
 const char kPreferredLanguages[] = "settings.language.preferred_languages";
 const char kPreferredLanguagesSyncable[] =
     "settings.language.preferred_languages_syncable";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The JSON representation of the user's language profile. Used as an input to
 // the user language model (i.e. for determining which languages a user

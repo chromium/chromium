@@ -33,7 +33,7 @@ void LanguagePrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(language::prefs::kAcceptLanguages,
                                l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES),
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterStringPref(language::prefs::kPreferredLanguages,
                                kFallbackInputMethodLocale);
 
@@ -114,7 +114,7 @@ void LanguagePrefs::SetAcceptLanguagesList(
 // static
 base::Value LanguagePrefs::GetDefaultFluentLanguages() {
   typename base::Value::ListStorage languages;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Preferred languages.
   std::string language = language::kFallbackInputMethodLocale;
   language::ToTranslateLanguageSynonym(&language);
@@ -161,7 +161,7 @@ size_t LanguagePrefs::NumFluentLanguages() const {
 void ResetLanguagePrefs(PrefService* prefs) {
   prefs->ClearPref(language::prefs::kAcceptLanguages);
   prefs->ClearPref(language::prefs::kFluentLanguages);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   prefs->ClearPref(language::prefs::kPreferredLanguages);
   prefs->ClearPref(language::prefs::kPreferredLanguagesSyncable);
 #endif

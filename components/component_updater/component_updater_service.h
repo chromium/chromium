@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/update_client/update_client.h"
 #include "url/gurl.h"
 
@@ -173,9 +174,9 @@ class OnDemandUpdater {
   friend class SODAComponentInstallerPolicy;
   friend class SodaEnUsComponentInstallerPolicy;
   friend class SodaJaJpComponentInstallerPolicy;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class CrOSComponentInstaller;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   friend class VrAssetsComponentInstallerPolicy;
 
   // Triggers an update check for a component. |id| is a value

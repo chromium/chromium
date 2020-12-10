@@ -11,6 +11,7 @@ source_set("browser") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/browsing_data/content",
     "//components/content_settings/common:mojom",
     "//components/content_settings/core/browser",

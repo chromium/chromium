@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/python.gni")
 
 # TODO(nparker): reduce the duplication between these two, somehow.
@@ -25,7 +26,7 @@ python2_action("make_file_types_protobuf") {
   # in the python script.
   if (is_android) {
     target_arch = "android"
-  } else if (is_chromeos) {
+  } else if (is_chromeos_ash) {
     target_arch = "chromeos"
   } else if (is_win) {
     target_arch = "win"

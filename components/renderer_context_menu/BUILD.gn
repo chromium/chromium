@@ -19,6 +19,7 @@ static_library("renderer_context_menu") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/search_engines",
     "//content/public/browser",
     "//content/public/common",

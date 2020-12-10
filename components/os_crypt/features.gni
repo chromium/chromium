@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
 declare_args() {
   # Whether to use libgnome-keyring (deprecated by libsecret).
   # See http://crbug.com/466975 and http://crbug.com/355223.
-  use_gnome_keyring = is_linux && use_glib
+  use_gnome_keyring = (is_linux || is_chromeos_lacros) && use_glib
 }

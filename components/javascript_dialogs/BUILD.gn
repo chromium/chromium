@@ -47,7 +47,10 @@ static_library("javascript_dialogs") {
       "views/app_modal_dialog_view_views.h",
     ]
 
-    deps += [ "//ui/views" ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//ui/views",
+    ]
   }
 
   if (is_android) {

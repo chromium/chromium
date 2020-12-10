@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -263,7 +264,7 @@ class AccountTrackerTest : public testing::Test {
 // the underlying GoogleSignedOut callback is never sent). Tests that exercise
 // functionality dependent on that callback firing are not relevant on ChromeOS
 // and should simply not run on that platform.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void NotifyLogoutOfAllAccounts() { identity_test_env_.ClearPrimaryAccount(); }
 #endif
 
@@ -305,7 +306,7 @@ TEST_F(AccountTrackerTest, PrimaryNoEventsBeforeLogin) {
   NotifyTokenRevoked(account.account_id);
 
 // Logout is not possible on ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   NotifyLogoutOfAllAccounts();
 #endif
 
@@ -339,7 +340,7 @@ TEST_F(AccountTrackerTest, PrimaryRevokeThenTokenAvailable) {
 }
 
 // These tests exercise true login/logout, which are not possible on ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AccountTrackerTest, PrimaryTokenAvailableThenLogin) {
   AddAccountWithToken(kPrimaryAccountEmail);
   EXPECT_TRUE(observer()->CheckEvents());
@@ -452,7 +453,7 @@ TEST_F(AccountTrackerTest, MultiNoEventsBeforeLogin) {
   NotifyTokenRevoked(account2.account_id);
 
 // Logout is not possible on ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   NotifyLogoutOfAllAccounts();
 #endif
 
@@ -519,7 +520,7 @@ TEST_F(AccountTrackerTest, GetAccountsReturnNothingWhenPrimarySignedOut) {
 }
 
 // This test exercises true login/logout, which are not possible on ChromeOS.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AccountTrackerTest, MultiLogoutRemovesAllAccounts) {
   CoreAccountInfo primary_account = SetActiveAccount(kPrimaryAccountEmail);
   NotifyTokenAvailable(primary_account.account_id);

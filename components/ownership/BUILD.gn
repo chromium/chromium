@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/crypto.gni")
 import("//build/config/features.gni")
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   component("ownership") {
     sources = [
       "mock_owner_key_util.cc",
@@ -24,6 +25,7 @@ if (is_chromeos) {
 
     deps = [
       "//base",
+      "//build:chromeos_buildflags",
       "//components/keyed_service/core",
       "//components/policy:generated",
       "//components/policy/core/common",

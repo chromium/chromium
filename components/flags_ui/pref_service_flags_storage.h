@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/flags_ui/flags_storage.h"
 
 class PrefService;
@@ -35,9 +36,9 @@ class PrefServiceFlagsStorage : public FlagsStorage {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   PrefService* prefs_;

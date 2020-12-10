@@ -44,6 +44,7 @@ source_set("browser") {
     "resource_tracker.h",
   ]
   deps = [
+    "//build:chromeos_buildflags",
     "//components/data_reduction_proxy/core/browser",
     "//components/page_load_metrics/common",
     "//components/page_load_metrics/common:page_load_metrics_mojom",

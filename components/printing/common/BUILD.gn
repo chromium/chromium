@@ -19,6 +19,7 @@ static_library("common") {
   deps = [
     ":mojo_interfaces",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/cloud_devices/common:common",
     "//ipc",
     "//printing",

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 static_library("core") {
   sources = [
     "android_app_description.cc",
@@ -111,7 +113,7 @@ static_library("error_strings") {
     "native_error_strings.h",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "chrome_os_error_strings.cc",
       "chrome_os_error_strings.h",

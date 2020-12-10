@@ -16,6 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/printing/common/print.mojom-test-utils.h"
 #include "components/printing/common/print.mojom.h"
 #include "components/printing/common/print_messages.h"
@@ -67,7 +68,7 @@ const char kBeforeAfterPrintHtml[] =
     "<button id=\"print\" onclick=\"window.print();\">Hello World!</button>"
     "</body>";
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // A simple webpage with a button to print itself with.
 const char kPrintOnUserAction[] =
     "<body>"
@@ -140,7 +141,7 @@ void CreatePrintSettingsDictionary(base::DictionaryValue* dict) {
   dict->SetBoolean(kSettingShouldPrintSelectionOnly, false);
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // TODO(https://crbug.com/1008939): Remove DidPreviewPageListener once all IPC
@@ -869,7 +870,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest) {
 #endif  // defined(OS_APPLE)
 
 // These print preview tests do not work on Chrome OS yet.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // RenderViewTest-based tests crash on Android
 // http://crbug.com/187500
@@ -1615,6 +1616,6 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
 
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace printing

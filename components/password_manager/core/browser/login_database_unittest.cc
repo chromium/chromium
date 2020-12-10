@@ -21,6 +21,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -2026,7 +2027,7 @@ TEST_F(LoginDatabaseTest, EncryptionDisabled) {
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // On Android and ChromeOS there is a mix of plain-text and obfuscated
 // passwords. Verify that they can both be accessed. Obfuscated passwords start
 // with "v10". Some password values also start with "v10". Test that both are
@@ -2075,7 +2076,7 @@ TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
   EXPECT_EQ(k_plain_text_pw1, UTF16ToASCII(forms[1]->password_value));
   EXPECT_EQ(k_plain_text_pw2, UTF16ToASCII(forms[2]->password_value));
 }
-#endif  // defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#endif  // defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 // If the database initialisation fails, the initialisation transaction should
 // roll back without crashing.

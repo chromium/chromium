@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "crypto/aead.h"
 
 namespace sessions {
@@ -341,7 +342,7 @@ bool CommandStorageBackend::AppendCommandsToFile(
     }
     commands_written_++;
   }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   file->Flush();
 #endif
   return true;

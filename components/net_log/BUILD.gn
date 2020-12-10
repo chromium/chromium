@@ -32,6 +32,7 @@ source_set("unit_tests") {
     ":net_log",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//net",
     "//net:test_support",
     "//services/network:network_service",

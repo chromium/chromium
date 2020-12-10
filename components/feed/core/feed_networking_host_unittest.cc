@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
@@ -358,7 +359,7 @@ TEST_F(FeedNetworkingHostTest, ShouldIncludeAPIKeyForAuthError) {
 
 // Disabled for chromeos, which doesn't allow for there not to be a signed in
 // user.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(FeedNetworkingHostTest, ShouldIncludeAPIKeyForNoSignedInUser) {
   identity_env()->ClearPrimaryAccount();
   MockResponseDoneCallback done_callback;

@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/page_info/features.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "components/permissions/permission_manager.h"
@@ -154,7 +155,7 @@ base::span<const PermissionsUIInfo> GetContentSettingsUIInfo() {
      IDS_AUTOMATIC_DOWNLOADS_TAB_LABEL},
     {ContentSettingsType::MIDI_SYSEX, IDS_PAGE_INFO_TYPE_MIDI_SYSEX},
     {ContentSettingsType::BACKGROUND_SYNC, IDS_PAGE_INFO_TYPE_BACKGROUND_SYNC},
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
     {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
      IDS_PAGE_INFO_TYPE_PROTECTED_MEDIA_IDENTIFIER},
 #endif
@@ -679,7 +680,7 @@ const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
       icon = &vector_icons::kFileDownloadIcon;
       break;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       icon = &vector_icons::kProtectedContentIcon;
       break;

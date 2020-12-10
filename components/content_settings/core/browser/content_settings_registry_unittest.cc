@@ -7,6 +7,7 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -51,7 +52,7 @@ TEST_F(ContentSettingsRegistryTest, GetPlatformDependent) {
 #endif
 
 // Protected media identifier only get registered on android and chromeos.
-#if defined(ANDROID) || defined(OS_CHROMEOS)
+#if defined(ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER));
 #else
   EXPECT_FALSE(
@@ -167,7 +168,7 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   info = registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif

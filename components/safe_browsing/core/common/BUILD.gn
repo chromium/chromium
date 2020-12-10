@@ -81,6 +81,7 @@ source_set("common") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/policy/core/browser:browser",
     "//components/prefs:prefs",
     "//components/safe_browsing/core:csd_proto",

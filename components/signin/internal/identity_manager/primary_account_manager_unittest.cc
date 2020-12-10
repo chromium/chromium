@@ -305,7 +305,7 @@ TEST_F(PrimaryAccountManagerTest, SigninNotAllowed) {
 #endif
 
 TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
 #endif
@@ -338,7 +338,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
 }
 
 TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
 #endif

@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/flags_ui/flags_ui_switches.h"
@@ -289,7 +290,7 @@ std::string GetCombinedOriginListValue(const FlagsStorage& flags_storage,
   return CombineAndSanitizeOriginLists(existing_value, new_value);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // ChromeOS does not call ConvertFlagsToSwitches on startup (see
 // ChromeFeatureListCreator::ConvertFlagsToSwitches() for details) so the
 // command line cannot be updated using pref values. Instead, this method
@@ -436,7 +437,7 @@ void FlagsState::SetFeatureEntryEnabled(FlagsStorage* flags_storage,
     else
       needs_restart_ |= (enabled_entries.erase(internal_name) > 0);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // If an origin list was enabled or disabled, update the command line flag.
     if (e->type == FeatureEntry::ORIGIN_LIST_VALUE && enable)
       DidModifyOriginListFlag(*flags_storage, *e);
@@ -475,7 +476,7 @@ void FlagsState::SetOriginListFlag(const std::string& internal_name,
       CombineAndSanitizeOriginLists(std::string(), value);
   flags_storage->SetOriginListFlag(internal_name, new_value);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const FeatureEntry* entry = FindFeatureEntryByName(internal_name);
   DCHECK(entry);
 
@@ -663,7 +664,7 @@ void FlagsState::GetFlagFeatureEntries(
     }
 
     bool supported = (entry.supported_platforms & current_platform) != 0;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (access == kOwnerAccessToFlags &&
         (entry.supported_platforms & kOsCrOSOwnerOnly) != 0) {
       supported = true;
@@ -685,9 +686,10 @@ int FlagsState::GetCurrentPlatform() {
   return kOsMac;
 #elif defined(OS_WIN)
   return kOsWin;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return kOsCrOS;
-#elif defined(OS_LINUX) || defined(OS_OPENBSD)
+#elif (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+    defined(OS_OPENBSD)
   return kOsLinux;
 #elif defined(OS_ANDROID)
   return kOsAndroid;
@@ -863,7 +865,7 @@ void FlagsState::GetSanitizedEnabledFlagsForCurrentPlatform(
   GetSanitizedEnabledFlags(flags_storage, result);
 
   int platform_mask = GetCurrentPlatform();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   platform_mask |= kOsCrOSOwnerOnly;
 #endif
   std::set<std::string> platform_entries =

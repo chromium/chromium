@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/payments/autofill_wallet_model_type_controller.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_model_type_controller.h"
@@ -52,7 +53,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_model_type_controller.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -338,7 +339,7 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
             dump_stack));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // When SplitSettingsSync is enabled the controller is created in
   // ChromeSyncClient.
   if (!disabled_types.Has(syncer::PRINTERS) &&
@@ -346,7 +347,7 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
     controllers.push_back(
         CreateModelTypeControllerForModelRunningOnUIThread(syncer::PRINTERS));
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Reading list sync is enabled by default only on iOS. Register unless
   // Reading List or Reading List Sync is explicitly disabled.

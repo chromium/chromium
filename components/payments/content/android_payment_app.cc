@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "build/chromeos_buildflags.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/payer_data.h"
@@ -159,9 +160,9 @@ bool AndroidPaymentApp::IsPreferred() const {
   // available is the trusted web application (TWA) that launched this instance
   // of Chrome with a TWA specific payment method, so this app should be
   // preferred.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK_EQ(1U, GetAppMethodNames().size());
   DCHECK_EQ(methods::kGooglePlayBilling, *GetAppMethodNames().begin());
   return true;

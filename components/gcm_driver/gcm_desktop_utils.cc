@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_driver_desktop.h"
@@ -29,9 +30,9 @@ GCMClient::ChromePlatform GetPlatform() {
   return GCMClient::PLATFORM_IOS;
 #elif defined(OS_ANDROID)
   return GCMClient::PLATFORM_ANDROID;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return GCMClient::PLATFORM_CROS;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return GCMClient::PLATFORM_LINUX;
 #else
   // For all other platforms, return as LINUX.

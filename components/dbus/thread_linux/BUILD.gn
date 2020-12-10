@@ -8,5 +8,8 @@ component("thread_linux") {
     "dbus_thread_linux.h",
   ]
   defines = [ "IS_DBUS_IMPL" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
 }

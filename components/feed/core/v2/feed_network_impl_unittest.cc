@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
@@ -386,7 +387,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForAuthError) {
 
 // Disabled for chromeos, which doesn't allow for there not to be a signed in
 // user.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForNoSignedInUser) {
   identity_env()->ClearPrimaryAccount();
   CallbackReceiver<QueryRequestResult> receiver;

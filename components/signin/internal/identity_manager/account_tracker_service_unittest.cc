@@ -706,7 +706,7 @@ TEST_F(AccountTrackerServiceTest, FindAccountInfoByEmail) {
 }
 
 TEST_F(AccountTrackerServiceTest, Persistence) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
 #endif
@@ -867,7 +867,7 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfoFull) {
 }
 
 TEST_F(AccountTrackerServiceTest, UpgradeToFullAccountInfo) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
 #endif
@@ -999,7 +999,7 @@ TEST_F(AccountTrackerServiceTest, LegacyDottedAccountIds) {
 }
 
 TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
 #endif
@@ -1048,7 +1048,7 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
 }
 
 TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
 #endif
@@ -1096,7 +1096,7 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
 }
 
 TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
 #endif

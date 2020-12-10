@@ -138,6 +138,7 @@ source_set("core_unit_tests") {
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/feed/core:feed_core",
     "//components/feed/core/common:feed_core_common",
     "//components/history/core/browser",

@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
@@ -57,7 +58,7 @@ const char kClientStr[] = "ios";
 #elif defined(OS_APPLE)
 const Client kClient = Client::CHROME_MAC;
 const char kClientStr[] = "mac";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 const Client kClient = Client::CHROME_CHROMEOS;
 const char kClientStr[] = "chromeos";
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)

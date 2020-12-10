@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 component("proxy_config") {
   sources = [
     "pref_proxy_config_tracker.cc",
@@ -32,7 +34,7 @@ component("proxy_config") {
   # and disable include checking so GN doesn't complain about the missing
   # dependency (it still links OK). This cycle should be fixed and header
   # checking enabled.
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     check_includes = false
   } else {
     deps += [ "//components/pref_registry" ]

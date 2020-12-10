@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
@@ -266,6 +267,7 @@ static_library("browser") {
     ":proto",
     "//base",
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/common",
@@ -340,7 +342,7 @@ static_library("browser") {
     sources += [ "login_database_win.cc" ]
   }
 
-  if (!is_chromeos && !is_android) {
+  if (!is_chromeos_ash && !is_android) {
     sources += [
       "password_store_signin_notifier_impl.cc",
       "password_store_signin_notifier_impl.h",
@@ -689,7 +691,7 @@ source_set("unit_tests") {
     sources += [ "hash_password_manager_unittest.cc" ]
   }
 
-  if (!is_chromeos && !is_android) {
+  if (!is_chromeos_ash && !is_android) {
     sources += [ "password_store_signin_notifier_impl_unittest.cc" ]
   }
 
@@ -704,6 +706,7 @@ source_set("unit_tests") {
     ":test_support",
     ":unit_tests_bundle_data",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/common",

@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/sha2.h"
@@ -40,13 +41,13 @@ ChromeUserPopulation::ProfileManagementStatus GetProfileManagementStatus(
     return ChromeUserPopulation::ENTERPRISE_MANAGED;
   else
     return ChromeUserPopulation::NOT_MANAGED;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (!bpc || !bpc->IsEnterpriseManaged())
     return ChromeUserPopulation::NOT_MANAGED;
   return ChromeUserPopulation::ENTERPRISE_MANAGED;
 #else
   return ChromeUserPopulation::UNAVAILABLE;
-#endif  // #if defined(OS_WIN) || defined(OS_CHROMEOS)
+#endif  // #if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SetDelayInPref(PrefService* prefs,

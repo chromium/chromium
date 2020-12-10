@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
@@ -95,13 +96,13 @@ void RecordNetworkResultWithAndWithoutSuffix(const std::string& metric,
 RTLookupRequest::OSType GetRTLookupRequestOSType() {
 #if defined(OS_ANDROID)
   return RTLookupRequest::OS_TYPE_ANDROID;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return RTLookupRequest::OS_TYPE_CHROME_OS;
 #elif defined(OS_FUCHSIA)
   return RTLookupRequest::OS_TYPE_FUCHSIA;
 #elif defined(OS_IOS)
   return RTLookupRequest::OS_TYPE_IOS;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return RTLookupRequest::OS_TYPE_LINUX;
 #elif defined(OS_MAC)
   return RTLookupRequest::OS_TYPE_MAC;

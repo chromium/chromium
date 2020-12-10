@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -107,7 +108,7 @@ base::string16 AppModalDialogViewViews::GetWindowTitle() const {
 }
 
 ui::ModalType AppModalDialogViewViews::GetModalType() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/1127133): Remove this hack. This works around the
   // linked bug. This dialog should be window-modal on ChromeOS as well.
   return ui::MODAL_TYPE_SYSTEM;

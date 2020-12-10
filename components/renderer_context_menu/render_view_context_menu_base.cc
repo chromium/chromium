@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -259,7 +260,7 @@ void RenderViewContextMenuBase::UpdateMenuIcon(int command_id,
     return;
 
   menu_model_.SetIcon(index, icon);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (toolkit_delegate_)
     toolkit_delegate_->RebuildMenu();
 #endif

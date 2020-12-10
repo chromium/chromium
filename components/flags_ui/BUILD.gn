@@ -23,6 +23,7 @@ static_library("flags_ui") {
   deps = [
     ":switches",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//components/strings",

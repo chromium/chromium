@@ -58,6 +58,7 @@ static_library("url_lookup_service_base") {
 
   deps = [
     "//base:base",
+    "//build:chromeos_buildflags",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core:csd_proto",

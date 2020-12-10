@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 source_set("app_file_handling") {
   sources = [
     "file_handler.cc",
@@ -56,7 +58,7 @@ source_set("app_url_handling") {
   deps = [ "//url" ]
 }
 
-if (is_chromeos) {
+if (is_chromeos_ash) {
   source_set("instance_update") {
     sources = [
       "instance.cc",
@@ -186,7 +188,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "instance_registry_unittest.cc",
       "instance_update_unittest.cc",

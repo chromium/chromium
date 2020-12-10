@@ -14,6 +14,7 @@
 #include "base/task_runner_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/test/browser_task_environment.h"
 #include "printing/backend/test_print_backend.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -220,7 +221,7 @@ TEST_F(PrinterCapabilitiesTest, UserDefinedPapers) {
   VerifyPaper(list[2], "bar", "vendor", {600, 600});
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PrinterCapabilitiesTest, HasNotSecureProtocol) {
   std::string printer_name = "test_printer";
   PrinterBasicInfo basic_info;
@@ -254,6 +255,6 @@ TEST_F(PrinterCapabilitiesTest, HasNotSecureProtocol) {
   ASSERT_TRUE(pin_supported.has_value());
   ASSERT_FALSE(pin_supported.value());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace printing

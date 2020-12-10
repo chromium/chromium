@@ -50,6 +50,7 @@ static_library("browser") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",
@@ -105,6 +106,7 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/content_settings/core/test:test_support",
     "//components/pref_registry:pref_registry",

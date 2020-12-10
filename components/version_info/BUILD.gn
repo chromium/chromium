@@ -20,6 +20,7 @@ static_library("version_info") {
     "//base",
     "//base:sanitizer_buildflags",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
   ]
 
   public_deps = [

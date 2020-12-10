@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/crx_verifier.h"
@@ -134,13 +135,13 @@ Result ComponentInstaller::InstallHelper(
   base::ScopedTempDir install_path_owner;
   ignore_result(install_path_owner.Set(local_install_path));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::SetPosixFilePermissions(local_install_path, 0755)) {
     PLOG(ERROR) << "SetPosixFilePermissions failed: "
                 << local_install_path.value();
     return Result(InstallError::SET_PERMISSIONS_FAILED);
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DCHECK(!base::PathExists(unpack_path));
   DCHECK(base::PathExists(local_install_path));
@@ -288,7 +289,7 @@ void ComponentInstaller::StartRegistration(
     return;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath base_dir_ = base_component_dir;
   std::vector<base::FilePath::StringType> components;
   installer_policy_->GetRelativeInstallDir().GetComponents(&components);
@@ -299,7 +300,7 @@ void ComponentInstaller::StartRegistration(
       return;
     }
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::vector<base::FilePath> older_paths;
   base::FileEnumerator file_enumerator(base_dir, false,

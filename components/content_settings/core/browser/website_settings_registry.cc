@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace {
@@ -66,13 +67,15 @@ const WebsiteSettingsInfo* WebsiteSettingsRegistry::Register(
 #if defined(OS_WIN)
   if (!(platform & PLATFORM_WINDOWS))
     return nullptr;
-#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!(platform & PLATFORM_LINUX))
     return nullptr;
 #elif defined(OS_MAC)
   if (!(platform & PLATFORM_MAC))
     return nullptr;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (!(platform & PLATFORM_CHROMEOS))
     return nullptr;
 #elif defined(OS_ANDROID)

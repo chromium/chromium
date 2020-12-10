@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/net_error_info.h"
@@ -752,7 +753,7 @@ void GetSuggestionsSummaryList(int error_code,
 
 // If the current platform has a directly accesible network diagnostics tool and
 // the URL is valid add a suggestion.
-#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
   if (IsOnlySuggestion(suggestions, SUGGEST_DIAGNOSE_TOOL)) {
     int diagose_message_id =
         error_code == error_page::DNS_PROBE_FINISHED_NXDOMAIN
@@ -769,8 +770,7 @@ void GetSuggestionsSummaryList(int error_code,
   }
 #else
   DCHECK(!IsSuggested(suggestions, SUGGEST_DIAGNOSE_TOOL));
-#endif  // defined(OS_CHROMEOS) || defined(OS_WIN) ||
-        // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
 
   // Add list prefix header.
   error_strings->SetString("suggestionsSummaryListHeader",
@@ -1033,11 +1033,11 @@ LocalizedError::PageState LocalizedError::GetPageState(
     result.strings.Set("reloadButton", std::move(reload_button));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS has its own diagnostics extension, which doesn't rely on a
   // browser-initiated dialog.
   can_show_network_diagnostics_dialog = true;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Add default suggestions and any relevant supporting details.
   GetSuggestionsSummaryList(error_code, &result.strings, options.suggestions,

@@ -171,7 +171,10 @@ static_library("performance_manager") {
     "worker_watcher.h",
   ]
 
-  deps = [ "//third_party/blink/public/common:headers" ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//third_party/blink/public/common:headers",
+  ]
 
   public_deps = [
     "//base",

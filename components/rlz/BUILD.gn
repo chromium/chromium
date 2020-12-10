@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 static_library("rlz") {
   sources = [
     "rlz_tracker.cc",
@@ -21,12 +23,13 @@ static_library("rlz") {
     sources += [ "rlz_tracker_win.cc" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "rlz_tracker_chromeos.cc" ]
   }
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/google/core/common",
     "//net",
     "//rlz:rlz_lib",
@@ -44,13 +47,14 @@ source_set("unit_tests") {
 
   deps = [
     ":rlz",
+    "//build:chromeos_buildflags",
     "//net:test_support",
     "//rlz:test_support",
     "//services/network/public/cpp:cpp",
     "//ui/base",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chromeos/system" ]
   }
 }

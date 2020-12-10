@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "content/public/common/child_process_host.h"
 
@@ -41,7 +42,7 @@ base::Value GetProcessValueDict(const base::Process& process) {
     ret.SetBoolKey("is_current", true);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (process.GetPidInNamespace() != base::kNullProcessId) {
     ret.SetIntKey("pid_in_namespace", process.GetPidInNamespace());
   }

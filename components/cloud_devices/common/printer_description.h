@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/description_items.h"
 
 // Defines printer options, CDD and CJT items.
@@ -524,11 +525,11 @@ typedef ValueCapability<Copies, class CopiesCapabilityTraits> CopiesCapability;
 typedef EmptyCapability<class PageRangeTraits> PageRangeCapability;
 typedef BooleanCapability<class CollateTraits> CollateCapability;
 typedef BooleanCapability<class ReverseTraits> ReverseCapability;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // This capability is not a part of standard CDD description. It's used for
 // providing PIN printing opportunity in Chrome OS native printing.
 typedef ValueCapability<bool, class PinTraits> PinCapability;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 typedef TicketItem<PwgRasterConfig, PwgRasterConfigTraits>
     PwgRasterConfigTicketItem;

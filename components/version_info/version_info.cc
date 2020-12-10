@@ -12,6 +12,7 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/version_info/version_info_values.h"
 
 namespace version_info {
@@ -53,7 +54,7 @@ std::string GetOSType() {
   return "iOS";
 #elif defined(OS_APPLE)
   return "Mac OS X";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 # if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "Chrome OS";
 # else
@@ -61,7 +62,7 @@ std::string GetOSType() {
 # endif
 #elif defined(OS_ANDROID)
   return "Android";
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return "Linux";
 #elif defined(OS_FREEBSD)
   return "FreeBSD";

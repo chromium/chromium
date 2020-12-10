@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/printing/browser/printing_buildflags.h"
 #include "components/printing/common/cloud_print_cdd_conversion.h"
@@ -31,13 +32,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #endif  // defined(OS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
 #include "components/printing/browser/ipp_l10n.h"
 #include "components/strings/grit/components_strings.h"
 #include "printing/printing_features.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 #include "components/printing/browser/print_media_l10n.h"
@@ -73,7 +74,7 @@ void PopulateAllPaperDisplayNames(PrinterSemanticCapsAndDefaults* info) {
 }
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PopulateAdvancedCapsLocalization(
     std::vector<AdvancedCapability>* advanced_capabilities) {
   auto& l10n_map = CapabilityLocalizationMap();
@@ -89,7 +90,7 @@ void PopulateAdvancedCapsLocalization(
     }
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns a dictionary representing printer capabilities as CDD.  Returns
 // an empty dictionary if a dictionary could not be generated.
@@ -128,13 +129,13 @@ base::Value GetPrinterCapabilitiesOnBlockingTaskRunner(
 
   info.user_defined_papers = std::move(user_defined_papers);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!has_secure_protocol)
     info.pin_supported = false;
 
   if (base::FeatureList::IsEnabled(printing::features::kAdvancedPpdAttributes))
     PopulateAdvancedCapsLocalization(&info.advanced_capabilities);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return cloud_print::PrinterSemanticCapsAndDefaultsToCdd(info);
 }
@@ -181,12 +182,12 @@ base::Value GetSettingsOnBlockingTaskRunner(
 
   base::Value options(base::Value::Type::DICTIONARY);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   printer_info.SetKey(
       kCUPSEnterprisePrinter,
       base::Value(base::Contains(basic_info.options, kCUPSEnterprisePrinter) &&
                   basic_info.options.at(kCUPSEnterprisePrinter) == kValueTrue));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   printer_info.SetKey(kSettingPrinterOptions, std::move(options));
 

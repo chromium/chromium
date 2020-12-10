@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/chromeos_buildflags.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/common/process_type.h"
@@ -76,7 +77,7 @@ std::unique_ptr<base::trace_event::TracedValue> FirstInputDelayTraceData(
 
 // TODO(crbug/1097328): Remove collecting visits to support.google.com after
 // language settings update fully launches.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void RecordVisitToLanguageSettingsSupportPage(const GURL& url) {
   if (url.is_empty() || !url.DomainIs("support.google.com"))
     return;
@@ -96,7 +97,7 @@ void RecordVisitToLanguageSettingsSupportPage(const GURL& url) {
     }
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -403,9 +404,9 @@ UmaPageLoadMetricsObserver::OnCommit(
 
   // TODO(crbug/1097328): Remove collecting visits to support.google.com after
   // language settings update fully launches.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   RecordVisitToLanguageSettingsSupportPage(navigation_handle->GetURL());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return CONTINUE_OBSERVING;
 }
 

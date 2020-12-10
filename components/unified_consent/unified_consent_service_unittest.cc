@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -117,7 +118,7 @@ TEST_F(UnifiedConsentServiceTest, Migration_UpdateSettings) {
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(UnifiedConsentServiceTest, ClearPrimaryAccountDisablesSomeServices) {
   base::HistogramTester histogram_tester;
 
@@ -144,6 +145,6 @@ TEST_F(UnifiedConsentServiceTest, Migration_NotSignedIn) {
   // creation of the consent service.
   EXPECT_EQ(GetMigrationState(), unified_consent::MigrationState::kCompleted);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace unified_consent

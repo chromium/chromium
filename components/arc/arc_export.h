@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_ARC_ARC_EXPORT_H_
 #define COMPONENTS_ARC_ARC_EXPORT_H_
 
-#if !defined(OS_CHROMEOS)
+#include "build/chromeos_buildflags.h"
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #error "ARC can be built only for Chrome OS."
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(COMPONENT_BUILD) && defined(ARC_IMPLEMENTATION)
 #define ARC_EXPORT __attribute__((visibility("default")))

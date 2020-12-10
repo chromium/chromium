@@ -30,6 +30,7 @@ static_library("component_updater") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/crx_file",
     "//components/update_client",
     "//components/version_info",

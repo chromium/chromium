@@ -37,6 +37,7 @@ static_library("cast_channel") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/cast_certificate",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
