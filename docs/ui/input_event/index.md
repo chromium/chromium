@@ -77,6 +77,11 @@ will be passed to the target. For key events, the target is the aura::Window
 that owns the focus. For mouse events, the target is the aura::Window under the
 cursor.
 
+Each browser window comes with an aura::Window. It is worth noting that the web
+content and dialog bubble live in their own aura::Windows. These different
+aura::Windows treat accelerators differently and the detail will be explained
+later.
+
 **Phase 2** - EventTarget pre-target
 
 Like EventProcessor, an EventTarget consumes the event in three phases. it owns
@@ -84,20 +89,29 @@ one target handler and optionally multiple pre-targets and post-target handlers.
 An event will first be passed to pre-target handlers, and if not consumed by
 them, then to the default target handler, and lastly to post-target handlers.
 
-aura::Window uses pre-handler to forward key events to FocusManager in views. If
-the key is an accelerator, the event will be intercepted and later phases will
-be SKIPPED.
+Non-content aura::Window uses pre-handler to forward key events to FocusManager
+in views. If the key is an accelerator, the event will be intercepted and later
+phases will be SKIPPED.
 
-Mouse events at present are not processed in pre-handlers.
+Mouse events at present are not processed in pre-handlers. Content aura::Window
+does not have any pre-handlers, either.
 
 **Phase 3** - EventTarget regular
 
-At this phase, aura::Window asks (Desktop)NativeWidgetAura::OnEvent() to handle
-the event. DesktopNativeWidgetAura is the native implementation of a top-level
+At this phase, non-content aura::Window asks (Desktop)NativeWidgetAura::OnEvent()
+to handle the event.
+
+DesktopNativeWidgetAura is the native implementation of a top-level
 Widget. Non top-level widgets, e.g. dialog bubble, use NativeWidgetAura instead.
 The native widget then passes the event to Widget::OnMouseEvent(),
 Widget::OnClickEvent(), or other Widget methods depending on the event type. The
 event is then handled in views and is explained in a later section.
+
+Content aura::Window instead asks RenderWidgetHostViewAura::OnEvent() to handle
+the event. The event will be sent to Blink and then to BrowserCommandController
+if not consumed by the webpage. Some important shortcuts, e.g. Ctrl+T, are
+[preserved](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/browser_command_controller.cc;drc=02f28360f2f6588ca2428ef93c8129e0a8cc231c;l=210)
+and will not be sent to the web page.
 
 **Phase 4** - EventTarget post-target
 
@@ -321,7 +335,7 @@ NativeWidgetMacNSWindowHost’s TextInputHost on focus change.
 In the case when the keystroke is an accelerator, for example, a Ctrl+T to open
 a new tab, the focused view is not the expected view to handle it.
 
-On Aura, accelerators are handled by a
+On Aura, when the focus is not on the web content, accelerators are handled by a
 **[pre-handler](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/widget/focus_manager_event_handler.cc;drc=df872ce8fcce25af51aa6b0f9fe8b1135b687524;l=17)**
 that happens before the handler for character keys. This pre-handlers is hooked
 on aura::Window in the Window Abstraction layer. If a key event is consumed as
@@ -336,6 +350,10 @@ Not all accelerators are handled by views::AcceleratorManager. A notable
 exception is the Tab key which is used to switch the focused view and will be
 [handled](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/focus/focus_manager.cc;drc=df872ce8fcce25af51aa6b0f9fe8b1135b687524;l=70)
 directly by the FocusManager.
+
+If the focus is on the web content, the event will be handled by
+RenderWidgetHostViewEventHandler where the web content has the priority to
+receive most keys except for important navigation accelerators.
 
 Mac interprets accelerators early in the event pipeline.
 [Key Equivalents](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/EventOverview/HandlingKeyEvents/HandlingKeyEvents.html#//apple_ref/doc/uid/10000060i-CH7-SW11)
