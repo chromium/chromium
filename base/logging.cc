@@ -402,7 +402,6 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
     fx_logger_config_t config = {
         .min_severity = FX_LOG_INFO,
         .console_fd = -1,
-        .log_service_channel = ZX_HANDLE_INVALID,
         .tags = &log_tag_data,
         .num_tags = 1,
     };
