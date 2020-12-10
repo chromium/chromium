@@ -1477,9 +1477,10 @@ void DevToolsWindow::SetEyeDropperActive(bool active) {
   if (!web_contents)
     return;
   if (active) {
-    eye_dropper_.reset(new DevToolsEyeDropper(
-        web_contents, base::Bind(&DevToolsWindow::ColorPickedInEyeDropper,
-                                 base::Unretained(this))));
+    eye_dropper_ = std::make_unique<DevToolsEyeDropper>(
+        web_contents,
+        base::BindRepeating(&DevToolsWindow::ColorPickedInEyeDropper,
+                            base::Unretained(this)));
   } else {
     eye_dropper_.reset();
   }

@@ -180,7 +180,7 @@ void DevToolsWindowTesting::CloseDevToolsWindowSync(
 // DevToolsWindowCreationObserver ---------------------------------------------
 
 DevToolsWindowCreationObserver::DevToolsWindowCreationObserver()
-    : creation_callback_(base::Bind(
+    : creation_callback_(base::BindRepeating(
           &DevToolsWindowCreationObserver::DevToolsWindowCreated,
           base::Unretained(this))) {
   DevToolsWindow::AddCreationCallbackForTest(creation_callback_);

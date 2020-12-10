@@ -22,7 +22,7 @@ class WebMouseEvent;
 class DevToolsEyeDropper : public content::WebContentsObserver,
                            public viz::mojom::FrameSinkVideoConsumer {
  public:
-  typedef base::Callback<void(int, int, int, int)> EyeDropperCallback;
+  typedef base::RepeatingCallback<void(int, int, int, int)> EyeDropperCallback;
 
   DevToolsEyeDropper(content::WebContents* web_contents,
                      EyeDropperCallback callback);
