@@ -6,7 +6,6 @@
 // the GRD files and generate the InfoPlist.strings files needed for
 // Mac OS X app bundles.
 
-#import <Foundation/Foundation.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -17,117 +16,84 @@
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
 #include "base/i18n/message_formatter.h"
-#include "base/mac/scoped_nsobject.h"
+#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/grit/chromium_strings.h"
 #include "ui/base/resource/data_pack.h"
 
 namespace {
 
-ui::DataPack* LoadResourceDataPack(const char* dir_path,
-                                   const char* branding_strings_name,
-                                   const char* locale_name) {
-  ui::DataPack* resource_pack = NULL;
-
-  NSString* resource_path = [NSString stringWithFormat:@"%s/%s_%s.pak",
-                             dir_path, branding_strings_name, locale_name];
-  if (resource_path) {
-    base::FilePath resources_pak_path([resource_path fileSystemRepresentation]);
-    resources_pak_path = base::MakeAbsoluteFilePath(resources_pak_path);
-    resource_pack = new ui::DataPack(ui::SCALE_FACTOR_100P);
-    bool success = resource_pack->LoadFromPath(resources_pak_path);
-    if (!success) {
-      delete resource_pack;
-      resource_pack = NULL;
-    }
-  }
-
+std::unique_ptr<ui::DataPack> LoadResourceDataPack(
+    const char* dir_path,
+    const char* branding_strings_name,
+    const std::string& locale_name) {
+  auto path = base::FilePath(base::StringPrintf(
+      "%s/%s_%s.pak", dir_path, branding_strings_name, locale_name.c_str()));
+  path = base::MakeAbsoluteFilePath(path);
+  auto resource_pack = std::make_unique<ui::DataPack>(ui::SCALE_FACTOR_100P);
+  if (!resource_pack->LoadFromPath(path))
+    resource_pack.reset();
   return resource_pack;
 }
 
-NSString* LoadStringFromDataPack(ui::DataPack* data_pack,
-                                 const char* data_pack_lang,
-                                 uint32_t resource_id,
-                                 const char* resource_id_str) {
-  NSString* result = nil;
+std::string LoadStringFromDataPack(ui::DataPack* data_pack,
+                                   const std::string& data_pack_lang,
+                                   uint32_t resource_id,
+                                   const char* resource_id_str) {
   base::StringPiece data;
-  if (data_pack->GetStringPiece(resource_id, &data)) {
-    // Data pack encodes strings as either UTF8 or UTF16.
-    if (data_pack->GetTextEncodingType() == ui::DataPack::UTF8) {
-      result =
-          [[[NSString alloc] initWithBytes:data.data()
-                                    length:data.length()
-                                  encoding:NSUTF8StringEncoding]
-           autorelease];
-    } else if (data_pack->GetTextEncodingType() == ui::DataPack::UTF16) {
-      result =
-          [[[NSString alloc] initWithBytes:data.data()
-                                    length:data.length()
-                                  encoding:NSUTF16LittleEndianStringEncoding]
-           autorelease];
-    } else {
-      fprintf(stderr, "ERROR: requested string %s from binary data pack\n",
-              resource_id_str);
-      exit(1);
-    }
+  CHECK(data_pack->GetStringPiece(resource_id, &data))
+      << "failed to load string " << resource_id_str << " for lang "
+      << data_pack_lang;
+
+  // Data pack encodes strings as either UTF8 or UTF16.
+  if (data_pack->GetTextEncodingType() == ui::DataPack::UTF8)
+    return (std::string)data;
+  if (data_pack->GetTextEncodingType() == ui::DataPack::UTF16) {
+    return base::UTF16ToUTF8(base::string16(
+        reinterpret_cast<const base::char16*>(data.data()), data.length() / 2));
   }
-  if (!result) {
-    fprintf(stderr, "ERROR: failed to load string %s for lang %s\n",
-            resource_id_str, data_pack_lang);
-    exit(1);
-  }
-  return result;
+
+  LOG(FATAL) << "requested string " << resource_id_str
+             << " from binary data pack";
+  return std::string();  // Unreachable.
 }
 
 // Escape quotes, newlines, etc so there are no errors when the strings file
 // is parsed.
-NSString* EscapeForStringsFileValue(NSString* str) {
-  NSMutableString* worker = [NSMutableString stringWithString:str];
-
+std::string EscapeForStringsFileValue(std::string str) {
   // Since this is a build tool, we don't really worry about making this
   // the most efficient code.
 
   // Backslash first since we need to do it before we put in all the others
-  [worker replaceOccurrencesOfString:@"\\"
-                          withString:@"\\\\"
-                             options:NSLiteralSearch
-                               range:NSMakeRange(0, [worker length])];
-  // Now the rest of them.
-  [worker replaceOccurrencesOfString:@"\n"
-                          withString:@"\\n"
-                             options:NSLiteralSearch
-                               range:NSMakeRange(0, [worker length])];
-  [worker replaceOccurrencesOfString:@"\r"
-                          withString:@"\\r"
-                             options:NSLiteralSearch
-                               range:NSMakeRange(0, [worker length])];
-  [worker replaceOccurrencesOfString:@"\t"
-                          withString:@"\\t"
-                             options:NSLiteralSearch
-                               range:NSMakeRange(0, [worker length])];
-  [worker replaceOccurrencesOfString:@"\""
-                          withString:@"\\\""
-                             options:NSLiteralSearch
-                               range:NSMakeRange(0, [worker length])];
+  base::ReplaceChars(str, "\\", "\\\\", &str);
 
-  return [[worker copy] autorelease];
+  // Now the rest of them.
+  base::ReplaceChars(str, "\n", "\\n", &str);
+  base::ReplaceChars(str, "\r", "\\r", &str);
+  base::ReplaceChars(str, "\t", "\\t", &str);
+  base::ReplaceChars(str, "\"", "\\\"", &str);
+
+  return str;
 }
 
 // The valid types for the -t arg
-const char kAppType_Main[] = "main";  // Main app
+const char kAppType_Main[] = "main";      // Main app
 const char kAppType_Helper[] = "helper";  // Helper app
 
 }  // namespace
 
 int main(int argc, char* const argv[]) {
-  @autoreleasepool {
-    const char* version_string = NULL;
-    const char* grit_output_dir = NULL;
-    const char* branding_strings_name = NULL;
-    const char* output_dir = NULL;
+  // FIXME: Remove the local block in a follow-up. Keeping it for now to keep
+  // the diff cleaner.
+  {
+    const char* version_string = nullptr;
+    const char* grit_output_dir = nullptr;
+    const char* branding_strings_name = nullptr;
+    const char* output_dir = nullptr;
     const char* app_type = kAppType_Main;
 
     // Process the args
@@ -150,21 +116,17 @@ int main(int argc, char* const argv[]) {
           output_dir = optarg;
           break;
         default:
-          fprintf(stderr, "ERROR: bad command line arg\n");
-          exit(1);
+          LOG(FATAL) << "bad command line arg";
           break;
       }
     }
     argc -= optind;
     argv += optind;
 
-#define CHECK_ARG(a, b) \
-    do { \
-      if ((a)) { \
-        fprintf(stderr, "ERROR: " b "\n"); \
-        exit(1); \
-      } \
-    } while (false)
+#define CHECK_ARG(a, b)      \
+  do {                       \
+    LOG_IF(FATAL, (a)) << b; \
+  } while (false)
 
     // Check our args
     CHECK_ARG(!version_string, "Missing version string");
@@ -181,19 +143,14 @@ int main(int argc, char* const argv[]) {
 
     base::i18n::InitializeICU();
 
-    NSFileManager* fm = [NSFileManager defaultManager];
-
     for (int loop = 0; loop < lang_list_count; ++loop) {
-      const char* cur_lang = lang_list[loop];
+      std::string cur_lang = lang_list[loop];
 
       // Open the branded string pak file
-      std::unique_ptr<ui::DataPack> branded_data_pack(
-          LoadResourceDataPack(grit_output_dir, branding_strings_name, cur_lang));
-      if (branded_data_pack.get() == NULL) {
-        fprintf(stderr, "ERROR: Failed to load branded pak for language: %s\n",
-                cur_lang);
-        exit(1);
-      }
+      std::unique_ptr<ui::DataPack> branded_data_pack(LoadResourceDataPack(
+          grit_output_dir, branding_strings_name, cur_lang));
+      CHECK(branded_data_pack)
+          << "failed to load branded pak for language: " << cur_lang;
 
       uint32_t name_id = IDS_PRODUCT_NAME;
       const char* name_id_str = "IDS_PRODUCT_NAME";
@@ -203,93 +160,65 @@ int main(int argc, char* const argv[]) {
       }
 
       // Fetch the strings.
-      NSString* name =
-            LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
-                                   name_id, name_id_str);
-      NSString* copyright_format =
-          LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
-                                 IDS_ABOUT_VERSION_COPYRIGHT,
-                                 "IDS_ABOUT_VERSION_COPYRIGHT");
+      std::string name = LoadStringFromDataPack(branded_data_pack.get(),
+                                                cur_lang, name_id, name_id_str);
+      std::string copyright_format = LoadStringFromDataPack(
+          branded_data_pack.get(), cur_lang, IDS_ABOUT_VERSION_COPYRIGHT,
+          "IDS_ABOUT_VERSION_COPYRIGHT");
 
-      NSString* copyright = base::SysUTF16ToNSString(
+      std::string copyright = base::UTF16ToUTF8(
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
-              base::SysNSStringToUTF16(copyright_format), base::Time::Now()));
+              base::UTF8ToUTF16(copyright_format), base::Time::Now()));
 
-      NSString* permission_reason =
+      std::string permission_reason =
           LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
                                  IDS_RUNTIME_PERMISSION_OS_REASON_TEXT,
                                  "IDS_RUNTIME_PERMISSION_OS_REASON_TEXT");
 
       // For now, assume this is ok for all languages. If we need to, this could
       // be moved into generated_resources.grd and fetched.
-      NSString* get_info = [NSString
-          stringWithFormat:@"%@ %s, %@", name, version_string, copyright];
+      std::string get_info = base::StringPrintf(
+          "%s %s, %s", name.c_str(), version_string, copyright.c_str());
 
       // Generate the InfoPlist.strings file contents.
-      NSDictionary<NSString*, NSString*>* infoplist_strings = @{
-        @"CFBundleGetInfoString" : get_info,
-        @"NSHumanReadableCopyright" : copyright,
+      std::map<std::string, std::string> infoplist_strings = {
+          {"CFBundleGetInfoString", get_info},
+          {"NSHumanReadableCopyright", copyright},
 
-        @"NSBluetoothAlwaysUsageDescription" : permission_reason,
-        @"NSBluetoothPeripheralUsageDescription" : permission_reason,
-        @"NSCameraUsageDescription" : permission_reason,
-        @"NSLocationUsageDescription" : permission_reason,
-        @"NSMicrophoneUsageDescription" : permission_reason,
+          {"NSBluetoothAlwaysUsageDescription", permission_reason},
+          {"NSBluetoothPeripheralUsageDescription", permission_reason},
+          {"NSCameraUsageDescription", permission_reason},
+          {"NSLocationUsageDescription", permission_reason},
+          {"NSMicrophoneUsageDescription", permission_reason},
       };
-      base::scoped_nsobject<NSMutableString> strings_file_contents_string(
-          [[NSMutableString alloc] init]);
-      for (NSString* key in infoplist_strings) {
-        [strings_file_contents_string
-            appendFormat:@"%@ = \"%@\";\n", key,
-                         EscapeForStringsFileValue(infoplist_strings[key])];
-      }
-
-      // We set up Xcode projects expecting strings files to be UTF8, so make
-      // sure we write the data in that form.  When Xcode copies them it will
-      // put them final runtime encoding.
-      NSData* strings_file_contents_utf8 =
-          [strings_file_contents_string dataUsingEncoding:NSUTF8StringEncoding];
-
-      if ([strings_file_contents_utf8 length] == 0) {
-        fprintf(stderr, "ERROR: failed to get the utf8 encoding of the strings "
-                "file for language: %s\n", cur_lang);
-        exit(1);
+      std::string strings_file_contents_string;
+      for (const auto& kv : infoplist_strings) {
+        strings_file_contents_string +=
+            base::StringPrintf("%s = \"%s\";\n", kv.first.c_str(),
+                               EscapeForStringsFileValue(kv.second).c_str());
       }
 
       // For Cocoa to find the locale at runtime, it needs to use '_' instead of
       // '-' (http://crbug.com/20441).  Also, 'en-US' should be represented
       // simply as 'en' (http://crbug.com/19165, http://crbug.com/25578).
-      NSString* cur_lang_ns = [NSString stringWithUTF8String:cur_lang];
-      if ([cur_lang_ns isEqualToString:@"en-US"]) {
-        cur_lang_ns = @"en";
-      }
-      cur_lang_ns = [cur_lang_ns stringByReplacingOccurrencesOfString:@"-"
-                                                           withString:@"_"];
+      if (cur_lang == "en-US")
+        cur_lang = "en";
+      base::ReplaceChars(cur_lang, "-", "_", &cur_lang);
+
       // Make sure the lproj we write to exists
-      NSString *lproj_name = [NSString stringWithFormat:@"%@.lproj", cur_lang_ns];
-      NSString *output_path =
-          [[NSString stringWithUTF8String:output_dir]
-           stringByAppendingPathComponent:lproj_name];
-      NSError* error = nil;
-      if (![fm fileExistsAtPath:output_path] &&
-          ![fm createDirectoryAtPath:output_path
-          withIntermediateDirectories:YES
-                          attributes:nil
-                               error:&error]) {
-        fprintf(stderr, "ERROR: '%s' didn't exist or we failed to create it\n",
-                [output_path UTF8String]);
-        exit(1);
-      }
+      std::string output_path =
+          base::StringPrintf("%s/%s.lproj", output_dir, cur_lang.c_str());
+      CHECK(base::CreateDirectory(base::FilePath(output_path)))
+          << "failed to create '" << output_path << "'";
 
       // Write out the file
-      output_path =
-          [output_path stringByAppendingPathComponent:@"InfoPlist.strings"];
-      if (![strings_file_contents_utf8 writeToFile:output_path
-                                        atomically:YES]) {
-        fprintf(stderr, "ERROR: Failed to write out '%s'\n",
-                [output_path UTF8String]);
-        exit(1);
-      }
+      // We set up Xcode projects expecting strings files to be UTF8, so make
+      // sure we write the data in that form.  When Xcode copies them it will
+      // put the final runtime encoding.
+      output_path += "/InfoPlist.strings";
+      CHECK(base::WriteFile(base::FilePath(output_path),
+                            strings_file_contents_string))
+          << "failed to write out '" << output_path << "'";
     }
     return 0;
   }
