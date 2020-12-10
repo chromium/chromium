@@ -9,12 +9,10 @@
 #include <numeric>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -94,12 +92,9 @@ void InstanceIDAndroid::GetToken(
     const std::string& authorized_entity,
     const std::string& scope,
     base::TimeDelta time_to_live,
-    const std::map<std::string, std::string>& options,
     std::set<Flags> flags,
     GetTokenCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-
-  UMA_HISTOGRAM_COUNTS_100("InstanceID.GetToken.OptionsCount", options.size());
 
   if (!time_to_live.is_zero()) {
     LOG(WARNING) << "Non-zero TTL requested for InstanceID token, while TTLs"
@@ -109,12 +104,6 @@ void InstanceIDAndroid::GetToken(
   int32_t request_id = get_token_callbacks_.Add(
       std::make_unique<GetTokenCallback>(std::move(callback)));
 
-  std::vector<std::string> options_strings;
-  for (const auto& entry : options) {
-    options_strings.push_back(entry.first);
-    options_strings.push_back(entry.second);
-  }
-
   int java_flags = std::accumulate(
       flags.begin(), flags.end(), 0,
       [](int sum, Flags flag) { return sum + static_cast<int>(flag); });
@@ -123,8 +112,7 @@ void InstanceIDAndroid::GetToken(
   Java_InstanceIDBridge_getToken(
       env, java_ref_, request_id,
       ConvertUTF8ToJavaString(env, authorized_entity),
-      ConvertUTF8ToJavaString(env, scope),
-      base::android::ToJavaArrayOfStrings(env, options_strings), java_flags);
+      ConvertUTF8ToJavaString(env, scope), java_flags);
 }
 
 void InstanceIDAndroid::ValidateToken(const std::string& authorized_entity,

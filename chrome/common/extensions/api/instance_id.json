@@ -66,6 +66,7 @@
                 "description": "Identifies authorized actions that the authorized entity can take. E.g. for sending GCM messages, <code>GCM</code> scope should be used."
               },
               "options": {
+                "deprecated": "options are deprecated and will be ignored.",
                 "type": "object",
                 "properties": {},
                 "additionalProperties": {

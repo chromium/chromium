@@ -69,11 +69,9 @@ class InstanceIDDriverTest : public testing::Test {
   std::string GetID(InstanceID* instance_id);
   base::Time GetCreationTime(InstanceID* instance_id);
   InstanceID::Result DeleteID(InstanceID* instance_id);
-  std::string GetToken(
-      InstanceID* instance_id,
-      const std::string& authorized_entity,
-      const std::string& scope,
-      const std::map<std::string, std::string>& options);
+  std::string GetToken(InstanceID* instance_id,
+                       const std::string& authorized_entity,
+                       const std::string& scope);
   InstanceID::Result DeleteToken(
       InstanceID* instance_id,
       const std::string& authorized_entity,
@@ -170,16 +168,14 @@ InstanceID::Result InstanceIDDriverTest::DeleteID(InstanceID* instance_id) {
   return result_;
 }
 
-std::string InstanceIDDriverTest::GetToken(
-    InstanceID* instance_id,
-    const std::string& authorized_entity,
-    const std::string& scope,
-    const std::map<std::string, std::string>& options) {
+std::string InstanceIDDriverTest::GetToken(InstanceID* instance_id,
+                                           const std::string& authorized_entity,
+                                           const std::string& scope) {
   async_operation_completed_ = false;
   token_.clear();
   result_ = InstanceID::UNKNOWN_ERROR;
   instance_id->GetToken(
-      authorized_entity, scope, /*time_to_live=*/base::TimeDelta(), options,
+      authorized_entity, scope, /*time_to_live=*/base::TimeDelta(),
       /*flags=*/{},
       base::BindRepeating(&InstanceIDDriverTest::GetTokenCompleted,
                           base::Unretained(this)));
@@ -326,23 +322,18 @@ TEST_F(InstanceIDDriverTest, DeleteID) {
 
 TEST_F(InstanceIDDriverTest, GetToken) {
   InstanceID* instance_id = driver()->GetInstanceID(kTestAppID1);
-  std::map<std::string, std::string> options;
-  std::string token1 =
-      GetToken(instance_id, kAuthorizedEntity1, kScope1, options);
+  std::string token1 = GetToken(instance_id, kAuthorizedEntity1, kScope1);
   EXPECT_FALSE(token1.empty());
 
   // Same token is returned for same authorized entity and scope.
-  EXPECT_EQ(token1,
-            GetToken(instance_id, kAuthorizedEntity1, kScope1, options));
+  EXPECT_EQ(token1, GetToken(instance_id, kAuthorizedEntity1, kScope1));
 
   // Different token is returned for different authorized entity or scope.
-  std::string token2 =
-      GetToken(instance_id, kAuthorizedEntity1, kScope2, options);
+  std::string token2 = GetToken(instance_id, kAuthorizedEntity1, kScope2);
   EXPECT_FALSE(token2.empty());
   EXPECT_NE(token1, token2);
 
-  std::string token3 =
-      GetToken(instance_id, kAuthorizedEntity2, kScope1, options);
+  std::string token3 = GetToken(instance_id, kAuthorizedEntity2, kScope1);
   EXPECT_FALSE(token3.empty());
   EXPECT_NE(token1, token3);
   EXPECT_NE(token2, token3);
@@ -350,14 +341,11 @@ TEST_F(InstanceIDDriverTest, GetToken) {
 
 TEST_F(InstanceIDDriverTest, DeleteToken) {
   InstanceID* instance_id = driver()->GetInstanceID(kTestAppID1);
-  std::map<std::string, std::string> options;
 
   // Gets 2 tokens.
-  std::string token1 =
-      GetToken(instance_id, kAuthorizedEntity1, kScope1, options);
+  std::string token1 = GetToken(instance_id, kAuthorizedEntity1, kScope1);
   EXPECT_FALSE(token1.empty());
-  std::string token2 =
-      GetToken(instance_id, kAuthorizedEntity2, kScope1, options);
+  std::string token2 = GetToken(instance_id, kAuthorizedEntity2, kScope1);
   EXPECT_FALSE(token1.empty());
   EXPECT_NE(token1, token2);
 
@@ -365,14 +353,12 @@ TEST_F(InstanceIDDriverTest, DeleteToken) {
   // deletion.
   EXPECT_EQ(InstanceID::SUCCESS,
             DeleteToken(instance_id, kAuthorizedEntity1, kScope1));
-  std::string new_token1 =
-      GetToken(instance_id, kAuthorizedEntity1, kScope2, options);
+  std::string new_token1 = GetToken(instance_id, kAuthorizedEntity1, kScope2);
   EXPECT_FALSE(new_token1.empty());
   EXPECT_NE(token1, new_token1);
 
   // The other token is not affected by the deletion.
-  EXPECT_EQ(token2,
-            GetToken(instance_id, kAuthorizedEntity2, kScope1, options));
+  EXPECT_EQ(token2, GetToken(instance_id, kAuthorizedEntity2, kScope1));
 }
 
 }  // namespace instance_id

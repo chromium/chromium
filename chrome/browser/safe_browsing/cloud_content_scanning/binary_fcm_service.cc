@@ -87,7 +87,6 @@ void BinaryFCMService::GetInstanceID(GetInstanceIDCallback callback) {
       ->GetToken(
           kBinaryFCMServiceSenderId, instance_id::kGCMScope,
           /*time_to_live=*/base::TimeDelta(),
-          /*options=*/{},
           /*flags=*/{},
           base::BindOnce(&BinaryFCMService::OnGetInstanceID,
                          weakptr_factory_.GetWeakPtr(), std::move(callback)));

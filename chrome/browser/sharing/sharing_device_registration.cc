@@ -73,7 +73,6 @@ void SharingDeviceRegistration::RetrieveTargetInfo(
   instance_id_driver_->GetInstanceID(kSharingFCMAppID)
       ->GetToken(authorized_entity, instance_id::kGCMScope,
                  /*time_to_live=*/base::TimeDelta(),
-                 /*options=*/{},
                  /*flags=*/{InstanceID::Flags::kBypassScheduler},
                  base::BindOnce(&SharingDeviceRegistration::OnFCMTokenReceived,
                                 weak_ptr_factory_.GetWeakPtr(),

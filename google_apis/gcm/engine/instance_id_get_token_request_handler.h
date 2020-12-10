@@ -5,7 +5,6 @@
 #ifndef GOOGLE_APIS_GCM_ENGINE_INSTANCE_ID_GET_TOKEN_REQUEST_HANDLER_H_
 #define GOOGLE_APIS_GCM_ENGINE_INSTANCE_ID_GET_TOKEN_REQUEST_HANDLER_H_
 
-#include <map>
 #include <string>
 
 #include "base/macros.h"
@@ -18,13 +17,11 @@ namespace gcm {
 class GCM_EXPORT InstanceIDGetTokenRequestHandler
     : public RegistrationRequest::CustomRequestHandler {
  public:
-  InstanceIDGetTokenRequestHandler(
-      const std::string& instance_id,
-      const std::string& authorized_entity,
-      const std::string& scope,
-      int gcm_version,
-      base::TimeDelta time_to_live,
-      const std::map<std::string, std::string>& options);
+  InstanceIDGetTokenRequestHandler(const std::string& instance_id,
+                                   const std::string& authorized_entity,
+                                   const std::string& scope,
+                                   int gcm_version,
+                                   base::TimeDelta time_to_live);
   ~InstanceIDGetTokenRequestHandler() override;
 
   // RegistrationRequest overrides:
@@ -38,7 +35,6 @@ class GCM_EXPORT InstanceIDGetTokenRequestHandler
   std::string scope_;
   int gcm_version_;
   base::TimeDelta time_to_live_;
-  std::map<std::string, std::string> options_;
 
   DISALLOW_COPY_AND_ASSIGN(InstanceIDGetTokenRequestHandler);
 };

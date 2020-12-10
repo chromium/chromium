@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_GCM_DRIVER_INSTANCE_ID_INSTANCE_ID_H_
 #define COMPONENTS_GCM_DRIVER_INSTANCE_ID_INSTANCE_ID_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -108,15 +107,11 @@ class InstanceID {
   // |scope|: identifies authorized actions that the authorized entity can take.
   //          E.g. for sending GCM messages, "GCM" scope should be used.
   // |time_to_live|: TTL of retrieved token, unlimited if zero value passed.
-  // |options|: allows including a small number of string key/value pairs that
-  //            will be associated with the token and may be used in processing
-  //            the request.
   // |flags|: Flags used to create this token.
   // |callback|: to be called once the asynchronous operation is done.
   virtual void GetToken(const std::string& authorized_entity,
                         const std::string& scope,
                         base::TimeDelta time_to_live,
-                        const std::map<std::string, std::string>& options,
                         std::set<Flags> flags,
                         GetTokenCallback callback) = 0;
 

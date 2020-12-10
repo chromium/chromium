@@ -204,7 +204,6 @@ void FCMHandler::StartTokenFetch(
   instance_id_driver_->GetInstanceID(app_id_)->GetToken(
       sender_id_, instance_id::kGCMScope,
       /*time_to_live=*/base::TimeDelta::FromSeconds(kInstanceIDTokenTTLSeconds),
-      /*options=*/std::map<std::string, std::string>(),
       /*flags=*/{instance_id::InstanceID::Flags::kIsLazy}, std::move(callback));
 }
 

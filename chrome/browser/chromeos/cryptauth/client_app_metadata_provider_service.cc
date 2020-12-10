@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service.h"
 
-#include <map>
 #include <string>
 
 #include "ash/public/cpp/ash_pref_names.h"
@@ -250,7 +249,7 @@ void ClientAppMetadataProviderService::OnInstanceIdFetched(
       device_sync::
           kCryptAuthV2EnrollmentAuthorizedEntity /* authorized_entity */,
       kInstanceIdScope /* scope */, base::TimeDelta() /* time_to_live */,
-      std::map<std::string, std::string>() /* options */, {} /* flags */,
+      {} /* flags */,
       base::BindOnce(
           &ClientAppMetadataProviderService::OnInstanceIdTokenFetched,
           weak_ptr_factory_.GetWeakPtr(), bluetooth_adapter, hardware_info,

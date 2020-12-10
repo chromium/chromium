@@ -738,7 +738,7 @@ TEST_F(GCMDriverFunctionalTest, DISABLED_RegisterAfterUnfinishedUnregister) {
   // Start unregistration without waiting for it to complete.
   Unregister(kTestAppID1, GCMDriverTest::DO_NOT_WAIT);
 
-  // Register immeidately after unregistration is not completed.
+  // Register immediately after unregistration is not completed.
   sender_ids.push_back("sender2");
   Register(kTestAppID1, sender_ids, GCMDriverTest::WAIT);
 
@@ -947,10 +947,8 @@ void GCMDriverInstanceIDTest::GetToken(const std::string& app_id,
                                        WaitToFinish wait_to_finish) {
   base::RunLoop run_loop;
   set_async_operation_completed_callback(run_loop.QuitClosure());
-  std::map<std::string, std::string> options;
   driver()->GetInstanceIDHandlerInternal()->GetToken(
       app_id, authorized_entity, scope, /*time_to_live=*/base::TimeDelta(),
-      options,
       base::BindOnce(&GCMDriverTest::RegisterCompleted,
                      base::Unretained(this)));
   if (wait_to_finish == WAIT)

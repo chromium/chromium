@@ -7,7 +7,6 @@
 
 #include <jni.h>
 
-#include <map>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
@@ -46,7 +45,6 @@ class InstanceIDAndroid : public InstanceID {
   void GetToken(const std::string& audience,
                 const std::string& scope,
                 base::TimeDelta time_to_live,
-                const std::map<std::string, std::string>& options,
                 std::set<Flags> flags,
                 GetTokenCallback callback) override;
   void ValidateToken(const std::string& authorized_entity,

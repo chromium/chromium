@@ -49,7 +49,7 @@ void GetGCMToken(content::BrowserContext* context,
   }
 
   instance_id->GetToken(kProdSenderId, kScopeGCM,
-                        /*time_to_live=*/base::TimeDelta(), /*options=*/{},
+                        /*time_to_live=*/base::TimeDelta(),
                         /*flags=*/{}, std::move(callback));
 }
 

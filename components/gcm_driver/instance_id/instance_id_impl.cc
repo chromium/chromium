@@ -12,7 +12,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -91,29 +90,25 @@ void InstanceIDImpl::DoGetCreationTime(GetCreationTimeCallback callback) {
 void InstanceIDImpl::GetToken(const std::string& authorized_entity,
                               const std::string& scope,
                               base::TimeDelta time_to_live,
-                              const std::map<std::string, std::string>& options,
                               std::set<Flags> flags,
                               GetTokenCallback callback) {
   DCHECK(!authorized_entity.empty());
   DCHECK(!scope.empty());
 
-  UMA_HISTOGRAM_COUNTS_100("InstanceID.GetToken.OptionsCount", options.size());
-
-  RunWhenReady(base::BindOnce(
-      &InstanceIDImpl::DoGetToken, weak_ptr_factory_.GetWeakPtr(),
-      authorized_entity, scope, time_to_live, options, std::move(callback)));
+  RunWhenReady(base::BindOnce(&InstanceIDImpl::DoGetToken,
+                              weak_ptr_factory_.GetWeakPtr(), authorized_entity,
+                              scope, time_to_live, std::move(callback)));
 }
 
 void InstanceIDImpl::DoGetToken(
     const std::string& authorized_entity,
     const std::string& scope,
     base::TimeDelta time_to_live,
-    const std::map<std::string, std::string>& options,
     GetTokenCallback callback) {
   EnsureIDGenerated();
 
   Handler()->GetToken(
-      app_id(), authorized_entity, scope, time_to_live, options,
+      app_id(), authorized_entity, scope, time_to_live,
       base::BindOnce(&InstanceIDImpl::OnGetTokenCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

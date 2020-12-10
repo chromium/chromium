@@ -2294,7 +2294,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.InstanceID.GetToken.OptionsCount" units="options"
-    expires_after="M91">
+    expires_after="M89">
+  <obsolete>
+    Deprecated as of 11/2020
+  </obsolete>
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>

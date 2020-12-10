@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_GCM_DRIVER_INSTANCE_ID_INSTANCE_ID_IMPL_H_
 #define COMPONENTS_GCM_DRIVER_INSTANCE_ID_INSTANCE_ID_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
@@ -36,7 +35,6 @@ class InstanceIDImpl : public InstanceID {
   void GetToken(const std::string& authorized_entity,
                 const std::string& scope,
                 base::TimeDelta time_to_live,
-                const std::map<std::string, std::string>& options,
                 std::set<Flags> flags,
                 GetTokenCallback callback) override;
   void ValidateToken(const std::string& authorized_entity,
@@ -66,7 +64,6 @@ class InstanceIDImpl : public InstanceID {
   void DoGetToken(const std::string& authorized_entity,
                   const std::string& scope,
                   base::TimeDelta time_to_live,
-                  const std::map<std::string, std::string>& options,
                   GetTokenCallback callback);
   void DoValidateToken(const std::string& authorized_entity,
                        const std::string& scope,

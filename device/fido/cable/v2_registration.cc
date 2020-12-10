@@ -59,7 +59,7 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
 
     instance_id_->GetToken(
         kFCMSenderId, instance_id::kGCMScope,
-        /*time_to_live=*/base::TimeDelta(), /*options=*/{},
+        /*time_to_live=*/base::TimeDelta(),
         /*flags=*/{},
         base::BindOnce(&FCMHandler::GetTokenComplete, base::Unretained(this)));
   }

@@ -116,7 +116,6 @@ class GCMDriverDesktop : public GCMDriver,
                 const std::string& authorized_entity,
                 const std::string& scope,
                 base::TimeDelta time_to_live,
-                const std::map<std::string, std::string>& options,
                 GetTokenCallback callback) override;
   void ValidateToken(const std::string& app_id,
                      const std::string& authorized_entity,
@@ -166,8 +165,7 @@ class GCMDriverDesktop : public GCMDriver,
   void DoGetToken(const std::string& app_id,
                   const std::string& authorized_entity,
                   const std::string& scope,
-                  base::TimeDelta time_to_live,
-                  const std::map<std::string, std::string>& options);
+                  base::TimeDelta time_to_live);
   void DoDeleteToken(const std::string& app_id,
                      const std::string& authorized_entity,
                      const std::string& scope);

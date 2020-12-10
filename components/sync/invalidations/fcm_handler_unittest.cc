@@ -4,7 +4,6 @@
 
 #include "components/sync/invalidations/fcm_handler.h"
 
-#include <map>
 #include <set>
 #include <string>
 #include <utility>
@@ -53,7 +52,6 @@ class MockInstanceID : public InstanceID {
               (const std::string& authorized_entity,
                const std::string& scope,
                base::TimeDelta time_to_live,
-               (const std::map<std::string, std::string>& options),
                std::set<Flags> flags,
                GetTokenCallback callback),
               (override));
@@ -134,7 +132,7 @@ class FCMHandlerTest : public testing::Test {
 TEST_F(FCMHandlerTest, ShouldReturnValidToken) {
   // Check that the handler gets the token through GetToken.
   EXPECT_CALL(mock_instance_id_, GetToken)
-      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+      .WillOnce(WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
         std::move(callback).Run("token", InstanceID::Result::SUCCESS);
       })));
 
@@ -163,7 +161,7 @@ TEST_F(FCMHandlerTest, ShouldNotifyOnTokenChange) {
   // Check that the handler gets the token through GetToken.
   ON_CALL(mock_instance_id_, GetToken)
       .WillByDefault(
-          WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+          WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
             std::move(callback).Run("token", InstanceID::Result::SUCCESS);
           })));
 
@@ -180,7 +178,7 @@ TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndActOnNewToken) {
   // Check that the handler gets the token through GetToken and notifies the
   // observer.
   EXPECT_CALL(mock_instance_id_, GetToken)
-      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+      .WillOnce(WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
         std::move(callback).Run("token", InstanceID::Result::SUCCESS);
       })));
   EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
@@ -193,7 +191,7 @@ TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndActOnNewToken) {
       base::TimeDelta::FromSeconds(1));
   // When it is time, validation happens.
   EXPECT_CALL(mock_instance_id_, GetToken)
-      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+      .WillOnce(WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
         std::move(callback).Run("new token", InstanceID::Result::SUCCESS);
       })));
   EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
@@ -209,7 +207,7 @@ TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndNotActOnSameToken) {
   // Check that the handler gets the token through GetToken and notifies the
   // observer.
   EXPECT_CALL(mock_instance_id_, GetToken)
-      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+      .WillOnce(WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
         std::move(callback).Run("token", InstanceID::Result::SUCCESS);
       })));
   EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
@@ -222,7 +220,7 @@ TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndNotActOnSameToken) {
       base::TimeDelta::FromSeconds(1));
   // When it is time, validation happens.
   EXPECT_CALL(mock_instance_id_, GetToken)
-      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+      .WillOnce(WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
         std::move(callback).Run("token", InstanceID::Result::SUCCESS);
       })));
   EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(0);
@@ -234,7 +232,7 @@ TEST_F(FCMHandlerTest, ShouldScheduleTokenValidationAndNotActOnSameToken) {
 TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
   // Check that the handler gets the token through GetToken.
   EXPECT_CALL(mock_instance_id_, GetToken)
-      .WillOnce(WithArg<5>(Invoke([](InstanceID::GetTokenCallback callback) {
+      .WillOnce(WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
         std::move(callback).Run("token", InstanceID::Result::SUCCESS);
       })));
   fcm_handler_.StartListening();

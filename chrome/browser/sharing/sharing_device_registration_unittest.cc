@@ -73,7 +73,6 @@ class FakeInstanceID : public instance_id::InstanceID {
   void GetToken(const std::string& authorized_entity,
                 const std::string& scope,
                 base::TimeDelta time_to_live,
-                const std::map<std::string, std::string>& options,
                 std::set<Flags> flags,
                 GetTokenCallback callback) override {
     if (authorized_entity == kSharingSenderID)

@@ -27,7 +27,6 @@
 
 namespace safe_browsing {
 
-using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
@@ -55,11 +54,10 @@ class MockInstanceID : public instance_id::InstanceID {
   MockInstanceID() : InstanceID("", nullptr) {}
   ~MockInstanceID() override = default;
 
-  MOCK_METHOD6(GetToken,
+  MOCK_METHOD5(GetToken,
                void(const std::string& authorized_entity,
                     const std::string& scope,
                     base::TimeDelta time_to_live,
-                    const std::map<std::string, std::string>& options,
                     std::set<Flags> flags,
                     GetTokenCallback callback));
 
@@ -331,17 +329,16 @@ TEST_F(BinaryFCMServiceTest, UnregistersTokensOnShutdown) {
 TEST_F(BinaryFCMServiceTest, UnregisterOneTokensOneCall) {
   MockInstanceIDDriver driver;
   MockInstanceID instance_id;
-  ON_CALL(driver, GetInstanceID(_)).WillByDefault(Return(&instance_id));
+  ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
   binary_fcm_service_ = std::make_unique<BinaryFCMService>(
       gcm::GCMProfileServiceFactory::GetForProfile(&profile_)->driver(),
       &driver);
 
-  EXPECT_CALL(instance_id, GetToken(_, _, _, _, _, _))
+  EXPECT_CALL(instance_id, GetToken)
       .Times(2)
       .WillRepeatedly(
           Invoke([](const std::string&, const std::string&, base::TimeDelta,
-                    const std::map<std::string, std::string>&,
                     std::set<instance_id::InstanceID::Flags>,
                     instance_id::InstanceID::GetTokenCallback callback) {
             std::move(callback).Run("token",
@@ -364,7 +361,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterOneTokensOneCall) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_CALL(instance_id, DeleteToken(_, _, _))
+  EXPECT_CALL(instance_id, DeleteToken)
       .WillOnce(
           Invoke([](const std::string&, const std::string&,
                     instance_id::InstanceID::DeleteTokenCallback callback) {
@@ -380,16 +377,15 @@ TEST_F(BinaryFCMServiceTest, UnregisterOneTokensOneCall) {
 TEST_F(BinaryFCMServiceTest, UnregisterTwoTokensTwoCalls) {
   MockInstanceIDDriver driver;
   MockInstanceID instance_id;
-  ON_CALL(driver, GetInstanceID(_)).WillByDefault(Return(&instance_id));
+  ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
   binary_fcm_service_ = std::make_unique<BinaryFCMService>(
       gcm::GCMProfileServiceFactory::GetForProfile(&profile_)->driver(),
       &driver);
 
-  EXPECT_CALL(instance_id, GetToken(_, _, _, _, _, _))
+  EXPECT_CALL(instance_id, GetToken)
       .WillOnce(
           Invoke([](const std::string&, const std::string&, base::TimeDelta,
-                    const std::map<std::string, std::string>&,
                     std::set<instance_id::InstanceID::Flags>,
                     instance_id::InstanceID::GetTokenCallback callback) {
             std::move(callback).Run("token",
@@ -397,7 +393,6 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokensTwoCalls) {
           }))
       .WillOnce(
           Invoke([](const std::string&, const std::string&, base::TimeDelta,
-                    const std::map<std::string, std::string>&,
                     std::set<instance_id::InstanceID::Flags>,
                     instance_id::InstanceID::GetTokenCallback callback) {
             std::move(callback).Run("token 2",
@@ -420,7 +415,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokensTwoCalls) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_CALL(instance_id, DeleteToken(_, _, _))
+  EXPECT_CALL(instance_id, DeleteToken)
       .Times(2)
       .WillOnce(
           Invoke([](const std::string&, const std::string&,
@@ -437,7 +432,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokensTwoCalls) {
 TEST_F(BinaryFCMServiceTest, UnregisterTwoTokenConflict) {
   MockInstanceIDDriver driver;
   MockInstanceID instance_id;
-  ON_CALL(driver, GetInstanceID(_)).WillByDefault(Return(&instance_id));
+  ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
   binary_fcm_service_ = std::make_unique<BinaryFCMService>(
       gcm::GCMProfileServiceFactory::GetForProfile(&profile_)->driver(),
@@ -448,18 +443,17 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokenConflict) {
 
   // Both calls to GetToken return the same value since we mock a case where the
   // second GetToken call happens before the first DeleteToken call resolves.
-  EXPECT_CALL(instance_id, GetToken(_, _, _, _, _, _))
+  EXPECT_CALL(instance_id, GetToken)
       .Times(2)
       .WillRepeatedly(
           Invoke([](const std::string&, const std::string&, base::TimeDelta,
-                    const std::map<std::string, std::string>&,
                     std::set<instance_id::InstanceID::Flags>,
                     instance_id::InstanceID::GetTokenCallback callback) {
             std::move(callback).Run("token",
                                     instance_id::InstanceID::Result::SUCCESS);
           }));
 
-  EXPECT_CALL(instance_id, DeleteToken(_, _, _))
+  EXPECT_CALL(instance_id, DeleteToken)
       .WillOnce(
           Invoke([this, &second_id](
                      const std::string&, const std::string&,
@@ -484,7 +478,7 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokenConflict) {
   task_environment_.RunUntilIdle();
 
   // Unregister the second token.
-  EXPECT_CALL(instance_id, DeleteToken(_, _, _))
+  EXPECT_CALL(instance_id, DeleteToken)
       .WillOnce(
           Invoke([](const std::string&, const std::string&,
                     instance_id::InstanceID::DeleteTokenCallback callback) {
@@ -499,16 +493,15 @@ TEST_F(BinaryFCMServiceTest, UnregisterTwoTokenConflict) {
 TEST_F(BinaryFCMServiceTest, QueuesGetInstanceIDOnRetriableError) {
   MockInstanceIDDriver driver;
   MockInstanceID instance_id;
-  ON_CALL(driver, GetInstanceID(_)).WillByDefault(Return(&instance_id));
+  ON_CALL(driver, GetInstanceID).WillByDefault(Return(&instance_id));
   binary_fcm_service_.reset();
   binary_fcm_service_ = std::make_unique<BinaryFCMService>(
       gcm::GCMProfileServiceFactory::GetForProfile(&profile_)->driver(),
       &driver);
 
-  EXPECT_CALL(instance_id, GetToken(_, _, _, _, _, _))
+  EXPECT_CALL(instance_id, GetToken)
       .WillOnce(
           Invoke([](const std::string&, const std::string&, base::TimeDelta,
-                    const std::map<std::string, std::string>&,
                     std::set<instance_id::InstanceID::Flags>,
                     instance_id::InstanceID::GetTokenCallback callback) {
             std::move(callback).Run(
@@ -516,7 +509,6 @@ TEST_F(BinaryFCMServiceTest, QueuesGetInstanceIDOnRetriableError) {
           }))
       .WillOnce(
           Invoke([](const std::string&, const std::string&, base::TimeDelta,
-                    const std::map<std::string, std::string>&,
                     std::set<instance_id::InstanceID::Flags>,
                     instance_id::InstanceID::GetTokenCallback callback) {
             std::move(callback).Run("token",

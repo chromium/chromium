@@ -21,8 +21,6 @@ const char kInstanceIDKey[] = "appid";
 const char kScopeKey[] = "scope";
 const char kExtraScopeKey[] = "X-scope";
 const char kTimeToLiveSecondsKey[] = "ttl";
-// Prefix that needs to be added for each option key.
-const char kOptionKeyPrefix[] = "X-";
 
 }  // namespace
 
@@ -31,14 +29,12 @@ InstanceIDGetTokenRequestHandler::InstanceIDGetTokenRequestHandler(
     const std::string& authorized_entity,
     const std::string& scope,
     int gcm_version,
-    base::TimeDelta time_to_live,
-    const std::map<std::string, std::string>& options)
+    base::TimeDelta time_to_live)
     : instance_id_(instance_id),
       authorized_entity_(authorized_entity),
       scope_(scope),
       gcm_version_(gcm_version),
-      time_to_live_(time_to_live),
-      options_(options) {
+      time_to_live_(time_to_live) {
   DCHECK(!instance_id.empty());
   DCHECK(!authorized_entity.empty());
   DCHECK(!scope.empty());
@@ -49,8 +45,6 @@ InstanceIDGetTokenRequestHandler::~InstanceIDGetTokenRequestHandler() {}
 void InstanceIDGetTokenRequestHandler::BuildRequestBody(std::string* body) {
   BuildFormEncoding(kScopeKey, scope_, body);
   BuildFormEncoding(kExtraScopeKey, scope_, body);
-  for (auto iter = options_.begin(); iter != options_.end(); ++iter)
-    BuildFormEncoding(kOptionKeyPrefix + iter->first, iter->second, body);
   BuildFormEncoding(kGMSVersionKey, base::NumberToString(gcm_version_), body);
   BuildFormEncoding(kInstanceIDKey, instance_id_, body);
   BuildFormEncoding(kAuthorizedEntityKey, authorized_entity_, body);
