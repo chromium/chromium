@@ -463,6 +463,13 @@ const char kWebViewNativeContextMenuDescription[] =
     "When enabled, the native context menu are displayed when the user long "
     "press on a link or an image.";
 
+const char kRecordSnapshotSizeName[] =
+    "Record the size of image and PDF snapshots in UMA histograms";
+const char kRecordSnapshotSizeDescription[] =
+    "When enabled, the app will record UMA histograms for image and PDF "
+    "snapshots. PDF snaphot will be taken just for the purpose of the "
+    "histogram recording.";
+
 // Please insert your name/description above in alphabetical order.
 
 }  // namespace flag_descriptions

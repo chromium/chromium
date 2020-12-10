@@ -52,6 +52,9 @@ const base::Feature kIOSLegacyTLSInterstitial{
 const base::Feature kWebViewNativeContextMenu{
     "WebViewNativeContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kRecordSnapshotSize{"RecordSnapshotSize",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool UseWebClientDefaultUserAgent() {
   if (@available(iOS 13, *)) {
     return base::FeatureList::IsEnabled(kUseDefaultUserAgentInWebClient);

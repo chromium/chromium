@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #import "base/ios/crb_protocol_observers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -331,6 +332,11 @@ void ConvertAndSaveGreyImage(NSString* snapshot_id,
     return;
 
   [_lruCache setObject:image forKey:snapshotID];
+
+  // Each image in the cache has the same resolution and hence the same size.
+  size_t imageSizes = CGImageGetBytesPerRow(image.CGImage) *
+                      CGImageGetHeight(image.CGImage) * [_lruCache count];
+  base::UmaHistogramMemoryKB("IOS.Snapshots.CacheSize", imageSizes / 1024);
 
   [self.observers snapshotCache:self didUpdateSnapshotForIdentifier:snapshotID];
 

@@ -595,6 +595,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLocationPermissionsPromptName,
      flag_descriptions::kLocationPermissionsPromptDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLocationPermissionsPrompt)},
+    {"record-snapshot-size", flag_descriptions::kRecordSnapshotSizeName,
+     flag_descriptions::kRecordSnapshotSizeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kRecordSnapshotSize)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

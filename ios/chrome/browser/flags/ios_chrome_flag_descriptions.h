@@ -416,6 +416,9 @@ extern const char kWebViewNativeContextMenuDescription[];
 extern const char kRestoreGaiaCookiesIfDeletedName[];
 extern const char kRestoreGaiaCookiesIfDeletedDescription[];
 
+extern const char kRecordSnapshotSizeName[];
+extern const char kRecordSnapshotSizeDescription[];
+
 // Please add names and descriptions above in alphabetical order.
 
 }  // namespace flag_descriptions

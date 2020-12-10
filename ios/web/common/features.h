@@ -68,6 +68,11 @@ extern const base::Feature kIOSLegacyTLSInterstitial;
 // that supports it.
 extern const base::Feature kWebViewNativeContextMenu;
 
+// Records snapshot size of image (IOS.Snapshots.ImageSize histogram) and PDF
+// (IOS.Snapshots.PDFSize histogram) if enabled. Enabling this flag will
+// generate PDF when Page Snapshot is taken just to record PDF size.
+extern const base::Feature kRecordSnapshotSize;
+
 // When true, for each navigation, the default user agent is chosen by the
 // WebClient GetDefaultUserAgent() method. If it is false, the mobile version
 // is requested by default.
