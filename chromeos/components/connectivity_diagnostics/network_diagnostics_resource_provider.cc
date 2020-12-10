@@ -38,8 +38,6 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"NetworkDiagnosticsResultPlaceholder",
      IDS_NETWORK_DIAGNOSTICS_RESULT_PLACEHOLDER},
     {"NetworkDiagnosticsRun", IDS_NETWORK_DIAGNOSTICS_RUN},
-    {"SignalStrengthProblem_NotFound",
-     IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH_PROBLEM_NOT_FOUND},
     {"SignalStrengthProblem_Weak",
      IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH_PROBLEM_WEAK},
     {"GatewayPingProblem_Unreachable",

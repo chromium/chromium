@@ -292,9 +292,6 @@ Polymer({
       switch (type) {
         case RoutineType.SIGNAL_STRENGTH:
           switch (problem) {
-            case diagnosticsMojom.SignalStrengthProblem.kSignalNotFound:
-              problemStrings.push(getString('SignalStrengthProblem_NotFound'));
-              break;
             case diagnosticsMojom.SignalStrengthProblem.kWeakSignal:
               problemStrings.push(getString('SignalStrengthProblem_Weak'));
               break;

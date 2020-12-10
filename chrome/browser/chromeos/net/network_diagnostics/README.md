@@ -55,7 +55,6 @@ Problems: N/A
 Tests whether there is an acceptable signal strength on wireless networks.
 
 Problems:
-* `kSignalNotFound`: Signal not found.
 * `kWeakSignal`: Weak signal detected.
 
 #### GatewayCanBePinged

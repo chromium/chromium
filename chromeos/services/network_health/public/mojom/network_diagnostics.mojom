@@ -21,7 +21,6 @@ enum RoutineVerdict {
 // Problems related to the SignalStrength routine.
 [Extensible]
 enum SignalStrengthProblem {
-  kSignalNotFound,
   kWeakSignal,
 };
 

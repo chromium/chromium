@@ -60,8 +60,7 @@ void SignalStrengthRoutine::RunRoutine(SignalStrengthRoutineCallback callback) {
 
 void SignalStrengthRoutine::AnalyzeResultsAndExecuteCallback() {
   if (signal_strength_ == kUnknownSignalStrength) {
-    set_verdict(mojom::RoutineVerdict::kProblem);
-    problems_.emplace_back(mojom::SignalStrengthProblem::kSignalNotFound);
+    set_verdict(mojom::RoutineVerdict::kNotRun);
   } else if (signal_strength_ < kSignalStrengthThreshold) {
     set_verdict(mojom::RoutineVerdict::kProblem);
     problems_.emplace_back(mojom::SignalStrengthProblem::kWeakSignal);
