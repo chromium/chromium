@@ -1557,6 +1557,15 @@ RenderFrameHostImpl::GetIsolationInfoForSubresources() {
   return isolation_info_;
 }
 
+net::IsolationInfo
+RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
+  network::mojom::URLLoaderFactoryParamsPtr factory_params =
+      RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
+          FindLatestNavigationRequestThatIsStillCommitting(), "Unused tag");
+  DCHECK(!factory_params->isolation_info.IsEmpty());
+  return factory_params->isolation_info;
+}
+
 void RenderFrameHostImpl::GetCanonicalUrlForSharing(
     mojom::Frame::GetCanonicalUrlForSharingCallback callback) {
   // TODO(https://crbug.com/859110): Remove this once frame_ can no longer be
@@ -1666,18 +1675,20 @@ RenderFrameHostImpl::CreateURLLoaderFactoriesForIsolatedWorlds(
     NavigationRequest* navigation_request,
     const base::flat_set<url::Origin>& isolated_world_origins) {
   url::Origin main_world_origin;
+  net::IsolationInfo isolation_info;
   network::mojom::ClientSecurityStatePtr client_security_state;
   network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy =
       network::mojom::TrustTokenRedemptionPolicy::kForbid;
   ExtractFactoryParamsFromNavigationRequestOrLastCommittedNavigation(
-      navigation_request, &main_world_origin, &client_security_state,
-      nullptr /* coep_reporter_remote */, &trust_token_redemption_policy);
+      navigation_request, &main_world_origin, &isolation_info,
+      &client_security_state, nullptr /* coep_reporter_remote */,
+      &trust_token_redemption_policy);
 
   blink::PendingURLLoaderFactoryBundle::OriginMap result;
   for (const url::Origin& isolated_world_origin : isolated_world_origins) {
     network::mojom::URLLoaderFactoryParamsPtr factory_params =
         URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
-            this, isolated_world_origin, main_world_origin,
+            this, isolated_world_origin, main_world_origin, isolation_info,
             mojo::Clone(client_security_state), trust_token_redemption_policy);
 
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
@@ -2737,6 +2748,13 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
           : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
                                       request_type);
+}
+
+net::IsolationInfo
+RenderFrameHostImpl::ComputeIsolationInfoForSubresourcesForPendingCommit(
+    const url::Origin& main_world_origin) const {
+  return ComputeIsolationInfoInternal(main_world_origin,
+                                      net::IsolationInfo::RequestType::kOther);
 }
 
 net::IsolationInfo RenderFrameHostImpl::GetIsolationInfoForViewSource() const {
@@ -6269,17 +6287,6 @@ void RenderFrameHostImpl::CommitNavigation(
   url::Origin main_world_origin_for_url_loader_factory =
       navigation_request->GetOriginForURLLoaderFactory();
 
-  // IsolationInfo should be filled before the URLLoaderFactory for
-  // sub-resources is created. Only update for cross document navigations since
-  // for opaque origin same document navigations, a new origin should not be
-  // created as that would be different from the original.
-  if (!is_same_document) {
-    isolation_info_ =
-        ComputeIsolationInfoInternal(main_world_origin_for_url_loader_factory,
-                                     net::IsolationInfo::RequestType::kOther);
-  }
-  DCHECK(!isolation_info_.IsEmpty());
-
   if (navigation_request->appcache_handle()) {
     // AppCache may create a subresource URLLoaderFactory later, so make sure it
     // has the correct origin to use when calling
@@ -6665,8 +6672,6 @@ void RenderFrameHostImpl::FailedNavigation(
   // Get back to a clean state, in case a new navigation started without
   // completing an unload handler.
   ResetWaitingState();
-
-  isolation_info_ = net::IsolationInfo::CreateTransient();
 
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
@@ -7273,6 +7278,7 @@ void RenderFrameHostImpl::
     ExtractFactoryParamsFromNavigationRequestOrLastCommittedNavigation(
         NavigationRequest* navigation_request,
         url::Origin* out_main_world_origin,
+        net::IsolationInfo* out_isolation_info,
         network::mojom::ClientSecurityStatePtr* out_client_security_state,
         mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>*
             coep_reporter_pending_remote,
@@ -7293,6 +7299,7 @@ void RenderFrameHostImpl::
   if (have_successful_request) {
     // Return values based on the |navigation_request|.
     *out_main_world_origin = navigation_request->GetOriginForURLLoaderFactory();
+    *out_isolation_info = navigation_request->isolation_info_for_subresources();
     *out_client_security_state =
         mojo::Clone(navigation_request->client_security_state());
     coep_reporter = navigation_request->coep_reporter();
@@ -7309,6 +7316,7 @@ void RenderFrameHostImpl::
     // commit IPC and setting |last_committed_origin_|.
     url::Origin error_page_origin = url::Origin();
     *out_main_world_origin = error_page_origin;
+    *out_isolation_info = net::IsolationInfo::CreateTransient();
 
     *out_client_security_state =
         mojo::Clone(navigation_request->client_security_state());
@@ -7318,6 +7326,7 @@ void RenderFrameHostImpl::
   } else {
     // Use properties of the last committed navigation.
     *out_main_world_origin = last_committed_origin_;
+    *out_isolation_info = isolation_info_;
     *out_client_security_state =
         mojo::Clone(last_committed_client_security_state_);
     coep_reporter = coep_reporter_.get();
@@ -7336,17 +7345,19 @@ RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
     NavigationRequest* navigation_request,
     base::StringPiece debug_tag) {
   url::Origin main_world_origin;
+  net::IsolationInfo isolation_info;
   network::mojom::ClientSecurityStatePtr client_security_state;
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_remote;
   network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy =
       network::mojom::TrustTokenRedemptionPolicy::kForbid;
   ExtractFactoryParamsFromNavigationRequestOrLastCommittedNavigation(
-      navigation_request, &main_world_origin, &client_security_state,
-      &coep_reporter_remote, &trust_token_redemption_policy);
+      navigation_request, &main_world_origin, &isolation_info,
+      &client_security_state, &coep_reporter_remote,
+      &trust_token_redemption_policy);
 
   return URLLoaderFactoryParamsHelper::CreateForFrame(
-      this, main_world_origin, std::move(client_security_state),
+      this, main_world_origin, isolation_info, std::move(client_security_state),
       std::move(coep_reporter_remote), GetProcess(),
       trust_token_redemption_policy, debug_tag);
 }
@@ -7801,7 +7812,7 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
           worker_process_id,
           /*creator_render_frame_host_id=*/GetGlobalFrameRoutingId(),
           /*ancestor_render_frame_host_id=*/GetGlobalFrameRoutingId(),
-          last_committed_origin_, GetNetworkIsolationKey(),
+          last_committed_origin_, isolation_info_,
           cross_origin_embedder_policy_, std::move(coep_reporter)),
       std::move(receiver));
 }
@@ -8155,6 +8166,8 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
   }
   return NavigationRequest::CreateForCommit(
       frame_tree_node_, this, is_same_document, url, origin,
+      ComputeIsolationInfoInternal(origin,
+                                   net::IsolationInfo::RequestType::kOther),
       std::move(referrer), transition, should_replace_current_entry, method,
       gesture, redirects, page_state, std::move(coep_reporter),
       std::move(web_bundle_navigation_info));
@@ -8638,6 +8651,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // TODO(arthursonzogni): Updating this flag for same-document or bfcache
   // navigation isn't right. This should be moved to DidCommitNewDocument().
   appcache_handle_ = navigation_request->TakeAppCacheHandle();
+
+  isolation_info_ = navigation_request->isolation_info_for_subresources();
 
   bool created_new_document =
       !is_same_document_navigation &&

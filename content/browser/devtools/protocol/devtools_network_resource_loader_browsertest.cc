@@ -73,6 +73,7 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
     auto* frame = current_frame_host();
     auto params = URLLoaderFactoryParamsHelper::CreateForFrame(
         frame, frame->GetLastCommittedOrigin(),
+        frame->GetIsolationInfoForSubresources(),
         mojo::Clone(frame->last_committed_client_security_state()),
         /**coep_reporter=*/mojo::NullRemote(), frame->GetProcess(),
         network::mojom::TrustTokenRedemptionPolicy::kForbid,

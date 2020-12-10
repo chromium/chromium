@@ -262,6 +262,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // navigation is committed.
   virtual const net::IsolationInfo& GetIsolationInfoForSubresources() = 0;
 
+  // Returns the IsolationInfo used for subresources for the pending commit, if
+  // there is one. Otherwise, returns the IsolationInfo used for subresources of
+  // the last committed page load.
+  //
+  // TODO(https://936696): Remove this once RenderDocument ships, at which point
+  // it will no longer be needed.
+  virtual net::IsolationInfo GetPendingIsolationInfoForSubresources() = 0;
+
   // Returns the associated widget's native view.
   virtual gfx::NativeView GetNativeView() = 0;
 

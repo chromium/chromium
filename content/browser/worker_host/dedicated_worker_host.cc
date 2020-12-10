@@ -46,7 +46,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
     GlobalFrameRoutingId ancestor_render_frame_host_id,
     const url::Origin& creator_origin,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::IsolationInfo& isolation_info,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter)
@@ -59,7 +59,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       // TODO(https://crbug.com/1058759): Calculate the worker origin based on
       // the worker script URL.
       worker_origin_(creator_origin),
-      network_isolation_key_(network_isolation_key),
+      isolation_info_(isolation_info),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
       coep_reporter_(std::move(coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -329,7 +329,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
 
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForFrame(
-          ancestor_render_frame_host, worker_origin_,
+          ancestor_render_frame_host, worker_origin_, isolation_info_,
           mojo::Clone(ancestor_render_frame_host
                           ->last_committed_client_security_state()),
           std::move(coep_reporter), worker_process_host_,
@@ -397,7 +397,7 @@ void DedicatedWorkerHost::CreateQuicTransportConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<QuicTransportConnectorImpl>(
           worker_process_host_->GetID(), /*frame=*/nullptr, worker_origin_,
-          network_isolation_key_),
+          isolation_info_.network_isolation_key()),
       std::move(receiver));
 }
 
@@ -434,9 +434,8 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_host_->GetID(),
           /*creator_render_frame_host_id_=*/base::nullopt,
-          ancestor_render_frame_host_id_, worker_origin_,
-          network_isolation_key_, cross_origin_embedder_policy_,
-          std::move(coep_reporter)),
+          ancestor_render_frame_host_id_, worker_origin_, isolation_info_,
+          cross_origin_embedder_policy_, std::move(coep_reporter)),
       std::move(receiver));
 }
 

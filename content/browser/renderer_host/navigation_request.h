@@ -44,6 +44,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/isolation_info.h"
 #include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -209,6 +210,7 @@ class CONTENT_EXPORT NavigationRequest
       bool is_same_document,
       const GURL& url,
       const url::Origin& origin,
+      const net::IsolationInfo& isolation_info_for_subresources,
       blink::mojom::ReferrerPtr referrer,
       const ui::PageTransition& transition,
       bool should_replace_current_entry,
@@ -731,6 +733,11 @@ class CONTENT_EXPORT NavigationRequest
 
   bool IsOverridingUserAgent() const {
     return commit_params_->is_overriding_user_agent || entry_overrides_ua_;
+  }
+
+  // Returns the IsolationInfo that should be used to load subresources.
+  const net::IsolationInfo& isolation_info_for_subresources() const {
+    return isolation_info_for_subresources_;
   }
 
  private:
@@ -1503,6 +1510,8 @@ class CONTENT_EXPORT NavigationRequest
 
   OptInOriginIsolationEndResult origin_isolation_end_result_ =
       OptInOriginIsolationEndResult::kNotRequestedAndNotIsolated;
+
+  net::IsolationInfo isolation_info_for_subresources_;
 
   // Prerender2:
   // This is valid only when this navigation will activate the prerendered

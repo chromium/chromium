@@ -897,6 +897,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
     bool is_same_document,
     const GURL& url,
     const url::Origin& origin,
+    const net::IsolationInfo& isolation_info_for_subresources,
     blink::mojom::ReferrerPtr referrer,
     const ui::PageTransition& transition,
     bool should_replace_current_entry,
@@ -979,6 +980,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
       std::move(web_bundle_navigation_info);
   navigation_request->render_frame_host_ = render_frame_host;
   navigation_request->coep_reporter_ = std::move(coep_reporter);
+  navigation_request->isolation_info_for_subresources_ =
+      isolation_info_for_subresources;
   navigation_request->StartNavigation(true);
   DCHECK(navigation_request->IsNavigationStarted());
 
@@ -3198,6 +3201,8 @@ void NavigationRequest::CommitErrorPage(
   sandbox_flags_to_commit_.reset();
   ComputeSandboxFlagsToCommit();
   ReadyToCommitNavigation(true);
+  // Use a separate cache shard, and no cookies, for error pages.
+  isolation_info_for_subresources_ = net::IsolationInfo::CreateTransient();
   render_frame_host_->FailedNavigation(this, *common_params_, *commit_params_,
                                        has_stale_copy_in_cache_, net_error_,
                                        error_page_content);
@@ -3339,6 +3344,13 @@ void NavigationRequest::CommitNavigation() {
       IgnoreInterfaceDisconnection();
     }
   }
+
+  // TODO(crbug.com/979296): Consider changing this code to copy an origin
+  // instead of creating one from a URL which lacks opacity information.
+  isolation_info_for_subresources_ =
+      render_frame_host_->ComputeIsolationInfoForSubresourcesForPendingCommit(
+          GetOriginForURLLoaderFactory());
+  DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
   CreateCoepReporter(render_frame_host_->GetProcess()->GetStoragePartition());
   coop_status_.UpdateReporterStoragePartition(

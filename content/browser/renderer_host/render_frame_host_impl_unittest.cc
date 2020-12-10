@@ -9,6 +9,8 @@
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "net/base/isolation_info.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -85,10 +87,101 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   EXPECT_EQ(url::Origin::Create(final_url),
             main_rfh()->GetLastCommittedOrigin());
 
-  // As a test sanity check, verify that there was no RFH swap (the bug this
-  // test protects against would only happen if there is no swap).  In fact,
-  // FindLatestNavigationRequestThatIsStillCommitting might possibly be removed
-  // entirely once we swap on all document changes.
+  // As a test correctness check, verify that there was no RFH swap (the bug
+  // this test protects against would only happen if there is no swap).  In
+  // fact, FindLatestNavigationRequestThatIsStillCommitting might possibly be
+  // removed entirely once we swap on all document changes.
+  EXPECT_EQ(initial_rfh, main_rfh());
+}
+
+// Test the IsolationInfo and related fields of a request during the various
+// phases of a commit, when a RenderFrameHost is reused. Once RenderDocument
+// ships, this test may no longer be needed.
+TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
+  GURL initial_url = GURL("https://initial.example.test/");
+  url::Origin expected_initial_origin = url::Origin::Create(initial_url);
+  net::IsolationInfo expected_initial_isolation_info =
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther, expected_initial_origin,
+          expected_initial_origin,
+          net::SiteForCookies::FromOrigin(expected_initial_origin),
+          std::set<net::SchemefulSite>());
+
+  GURL final_url = GURL("https://final.example.test/");
+  url::Origin expected_final_origin = url::Origin::Create(final_url);
+  net::IsolationInfo expected_final_isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, expected_final_origin,
+      expected_final_origin,
+      net::SiteForCookies::FromOrigin(expected_final_origin),
+      std::set<net::SchemefulSite>());
+
+  // Start the test with a simple navigation.
+  {
+    std::unique_ptr<NavigationSimulator> simulator =
+        NavigationSimulator::CreateRendererInitiated(initial_url, main_rfh());
+    simulator->Start();
+    simulator->Commit();
+  }
+
+  // This test is targetted at the case an RFH is reused between navigations.
+  RenderFrameHost* initial_rfh = main_rfh();
+  DisableProactiveBrowsingInstanceSwapFor(main_rfh());
+
+  // Check values for the initial commit.
+  EXPECT_EQ(expected_initial_origin, main_rfh()->GetLastCommittedOrigin());
+  EXPECT_TRUE(expected_initial_isolation_info.IsEqualForTesting(
+      main_rfh()->GetIsolationInfoForSubresources()));
+  EXPECT_EQ(expected_initial_isolation_info.network_isolation_key(),
+            main_rfh()->GetNetworkIsolationKey());
+  EXPECT_TRUE(expected_initial_isolation_info.site_for_cookies().IsEquivalent(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->ComputeSiteForCookies()));
+  EXPECT_TRUE(expected_initial_isolation_info.IsEqualForTesting(
+      main_rfh()->GetPendingIsolationInfoForSubresources()));
+
+  // Values should be the same when a pending navigation was started but
+  // hasn't yet reached the ready-to-commit state.
+  std::unique_ptr<NavigationSimulator> simulator2 =
+      NavigationSimulator::CreateRendererInitiated(final_url, main_rfh());
+  simulator2->Start();
+  EXPECT_EQ(expected_initial_origin, main_rfh()->GetLastCommittedOrigin());
+  EXPECT_TRUE(expected_initial_isolation_info.IsEqualForTesting(
+      main_rfh()->GetIsolationInfoForSubresources()));
+  EXPECT_EQ(expected_initial_isolation_info.network_isolation_key(),
+            main_rfh()->GetNetworkIsolationKey());
+  EXPECT_TRUE(expected_initial_isolation_info.site_for_cookies().IsEquivalent(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->ComputeSiteForCookies()));
+  EXPECT_TRUE(expected_initial_isolation_info.IsEqualForTesting(
+      main_rfh()->GetPendingIsolationInfoForSubresources()));
+
+  // Only the GetPendingIsolationInfoForSubresources() should change when a
+  // pending navigation has reached the ready-to-commit state.
+  simulator2->ReadyToCommit();
+  simulator2->Wait();
+  EXPECT_EQ(expected_initial_origin, main_rfh()->GetLastCommittedOrigin());
+  EXPECT_TRUE(expected_initial_isolation_info.IsEqualForTesting(
+      main_rfh()->GetIsolationInfoForSubresources()));
+  EXPECT_EQ(expected_initial_isolation_info.network_isolation_key(),
+            main_rfh()->GetNetworkIsolationKey());
+  EXPECT_TRUE(expected_initial_isolation_info.site_for_cookies().IsEquivalent(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->ComputeSiteForCookies()));
+  EXPECT_TRUE(expected_final_isolation_info.IsEqualForTesting(
+      main_rfh()->GetPendingIsolationInfoForSubresources()));
+
+  // Verify expected main world origin once we are again in a steady state -
+  // after a commit.
+  simulator2->Commit();
+  EXPECT_EQ(expected_final_origin, main_rfh()->GetLastCommittedOrigin());
+  EXPECT_TRUE(expected_final_isolation_info.IsEqualForTesting(
+      main_rfh()->GetIsolationInfoForSubresources()));
+  EXPECT_EQ(expected_final_isolation_info.network_isolation_key(),
+            main_rfh()->GetNetworkIsolationKey());
+  EXPECT_TRUE(expected_final_isolation_info.site_for_cookies().IsEquivalent(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->ComputeSiteForCookies()));
+  EXPECT_TRUE(expected_final_isolation_info.IsEqualForTesting(
+      main_rfh()->GetPendingIsolationInfoForSubresources()));
+
+  // As a test correctness check, verify that there was no RFH swap. When
+  // there's always an RFH swap, this test will likely no longer be useful.
   EXPECT_EQ(initial_rfh, main_rfh());
 }
 

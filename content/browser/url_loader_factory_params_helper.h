@@ -47,6 +47,7 @@ class URLLoaderFactoryParamsHelper {
   CreateForFrame(
       RenderFrameHostImpl* frame,
       const url::Origin& origin,
+      const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
@@ -60,6 +61,7 @@ class URLLoaderFactoryParamsHelper {
       RenderFrameHostImpl* frame,
       const url::Origin& isolated_world_origin,
       const url::Origin& main_world_origin,
+      const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr client_security_state,
       network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy);
 

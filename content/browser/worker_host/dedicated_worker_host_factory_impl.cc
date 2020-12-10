@@ -40,7 +40,7 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
     GlobalFrameRoutingId ancestor_render_frame_host_id,
     const url::Origin& creator_origin,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::IsolationInfo& isolation_info,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter)
@@ -48,7 +48,7 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
       creator_render_frame_host_id_(creator_render_frame_host_id),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_origin),
-      network_isolation_key_(network_isolation_key),
+      isolation_info_(isolation_info),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
       coep_reporter_(std::move(coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -92,7 +92,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
 
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
-      ancestor_render_frame_host_id_, creator_origin_, network_isolation_key_,
+      ancestor_render_frame_host_id_, creator_origin_, isolation_info_,
       cross_origin_embedder_policy_, std::move(coep_reporter));
   host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
 }
@@ -134,7 +134,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
 
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
-      ancestor_render_frame_host_id_, creator_origin_, network_isolation_key_,
+      ancestor_render_frame_host_id_, creator_origin_, isolation_info_,
       cross_origin_embedder_policy_, std::move(coep_reporter));
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;
   host->BindBrowserInterfaceBrokerReceiver(

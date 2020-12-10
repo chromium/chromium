@@ -129,7 +129,7 @@ bool PrefetchProxySubresourceManager::MaybeProxyURLLoaderFactory(
   mojo::PendingRemote<network::mojom::URLLoaderFactory> isolated_factory_remote;
   create_isolated_loader_factory_callback_.Run(
       isolated_factory_remote.InitWithNewPipeAndPassReceiver(),
-      frame->GetIsolationInfoForSubresources());
+      frame->GetPendingIsolationInfoForSubresources());
 
   auto proxy = std::make_unique<PrefetchProxyProxyingURLLoaderFactory>(
       this, frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
