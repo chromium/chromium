@@ -753,7 +753,7 @@ const base::Feature kV8VmFuture{"V8VmFuture",
 
 // Enable display_override manifest entry for web applications.
 const base::Feature kWebAppManifestDisplayOverride{
-    "WebAppManifestDisplayOverride", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebAppManifestDisplayOverride", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable window controls overlays for desktop PWAs
 const base::Feature kWebAppWindowControlsOverlay{
