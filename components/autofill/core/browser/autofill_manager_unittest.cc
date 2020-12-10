@@ -5046,18 +5046,6 @@ TEST_P(AutofillManagerStructuredProfileTest,
   autofill_manager_.reset();
 }
 
-namespace {
-void AddFieldSuggestionToForm(
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
-    autofill::FormFieldData field_data,
-    ServerFieldType field_type) {
-  auto* field_suggestion = form_suggestion->add_field_suggestions();
-  field_suggestion->set_field_signature(
-      CalculateFieldSignatureForField(field_data).value());
-  field_suggestion->set_primary_type_prediction(field_type);
-}
-}  // namespace
-
 // Test that OnLoadedServerPredictions can obtain the FormStructure with the
 // signature of the queried form from the API and apply type predictions.
 // What we test here:
@@ -5111,14 +5099,20 @@ TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   AutofillQueryResponse::FormSuggestion* form_suggestion;
   // Set suggestions for form 1.
   form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0], ADDRESS_HOME_CITY);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1], ADDRESS_HOME_STATE);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[2], ADDRESS_HOME_ZIP);
+  autofill::test::AddFieldSuggestionToForm(form.fields[0], ADDRESS_HOME_CITY,
+                                           form_suggestion);
+  autofill::test::AddFieldSuggestionToForm(form.fields[1], ADDRESS_HOME_STATE,
+                                           form_suggestion);
+  autofill::test::AddFieldSuggestionToForm(form.fields[2], ADDRESS_HOME_ZIP,
+                                           form_suggestion);
   // Set suggestions for form 2.
   form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form2.fields[0], NAME_LAST);
-  AddFieldSuggestionToForm(form_suggestion, form2.fields[1], NAME_MIDDLE);
-  AddFieldSuggestionToForm(form_suggestion, form2.fields[2], ADDRESS_HOME_ZIP);
+  autofill::test::AddFieldSuggestionToForm(form2.fields[0], NAME_LAST,
+                                           form_suggestion);
+  autofill::test::AddFieldSuggestionToForm(form2.fields[1], NAME_MIDDLE,
+                                           form_suggestion);
+  autofill::test::AddFieldSuggestionToForm(form2.fields[2], ADDRESS_HOME_ZIP,
+                                           form_suggestion);
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
@@ -5234,15 +5228,16 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0],
-                           CREDIT_CARD_NAME_FIRST);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1],
-                           CREDIT_CARD_NAME_LAST);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[2], CREDIT_CARD_NUMBER);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[3],
-                           CREDIT_CARD_EXP_MONTH);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[4],
-                           CREDIT_CARD_EXP_4_DIGIT_YEAR);
+  autofill::test::AddFieldSuggestionToForm(
+      form.fields[0], CREDIT_CARD_NAME_FIRST, form_suggestion);
+  autofill::test::AddFieldSuggestionToForm(
+      form.fields[1], CREDIT_CARD_NAME_LAST, form_suggestion);
+  autofill::test::AddFieldSuggestionToForm(form.fields[2], CREDIT_CARD_NUMBER,
+                                           form_suggestion);
+  autofill::test::AddFieldSuggestionToForm(
+      form.fields[3], CREDIT_CARD_EXP_MONTH, form_suggestion);
+  autofill::test::AddFieldSuggestionToForm(
+      form.fields[4], CREDIT_CARD_EXP_4_DIGIT_YEAR, form_suggestion);
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));

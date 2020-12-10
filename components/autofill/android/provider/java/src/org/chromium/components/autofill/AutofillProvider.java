@@ -118,6 +118,11 @@ public class AutofillProvider {
                                 .addAttribute("ua-autofill-hints", field.mHeuristicType)
                                 .addAttribute("id", field.mId);
 
+                // TODO(crbug.com/1151542): Only add the additional attributes if the crowdsourcing
+                // feature is enabled.
+                builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
+                builder.addAttribute("computed-autofill-hints", field.getComputedType());
+
                 switch (field.getControlType()) {
                     case FormFieldData.ControlType.LIST:
                         child.setAutofillType(View.AUTOFILL_TYPE_LIST);

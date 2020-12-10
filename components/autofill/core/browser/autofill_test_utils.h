@@ -337,6 +337,11 @@ std::string LastYear();
 std::string NextYear();
 std::string TenYearsFromNow();
 
+void AddFieldSuggestionToForm(
+    autofill::FormFieldData field_data,
+    ServerFieldType field_type,
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
+
 }  // namespace test
 }  // namespace autofill
 

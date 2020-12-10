@@ -63,11 +63,17 @@ public class FormFieldData {
     // Indicates whether this fields was autofilled, but changed by user.
     private boolean mPreviouslyAutofilled;
 
+    // Provides the field type along with mHeuristicType, but could be changed
+    // after the object instantiated.
+    private String mServerType;
+    private String mComputedType;
+
     private FormFieldData(String name, String label, String value, String autocompleteAttr,
             boolean shouldAutocomplete, String placeholder, String type, String id,
             String[] optionValues, String[] optionContents, boolean isCheckField, boolean isChecked,
-            int maxLength, String heuristicType, float left, float top, float right, float bottom,
-            String[] datalistValues, String[] datalistLabels, boolean visible) {
+            int maxLength, String heuristicType, String serverType, String computedType, float left,
+            float top, float right, float bottom, String[] datalistValues, String[] datalistLabels,
+            boolean visible) {
         mName = name;
         mLabel = label;
         mValue = value;
@@ -92,6 +98,8 @@ public class FormFieldData {
         }
         mMaxLength = maxLength;
         mHeuristicType = heuristicType;
+        mServerType = serverType;
+        mComputedType = computedType;
         mBounds = new RectF(left, top, right, bottom);
         mVisible = visible;
     }
@@ -136,6 +144,14 @@ public class FormFieldData {
         updateAutofillState(false);
     }
 
+    public String getServerType() {
+        return mServerType;
+    }
+
+    public String getComputedType() {
+        return mComputedType;
+    }
+
     @CalledByNative
     public boolean isChecked() {
         return mIsChecked;
@@ -155,12 +171,12 @@ public class FormFieldData {
     public static FormFieldData createFormFieldData(String name, String label, String value,
             String autocompleteAttr, boolean shouldAutocomplete, String placeholder, String type,
             String id, String[] optionValues, String[] optionContents, boolean isCheckField,
-            boolean isChecked, int maxLength, String heuristicType, float left, float top,
-            float right, float bottom, String[] datalistValues, String[] datalistLabels,
-            boolean visible) {
+            boolean isChecked, int maxLength, String heuristicType, String serverType,
+            String computedType, float left, float top, float right, float bottom,
+            String[] datalistValues, String[] datalistLabels, boolean visible) {
         return new FormFieldData(name, label, value, autocompleteAttr, shouldAutocomplete,
                 placeholder, type, id, optionValues, optionContents, isCheckField, isChecked,
-                maxLength, heuristicType, left, top, right, bottom, datalistValues, datalistLabels,
-                visible);
+                maxLength, heuristicType, serverType, computedType, left, top, right, bottom,
+                datalistValues, datalistLabels, visible);
     }
 }

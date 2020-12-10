@@ -47,9 +47,18 @@ ScopedJavaLocalRef<jobject> FormFieldDataAndroid::GetJavaPeer() {
     ScopedJavaLocalRef<jobjectArray> joption_contents =
         ToJavaArrayOfStrings(env, field_ptr_->option_contents);
     ScopedJavaLocalRef<jstring> jheuristic_type;
-    if (!heuristic_type_.IsUnknown())
+    if (!heuristic_type_.IsUnknown()) {
       jheuristic_type =
           ConvertUTF8ToJavaString(env, heuristic_type_.ToString());
+    }
+    ScopedJavaLocalRef<jstring> jserver_type;
+    if (!server_type_.IsUnknown()) {
+      jserver_type = ConvertUTF8ToJavaString(env, server_type_.ToString());
+    }
+    ScopedJavaLocalRef<jstring> jcomputed_type;
+    if (!computed_type_.IsUnknown()) {
+      jcomputed_type = ConvertUTF8ToJavaString(env, computed_type_.ToString());
+    }
     ScopedJavaLocalRef<jobjectArray> jdatalist_values =
         ToJavaArrayOfStrings(env, field_ptr_->datalist_values);
     ScopedJavaLocalRef<jobjectArray> jdatalist_labels =
@@ -60,9 +69,10 @@ ScopedJavaLocalRef<jobject> FormFieldDataAndroid::GetJavaPeer() {
         field_ptr_->should_autocomplete, jplaceholder, jtype, jid,
         joption_values, joption_contents, IsCheckable(field_ptr_->check_status),
         IsChecked(field_ptr_->check_status), field_ptr_->max_length,
-        jheuristic_type, field_ptr_->bounds.x(), field_ptr_->bounds.y(),
-        field_ptr_->bounds.right(), field_ptr_->bounds.bottom(),
-        jdatalist_values, jdatalist_labels, field_ptr_->IsVisible());
+        jheuristic_type, jserver_type, jcomputed_type, field_ptr_->bounds.x(),
+        field_ptr_->bounds.y(), field_ptr_->bounds.right(),
+        field_ptr_->bounds.bottom(), jdatalist_values, jdatalist_labels,
+        field_ptr_->IsVisible());
     java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   }
   return obj;
@@ -101,6 +111,15 @@ void FormFieldDataAndroid::OnFormFieldDidChange(const base::string16& value) {
 
 bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {
   return field_ptr_->SimilarFieldAs(field);
+}
+
+void FormFieldDataAndroid::UpdateAutofillTypes(
+    const AutofillType& heuristic_type,
+    const AutofillType& server_type,
+    const AutofillType& computed_type) {
+  heuristic_type_ = heuristic_type;
+  server_type_ = server_type;
+  computed_type_ = computed_type;
 }
 
 }  // namespace autofill

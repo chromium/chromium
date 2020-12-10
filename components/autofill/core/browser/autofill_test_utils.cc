@@ -912,5 +912,15 @@ std::vector<FormSignature> GetEncodedSignatures(
   return all_signatures;
 }
 
+void AddFieldSuggestionToForm(
+    autofill::FormFieldData field_data,
+    ServerFieldType field_type,
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
+  auto* field_suggestion = form_suggestion->add_field_suggestions();
+  field_suggestion->set_field_signature(
+      CalculateFieldSignatureForField(field_data).value());
+  field_suggestion->set_primary_type_prediction(field_type);
+}
+
 }  // namespace test
 }  // namespace autofill

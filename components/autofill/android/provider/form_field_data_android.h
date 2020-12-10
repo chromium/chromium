@@ -23,13 +23,15 @@ class FormFieldDataAndroid {
   void GetValue();
   void OnFormFieldDidChange(const base::string16& value);
   bool SimilarFieldAs(const FormFieldData& field) const;
-
-  void set_heuristic_type(const AutofillType& heuristic_type) {
-    heuristic_type_ = heuristic_type;
-  }
+  void UpdateAutofillTypes(const AutofillType& heuristic_type,
+                           const AutofillType& server_type,
+                           const AutofillType& computed_type);
 
  private:
   AutofillType heuristic_type_;
+  AutofillType server_type_;
+  AutofillType computed_type_;
+
   // Not owned.
   FormFieldData* field_ptr_;
   JavaObjectWeakGlobalRef java_ref_;

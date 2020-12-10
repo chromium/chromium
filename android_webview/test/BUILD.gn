@@ -55,6 +55,7 @@ android_apk("webview_instrumentation_apk") {
     "//android_webview:platform_service_bridge_upstream_implementation_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//components/autofill/android/provider/test_support:component_autofill_provider_java_test_support",
     "//components/embedder_support/android:util_java",
     "//components/heap_profiling/multi_process:heap_profiling_java_test_support",
     "//components/policy/android:policy_java_test_support",
@@ -147,6 +148,7 @@ shared_library("libstandalonelibwebviewchromium") {
     "//android_webview/nonembedded",
     "//android_webview/public",
     "//base",
+    "//components/autofill/android/provider/test_support:component_autofill_provider_native_test_support",
     "//components/heap_profiling/multi_process:test_support",
     "//content/public/test/android:content_native_test_support",
   ]
@@ -176,6 +178,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//base:base_java_test_support",
     "//components/autofill/android:autofill_java",
     "//components/autofill/android/provider:java",
+    "//components/autofill/android/provider/test_support:component_autofill_provider_java_test_support",
     "//components/autofill/core/common/mojom:mojo_types_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/content_capture/android:java",

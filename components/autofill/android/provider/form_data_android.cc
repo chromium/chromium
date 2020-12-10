@@ -40,7 +40,7 @@ ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer(
           new FormFieldDataAndroid(&form_.fields[i])));
     }
     if (form_structure)
-      ApplyHeuristicFieldType(*form_structure);
+      UpdateFieldTypes(*form_structure);
     ScopedJavaLocalRef<jstring> jname =
         ConvertUTF16ToJavaString(env, form_.name);
     ScopedJavaLocalRef<jstring> jhost =
@@ -96,14 +96,15 @@ bool FormDataAndroid::SimilarFormAs(const FormData& form) {
   return form_.SimilarFormAs(form);
 }
 
-void FormDataAndroid::ApplyHeuristicFieldType(
-    const FormStructure& form_structure) {
+void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
   DCHECK(form_structure.field_count() == fields_.size());
   auto form_field_data_android = fields_.begin();
   for (const auto& autofill_field : form_structure) {
     DCHECK(form_field_data_android->get()->SimilarFieldAs(*autofill_field));
-    form_field_data_android->get()->set_heuristic_type(
-        AutofillType(autofill_field->heuristic_type()));
+    form_field_data_android->get()->UpdateAutofillTypes(
+        AutofillType(autofill_field->heuristic_type()),
+        AutofillType(autofill_field->server_type()),
+        autofill_field->ComputedType());
     if (++form_field_data_android == fields_.end())
       break;
   }

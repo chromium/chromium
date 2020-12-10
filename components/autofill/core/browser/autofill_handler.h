@@ -170,6 +170,15 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
     return form_interactions_ukm_logger_.get();
   }
 
+  // A public wrapper that calls |OnLoadedServerPredictions| for testing
+  // purposes only, it is used by WebView integration test and unit test, so it
+  // can't be in #ifdef UNIT_TEST.
+  void OnLoadedServerPredictionsForTest(
+      std::string response,
+      const std::vector<FormSignature>& queried_form_signatures) {
+    OnLoadedServerPredictions(response, queried_form_signatures);
+  }
+
 #ifdef UNIT_TEST
   // A public wrapper that calls |mutable_form_structures| for testing purposes
   // only.
@@ -183,13 +192,6 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
     return ParseForm(form, nullptr);
   }
 
-  // A public wrapper that calls |OnLoadedServerPredictions| for testing
-  // purposes only.
-  void OnLoadedServerPredictionsForTest(
-      std::string response,
-      const std::vector<FormSignature>& queried_form_signatures) {
-    OnLoadedServerPredictions(response, queried_form_signatures);
-  }
 #endif  // UNIT_TEST
 
  protected:
