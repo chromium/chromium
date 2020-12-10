@@ -570,6 +570,11 @@
           'shards': 20,
         },
       },
+      'linux-chromeos-beta': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
+        ],
+      },
       'linux-chromeos-chrome': {
         # TODO(https://crbug.com/932269): Promote out of experiment when the
         # tests are green.
@@ -587,6 +592,16 @@
           'shards': 30,
         },
       },
+      'linux-chromeos-ltc': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
+        ],
+      },
+      'linux-chromeos-lts': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
+        ],
+      },
       'linux-chromeos-rel': {
         'swarming': {
           'shards': 20,
@@ -596,6 +611,11 @@
             },
           ],
         },
+      },
+      'linux-chromeos-stable': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
+        ],
       },
       'linux-code-coverage': {
         'args': [
@@ -1495,8 +1515,13 @@
           'shards': 4,
         },
       },
+      # TODO(crbug.com/970649): Remove these filters.
+      'linux-chromeos-beta': {
+        'args': [
+          '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
+        ],
+      },
       'linux-chromeos-chrome': {
-        # TODO(crbug.com/970649): Remove this filter.
         'args': [
           '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
         ],
@@ -1505,6 +1530,21 @@
         'swarming': {
           'shards': 10,
         },
+      },
+      'linux-chromeos-ltc': {
+        'args': [
+          '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
+        ],
+      },
+      'linux-chromeos-lts': {
+        'args': [
+          '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
+        ],
+      },
+      'linux-chromeos-stable': {
+        'args': [
+          '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
+        ],
       },
       'linux-code-coverage': {
         'swarming': {
@@ -2170,7 +2210,27 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
         ],
       },
+      'linux-chromeos-beta': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
+        ],
+      },
       'linux-chromeos-chrome': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
+        ],
+      },
+      'linux-chromeos-ltc': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
+        ],
+      },
+      'linux-chromeos-lts': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
+        ],
+      },
+      'linux-chromeos-stable': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
         ],
