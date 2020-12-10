@@ -49,6 +49,15 @@ Polymer({
     },
   },
 
+  /**
+   * @param {number} index
+   * @return {string}
+   * @private
+   */
+  getAvatarId_(index) {
+    return 'avatarId' + index;
+  },
+
   /** @private */
   getSelectedClass_(isSelected) {
     // TODO(dpapad): Rename 'iron-selected' to 'selected' now that this CSS
