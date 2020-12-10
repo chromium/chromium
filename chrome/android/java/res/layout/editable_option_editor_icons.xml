@@ -8,7 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/editor_dialog_section_large_spacing"
-        android:layout_marginBottom="@dimen/editor_dialog_section_large_spacing"
         android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
         android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding"
         android:orientation="vertical">
@@ -24,9 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:columnWidth="@dimen/editable_option_section_logo_width"
-            android:layout_marginTop="@dimen/editor_dialog_section_small_spacing"
-            android:verticalSpacing="@dimen/editor_dialog_section_small_spacing"
-            android:horizontalSpacing="@dimen/editor_dialog_section_small_spacing"
             android:stretchMode="none"
             android:numColumns="auto_fit" />
 

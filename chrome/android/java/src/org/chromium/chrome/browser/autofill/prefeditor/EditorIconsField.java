@@ -54,10 +54,12 @@ class EditorIconsField {
      * An instance of a {@link BaseAdapter} that provides a list of card icon views.
      */
     private static class IconListAdapter extends BaseAdapter {
-        private Context mContext;
-        private List<Integer> mIconResourceIds;
-        private List<Integer> mIconDescriptionIds;
-        private int mIconSize;
+        private final Context mContext;
+        private final List<Integer> mIconResourceIds;
+        private final List<Integer> mIconDescriptionIds;
+        private final int mIconSize;
+        private final int mHorizontalPaddingInPixels;
+        private final int mVerticalPaddingInPixels;
 
         public IconListAdapter(
                 Context context, List<Integer> iconResourceIds, List<Integer> iconDescriptionIds) {
@@ -66,6 +68,10 @@ class EditorIconsField {
             mIconDescriptionIds = iconDescriptionIds;
             mIconSize = mContext.getResources().getDimensionPixelSize(
                     R.dimen.editable_option_section_logo_width);
+            mHorizontalPaddingInPixels = mContext.getResources().getDimensionPixelSize(
+                    R.dimen.editable_option_section_logo_horizontal_padding);
+            mVerticalPaddingInPixels = mContext.getResources().getDimensionPixelSize(
+                    R.dimen.editable_option_section_logo_vertical_padding);
             assert mIconResourceIds.size() == mIconDescriptionIds.size();
         }
 
@@ -94,6 +100,8 @@ class EditorIconsField {
             iconView.setAdjustViewBounds(true);
             iconView.setMaxWidth(mIconSize);
             iconView.setMaxHeight(mIconSize);
+            iconView.setPadding(mHorizontalPaddingInPixels, mVerticalPaddingInPixels,
+                    mHorizontalPaddingInPixels, mVerticalPaddingInPixels);
             return iconView;
         }
     }

@@ -45,5 +45,7 @@
     <dimen name="editor_dialog_section_small_spacing">8dp</dimen>
     <dimen name="editor_dialog_section_large_spacing">16dp</dimen>
     <dimen name="editor_dialog_section_buttons_vertical_padding">10dp</dimen>
-    <dimen name="editable_option_section_logo_width">38dp</dimen>
+    <dimen name="editable_option_section_logo_width">48dp</dimen>
+    <dimen name="editable_option_section_logo_horizontal_padding">5dp</dimen>
+    <dimen name="editable_option_section_logo_vertical_padding">13dp</dimen>
 </resources>
