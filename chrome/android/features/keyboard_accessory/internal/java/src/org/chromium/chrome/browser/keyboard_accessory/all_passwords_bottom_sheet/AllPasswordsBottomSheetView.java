@@ -5,13 +5,16 @@
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
 import android.content.Context;
+import android.text.Spannable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -92,6 +95,11 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
         } else {
             mBottomSheetController.hideContent(this, true);
         }
+    }
+
+    void setWarning(Spannable spannableWarningMessage) {
+        final TextView warningTextView = mContentView.findViewById(R.id.sheet_warning);
+        warningTextView.setText(spannableWarningMessage);
     }
 
     void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
@@ -191,5 +199,11 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.all_passwords_bottom_sheet_closed;
+    }
+
+    @VisibleForTesting
+    CharSequence getWarningText() {
+        final TextView warningTextView = mContentView.findViewById(R.id.sheet_warning);
+        return warningTextView.getText();
     }
 }

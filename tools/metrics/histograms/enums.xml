@@ -1316,6 +1316,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AllPasswordsWarningActions">
+  <obsolete>
+    Obsolete since M88.
+  </obsolete>
   <int value="0" label="Warning shown"/>
   <int value="1" label="Warning accepted"/>
   <int value="2" label="Warning canceled"/>

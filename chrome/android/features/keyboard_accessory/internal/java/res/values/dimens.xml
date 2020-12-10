@@ -29,6 +29,6 @@
     <dimen name="keyboard_accessory_tab_size">@dimen/keyboard_accessory_height</dimen>
     <dimen name="all_passwords_bottom_sheet_padding">20dp</dimen>
     <dimen name="all_passwords_bottom_sheet_recycler_view_padding">6dp</dimen>
-    <dimen name="all_passwords_bottom_sheet_search_view_padding">14dp</dimen>
-    <dimen name="all_passwords_warning_dialog_padding">24dp</dimen>
+    <dimen name="all_passwords_bottom_sheet_search_view_bottom_padding">8dp</dimen>
+    <dimen name="all_passwords_bottom_sheet_search_view_padding">24dp</dimen>
 </resources>

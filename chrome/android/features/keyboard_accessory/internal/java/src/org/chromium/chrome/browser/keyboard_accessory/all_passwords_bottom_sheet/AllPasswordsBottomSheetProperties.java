@@ -26,18 +26,21 @@ class AllPasswordsBottomSheetProperties {
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
     static final PropertyModel.ReadableObjectPropertyKey<ListModel<ListItem>> SHEET_ITEMS =
             new PropertyModel.ReadableObjectPropertyKey<>("sheet_items");
+    static final PropertyModel.ReadableObjectPropertyKey<String> ORIGIN =
+            new PropertyModel.ReadableObjectPropertyKey<>("origin");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<String>> ON_QUERY_TEXT_CHANGE =
             new PropertyModel.ReadableObjectPropertyKey<>("on_query_text_change");
 
     static final PropertyKey[] ALL_KEYS = {
-            VISIBLE, DISMISS_HANDLER, SHEET_ITEMS, ON_QUERY_TEXT_CHANGE};
+            VISIBLE, DISMISS_HANDLER, SHEET_ITEMS, ORIGIN, ON_QUERY_TEXT_CHANGE};
 
-    static PropertyModel createDefaultModel(
-            Callback<Integer> dismissHandler, Callback<String> onSearchQueryChangeHandler) {
+    static PropertyModel createDefaultModel(String origin, Callback<Integer> dismissHandler,
+            Callback<String> onSearchQueryChangeHandler) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(VISIBLE, false)
                 .with(SHEET_ITEMS, new ListModel<>())
                 .with(DISMISS_HANDLER, dismissHandler)
+                .with(ORIGIN, origin)
                 .with(ON_QUERY_TEXT_CHANGE, onSearchQueryChangeHandler)
                 .build();
     }

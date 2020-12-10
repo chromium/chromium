@@ -189,20 +189,11 @@
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_NO_PASSWORD" desc="The title for the disabled button on the all passwords bottom sheet UI when a credential doesn't contain a password.">
         No password
       </message>
-      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_WARNING_DIALOG_TITLE" desc="The title for the warning message showing when `User other password` button is clicked.">
-        Use other password
-      </message>
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_WARNING_DIALOG_MESSAGE_FIRST" desc="The first paragraph in the warning message showing when the `User other password` button is clicked.">
         If you trust <ph name="ORIGIN">%s<ex>example.com</ex></ph>, you can use a saved password for another site.
       </message>
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_WARNING_DIALOG_MESSAGE_SECOND" desc="The second paragraph in the warning message showing when the `User other password` button is clicked.">
         Try to use a unique password for every site.
-      </message>
-      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_ACCEPT" desc="The text for the positive button in a warning dialog. The all passwords bottom sheet will be shown if this button clicked.">
-        Continue
-      </message>
-      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_CANCEL" desc="The text for the negative button which appears in a warning dialog. Dismisses the warning and all passwords bottom sheet will not be shown.">
-        Cancel
       </message>
       <message name="IDS_AUTOFILL_KEYBOARD_ACCESSORY_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when the password suggestions are shown.">
         Passwords available
