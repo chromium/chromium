@@ -12,7 +12,6 @@ def main_console_if_on_branch():
     return branches.value(for_branches = "main")
 
 ci.defaults.set(
-    add_to_console_view = True,
     bucket = "ci",
     build_numbers = True,
     configure_kitchen = True,

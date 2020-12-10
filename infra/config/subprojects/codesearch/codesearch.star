@@ -23,7 +23,6 @@ luci.bucket(
     ],
 )
 
-try_.defaults.add_to_list_view.set(True)
 try_.defaults.bucket.set("codesearch")
 try_.defaults.build_numbers.set(True)
 try_.defaults.builder_group.set("tryserver.chromium.codesearch")
