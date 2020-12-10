@@ -499,7 +499,8 @@ class AutoEnrollmentClientImplTest
     return static_cast<AutoEnrollmentClientImpl*>(client_.release());
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState scoped_testing_local_state_;
   TestingPrefServiceSimple* local_state_;
   std::unique_ptr<MockDeviceManagementService> service_;
@@ -1451,6 +1452,13 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
                            dummy_response);
   }
 
+  void ServerRepliesEmptyResponseForAsyncJob(
+      DeviceManagementService::JobControl** job) {
+    em::DeviceManagementResponse dummy_response;
+    ServerReplyForAsyncJob(job, net::OK, DeviceManagementService::kSuccess,
+                           dummy_response);
+  }
+
   // Mocks the server reply for the full controlled job |job|.
   void ServerReplyForAsyncJob(
       DeviceManagementService::JobControl** job,
@@ -1541,6 +1549,8 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
   PrivateSetMembershipHelperTest& operator=(
       const PrivateSetMembershipHelperTest&) = delete;
 
+  base::HistogramTester histogram_tester_;
+
  private:
   em::DeviceManagementResponse GetPrivateSetMembershipOprfResponse() const {
     em::DeviceManagementResponse response;
@@ -1570,8 +1580,6 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
       private_set_membership_last_job_type_ =
           DeviceManagementService::JobConfiguration::TYPE_INVALID;
   em::DeviceManagementRequest private_set_membership_last_request_;
-
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_P(PrivateSetMembershipHelperTest, MembershipRetrievedSuccessfully) {
@@ -2213,6 +2221,8 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
        RetryWhileWaitingForPrivateSetMembershipQueryResponseAndHashDanceFails) {
   InSequence sequence;
 
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+
   DeviceManagementService::JobControl* psm_rlwe_oprf_job = nullptr;
   DeviceManagementService::JobControl* psm_rlwe_query_job = nullptr;
   DeviceManagementService::JobControl* hash_dance_job = nullptr;
@@ -2242,6 +2252,9 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
   ServerReplyForPrivateSetMembershipAsyncJobWithOprfResponse(
       &psm_rlwe_oprf_job);
 
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
   // Verify the only job that has been captured is the PSM RLWE Query request.
   VerifyPrivateSetMembershipRlweQueryRequest();
   VerifyPrivateSetMembershipLastRequestJobType();
@@ -2258,6 +2271,9 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
   ServerReplyForPrivateSetMembershipAsyncJobWithQueryResponse(
       &psm_rlwe_query_job);
 
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
   // Verify private set membership result.
   EXPECT_EQ(GetStateDiscoveryResult(),
             GetExpectedMembershipResult()
@@ -2273,8 +2289,15 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             last_async_job_type_);
 
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerFailsForAsyncJob(&hash_dance_job);
+  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request by sending
+  // an empty response.
+  ServerRepliesEmptyResponseForAsyncJob(&hash_dance_job);
+
+  // Verify Hash dance execution time histogram was recorded correctly.
+  const std::string kUMAHashDanceProtocolTimeStr = kUMAHashDanceProtocolTime;
+  histogram_tester_.ExpectUniqueTimeSample(
+      kUMAHashDanceProtocolTimeStr + kUMAHashDanceSuffixInitialEnrollment,
+      kOneSecondTimeDelta, /*expected_count=*/1);
 
   // Verify failure of Hash dance by inexistence of its cached decision.
   EXPECT_FALSE(HasCachedDecision());
