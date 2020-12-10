@@ -2549,21 +2549,11 @@ void RenderWidgetHostImpl::DidFirstVisuallyNonEmptyPaint() {
 void RenderWidgetHostImpl::StartDragging(
     blink::mojom::DragDataPtr drag_data,
     blink::DragOperationsMask drag_operations_mask,
-    const SkBitmap& unsafe_bitmap,
+    const SkBitmap& bitmap,
     const gfx::Vector2d& bitmap_offset_in_dip,
     blink::mojom::DragEventSourceInfoPtr event_info) {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();
   if (!view || !GetView()) {
-    // Need to clear drag and drop state in blink.
-    DragSourceSystemDragEnded();
-    return;
-  }
-  SkBitmap bitmap;
-  // On receipt of an arbitrary bitmap from the renderer, we convert to an N32
-  // 32bpp bitmap. Other pixel sizes can lead to out-of-bounds mistakes when
-  // transferring the pixels out of the/ bitmap into other buffers.
-  if (!skia::SkBitmapToN32OpaqueOrPremul(unsafe_bitmap, &bitmap)) {
-    NOTREACHED() << "Unable to convert bitmap for drag-and-drop";
     // Need to clear drag and drop state in blink.
     DragSourceSystemDragEnded();
     return;
