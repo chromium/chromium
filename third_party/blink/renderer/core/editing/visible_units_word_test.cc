@@ -177,10 +177,11 @@ TEST_P(ParameterizedVisibleUnitsWordTest, StartOfWordFirstLetter) {
 
 TEST_P(ParameterizedVisibleUnitsWordTest, StartOfWordShadowDOM) {
   const char* body_content =
-      "<a id=host><b id=one>1</b> <b id=two>22</b></a><i id=three>333</i>";
+      "<span id=host><b slot='#one' id=one>1</b> <b slot='#two' "
+      "id=two>22</b></span><i id=three>333</i>";
   const char* shadow_content =
-      "<p><u id=four>44444</u><content select=#two></content><span id=space> "
-      "</span><content select=#one></content><u id=five>55555</u></p>";
+      "<p><u id=four>44444</u><slot name=#two></slot><span id=space> "
+      "</span><slot name=#one></slot><u id=five>55555</u></p>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -399,10 +400,11 @@ TEST_P(ParameterizedVisibleUnitsWordTest,
 
 TEST_P(ParameterizedVisibleUnitsWordTest, EndOfWordShadowDOM) {
   const char* body_content =
-      "<a id=host><b id=one>1</b> <b id=two>22</b></a><i id=three>333</i>";
+      "<span id=host><b slot='#one' id=one>1</b> <b slot='#two' "
+      "id=two>22</b></span><i id=three>333</i>";
   const char* shadow_content =
-      "<p><u id=four>44444</u><content select=#two></content><span id=space> "
-      "</span><content select=#one></content><u id=five>55555</u></p>";
+      "<p><u id=four>44444</u><slot name=#two></slot><span id=space> "
+      "</span><slot name=#one></slot><u id=five>55555</u></p>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 

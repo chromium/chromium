@@ -86,8 +86,7 @@ TEST_F(NodeTest, canStartSelection) {
 
 TEST_F(NodeTest, canStartSelectionWithShadowDOM) {
   const char* body_content = "<div id=host><span id=one>one</span></div>";
-  const char* shadow_content =
-      "<a href='http://www.msn.com'><content></content></a>";
+  const char* shadow_content = "<a href='http://www.msn.com'><slot></slot></a>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* one = GetDocument().getElementById("one");
@@ -274,19 +273,6 @@ TEST_F(NodeTest, AttachContext_PreviousInFlow_Slotted) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* root = shadow_root.getElementById("root");
-  Element* span = GetDocument().getElementById("inline");
-  LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
-
-  EXPECT_TRUE(previous_in_flow);
-  EXPECT_EQ(span->GetLayoutObject(), previous_in_flow);
-}
-
-TEST_F(NodeTest, AttachContext_PreviousInFlow_V0Content) {
-  SetBodyContent("<div id=host><span id=inline></span></div>");
-  ShadowRoot* shadow_root = CreateShadowRootForElementWithIDAndSetInnerHTML(
-      GetDocument(), "host",
-      "<div id=root style='display:contents'><span></span><content /></div>");
-  Element* root = shadow_root->getElementById("root");
   Element* span = GetDocument().getElementById("inline");
   LayoutObject* previous_in_flow = ReattachLayoutTreeForNode(*root);
 
@@ -520,43 +506,6 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlottingDirtyNode) {
 
   // This used to call a DCHECK failure. Make sure we don't regress.
   UpdateAllLifecyclePhasesForTest();
-}
-
-TEST_F(NodeTest, ChildDirtyNeedsV0Distribution) {
-  SetBodyContent("<div id=host><span></span> </div>");
-  ShadowRoot* shadow_root = CreateShadowRootForElementWithIDAndSetInnerHTML(
-      GetDocument(), "host", "<content />");
-  UpdateAllLifecyclePhasesForTest();
-
-#if DCHECK_IS_ON()
-  GetDocument().SetAllowDirtyShadowV0Traversal(true);
-#endif
-
-  auto* host = GetDocument().getElementById("host");
-  auto* span = To<Element>(host->firstChild());
-  auto* content = shadow_root->firstChild();
-
-  host->lastChild()->remove();
-
-  EXPECT_FALSE(GetDocument().documentElement()->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(GetDocument().documentElement()->ChildNeedsDistributionRecalc());
-  EXPECT_EQ(content, host->firstChild()->GetStyleRecalcParent());
-  EXPECT_FALSE(content->ChildNeedsStyleRecalc());
-
-  // Make the span style dirty.
-  span->setAttribute("style", "color:green");
-
-  // Check that the flat tree ancestor chain is child-dirty while the
-  // shadow distribution is still dirty.
-  EXPECT_TRUE(GetDocument().documentElement()->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(GetDocument().body()->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(host->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(content->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(GetDocument().documentElement()->ChildNeedsDistributionRecalc());
-
-#if DCHECK_IS_ON()
-  GetDocument().SetAllowDirtyShadowV0Traversal(false);
-#endif
 }
 
 }  // namespace blink

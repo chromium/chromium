@@ -45,9 +45,9 @@ INSTANTIATE_TEST_SUITE_P(All, ParameterizedLocalCaretRectTest, testing::Bool());
 
 TEST_P(ParameterizedLocalCaretRectTest, DOMAndFlatTrees) {
   const char* body_content =
-      "<p id='host'><b id='one'>1</b></p><b id='two'>22</b>";
+      "<p id='host'><b slot='#one' id='one'>1</b></p><b id='two'>22</b>";
   const char* shadow_content =
-      "<b id='two'>22</b><content select=#one></content><b id='three'>333</b>";
+      "<b id='two'>22</b><slot name=#one></slot><b id='three'>333</b>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
@@ -807,10 +807,10 @@ TEST_P(ParameterizedLocalCaretRectTest, CollapsedSpace) {
 
 TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretBoundsOfWithShadowDOM) {
   const char* body_content =
-      "<p id='host'><b id='one'>11</b><b id='two'>22</b></p>";
+      "<p id='host'><b slot='#one' id='one'>11</b><b name='#two' "
+      "id='two'>22</b></p>";
   const char* shadow_content =
-      "<div><content select=#two></content><content "
-      "select=#one></content></div>";
+      "<div><slot name=#two></slot><slot name=#one></slot></div>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 

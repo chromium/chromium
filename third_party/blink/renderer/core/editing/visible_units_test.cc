@@ -69,11 +69,12 @@ TEST_F(VisibleUnitsTest, caretMinOffsetWithFirstLetter) {
 
 TEST_F(VisibleUnitsTest, characterAfter) {
   const char* body_content =
-      "<p id='host'><b id='one'>1</b><b id='two'>22</b></p><b "
+      "<p id='host'><b slot='#one' id='one'>1</b><b slot='#two' "
+      "id='two'>22</b></p><b "
       "id='three'>333</b>";
   const char* shadow_content =
-      "<b id='four'>4444</b><content select=#two></content><content "
-      "select=#one></content><b id='five'>5555</b>";
+      "<b id='four'>4444</b><slot name='#two'></slot><slot name=#one></slot><b "
+      "id='five'>5555</b>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
@@ -198,10 +199,11 @@ TEST_F(VisibleUnitsTest, canonicalPositionOfWithInputElement) {
 
 TEST_F(VisibleUnitsTest, characterBefore) {
   const char* body_content =
-      "<p id=host><b id=one>1</b><b id=two>22</b></p><b id=three>333</b>";
+      "<p id=host><b slot='#one' id=one>1</b><b slot='#two' "
+      "id=two>22</b></p><b id=three>333</b>";
   const char* shadow_content =
-      "<b id=four>4444</b><content select=#two></content><content "
-      "select=#one></content><b id=five>5555</b>";
+      "<b id=four>4444</b><slot name='#two'></slot><slot name=#one></slot><b "
+      "id=five>5555</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -223,10 +225,11 @@ TEST_F(VisibleUnitsTest, characterBefore) {
 }
 
 TEST_F(VisibleUnitsTest, endOfDocument) {
-  const char* body_content = "<a id=host><b id=one>1</b><b id=two>22</b></a>";
+  const char* body_content =
+      "<span id=host><b slot='#one' id=one>1</b><b slot='#two' "
+      "id=two>22</b></span>";
   const char* shadow_content =
-      "<p><content select=#two></content></p><p><content "
-      "select=#one></content></p>";
+      "<p><slot name='#two'></slot></p><p><slot name=#one></slot></p>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
@@ -274,9 +277,10 @@ TEST_F(VisibleUnitsTest,
 
 TEST_F(VisibleUnitsTest, isEndOfEditableOrNonEditableContent) {
   const char* body_content =
-      "<a id=host><b id=one contenteditable>1</b><b id=two>22</b></a>";
+      "<span id=host><b slot='#one' id=one contenteditable>1</b><b slot='#two' "
+      "id=two>22</b></span>";
   const char* shadow_content =
-      "<content select=#two></content></p><p><content select=#one></content>";
+      "<slot name='#two'></slot></p><p><slot name='#one'></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
@@ -411,7 +415,7 @@ TEST_F(VisibleUnitsTest, mostBackwardCaretPositionAfterAnchor) {
   const char* body_content =
       "<p id='host'><b id='one'>1</b></p><b id='two'>22</b>";
   const char* shadow_content =
-      "<b id='two'>22</b><content select=#one></content><b id='three'>333</b>";
+      "<b id='two'>22</b><slot name='#one'></slot><b id='three'>333</b>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
@@ -490,7 +494,7 @@ TEST_F(VisibleUnitsTest, mostBackwardCaretPositionFirstLetterSplit) {
 TEST_F(VisibleUnitsTest, mostForwardCaretPositionAfterAnchor) {
   const char* body_content = "<p id='host'><b id='one'>1</b></p>";
   const char* shadow_content =
-      "<b id='two'>22</b><content select=#one></content><b id='three'>333</b>";
+      "<b id='two'>22</b><slot name='#one'></slot><b id='three'>333</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   UpdateAllLifecyclePhasesForTest();
@@ -533,11 +537,12 @@ TEST_F(VisibleUnitsTest, mostForwardCaretPositionFirstLetter) {
 
 TEST_F(VisibleUnitsTest, nextPositionOf) {
   const char* body_content =
-      "<b id=zero>0</b><p id=host><b id=one>1</b><b id=two>22</b></p><b "
+      "<b id=zero>0</b><p id=host><b slot='#one' id=one>1</b><b slot='#two' "
+      "id=two>22</b></p><b "
       "id=three>333</b>";
   const char* shadow_content =
-      "<b id=four>4444</b><content select=#two></content><content "
-      "select=#one></content><b id=five>55555</b>";
+      "<b id=four>4444</b><slot name='#two'></slot><slot name=#one></slot><b "
+      "id=five>55555</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -598,11 +603,11 @@ TEST_F(VisibleUnitsTest, nextPositionOfTable) {
 
 TEST_F(VisibleUnitsTest, previousPositionOf) {
   const char* body_content =
-      "<b id=zero>0</b><p id=host><b id=one>1</b><b id=two>22</b></p><b "
-      "id=three>333</b>";
+      "<b id=zero>0</b><p id=host><b slot='#one' id=one>1</b><b slot='#two' "
+      "id=two>22</b></p><b id=three>333</b>";
   const char* shadow_content =
-      "<b id=four>4444</b><content select=#two></content><content "
-      "select=#one></content><b id=five>55555</b>";
+      "<b id=four>4444</b><slot name='#two'></slot><slot name=#one></slot><b "
+      "id=five>55555</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -769,10 +774,11 @@ TEST_F(VisibleUnitsTest, renderedOffset) {
 }
 
 TEST_F(VisibleUnitsTest, startOfDocument) {
-  const char* body_content = "<a id=host><b id=one>1</b><b id=two>22</b></a>";
+  const char* body_content =
+      "<span id=host><b slot='#one' id=one>1</b><b slot='#two' "
+      "id=two>22</b></span>";
   const char* shadow_content =
-      "<p><content select=#two></content></p><p><content "
-      "select=#one></content></p>";
+      "<p><slot name='#two'></slot></p><p><slot name=#one></slot></p>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 

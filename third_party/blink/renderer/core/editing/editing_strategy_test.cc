@@ -12,9 +12,9 @@ class EditingStrategyTest : public EditingTestBase {};
 
 TEST_F(EditingStrategyTest, caretMaxOffset) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>1</b><b id='two'>22</b>333</p>";
-  const char* shadow_content =
-      "<content select=#two></content><content select=#one></content>";
+      "<p id='host'>00<b slot='#one' id='one'>1</b><b slot='#two' "
+      "id='two'>22</b>333</p>";
+  const char* shadow_content = "<slot name=#two></slot><slot name=#one></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* host = GetDocument().getElementById("host");

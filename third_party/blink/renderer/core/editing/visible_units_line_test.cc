@@ -106,11 +106,12 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
   // 117777777
   // 3334444
   const char* body_content =
-      "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
+      "<span id=host><b slot='#one' id=one>11</b><b slot='#two' "
+      "id=two>22</b></span><i id=three>333</i><i "
       "id=four>4444</i><br>";
   const char* shadow_content =
-      "<div><u id=five>55555</u><content select=#two></content><br><u "
-      "id=six>666666</u><br><content select=#one></content><u "
+      "<div><u id=five>55555</u><slot name='#two'></slot><br><u "
+      "id=six>666666</u><br><slot name='#one'></slot><u "
       "id=seven>7777777</u></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
@@ -208,11 +209,12 @@ TEST_F(VisibleUnitsLineTest, isEndOfLine) {
   // 117777777
   // 3334444
   const char* body_content =
-      "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
+      "<span id=host><b slot='#one' id=one>11</b><b slot='#two' "
+      "id=two>22</b></span><i id=three>333</i><i "
       "id=four>4444</i><br>";
   const char* shadow_content =
-      "<div><u id=five>55555</u><content select=#two></content><br><u "
-      "id=six>666666</u><br><content select=#one></content><u "
+      "<div><u id=five>55555</u><slot name='#two'></slot><br><u "
+      "id=six>666666</u><br><slot name='#one'></slot><u "
       "id=seven>7777777</u></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
@@ -263,11 +265,12 @@ TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
   // 117777777
   // 3334444
   const char* body_content =
-      "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
+      "<span id=host><b slot='#one' id=one>11</b><b slot='#two' "
+      "id=two>22</b></span><i id=three>333</i><i "
       "id=four>4444</i><br>";
   const char* shadow_content =
-      "<div><u id=five>55555</u><content select=#two></content><br><u "
-      "id=six>666666</u><br><content select=#one></content><u "
+      "<div><u id=five>55555</u><slot name='#two'></slot><br><u "
+      "id=six>666666</u><br><slot name='#one'></slot><u "
       "id=seven>7777777</u></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
@@ -316,10 +319,11 @@ TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
 
 TEST_P(ParameterizedVisibleUnitsLineTest, inSameLine) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b>33</p>";
   const char* shadow_content =
-      "<div><span id='s4'>44</span><content select=#two></content><br><span "
-      "id='s5'>55</span><br><content select=#one></content><span "
+      "<div><span id='s4'>44</span><slot name='#two'></slot><br><span "
+      "id='s5'>55</span><br><slot name='#one'></slot><span "
       "id='s6'>66</span></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
@@ -391,11 +395,12 @@ TEST_P(ParameterizedVisibleUnitsLineTest, inSameLine) {
 
 TEST_F(VisibleUnitsLineTest, isStartOfLine) {
   const char* body_content =
-      "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
+      "<span id=host><b slot='#one' id=one>11</b><b slot='#two' "
+      "id=two>22</b></span><i id=three>333</i><i "
       "id=four>4444</i><br>";
   const char* shadow_content =
-      "<div><u id=five>55555</u><content select=#two></content><br><u "
-      "id=six>666666</u><br><content select=#one></content><u "
+      "<div><u id=five>55555</u><slot name='#two'></slot><br><u "
+      "id=six>666666</u><br><slot name='#one'></slot><u "
       "id=seven>7777777</u></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
@@ -442,11 +447,12 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
   // 117777777
   // 3334444
   const char* body_content =
-      "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
+      "<span id=host><b slot='#one' id=one>11</b><b slot='#two' "
+      "id=two>22</b></span><i id=three>333</i><i "
       "id=four>4444</i><br>";
   const char* shadow_content =
-      "<div><u id=five>55555</u><content select=#two></content><br><u "
-      "id=six>666666</u><br><content select=#one></content><u "
+      "<div><u id=five>55555</u><slot name='#two'></slot><br><u "
+      "id=six>666666</u><br><slot name='#one'></slot><u "
       "id=seven>7777777</u></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
@@ -538,11 +544,12 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
 
 TEST_F(VisibleUnitsLineTest, logicalStartOfLine) {
   const char* body_content =
-      "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
+      "<span id=host><b slot='#one' id=one>11</b><b slot='#two' "
+      "id=two>22</b></span><i id=three>333</i><i "
       "id=four>4444</i><br>";
   const char* shadow_content =
-      "<div><u id=five>55555</u><content select=#two></content><br><u "
-      "id=six>666666</u><br><content select=#one></content><u "
+      "<div><u id=five>55555</u><slot name='#two'></slot><br><u "
+      "id=six>666666</u><br><slot name='#one'></slot><u "
       "id=seven>7777777</u></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
@@ -638,11 +645,12 @@ TEST_F(VisibleUnitsLineTest, startOfLine) {
   // 117777777
   // 3334444
   const char* body_content =
-      "<a id=host><b id=one>11</b><b id=two>22</b></a><i id=three>333</i><i "
+      "<span id=host><b slot='#one' id=one>11</b><b slot='#two' "
+      "id=two>22</b></span><i id=three>333</i><i "
       "id=four>4444</i><br>";
   const char* shadow_content =
-      "<div><u id=five>55555</u><content select=#two></content><br><u "
-      "id=six>666666</u><br><content select=#one></content><u "
+      "<div><u id=five>55555</u><slot name='#two'></slot><br><u "
+      "id=six>666666</u><br><slot name='#one'></slot><u "
       "id=seven>7777777</u></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");

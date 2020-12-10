@@ -111,10 +111,10 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphFirstLetterPre) {
 
 TEST_F(VisibleUnitsParagraphTest, endOfParagraphShadow) {
   const char* body_content =
-      "<a id=host><b id=one>1</b><b id=two>22</b></a><b id=three>333</b>";
+      "<span id=host><b slot='#one' id=one>1</b><b slot='#two' "
+      "id=two>22</b></span><b id=three>333</b>";
   const char* shadow_content =
-      "<p><content select=#two></content></p><p><content "
-      "select=#one></content></p>";
+      "<p><slot name=#two></slot></p><p><slot name=#one></slot></p>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
@@ -201,10 +201,10 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphSimplePre) {
 
 TEST_F(VisibleUnitsParagraphTest, isEndOfParagraph) {
   const char* body_content =
-      "<a id=host><b id=one>1</b><b id=two>22</b></a><b id=three>333</b>";
+      "<span id=host><b slot='#one' id=one>1</b><b slot='#two' "
+      "id=two>22</b></span><b id=three>333</b>";
   const char* shadow_content =
-      "<p><content select=#two></content></p><p><content "
-      "select=#one></content></p>";
+      "<p><slot name=#two></slot></p><p><slot name=#one></slot></p>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
@@ -230,11 +230,10 @@ TEST_F(VisibleUnitsParagraphTest, isEndOfParagraph) {
 
 TEST_F(VisibleUnitsParagraphTest, isStartOfParagraph) {
   const char* body_content =
-      "<b id=zero>0</b><a id=host><b id=one>1</b><b id=two>22</b></a><b "
-      "id=three>333</b>";
+      "<b id=zero>0</b><span id=host><b slot='#one' id=one>1</b><b slot='#two' "
+      "id=two>22</b></span><b id=three>333</b>";
   const char* shadow_content =
-      "<p><content select=#two></content></p><p><content "
-      "select=#one></content></p>";
+      "<p><slot name=#two></slot></p><p><slot name=#one></slot></p>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 

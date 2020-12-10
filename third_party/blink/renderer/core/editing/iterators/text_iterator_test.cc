@@ -266,7 +266,7 @@ TEST_P(TextIteratorTest, NotEnteringShadowTreeWithContentInsertionPoint) {
   static const char* body_content =
       "<div>Hello, <span id='host'>text</span> iterator.</div>";
   static const char* shadow_content =
-      "<span>shadow <content>content</content></span>";
+      "<span>shadow <slot>content</slot></span>";
   SetBodyContent(body_content);
   CreateShadowRootForElementWithIDAndSetInnerHTML(GetDocument(), "host",
                                                   shadow_content);
@@ -312,7 +312,7 @@ TEST_P(TextIteratorTest,
   static const char* body_content =
       "<div>Hello, <span id='host'>text</span> iterator.</div>";
   static const char* shadow_content =
-      "<span><content>content</content> shadow</span>";
+      "<span><slot>content</slot> shadow</span>";
   // In this case a layoutObject for "text" is created, and emitted AFTER any
   // nodes in the shadow tree. This order does not match the order of the
   // rendered texts, but at this moment it's the expected behavior.
@@ -331,7 +331,7 @@ TEST_P(TextIteratorTest, StartingAtNodeInShadowRoot) {
   static const char* body_content =
       "<div id='outer'>Hello, <span id='host'>text</span> iterator.</div>";
   static const char* shadow_content =
-      "<span><content>content</content> shadow</span>";
+      "<span><slot>content</slot> shadow</span>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = CreateShadowRootForElementWithIDAndSetInnerHTML(
       GetDocument(), "host", shadow_content);
@@ -356,7 +356,7 @@ TEST_P(TextIteratorTest, FinishingAtNodeInShadowRoot) {
   static const char* body_content =
       "<div id='outer'>Hello, <span id='host'>text</span> iterator.</div>";
   static const char* shadow_content =
-      "<span><content>content</content> shadow</span>";
+      "<span><slot>content</slot> shadow</span>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = CreateShadowRootForElementWithIDAndSetInnerHTML(
       GetDocument(), "host", shadow_content);
@@ -408,7 +408,7 @@ TEST_P(TextIteratorTest, FullyClippedContentsDistributed) {
       "</div>";
   static const char* shadow_content =
       "<div style='overflow: hidden; width: 200px; height: 0;'>"
-      "<content></content>"
+      "<slot></slot>"
       "</div>";
   SetBodyContent(body_content);
   CreateShadowRootForElementWithIDAndSetInnerHTML(GetDocument(), "host",
@@ -428,7 +428,7 @@ TEST_P(TextIteratorTest, IgnoresContainersClipDistributed) {
   static const char* shadow_content =
       "<div style='position: absolute; width: 200px; height: 200px; top: 0; "
       "right: 0;'>"
-      "<content></content>"
+      "<slot></slot>"
       "</div>";
   SetBodyContent(body_content);
   CreateShadowRootForElementWithIDAndSetInnerHTML(GetDocument(), "host",
@@ -579,9 +579,10 @@ TEST_P(TextIteratorTest, WhitespaceCollapseForReplacedElements) {
 
 TEST_P(TextIteratorTest, characterAt) {
   const char* body_content =
-      "<a id=host><b id=one>one</b> not appeared <b id=two>two</b></a>";
+      "<span id=host><b slot='#one' id=one>one</b> not appeared <b slot='#two' "
+      "id=two>two</b></span>";
   const char* shadow_content =
-      "three <content select=#two></content> <content select=#one></content> "
+      "three <slot name=#two></slot> <slot name=#one></slot> "
       "zero";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");

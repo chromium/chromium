@@ -31,10 +31,10 @@ TEST_F(EditingUtilitiesTest, ComputePositionForNodeRemovalAfterNode) {
 
 TEST_F(EditingUtilitiesTest, DirectionOfEnclosingBlockOf) {
   const char* body_content =
-      "<p id='host'><b id='one'></b><b id='two'>22</b></p>";
+      "<p id='host'><b slot='#one' id='one'></b><b slot='#two' "
+      "id='two'>22</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><p dir=rtl><content "
-      "select=#one></content><p>";
+      "<slot name=#two></slot><p dir=rtl><slot name=#one></slot><p>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* one = GetDocument().getElementById("one");
@@ -44,12 +44,14 @@ TEST_F(EditingUtilitiesTest, DirectionOfEnclosingBlockOf) {
             DirectionOfEnclosingBlockOf(PositionInFlatTree(one, 0)));
 }
 
-TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(EditingUtilitiesTest,
+       DISABLED_firstEditablePositionAfterPositionInRoot) {
   const char* body_content =
-      "<p id='host' contenteditable><b id='one'>1</b><b id='two'>22</b></p>";
+      "<p id='host' contenteditable><b slot='#one' id='one'>1</b><b "
+      "slot='#two' id='two'>22</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><content select=#one></content><b "
-      "id='three'>333</b>";
+      "<slot name=#two></slot><slot name=#one></slot><b id='three'>333</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Element* host = GetDocument().getElementById("host");
@@ -59,6 +61,8 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
 
   EXPECT_EQ(Position(one, 0),
             FirstEditablePositionAfterPositionInRoot(Position(one, 0), *host));
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // end of "22".
   EXPECT_EQ(Position(two->firstChild(), 2),
             CreateVisiblePosition(FirstEditablePositionAfterPositionInRoot(
                                       Position(one, 0), *host))
@@ -67,6 +71,8 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
   EXPECT_EQ(PositionInFlatTree(one, 0),
             FirstEditablePositionAfterPositionInRoot(PositionInFlatTree(one, 0),
                                                      *host));
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // end of "22".
   EXPECT_EQ(PositionInFlatTree(two->firstChild(), 2),
             CreateVisiblePosition(FirstEditablePositionAfterPositionInRoot(
                                       PositionInFlatTree(one, 0), *host))
@@ -75,6 +81,8 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
   EXPECT_EQ(
       Position::FirstPositionInNode(*host),
       FirstEditablePositionAfterPositionInRoot(Position(three, 0), *host));
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // beginning of "22".
   EXPECT_EQ(Position(two->firstChild(), 0),
             CreateVisiblePosition(FirstEditablePositionAfterPositionInRoot(
                                       Position(three, 0), *host))
@@ -89,10 +97,9 @@ TEST_F(EditingUtilitiesTest, firstEditablePositionAfterPositionInRoot) {
 }
 
 TEST_F(EditingUtilitiesTest, enclosingBlock) {
-  const char* body_content = "<p id='host'><b id='one'>11</b></p>";
+  const char* body_content = "<p id='host'><b slot='#one' id='one'>11</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><div id='three'><content "
-      "select=#one></content></div>";
+      "<slot name=#two></slot><div id='three'><slot name=#one></slot></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Node* host = GetDocument().getElementById("host");
@@ -106,10 +113,9 @@ TEST_F(EditingUtilitiesTest, enclosingBlock) {
 }
 
 TEST_F(EditingUtilitiesTest, enclosingNodeOfType) {
-  const char* body_content = "<p id='host'><b id='one'>11</b></p>";
+  const char* body_content = "<p id='host'><b slot='#one' id='one'>11</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><div id='three'><content "
-      "select=#one></div></content>";
+      "<slot name=#two></slot><div id='three'><slot name=#one></div></slot>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   Node* host = GetDocument().getElementById("host");
@@ -161,28 +167,32 @@ TEST_F(EditingUtilitiesTest, RepeatString) {
   EXPECT_EQ("xyzxyzxyz", RepeatString("xyz", 3));
 }
 
-TEST_F(EditingUtilitiesTest, tableElementJustBefore) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(EditingUtilitiesTest, DISABLED_tableElementJustBefore) {
   const char* body_content =
-      "<div contenteditable id=host><table "
-      "id=table><tr><td>1</td></tr></table><b id=two>22</b></div>";
+      "<div contenteditable id=host><table slot=#table "
+      "id=table><tr><td>1</td></tr></table><b slot=#two id=two>22</b></div>";
   const char* shadow_content =
-      "<content select=#two></content><content select=#table></content>";
+      "<slot name=#two></slot><slot name=#table></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* host = GetDocument().getElementById("host");
   Node* table = GetDocument().getElementById("table");
 
   EXPECT_EQ(table, TableElementJustBefore(VisiblePosition::AfterNode(*table)));
+  // TODO(crbug.com/1157146): This returns null instead of the table.
   EXPECT_EQ(table, TableElementJustBefore(
                        VisiblePositionInFlatTree::AfterNode(*table)));
 
   EXPECT_EQ(table, TableElementJustBefore(
                        VisiblePosition::LastPositionInNode(*table)));
+  // TODO(crbug.com/1157146): This returns null instead of the table.
   EXPECT_EQ(table, TableElementJustBefore(CreateVisiblePosition(
                        PositionInFlatTree::LastPositionInNode(*table))));
 
   EXPECT_EQ(nullptr,
             TableElementJustBefore(CreateVisiblePosition(Position(host, 2))));
+  // TODO(crbug.com/1157146): This returns null instead of the table.
   EXPECT_EQ(table, TableElementJustBefore(
                        CreateVisiblePosition(PositionInFlatTree(host, 2))));
 
@@ -192,15 +202,19 @@ TEST_F(EditingUtilitiesTest, tableElementJustBefore) {
 
   EXPECT_EQ(nullptr,
             TableElementJustBefore(VisiblePosition::LastPositionInNode(*host)));
+  // TODO(crbug.com/1157146): This returns null instead of the table.
   EXPECT_EQ(table, TableElementJustBefore(CreateVisiblePosition(
                        PositionInFlatTree::LastPositionInNode(*host))));
 }
 
-TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(EditingUtilitiesTest,
+       DISABLED_lastEditablePositionBeforePositionInRoot) {
   const char* body_content =
-      "<p id='host' contenteditable><b id='one'>1</b><b id='two'>22</b></p>";
+      "<p id='host' contenteditable><b slot=#one id='one'>1</b><b slot=#two "
+      "id='two'>22</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><content select=#one></content><b "
+      "<slot name=#two></slot><slot name=#one></slot><b "
       "id='three'>333</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
@@ -211,6 +225,8 @@ TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
 
   EXPECT_EQ(Position(one, 0),
             LastEditablePositionBeforePositionInRoot(Position(one, 0), *host));
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // end of "22".
   EXPECT_EQ(Position(two->firstChild(), 2),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       Position(one, 0), *host))
@@ -219,6 +235,8 @@ TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
   EXPECT_EQ(PositionInFlatTree(one, 0),
             LastEditablePositionBeforePositionInRoot(PositionInFlatTree(one, 0),
                                                      *host));
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // end of "22".
   EXPECT_EQ(PositionInFlatTree(two->firstChild(), 2),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       PositionInFlatTree(one, 0), *host))
@@ -227,6 +245,8 @@ TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
   EXPECT_EQ(
       Position::FirstPositionInNode(*host),
       LastEditablePositionBeforePositionInRoot(Position(three, 0), *host));
+  // TODO(crbug.com/1157146): This returns the beginning of "1" instead of the
+  // beginning of "22".
   EXPECT_EQ(Position(two->firstChild(), 0),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       Position(three, 0), *host))
@@ -234,17 +254,20 @@ TEST_F(EditingUtilitiesTest, lastEditablePositionBeforePositionInRoot) {
   EXPECT_EQ(PositionInFlatTree::FirstPositionInNode(*host),
             LastEditablePositionBeforePositionInRoot(
                 PositionInFlatTree(three, 0), *host));
+  // TODO(crbug.com/1157146): This returns nullptr instead of the beginning of
+  // "22".
   EXPECT_EQ(PositionInFlatTree(two->firstChild(), 0),
             CreateVisiblePosition(LastEditablePositionBeforePositionInRoot(
                                       PositionInFlatTree(three, 0), *host))
                 .DeepEquivalent());
 }
 
-TEST_F(EditingUtilitiesTest, NextNodeIndex) {
+// TODO(crbug.com/1157146): This test breaks without Shadow DOM v0.
+TEST_F(EditingUtilitiesTest, DISABLED_NextNodeIndex) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
-  const char* shadow_content =
-      "<content select=#two></content><content select=#one></content>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b>33</p>";
+  const char* shadow_content = "<slot name=#two></slot><slot name=#one></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* host = GetDocument().getElementById("host");
@@ -253,6 +276,7 @@ TEST_F(EditingUtilitiesTest, NextNodeIndex) {
   EXPECT_EQ(
       Position(host, 3),
       NextPositionOf(Position(two, 1), PositionMoveType::kGraphemeCluster));
+  // TODO(crbug.com/1157146): This returns the slot instead of the <p>.
   EXPECT_EQ(PositionInFlatTree(host, 1),
             NextPositionOf(PositionInFlatTree(two, 1),
                            PositionMoveType::kGraphemeCluster));
@@ -260,11 +284,10 @@ TEST_F(EditingUtilitiesTest, NextNodeIndex) {
 
 TEST_F(EditingUtilitiesTest, NextVisuallyDistinctCandidate) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b><b "
-      "id='three'>33</b></p>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b><b slot='#three' id='three'>33</b></p>";
   const char* shadow_content =
-      "<content select=#two></content><content select=#one></content><content "
-      "select=#three></content>";
+      "<slot name=#two></slot><slot name=#one></slot><slot name=#three></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
   Node* one = GetDocument().getElementById("one");

@@ -80,15 +80,15 @@ TEST_F(EphemeralRangeTest, rangeShadowTraversal) {
   const char* body_content =
       "<b id='zero'>0</b>"
       "<p id='host'>"
-      "<b id='one'>1</b>"
-      "<b id='two'>22</b>"
+      "<b slot='#one' id='one'>1</b>"
+      "<b slot='#two' id='two'>22</b>"
       "<b id='three'>333</b>"
       "</p>"
       "<b id='four'>4444</b>";
   const char* shadow_content =
       "<p id='five'>55555</p>"
-      "<content select=#two></content>"
-      "<content select=#one></content>"
+      "<slot name=#two></slot>"
+      "<slot name=#one></slot>"
       "<span id='six'>666666</span>"
       "<p id='seven'>7777777</p>";
   SetBodyContent(body_content);
@@ -96,9 +96,9 @@ TEST_F(EphemeralRangeTest, rangeShadowTraversal) {
 
   const std::string expected_nodes(
       "[BODY][B id=\"zero\"][#text \"0\"][P id=\"host\"][P id=\"five\"][#text "
-      "\"55555\"][B id=\"two\"][#text \"22\"][B id=\"one\"][#text \"1\"][SPAN "
-      "id=\"six\"][#text \"666666\"][P id=\"seven\"][#text \"7777777\"][B "
-      "id=\"four\"][#text \"4444\"]");
+      "\"55555\"][SLOT][B id=\"two\"][#text \"22\"][SLOT][B id=\"one\"][#text "
+      "\"1\"][SPAN id=\"six\"][#text \"666666\"][P id=\"seven\"][#text "
+      "\"7777777\"][B id=\"four\"][#text \"4444\"]");
 
   EXPECT_EQ(expected_nodes, TraverseRange<FlatTreeTraversal>(GetBodyRange()));
   EXPECT_EQ(TraverseRange<FlatTreeTraversal>(GetBodyRange()),
@@ -140,14 +140,14 @@ TEST_F(EphemeralRangeTest, rangeTraversalLimitedFlatTree) {
   const char* body_content =
       "<b id='zero'>0</b>"
       "<p id='host'>"
-      "<b id='one'>1</b>"
-      "<b id='two'>22</b>"
+      "<b slot='#one' id='one'>1</b>"
+      "<b slot='#two' id='two'>22</b>"
       "</p>"
       "<b id='three'>333</b>";
   const char* shadow_content =
       "<p id='four'>4444</p>"
-      "<content select=#two></content>"
-      "<content select=#one></content>"
+      "<slot name=#two></slot>"
+      "<slot name=#one></slot>"
       "<span id='five'>55555</span>"
       "<p id='six'>666666</p>";
   SetBodyContent(body_content);
@@ -206,14 +206,14 @@ TEST_F(EphemeralRangeTest, commonAncesstorFlatTree) {
   const char* body_content =
       "<b id='zero'>0</b>"
       "<p id='host'>"
-      "<b id='one'>1</b>"
-      "<b id='two'>22</b>"
+      "<b slot='#one' id='one'>1</b>"
+      "<b slot='#two' id='two'>22</b>"
       "</p>"
       "<b id='three'>333</b>";
   const char* shadow_content =
       "<p id='four'>4444</p>"
-      "<content select=#two></content>"
-      "<content select=#one></content>"
+      "<slot name=#two></slot>"
+      "<slot name=#one></slot>"
       "<p id='five'>55555</p>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");

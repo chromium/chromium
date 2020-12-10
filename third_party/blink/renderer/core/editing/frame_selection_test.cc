@@ -189,7 +189,7 @@ TEST_F(FrameSelectionTest, SelectWordAroundCaret2) {
 
 TEST_F(FrameSelectionTest, ModifyExtendWithFlatTree) {
   SetBodyContent("<span id=host></span>one");
-  SetShadowContent("two<content></content>", "host");
+  SetShadowContent("two<slot></slot>", "host");
   Element* host = GetDocument().getElementById("host");
   Node* const two = FlatTreeTraversal::FirstChild(*host);
   // Select "two" for selection in DOM tree

@@ -113,11 +113,11 @@ TEST_F(VisibleSelectionTest, AnonymousPlaceholder) {
 
 TEST_F(VisibleSelectionTest, expandUsingGranularity) {
   const char* body_content =
-      "<span id=host><a id=one>1</a><a id=two>22</a></span>";
+      "<span id=host><a slot='#one' id=one>1</a><a slot='#two' "
+      "id=two>22</a></span>";
   const char* shadow_content =
-      "<p><b id=three>333</b><content select=#two></content><b "
-      "id=four>4444</b><span id=space>  </span><content "
-      "select=#one></content><b id=five>55555</b></p>";
+      "<p><b id=three>333</b><slot name=#two></slot><b id=four>4444</b><span "
+      "id=space>  </span><slot name=#one></slot><b id=five>55555</b></p>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -436,11 +436,11 @@ TEST_F(VisibleSelectionTest, GetWordSelectionTextWithTextSecurity) {
 
 TEST_F(VisibleSelectionTest, ShadowCrossing) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b>33</p>";
   const char* shadow_content =
-      "<a><span id='s4'>44</span><content select=#two></content><span "
-      "id='s5'>55</span><content select=#one></content><span "
-      "id='s6'>66</span></a>";
+      "<a><span id='s4'>44</span><slot name=#two></slot><span "
+      "id='s5'>55</span><slot name=#one></slot><span id='s6'>66</span></a>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
@@ -469,49 +469,16 @@ TEST_F(VisibleSelectionTest, ShadowCrossing) {
             selection_in_flat_tree.End());
 }
 
-TEST_F(VisibleSelectionTest, ShadowV0DistributedNodes) {
-  const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
-  const char* shadow_content =
-      "<a><span id='s4'>44</span><content select=#two></content><span "
-      "id='s5'>55</span><content select=#one></content><span "
-      "id='s6'>66</span></a>";
-  SetBodyContent(body_content);
-  ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
-
-  Element* body = GetDocument().body();
-  Element* one = body->QuerySelector("#one");
-  Element* two = body->QuerySelector("#two");
-  Element* five = shadow_root->QuerySelector("#s5");
-
-  VisibleSelection selection =
-      CreateVisibleSelection(SelectionInDOMTree::Builder()
-                                 .Collapse(Position::FirstPositionInNode(*one))
-                                 .Extend(Position::LastPositionInNode(*two))
-                                 .Build());
-  VisibleSelectionInFlatTree selection_in_flat_tree = CreateVisibleSelection(
-      SelectionInFlatTree::Builder()
-          .Collapse(PositionInFlatTree::FirstPositionInNode(*one))
-          .Extend(PositionInFlatTree::LastPositionInNode(*two))
-          .Build());
-
-  EXPECT_EQ(Position(one->firstChild(), 0), selection.Start());
-  EXPECT_EQ(Position(two->firstChild(), 2), selection.End());
-  EXPECT_EQ(PositionInFlatTree(five->firstChild(), 0),
-            selection_in_flat_tree.Start());
-  EXPECT_EQ(PositionInFlatTree(five->firstChild(), 2),
-            selection_in_flat_tree.End());
-}
 
 TEST_F(VisibleSelectionTest, ShadowNested) {
   const char* body_content =
-      "<p id='host'>00<b id='one'>11</b><b id='two'>22</b>33</p>";
+      "<p id='host'>00<b slot='#one' id='one'>11</b><b slot='#two' "
+      "id='two'>22</b>33</p>";
   const char* shadow_content =
-      "<a><span id='s4'>44</span><content select=#two></content><span "
-      "id='s5'>55</span><content select=#one></content><span "
-      "id='s6'>66</span></a>";
+      "<a><span id='s4'>44</span><slot name=#two></slot><span "
+      "id='s5'>55</span><slot name=#one></slot><span id='s6'>66</span></a>";
   const char* shadow_content2 =
-      "<span id='s7'>77</span><content></content><span id='s8'>88</span>";
+      "<span id='s7'>77</span><slot></slot><span id='s8'>88</span>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
   ShadowRoot* shadow_root2 = CreateShadowRootForElementWithIDAndSetInnerHTML(
@@ -688,7 +655,7 @@ TEST_F(VisibleSelectionTest, WordGranularityAfterTextControl) {
 // in undo stack.
 TEST_F(VisibleSelectionTest, updateIfNeededWithShadowHost) {
   SetBodyContent("<div id=host></div><div id=sample>foo</div>");
-  SetShadowContent("<content>", "host");
+  SetShadowContent("<slot>", "host");
   Element* sample = GetDocument().getElementById("sample");
 
   // Simulates saving selection in undo stack.
