@@ -340,7 +340,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
-        return new ChromeWindow(this);
+        return new ChromeWindow(/* activity= */ this, mActivityTabProvider,
+                this::getCompositorViewHolder, getModalDialogManagerSupplier());
     }
 
     @Override

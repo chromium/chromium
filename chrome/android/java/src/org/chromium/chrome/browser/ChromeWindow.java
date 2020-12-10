@@ -7,9 +7,11 @@ package org.chromium.chrome.browser;
 import android.app.Activity;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
@@ -34,28 +36,38 @@ public class ChromeWindow extends ActivityWindowAndroid {
     private static KeyboardVisibilityDelegateFactory sKeyboardVisibilityDelegateFactory =
             ChromeKeyboardVisibilityDelegate::new;
 
+    private final ActivityTabProvider mActivityTabProvider;
+    private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+
     /**
      * Creates Chrome specific ActivityWindowAndroid.
      * @param activity The activity that owns the ChromeWindow.
+     * @param activityTabProvider Provides the current activity's {@link Tab}.
+     * @param compositorViewHolderSupplier Supplies the {@link CompostiorViewHolder}.
+     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      */
-    public ChromeWindow(ChromeActivity activity) {
+    public ChromeWindow(@NonNull Activity activity,
+            @NonNull ActivityTabProvider activityTabProvider,
+            @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         super(activity);
+        mActivityTabProvider = activityTabProvider;
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     @Override
     public View getReadbackView() {
-        assert getActivity().get() instanceof ChromeActivity;
-
-        ChromeActivity chromeActivity = (ChromeActivity) getActivity().get();
-        return chromeActivity.getCompositorViewHolder() == null
+        return mCompositorViewHolderSupplier.get() == null
                 ? null
-                : chromeActivity.getCompositorViewHolder().getActiveSurfaceView();
+                : mCompositorViewHolderSupplier.get().getActiveSurfaceView();
     }
 
     @Override
     public ModalDialogManager getModalDialogManager() {
-        ChromeActivity activity = (ChromeActivity) getActivity().get();
-        return activity == null ? null : activity.getModalDialogManager();
+        // TODO(crbug.com/1155658): Move ModalDialogManager to UnownedUserData.
+        return mModalDialogManagerSupplier.get();
     }
 
     @Override
@@ -68,11 +80,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
      */
     @Override
     protected void showCallbackNonExistentError(String error) {
-        Activity activity = getActivity().get();
-
-        // We can assume that activity is a ChromeActivity because we require one to be passed in
-        // in the constructor.
-        Tab tab = activity != null ? ((ChromeActivity) activity).getActivityTab() : null;
+        Tab tab = mActivityTabProvider.get();
 
         if (tab != null) {
             SimpleConfirmInfoBarBuilder.create(tab.getWebContents(),
