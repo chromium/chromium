@@ -259,11 +259,14 @@ void MediaClientImpl::OnVmCameraMicActiveChanged(
     chromeos::VmCameraMicManager* manager) {
   using DeviceType = chromeos::VmCameraMicManager::DeviceType;
   vm_media_capture_state_ = MediaCaptureState::kNone;
-  if (manager->GetDeviceActive(DeviceType::kCamera))
+  if (manager->IsDeviceActive(DeviceType::kCamera))
     vm_media_capture_state_ |= MediaCaptureState::kVideo;
-  if (manager->GetDeviceActive(DeviceType::kMic))
+  if (manager->IsDeviceActive(DeviceType::kMic))
     vm_media_capture_state_ |= MediaCaptureState::kAudio;
-  media_controller_->NotifyVmCaptureState(vm_media_capture_state_);
+
+  media_controller_->NotifyVmMediaNotificationState(
+      manager->IsNotificationActive(DeviceType::kCamera),
+      manager->IsNotificationActive(DeviceType::kMic));
 }
 
 void MediaClientImpl::EnableCustomMediaKeyHandler(

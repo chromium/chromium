@@ -17,25 +17,6 @@ namespace ash {
 
 namespace {
 using Type = CameraMicTrayItemView::Type;
-
-MediaCaptureState GetRelevantCaptureState(Type type) {
-  switch (type) {
-    case Type::kCamera:
-      return MediaCaptureState::kVideo;
-    case Type::kMic:
-      return MediaCaptureState::kAudio;
-  }
-}
-
-MediaCaptureState GetIrrelevantCaptureState(Type type) {
-  switch (type) {
-    case Type::kCamera:
-      return MediaCaptureState::kAudio;
-    case Type::kMic:
-      return MediaCaptureState::kVideo;
-  }
-}
-
 }  // namespace
 
 class CameraMicTrayItemViewTest : public AshTestBase,
@@ -65,31 +46,30 @@ class CameraMicTrayItemViewTest : public AshTestBase,
   std::unique_ptr<CameraMicTrayItemView> camera_mic_tray_item_view_;
 };
 
-TEST_P(CameraMicTrayItemViewTest, OnVmMediaCaptureChanged) {
+TEST_P(CameraMicTrayItemViewTest, OnVmMediaNotificationChanged) {
   Type type = GetParam();
-  MediaCaptureState relevant = GetRelevantCaptureState(type);
-  MediaCaptureState irrelevant = GetIrrelevantCaptureState(type);
-
   EXPECT_FALSE(camera_mic_tray_item_view_->GetVisible());
 
-  camera_mic_tray_item_view_->OnVmMediaCaptureChanged(relevant);
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/true,
+                                                           /*mic=*/false);
+  EXPECT_EQ(camera_mic_tray_item_view_->GetVisible(), type == Type::kCamera);
+
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/false,
+                                                           /*mic=*/true);
+  EXPECT_EQ(camera_mic_tray_item_view_->GetVisible(), type == Type::kMic);
+
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/true,
+                                                           /*mic=*/true);
   EXPECT_TRUE(camera_mic_tray_item_view_->GetVisible());
 
-  camera_mic_tray_item_view_->OnVmMediaCaptureChanged(irrelevant);
-  EXPECT_FALSE(camera_mic_tray_item_view_->GetVisible());
-
-  camera_mic_tray_item_view_->OnVmMediaCaptureChanged(
-      static_cast<MediaCaptureState>(static_cast<int>(relevant) |
-                                     static_cast<int>(irrelevant)));
-  EXPECT_TRUE(camera_mic_tray_item_view_->GetVisible());
-
-  camera_mic_tray_item_view_->OnVmMediaCaptureChanged(MediaCaptureState::kNone);
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/false,
+                                                           /*mic=*/false);
   EXPECT_FALSE(camera_mic_tray_item_view_->GetVisible());
 }
 
 TEST_P(CameraMicTrayItemViewTest, HideForNonPrimaryUser) {
-  camera_mic_tray_item_view_->OnVmMediaCaptureChanged(
-      GetRelevantCaptureState(GetParam()));
+  camera_mic_tray_item_view_->OnVmMediaNotificationChanged(/*camera=*/true,
+                                                           /*mic=*/true);
   EXPECT_TRUE(camera_mic_tray_item_view_->GetVisible());
 
   SimulateUserLogin("user2@test.com");

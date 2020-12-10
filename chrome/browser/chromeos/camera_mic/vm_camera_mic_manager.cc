@@ -111,7 +111,7 @@ void VmCameraMicManager::SetActive(VmType vm, DeviceType device, bool active) {
   }
 }
 
-bool VmCameraMicManager::GetDeviceActive(DeviceType device) const {
+bool VmCameraMicManager::IsDeviceActive(DeviceType device) const {
   for (const auto& vm_notification : notification_map_) {
     const NotificationType& notification_type = vm_notification.second;
     if (notification_type[static_cast<size_t>(device)]) {

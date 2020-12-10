@@ -58,16 +58,14 @@ CameraMicTrayItemView::~CameraMicTrayItemView() {
   shell->session_controller()->RemoveObserver(this);
 }
 
-void CameraMicTrayItemView::OnVmMediaCaptureChanged(
-    MediaCaptureState capture_state) {
+void CameraMicTrayItemView::OnVmMediaNotificationChanged(bool camera,
+                                                         bool mic) {
   switch (type_) {
     case Type::kCamera:
-      active_ = (capture_state == MediaCaptureState::kVideo ||
-                 capture_state == MediaCaptureState::kAudioVideo);
+      active_ = camera;
       break;
     case Type::kMic:
-      active_ = (capture_state == MediaCaptureState::kAudio ||
-                 capture_state == MediaCaptureState::kAudioVideo);
+      active_ = mic;
       break;
   }
   Update();

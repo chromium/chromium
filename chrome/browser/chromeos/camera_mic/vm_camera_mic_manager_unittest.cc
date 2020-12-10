@@ -150,7 +150,7 @@ class VmCameraMicManagerTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(VmCameraMicManagerTest);
 };
 
-// Test `GetDeviceActive()` and `IsNotificationActive()`.
+// Test `IsDeviceActive()` and `IsNotificationActive()`.
 class VmCameraMicManagerIsActiveTest
     : public VmCameraMicManagerTest,
       public testing::WithParamInterface<IsActiveTestParam> {};
@@ -160,7 +160,7 @@ TEST_P(VmCameraMicManagerIsActiveTest, IsNotificationActive) {
 
   for (const auto& device_and_expectation : GetParam().device_expectations) {
     EXPECT_EQ(
-        vm_camera_mic_manager_->GetDeviceActive(device_and_expectation.first),
+        vm_camera_mic_manager_->IsDeviceActive(device_and_expectation.first),
         device_and_expectation.second);
   }
 

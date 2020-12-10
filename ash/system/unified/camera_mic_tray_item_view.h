@@ -43,7 +43,7 @@ class ASH_EXPORT CameraMicTrayItemView : public TrayItemView,
   void HandleLocaleChange() override;
 
   // MediaCaptureObserver:
-  void OnVmMediaCaptureChanged(MediaCaptureState capture_state) override;
+  void OnVmMediaNotificationChanged(bool camera, bool mic) override;
 
  private:
   void Update();

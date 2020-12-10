@@ -55,9 +55,7 @@ class VmCameraMicManager : public KeyedService {
   void RemoveObserver(Observer* observer);
 
   // Return true if any of the VMs is using the device.
-  //
-  // TODO(b/167491603): Rename to `IsDeviceActive()` for consistency.
-  bool GetDeviceActive(DeviceType device) const;
+  bool IsDeviceActive(DeviceType device) const;
 
   // When a VM is using both camera and mic, we only show a single "camera and
   // mic" notification, which is considered a camera notification but not a mic
@@ -65,9 +63,6 @@ class VmCameraMicManager : public KeyedService {
   // "camera and mic" notifications are shown, this function returns true for
   // `kCamera` but false for `kMic`. If a "mic only" notification is shown, this
   // function returns true for `kMic`.
-  //
-  // TODO(b/167491603): We need to switch the indicator displaying logic to use
-  // this function instead.
   bool IsNotificationActive(DeviceType device) const;
 
  private:
