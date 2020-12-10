@@ -4174,7 +4174,7 @@
             ]
         }
     ],
-    "LiveCaptionInProductHelp": [
+    "LiveCaption": [
         {
             "platforms": [
                 "chromeos",
@@ -4185,6 +4185,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:live_caption_iph_triggered;comparator:==0;window:120;storage:365",
+                        "event_used": "name:live_caption_toggle_viewed;comparator:==0;window:120;storage:365",
+                        "session_rate": "==0"
+                    },
                     "enable_features": [
                         "IPH_LiveCaption"
                     ]
