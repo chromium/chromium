@@ -1,0 +1,46 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.cfm.mojom;
+
+// Indicates the upload priority of the enqueued payload.
+enum EnqueuePriority {
+  // |kHigh| priority indicates the payload requires immediate upload
+  // Ex: Security Events, Failed Installation, High Disc Usage
+  kHigh,
+  // |kMedium| priority indicates the payload does not require immediate upload
+  // Ex: telemetry such as uptime, power usage, etc
+  kMedium,
+  // |kLow| priority indicates the payload can be large and can be uploaded with
+  // a slower frequency.
+  // Ex: Logs, Feedback
+  kLow,
+};
+
+// Indicates the current state of the |MeetDevicesLogger| service
+enum LoggerState {
+  // |kFailed| state indicates the previous request failed. Only for Enqueue
+  kFailed,
+  // |kReadyForRequests| state indicates the service can enqueue records.
+  kReadyForRequests,
+  // |kUninitialized| state indicates the service has yet to be fully configured
+  kUninitialized,
+};
+
+// Allows clients to be notified of changes in |MeetDevicesLogger|
+interface LoggerStateObserver {
+  // Called when this observer is first added to |MeetDevicesLogger| service
+  // as well as whenever the status of |LoggerState| is updated.
+  OnNotifyState(LoggerState state);
+};
+
+// Interface used to enqueue CfM Telemetry data, using the Chrome Reporting API
+interface MeetDevicesLogger {
+  // Allows a user to |Enqueue| a serialised message for delivery, using the,
+  // report handler specified by |Destination::MEET_DEVICE_TELEMETRY|.
+  Enqueue(string record, EnqueuePriority priority)=>(LoggerState success);
+
+  // Adds a |LoggerStateObserver| to monitor |MeetDevicesLogger|'s state.
+  AddStateObserver(pending_remote<LoggerStateObserver> pending_observer);
+};

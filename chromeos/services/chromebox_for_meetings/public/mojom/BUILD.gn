@@ -8,6 +8,7 @@ mojom("mojom") {
   sources = [
     "cfm_browser.mojom",
     "cfm_service_manager.mojom",
+    "meet_devices_logger.mojom",
   ]
   public_deps = [ "//mojo/public/mojom/base" ]
 }
