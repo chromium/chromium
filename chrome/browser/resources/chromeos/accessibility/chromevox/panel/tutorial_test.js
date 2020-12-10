@@ -621,3 +621,55 @@ TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', function() {
         .replay();
   });
 });
+
+// Tests that interactive mode and UserActionMonitor are properly set when
+// showing different screens in the tutorial.
+TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    let userActionMonitorCreatedCount = 0;
+    let userActionMonitorDestroyedCount = 0;
+    let isUserActionMonitorActive = false;
+
+    // Swap in functions below so we can track the number of times
+    // UserActionMonitor is created and destroyed.
+    ChromeVoxState.instance.createUserActionMonitor = (actions, callback) => {
+      userActionMonitorCreatedCount += 1;
+      isUserActionMonitorActive = true;
+    };
+    ChromeVoxState.instance.destroyUserActionMonitor = () => {
+      userActionMonitorDestroyedCount += 1;
+      isUserActionMonitorActive = false;
+    };
+
+    // A helper to make assertions on four variables of interest.
+    const makeAssertions = (expectedVars) => {
+      assertEquals(expectedVars.createdCount, userActionMonitorCreatedCount);
+      assertEquals(
+          expectedVars.destroyedCount, userActionMonitorDestroyedCount);
+      assertEquals(expectedVars.interactiveMode, tutorial.interactiveMode);
+      // Note: Interactive mode and UserActionMonitor should always be in
+      // sync in the context of the tutorial.
+      assertEquals(expectedVars.interactiveMode, isUserActionMonitorActive);
+    };
+
+    makeAssertions(
+        {createdCount: 0, destroyedCount: 0, interactiveMode: false});
+    // Show the first lesson of the quick orientation, which is interactive.
+    tutorial.curriculum = 'quick_orientation';
+    tutorial.showLesson(0);
+    makeAssertions({createdCount: 1, destroyedCount: 0, interactiveMode: true});
+
+    // Move to the next lesson in the quick orientation. This lesson is also
+    // interactive, so UserActionMonitor should be destroyed and re-created.
+    tutorial.showNextLesson();
+    makeAssertions({createdCount: 2, destroyedCount: 1, interactiveMode: true});
+
+    // Leave the quick orientation by navigating to the lesson menu. This should
+    // stop interactive mode and destroy UserActionMonitor.
+    tutorial.showLessonMenu();
+    makeAssertions(
+        {createdCount: 2, destroyedCount: 2, interactiveMode: false});
+  });
+});
