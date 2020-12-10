@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <set
+        android:ordering="sequentially" >
+        <objectAnimator
+            android:duration="1000"
+            android:propertyName="trimPathEnd"
+            android:valueFrom="0.2"
+            android:valueTo="0.5"
+            android:valueType="floatType"
+            android:interpolator="@anim/circle_loader_animation_interpolator_7" />
+        <objectAnimator
+            android:duration="483"
+            android:propertyName="trimPathEnd"
+            android:valueFrom="0.5"
+            android:valueTo="1.0"
+            android:valueType="floatType"
+            android:interpolator="@anim/circle_loader_animation_interpolator_4" />
+        <objectAnimator
+            android:duration="516"
+            android:propertyName="trimPathEnd"
+            android:valueFrom="1.0"
+            android:valueTo="1.0"
+            android:valueType="floatType"
+            android:interpolator="@anim/circle_loader_animation_interpolator_1" />
+    </set>
+    <set
+        android:ordering="sequentially" >
+        <objectAnimator
+            android:duration="516"
+            android:propertyName="trimPathStart"
+            android:valueFrom="0.0"
+            android:valueTo="0.0"
+            android:valueType="floatType"
+            android:interpolator="@anim/circle_loader_animation_interpolator_1" />
+        <objectAnimator
+            android:duration="966"
+            android:propertyName="trimPathStart"
+            android:valueFrom="0.0"
+            android:valueTo="0.33644"
+            android:valueType="floatType"
+            android:interpolator="@anim/circle_loader_animation_interpolator_5" />
+        <objectAnimator
+            android:duration="516"
+            android:propertyName="trimPathStart"
+            android:valueFrom="0.33644"
+            android:valueTo="0.8"
+            android:valueType="floatType"
+            android:interpolator="@anim/circle_loader_animation_interpolator_6" />
+    </set>
+</set>

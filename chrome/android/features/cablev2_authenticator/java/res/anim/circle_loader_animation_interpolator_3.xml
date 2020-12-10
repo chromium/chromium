@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pathInterpolator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:pathData="M 0.0,0.0 c 0.333333330786,0.0 0.666666664831,-0.0357237301378 1.0,1.0"
+    tools:targetApi="21"/>

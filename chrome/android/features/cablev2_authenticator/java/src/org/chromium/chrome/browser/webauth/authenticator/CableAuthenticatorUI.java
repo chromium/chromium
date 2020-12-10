@@ -28,6 +28,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.Log;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
@@ -123,6 +125,23 @@ public class CableAuthenticatorUI
             case SERVER_LINK:
                 View v = inflater.inflate(R.layout.cablev2_serverlink, container, false);
                 mStatusText = v.findViewById(R.id.status_text);
+
+                ImageView spinner = (ImageView) v.findViewById(R.id.spinner);
+                final AnimatedVectorDrawableCompat anim = AnimatedVectorDrawableCompat.create(
+                        getContext(), R.drawable.circle_loader_animation);
+                // There is no way to make an animation loop. Instead it must be
+                // manually started each time it completes.
+                anim.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
+                    @Override
+                    public void onAnimationEnd(Drawable drawable) {
+                        if (drawable != null && drawable.isVisible()) {
+                            anim.start();
+                        }
+                    }
+                });
+                spinner.setImageDrawable(anim);
+                anim.start();
+
                 return v;
 
             case QR:
@@ -230,6 +249,7 @@ public class CableAuthenticatorUI
         }
     }
 
+    @SuppressLint("SetTextI18n")
     void onStatus(int code) {
         switch (mMode) {
             case QR:
@@ -244,7 +264,15 @@ public class CableAuthenticatorUI
                 break;
 
             case SERVER_LINK:
-                mStatusText.setText(String.valueOf(code));
+                // These values must match up with the Status enum in v2_authenticator.h
+                // TODO(agl): translate
+                if (code == 1) {
+                    mStatusText.setText("Waiting for other computer");
+                } else if (code == 2) {
+                    mStatusText.setText("Connected to other computer");
+                } else if (code == 3) {
+                    mStatusText.setText("Processing request");
+                }
                 break;
 
             case FCM:
