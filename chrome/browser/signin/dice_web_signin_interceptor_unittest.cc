@@ -119,7 +119,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
                                            /*is_sync_signin=*/false);
   }
 
-  // Calls MaybeInterceptWebSignin and verifies the hsueristic outcome, the
+  // Calls MaybeInterceptWebSignin and verifies the heuristic outcome, the
   // histograms and whether the interception is in progress.
   // This function only works if the interception decision can be made
   // synchronously (GetHeuristicOutcome() returns a value).
@@ -408,6 +408,28 @@ TEST_F(DiceWebSigninInterceptorTest, HeuristicDefaultsToGmail) {
           /*is_new_account=*/true, /*is_sync_signin=*/false, "bob@example.com",
           /*entry=*/nullptr),
       SigninInterceptionHeuristicOutcome::kAbortSingleAccount);
+}
+
+// Checks that no heuristic is returned if signin interception is disabled.
+TEST_F(DiceWebSigninInterceptorTest, InterceptionDsiabled) {
+  // Setup for profile switch interception.
+  std::string email = "bob@gmail.com";
+  Profile* profile_2 = CreateTestingProfile("Profile 2");
+  profile()->GetPrefs()->SetBoolean(prefs::kSigninInterceptionEnabled, false);
+  ProfileAttributesEntry* entry = nullptr;
+  ASSERT_TRUE(profile_attributes_storage()->GetProfileAttributesWithPath(
+      profile_2->GetPath(), &entry));
+  entry->SetAuthInfo("dummy_gaia_id", base::UTF8ToUTF16(email),
+                     /*is_consented_primary_account=*/false);
+  EXPECT_EQ(interceptor()->GetHeuristicOutcome(
+                /*is_new_account=*/true, /*is_sync_signin=*/false, "bob",
+                /*entry=*/nullptr),
+            SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
+  EXPECT_EQ(
+      interceptor()->GetHeuristicOutcome(
+          /*is_new_account=*/true, /*is_sync_signin=*/false, "bob@example.com",
+          /*entry=*/nullptr),
+      SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
 }
 
 TEST_F(DiceWebSigninInterceptorTest, InterceptionInProgress) {
