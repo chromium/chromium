@@ -7,7 +7,9 @@ import '../../cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../../cr_elements/cr_icons_css.m.js';
 import '../../cr_elements/cr_grid/cr_grid.js';
 import '../../cr_elements/shared_vars_css.m.js';
+import '../../cr_elements/shared_style_css.m.js';
 import './theme_icon.js';
+import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -210,6 +212,15 @@ export class CustomizeThemesElement extends mixinBehaviors
    */
   skColorToRgba_(skColor) {
     return skColorToRgba(skColor);
+  }
+
+  /**
+   * @param {number} index
+   * @return {string}
+   * @private
+   */
+  getThemeIconId_(index) {
+    return 'themeIconId' + index;
   }
 }
 
