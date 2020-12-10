@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS Test that violation report event was fired
+PASS inline-style-allowed-while-cloning-objects
+PASS inline-style-allowed-while-cloning-objects 1
+PASS inline-style-allowed-while-cloning-objects 2
+PASS inline-style-allowed-while-cloning-objects 3
+PASS inline-style-allowed-while-cloning-objects 4
+PASS inline-style-allowed-while-cloning-objects 5
+PASS inline-style-allowed-while-cloning-objects 6
+PASS inline-style-allowed-while-cloning-objects 7
+PASS inline-style-allowed-while-cloning-objects 8
+PASS inline-style-allowed-while-cloning-objects 9
+PASS inline-style-allowed-while-cloning-objects 10
+PASS inline-style-allowed-while-cloning-objects 11
+PASS inline-style-allowed-while-cloning-objects 12
+PASS inline-style-allowed-while-cloning-objects 13
+PASS inline-style-allowed-while-cloning-objects 14
+PASS inline-style-allowed-while-cloning-objects 15
+PASS inline-style-allowed-while-cloning-objects 16
+PASS inline-style-allowed-while-cloning-objects 17
+FAIL inline-style-allowed-while-cloning-objects 18 assert_equals: expected "rgb(238, 130, 238) none repeat scroll 0% 0% / auto padding-box border-box" but got "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"
+FAIL inline-style-allowed-while-cloning-objects 19 assert_equals: expected "rgb(238, 130, 238) none repeat scroll 0% 0% / auto padding-box border-box" but got "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box"
+PASS inline-style-allowed-while-cloning-objects 20
+PASS inline-style-allowed-while-cloning-objects 21
+FAIL non-HTML namespace assert_equals: expected "" but got "background: rgb(238, 130, 238)"
+Harness: the test ran to completion.
+

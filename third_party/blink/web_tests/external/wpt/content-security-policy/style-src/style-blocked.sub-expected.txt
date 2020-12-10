@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Expecting logs: ["violated-directive=style-src-elem","PASS"] assert_unreached: FAIL Reached unreachable code
+Harness: the test ran to completion.
+

@@ -1897,8 +1897,6 @@ crbug.com/694525 external/wpt/content-security-policy/navigation/to-javascript-p
 crbug.com/694525 external/wpt/content-security-policy/form-action/form-action-src-redirect-blocked.sub.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/script-src/worker-importscripts-blocked.sub.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/script-src/worker-set-timeout-blocked.sub.html [ Skip ]
-crbug.com/694525 external/wpt/content-security-policy/style-src/inline-style-allowed-while-cloning-objects.sub.html [ Skip ]
-crbug.com/694525 external/wpt/content-security-policy/style-src/style-blocked.sub.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/unsafe-eval/eval-blocked-in-about-blank-iframe.sub.html [ Skip ]
 
 # These tests will be added back soon:
