@@ -2101,10 +2101,10 @@ void RenderFrameHostImpl::ValidateStateForBug1146573() {
   if (must_be_replaced_ && render_frame_created_) {
     SCOPED_CRASH_KEY_BOOL(ValidateStateForBug1146573, IsMainFrame,
                           is_main_frame());
-    SCOPED_CRASH_KEY_BOOL(ValidateStateForBug1146573, ProcessID,
-                          GetProcess()->GetID());
-    SCOPED_CRASH_KEY_BOOL(ValidateStateForBug1146573, RoutingID,
-                          GetRoutingID());
+    SCOPED_CRASH_KEY_NUMBER(ValidateStateForBug1146573, ProcessID,
+                            GetProcess()->GetID());
+    SCOPED_CRASH_KEY_NUMBER(alidateStateForBug1146573, RoutingID,
+                            GetRoutingID());
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
   }
@@ -3281,8 +3281,8 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
     SCOPED_CRASH_KEY_BOOL(Bug1146573, Live, IsRenderFrameLive());
     SCOPED_CRASH_KEY_BOOL(Bug1146573, MustBeReplaced, must_be_replaced());
     SCOPED_CRASH_KEY_BOOL(Bug1146573, IsMainFrame, is_main_frame());
-    SCOPED_CRASH_KEY_BOOL(Bug1146573, ProcessID, GetProcess()->GetID());
-    SCOPED_CRASH_KEY_BOOL(Bug1146573, RoutingID, GetRoutingID());
+    SCOPED_CRASH_KEY_NUMBER(Bug1146573, ProcessID, GetProcess()->GetID());
+    SCOPED_CRASH_KEY_NUMBER(Bug1146573, RoutingID, GetRoutingID());
     CHECK(ShouldCreateNewHostForSameSiteSubframe());
 
     // The unload handlers already ran for this document during the
