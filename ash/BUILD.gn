@@ -897,6 +897,7 @@ component("ash") {
     "system/accessibility/floating_menu_button.h",
     "system/accessibility/floating_menu_utils.cc",
     "system/accessibility/floating_menu_utils.h",
+    "system/accessibility/select_to_speak_constants.h",
     "system/accessibility/select_to_speak_menu_bubble_controller.cc",
     "system/accessibility/select_to_speak_menu_bubble_controller.h",
     "system/accessibility/select_to_speak_menu_view.cc",

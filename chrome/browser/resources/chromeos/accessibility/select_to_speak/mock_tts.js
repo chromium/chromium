@@ -94,5 +94,8 @@ MockTts.prototype = {
   },
   setOnSpeechCallbacks(callbacks) {
     this.speechCallbackStack_ = callbacks.reverse();
+  },
+  getOptions() {
+    return this.options_;
   }
 };

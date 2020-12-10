@@ -147,7 +147,7 @@ TEST_F(SelectToSpeakSpeedBubbleControllerTest, SelectFastOption) {
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kChangeSpeed);
-  EXPECT_EQ(client.last_select_to_speak_panel_action_value(), 1.6);
+  EXPECT_EQ(client.last_select_to_speak_panel_action_value(), 1.5);
 }
 
 TEST_F(SelectToSpeakSpeedBubbleControllerTest, SelectFasterOption) {

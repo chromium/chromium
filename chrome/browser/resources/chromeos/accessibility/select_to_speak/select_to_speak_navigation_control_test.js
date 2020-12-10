@@ -303,3 +303,84 @@ TEST_F('SelectToSpeakNavigationControlTest', 'PrevSentence', function() {
             'Second sentence. Third sentence.');
       });
 });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePlaying',
+    function() {
+      chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
+      const bodyHtml = `
+      <p id="p1">Paragraph 1</p>'
+    `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Speaks the first word.
+            this.mockTts.speakUntilCharIndex(10);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Paragraph 1');
+            assertEquals(this.mockTts.getOptions().rate, 1.2);
+
+            // Changing speed will resume where we left off with selected speech
+            // rate.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction
+                    .CHANGE_SPEED,
+                1.5);
+            assertFalse(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 0);
+
+            // Wait an event loop so all pending promises are resolved prior to
+            // asserting that TTS resumed with the proper rate.
+            setTimeout(
+                this.newCallback(() => {
+                  assertTrue(this.mockTts.currentlySpeaking());
+                  assertEquals(this.mockTts.getOptions().rate, 1.5);
+                  assertEquals(this.mockTts.pendingUtterances().length, 1);
+                  this.assertEqualsCollapseWhitespace(
+                      this.mockTts.pendingUtterances()[0], '1');
+                }),
+                0);
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePaused', function() {
+      chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
+      const bodyHtml = `
+      <p id="p1">Paragraph 1</p>'
+    `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Speaks the first word.
+            this.mockTts.speakUntilCharIndex(10);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Paragraph 1');
+            assertEquals(this.mockTts.getOptions().rate, 1.2);
+
+            // User-intiated pause.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.PAUSE);
+            assertFalse(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 0);
+
+            // Changing speed will remain paused.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction
+                    .CHANGE_SPEED,
+                1.5);
+
+            // Wait an event loop so all pending promises are resolved prior to
+            // asserting that TTS remains paused.
+            setTimeout(this.newCallback(() => {
+              assertFalse(this.mockTts.currentlySpeaking());
+              assertEquals(this.mockTts.pendingUtterances().length, 0);
+            }, 0));
+          });
+    });

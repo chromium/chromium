@@ -24,7 +24,9 @@ constexpr int kBubbleViewMargin = 2;
 
 }  // namespace
 
-SelectToSpeakSpeedBubbleController::SelectToSpeakSpeedBubbleController() {
+SelectToSpeakSpeedBubbleController::SelectToSpeakSpeedBubbleController(
+    SelectToSpeakSpeedView::Delegate* delegate)
+    : delegate_(delegate) {
   Shell::Get()->activation_client()->AddObserver(this);
 }
 
@@ -67,6 +69,8 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
     bubble_view_->InitializeAndShowBubble();
+  } else {
+    speed_view_->SetInitialSpeechRate(speech_rate);
   }
 
   bubble_view_->ChangeAnchorView(anchor_view);
@@ -99,16 +103,14 @@ void SelectToSpeakSpeedBubbleController::OnWindowActivated(
       views::Widget::GetWidgetForNativeView(gained_active);
   if (gained_widget == bubble_widget_) {
     speed_view_->SetInitialFocus();
-  } else {
-    Hide();
   }
 }
 
 void SelectToSpeakSpeedBubbleController::OnSpeechRateSelected(
     double speech_rate) {
-  Shell::Get()->accessibility_controller()->OnSelectToSpeakPanelAction(
-      SelectToSpeakPanelAction::kChangeSpeed, speech_rate);
-  Hide();
+  // Let parent handle this, so menu bubble controller can properly set speed
+  // button state.
+  delegate_->OnSpeechRateSelected(speech_rate);
 }
 
 }  // namespace ash

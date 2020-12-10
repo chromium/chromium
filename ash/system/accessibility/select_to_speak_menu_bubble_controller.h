@@ -18,6 +18,7 @@ namespace ash {
 class ASH_EXPORT SelectToSpeakMenuBubbleController
     : public TrayBubbleView::Delegate,
       public SelectToSpeakMenuView::Delegate,
+      public SelectToSpeakSpeedView::Delegate,
       public ::wm::ActivationChangeObserver {
  public:
   SelectToSpeakMenuBubbleController();
@@ -46,6 +47,9 @@ class ASH_EXPORT SelectToSpeakMenuBubbleController
 
   // SelectToSpeakMenuView::Delegate:
   void OnActionSelected(SelectToSpeakPanelAction action) override;
+
+  // SelectToSpeakSpeedView::Delegate:
+  void OnSpeechRateSelected(double speech_rate) override;
 
   // Owned by views hierarchy.
   TrayBubbleView* bubble_view_ = nullptr;

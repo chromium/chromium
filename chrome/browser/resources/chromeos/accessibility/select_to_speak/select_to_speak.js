@@ -41,6 +41,9 @@ const GSUITE_APP_REGEXP =
 // AshColorProvider::ShieldLayerType kShield40.
 const DEFAULT_BACKGROUND_SHADING_COLOR = '#0006';
 
+// Settings key for system speech rate setting.
+const SPEECH_RATE_KEY = 'settings.tts.speech_rate';
+
 /**
  * Determines if a node is in one of the known Google GSuite apps that needs
  * special case treatment for speaking selected text. Not all Google GSuite
@@ -251,6 +254,18 @@ class SelectToSpeak {
         AccessibilityFeature.SELECT_TO_SPEAK_NAVIGATION_CONTROL, (result) => {
           this.navigationControlFlag_ = result;
         });
+
+    /** @private {number} Default speech rate set in system settings. */
+    this.systemSpeechRate_ = 1.0;
+    chrome.settingsPrivate.getPref(SPEECH_RATE_KEY, (pref) => {
+      if (!pref) {
+        return;
+      }
+      this.systemSpeechRate_ = /** @type {number} */ (pref.value);
+    });
+
+    /** @private {?number} Speech rate that overrides system rate. */
+    this.overrideSpeechRate_ = null;
   }
 
   /**
@@ -669,6 +684,7 @@ class SelectToSpeak {
     chrome.tts.stop();
     this.clearFocusRing_();
     this.clearNavigationStateVariables_();
+    this.overrideSpeechRate_ = null;  // Reset speech rate to system default
     this.onStateChanged_(SelectToSpeakState.INACTIVE);
   }
 
@@ -713,7 +729,8 @@ class SelectToSpeak {
       // Also, update the location of the panel according to the focus ring.
       chrome.accessibilityPrivate.updateSelectToSpeakPanel(
           /* show= */ true, /* anchor= */ this.currentFocusRing_[0],
-          /* isPaused= */ this.isPaused_(), /* speed= */ 1.2);
+          /* isPaused= */ this.isPaused_(),
+          /* speed= */ this.getSpeechRate_());
     } else {
       // Dismiss the panel if either the feature is disabled or the focus ring
       // is not valid.
@@ -827,6 +844,8 @@ class SelectToSpeak {
         this.onStateChangeRequested_.bind(this));
     chrome.accessibilityPrivate.onSelectToSpeakPanelAction.addListener(
         this.onSelectToSpeakPanelAction_.bind(this));
+    chrome.settingsPrivate.onPrefsChanged.addListener(
+        this.onPrefsChanged_.bind(this));
     // Initialize the state to SelectToSpeakState.INACTIVE.
     chrome.accessibilityPrivate.setSelectToSpeakState(this.state_);
   }
@@ -866,10 +885,11 @@ class SelectToSpeak {
 
   /**
    * Handles Select-to-speak panel action.
-   * @param {!SelectToSpeakPanelAction} panelAction
+   * @param {!SelectToSpeakPanelAction} panelAction Action to perform.
+   * @param {number=} value Optional value associated with action.
    * @private
    */
-  onSelectToSpeakPanelAction_(panelAction) {
+  onSelectToSpeakPanelAction_(panelAction, value) {
     if (!this.shouldShowNavigationControls_()) {
       // Ignore if this feature is not enabled.
       return;
@@ -896,8 +916,28 @@ class SelectToSpeak {
       case SelectToSpeakPanelAction.RESUME:
         this.resume_();
         break;
+      case SelectToSpeakPanelAction.CHANGE_SPEED:
+        if (!value) {
+          console.warn(
+              'Change speed request receieved with invalid value', value);
+          return;
+        }
+        this.changeSpeed_(value);
+        break;
       default:
         // TODO(crbug.com/1140216): Implement other actions.
+    }
+  }
+
+  /**
+   * Handles system preferences change.
+   * @param {!Array<!Object>} prefs
+   * @private
+   */
+  onPrefsChanged_(prefs) {
+    const ratePref = prefs.find((pref) => pref.key === SPEECH_RATE_KEY);
+    if (ratePref) {
+      this.systemSpeechRate_ = ratePref.value;
     }
   }
 
@@ -970,6 +1010,21 @@ class SelectToSpeak {
     nextParagraphNodes[0].makeVisible();
 
     this.startSpeechQueue_(nextParagraphNodes);
+  }
+
+  /**
+   * Updates current reading speed (speech rate).
+   * @param {number} rate
+   * @private
+   */
+  async changeSpeed_(rate) {
+    this.overrideSpeechRate_ = rate === this.systemSpeechRate_ ? null : rate;
+
+    // If currently playing, stop TTS, then resume from current spot.
+    if (!this.isPaused_()) {
+      await this.pause_();
+      this.resume_();
+    }
   }
 
   /**
@@ -1136,6 +1191,9 @@ class SelectToSpeak {
     if (this.enableLanguageDetectionIntegration_ &&
         nodeGroup.detectedLanguage) {
       options.lang = nodeGroup.detectedLanguage;
+    }
+    if (this.navigationControlFlag_) {
+      options.rate = this.getSpeechRate_();
     }
 
     const nodeGroupText = nodeGroup.text || '';
@@ -1645,6 +1703,14 @@ class SelectToSpeak {
       this.currentNodeWord_ = {'start': nodeStart, 'end': nodeEnd};
       this.testCurrentNode_();
     }
+  }
+
+  /**
+   * @return {number} Current speech rate.
+   * @private
+   */
+  getSpeechRate_() {
+    return this.overrideSpeechRate_ || this.systemSpeechRate_;
   }
 
   /**

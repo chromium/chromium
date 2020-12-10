@@ -38,6 +38,9 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
 
   void SetInitialFocus();
 
+  // Sets the speech rate that should be selected.
+  void SetInitialSpeechRate(double initial_speech_rate);
+
  private:
   void AddMenuItem(int option_id,
                    const base::string16& label,

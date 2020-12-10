@@ -6,6 +6,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/accessibility/select_to_speak_constants.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
@@ -22,9 +23,6 @@ namespace ash {
 
 namespace {
 
-// User-selectable speech rates.
-const std::vector<double> kSpeechRates = {0.5, 1.0, 1.2, 1.6, 2.0};
-
 // View ID for the option that represents the system default speech rate.
 constexpr int kDefaultSpeedId = 100;
 
@@ -37,10 +35,15 @@ SelectToSpeakSpeedView::SelectToSpeakSpeedView(Delegate* delegate,
                                                double initial_speech_rate)
     : delegate_(delegate) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
+  SetInitialSpeechRate(initial_speech_rate);
+}
+
+void SelectToSpeakSpeedView::SetInitialSpeechRate(double initial_speech_rate) {
+  RemoveAllChildViews(true);
 
   bool any_selected = false;
-  for (unsigned int i = 0; i < kSpeechRates.size(); i++) {
-    double option_speed = kSpeechRates[i];
+  for (size_t i = 0; i < base::size(kSelectToSpeakSpeechRates); i++) {
+    double option_speed = kSelectToSpeakSpeechRates[i];
     bool is_selected = option_speed == initial_speech_rate;
     // Add 1 to the index, because view IDs cannot be 0.
     auto label = base::ASCIIToUTF16(base::StringPrintf("%.1fx", option_speed));
@@ -49,9 +52,8 @@ SelectToSpeakSpeedView::SelectToSpeakSpeedView(Delegate* delegate,
   }
   if (!any_selected) {
     default_speech_rate_ = initial_speech_rate;
-    auto label = l10n_util::GetStringFUTF16(
-        IDS_ASH_SELECT_TO_SPEAK_DEFAULT_OPTION,
-        base::ASCIIToUTF16(base::StringPrintf("%.1f", initial_speech_rate)));
+    auto label =
+        l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_DEFAULT_OPTION);
     AddMenuItem(/*option_id=*/kDefaultSpeedId, label, /*is_selected=*/true);
   }
 }
@@ -69,8 +71,8 @@ void SelectToSpeakSpeedView::AddMenuItem(int option_id,
 void SelectToSpeakSpeedView::OnViewClicked(views::View* sender) {
   unsigned int speed_index = sender->GetID() - 1;
   double selected_rate = default_speech_rate_;
-  if (speed_index >= 0 && speed_index < kSpeechRates.size())
-    selected_rate = kSpeechRates[speed_index];
+  if (speed_index >= 0 && speed_index < base::size(kSelectToSpeakSpeechRates))
+    selected_rate = kSelectToSpeakSpeechRates[speed_index];
   if (selected_rate != 0.0)
     delegate_->OnSpeechRateSelected(selected_rate);
 }

@@ -246,9 +246,8 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, ChangeSpeedButtonPressed) {
   EXPECT_TRUE(GetSpeedBubbleController() &&
               GetSpeedBubbleController()->IsVisible());
 
-  // Clicking panel hides the speed selection bubble.
-  GetEventGenerator()->GestureTapAt(
-      GetMenuView()->GetBoundsInScreen().CenterPoint());
+  // Clicking button again closes the speed selection bubble.
+  GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(!GetSpeedBubbleController() ||
               !GetSpeedBubbleController()->IsVisible());
 }

@@ -807,7 +807,7 @@ This file contains the strings for ash.
         Exit Select-to-speak
       </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_DEFAULT_OPTION" desc="The label for the Select-to-speak reading speed option where users can select their default system text-to-speech rate.">
-        Default (<ph name="RATE">$1<ex>1.2</ex></ph>x)
+        Default
       </message>
       <message name="IDS_ASH_SELECT_TO_SPEAK_MENU" desc="The name of the Select-to-speak floating menu.">
         Select-to-speak menu

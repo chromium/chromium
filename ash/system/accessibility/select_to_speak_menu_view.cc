@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/floating_menu_button.h"
+#include "ash/system/accessibility/select_to_speak_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -123,7 +124,7 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
                     views::Builder<FloatingMenuButton>()
                         .CopyAddressTo(&speed_button_)
                         .SetID(static_cast<int>(ButtonId::kSpeed))
-                        .SetVectorIcon(kSelectToSpeakReadingSpeedIcon)
+                        .SetVectorIcon(kSelectToSpeakReadingSpeedNormalIcon)
                         .SetTooltipText(l10n_util::GetStringUTF16(
                             IDS_ASH_SELECT_TO_SPEAK_READING_SPEED))
                         .SetCallback(base::BindRepeating(
@@ -155,8 +156,20 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
                             base::Unretained(this),
                             base::Unretained(stop_button_)))})})
       .BuildChildren();
+}
 
-  pause_button_->SetToggled(true);
+void SelectToSpeakMenuView::SetInitialSpeechRate(double initial_speech_rate) {
+  const gfx::VectorIcon* speed_icon = &kSelectToSpeakReadingSpeedNormalIcon;
+  if (initial_speech_rate == kSelectToSpeakSpeechRateSlow) {
+    speed_icon = &kSelectToSpeakReadingSpeedSlowIcon;
+  } else if (initial_speech_rate == kSelectToSpeakSpeechRatePeppy) {
+    speed_icon = &kSelectToSpeakReadingSpeedPeppyIcon;
+  } else if (initial_speech_rate == kSelectToSpeakSpeechRateFast) {
+    speed_icon = &kSelectToSpeakReadingSpeedFastIcon;
+  } else if (initial_speech_rate == kSelectToSpeakSpeechRateFaster) {
+    speed_icon = &kSelectToSpeakReadingSpeedFasterIcon;
+  }
+  speed_button_->SetVectorIcon(*speed_icon);
 }
 
 void SelectToSpeakMenuView::OnKeyEvent(ui::KeyEvent* key_event) {
@@ -202,6 +215,10 @@ void SelectToSpeakMenuView::SetPaused(bool is_paused) {
 
 void SelectToSpeakMenuView::SetInitialFocus() {
   pause_button_->RequestFocus();
+}
+
+void SelectToSpeakMenuView::SetSpeedButtonToggled(bool toggled) {
+  speed_button_->SetToggled(toggled);
 }
 
 void SelectToSpeakMenuView::OnButtonPressed(views::Button* sender) {

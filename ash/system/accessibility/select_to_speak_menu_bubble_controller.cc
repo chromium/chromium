@@ -59,6 +59,7 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
     menu_view_->SetBorder(
         views::CreateEmptyBorder(kUnifiedTopShortcutSpacing, 0, 0, 0));
     bubble_view_->AddChildView(menu_view_);
+    menu_view_->SetSpeedButtonToggled(false);
     menu_view_->SetPaintToLayer();
     menu_view_->layer()->SetFillsBoundsOpaquely(false);
 
@@ -70,6 +71,7 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
 
   // Update button states.
   menu_view_->SetPaused(is_paused);
+  menu_view_->SetInitialSpeechRate(initial_speech_rate);
 
   // Add vertical spacing to given anchor rect.
   bubble_view_->ChangeAnchorRect(gfx::Rect(
@@ -86,7 +88,6 @@ void SelectToSpeakMenuBubbleController::Hide() {
     bubble_widget_->Hide();
   }
   if (speed_bubble_controller_) {
-    speed_bubble_controller_->Hide();
     speed_bubble_controller_.reset();
   }
 }
@@ -121,18 +122,31 @@ void SelectToSpeakMenuBubbleController::OnActionSelected(
     // Toggle reading speed selection menu.
     if (!speed_bubble_controller_) {
       speed_bubble_controller_ =
-          std::make_unique<SelectToSpeakSpeedBubbleController>();
+          std::make_unique<SelectToSpeakSpeedBubbleController>(this);
     }
     if (speed_bubble_controller_->IsVisible()) {
-      speed_bubble_controller_->Hide();
       speed_bubble_controller_.reset();
+      menu_view_->SetSpeedButtonToggled(false);
     } else {
       speed_bubble_controller_->Show(
           /*anchor=*/menu_view_, initial_speech_rate_);
+      menu_view_->SetSpeedButtonToggled(true);
     }
+    return;
   }
   Shell::Get()->accessibility_controller()->OnSelectToSpeakPanelAction(
       action, /*value=*/0.0);
+}
+
+void SelectToSpeakMenuBubbleController::OnSpeechRateSelected(
+    double speech_rate) {
+  if (speed_bubble_controller_) {
+    speed_bubble_controller_->Hide();
+    speed_bubble_controller_.reset();
+    menu_view_->SetSpeedButtonToggled(false);
+  }
+  Shell::Get()->accessibility_controller()->OnSelectToSpeakPanelAction(
+      SelectToSpeakPanelAction::kChangeSpeed, /*value=*/speech_rate);
 }
 
 }  // namespace ash

@@ -19,7 +19,8 @@ class ASH_EXPORT SelectToSpeakSpeedBubbleController
       public SelectToSpeakSpeedView::Delegate,
       public ::wm::ActivationChangeObserver {
  public:
-  SelectToSpeakSpeedBubbleController();
+  explicit SelectToSpeakSpeedBubbleController(
+      SelectToSpeakSpeedView::Delegate* delegate);
   SelectToSpeakSpeedBubbleController(
       const SelectToSpeakSpeedBubbleController&) = delete;
   SelectToSpeakSpeedBubbleController& operator=(
@@ -53,6 +54,9 @@ class ASH_EXPORT SelectToSpeakSpeedBubbleController
   TrayBubbleView* bubble_view_ = nullptr;
   views::Widget* bubble_widget_ = nullptr;
   SelectToSpeakSpeedView* speed_view_ = nullptr;
+
+  // Owned by parent whose lifetime exceeds this class.
+  SelectToSpeakSpeedView::Delegate* delegate_ = nullptr;
 };
 
 }  // namespace ash

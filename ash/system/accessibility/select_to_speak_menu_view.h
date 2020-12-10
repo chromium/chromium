@@ -54,6 +54,12 @@ class SelectToSpeakMenuView : public views::BoxLayoutView {
 
   void SetInitialFocus();
 
+  // Sets the speech rate that should be selected.
+  void SetInitialSpeechRate(double initial_speech_rate);
+
+  // Sets reading speed button into toggled state.
+  void SetSpeedButtonToggled(bool toggled);
+
  private:
   void OnButtonPressed(views::Button* sender);
 
