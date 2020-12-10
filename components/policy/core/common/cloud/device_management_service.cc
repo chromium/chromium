@@ -299,22 +299,29 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
   rr->trusted_params->disable_secure_dns = true;
 
   // If auth data is specified, use it to build the request.
-  if (auth_data_.has_gaia_token()) {
-    rr->headers.SetHeader(
-        dm_protocol::kAuthHeader,
-        std::string(dm_protocol::kServiceTokenAuthHeaderPrefix) +
-            auth_data_.gaia_token());
-  }
-  if (auth_data_.has_dm_token()) {
-    rr->headers.SetHeader(dm_protocol::kAuthHeader,
-                          std::string(dm_protocol::kDMTokenAuthHeaderPrefix) +
-                              auth_data_.dm_token());
-  }
-  if (auth_data_.has_enrollment_token()) {
-    rr->headers.SetHeader(
-        dm_protocol::kAuthHeader,
-        std::string(dm_protocol::kEnrollmentTokenAuthHeaderPrefix) +
-            auth_data_.enrollment_token());
+  switch (auth_data_.token_type()) {
+    case DMAuthTokenType::kNoAuth:
+      break;
+    case DMAuthTokenType::kGaia:
+      rr->headers.SetHeader(
+          dm_protocol::kAuthHeader,
+          std::string(dm_protocol::kServiceTokenAuthHeaderPrefix) +
+              auth_data_.gaia_token());
+      break;
+    case DMAuthTokenType::kDm:
+      rr->headers.SetHeader(dm_protocol::kAuthHeader,
+                            std::string(dm_protocol::kDMTokenAuthHeaderPrefix) +
+                                auth_data_.dm_token());
+      break;
+    case DMAuthTokenType::kEnrollment:
+      rr->headers.SetHeader(
+          dm_protocol::kAuthHeader,
+          std::string(dm_protocol::kEnrollmentTokenAuthHeaderPrefix) +
+              auth_data_.enrollment_token());
+      break;
+    case DMAuthTokenType::kOauth:
+      // OAuth token is transferred as a HTTP query parameter.
+      break;
   }
 
   return rr;
