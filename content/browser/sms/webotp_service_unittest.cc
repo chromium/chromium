@@ -566,7 +566,7 @@ class ServiceWithPrompt : public Service {
       FAIL() << "User prompt is not available";
       return;
     }
-    std::move(on_complete_callback_).Run(SmsStatus::kSuccess);
+    std::move(on_complete_callback_).Run(UserConsentResult::kApproved);
     on_complete_callback_.Reset();
   }
 
@@ -575,7 +575,8 @@ class ServiceWithPrompt : public Service {
       FAIL() << "User prompt is not available";
       return;
     }
-    std::move(on_complete_callback_).Run(SmsStatus::kCancelled);
+    std::move(on_complete_callback_).Run(UserConsentResult::kDenied);
+    ActivateTimer();
     on_complete_callback_.Reset();
   }
 
@@ -912,6 +913,32 @@ TEST_F(WebOTPServiceTest,
   service.NotifyFailure(FailureType::kPromptCancelled);
 
   ExpectNoOutcomeUKM();
+}
+
+TEST_F(WebOTPServiceTest, RecordUserDismissPrompt) {
+  GURL url = GURL(kTestUrl);
+  NavigateAndCommit(url);
+
+  ServiceWithPrompt service(web_contents());
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  service.ExpectRequestUserConsent();
+  EXPECT_CALL(*service.provider(), Retrieve(_)).WillOnce(Invoke([&service]() {
+    service.NotifyReceive(GURL(kTestUrl), "hi", UserConsent::kNotObtained);
+    service.DismissPrompt();
+  }));
+
+  service.MakeRequest(BindLambdaForTesting(
+      [](SmsStatus status, const Optional<string>& otp) {}));
+
+  ukm_loop.Run();
+
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
+  ExpectTimingUKM("TimeUserCancelMs");
+  histogram_tester().ExpectTotalCount("Blink.Sms.Receive.TimeUserCancel", 1);
 }
 
 }  // namespace content

@@ -25,7 +25,6 @@ using url::Origin;
 namespace content {
 
 namespace {
-using blink::mojom::SmsStatus;
 
 const char kTestUrl[] = "https://testing.test";
 
@@ -101,8 +100,9 @@ TEST_F(PromptBasedUserConsentHandlerTest, ConfirmInvokedCallback) {
   PromptBasedUserConsentHandler consent_handler{main_rfh(), origin};
   EXPECT_FALSE(consent_handler.is_active());
   bool succeed;
-  auto callback = base::BindLambdaForTesting(
-      [&](SmsStatus status) { succeed = (status == SmsStatus::kSuccess); });
+  auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
+    succeed = (result == UserConsentResult::kApproved);
+  });
   consent_handler.RequestUserConsent("12345", std::move(callback));
   EXPECT_TRUE(consent_handler.is_active());
   ConfirmPrompt();
@@ -120,8 +120,9 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelingInvokedCallback) {
   PromptBasedUserConsentHandler consent_handler{main_rfh(), origin};
   EXPECT_FALSE(consent_handler.is_active());
   bool cancelled;
-  auto callback = base::BindLambdaForTesting(
-      [&](SmsStatus status) { cancelled = (status == SmsStatus::kCancelled); });
+  auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
+    cancelled = (result == UserConsentResult::kDenied);
+  });
   consent_handler.RequestUserConsent("12345", std::move(callback));
   EXPECT_TRUE(consent_handler.is_active());
   DismissPrompt();
@@ -143,8 +144,9 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelsWhenNoDelegate) {
 
   PromptBasedUserConsentHandler consent_handler{main_rfh(), origin};
   bool cancelled;
-  auto callback = base::BindLambdaForTesting(
-      [&](SmsStatus status) { cancelled = (status == SmsStatus::kCancelled); });
+  auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
+    cancelled = (result == UserConsentResult::kNoDelegate);
+  });
   consent_handler.RequestUserConsent("12345", std::move(callback));
   EXPECT_TRUE(cancelled);
 }

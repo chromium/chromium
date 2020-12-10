@@ -71,6 +71,8 @@ class CONTENT_EXPORT WebOTPService
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnTimeout();
 
+  void OnUserConsentComplete(UserConsentResult);
+
  protected:
   // content::WebContentsObserver:
   void NavigationEntryCommitted(

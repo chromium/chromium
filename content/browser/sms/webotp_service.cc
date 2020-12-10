@@ -190,7 +190,7 @@ void WebOTPService::OnReceive(const std::string& one_time_code,
   UserConsentHandler* consent_handler =
       CreateConsentHandler(consent_requirement);
   consent_handler->RequestUserConsent(
-      one_time_code, base::BindOnce(&WebOTPService::CompleteRequest,
+      one_time_code, base::BindOnce(&WebOTPService::OnUserConsentComplete,
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -295,6 +295,7 @@ void WebOTPService::CleanUp() {
   }
   start_time_ = base::TimeTicks();
   callback_.Reset();
+  prompt_failure_.reset();
   fetcher_->Unsubscribe(origin_list_, this);
 }
 
@@ -387,10 +388,25 @@ void WebOTPService::RecordMetrics(blink::mojom::SmsStatus status) {
     if (status == SmsStatus::kSuccess) {
       DCHECK(!receive_time_.is_null());
       RecordContinueOnSuccessTime(base::TimeTicks::Now() - receive_time_);
-    } else if (status == SmsStatus::kCancelled) {
+    } else if (prompt_failure_ &&
+               prompt_failure_.value() == FailureType::kPromptCancelled) {
       DCHECK(!receive_time_.is_null());
       RecordCancelOnSuccessTime(base::TimeTicks::Now() - receive_time_);
     }
+  }
+}
+
+void WebOTPService::OnUserConsentComplete(UserConsentResult result) {
+  switch (result) {
+    case UserConsentResult::kApproved:
+      CompleteRequest(SmsStatus::kSuccess);
+      break;
+    case UserConsentResult::kNoDelegate:
+      CompleteRequest(SmsStatus::kCancelled);
+      break;
+    case UserConsentResult::kDenied:
+      OnFailure(FailureType::kPromptCancelled);
+      break;
   }
 }
 

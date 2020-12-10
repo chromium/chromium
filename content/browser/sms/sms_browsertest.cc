@@ -655,48 +655,6 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsReceivedAfterTabIsClosed) {
   ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUnhandledRequest);
 }
 
-IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Cancels) {
-  base::HistogramTester histogram_tester;
-  GURL url = GetTestUrl(nullptr, "simple_page.html");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  auto provider = std::make_unique<MockSmsProvider>();
-  MockSmsProvider* mock_provider_ptr = provider.get();
-  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
-
-  shell()->web_contents()->SetDelegate(&delegate_);
-
-  base::RunLoop ukm_loop;
-
-  ExpectSmsPrompt();
-
-  EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&]() {
-    mock_provider_ptr->NotifyReceive(OriginList{url::Origin::Create(url)},
-                                     "hello", UserConsent::kNotObtained);
-    DismissPrompt();
-  }));
-
-  // Wait for UKM to be recorded to avoid race condition between outcome
-  // capture and evaluation.
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
-                                        ukm_loop.QuitClosure());
-
-  EXPECT_TRUE(ExecJs(shell(), R"(
-     var error = navigator.credentials.get({otp: {transport: ["sms"]}})
-       .catch(({name}) => {
-         return name;
-       });
-    )"));
-
-  ukm_loop.Run();
-
-  EXPECT_EQ("AbortError", EvalJs(shell(), "error"));
-
-  content::FetchHistogramsFromChildProcesses();
-  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kCancelled);
-  histogram_tester.ExpectTotalCount("Blink.Sms.Receive.TimeCancel", 1);
-}
-
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, AbortAfterSmsRetrieval) {
   GURL url = GetTestUrl(nullptr, "simple_page.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));

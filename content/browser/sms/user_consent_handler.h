@@ -14,7 +14,8 @@ namespace content {
 
 class RenderFrameHost;
 
-using CompletionCallback = base::OnceCallback<void(blink::mojom::SmsStatus)>;
+enum class UserConsentResult { kApproved, kDenied, kNoDelegate };
+using CompletionCallback = base::OnceCallback<void(UserConsentResult)>;
 
 class CONTENT_EXPORT UserConsentHandler {
  public:
