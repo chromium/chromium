@@ -61,7 +61,7 @@ also runs on the command thread. It does the following:
 The final part of initialization occurs in
 [`StartServerOnIOThread`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/server/chromedriver_server.cc?q=StartServerOnIOThread)
 on the I/O thread.
-It creates an [`HttpServer`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/server/chromedriver_server.cc?q=%22class%20HttpServer%22),
+It creates an [`HttpServer`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/server/http_server.h?q=%22class%20HttpServer%22),
 and then calls `HttpServer::Start` to start listening for incoming WebDriver
 requests.
 
@@ -69,7 +69,7 @@ requests.
 
 When a new request is received from a client, two things happen on the I/O
 thread.
-* [`HttpServer::OnHttpRequest`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/server/chromedriver_server.cc?q=HttpServer::OnHttpRequest)
+* [`HttpServer::OnHttpRequest`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/server/http_server.cc?q=HttpServer::OnHttpRequest)
   runs `HandleRequestOnIOThread`,
   which is stored in `HttpServer::handle_request_func_`.
 * [`HandleRequestOnIOThread`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/server/chromedriver_server.cc?q=%22void%20HandleRequestOnIOThread%22)
