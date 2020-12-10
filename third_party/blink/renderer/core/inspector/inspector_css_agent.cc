@@ -349,7 +349,8 @@ enum ForcePseudoClassFlags {
   kPseudoActive = 1 << 2,
   kPseudoVisited = 1 << 3,
   kPseudoFocusWithin = 1 << 4,
-  kPseudoFocusVisible = 1 << 5
+  kPseudoFocusVisible = 1 << 5,
+  kPseudoTarget = 1 << 6,
 };
 
 static unsigned ComputePseudoClassMask(
@@ -359,6 +360,7 @@ static unsigned ComputePseudoClassMask(
   DEFINE_STATIC_LOCAL(String, focus, ("focus"));
   DEFINE_STATIC_LOCAL(String, focusVisible, ("focus-visible"));
   DEFINE_STATIC_LOCAL(String, focusWithin, ("focus-within"));
+  DEFINE_STATIC_LOCAL(String, target, ("target"));
   DEFINE_STATIC_LOCAL(String, visited, ("visited"));
   if (!pseudo_class_array || pseudo_class_array->empty())
     return kPseudoNone;
@@ -375,6 +377,8 @@ static unsigned ComputePseudoClassMask(
       result |= kPseudoFocusVisible;
     else if (pseudo_class == focusWithin)
       result |= kPseudoFocusWithin;
+    else if (pseudo_class == target)
+      result |= kPseudoTarget;
     else if (pseudo_class == visited)
       result |= kPseudoVisited;
   }
@@ -959,6 +963,9 @@ void InspectorCSSAgent::ForcePseudoState(Element* element,
       break;
     case CSSSelector::kPseudoHover:
       force = forced_pseudo_state & kPseudoHover;
+      break;
+    case CSSSelector::kPseudoTarget:
+      force = forced_pseudo_state & kPseudoTarget;
       break;
     case CSSSelector::kPseudoVisited:
       force = forced_pseudo_state & kPseudoVisited;

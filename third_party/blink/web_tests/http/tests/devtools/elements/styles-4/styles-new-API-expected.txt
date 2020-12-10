@@ -82,7 +82,7 @@ html: [regular, 4:0-4:4] {
 ['width':'85%'] @[0:21-0:32] 
 ['background-image':'url(bar.png)'] @[0:33-0:63] 
 
-Running: test_forcedState
+Running: test_forcedStateHover
 === BODY with forced :hover ===
 body: [user-agent] {
     ['display':'block'] @[undefined-undefined] 
@@ -139,6 +139,33 @@ body.mainpage: [regular, 8:0-8:13] {
 }
 body:hover: [regular, 13:0-13:10] {
     ['color':'#CDE'] @[14:2-14:14] 
+}
+
+Running: test_forcedStateTarget
+=== #target with forced :target ===
+p: [user-agent] {
+    ['display':'block'] @[undefined-undefined] 
+    ['margin-block-start':'1em'] @[undefined-undefined] 
+    ['margin-block-end':'1em'] @[undefined-undefined] 
+    ['margin-inline-start':'0px'] @[undefined-undefined] 
+    ['margin-inline-end':'0px'] @[undefined-undefined] 
+}
+#target:target: [regular, 17:0-17:14] {
+    ['background':'#bada55'] @[18:2-18:22] 
+    ['outline':'5px solid lime'] @[19:2-19:26] 
+    ['background-image':'initial'] @[undefined-undefined] 
+    ['background-position-x':'initial'] @[undefined-undefined] 
+    ['background-position-y':'initial'] @[undefined-undefined] 
+    ['background-size':'initial'] @[undefined-undefined] 
+    ['background-repeat-x':'initial'] @[undefined-undefined] 
+    ['background-repeat-y':'initial'] @[undefined-undefined] 
+    ['background-attachment':'initial'] @[undefined-undefined] 
+    ['background-origin':'initial'] @[undefined-undefined] 
+    ['background-clip':'initial'] @[undefined-undefined] 
+    ['background-color':'rgb(186, 218, 85)'] @[undefined-undefined] 
+    ['outline-color':'lime'] @[undefined-undefined] 
+    ['outline-style':'solid'] @[undefined-undefined] 
+    ['outline-width':'5px'] @[undefined-undefined] 
 }
 
 Running: test_textNodeComputedStyles
@@ -215,8 +242,5 @@ body.mainpage: [regular, 3:0-3:13] {
 body.mainpage: [regular, 8:0-8:13] {
     ['prop1':'val1' non-parsed] @[9:4-9:16] 
     ['prop2':'val2' non-parsed] @[10:4-10:16] 
-}
-body:hover: [regular, 13:0-13:10] {
-    ['color':'#CDE'] @[14:2-14:14] 
 }
 

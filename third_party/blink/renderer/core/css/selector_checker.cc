@@ -920,6 +920,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return selector.MatchNth(NthIndexCache::NthLastOfTypeIndex(element));
     }
     case CSSSelector::kPseudoTarget:
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoTarget,
+                              &force_pseudo_state);
+      if (force_pseudo_state)
+        return true;
       return element == element.GetDocument().CssTarget();
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
