@@ -450,6 +450,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
       "Honeybees have tiny hairs on their eyes to help them collect pollen");
   // Not focused initially.
   EXPECT_FALSE(GetBubble()->HasFocus());
+  // In the tests, the widget must be active for the key presses to be handled.
+  GetCaptionWidget()->Activate();
 
   // Key presses do not change the bounds when it is not focused.
   gfx::Rect bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
@@ -503,6 +505,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, FocusableInTabOrder) {
   EXPECT_FALSE(GetBubble()->HasFocus());
   EXPECT_FALSE(GetCloseButton()->HasFocus());
   EXPECT_FALSE(GetBubble()->GetFocusManager()->GetFocusedView());
+  // In the tests, the widget must be active for the key presses to be handled.
+  GetCaptionWidget()->Activate();
 
   // Press tab until we enter the bubble.
   while (!GetBubble()->HasFocus()) {
@@ -1043,6 +1047,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   OnPartialTranscription("Cows can detect odors up to 6 miles away.");
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_TRUE(CanWidgetActivate());
+  EXPECT_FALSE(IsWidgetActive());
+  GetBubble()->RequestFocus();
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_TRUE(CanWidgetActivate());
   EXPECT_TRUE(IsWidgetActive());
   ClickButton(GetCloseButton());
   EXPECT_FALSE(IsWidgetVisible());
@@ -1081,6 +1089,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
   test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
   EXPECT_TRUE(IsWidgetVisible());
 
+  // In the tests, the widget must be active.
+  GetCaptionWidget()->Activate();
   // Caption bubble stays visible while it has focus.
   GetBubble()->RequestFocus();
   EXPECT_TRUE(IsWidgetVisible());
