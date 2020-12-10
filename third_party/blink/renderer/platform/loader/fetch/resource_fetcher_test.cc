@@ -361,6 +361,83 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSite) {
       0 /* RevalidationPolicy::kUse */, 2);
 }
 
+TEST_F(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
+  blink::HistogramTester histogram_tester;
+
+  KURL url("http://127.0.0.1:8000/foo.html");
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(http_names::kCacheControl, "max-age=3600");
+  platform_->GetURLLoaderMockFactory()->RegisterURL(
+      url, WrappedResourceResponse(response),
+      test::PlatformTestDataPath(kTestResourceFilename));
+
+  ResourceRequestHead request_head(url);
+  scoped_refptr<const SecurityOrigin> origin_a =
+      SecurityOrigin::Create(KURL("https://a.test"));
+  scoped_refptr<const SecurityOrigin> opaque_origin1 =
+      SecurityOrigin::CreateUniqueOpaque();
+  request_head.SetTopFrameOrigin(opaque_origin1);
+  request_head.SetRequestorOrigin(origin_a);
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(ResourceRequest(request_head));
+  auto* fetcher_1 = CreateFetcher();
+  Resource* resource_1 = MockResource::Fetch(fetch_params, fetcher_1, nullptr);
+  ASSERT_TRUE(resource_1);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(resource_1->IsLoaded());
+  EXPECT_TRUE(GetMemoryCache()->Contains(resource_1));
+
+  // Create a 2nd opaque top-level origin.
+  auto* fetcher_2 = CreateFetcher();
+  ResourceRequestHead request_head_2(url);
+  scoped_refptr<const SecurityOrigin> opaque_origin2 =
+      SecurityOrigin::CreateUniqueOpaque();
+  request_head_2.SetTopFrameOrigin(opaque_origin2);
+  request_head_2.SetRequestorOrigin(origin_a);
+  FetchParameters fetch_params_2 =
+      FetchParameters::CreateForTest(ResourceRequest(request_head_2));
+  Resource* resource_2 =
+      MockResource::Fetch(fetch_params_2, fetcher_2, nullptr);
+  EXPECT_EQ(resource_1, resource_2);
+
+  // Test histograms.
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.Mock", 0);
+
+  histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
+                                    2);
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.Mock",
+      3 /* RevalidationPolicy::kLoad */, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.Mock",
+      0 /* RevalidationPolicy::kUse */, 1);
+
+  // Now load the same resource with opaque_origin1 as top-frame site. The
+  // PerTopFrameSite histogram should be incremented.
+  auto* fetcher_3 = CreateFetcher();
+  ResourceRequestHead request_head_3(url);
+  request_head_3.SetTopFrameOrigin(opaque_origin2);
+  request_head_3.SetRequestorOrigin(origin_a);
+  FetchParameters fetch_params_3 =
+      FetchParameters::CreateForTest(ResourceRequest(request_head_3));
+  Resource* resource_3 =
+      MockResource::Fetch(fetch_params_2, fetcher_3, nullptr);
+  EXPECT_EQ(resource_1, resource_3);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.Mock", 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.PerTopFrameSite.Mock",
+      0 /* RevalidationPolicy::kUse */, 1);
+  histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Mock",
+                                    3);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy.Mock",
+      0 /* RevalidationPolicy::kUse */, 2);
+}
+
 // Verify that the ad bit is copied to WillSendRequest's request when the
 // response is served from the memory cache.
 TEST_F(ResourceFetcherTest, WillSendRequestAdBit) {

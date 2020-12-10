@@ -792,6 +792,16 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     DEFINE_RESOURCE_HISTOGRAM("Preload.");
   } else {
     DEFINE_RESOURCE_HISTOGRAM("");
+
+    // Log metrics to evaluate effectiveness of the memory cache if it were
+    // scoped to the document.
+    if (in_cached_resources_map)
+      DEFINE_RESOURCE_HISTOGRAM("PerDocument.");
+
+    // Log metrics to evaluate effectiveness of the memory cache if it was
+    // partitioned by the top-frame site.
+    if (same_top_frame_site_resource_cached)
+      DEFINE_RESOURCE_HISTOGRAM("PerTopFrameSite.");
   }
 
   // Aims to count Resource only referenced from MemoryCache (i.e. what would be
@@ -801,16 +811,6 @@ void ResourceFetcher::UpdateMemoryCacheStats(
   if (resource && !resource->IsAlive() && !ContainsAsPreload(resource)) {
     DEFINE_RESOURCE_HISTOGRAM("Dead.");
   }
-
-  // Log metrics to evaluate effectiveness of the memory cache if it were scoped
-  // to the document.
-  if (in_cached_resources_map)
-    DEFINE_RESOURCE_HISTOGRAM("PerDocument.");
-
-  // Log metrics to evaluate effectiveness of the memory cache if it was
-  // partitioned by the top-frame site.
-  if (same_top_frame_site_resource_cached)
-    DEFINE_RESOURCE_HISTOGRAM("PerTopFrameSite.");
 
   // Async (and defer) scripts may have more cache misses, track them
   // separately. See https://crbug.com/1043679 for context.

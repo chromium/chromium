@@ -31,6 +31,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
@@ -552,7 +553,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // To compute metrics for measuring the efficacy of the
   // memory cache if it was partitioned by top-frame site (in addition to the
   // current origin which it is already partitioned by).
-  HashSet<String> existing_top_frame_sites_in_cache_;
+  // TODO(crbug.com/1127971): Remove this once the decision is made to partition
+  // the cache using either Network Isolation Key or scoped to per-document.
+  std::set<net::SchemefulSite> existing_top_frame_sites_in_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(Resource);
 };

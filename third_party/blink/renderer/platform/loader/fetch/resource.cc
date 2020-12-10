@@ -34,7 +34,6 @@
 #include "base/stl_util.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
-#include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -130,11 +129,6 @@ static inline bool ShouldUpdateHeaderAfterRevalidation(
 namespace {
 const base::Clock* g_clock_for_testing = nullptr;
 
-String OriginToSchemefulSite(const SecurityOrigin& origin) {
-  net::SchemefulSite site(origin.ToUrlOrigin());
-  return String(site.Serialize().c_str());
-}
-
 }  // namespace
 
 static inline base::Time Now() {
@@ -165,8 +159,8 @@ Resource::Resource(const ResourceRequestHead& request,
   scoped_refptr<const SecurityOrigin> top_frame_origin =
       resource_request_.TopFrameOrigin();
   if (top_frame_origin) {
-    existing_top_frame_sites_in_cache_.insert(
-        OriginToSchemefulSite(*top_frame_origin));
+    net::SchemefulSite site(top_frame_origin->ToUrlOrigin());
+    existing_top_frame_sites_in_cache_.insert(site);
   }
 
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceCounter);
@@ -1201,9 +1195,9 @@ void Resource::SetClockForTesting(const base::Clock* clock) {
 }
 
 bool Resource::AppendTopFrameSiteForMetrics(const SecurityOrigin& origin) {
-  auto result =
-      existing_top_frame_sites_in_cache_.insert(OriginToSchemefulSite(origin));
-  return !result.is_new_entry;
+  net::SchemefulSite site(origin.ToUrlOrigin());
+  auto result = existing_top_frame_sites_in_cache_.insert(site);
+  return !result.second;
 }
 
 }  // namespace blink
