@@ -965,6 +965,9 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
         properties_from_parent_local_root_.is_pinch_gesture_active;
   }
 
+  visual_properties.compositing_scale_factor =
+      properties_from_parent_local_root_.compositing_scale_factor;
+
   // The |visible_viewport_size| is affected by auto-resize which is magical and
   // tricky.
   //
@@ -2158,11 +2161,14 @@ bool RenderWidgetHostImpl::IsMouseLocked() const {
 
 void RenderWidgetHostImpl::SetVisualPropertiesFromParentFrame(
     float page_scale_factor,
+    float compositing_scale_factor,
     bool is_pinch_gesture_active,
     const gfx::Size& visible_viewport_size,
     const gfx::Rect& compositor_viewport,
     std::vector<gfx::Rect> root_widget_window_segments) {
   properties_from_parent_local_root_.page_scale_factor = page_scale_factor;
+  properties_from_parent_local_root_.compositing_scale_factor =
+      compositing_scale_factor;
   properties_from_parent_local_root_.is_pinch_gesture_active =
       is_pinch_gesture_active;
   properties_from_parent_local_root_.visible_viewport_size =
@@ -2470,6 +2476,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.capture_sequence_number ||
          old_visual_properties->page_scale_factor !=
              new_visual_properties.page_scale_factor ||
+         old_visual_properties->compositing_scale_factor !=
+             new_visual_properties.compositing_scale_factor ||
          old_visual_properties->is_pinch_gesture_active !=
              new_visual_properties.is_pinch_gesture_active ||
          old_visual_properties->root_widget_window_segments !=

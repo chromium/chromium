@@ -273,6 +273,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                               const gfx::Range& replacement_range,
                               int relative_cursor_pos) override;
   void ImeFinishComposingTextForPlugin(bool keep_selection) override;
+  float GetCompositingScaleFactor() override;
 
   // WebFrameWidget overrides.
   void InitializeNonCompositing(WebNonCompositedWidgetClient* client) override;
@@ -803,6 +804,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // The fullscreen granted status from the most recent VisualProperties update.
   bool IsFullscreenGranted();
 
+  // Set the compositing scale factor for this widget and notify remote frames
+  // to update their compositing scale factor.
+  void NotifyCompositingScaleFactorChanged(float compositing_scale_factor);
+
   void NotifyPageScaleFactorChanged(float page_scale_factor,
                                     bool is_pinch_gesture_active);
 
@@ -846,6 +851,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Base functionality all widgets have. This is a member as to avoid
   // complicated inheritance structures.
   std::unique_ptr<WidgetBase> widget_base_;
+
+  // Compositing scale factor for all frames attached to this widget sent from
+  // the remote parent frame.
+  float compositing_scale_factor_ = 1.f;
 
   // The last seen page scale state, which comes from the main frame if we're
   // in a child frame. This state is propagated through the RenderWidget tree

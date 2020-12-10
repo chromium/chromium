@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 
+#include "cc/base/math_util.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 // nogncheck because dependency on //printing is conditional upon
@@ -176,6 +178,49 @@ void RemoteFrameView::UpdateCompositingRect() {
 
   if (compositing_rect_ != previous_rect)
     needs_frame_rect_propagation_ = true;
+}
+
+void RemoteFrameView::UpdateCompositingScaleFactor() {
+  float previous_scale_factor = compositing_scale_factor_;
+
+  LocalFrameView* local_root_view = ParentLocalRootFrameView();
+  LayoutEmbeddedContent* owner_layout_object =
+      remote_frame_->OwnerLayoutObject();
+  if (!local_root_view || !owner_layout_object)
+    return;
+
+  TransformState local_root_transform_state(
+      TransformState::kApplyTransformDirection);
+  local_root_transform_state.Move(
+      owner_layout_object->PhysicalContentBoxOffset());
+  owner_layout_object->MapLocalToAncestor(nullptr, local_root_transform_state,
+                                          kTraverseDocumentBoundaries);
+
+  float frame_to_local_root_scale_factor = 1.0f;
+  gfx::Transform local_root_transform = TransformationMatrix::ToTransform(
+      local_root_transform_state.AccumulatedTransform());
+  if (local_root_transform.HasPerspective()) {
+    frame_to_local_root_scale_factor =
+        cc::MathUtil::ComputeApproximateMaxScale(local_root_transform);
+  } else {
+    gfx::Vector2dF scale_components =
+        cc::MathUtil::ComputeTransform2dScaleComponents(
+            local_root_transform,
+            /*fallback_scale=*/1.0f);
+    frame_to_local_root_scale_factor =
+        std::max(scale_components.x(), scale_components.y());
+  }
+
+  // The compositing scale factor is calculated by multiplying the scale factor
+  // from the local root to main frame with the scale factor between child frame
+  // and local root.
+  FrameWidget* widget = local_root_view->GetFrame().GetWidgetForLocalRoot();
+  compositing_scale_factor_ =
+      widget->GetCompositingScaleFactor() * frame_to_local_root_scale_factor;
+  DCHECK_GE(compositing_scale_factor_, 0.0f);
+
+  if (compositing_scale_factor_ != previous_scale_factor)
+    remote_frame_->Client()->SynchronizeVisualProperties();
 }
 
 void RemoteFrameView::Dispose() {

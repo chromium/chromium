@@ -13727,4 +13727,80 @@ TEST_F(WebFrameTest, DownloadReferrerPolicy) {
   web_view_helper.Reset();
 }
 
+TEST_F(WebFrameTest, RemoteFrameCompositingScaleFactor) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebViewImpl* web_view = web_view_helper.GetWebView();
+  web_view->Resize(gfx::Size(800, 800));
+  InitializeWithHTML(*web_view->MainFrameImpl()->GetFrame(), R"HTML(
+<!DOCTYPE html>
+<style>
+  iframe {
+    width: 1600;
+    height: 1200;
+    transform-origin: top left;
+    transform: scale(0.5);
+    border: none;
+  }
+</style>
+<iframe></iframe>
+  )HTML");
+
+  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
+  web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
+  remote_frame->SetReplicatedOrigin(
+      WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
+
+  // Call directly into frame view since we need to RunPostLifecycleSteps() too.
+  web_view->MainFrameImpl()
+      ->GetFrame()
+      ->View()
+      ->UpdateAllLifecyclePhasesForTest();
+  RunPendingTasks();
+
+  // The compositing scale factor tells the OOPIF compositor to raster at a
+  // lower scale since the frame is scaled down in the parent webview.
+  EXPECT_EQ(remote_frame->GetCompositingRect(), WebRect(0, 0, 1600, 1200));
+  EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 0.5f);
+}
+
+TEST_F(WebFrameTest, RotatedRemoteFrameCompositingScaleFactor) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebViewImpl* web_view = web_view_helper.GetWebView();
+  web_view->Resize(gfx::Size(800, 800));
+  InitializeWithHTML(*web_view->MainFrameImpl()->GetFrame(), R"HTML(
+<!DOCTYPE html>
+<style>
+  iframe {
+    width: 1600;
+    height: 1200;
+    transform-origin: top left;
+    transform: scale(0.5) rotate(45deg);
+    border: none;
+  }
+</style>
+<iframe></iframe>
+  )HTML");
+
+  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
+  web_view_helper.LocalMainFrame()->FirstChild()->Swap(remote_frame);
+  remote_frame->SetReplicatedOrigin(
+      WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
+
+  // Call directly into frame view since we need to RunPostLifecycleSteps() too.
+  web_view->MainFrameImpl()
+      ->GetFrame()
+      ->View()
+      ->UpdateAllLifecyclePhasesForTest();
+  RunPendingTasks();
+
+  // The compositing scale factor tells the OOPIF compositor to raster at a
+  // lower scale since the frame is scaled down in the parent webview.
+  EXPECT_EQ(remote_frame->GetCompositingRect(), WebRect(0, 0, 1600, 1200));
+  EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 0.5f);
+}
+
 }  // namespace blink

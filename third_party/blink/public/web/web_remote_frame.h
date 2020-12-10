@@ -158,7 +158,12 @@ class WebRemoteFrame : public WebFrame {
 
   virtual void SetHadStickyUserActivationBeforeNavigation(bool value) = 0;
 
+  // Return the interest rect for compositing in the frame's space.
   virtual WebRect GetCompositingRect() = 0;
+
+  // Returns the ideal raster scale factor for the OOPIF's compositor so that it
+  // doesn't raster at a higher scale than it needs to.
+  virtual float GetCompositingScaleFactor() = 0;
 
   // Unique name is an opaque identifier for maintaining association with
   // session restore state for this frame.

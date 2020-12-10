@@ -114,6 +114,10 @@ struct VisualProperties {
   // It needs to be shared with subframes.
   float page_scale_factor = 1.f;
 
+  // This represents the child frame's raster scale factor which takes into
+  // account the transform from child frame space to main frame space.
+  float compositing_scale_factor = 1.f;
+
   // The logical segments of the root widget, in widget-relative DIPs. This
   // property is set by the root RenderWidget in the renderer process, then
   // propagated to child local frame roots via RenderFrameProxy/

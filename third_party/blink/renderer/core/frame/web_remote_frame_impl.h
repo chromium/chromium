@@ -114,6 +114,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
   void SetHadStickyUserActivationBeforeNavigation(bool value) override;
   v8::Local<v8::Object> GlobalProxy() const override;
   WebRect GetCompositingRect() override;
+  float GetCompositingScaleFactor() override;
   WebString UniqueName() const override;
   void InitializeCoreFrame(Page&,
                            FrameOwner*,

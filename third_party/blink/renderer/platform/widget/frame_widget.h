@@ -253,6 +253,10 @@ class PLATFORM_EXPORT FrameWidget {
   // Returns the FrameSinkId for this widget which is used for identifying
   // frames submitted from the compositor.
   virtual const viz::FrameSinkId& GetFrameSinkId() = 0;
+
+  // Returns the raster scale factor for the local root frame associated with
+  // this widget, taking into account its transform to main frame space.
+  virtual float GetCompositingScaleFactor() = 0;
 };
 
 }  // namespace blink

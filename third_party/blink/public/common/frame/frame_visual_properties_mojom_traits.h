@@ -38,7 +38,14 @@ struct BLINK_COMMON_EXPORT
   }
 
   static double page_scale_factor(const blink::FrameVisualProperties& r) {
+    DCHECK_GT(r.page_scale_factor, 0);
     return r.page_scale_factor;
+  }
+
+  static double compositing_scale_factor(
+      const blink::FrameVisualProperties& r) {
+    DCHECK_GT(r.compositing_scale_factor, 0);
+    return r.compositing_scale_factor;
   }
 
   static const gfx::Size& visible_viewport_size(

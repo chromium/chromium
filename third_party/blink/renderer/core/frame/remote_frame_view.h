@@ -73,6 +73,9 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   void UpdateCompositingRect();
   IntRect GetCompositingRect() const { return compositing_rect_; }
 
+  void UpdateCompositingScaleFactor();
+  float GetCompositingScaleFactor() const { return compositing_scale_factor_; }
+
   uint32_t Print(const IntRect&, cc::PaintCanvas*) const;
   uint32_t CapturePaintPreview(const IntRect&, cc::PaintCanvas*) const;
 
@@ -99,6 +102,7 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   Member<RemoteFrame> remote_frame_;
   mojom::blink::ViewportIntersectionState last_intersection_state_;
   IntRect compositing_rect_;
+  float compositing_scale_factor_ = 1.0f;
 
   IntrinsicSizingInfo intrinsic_sizing_info_;
   bool has_intrinsic_sizing_info_ = false;

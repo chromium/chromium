@@ -1419,16 +1419,20 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   // that it comes from the top level widget's page scale.
   if (!ForTopMostMainFrame()) {
     // The main frame controls the page scale factor, from blink. For other
-    // frame widgets, the page scale is received from its parent as part of
-    // the visual properties here. While blink doesn't need to know this
-    // page scale factor outside the main frame, the compositor does in
-    // order to produce its output at the correct scale.
+    // frame widgets, the page scale from pinch zoom and compositing scale is
+    // received from its parent as part of the visual properties here. While
+    // blink doesn't need to know this page scale factor outside the main frame,
+    // the compositor does in order to produce its output at the correct scale.
+    float combined_scale_factor = visual_properties.page_scale_factor *
+                                  visual_properties.compositing_scale_factor;
     widget_base_->LayerTreeHost()->SetExternalPageScaleFactor(
-        visual_properties.page_scale_factor,
-        visual_properties.is_pinch_gesture_active);
+        combined_scale_factor, visual_properties.is_pinch_gesture_active);
 
     NotifyPageScaleFactorChanged(visual_properties.page_scale_factor,
                                  visual_properties.is_pinch_gesture_active);
+
+    NotifyCompositingScaleFactorChanged(
+        visual_properties.compositing_scale_factor);
   } else {
     // Ensure the external scale factor in top-level widgets is reset as it may
     // be leftover from when a widget was nested and was promoted to top level
@@ -3624,6 +3628,23 @@ void WebFrameWidgetImpl::SetScreenInfoAndSize(
   UpdateScreenInfo(screen_info);
   widget_base_->SetVisibleViewportSizeInDIPs(visible_viewport_size_in_dips);
   Resize(widget_base_->DIPsToCeiledBlinkSpace(widget_size_in_dips));
+}
+
+float WebFrameWidgetImpl::GetCompositingScaleFactor() {
+  return compositing_scale_factor_;
+}
+
+void WebFrameWidgetImpl::NotifyCompositingScaleFactorChanged(
+    float compositing_scale_factor) {
+  compositing_scale_factor_ = compositing_scale_factor;
+
+  // Update the scale factor for remote frames which in turn depends on the
+  // compositing scale factor set in the widget.
+  ForEachRemoteFrameControlledByWidget(
+      WTF::BindRepeating([](RemoteFrame* remote_frame) {
+        if (remote_frame->View())
+          remote_frame->View()->UpdateCompositingScaleFactor();
+      }));
 }
 
 void WebFrameWidgetImpl::NotifyPageScaleFactorChanged(

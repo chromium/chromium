@@ -397,13 +397,6 @@ void WidgetBase::UpdateVisualProperties(
       visual_properties.screen_info.device_scale_factor));
 
   client_->UpdateVisualProperties(visual_properties);
-
-  // FrameWidgets have custom code for external page scale factor.
-  if (!client_->FrameWidget()) {
-    LayerTreeHost()->SetExternalPageScaleFactor(
-        visual_properties.page_scale_factor,
-        visual_properties.is_pinch_gesture_active);
-  }
 }
 
 void WidgetBase::UpdateScreenRects(const gfx::Rect& widget_screen_rect,

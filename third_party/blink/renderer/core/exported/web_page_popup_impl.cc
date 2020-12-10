@@ -871,6 +871,14 @@ void WebPagePopupImpl::UpdateVisualProperties(
   widget_base_->SetVisibleViewportSizeInDIPs(
       visual_properties.visible_viewport_size);
 
+  // TODO(crbug.com/1155388): Popups are a single "global" object that don't
+  // inherit the scale factor of the frame containing the corresponding element
+  // so compositing_scale_factor is always 1 and has no effect.
+  float combined_scale_factor = visual_properties.page_scale_factor *
+                                visual_properties.compositing_scale_factor;
+  widget_base_->LayerTreeHost()->SetExternalPageScaleFactor(
+      combined_scale_factor, visual_properties.is_pinch_gesture_active);
+
   Resize(widget_base_->DIPsToCeiledBlinkSpace(visual_properties.new_size));
 }
 

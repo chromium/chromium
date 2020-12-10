@@ -362,6 +362,10 @@ WebRect WebRemoteFrameImpl::GetCompositingRect() {
   return GetFrame()->View()->GetCompositingRect();
 }
 
+float WebRemoteFrameImpl::GetCompositingScaleFactor() {
+  return GetFrame()->View()->GetCompositingScaleFactor();
+}
+
 WebString WebRemoteFrameImpl::UniqueName() const {
   return GetFrame()->UniqueName();
 }

@@ -504,6 +504,8 @@ void RenderFrameProxy::SynchronizeVisualProperties() {
   if (web_frame_) {
     pending_visual_properties_.compositor_viewport =
         web_frame_->GetCompositingRect();
+    pending_visual_properties_.compositing_scale_factor =
+        web_frame_->GetCompositingScaleFactor();
   }
 
   bool synchronized_props_changed =
@@ -524,6 +526,8 @@ void RenderFrameProxy::SynchronizeVisualProperties() {
           pending_visual_properties_.zoom_level ||
       sent_visual_properties_->page_scale_factor !=
           pending_visual_properties_.page_scale_factor ||
+      sent_visual_properties_->compositing_scale_factor !=
+          pending_visual_properties_.compositing_scale_factor ||
       sent_visual_properties_->is_pinch_gesture_active !=
           pending_visual_properties_.is_pinch_gesture_active ||
       sent_visual_properties_->visible_viewport_size !=

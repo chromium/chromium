@@ -270,6 +270,7 @@ _CONFIG = [
             'gfx::Vector2dF',
 
             # Chromium geometry operations.
+            'cc::MathUtil',
             'gfx::ToFlooredPoint',
 
             # Range type.

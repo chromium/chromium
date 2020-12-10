@@ -26,6 +26,7 @@ specific_include_rules = {
     "+components/paint_preview/common/paint_preview_tracker.h",
   ],
   "remote_frame_view\.cc": [
+    "+cc/base/math_util.h",
     "+components/paint_preview/common/paint_preview_tracker.h",
     "+printing/buildflags/buildflags.h",
     "+printing/metafile_skia.h",

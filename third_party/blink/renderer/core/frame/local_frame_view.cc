@@ -1104,6 +1104,9 @@ DocumentLifecycle& LocalFrameView::Lifecycle() const {
 void LocalFrameView::RunPostLifecycleSteps() {
   AllowThrottlingScope allow_throttling(*this);
   RunIntersectionObserverSteps();
+  ForAllRemoteFrameViews([](RemoteFrameView& frame_view) {
+    frame_view.UpdateCompositingScaleFactor();
+  });
 }
 
 void LocalFrameView::RunIntersectionObserverSteps() {

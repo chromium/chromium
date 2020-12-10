@@ -79,7 +79,13 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
   }
 
   static double page_scale_factor(const blink::VisualProperties& r) {
+    DCHECK_GT(r.page_scale_factor, 0);
     return r.page_scale_factor;
+  }
+
+  static double compositing_scale_factor(const blink::VisualProperties& r) {
+    DCHECK_GT(r.compositing_scale_factor, 0);
+    return r.compositing_scale_factor;
   }
 
   static const std::vector<gfx::Rect>& root_widget_window_segments(

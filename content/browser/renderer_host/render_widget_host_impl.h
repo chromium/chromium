@@ -625,6 +625,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // propagation down the RenderWidget tree.
   void SetVisualPropertiesFromParentFrame(
       float page_scale_factor,
+      float compositing_scale_factor,
       bool is_pinch_gesture_active,
       const gfx::Size& visible_viewport_size,
       const gfx::Rect& compositor_viewport,
@@ -1165,6 +1166,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
     // The page-scale factor of the main-frame.
     float page_scale_factor = 1.f;
+
+    // This represents the child frame's raster scale factor which takes into
+    // account the transform from child frame space to main frame space.
+    float compositing_scale_factor = 1.f;
 
     // True when the renderer is currently undergoing a pinch-zoom gesture.
     bool is_pinch_gesture_active = false;

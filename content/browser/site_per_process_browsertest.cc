@@ -48,6 +48,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "cc/base/math_util.h"
 #include "cc/input/touch_action.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/viz/common/features.h"
@@ -13118,6 +13119,94 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   EXPECT_GT(viewport_intersection.height(), 0);
   EXPECT_GT(viewport_intersection.width(), 0);
+}
+
+// Test that the compositing scale factor for an out-of-process iframe are set
+// and updated correctly, including accounting for all intermediate transforms.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       CompositingScaleFactorInNestedFrameTest) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/frame_tree/page_with_scaled_frame.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child_b = root->child_at(0);
+
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      child_b, embedded_test_server()->GetURL(
+                   "b.com", "/frame_tree/page_with_transformed_iframe.html")));
+
+  ASSERT_EQ(1U, child_b->child_count());
+  FrameTreeNode* child_c = child_b->child_at(0);
+
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      child_c, embedded_test_server()->GetURL(
+                   "c.com", "/frame_tree/page_with_scaled_frame.html")));
+
+  ASSERT_EQ(1U, child_c->child_count());
+  FrameTreeNode* child_d = child_c->child_at(0);
+
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      child_d, embedded_test_server()->GetURL("d.com", "/simple_page.html")));
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C D\n"
+      "   +--Site B ------- proxies for A C D\n"
+      "        +--Site C -- proxies for A B D\n"
+      "             +--Site D -- proxies for A B C\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/\n"
+      "      C = http://c.com/\n"
+      "      D = http://d.com/",
+      DepictFrameTree(root));
+
+  // Wait for b.com's frame to have its compositing scale factor set to 0.5,
+  // which is the scale factor for b.com's iframe element in the main frame.
+  while (true) {
+    auto* rwh_b = child_b->current_frame_host()->GetRenderWidgetHost();
+    base::Optional<blink::VisualProperties> properties =
+        rwh_b->GetLastVisualPropertiesSentToRendererForTesting();
+    if (properties && cc::MathUtil::IsFloatNearlyTheSame(
+                          properties->compositing_scale_factor, 0.5f)) {
+      break;
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Wait for c.com's frame to have its compositing scale factor set to 0.5,
+  // which is the accumulated scale factor of c.com to the main frame obtained
+  // by multiplying the scale factor of c.com's iframe element (1 since
+  // transform is rotation only without scale) with the scale factor of its
+  // parent frame b.com (0.5).
+  while (true) {
+    auto* rwh_c = child_c->current_frame_host()->GetRenderWidgetHost();
+    base::Optional<blink::VisualProperties> properties =
+        rwh_c->GetLastVisualPropertiesSentToRendererForTesting();
+    if (properties && cc::MathUtil::IsFloatNearlyTheSame(
+                          properties->compositing_scale_factor, 0.5f)) {
+      break;
+    }
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Wait for d.com's frame to have its compositing scale factor set to 0.25,
+  // which is the accumulated scale factor of d.com to the main frame obtained
+  // by combining the scale factor of d.com's iframe element (0.5) with the
+  // scale factor of its parent d.com (0.5).
+  while (true) {
+    auto* rwh_d = child_d->current_frame_host()->GetRenderWidgetHost();
+    base::Optional<blink::VisualProperties> properties =
+        rwh_d->GetLastVisualPropertiesSentToRendererForTesting();
+    if (properties && cc::MathUtil::IsFloatNearlyTheSame(
+                          properties->compositing_scale_factor, 0.25f)) {
+      break;
+    }
+    base::RunLoop().RunUntilIdle();
+  }
 }
 
 // Verify that OOPIF select element popup menu coordinates account for scroll

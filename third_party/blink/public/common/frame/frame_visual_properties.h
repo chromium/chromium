@@ -33,6 +33,7 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
   uint32_t capture_sequence_number = 0u;
   double zoom_level = 0;
   float page_scale_factor = 1.f;
+  float compositing_scale_factor = 1.f;
   gfx::Size visible_viewport_size;
   gfx::Size min_size_for_auto_resize;
   gfx::Size max_size_for_auto_resize;

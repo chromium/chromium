@@ -170,6 +170,7 @@ void CrossProcessFrameConnector::SynchronizeVisualProperties(
                                     visual_properties.max_size_for_auto_resize);
   render_widget_host->SetVisualPropertiesFromParentFrame(
       visual_properties.page_scale_factor,
+      visual_properties.compositing_scale_factor,
       visual_properties.is_pinch_gesture_active,
       visual_properties.visible_viewport_size,
       visual_properties.compositor_viewport,
