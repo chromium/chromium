@@ -270,16 +270,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadARModelState.USDZ"
-    enum="DownloadARModelState" expires_after="2020-11-29">
+    enum="DownloadARModelState" expires_after="2021-05-08">
   <owner>mahmadi@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
   <summary>
     Logged at different stages of downloading a USDZ MIME type AR model on iOS.
   </summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
-    expires_after="2021-05-23">
+    expires_after="2021-05-08">
   <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
   <summary>
     The action that a user takes on a file after it has been successfully
     downloaded on iOS.
@@ -287,17 +289,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileNetError" enum="NetErrorCodes"
-    expires_after="2021-01-15">
+    expires_after="2021-05-08">
   <owner>eugenebut@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <summary>
-    Positive net error codes that happens in the case of download content fetch
+    Positive net error codes that happen in the case of download content fetch
     failure.
   </summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileStatusCode" units="units"
-    expires_after="2021-01-15">
+    expires_after="2020-12-08">
+  <obsolete>
+    No longer recorded. Unclear when recording code was removed as git log -S
+    Download.IOSDownloadedFileStatusCode did not find anything useful. Marked as
+    obsolete on 12-2020.
+  </obsolete>
   <owner>eugenebut@chromium.org</owner>
   <owner>stkhapugin@chromium.org</owner>
   <summary>
@@ -306,8 +313,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileInBackground"
-    enum="DownloadFileInBackground" expires_after="2021-01-15">
+    enum="DownloadFileInBackground" expires_after="2021-05-08">
   <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
   <summary>
     Logged when the download is completed (successfully or not) or in-progress
     download was cancelled because of the app termination. This histogram
@@ -353,10 +361,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadPassKitResult"
-    enum="DownloadPassKitResult" expires_after="2021-01-15">
+    enum="DownloadPassKitResult" expires_after="2021-05-08">
   <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
   <summary>
-    Result when a user attempts to download a PassKit file on iOS.
+    Recorded when a user attempts to download a PassKit file on iOS.
   </summary>
 </histogram>
 
