@@ -18,6 +18,10 @@ const SELECT_TO_SPEAK_TRAY_CLASS_NAME =
 // ash/system/accessibility/select_to_speak_menu_view.h
 const SELECT_TO_SPEAK_MENU_CLASS_NAME = 'SelectToSpeakMenuView';
 
+// This must match the name of view class that implements the speed view:
+// ash/system/accessibility/select_to_speak_speed_view.h
+const SELECT_TO_SPEAK_SPEED_CLASS_NAME = 'SelectToSpeakSpeedView';
+
 // This must match the name of view class that implements the bubble views:
 // ash/system/tray/tray_bubble_view.h
 const TRAY_BUBBLE_VIEW_CLASS_NAME = 'TrayBubbleView';
@@ -915,16 +919,39 @@ class SelectToSpeak {
    * @param {constants.Dir} direction
    * @private
    */
-  navigateToNextParagraph_(direction) {
-    if (this.currentBlockParent_ === null) {
+  async navigateToNextParagraph_(direction) {
+    if (!this.isPaused_()) {
+      // Stop TTS if it is currently playing.
+      await this.pause_();
+    }
+
+    // Use current block parent as starting point to navigate from. If it is not
+    // a valid block, then use one of the nodes that are currently activated.
+    let node = this.currentBlockParent_;
+    if ((node === null || node.isRootNode) &&
+        this.navigationState_.currentNodes.length > 0) {
+      const nodeIdx = direction === constants.Dir.FORWARD ?
+          this.navigationState_.currentNodes.length - 1 :
+          0;
+      node = this.navigationState_.currentNodes[nodeIdx];
+    }
+    if (node === null) {
+      // Could not find any nodes to navigate from.
       return;
     }
+
     // Retrieve the nodes that make up the next/prev paragraph.
-    const nextParagraphNodes =
-        NodeUtils.getNextParagraph(this.currentBlockParent_, direction);
+    const nextParagraphNodes = NodeUtils.getNextParagraph(node, direction);
     if (nextParagraphNodes.length === 0) {
+      // Cannot find any valid nodes in given direction.
       return;
     }
+    if (AutomationUtil.getAncestors(nextParagraphNodes[0])
+            .find((n) => this.isPanel_(n))) {
+      // Do not navigate to Select-to-speak panel.
+      return;
+    }
+
     // Ensure the first node in the paragraph is visible.
     nextParagraphNodes[0].makeVisible();
 
@@ -1143,8 +1170,13 @@ class SelectToSpeak {
           this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
         }
       } else if (event.type === 'end') {
-        this.startNodeGroupAfter_(
+        const ttsStarted = this.startNodeGroupAfter_(
             nodeGroup.endIndex /* currentNodeGroupEndIndex */);
+        if (!ttsStarted && this.shouldShowNavigationControls_()) {
+          // Should be in a 'paused' state once we reach the end of the node
+          // queue.
+          this.updatePauseStatusFromTtsEvent_(true /* shouldPause */);
+        }
       } else if (event.type === 'word') {
         this.onTtsWordEvent_(event, nodeGroup);
       }
@@ -1157,6 +1189,7 @@ class SelectToSpeak {
    * @param {number} currentNodeGroupEndIndex the index of the last node in the
    *     current node group. The index is relative to
    *     |this.navigationState_.currentNodes|.
+   * @return {boolean} Whether TTS was started.
    */
   startNodeGroupAfter_(currentNodeGroupEndIndex) {
     const isLastNodeGroup =
@@ -1170,6 +1203,7 @@ class SelectToSpeak {
       if (!this.shouldShowNavigationControls_()) {
         this.onStateChanged_(SelectToSpeakState.INACTIVE);
       }
+      return false;
     }
 
     // Navigate to the next NodeGroup. Don't change |currentNodes|,
@@ -1179,6 +1213,7 @@ class SelectToSpeak {
         currentNodeGroupEndIndex + 1;
     // Play TTS.
     this.startCurrentNodeGroup_();
+    return true;
   }
 
   /**
@@ -1512,6 +1547,13 @@ class SelectToSpeak {
           NodeUtils.getNearestContainingWindow(this.currentNode_.node);
       var inForeground =
           currentWindow != null && window != null && currentWindow === window;
+      if (!inForeground &&
+          (this.isPanel_(window) ||
+           this.isPanel_(NodeUtils.getNearestContainingWindow(focusedNode)))) {
+        // If the focus is on the Select-to-speak panel or the hit test landed
+        // on the panel, treat the current node as if it is in the foreground.
+        inForeground = true;
+      }
       if (!inForeground && focusedNode && currentWindow) {
         // See if the focused node window matches the currentWindow.
         // This may happen in some cases, for example, ARC++, when the window
@@ -1524,6 +1566,28 @@ class SelectToSpeak {
       }
       this.updateFromNodeState_(this.currentNode_, inForeground);
     }.bind(this));
+  }
+
+  /**
+   * @param {?AutomationNode|undefined} node
+   * @return {boolean} Whether given node is the Select-to-speak floating panel.
+   * @private
+   */
+  isPanel_(node) {
+    if (!node) {
+      return false;
+    }
+    if (node === this.panel_) {
+      return true;
+    }
+
+    // Determine if the node is part of the floating panel or the reading speed
+    // selection bubble.
+    return (
+        node.className === TRAY_BUBBLE_VIEW_CLASS_NAME &&
+        node.children.length === 1 &&
+        (node.children[0].className === SELECT_TO_SPEAK_MENU_CLASS_NAME ||
+         node.children[0].className === SELECT_TO_SPEAK_SPEED_CLASS_NAME));
   }
 
   /**

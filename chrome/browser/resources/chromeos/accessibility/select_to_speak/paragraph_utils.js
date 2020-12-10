@@ -9,6 +9,24 @@ class ParagraphUtils {
   constructor() {}
 
   /**
+   * @param {!AutomationNode} node
+   * @return {boolean} Whether the given node is a paragraph.
+   * TODO(joelriley@google.com): Consider expanding what is considered a block,
+   * for instance, any non-inline node.
+   */
+  static isBlock(node) {
+    if (node.role === RoleType.PARAGRAPH || node.role === RoleType.SVG_ROOT) {
+      return true;
+    }
+    if (node.display !== undefined && node.display !== 'inline' &&
+        node.role !== RoleType.STATIC_TEXT &&
+        (node.parent && node.parent.role !== RoleType.SVG_ROOT)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Gets the first ancestor of a node which is a paragraph or is not inline,
    * or get the root node if none is found.
    * @param {AutomationNode} node The node to get the parent for.
@@ -18,16 +36,7 @@ class ParagraphUtils {
     let parent = node.parent;
     const root = node.root;
     while (parent != null) {
-      if (parent === root) {
-        return parent;
-      }
-      if (parent.role === RoleType.PARAGRAPH ||
-          parent.role === RoleType.SVG_ROOT) {
-        return parent;
-      }
-      if (parent.display !== undefined && parent.display !== 'inline' &&
-          parent.role !== RoleType.STATIC_TEXT &&
-          (parent.parent && parent.parent.role !== RoleType.SVG_ROOT)) {
+      if (parent === root || ParagraphUtils.isBlock(parent)) {
         return parent;
       }
       parent = parent.parent;

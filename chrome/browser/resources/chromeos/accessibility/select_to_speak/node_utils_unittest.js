@@ -551,6 +551,169 @@ TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextParagraph', function() {
   assertEquals(result.length, 0);
 });
 
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphContainedWithinRoot',
+    function() {
+      const desktop = createMockNode({role: 'desktop'});
+
+      const root = createMockNode({role: 'rootWebArea', parent: desktop});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+      const otherRoot = createMockNode({role: 'rootWebArea', parent: desktop});
+      const paragraph2 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: otherRoot, root});
+      createMockNode({
+        role: 'staticText',
+        parent: paragraph2,
+        root: otherRoot,
+        name: 'Line 2'
+      });
+
+      let result = NodeUtils.getNextParagraph(text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
+
+      NodeUtils.getNextParagraph(text1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+
+      result = NodeUtils.getNextParagraph(paragraph1, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
+
+      result = NodeUtils.getNextParagraph(paragraph1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+    });
+
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphThroughIframe',
+    function() {
+      const desktop = createMockNode({role: 'desktop'});
+
+      const root =
+          createMockNode({role: 'rootWebArea', parent: desktop, root: desktop});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+      const iframeRoot =
+          createMockNode({role: 'rootWebArea', parent: root, root});
+      const paragraph2 = createMockNode({
+        role: 'paragraph',
+        display: 'block',
+        parent: iframeRoot,
+        root: iframeRoot
+      });
+      const text2 = createMockNode({
+        role: 'staticText',
+        parent: paragraph2,
+        root: iframeRoot,
+        name: 'Line 2'
+      });
+      const paragraph3 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph3, root, name: 'Line 3'});
+
+      let result = NodeUtils.getNextParagraph(text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
+
+      result = NodeUtils.getNextParagraph(text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+    });
+
+TEST_F(
+    'SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphNonBlockNodes',
+    function() {
+      /**
+       * Example below is roughly similar to:
+       * <p>Line 1</p>
+       * <span>Line 2</span>
+       * <p><span>Line 2</span><span>Line 3</span></p>
+       */
+      const root = createMockNode({role: 'rootWebArea'});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+      const text2 = createMockNode(
+          {role: 'staticText', parent: root, root, name: 'Line 2'});
+      const paragraph2 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
+      const text4 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 4'});
+
+      // Forward from first text node of paragraph 1 gives inline text node.
+      let result = NodeUtils.getNextParagraph(text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
+
+      // Forward from inline text node gives paragraph 2 nodes.
+      result = NodeUtils.getNextParagraph(text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text3);
+      assertEquals(result[1], text4);
+
+      // Backwards from paragraph 2 inline text node.
+      result = NodeUtils.getNextParagraph(paragraph2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
+    });
+
+TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextParagraphAndroid', function() {
+  const root = createMockNode({role: 'application'});
+  const container1 =
+      createMockNode({role: 'genericContainer', parent: root, root});
+  const text1 = createMockNode(
+      {role: 'staticText', parent: container1, root, name: 'Line 1'});
+  const text2 = createMockNode(
+      {role: 'staticText', parent: container1, root, name: 'Line 2'});
+  const container2 =
+      createMockNode({role: 'genericContainer', parent: root, root});
+  const text3 = createMockNode(
+      {role: 'staticText', parent: container2, root, name: 'Line 3'});
+
+  // Without paragraphs, navigate node to node.
+  let result = NodeUtils.getNextParagraph(text1, constants.Dir.FORWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text2);
+
+  result = NodeUtils.getNextParagraph(text2, constants.Dir.FORWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text3);
+
+  result = NodeUtils.getNextParagraph(container1, constants.Dir.FORWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text3);
+
+  result = NodeUtils.getNextParagraph(text3, constants.Dir.FORWARD);
+  assertEquals(result.length, 0);
+
+  result = NodeUtils.getNextParagraph(container2, constants.Dir.FORWARD);
+  assertEquals(result.length, 0);
+
+  result = NodeUtils.getNextParagraph(text3, constants.Dir.BACKWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text2);
+
+  result = NodeUtils.getNextParagraph(container2, constants.Dir.BACKWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text2);
+
+  result = NodeUtils.getNextParagraph(text2, constants.Dir.BACKWARD);
+  assertEquals(result.length, 1);
+  assertEquals(result[0], text1);
+
+  result = NodeUtils.getNextParagraph(text1, constants.Dir.BACKWARD);
+  assertEquals(result.length, 0);
+
+  result = NodeUtils.getNextParagraph(container1, constants.Dir.BACKWARD);
+  assertEquals(result.length, 0);
+});
+
 TEST_F('SelectToSpeakNodeUtilsUnitTest', 'getNextNodesInParagraph', function() {
   const root = createMockNode({role: 'rootWebArea'});
   createMockNode({role: 'paragraph', display: 'block', parent: root, root});

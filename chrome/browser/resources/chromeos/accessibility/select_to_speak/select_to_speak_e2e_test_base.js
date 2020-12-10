@@ -88,4 +88,13 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
     selectToSpeak.fireMockMouseUpEvent(upEvent);
     selectToSpeak.fireMockKeyUpEvent({keyCode: SelectToSpeak.SEARCH_KEY_CODE});
   }
+
+  /**
+   * Waits one event loop before invoking callback. Useful if you are waiting
+   * for pending promises to resolve.
+   * @param {function()} callback
+   */
+  waitOneEventLoop(callback) {
+    setTimeout(this.newCallback(callback), 0);
+  }
 };

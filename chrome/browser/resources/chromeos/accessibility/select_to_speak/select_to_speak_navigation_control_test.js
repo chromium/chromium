@@ -61,10 +61,12 @@ TEST_F(
                     .NEXT_PARAGRAPH);
 
             // Speaks second paragraph
-            assertTrue(this.mockTts.currentlySpeaking());
-            assertEquals(this.mockTts.pendingUtterances().length, 1);
-            this.assertEqualsCollapseWhitespace(
-                this.mockTts.pendingUtterances()[0], 'Paragraph 2');
+            this.waitOneEventLoop(() => {
+              assertTrue(this.mockTts.currentlySpeaking());
+              assertEquals(this.mockTts.pendingUtterances().length, 1);
+              this.assertEqualsCollapseWhitespace(
+                  this.mockTts.pendingUtterances()[0], 'Paragraph 2');
+            });
           });
     });
 
@@ -93,10 +95,12 @@ TEST_F(
                     .PREVIOUS_PARAGRAPH);
 
             // Speaks second paragraph
-            assertTrue(this.mockTts.currentlySpeaking());
-            assertEquals(this.mockTts.pendingUtterances().length, 1);
-            this.assertEqualsCollapseWhitespace(
-                this.mockTts.pendingUtterances()[0], 'Paragraph 1');
+            this.waitOneEventLoop(() => {
+              assertTrue(this.mockTts.currentlySpeaking());
+              assertEquals(this.mockTts.pendingUtterances().length, 1);
+              this.assertEqualsCollapseWhitespace(
+                  this.mockTts.pendingUtterances()[0], 'Paragraph 1');
+            });
           });
     });
 

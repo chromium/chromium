@@ -463,32 +463,39 @@ class NodeUtils {
    * @param {!AutomationNode} node Node to traverse from.
    * @param {constants.Dir} direction Direction to traverse.
    * @return {!Array<!AutomationNode>} Returns all selectable leaf text nodes
-   *     within the paragraph adjacent to the given node.
+   *     within the paragraph adjacent to the given node. If there is an
+   *     adjacent valid leaf node not contained within a paragraph, it will
+   *     return that node. Only traverses within containing root.
    */
   static getNextParagraph(node, direction) {
-    const blockParent = ParagraphUtils.getFirstBlockAncestor(node);
-    if (blockParent === null) {
-      return [];
+    const blockParent = ParagraphUtils.isBlock(node) ?
+        node :
+        ParagraphUtils.getFirstBlockAncestor(node);
+    let containingRoot = node.root;
+    // If role is a rootWebArea, search for the first ancestor with that role,
+    // to enable users to traverse across iframes within the same webpage.
+    if (containingRoot.role === RoleType.ROOT_WEB_AREA) {
+      const ancestors = AutomationUtil.getAncestors(containingRoot);
+      const topRootWebArea =
+          ancestors.find((a) => a.role === RoleType.ROOT_WEB_AREA);
+      if (topRootWebArea) {
+        containingRoot = topRootWebArea;
+      }
     }
-    let nextNode = AutomationUtil.findNextNode(
-        node, direction, NodeUtils.isValidLeafNode, {skipInitialSubtree: true});
-    while (nextNode !== null &&
-           ParagraphUtils.getFirstBlockAncestor(nextNode) === blockParent) {
-      nextNode = AutomationUtil.findNextNode(
-          nextNode, direction, NodeUtils.isValidLeafNode);
+    let startNode = blockParent;
+    if (startNode === null || startNode === node.root) {
+      startNode = node;
     }
+    const nextNode = AutomationUtil.findNextNode(
+        startNode, direction, NodeUtils.isValidLeafNode, {
+          root: (n) => containingRoot === n,
+          skipInitialSubtree: true,
+        });
     if (nextNode === null) {
       return [];
     }
 
-    // Now construct an array with all leaf nodes within the block.
-    const nodes = NodeUtils.getNextNodesInParagraph(nextNode, direction);
-    if (direction === constants.Dir.FORWARD) {
-      nodes.unshift(nextNode);
-    } else {
-      nodes.push(nextNode);
-    }
-    return nodes;
+    return NodeUtils.getAllNodesInParagraph(nextNode);
   }
 
   /**
@@ -499,7 +506,7 @@ class NodeUtils {
    */
   static getNextNodesInParagraph(node, direction) {
     const blockParent = ParagraphUtils.getFirstBlockAncestor(node);
-    if (blockParent === null) {
+    if (blockParent === null || blockParent === node.root) {
       return [];
     }
     const nodes = AutomationUtil.findAllNodes(
@@ -517,12 +524,13 @@ class NodeUtils {
   /**
    * @param {!AutomationNode} node Leaf node.
    * @return {!Array<!AutomationNode>} All selectable leaf nodes in the
-   *     paragraph that the given leaf node belongs to.
+   *     paragraph that the given leaf node belongs to. If the node does
+   *     not belong to a paragraph, then just the node itself is returned.
    */
   static getAllNodesInParagraph(node) {
     const blockParent = ParagraphUtils.getFirstBlockAncestor(node);
-    if (blockParent === null) {
-      return [];
+    if (blockParent === null || blockParent === node.root) {
+      return [node];
     }
     return AutomationUtil.findAllNodes(
         blockParent, constants.Dir.FORWARD,
