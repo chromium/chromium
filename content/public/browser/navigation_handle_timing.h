@@ -16,6 +16,9 @@ namespace content {
 // the design doc for details.
 // https://docs.google.com/document/d/16oqu9lyPbfgZIjQsRaCfaKE8r1Cdlb3d4GVSdth4AN8/edit?usp=sharing
 struct CONTENT_EXPORT NavigationHandleTiming {
+  NavigationHandleTiming();
+  NavigationHandleTiming(const NavigationHandleTiming& timing);
+
   // The time the first HTTP request was sent. This is filled with
   // net::LoadTimingInfo::send_start during navigation.
   //
@@ -29,7 +32,7 @@ struct CONTENT_EXPORT NavigationHandleTiming {
 
   // The time the headers of the first HTTP response were received. This is
   // filled with net::LoadTimingInfo::receive_headers_start on the first HTTP
-  // response during navigation.
+  // response during navigation. The response can be informational (1xx).
   //
   // In some cases, this can be the time an internal response was received that
   // did not come from the networking layer. For example,
@@ -57,7 +60,7 @@ struct CONTENT_EXPORT NavigationHandleTiming {
 
   // The time the headers of the final HTTP response were received. This is
   // filled with net::LoadTimingInfo::receive_headers_start on the final HTTP
-  // response during navigation.
+  // response during navigation. The response can be informational (1xx).
   //
   // In some cases, this can be the time an internal response was received that
   // did not come from the networking layer. See the comment for
@@ -65,6 +68,13 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   //
   // This is equal to |first_response_start_time| if there is no redirection.
   base::TimeTicks final_response_start_time;
+
+  // The time the headers of the final non-informational (non-1xx) HTTP response
+  // were received. This is filled with
+  // net::LoadTimingInfo::receive_non_informational_headers_start on the final
+  // non-informational HTTP response during navigation. If no informational
+  // responses are received, this is equal to |final_response_start_time|.
+  base::TimeTicks final_non_informational_response_start_time;
 
   // The time a callback for the navigation loader was last invoked. The time
   // between this and |final_response_start_time| includes any throttling or

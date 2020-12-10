@@ -3530,6 +3530,8 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
       response_head_->load_timing.send_start;
   navigation_handle_timing_.final_response_start_time =
       response_head_->load_timing.receive_headers_start;
+  navigation_handle_timing_.final_non_informational_response_start_time =
+      response_head_->load_timing.receive_non_informational_headers_start;
   navigation_handle_timing_.final_loader_callback_time = loader_callback_time;
 
   // 103 Early Hints experiment (https://crbug.com/1093693).

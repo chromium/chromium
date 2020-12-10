@@ -227,6 +227,7 @@ source_set("browser_sources") {
     "navigation_entry.h",
     "navigation_handle.cc",
     "navigation_handle.h",
+    "navigation_handle_timing.cc",
     "navigation_handle_timing.h",
     "navigation_throttle.cc",
     "navigation_throttle.h",

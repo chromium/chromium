@@ -29,6 +29,7 @@ struct LoadTimingInfo {
   mojo_base.mojom.TimeTicks send_end;
   mojo_base.mojom.TimeTicks receive_headers_start;
   mojo_base.mojom.TimeTicks receive_headers_end;
+  mojo_base.mojom.TimeTicks receive_non_informational_headers_start;
   mojo_base.mojom.TimeTicks first_early_hints_time;
   mojo_base.mojom.TimeTicks push_start;
   mojo_base.mojom.TimeTicks push_end;

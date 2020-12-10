@@ -45,6 +45,11 @@ class WithTaskEnvironment {
     task_environment_.FastForwardUntilNoTasksRemain();
   }
 
+  // Only valid for instances using TimeSource::MOCK_TIME.
+  void AdvanceClock(base::TimeDelta delta) {
+    task_environment_.AdvanceClock(delta);
+  }
+
   const base::TickClock* GetMockTickClock() WARN_UNUSED_RESULT {
     return task_environment_.GetMockTickClock();
   }

@@ -472,6 +472,7 @@ void ParamTraits<net::LoadTimingInfo>::Write(base::Pickle* m,
   WriteParam(m, p.send_end);
   WriteParam(m, p.receive_headers_start);
   WriteParam(m, p.receive_headers_end);
+  WriteParam(m, p.receive_non_informational_headers_start);
   WriteParam(m, p.first_early_hints_time);
   WriteParam(m, p.push_start);
   WriteParam(m, p.push_end);
@@ -503,6 +504,7 @@ bool ParamTraits<net::LoadTimingInfo>::Read(const base::Pickle* m,
          ReadParam(m, iter, &r->send_end) &&
          ReadParam(m, iter, &r->receive_headers_start) &&
          ReadParam(m, iter, &r->receive_headers_end) &&
+         ReadParam(m, iter, &r->receive_non_informational_headers_start) &&
          ReadParam(m, iter, &r->first_early_hints_time) &&
          ReadParam(m, iter, &r->push_start) && ReadParam(m, iter, &r->push_end);
 }
@@ -541,6 +543,8 @@ void ParamTraits<net::LoadTimingInfo>::Log(const param_type& p,
   LogParam(p.receive_headers_start, l);
   l->append(", ");
   LogParam(p.receive_headers_end, l);
+  l->append(", ");
+  LogParam(p.receive_non_informational_headers_start, l);
   l->append(", ");
   LogParam(p.first_early_hints_time, l);
   l->append(", ");

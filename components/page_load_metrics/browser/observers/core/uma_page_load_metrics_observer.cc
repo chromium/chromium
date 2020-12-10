@@ -905,28 +905,37 @@ void UmaPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
           kHistogramNavigationTimingFinalLoaderCallbackToNavigationCommitSent,
       timing.navigation_commit_sent_time - timing.final_loader_callback_time);
 
-  // Record the following intervals for the 103 Early Hints experiment
-  // (https://crbug.com/1093693).
-  // - The first request start to the 103 response,
-  // - The final request start to the 103 response, and the 103 response to the
-  //   final response,
-  // Note that multiple 103 responses can be served per request. These metrics
-  // use the first 103 response as the timing.
+  // Record intervals for the 103 Early Hints experiment
+  // (https://crbug.com/1093693). Note that multiple 103 responses can be served
+  // per request. These metrics use the first 103 response as the timing.
   if (!timing.early_hints_for_first_request_time.is_null()) {
+    // Record the interval from "first request start" to "103 Early Hints
+    // response start for first request".
+    DCHECK_LT(timing.first_request_start_time,
+              timing.early_hints_for_first_request_time);
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramEarlyHintsFirstRequestStartToEarlyHints,
-        timing.first_request_start_time -
-            timing.early_hints_for_first_request_time);
+        timing.early_hints_for_first_request_time -
+            timing.first_request_start_time);
   }
   if (!timing.early_hints_for_final_request_time.is_null()) {
+    // Record the interval from "final request start" to "103 Early Hints
+    // response start for final request".
+    DCHECK_LT(timing.final_request_start_time,
+              timing.early_hints_for_final_request_time);
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramEarlyHintsFinalRequestStartToEarlyHints,
-        timing.final_request_start_time -
-            timing.early_hints_for_final_request_time);
+        timing.early_hints_for_final_request_time -
+            timing.final_request_start_time);
+
+    // Record the interval from "103 Early Hints response start for final
+    // request" to "non-informational final response start"
+    DCHECK_LT(timing.early_hints_for_final_request_time,
+              timing.final_non_informational_response_start_time);
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramEarlyHintsEarlyHintsToFinalResponseStart,
-        timing.early_hints_for_final_request_time -
-            timing.final_response_start_time);
+        timing.final_non_informational_response_start_time -
+            timing.early_hints_for_final_request_time);
   }
 }
 

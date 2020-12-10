@@ -870,15 +870,19 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
 
   // Record our best estimate of the 'response time' as the time when we read
   // the first bytes of the response headers.
-  if (read_buf_->offset() == 0)
+  if (read_buf_->offset() == 0) {
     response_->response_time = base::Time::Now();
+    // Also keep the time as base::TimeTicks for `first_response_start_time_`
+    // and `non_informational_response_start_time_`.
+    current_response_start_time_ = base::TimeTicks::Now();
+  }
 
-  // For |response_start_time_|, use the time that we received the first byte of
-  // *any* response- including 1XX, as per the resource timing spec for
+  // For |first_response_start_time_|, use the time that we received the first
+  // byte of *any* response- including 1XX, as per the resource timing spec for
   // responseStart (see note at
   // https://www.w3.org/TR/resource-timing-2/#dom-performanceresourcetiming-responsestart).
-  if (response_start_time_.is_null())
-    response_start_time_ = base::TimeTicks::Now();
+  if (first_response_start_time_.is_null())
+    first_response_start_time_ = current_response_start_time_;
 
   read_buf_->set_offset(read_buf_->offset() + result);
   DCHECK_LE(read_buf_->offset(), read_buf_->capacity());
@@ -926,7 +930,7 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
         // (https://crbug.com/1093693).
         if (response_->headers->response_code() == 103 &&
             first_early_hints_time_.is_null()) {
-          first_early_hints_time_ = response_start_time_;
+          first_early_hints_time_ = current_response_start_time_;
         }
         // Now waiting for the second set of headers to be read.
       } else {
@@ -936,6 +940,13 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
         io_state_ = STATE_DONE;
       }
       return OK;
+    }
+
+    // Record the response start time if this response is not informational
+    // (non-1xx).
+    if (response_->headers->response_code() / 100 != 1) {
+      DCHECK(non_informational_response_start_time_.is_null());
+      non_informational_response_start_time_ = current_response_start_time_;
     }
 
     // Only set keep-alive based on final set of headers.

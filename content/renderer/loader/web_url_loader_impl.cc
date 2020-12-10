@@ -124,6 +124,7 @@ network::mojom::LoadTimingInfo ToMojoLoadTiming(
       load_timing.proxy_resolve_start, load_timing.proxy_resolve_end,
       load_timing.connect_timing, load_timing.send_start, load_timing.send_end,
       load_timing.receive_headers_start, load_timing.receive_headers_end,
+      load_timing.receive_non_informational_headers_start,
       load_timing.first_early_hints_time, load_timing.push_start,
       load_timing.push_end, load_timing.service_worker_start_time,
       load_timing.service_worker_ready_time,

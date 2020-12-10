@@ -513,8 +513,20 @@ class NET_EXPORT_PRIVATE SpdyStream {
   NetLogWithSource net_log_;
 
   base::TimeTicks send_time_;
+
+  // The time at which the first / last byte of the HTTP headers were received.
+  //
+  // These correspond to |LoadTimingInfo::receive_headers_start| and
+  // |LoadTimingInfo::receive_headers_end|. See also comments there.
   base::TimeTicks recv_first_byte_time_;
   base::TimeTicks recv_last_byte_time_;
+
+  // The time at which the first byte of the HTTP headers for the
+  // non-informational response (non-1xx). This corresponds to
+  // |LoadTimingInfo::receive_non_informational_headers_start|. See also
+  // comments there.
+  base::TimeTicks recv_first_byte_time_for_non_informational_response_;
+
   // The time at which the first 103 Early Hints response is received.
   base::TimeTicks first_early_hints_time_;
 

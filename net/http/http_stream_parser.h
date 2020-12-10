@@ -94,7 +94,12 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
 
   int64_t sent_bytes() const { return sent_bytes_; }
 
-  base::TimeTicks response_start_time() { return response_start_time_; }
+  base::TimeTicks first_response_start_time() const {
+    return first_response_start_time_;
+  }
+  base::TimeTicks non_informational_response_start_time() const {
+    return non_informational_response_start_time_;
+  }
   base::TimeTicks first_early_hints_time() { return first_early_hints_time_; }
 
   void GetSSLInfo(SSLInfo* ssl_info);
@@ -238,11 +243,24 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // HttpResponseBodyDrainer is used.
   HttpResponseInfo* response_;
 
-  // Time at which the first bytes of the header response are about to be
-  // parsed.
-  base::TimeTicks response_start_time_;
+  // Time at which the first bytes of the first header response including
+  // informational responses (1xx) are about to be parsed. This corresponds to
+  // |LoadTimingInfo::receive_headers_start|. See also comments there.
+  base::TimeTicks first_response_start_time_;
 
-  // Time at which the first 103 Early Hints response is received.
+  // Time at which the first bytes of the current header response are about to
+  // be parsed. This is reset every time new response headers including
+  // non-informational responses (1xx) are parsed.
+  base::TimeTicks current_response_start_time_;
+
+  // Time at which the first byte of the non-informational header response
+  // (non-1xx) are about to be parsed. This corresponds to
+  // |LoadTimingInfo::receive_non_informational_headers_start|. See also
+  // comments there.
+  base::TimeTicks non_informational_response_start_time_;
+
+  // Time at which the first 103 Early Hints response is received. This
+  // corresponds to |LoadTimingInfo::first_early_hints_time|.
   base::TimeTicks first_early_hints_time_;
 
   // Indicates the content length.  If this value is less than zero

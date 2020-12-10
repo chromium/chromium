@@ -412,10 +412,16 @@ void SpdyStream::OnHeadersReceived(
 
       base::UmaHistogramSparse("Net.SpdyResponseCode", status);
 
-      // Include 1XX responses in the TTFB as per the resource timing spec
-      // for responseStart.
+      // Include informational responses (1xx) in the TTFB as per the resource
+      // timing spec for responseStart.
       if (recv_first_byte_time_.is_null())
         recv_first_byte_time_ = recv_first_byte_time;
+      // Also record the TTFB of non-informational responses.
+      if (status / 100 != 1) {
+        DCHECK(recv_first_byte_time_for_non_informational_response_.is_null());
+        recv_first_byte_time_for_non_informational_response_ =
+            recv_first_byte_time;
+      }
 
       // Ignore informational headers like 103 Early Hints.
       // TODO(bnc): Add support for 103 Early Hints, https://crbug.com/671310.
@@ -832,6 +838,8 @@ bool SpdyStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   // first bytes of the HEADERS frame were received to BufferedSpdyFramer
   // (https://crbug.com/568024).
   load_timing_info->receive_headers_start = recv_first_byte_time_;
+  load_timing_info->receive_non_informational_headers_start =
+      recv_first_byte_time_for_non_informational_response_;
   load_timing_info->first_early_hints_time = first_early_hints_time_;
   return result;
 }

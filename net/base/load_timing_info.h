@@ -42,6 +42,7 @@ namespace net {
 // service_worker_respond_with_settled
 // first_early_hints_time
 // receive_headers_start
+// receive_non_informational_headers_start
 // receive_headers_end
 //
 // Times represent when a request starts/stops blocking on an event(*), not the
@@ -174,10 +175,19 @@ struct NET_EXPORT LoadTimingInfo {
   base::TimeTicks send_end;
 
   // The time at which the first / last byte of the HTTP headers were received.
+  //
   // |receive_headers_start| corresponds to |responseStart| in ResourceTiming
-  // (http://www.w3.org/TR/resource-timing/) for Web-surfacing requests.
+  // (http://www.w3.org/TR/resource-timing/) for Web-surfacing requests. This
+  // can be the time at which the first byte of the HTTP headers for
+  // informational responses (1xx) as per the ResourceTiming spec (see note at
+  // https://www.w3.org/TR/resource-timing-2/#dom-performanceresourcetiming-responsestart).
   base::TimeTicks receive_headers_start;
   base::TimeTicks receive_headers_end;
+
+  // The time at which the first byte of the HTTP headers for the
+  // non-informational response (non-1xx). See also comments on
+  // |receive_headers_start|.
+  base::TimeTicks receive_non_informational_headers_start;
 
   // The time that the first 103 Early Hints response is received.
   base::TimeTicks first_early_hints_time;

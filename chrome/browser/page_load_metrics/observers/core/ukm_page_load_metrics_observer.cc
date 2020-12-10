@@ -474,6 +474,14 @@ void UkmPageLoadMetricsObserver::RecordNavigationTimingMetrics() {
             .InMilliseconds());
   }
 
+  // TODO(https://crbug.com/1093693): We should record the timing of the final
+  // non-informational response start time in addition to the final response
+  // start time to measure the interval from the Early Hints response to the
+  // actual final response. This is because `final_response_start_time` may
+  // capture the timing of the informational response as per the Resource
+  // Timing spec. To be more specific, the timing can be equal to
+  // `early_hints_for_final_request_time`.
+
   builder.Record(ukm::UkmRecorder::Get());
 }
 

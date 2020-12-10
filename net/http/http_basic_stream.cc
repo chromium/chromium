@@ -137,7 +137,10 @@ bool HttpBasicStream::GetLoadTimingInfo(
     load_timing_info->connect_timing.connect_end = confirm_handshake_end_;
   }
 
-  load_timing_info->receive_headers_start = parser()->response_start_time();
+  load_timing_info->receive_headers_start =
+      parser()->first_response_start_time();
+  load_timing_info->receive_non_informational_headers_start =
+      parser()->non_informational_response_start_time();
   load_timing_info->first_early_hints_time = parser()->first_early_hints_time();
   return true;
 }

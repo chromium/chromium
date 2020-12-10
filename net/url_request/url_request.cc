@@ -89,6 +89,12 @@ void ConvertRealLoadTimesToBlockingTimes(LoadTimingInfo* load_timing_info) {
       load_timing_info->receive_headers_start < block_on_connect) {
     load_timing_info->receive_headers_start = block_on_connect;
   }
+  if (!load_timing_info->receive_non_informational_headers_start.is_null() &&
+      load_timing_info->receive_non_informational_headers_start <
+          block_on_connect) {
+    load_timing_info->receive_non_informational_headers_start =
+        block_on_connect;
+  }
 
   // Make sure connection times are after start and proxy times.
 

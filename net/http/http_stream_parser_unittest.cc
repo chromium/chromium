@@ -1653,64 +1653,466 @@ TEST(HttpStreamParser, ReceivedBytesMultipleReads) {
   EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
 }
 
+// Test timing information of responses that don't have informational (1xx)
+// response headers.
+TEST(HttpStreamParser, NonInformationalResponseStart) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  std::string response_headers1 = "HTTP/1.1 200 OK\r\n";
+  std::string response_headers2 = "Content-Length: 7\r\n\r\n";
+  int64_t response_headers_size =
+      response_headers1.size() + response_headers2.size();
+
+  std::string response_body = "content";
+  int64_t response_size = response_headers_size + response_body.size();
+
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, "GET / HTTP/1.1\r\n\r\n")};
+
+  MockRead reads[] = {
+      // Add pauses between header fragments so that the test runner can advance
+      // the mock clock to test timing information.
+      MockRead(ASYNC, 1, response_headers1.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 2),
+      MockRead(ASYNC, 3, response_headers2.c_str()),
+      MockRead(ASYNC, 4, response_body.c_str()),
+  };
+
+  // Set up the sequenced socket data.
+  SequencedSocketData sequenced_socket_data(reads, writes);
+  std::unique_ptr<StreamSocket> stream_socket =
+      CreateConnectedSocket(&sequenced_socket_data);
+
+  // Set up the http stream parser.
+  HttpRequestInfo request;
+  auto read_buffer = base::MakeRefCounted<GrowableIOBuffer>();
+  HttpStreamParser parser(stream_socket.get(), /*connection_is_reused=*/false,
+                          &request, read_buffer.get(), NetLogWithSource());
+
+  // Send a request.
+  HttpResponseInfo response;
+  TestCompletionCallback callback;
+  EXPECT_THAT(parser.SendRequest("GET / HTTP/1.1\r\n", HttpRequestHeaders(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS, &response,
+                                 callback.callback()),
+              IsOk());
+
+  EXPECT_THAT(parser.ReadResponseHeaders(callback.callback()),
+              IsError(ERR_IO_PENDING));
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=1 --> seq=2] The parser reads the first fragment of the response
+  // headers and then pauses to advance the mock clock.
+  base::TimeTicks first_response_start_time = task_environment.NowTicks();
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=3] The parser reads the second fragment of the response headers.
+  sequenced_socket_data.Resume();
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  // Check the received headers.
+  EXPECT_EQ(200, response.headers->response_code());
+  EXPECT_EQ(response_headers_size, parser.received_bytes());
+
+  // No informational responses were served. The first response start time
+  // should be equal to the non-informational response start time.
+  EXPECT_EQ(parser.first_response_start_time(), first_response_start_time);
+  EXPECT_EQ(parser.non_informational_response_start_time(),
+            first_response_start_time);
+
+  // [seq=4] The parser reads the response body.
+  scoped_refptr<IOBuffer> body_buffer =
+      base::MakeRefCounted<IOBuffer>(response_body.size());
+  int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
+                                       callback.callback());
+  EXPECT_THAT(callback.GetResult(result), response_body.size());
+
+  // Check the received body.
+  EXPECT_EQ(response_size, parser.received_bytes());
+}
+
 // Test that "continue" HTTP header is counted as "received_bytes".
 TEST(HttpStreamParser, ReceivedBytesIncludesContinueHeader) {
-  std::string status100 = "HTTP/1.1 100 OK\r\n\r\n";
-  std::string headers = "HTTP/1.1 200 OK\r\n"
-      "Content-Length: 7\r\n\r\n";
-  int64_t headers_size = status100.size() + headers.size();
-  std::string body = "content";
-  std::string response = headers + body;
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  SimpleGetRunner get_runner;
-  get_runner.AddRead(status100);
-  get_runner.AddRead(response);
-  get_runner.SetupParserAndSendRequest();
-  get_runner.ReadHeaders();
-  EXPECT_EQ(100, get_runner.response_info()->headers->response_code());
-  int64_t status100_size = status100.size();
-  EXPECT_EQ(status100_size, get_runner.parser()->received_bytes());
-  get_runner.ReadHeaders();
-  EXPECT_EQ(200, get_runner.response_info()->headers->response_code());
-  EXPECT_EQ(headers_size, get_runner.parser()->received_bytes());
-  int64_t response_size = headers_size + body.size();
-  int body_size = body.size();
-  int read_lengths[] = {body_size, 0};
-  get_runner.ReadBody(body_size, read_lengths);
-  EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
+  std::string status100_response_headers1 = "HTTP/1.1 100 ";
+  std::string status100_response_headers2 = "Continue\r\n\r\n";
+  int64_t status100_response_headers_size =
+      status100_response_headers1.size() + status100_response_headers2.size();
+
+  std::string response_headers1 = "HTTP/1.1 200 OK\r\n";
+  std::string response_headers2 = "Content-Length: 7\r\n\r\n";
+  int64_t response_headers_size =
+      response_headers1.size() + response_headers2.size();
+
+  std::string response_body = "content";
+  int64_t response_size = status100_response_headers_size +
+                          response_headers_size + response_body.size();
+
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, "GET / HTTP/1.1\r\n\r\n")};
+
+  MockRead reads[] = {
+      // Add pauses between header fragments so that the test runner can advance
+      // the mock clock to test timing information.
+
+      // 100 response headers.
+      MockRead(ASYNC, 1, status100_response_headers1.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 2),
+      MockRead(ASYNC, 3, status100_response_headers2.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 4),
+
+      // 200 response headers and body.
+      MockRead(ASYNC, 5, response_headers1.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 6),
+      MockRead(ASYNC, 7, response_headers2.c_str()),
+      MockRead(ASYNC, 8, response_body.c_str()),
+  };
+
+  // Set up the sequenced socket data.
+  SequencedSocketData sequenced_socket_data(reads, writes);
+  std::unique_ptr<StreamSocket> stream_socket =
+      CreateConnectedSocket(&sequenced_socket_data);
+
+  // Set up the http stream parser.
+  HttpRequestInfo request;
+  auto read_buffer = base::MakeRefCounted<GrowableIOBuffer>();
+  HttpStreamParser parser(stream_socket.get(), /*connection_is_reused=*/false,
+                          &request, read_buffer.get(), NetLogWithSource());
+
+  // Send a request.
+  HttpResponseInfo response;
+  TestCompletionCallback callback;
+  EXPECT_THAT(parser.SendRequest("GET / HTTP/1.1\r\n", HttpRequestHeaders(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS, &response,
+                                 callback.callback()),
+              IsOk());
+
+  EXPECT_THAT(parser.ReadResponseHeaders(callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  // [seq=1 --> seq=2] The parser reads the first fragment of the informational
+  // response headers and then pauses to advance the mock clock.
+  base::TimeTicks first_response_start_time = task_environment.NowTicks();
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=3] The parser reads the second fragment of the informational response
+  // headers.
+  sequenced_socket_data.Resume();
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  // Check the received headers.
+  EXPECT_EQ(100, response.headers->response_code());
+  EXPECT_EQ(status100_response_headers_size, parser.received_bytes());
+
+  EXPECT_THAT(parser.ReadResponseHeaders(callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  // [seq=4] The parser pauses to advance the clock.
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=5 --> seq=6] The parser reads the first fragment of the
+  // non-informational response headers and then pauses to advance the mock
+  // clock.
+  base::TimeTicks non_informational_response_start_time =
+      task_environment.NowTicks();
+  sequenced_socket_data.Resume();
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=7] The parser reads the second fragment of the non-informational
+  // response headers.
+  sequenced_socket_data.Resume();
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // Check the received headers.
+  EXPECT_EQ(200, response.headers->response_code());
+  EXPECT_EQ(status100_response_headers_size + response_headers_size,
+            parser.received_bytes());
+
+  // The first response start time should be captured at the time the first
+  // fragment of the informational response headers is received.
+  EXPECT_EQ(parser.first_response_start_time(), first_response_start_time);
+  // The non-informational response start time should be captured at the time
+  // the first fragment of the non-informational response headers is received.
+  EXPECT_EQ(parser.non_informational_response_start_time(),
+            non_informational_response_start_time);
+  // The first response start time should be earlier than the non-informational
+  // response start time.
+  EXPECT_LT(parser.first_response_start_time(),
+            parser.non_informational_response_start_time());
+
+  // [seq=8] The parser reads the non-informational response body.
+  scoped_refptr<IOBuffer> body_buffer =
+      base::MakeRefCounted<IOBuffer>(response_body.size());
+  int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
+                                       callback.callback());
+  EXPECT_THAT(callback.GetResult(result), response_body.size());
+
+  // Check the received body.
+  EXPECT_EQ(response_size, parser.received_bytes());
 }
 
 // Test that "early hints" HTTP header is counted as "received_bytes".
 // 103 Early Hints hasn't been implemented yet and should be ignored, but we
 // collect timing information for the experiment (https://crbug.com/1093693).
 TEST(HttpStreamParser, EarlyHints) {
-  std::string status103 = "HTTP/1.1 103 Early Hints\r\n\r\n";
-  std::string headers =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Length: 7\r\n\r\n";
-  int64_t headers_size = status103.size() + headers.size();
-  std::string body = "content";
-  std::string response = headers + body;
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  SimpleGetRunner get_runner;
-  get_runner.AddRead(status103);
-  get_runner.AddRead(response);
-  get_runner.SetupParserAndSendRequest();
-  get_runner.ReadHeaders();
-  EXPECT_EQ(103, get_runner.response_info()->headers->response_code());
-  int64_t status103_size = status103.size();
-  EXPECT_EQ(status103_size, get_runner.parser()->received_bytes());
-  get_runner.ReadHeaders();
-  EXPECT_EQ(200, get_runner.response_info()->headers->response_code());
-  EXPECT_EQ(headers_size, get_runner.parser()->received_bytes());
-  int64_t response_size = headers_size + body.size();
-  int body_size = body.size();
-  int read_lengths[] = {body_size, 0};
-  get_runner.ReadBody(body_size, read_lengths);
-  EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
+  std::string status103_response_headers1 = "HTTP/1.1 103 Early Hints\r\n";
+  std::string status103_response_headers2 =
+      "Link: </style.css>; rel=preload; as=style\r\n";
+  std::string status103_response_headers3 =
+      "Link: </script.js>; rel=preload; as=script\r\n\r\n";
+  int64_t status103_response_headers_size = status103_response_headers1.size() +
+                                            status103_response_headers2.size() +
+                                            status103_response_headers3.size();
 
-  // Make sure the timing of the Early Hints response is captured.
-  EXPECT_FALSE(get_runner.parser()->first_early_hints_time().is_null());
+  std::string response_headers1 = "HTTP/1.1 200 OK\r\n";
+  std::string response_headers2 = "Content-Length: 7\r\n\r\n";
+  int64_t response_headers_size =
+      response_headers1.size() + response_headers2.size();
+
+  std::string response_body = "content";
+  int64_t response_size = status103_response_headers_size +
+                          response_headers_size + response_body.size();
+
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, "GET / HTTP/1.1\r\n\r\n")};
+
+  MockRead reads[] = {
+      // Add pauses between header fragments so that the test runner can advance
+      // the mock clock to test timing information.
+
+      // 103 Early Hints response headers.
+      MockRead(ASYNC, 1, status103_response_headers1.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 2),
+      MockRead(ASYNC, 3, status103_response_headers2.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 4),
+      MockRead(ASYNC, 5, status103_response_headers3.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 6),
+
+      // 200 response headers and body.
+      MockRead(ASYNC, 7, response_headers1.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 8),
+      MockRead(ASYNC, 9, response_headers2.c_str()),
+      MockRead(ASYNC, 10, response_body.c_str()),
+  };
+
+  // Set up the sequenced socket data.
+  SequencedSocketData sequenced_socket_data(reads, writes);
+  std::unique_ptr<StreamSocket> stream_socket =
+      CreateConnectedSocket(&sequenced_socket_data);
+
+  // Set up the http stream parser.
+  HttpRequestInfo request;
+  auto read_buffer = base::MakeRefCounted<GrowableIOBuffer>();
+  HttpStreamParser parser(stream_socket.get(), /*connection_is_reused=*/false,
+                          &request, read_buffer.get(), NetLogWithSource());
+
+  // Send a request.
+  HttpResponseInfo response;
+  TestCompletionCallback callback;
+  EXPECT_THAT(parser.SendRequest("GET / HTTP/1.1\r\n", HttpRequestHeaders(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS, &response,
+                                 callback.callback()),
+              IsOk());
+
+  EXPECT_THAT(parser.ReadResponseHeaders(callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  // [seq=1 --> seq=2] The parser reads the first fragment of the informational
+  // response headers and then pauses to advance the mock clock.
+  base::TimeTicks first_response_start_time = task_environment.NowTicks();
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=3 --> seq=4] The parser reads the second fragment of the informational
+  // response headers and then pauses to advance the mock clock.
+  sequenced_socket_data.Resume();
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=5] The parser reads the third fragment of the informational response
+  // headers.
+  sequenced_socket_data.Resume();
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  // Check the received headers.
+  EXPECT_EQ(103, response.headers->response_code());
+  EXPECT_EQ(status103_response_headers_size, parser.received_bytes());
+
+  EXPECT_THAT(parser.ReadResponseHeaders(callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  // [seq=6] The parser pauses to advance the clock.
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=7 --> seq=8] The parser reads the first fragment of the
+  // non-informational response headers and then pauses to advance the mock
+  // clock.
+  base::TimeTicks non_informational_response_start_time =
+      task_environment.NowTicks();
+  sequenced_socket_data.Resume();
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=9] The parser reads the second fragment of the non-informational
+  // response headers.
+  sequenced_socket_data.Resume();
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // Check the received headers.
+  EXPECT_EQ(200, response.headers->response_code());
+  EXPECT_EQ(status103_response_headers_size + response_headers_size,
+            parser.received_bytes());
+
+  // The first response start time and first early hints time should be captured
+  // at the time the first fragment of the informational response headers is
+  // received.
+  EXPECT_EQ(parser.first_response_start_time(), first_response_start_time);
+  EXPECT_EQ(parser.first_early_hints_time(), first_response_start_time);
+  // The non-informational response start time should be captured at the time
+  // the first fragment of the non-informational response headers is received.
+  EXPECT_EQ(parser.non_informational_response_start_time(),
+            non_informational_response_start_time);
+  // The first response start time should be earlier than the non-informational
+  // response start time.
+  EXPECT_LT(parser.first_response_start_time(),
+            parser.non_informational_response_start_time());
+
+  // [seq=10] The parser reads the non-informational response body.
+  scoped_refptr<IOBuffer> body_buffer =
+      base::MakeRefCounted<IOBuffer>(response_body.size());
+  int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
+                                       callback.callback());
+  EXPECT_THAT(callback.GetResult(result), response_body.size());
+
+  // Check the received body.
+  EXPECT_EQ(response_size, parser.received_bytes());
+}
+
+// Test the case where informational response headers and non-informational
+// response headers are packed in the same fragment.
+TEST(HttpStreamParser, MixedResponseHeaders) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  std::string status100_response_headers = "HTTP/1.1 100 ";
+  std::string mixed_response_headers = "Continue\r\n\r\nHTTP/1.1 200 OK\r\n";
+  std::string response_headers = "Content-Length: 7\r\n\r\n";
+  int64_t status100_response_headers_size =
+      status100_response_headers.size() + 12;
+  int64_t response_headers_size = response_headers.size() + 17;
+
+  std::string response_body = "content";
+  int64_t response_size = status100_response_headers_size +
+                          response_headers_size + response_body.size();
+
+  MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, "GET / HTTP/1.1\r\n\r\n")};
+
+  MockRead reads[] = {
+      // Add pauses between header fragments so that the test runner can advance
+      // the mock clock to test timing information.
+
+      // 100 response headers.
+      MockRead(ASYNC, 1, status100_response_headers.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 2),
+
+      // Mixed response headers.
+      MockRead(ASYNC, 3, mixed_response_headers.c_str()),
+      MockRead(ASYNC, ERR_IO_PENDING, 4),
+
+      // 200 response headers and body.
+      MockRead(ASYNC, 5, response_headers.c_str()),
+      MockRead(ASYNC, 6, response_body.c_str()),
+  };
+
+  // Set up the sequenced socket data.
+  SequencedSocketData sequenced_socket_data(reads, writes);
+  std::unique_ptr<StreamSocket> stream_socket =
+      CreateConnectedSocket(&sequenced_socket_data);
+
+  // Set up the http stream parser.
+  HttpRequestInfo request;
+  auto read_buffer = base::MakeRefCounted<GrowableIOBuffer>();
+  HttpStreamParser parser(stream_socket.get(), /*connection_is_reused=*/false,
+                          &request, read_buffer.get(), NetLogWithSource());
+
+  // Send a request.
+  HttpResponseInfo response;
+  TestCompletionCallback callback;
+  EXPECT_THAT(parser.SendRequest("GET / HTTP/1.1\r\n", HttpRequestHeaders(),
+                                 TRAFFIC_ANNOTATION_FOR_TESTS, &response,
+                                 callback.callback()),
+              IsOk());
+
+  EXPECT_THAT(parser.ReadResponseHeaders(callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  // [seq=1 --> seq=2] The parser reads the first fragment of the informational
+  // response headers and then pauses to advance the mock clock.
+  base::TimeTicks first_response_start_time = task_environment.NowTicks();
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=3] The parser reads the second fragment of the informational response
+  // headers.
+  sequenced_socket_data.Resume();
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  // Check the received headers.
+  EXPECT_EQ(100, response.headers->response_code());
+  EXPECT_EQ(status100_response_headers_size, parser.received_bytes());
+
+  EXPECT_THAT(parser.ReadResponseHeaders(callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  // [seq=3 --> seq=4] The parser reads the first fragment of the
+  // non-informational response headers and then pauses to advance the mock
+  // clock.
+  base::TimeTicks non_informational_response_start_time =
+      task_environment.NowTicks();
+  sequenced_socket_data.RunUntilPaused();
+  task_environment.AdvanceClock(base::TimeDelta::FromSeconds(1));
+
+  // [seq=5] The parser reads the second fragment of the non-informational
+  // response headers.
+  sequenced_socket_data.Resume();
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  // Check the received headers.
+  EXPECT_EQ(200, response.headers->response_code());
+  EXPECT_EQ(status100_response_headers_size + response_headers_size,
+            parser.received_bytes());
+
+  // The first response start time should be captured at the time the first
+  // fragment of the informational response headers is received.
+  EXPECT_EQ(parser.first_response_start_time(), first_response_start_time);
+  // The non-informational response start time should be captured at the time
+  // the first fragment of the non-informational response headers is received.
+  EXPECT_EQ(parser.non_informational_response_start_time(),
+            non_informational_response_start_time);
+  // The first response start time should be earlier than the non-informational
+  // response start time.
+  EXPECT_LT(parser.first_response_start_time(),
+            parser.non_informational_response_start_time());
+
+  // [seq=6] The parser reads the non-informational response body.
+  scoped_refptr<IOBuffer> body_buffer =
+      base::MakeRefCounted<IOBuffer>(response_body.size());
+  int result = parser.ReadResponseBody(body_buffer.get(), response_body.size(),
+                                       callback.callback());
+  EXPECT_THAT(callback.GetResult(result), response_body.size());
+
+  // Check the received body.
+  EXPECT_EQ(response_size, parser.received_bytes());
 }
 
 // Test that an HttpStreamParser can be read from after it's received headers
