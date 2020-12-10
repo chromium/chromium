@@ -2759,6 +2759,7 @@ static_library("ui") {
       "views/frame/browser_non_client_frame_view_chromeos.h",
       "views/frame/browser_non_client_frame_view_factory_chromeos.cc",
     ]
+    deps += [ "//components/account_manager_core:account_manager_core" ]
   }
 
   if (is_chromeos_lacros) {

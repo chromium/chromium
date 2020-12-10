@@ -16,6 +16,32 @@ namespace account_manager {
 // Use |GetAccountManagerFacade()| to get an instance of this class.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
  public:
+  // The source UI surface used for launching the account addition /
+  // re-authentication dialog. This should be as specific as possible.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Note: Please update |AccountManagerAccountAdditionSource| in enums.xml
+  // after adding new values.
+  enum class AccountAdditionSource : int {
+    // Settings > Add account button.
+    kSettingsAddAccountButton = 0,
+    // Settings > Sign in again button.
+    kSettingsReauthAccountButton = 1,
+    // Launched from an ARC application.
+    kArc = 2,
+    // Launched automatically from Chrome content area. As of now, this is
+    // possible only when an account requires re-authentication.
+    kContentArea = 3,
+    // Print Preview dialog.
+    kPrintPreviewDialog = 4,
+    // Account Manager migration welcome screen.
+    kAccountManagerMigrationWelcomeScreen = 5,
+    // Onboarding.
+    kOnboarding = 6,
+
+    kMaxValue = kOnboarding
+  };
+
   AccountManagerFacade();
   AccountManagerFacade(const AccountManagerFacade&) = delete;
   AccountManagerFacade& operator=(const AccountManagerFacade&) = delete;

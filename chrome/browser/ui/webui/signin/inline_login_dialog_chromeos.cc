@@ -103,15 +103,21 @@ bool InlineLoginDialogChromeOS::IsShown() {
 }
 
 // static
-void InlineLoginDialogChromeOS::ShowDeprecated(const std::string& email,
-                                               const Source& source) {
+void InlineLoginDialogChromeOS::ShowDeprecated(
+    const std::string& email,
+    const ::account_manager::AccountManagerFacade::AccountAdditionSource&
+        source) {
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
-  const bool is_arc_source = source == InlineLoginDialogChromeOS::Source::kArc;
+  const bool is_arc_source =
+      source ==
+      ::account_manager::AccountManagerFacade::AccountAdditionSource::kArc;
   ShowInternal(email, is_arc_source);
 }
 
 // static
-void InlineLoginDialogChromeOS::ShowDeprecated(const Source& source) {
+void InlineLoginDialogChromeOS::ShowDeprecated(
+    const ::account_manager::AccountManagerFacade::AccountAdditionSource&
+        source) {
   ShowDeprecated(/* email= */ std::string(), source);
 }
 

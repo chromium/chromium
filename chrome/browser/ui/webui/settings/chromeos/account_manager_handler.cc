@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -344,7 +345,8 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
 void AccountManagerUIHandler::HandleAddAccount(const base::ListValue* args) {
   AllowJavascript();
   InlineLoginDialogChromeOS::ShowDeprecated(
-      InlineLoginDialogChromeOS::Source::kSettingsAddAccountButton);
+      ::account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsAddAccountButton);
 }
 
 void AccountManagerUIHandler::HandleReauthenticateAccount(
@@ -355,8 +357,8 @@ void AccountManagerUIHandler::HandleReauthenticateAccount(
   const std::string& account_email = args->GetList()[0].GetString();
 
   InlineLoginDialogChromeOS::ShowDeprecated(
-      account_email,
-      InlineLoginDialogChromeOS::Source::kSettingsReauthAccountButton);
+      account_email, ::account_manager::AccountManagerFacade::
+                         AccountAdditionSource::kSettingsReauthAccountButton);
 }
 
 void AccountManagerUIHandler::HandleMigrateAccount(

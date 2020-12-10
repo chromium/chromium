@@ -86,6 +86,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #endif
 
 using content::RenderFrameHost;
@@ -716,7 +717,8 @@ void PrintPreviewHandler::HandleSignin(const base::ListValue* /*args*/) {
     // account management flows will go through native UIs and not through a
     // tabbed browser window.
     chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
-        chromeos::InlineLoginDialogChromeOS::Source::kPrintPreviewDialog);
+        account_manager::AccountManagerFacade::AccountAdditionSource::
+            kPrintPreviewDialog);
     return;
   }
 #endif

@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
@@ -510,7 +511,7 @@ void ArcAuthService::HandleAddAccountRequest() {
   DCHECK(chromeos::IsAccountManagerAvailable(profile_));
 
   chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
-      chromeos::InlineLoginDialogChromeOS::Source::kArc);
+      ::account_manager::AccountManagerFacade::AccountAdditionSource::kArc);
 }
 
 void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
@@ -524,7 +525,8 @@ void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
   DCHECK(chromeos::IsAccountManagerAvailable(profile_));
 
   chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
-      email, chromeos::InlineLoginDialogChromeOS::Source::kArc);
+      email,
+      ::account_manager::AccountManagerFacade::AccountAdditionSource::kArc);
 }
 
 void ArcAuthService::OnRefreshTokenUpdatedForAccount(

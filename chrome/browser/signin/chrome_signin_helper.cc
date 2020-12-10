@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/url_constants.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/cookie_reminter.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -283,8 +284,8 @@ void ProcessMirrorHeader(
 
     // Display a re-authentication dialog.
     chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
-        manage_accounts_params.email,
-        chromeos::InlineLoginDialogChromeOS::Source::kContentArea);
+        manage_accounts_params.email, ::account_manager::AccountManagerFacade::
+                                          AccountAdditionSource::kContentArea);
     return;
   }
 

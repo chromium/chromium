@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_modal_delegate.h"
 #include "chromeos/components/account_manager/account_manager.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
 class GURL;
@@ -25,32 +26,6 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
                                   public web_modal::WebContentsModalDialogHost {
  public:
   static const char kAccountAdditionSource[];
-
-  // The source UX surface used for launching the account addition /
-  // re-authentication dialog. This should be as specific as possible.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // Note: Please update |AccountManagerAccountAdditionSource| in enums.xml
-  // after adding new values.
-  enum class Source : int {
-    // Settings > Add account button.
-    kSettingsAddAccountButton = 0,
-    // Settings > Sign in again button.
-    kSettingsReauthAccountButton = 1,
-    // Launched from an ARC application.
-    kArc = 2,
-    // Launched automatically from Chrome content area. As of now, this is
-    // possible only when an account requires re-authentication.
-    kContentArea = 3,
-    // Print Preview dialog.
-    kPrintPreviewDialog = 4,
-    // Account Manager migration welcome screen.
-    kAccountManagerMigrationWelcomeScreen = 5,
-    // Onboarding.
-    kOnboarding = 6,
-
-    kMaxValue = kOnboarding
-  };
 
   // Represents the last reached step in the flow.
   // Keep in sync with
@@ -74,13 +49,18 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   // the source UX surface used for launching the dialog.
   // DEPRECATED: Use AccountManagerFacade instead (see
   // https://crbug.com/1140469).
-  static void ShowDeprecated(const std::string& email, const Source& source);
+  static void ShowDeprecated(
+      const std::string& email,
+      const ::account_manager::AccountManagerFacade::AccountAdditionSource&
+          source);
 
   // Displays the dialog for account addition. |source| specifies the source UX
   // surface used for launching the dialog.
   // DEPRECATED: Use AccountManagerFacade instead (see
   // https://crbug.com/1140469).
-  static void ShowDeprecated(const Source& source);
+  static void ShowDeprecated(
+      const ::account_manager::AccountManagerFacade::AccountAdditionSource&
+          source);
 
   // Updates the value of the last reached step in 'Add Account' flow for child
   // users. Before the dialog will close, this value will be reported to UMA.
