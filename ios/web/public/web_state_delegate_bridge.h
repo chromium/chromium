@@ -86,10 +86,10 @@
 // provide a UIContextMenuConfiguration to |completion_handler| to generate the
 // context menu.
 - (void)webState:(web::WebState*)webState
-    contextMenuConfigurationForLinkWithURL:(const GURL&)linkURL
-                         completionHandler:
-                             (void (^)(UIContextMenuConfiguration*))
-                                 completionHandler API_AVAILABLE(ios(13.0));
+    contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
+                    completionHandler:
+                        (void (^)(UIContextMenuConfiguration*))completionHandler
+    API_AVAILABLE(ios(13.0));
 
 // Called when iOS13+ context menu is ready to be showed.
 - (void)webState:(web::WebState*)webState
@@ -146,7 +146,7 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
   UIView* GetWebViewContainer(WebState* source) override;
   void ContextMenuConfiguration(
       WebState* source,
-      const GURL& link_url,
+      const ContextMenuParams& params,
       void (^completion_handler)(UIContextMenuConfiguration*))
       API_AVAILABLE(ios(13.0)) override;
   void ContextMenuDidEnd(WebState* source, const GURL& link_url)

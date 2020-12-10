@@ -3595,10 +3595,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)webState:(web::WebState*)webState
-    contextMenuConfigurationForLinkWithURL:(const GURL&)linkURL
-                         completionHandler:
-                             (void (^)(UIContextMenuConfiguration*))
-                                 completionHandler API_AVAILABLE(ios(13.0)) {
+    contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
+                    completionHandler:
+                        (void (^)(UIContextMenuConfiguration*))completionHandler
+    API_AVAILABLE(ios(13.0)) {
   // Prevent context menu from displaying for a tab which is no longer the
   // current one.
   if (webState != self.currentWebState) {
@@ -3606,7 +3606,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   // No custom context menu if no valid url is available.
-  if (!linkURL.is_valid())
+  if (!params.link_url.is_valid())
     return;
 
   DCHECK(self.browserState);

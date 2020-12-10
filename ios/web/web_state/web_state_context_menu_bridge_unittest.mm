@@ -6,6 +6,7 @@
 
 #include "ios/web/public/test/fakes/test_browser_state.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/test/web_test_with_web_controller.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest_mac.h"
@@ -30,12 +31,12 @@
 @implementation FakeCRWWebStateDelegate
 
 - (void)webState:(web::WebState*)webState
-    contextMenuConfigurationForLinkWithURL:(const GURL&)linkURL
-                         completionHandler:
-                             (void (^)(UIContextMenuConfiguration*))
-                                 completionHandler API_AVAILABLE(ios(13.0)) {
+    contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
+                    completionHandler:
+                        (void (^)(UIContextMenuConfiguration*))completionHandler
+    API_AVAILABLE(ios(13.0)) {
   self.webState = webState;
-  self.URL = net::NSURLWithGURL(linkURL);
+  self.URL = net::NSURLWithGURL(params.link_url);
   self.contextMenuConfigurationNeeded = YES;
 }
 

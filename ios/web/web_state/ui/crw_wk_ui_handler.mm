@@ -8,6 +8,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/wk_navigation_action_util.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/crw_legacy_context_menu_controller.h"
@@ -199,11 +200,14 @@
                              completionHandler API_AVAILABLE(ios(13.0)) {
   web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
   if (!delegate) {
+    completionHandler(nil);
     return;
   }
 
-  delegate->ContextMenuConfiguration(self.webStateImpl,
-                                     net::GURLWithNSURL(elementInfo.linkURL),
+  web::ContextMenuParams params;
+  params.link_url = net::GURLWithNSURL(elementInfo.linkURL);
+
+  delegate->ContextMenuConfiguration(self.webStateImpl, params,
                                      completionHandler);
 }
 

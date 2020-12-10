@@ -523,16 +523,19 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
 }
 
 - (void)webState:(web::WebState*)webState
-    contextMenuConfigurationForLinkWithURL:(const GURL&)linkURL
-                         completionHandler:
-                             (void (^)(UIContextMenuConfiguration*))
-                                 completionHandler API_AVAILABLE(ios(13.0)) {
+    contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
+                    completionHandler:
+                        (void (^)(UIContextMenuConfiguration*))completionHandler
+    API_AVAILABLE(ios(13.0)) {
   SEL selector = @selector(webView:
       contextMenuConfigurationForLinkWithURL:completionHandler:);
   if ([_UIDelegate respondsToSelector:selector]) {
     [_UIDelegate webView:self
-        contextMenuConfigurationForLinkWithURL:net::NSURLWithGURL(linkURL)
+        contextMenuConfigurationForLinkWithURL:net::NSURLWithGURL(
+                                                   params.link_url)
                              completionHandler:completionHandler];
+  } else {
+    completionHandler(nil);
   }
 }
 

@@ -140,16 +140,17 @@ UIView* WebStateDelegateBridge::GetWebViewContainer(WebState* source) {
 
 void WebStateDelegateBridge::ContextMenuConfiguration(
     WebState* source,
-    const GURL& link_url,
+    const ContextMenuParams& params,
     void (^completion_handler)(UIContextMenuConfiguration*))
     API_AVAILABLE(ios(13.0)) {
-  if ([delegate_
-          respondsToSelector:@selector
-          (webState:
-              contextMenuConfigurationForLinkWithURL:completionHandler:)]) {
+  if ([delegate_ respondsToSelector:@selector
+                 (webState:
+                     contextMenuConfigurationForParams:completionHandler:)]) {
     [delegate_ webState:source
-        contextMenuConfigurationForLinkWithURL:link_url
-                             completionHandler:completion_handler];
+        contextMenuConfigurationForParams:params
+                        completionHandler:completion_handler];
+  } else {
+    completion_handler(nil);
   }
 }
 

@@ -99,7 +99,7 @@ class WebStateDelegate {
   // the context menu.
   virtual void ContextMenuConfiguration(
       WebState* source,
-      const GURL& link_url,
+      const ContextMenuParams& params,
       void (^completion_handler)(UIContextMenuConfiguration*))
       API_AVAILABLE(ios(13.0));
   // Called when iOS13+ context menu is ready to be showed.
