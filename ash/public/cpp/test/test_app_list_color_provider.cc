@@ -12,6 +12,10 @@ SkColor TestAppListColorProvider::GetExpandArrowInkDropBaseColor() const {
   return SK_ColorWHITE;
 }
 
+float TestAppListColorProvider::GetExpandArrowInkDropOpacity() const {
+  return 1.0f;
+}
+
 SkColor TestAppListColorProvider::GetExpandArrowIconBaseColor() const {
   return gfx::kGoogleGrey200;
 }

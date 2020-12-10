@@ -32,6 +32,10 @@ SkColor AppListColorProviderImpl::GetExpandArrowInkDropBaseColor() const {
       /*default_color*/ SkColorSetARGB(0x14, 0xFF, 0xFF, 0xFF));
 }
 
+float AppListColorProviderImpl::GetExpandArrowInkDropOpacity() const {
+  return DeprecatedGetInkDropOpacity(/*default_opacity*/ 1.0f);
+}
+
 SkColor AppListColorProviderImpl::GetExpandArrowIconBaseColor() const {
   return DeprecatedGetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor,

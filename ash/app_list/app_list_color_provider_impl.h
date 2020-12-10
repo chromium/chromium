@@ -17,6 +17,7 @@ class AppListColorProviderImpl : public AppListColorProvider {
   ~AppListColorProviderImpl() override;
   // AppListColorProvider:
   SkColor GetExpandArrowInkDropBaseColor() const override;
+  float GetExpandArrowInkDropOpacity() const override;
   SkColor GetExpandArrowIconBaseColor() const override;
   SkColor GetExpandArrowIconBackgroundColor() const override;
   SkColor GetAppListBackgroundColor() const override;

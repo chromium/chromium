@@ -22,6 +22,7 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   static AppListColorProvider* Get();
 
   virtual SkColor GetExpandArrowInkDropBaseColor() const = 0;
+  virtual float GetExpandArrowInkDropOpacity() const = 0;
   virtual SkColor GetExpandArrowIconBaseColor() const = 0;
   virtual SkColor GetExpandArrowIconBackgroundColor() const = 0;
   virtual SkColor GetAppListBackgroundColor() const = 0;
