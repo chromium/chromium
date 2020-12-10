@@ -2866,7 +2866,13 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return bitfields_.ShouldCheckForPaintInvalidation();
   }
+  // Sets both ShouldCheckForPaintInvalidation() and
+  // ShouldCheckGeometryForPaintInvalidation(). Though the setter and the getter
+  // are asymmetric, this prevents callers from accidentally missing the
+  // geometry checking flag.
   void SetShouldCheckForPaintInvalidation();
+  // Sets ShouldCheckForPaintInvalidation() only. PaintInvalidator won't require
+  // paint property tree update or other geometry related updates.
   void SetShouldCheckForPaintInvalidationWithoutGeometryChange();
 
   bool SubtreeShouldCheckForPaintInvalidation() const {
@@ -3592,8 +3598,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   bool SelfPaintingLayerNeedsVisualOverflowRecalc() const;
   inline void MarkContainerChainForOverflowRecalcIfNeeded(
       bool mark_container_chain_layout_overflow_recalc);
-
-  inline void SetShouldCheckGeometryForPaintInvalidation();
 
   inline void InvalidateContainerIntrinsicLogicalWidths();
 

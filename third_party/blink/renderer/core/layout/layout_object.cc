@@ -4339,19 +4339,6 @@ bool LayoutObject::IsRelayoutBoundary() const {
   return ObjectIsRelayoutBoundary(this);
 }
 
-inline void LayoutObject::SetShouldCheckGeometryForPaintInvalidation() {
-  NOT_DESTROYED();
-  DCHECK(ShouldCheckForPaintInvalidation());
-  bitfields_.SetShouldCheckGeometryForPaintInvalidation(true);
-  for (auto* ancestor = Parent();
-       ancestor &&
-       !ancestor->DescendantShouldCheckGeometryForPaintInvalidation();
-       ancestor = ancestor->Parent()) {
-    ancestor->bitfields_.SetDescendantShouldCheckGeometryForPaintInvalidation(
-        true);
-  }
-}
-
 void LayoutObject::SetShouldInvalidateSelection() {
   NOT_DESTROYED();
   bitfields_.SetShouldInvalidateSelection(true);
@@ -4361,8 +4348,8 @@ void LayoutObject::SetShouldInvalidateSelection() {
 void LayoutObject::SetShouldDoFullPaintInvalidation(
     PaintInvalidationReason reason) {
   NOT_DESTROYED();
+  SetShouldCheckForPaintInvalidation();
   SetShouldDoFullPaintInvalidationWithoutGeometryChange(reason);
-  SetShouldCheckGeometryForPaintInvalidation();
 }
 
 static PaintInvalidationReason DocumentLifecycleBasedPaintInvalidationReason(
@@ -4401,8 +4388,22 @@ void LayoutObject::SetShouldDoFullPaintInvalidationWithoutGeometryChange(
 
 void LayoutObject::SetShouldCheckForPaintInvalidation() {
   NOT_DESTROYED();
-  SetShouldCheckForPaintInvalidationWithoutGeometryChange();
-  SetShouldCheckGeometryForPaintInvalidation();
+  if (ShouldCheckGeometryForPaintInvalidation()) {
+    DCHECK(ShouldCheckForPaintInvalidation());
+    return;
+  }
+  GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
+
+  bitfields_.SetShouldCheckForPaintInvalidation(true);
+  bitfields_.SetShouldCheckGeometryForPaintInvalidation(true);
+  for (LayoutObject* ancestor = Parent();
+       ancestor &&
+       !ancestor->DescendantShouldCheckGeometryForPaintInvalidation();
+       ancestor = ancestor->Parent()) {
+    ancestor->bitfields_.SetShouldCheckForPaintInvalidation(true);
+    ancestor->bitfields_.SetDescendantShouldCheckGeometryForPaintInvalidation(
+        true);
+  }
 }
 
 void LayoutObject::SetShouldCheckForPaintInvalidationWithoutGeometryChange() {

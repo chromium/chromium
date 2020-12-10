@@ -245,6 +245,9 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   if (owner->ForceLegacyLayout() && !new_child->IsLayoutNGObject())
     new_child->SetForceLegacyLayout();
 
+  // Mark the ancestor chain for paint invalidation checking.
+  owner->SetShouldCheckForPaintInvalidation();
+
   new_child->SetNeedsLayoutAndIntrinsicWidthsRecalc(
       layout_invalidation_reason::kAddedToLayout);
   if (new_child->IsOutOfFlowPositioned() &&
