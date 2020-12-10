@@ -85,12 +85,6 @@ public class ChromePaymentRequestService
     private boolean mHideServerAutofillCards;
     private PaymentHandlerHost mPaymentHandlerHost;
 
-    /**
-     * There are a few situations were the Payment Request can appear, from a code perspective, to
-     * be shown more than once. This boolean is used to make sure it is only logged once.
-     */
-    private boolean mDidRecordShowEvent;
-
     /** A helper to manage the Skip-to-GPay experimental flow. */
     private SkipToGPayHelper mSkipToGPayHelper;
     private boolean mIsGooglePayBridgeActivated;
@@ -296,7 +290,6 @@ public class ChromePaymentRequestService
                             ()
                                     -> onUiAborted(AbortReason.ABORTED_BY_USER,
                                             ErrorStrings.USER_CANCELLED))) {
-                    mDidRecordShowEvent = true;
                     mJourneyLogger.setEventOccurred(Event.SHOWN);
                     return null;
                 } else {
@@ -307,7 +300,6 @@ public class ChromePaymentRequestService
             assert !mPaymentUiService.getPaymentApps().isEmpty();
             PaymentApp selectedApp = mPaymentUiService.getSelectedPaymentApp();
             dimBackgroundIfNotBottomSheetPaymentHandler(selectedApp);
-            mDidRecordShowEvent = true;
             mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
             invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
                     selectedApp);
@@ -398,10 +390,7 @@ public class ChromePaymentRequestService
 
         String detailsError = mSpec.getPaymentDetails().error;
         mPaymentUiService.showShippingAddressErrorIfApplicable(detailsError);
-
-        boolean providedInformationToPaymentRequestUI =
-                mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
-        if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
+        mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
     }
 
     // Implements BrowserPaymentRequest:
@@ -413,9 +402,7 @@ public class ChromePaymentRequestService
         mPaymentUiService.updateDetailsOnPaymentRequestUI(mSpec.getPaymentDetails());
 
         if (isFinishedQueryingPaymentApps && !mHasSkippedAppSelector) {
-            boolean providedInformationToPaymentRequestUI =
-                    mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
-            if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
+            mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
         }
         return null;
     }
@@ -424,24 +411,13 @@ public class ChromePaymentRequestService
     @Override
     public void onPaymentDetailsNotUpdated(@Nullable String selectedShippingOptionError) {
         mPaymentUiService.showShippingAddressErrorIfApplicable(selectedShippingOptionError);
-
-        boolean providedInformationToPaymentRequestUI =
-                mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
-        if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
+        mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
     }
 
     // Implements BrowserPaymentRequest:
     @Override
     public boolean parseAndValidateDetailsFurtherIfNeeded(PaymentDetails details) {
         return mSkipToGPayHelper == null || mSkipToGPayHelper.setShippingOptionIfValid(details);
-    }
-
-    // Implements PaymentUiService.Delegate:
-    @Override
-    public void recordShowEventAndTransactionAmount() {
-        if (mDidRecordShowEvent) return;
-        mDidRecordShowEvent = true;
-        mJourneyLogger.setEventOccurred(Event.SHOWN);
     }
 
     // Implements BrowserPaymentRequest:
