@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -10,7 +10,7 @@
 
 namespace web {
 
-TestNavigationManager::TestNavigationManager()
+FakeNavigationManager::FakeNavigationManager()
     : items_index_(-1),
       pending_item_(nullptr),
       pending_item_index_(-1),
@@ -21,73 +21,73 @@ TestNavigationManager::TestNavigationManager()
       load_if_necessary_was_called_(false),
       reload_was_called_(false) {}
 
-TestNavigationManager::~TestNavigationManager() {}
+FakeNavigationManager::~FakeNavigationManager() {}
 
-BrowserState* TestNavigationManager::GetBrowserState() const {
+BrowserState* FakeNavigationManager::GetBrowserState() const {
   return browser_state_;
 }
 
-WebState* TestNavigationManager::GetWebState() const {
+WebState* FakeNavigationManager::GetWebState() const {
   NOTREACHED();
   return nullptr;
 }
 
-NavigationItem* TestNavigationManager::GetVisibleItem() const {
+NavigationItem* FakeNavigationManager::GetVisibleItem() const {
   return visible_item_;
 }
 
-void TestNavigationManager::SetVisibleItem(NavigationItem* item) {
+void FakeNavigationManager::SetVisibleItem(NavigationItem* item) {
   visible_item_ = item;
 }
 
-NavigationItem* TestNavigationManager::GetLastCommittedItem() const {
+NavigationItem* FakeNavigationManager::GetLastCommittedItem() const {
   return last_committed_item_;
 }
 
-void TestNavigationManager::SetLastCommittedItem(NavigationItem* item) {
+void FakeNavigationManager::SetLastCommittedItem(NavigationItem* item) {
   last_committed_item_ = item;
 }
 
-NavigationItem* TestNavigationManager::GetPendingItem() const {
+NavigationItem* FakeNavigationManager::GetPendingItem() const {
   return pending_item_;
 }
 
-void TestNavigationManager::SetPendingItem(NavigationItem* item) {
+void FakeNavigationManager::SetPendingItem(NavigationItem* item) {
   pending_item_ = item;
 }
 
-web::NavigationItem* TestNavigationManager::GetTransientItem() const {
+web::NavigationItem* FakeNavigationManager::GetTransientItem() const {
   NOTREACHED();
   return nullptr;
 }
 
-void TestNavigationManager::DiscardNonCommittedItems() {
+void FakeNavigationManager::DiscardNonCommittedItems() {
   SetPendingItem(nullptr);
 }
 
-void TestNavigationManager::LoadURLWithParams(
+void FakeNavigationManager::LoadURLWithParams(
     const NavigationManager::WebLoadParams& params) {
   load_url_with_params_was_called_ = true;
 }
 
-void TestNavigationManager::LoadIfNecessary() {
+void FakeNavigationManager::LoadIfNecessary() {
   load_if_necessary_was_called_ = true;
 }
 
-void TestNavigationManager::AddTransientURLRewriter(
+void FakeNavigationManager::AddTransientURLRewriter(
     BrowserURLRewriter::URLRewriter rewriter) {
   NOTREACHED();
 }
 
-int TestNavigationManager::GetItemCount() const {
+int FakeNavigationManager::GetItemCount() const {
   return items_.size();
 }
 
-web::NavigationItem* TestNavigationManager::GetItemAtIndex(size_t index) const {
+web::NavigationItem* FakeNavigationManager::GetItemAtIndex(size_t index) const {
   return items_[index].get();
 }
 
-int TestNavigationManager::GetIndexOfItem(
+int FakeNavigationManager::GetIndexOfItem(
     const web::NavigationItem* item) const {
   for (size_t index = 0; index < items_.size(); ++index) {
     if (items_[index].get() == item)
@@ -96,84 +96,84 @@ int TestNavigationManager::GetIndexOfItem(
   return -1;
 }
 
-void TestNavigationManager::SetLastCommittedItemIndex(const int index) {
+void FakeNavigationManager::SetLastCommittedItemIndex(const int index) {
   DCHECK(index == -1 || index >= 0 && index < GetItemCount());
   items_index_ = index;
 }
 
-int TestNavigationManager::GetLastCommittedItemIndex() const {
+int FakeNavigationManager::GetLastCommittedItemIndex() const {
   return items_index_;
 }
 
-int TestNavigationManager::GetPendingItemIndex() const {
+int FakeNavigationManager::GetPendingItemIndex() const {
   return pending_item_index_;
 }
 
-void TestNavigationManager::SetPendingItemIndex(int index) {
+void FakeNavigationManager::SetPendingItemIndex(int index) {
   pending_item_index_ = index;
 }
 
-bool TestNavigationManager::CanGoBack() const {
+bool FakeNavigationManager::CanGoBack() const {
   return items_index_ > 0;
 }
 
-bool TestNavigationManager::CanGoForward() const {
+bool FakeNavigationManager::CanGoForward() const {
   return items_index_ < GetItemCount() - 1;
 }
 
-bool TestNavigationManager::CanGoToOffset(int offset) const {
+bool FakeNavigationManager::CanGoToOffset(int offset) const {
   NOTREACHED();
   return false;
 }
 
-void TestNavigationManager::GoBack() {
+void FakeNavigationManager::GoBack() {
   items_index_--;
 }
 
-void TestNavigationManager::GoForward() {
+void FakeNavigationManager::GoForward() {
   items_index_++;
 }
 
-void TestNavigationManager::GoToIndex(int index) {
+void FakeNavigationManager::GoToIndex(int index) {
   NOTREACHED();
 }
 
-void TestNavigationManager::Reload(ReloadType reload_type,
+void FakeNavigationManager::Reload(ReloadType reload_type,
                                    bool check_for_repost) {
   reload_was_called_ = true;
 }
 
-void TestNavigationManager::ReloadWithUserAgentType(
+void FakeNavigationManager::ReloadWithUserAgentType(
     UserAgentType user_agent_type) {
   NOTREACHED();
 }
 
-NavigationItemList TestNavigationManager::GetBackwardItems() const {
+NavigationItemList FakeNavigationManager::GetBackwardItems() const {
   return NavigationItemList();
 }
 
-NavigationItemList TestNavigationManager::GetForwardItems() const {
+NavigationItemList FakeNavigationManager::GetForwardItems() const {
   return NavigationItemList();
 }
 
-void TestNavigationManager::Restore(
+void FakeNavigationManager::Restore(
     int last_committed_item_index,
     std::vector<std::unique_ptr<NavigationItem>> items) {
   NOTREACHED();
 }
 
-bool TestNavigationManager::IsRestoreSessionInProgress() const {
+bool FakeNavigationManager::IsRestoreSessionInProgress() const {
   return false;
 }
 
-void TestNavigationManager::AddRestoreCompletionCallback(
+void FakeNavigationManager::AddRestoreCompletionCallback(
     base::OnceClosure callback) {
   NOTREACHED();
 }
 
 // Adds a new navigation item of |transition| type at the end of this
 // navigation manager.
-void TestNavigationManager::AddItem(const GURL& url,
+void FakeNavigationManager::AddItem(const GURL& url,
                                     ui::PageTransition transition) {
   items_.push_back(web::NavigationItem::Create());
   items_.back()->SetTransitionType(transition);
@@ -181,19 +181,19 @@ void TestNavigationManager::AddItem(const GURL& url,
   SetLastCommittedItemIndex(GetItemCount() - 1);
 }
 
-void TestNavigationManager::SetBrowserState(web::BrowserState* browser_state) {
+void FakeNavigationManager::SetBrowserState(web::BrowserState* browser_state) {
   browser_state_ = browser_state;
 }
 
-bool TestNavigationManager::LoadURLWithParamsWasCalled() {
+bool FakeNavigationManager::LoadURLWithParamsWasCalled() {
   return load_url_with_params_was_called_;
 }
 
-bool TestNavigationManager::LoadIfNecessaryWasCalled() {
+bool FakeNavigationManager::LoadIfNecessaryWasCalled() {
   return load_if_necessary_was_called_;
 }
 
-bool TestNavigationManager::ReloadWasCalled() {
+bool FakeNavigationManager::ReloadWasCalled() {
   return reload_was_called_;
 }
 

@@ -47,7 +47,7 @@ id GetObject(const std::string& json) {
                                            error:nil];
 }
 
-class FakeWebState : public TestWebState {
+class FakeWebStateWithMojoFacade : public TestWebState {
  public:
   void SetWatchId(int watch_id) { watch_id_ = watch_id; }
 
@@ -87,7 +87,7 @@ class MojoFacadeTest : public WebTest {
     web_state_.SetFacade(facade_.get());
   }
 
-  FakeWebState* web_state() { return &web_state_; }
+  FakeWebStateWithMojoFacade* web_state() { return &web_state_; }
   MojoFacade* facade() { return facade_.get(); }
 
   void CreateMessagePipe(uint32_t* handle0, uint32_t* handle1) {
@@ -119,7 +119,7 @@ class MojoFacadeTest : public WebTest {
   }
 
  private:
-  FakeWebState web_state_;
+  FakeWebStateWithMojoFacade web_state_;
   std::unique_ptr<MojoFacade> facade_;
 };
 

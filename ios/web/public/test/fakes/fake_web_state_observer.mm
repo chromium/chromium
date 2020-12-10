@@ -21,31 +21,31 @@
 
 namespace web {
 
-TestWebStateObserver::TestWebStateObserver(WebState* web_state)
+FakeWebStateObserver::FakeWebStateObserver(WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
 }
 
-TestWebStateObserver::~TestWebStateObserver() {
+FakeWebStateObserver::~FakeWebStateObserver() {
   if (web_state_) {
     web_state_->RemoveObserver(this);
     web_state_ = nullptr;
   }
 }
 
-void TestWebStateObserver::WasShown(WebState* web_state) {
+void FakeWebStateObserver::WasShown(WebState* web_state) {
   ASSERT_EQ(web_state_, web_state);
   was_shown_info_ = std::make_unique<web::TestWasShownInfo>();
   was_shown_info_->web_state = web_state;
 }
 
-void TestWebStateObserver::WasHidden(WebState* web_state) {
+void FakeWebStateObserver::WasHidden(WebState* web_state) {
   ASSERT_EQ(web_state_, web_state);
   was_hidden_info_ = std::make_unique<web::TestWasHiddenInfo>();
   was_hidden_info_->web_state = web_state;
 }
 
-void TestWebStateObserver::PageLoaded(
+void FakeWebStateObserver::PageLoaded(
     WebState* web_state,
     PageLoadCompletionStatus load_completion_status) {
   ASSERT_EQ(web_state_, web_state);
@@ -55,7 +55,7 @@ void TestWebStateObserver::PageLoaded(
       load_completion_status == PageLoadCompletionStatus::SUCCESS;
 }
 
-void TestWebStateObserver::LoadProgressChanged(WebState* web_state,
+void FakeWebStateObserver::LoadProgressChanged(WebState* web_state,
                                                double progress) {
   ASSERT_EQ(web_state_, web_state);
   change_loading_progress_info_ =
@@ -64,7 +64,7 @@ void TestWebStateObserver::LoadProgressChanged(WebState* web_state,
   change_loading_progress_info_->progress = progress;
 }
 
-void TestWebStateObserver::DidStartNavigation(WebState* web_state,
+void FakeWebStateObserver::DidStartNavigation(WebState* web_state,
                                               NavigationContext* navigation) {
   ASSERT_EQ(web_state_, web_state);
   ASSERT_TRUE(!navigation->GetError() || !navigation->IsSameDocument());
@@ -81,7 +81,7 @@ void TestWebStateObserver::DidStartNavigation(WebState* web_state,
   did_start_navigation_info_->context = std::move(context);
 }
 
-void TestWebStateObserver::DidFinishNavigation(WebState* web_state,
+void FakeWebStateObserver::DidFinishNavigation(WebState* web_state,
                                                NavigationContext* navigation) {
   ASSERT_EQ(web_state_, web_state);
   ASSERT_TRUE(!navigation->GetError() || !navigation->IsSameDocument());
@@ -98,13 +98,13 @@ void TestWebStateObserver::DidFinishNavigation(WebState* web_state,
   did_finish_navigation_info_->context = std::move(context);
 }
 
-void TestWebStateObserver::TitleWasSet(WebState* web_state) {
+void FakeWebStateObserver::TitleWasSet(WebState* web_state) {
   ASSERT_EQ(web_state_, web_state);
   title_was_set_info_ = std::make_unique<web::TestTitleWasSetInfo>();
   title_was_set_info_->web_state = web_state;
 }
 
-void TestWebStateObserver::DidChangeVisibleSecurityState(WebState* web_state) {
+void FakeWebStateObserver::DidChangeVisibleSecurityState(WebState* web_state) {
   ASSERT_EQ(web_state_, web_state);
   did_change_visible_security_state_info_ =
       std::make_unique<web::TestDidChangeVisibleSecurityStateInfo>();
@@ -120,7 +120,7 @@ void TestWebStateObserver::DidChangeVisibleSecurityState(WebState* web_state) {
   }
 }
 
-void TestWebStateObserver::FaviconUrlUpdated(
+void FakeWebStateObserver::FaviconUrlUpdated(
     WebState* web_state,
     const std::vector<FaviconURL>& candidates) {
   ASSERT_EQ(web_state_, web_state);
@@ -130,7 +130,7 @@ void TestWebStateObserver::FaviconUrlUpdated(
   update_favicon_url_candidates_info_->candidates = candidates;
 }
 
-void TestWebStateObserver::WebFrameDidBecomeAvailable(WebState* web_state,
+void FakeWebStateObserver::WebFrameDidBecomeAvailable(WebState* web_state,
                                                       WebFrame* web_frame) {
   ASSERT_EQ(web_state_, web_state);
   web_frame_available_info_ =
@@ -139,7 +139,7 @@ void TestWebStateObserver::WebFrameDidBecomeAvailable(WebState* web_state,
   web_frame_available_info_->web_frame = web_frame;
 }
 
-void TestWebStateObserver::WebFrameWillBecomeUnavailable(WebState* web_state,
+void FakeWebStateObserver::WebFrameWillBecomeUnavailable(WebState* web_state,
                                                          WebFrame* web_frame) {
   ASSERT_EQ(web_state_, web_state);
   web_frame_unavailable_info_ =
@@ -148,14 +148,14 @@ void TestWebStateObserver::WebFrameWillBecomeUnavailable(WebState* web_state,
   web_frame_unavailable_info_->web_frame = web_frame;
 }
 
-void TestWebStateObserver::RenderProcessGone(WebState* web_state) {
+void FakeWebStateObserver::RenderProcessGone(WebState* web_state) {
   ASSERT_EQ(web_state_, web_state);
   render_process_gone_info_ =
       std::make_unique<web::TestRenderProcessGoneInfo>();
   render_process_gone_info_->web_state = web_state;
 }
 
-void TestWebStateObserver::WebStateDestroyed(WebState* web_state) {
+void FakeWebStateObserver::WebStateDestroyed(WebState* web_state) {
   ASSERT_EQ(web_state_, web_state);
   EXPECT_TRUE(web_state->IsBeingDestroyed());
   web_state_destroyed_info_ =
@@ -165,13 +165,13 @@ void TestWebStateObserver::WebStateDestroyed(WebState* web_state) {
   web_state_ = nullptr;
 }
 
-void TestWebStateObserver::DidStartLoading(WebState* web_state) {
+void FakeWebStateObserver::DidStartLoading(WebState* web_state) {
   ASSERT_EQ(web_state_, web_state);
   start_loading_info_ = std::make_unique<web::TestStartLoadingInfo>();
   start_loading_info_->web_state = web_state;
 }
 
-void TestWebStateObserver::DidStopLoading(WebState* web_state) {
+void FakeWebStateObserver::DidStopLoading(WebState* web_state) {
   ASSERT_EQ(web_state_, web_state);
   stop_loading_info_ = std::make_unique<web::TestStopLoadingInfo>();
   stop_loading_info_->web_state = web_state;

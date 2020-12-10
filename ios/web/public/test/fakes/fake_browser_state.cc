@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 
 #include "base/files/file_path.h"
 #include "base/single_thread_task_runner.h"
@@ -46,44 +46,44 @@ class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
 }  // namespace
 
 // static
-const char TestBrowserState::kCorsExemptTestHeaderName[] = "ExemptTest";
+const char FakeBrowserState::kCorsExemptTestHeaderName[] = "ExemptTest";
 
-TestBrowserState::TestBrowserState() : is_off_the_record_(false) {}
+FakeBrowserState::FakeBrowserState() : is_off_the_record_(false) {}
 
-TestBrowserState::~TestBrowserState() {}
+FakeBrowserState::~FakeBrowserState() {}
 
-bool TestBrowserState::IsOffTheRecord() const {
+bool FakeBrowserState::IsOffTheRecord() const {
   return is_off_the_record_;
 }
 
-base::FilePath TestBrowserState::GetStatePath() const {
+base::FilePath FakeBrowserState::GetStatePath() const {
   return base::FilePath();
 }
 
-net::URLRequestContextGetter* TestBrowserState::GetRequestContext() {
+net::URLRequestContextGetter* FakeBrowserState::GetRequestContext() {
   if (!request_context_)
     request_context_ = new TestContextURLRequestContextGetter(this);
   return request_context_.get();
 }
 
-void TestBrowserState::UpdateCorsExemptHeader(
+void FakeBrowserState::UpdateCorsExemptHeader(
     network::mojom::NetworkContextParams* params) {
   DCHECK(params);
   params->cors_exempt_header_list.push_back(kCorsExemptTestHeaderName);
 }
 
-void TestBrowserState::SetOffTheRecord(bool flag) {
+void FakeBrowserState::SetOffTheRecord(bool flag) {
   is_off_the_record_ = flag;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-TestBrowserState::GetSharedURLLoaderFactory() {
+FakeBrowserState::GetSharedURLLoaderFactory() {
   return test_shared_url_loader_factory_
              ? test_shared_url_loader_factory_
              : BrowserState::GetSharedURLLoaderFactory();
 }
 
-void TestBrowserState::SetSharedURLLoaderFactory(
+void FakeBrowserState::SetSharedURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   test_shared_url_loader_factory_ = std::move(shared_url_loader_factory);
 }

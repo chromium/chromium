@@ -28,24 +28,24 @@
 namespace web {
 namespace {
 // Function used to implement the default WebState getters.
-web::WebState* ReturnWeakReference(base::WeakPtr<TestWebState> weak_web_state) {
+web::WebState* ReturnWeakReference(base::WeakPtr<FakeWebState> weak_web_state) {
   return weak_web_state.get();
 }
 }  // namespace
 
-void TestWebState::AddObserver(WebStateObserver* observer) {
+void FakeWebState::AddObserver(WebStateObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void TestWebState::RemoveObserver(WebStateObserver* observer) {
+void FakeWebState::RemoveObserver(WebStateObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void TestWebState::CloseWebState() {
+void FakeWebState::CloseWebState() {
   is_closed_ = true;
 }
 
-TestWebState::TestWebState()
+FakeWebState::FakeWebState()
     : browser_state_(nullptr),
       web_usage_enabled_(true),
       is_loading_(false),
@@ -59,7 +59,7 @@ TestWebState::TestWebState()
       content_is_html_(true),
       web_view_proxy_(nil) {}
 
-TestWebState::~TestWebState() {
+FakeWebState::~FakeWebState() {
   for (auto& observer : observers_)
     observer.WebStateDestroyed(this);
   for (auto& observer : policy_deciders_)
@@ -68,83 +68,83 @@ TestWebState::~TestWebState() {
     observer.ResetWebState();
 }
 
-WebState::Getter TestWebState::CreateDefaultGetter() {
+WebState::Getter FakeWebState::CreateDefaultGetter() {
   return base::BindRepeating(&ReturnWeakReference, weak_factory_.GetWeakPtr());
 }
 
-WebState::OnceGetter TestWebState::CreateDefaultOnceGetter() {
+WebState::OnceGetter FakeWebState::CreateDefaultOnceGetter() {
   return base::BindOnce(&ReturnWeakReference, weak_factory_.GetWeakPtr());
 }
 
-WebStateDelegate* TestWebState::GetDelegate() {
+WebStateDelegate* FakeWebState::GetDelegate() {
   return nil;
 }
 
-void TestWebState::SetDelegate(WebStateDelegate* delegate) {}
+void FakeWebState::SetDelegate(WebStateDelegate* delegate) {}
 
-BrowserState* TestWebState::GetBrowserState() const {
+BrowserState* FakeWebState::GetBrowserState() const {
   return browser_state_;
 }
 
-bool TestWebState::IsWebUsageEnabled() const {
+bool FakeWebState::IsWebUsageEnabled() const {
   return web_usage_enabled_;
 }
 
-void TestWebState::SetWebUsageEnabled(bool enabled) {
+void FakeWebState::SetWebUsageEnabled(bool enabled) {
   web_usage_enabled_ = enabled;
   if (!web_usage_enabled_)
     SetIsEvicted(true);
 }
 
-UIView* TestWebState::GetView() {
+UIView* FakeWebState::GetView() {
   return view_;
 }
 
-void TestWebState::DidCoverWebContent() {}
+void FakeWebState::DidCoverWebContent() {}
 
-void TestWebState::DidRevealWebContent() {}
+void FakeWebState::DidRevealWebContent() {}
 
-void TestWebState::WasShown() {
+void FakeWebState::WasShown() {
   is_visible_ = true;
   for (auto& observer : observers_)
     observer.WasShown(this);
 }
 
-void TestWebState::WasHidden() {
+void FakeWebState::WasHidden() {
   is_visible_ = false;
   for (auto& observer : observers_)
     observer.WasHidden(this);
 }
 
-void TestWebState::SetKeepRenderProcessAlive(bool keep_alive) {}
+void FakeWebState::SetKeepRenderProcessAlive(bool keep_alive) {}
 
-const NavigationManager* TestWebState::GetNavigationManager() const {
+const NavigationManager* FakeWebState::GetNavigationManager() const {
   return navigation_manager_.get();
 }
 
-NavigationManager* TestWebState::GetNavigationManager() {
+NavigationManager* FakeWebState::GetNavigationManager() {
   return navigation_manager_.get();
 }
 
-const WebFramesManager* TestWebState::GetWebFramesManager() const {
+const WebFramesManager* FakeWebState::GetWebFramesManager() const {
   return web_frames_manager_.get();
 }
 
-WebFramesManager* TestWebState::GetWebFramesManager() {
+WebFramesManager* FakeWebState::GetWebFramesManager() {
   return web_frames_manager_.get();
 }
 
 const SessionCertificatePolicyCache*
-TestWebState::GetSessionCertificatePolicyCache() const {
+FakeWebState::GetSessionCertificatePolicyCache() const {
   return nullptr;
 }
 
 SessionCertificatePolicyCache*
-TestWebState::GetSessionCertificatePolicyCache() {
+FakeWebState::GetSessionCertificatePolicyCache() {
   return nullptr;
 }
 
-CRWSessionStorage* TestWebState::BuildSessionStorage() {
+CRWSessionStorage* FakeWebState::BuildSessionStorage() {
   std::unique_ptr<web::SerializableUserData> serializable_user_data =
       web::SerializableUserDataManager::FromWebState(this)
           ->CreateSerializableUserData();
@@ -154,39 +154,39 @@ CRWSessionStorage* TestWebState::BuildSessionStorage() {
   return session_storage;
 }
 
-void TestWebState::SetNavigationManager(
+void FakeWebState::SetNavigationManager(
     std::unique_ptr<NavigationManager> navigation_manager) {
   navigation_manager_ = std::move(navigation_manager);
 }
 
-void TestWebState::SetWebFramesManager(
+void FakeWebState::SetWebFramesManager(
     std::unique_ptr<WebFramesManager> web_frames_manager) {
   web_frames_manager_ = std::move(web_frames_manager);
 }
 
-void TestWebState::SetView(UIView* view) {
+void FakeWebState::SetView(UIView* view) {
   view_ = view;
 }
 
-void TestWebState::SetIsCrashed(bool value) {
+void FakeWebState::SetIsCrashed(bool value) {
   is_crashed_ = value;
   if (is_crashed_)
     SetIsEvicted(true);
 }
 
-void TestWebState::SetIsEvicted(bool value) {
+void FakeWebState::SetIsEvicted(bool value) {
   is_evicted_ = value;
 }
 
-void TestWebState::SetWebViewProxy(CRWWebViewProxyType web_view_proxy) {
+void FakeWebState::SetWebViewProxy(CRWWebViewProxyType web_view_proxy) {
   web_view_proxy_ = web_view_proxy;
 }
 
-CRWJSInjectionReceiver* TestWebState::GetJSInjectionReceiver() const {
+CRWJSInjectionReceiver* FakeWebState::GetJSInjectionReceiver() const {
   return injection_receiver_;
 }
 
-void TestWebState::LoadData(NSData* data,
+void FakeWebState::LoadData(NSData* data,
                             NSString* mime_type,
                             const GURL& url) {
   SetCurrentURL(url);
@@ -196,105 +196,105 @@ void TestWebState::LoadData(NSData* data,
   OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
 }
 
-void TestWebState::ExecuteJavaScript(const base::string16& javascript) {
+void FakeWebState::ExecuteJavaScript(const base::string16& javascript) {
   last_executed_javascript_ = javascript;
 }
 
-void TestWebState::ExecuteJavaScript(const base::string16& javascript,
+void FakeWebState::ExecuteJavaScript(const base::string16& javascript,
                                      JavaScriptResultCallback callback) {
   last_executed_javascript_ = javascript;
   std::move(callback).Run(nullptr);
 }
 
-void TestWebState::ExecuteUserJavaScript(NSString* javaScript) {}
+void FakeWebState::ExecuteUserJavaScript(NSString* javaScript) {}
 
-const std::string& TestWebState::GetContentsMimeType() const {
+const std::string& FakeWebState::GetContentsMimeType() const {
   return mime_type_;
 }
 
-bool TestWebState::ContentIsHTML() const {
+bool FakeWebState::ContentIsHTML() const {
   return content_is_html_;
 }
 
-const GURL& TestWebState::GetVisibleURL() const {
+const GURL& FakeWebState::GetVisibleURL() const {
   return url_;
 }
 
-const GURL& TestWebState::GetLastCommittedURL() const {
+const GURL& FakeWebState::GetLastCommittedURL() const {
   return url_;
 }
 
-GURL TestWebState::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
+GURL FakeWebState::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
   if (trust_level) {
     *trust_level = trust_level_;
   }
   return url_;
 }
 
-base::CallbackListSubscription TestWebState::AddScriptCommandCallback(
+base::CallbackListSubscription FakeWebState::AddScriptCommandCallback(
     const ScriptCommandCallback& callback,
     const std::string& command_prefix) {
   return callback_list_.Add(callback);
 }
 
-bool TestWebState::IsShowingWebInterstitial() const {
+bool FakeWebState::IsShowingWebInterstitial() const {
   return false;
 }
 
-WebInterstitial* TestWebState::GetWebInterstitial() const {
+WebInterstitial* FakeWebState::GetWebInterstitial() const {
   return nullptr;
 }
 
-void TestWebState::SetBrowserState(BrowserState* browser_state) {
+void FakeWebState::SetBrowserState(BrowserState* browser_state) {
   browser_state_ = browser_state;
 }
 
-void TestWebState::SetJSInjectionReceiver(
+void FakeWebState::SetJSInjectionReceiver(
     CRWJSInjectionReceiver* injection_receiver) {
   injection_receiver_ = injection_receiver;
 }
 
-void TestWebState::SetContentIsHTML(bool content_is_html) {
+void FakeWebState::SetContentIsHTML(bool content_is_html) {
   content_is_html_ = content_is_html;
 }
 
-void TestWebState::SetContentsMimeType(const std::string& mime_type) {
+void FakeWebState::SetContentsMimeType(const std::string& mime_type) {
   mime_type_ = mime_type;
 }
 
-void TestWebState::SetTitle(const base::string16& title) {
+void FakeWebState::SetTitle(const base::string16& title) {
   title_ = title;
 }
 
-const base::string16& TestWebState::GetTitle() const {
+const base::string16& FakeWebState::GetTitle() const {
   return title_;
 }
 
-bool TestWebState::IsLoading() const {
+bool FakeWebState::IsLoading() const {
   return is_loading_;
 }
 
-double TestWebState::GetLoadingProgress() const {
+double FakeWebState::GetLoadingProgress() const {
   return 0.0;
 }
 
-bool TestWebState::IsVisible() const {
+bool FakeWebState::IsVisible() const {
   return is_visible_;
 }
 
-bool TestWebState::IsCrashed() const {
+bool FakeWebState::IsCrashed() const {
   return is_crashed_;
 }
 
-bool TestWebState::IsEvicted() const {
+bool FakeWebState::IsEvicted() const {
   return is_evicted_;
 }
 
-bool TestWebState::IsBeingDestroyed() const {
+bool FakeWebState::IsBeingDestroyed() const {
   return false;
 }
 
-void TestWebState::SetLoading(bool is_loading) {
+void FakeWebState::SetLoading(bool is_loading) {
   if (is_loading == is_loading_)
     return;
 
@@ -309,58 +309,58 @@ void TestWebState::SetLoading(bool is_loading) {
   }
 }
 
-void TestWebState::OnPageLoaded(
+void FakeWebState::OnPageLoaded(
     PageLoadCompletionStatus load_completion_status) {
   for (auto& observer : observers_)
     observer.PageLoaded(this, load_completion_status);
 }
 
-void TestWebState::OnNavigationStarted(NavigationContext* navigation_context) {
+void FakeWebState::OnNavigationStarted(NavigationContext* navigation_context) {
   for (auto& observer : observers_)
     observer.DidStartNavigation(this, navigation_context);
 }
 
-void TestWebState::OnNavigationRedirected(
+void FakeWebState::OnNavigationRedirected(
     NavigationContext* navigation_context) {
   for (auto& observer : observers_)
     observer.DidRedirectNavigation(this, navigation_context);
 }
 
-void TestWebState::OnNavigationFinished(NavigationContext* navigation_context) {
+void FakeWebState::OnNavigationFinished(NavigationContext* navigation_context) {
   for (auto& observer : observers_)
     observer.DidFinishNavigation(this, navigation_context);
 }
 
-void TestWebState::OnRenderProcessGone() {
+void FakeWebState::OnRenderProcessGone() {
   for (auto& observer : observers_)
     observer.RenderProcessGone(this);
 }
 
-void TestWebState::OnBackForwardStateChanged() {
+void FakeWebState::OnBackForwardStateChanged() {
   for (auto& observer : observers_) {
     observer.DidChangeBackForwardState(this);
   }
 }
 
-void TestWebState::OnVisibleSecurityStateChanged() {
+void FakeWebState::OnVisibleSecurityStateChanged() {
   for (auto& observer : observers_) {
     observer.DidChangeVisibleSecurityState(this);
   }
 }
 
-void TestWebState::OnWebFrameDidBecomeAvailable(WebFrame* frame) {
+void FakeWebState::OnWebFrameDidBecomeAvailable(WebFrame* frame) {
   for (auto& observer : observers_) {
     observer.WebFrameDidBecomeAvailable(this, frame);
   }
 }
 
-void TestWebState::OnWebFrameWillBecomeUnavailable(WebFrame* frame) {
+void FakeWebState::OnWebFrameWillBecomeUnavailable(WebFrame* frame) {
   for (auto& observer : observers_) {
     observer.WebFrameWillBecomeUnavailable(this, frame);
   }
 }
 
-WebStatePolicyDecider::PolicyDecision TestWebState::ShouldAllowRequest(
+WebStatePolicyDecider::PolicyDecision FakeWebState::ShouldAllowRequest(
     NSURLRequest* request,
     const WebStatePolicyDecider::RequestInfo& request_info) {
   for (auto& policy_decider : policy_deciders_) {
@@ -373,7 +373,7 @@ WebStatePolicyDecider::PolicyDecision TestWebState::ShouldAllowRequest(
   return WebStatePolicyDecider::PolicyDecision::Allow();
 }
 
-void TestWebState::ShouldAllowResponse(
+void FakeWebState::ShouldAllowResponse(
     NSURLResponse* response,
     bool for_main_frame,
     base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)> callback) {
@@ -397,72 +397,72 @@ void TestWebState::ShouldAllowResponse(
       num_decisions_requested);
 }
 
-base::string16 TestWebState::GetLastExecutedJavascript() const {
+base::string16 FakeWebState::GetLastExecutedJavascript() const {
   return last_executed_javascript_;
 }
 
-NSData* TestWebState::GetLastLoadedData() const {
+NSData* FakeWebState::GetLastLoadedData() const {
   return last_loaded_data_;
 }
 
-bool TestWebState::IsClosed() const {
+bool FakeWebState::IsClosed() const {
   return is_closed_;
 }
 
-void TestWebState::SetCurrentURL(const GURL& url) {
+void FakeWebState::SetCurrentURL(const GURL& url) {
   url_ = url;
 }
 
-void TestWebState::SetVisibleURL(const GURL& url) {
+void FakeWebState::SetVisibleURL(const GURL& url) {
   url_ = url;
 }
 
-void TestWebState::SetTrustLevel(URLVerificationTrustLevel trust_level) {
+void FakeWebState::SetTrustLevel(URLVerificationTrustLevel trust_level) {
   trust_level_ = trust_level;
 }
 
-void TestWebState::ClearLastExecutedJavascript() {
+void FakeWebState::ClearLastExecutedJavascript() {
   last_executed_javascript_.clear();
 }
 
-void TestWebState::SetCanTakeSnapshot(bool can_take_snapshot) {
+void FakeWebState::SetCanTakeSnapshot(bool can_take_snapshot) {
   can_take_snapshot_ = can_take_snapshot;
 }
 
-CRWWebViewProxyType TestWebState::GetWebViewProxy() const {
+CRWWebViewProxyType FakeWebState::GetWebViewProxy() const {
   return web_view_proxy_;
 }
 
-void TestWebState::AddPolicyDecider(WebStatePolicyDecider* decider) {
+void FakeWebState::AddPolicyDecider(WebStatePolicyDecider* decider) {
   policy_deciders_.AddObserver(decider);
 }
 
-void TestWebState::RemovePolicyDecider(WebStatePolicyDecider* decider) {
+void FakeWebState::RemovePolicyDecider(WebStatePolicyDecider* decider) {
   policy_deciders_.RemoveObserver(decider);
 }
 
-void TestWebState::DidChangeVisibleSecurityState() {
+void FakeWebState::DidChangeVisibleSecurityState() {
   OnVisibleSecurityStateChanged();
 }
 
-bool TestWebState::HasOpener() const {
+bool FakeWebState::HasOpener() const {
   return has_opener_;
 }
 
-void TestWebState::SetHasOpener(bool has_opener) {
+void FakeWebState::SetHasOpener(bool has_opener) {
   has_opener_ = has_opener;
 }
 
-bool TestWebState::CanTakeSnapshot() const {
+bool FakeWebState::CanTakeSnapshot() const {
   return can_take_snapshot_;
 }
 
-void TestWebState::TakeSnapshot(const gfx::RectF& rect,
+void FakeWebState::TakeSnapshot(const gfx::RectF& rect,
                                 SnapshotCallback callback) {
   std::move(callback).Run(gfx::Image([[UIImage alloc] init]));
 }
 
-void TestWebState::CreateFullPagePdf(
+void FakeWebState::CreateFullPagePdf(
     base::OnceCallback<void(NSData*)> callback) {
   std::move(callback).Run([[NSData alloc] init]);
 }

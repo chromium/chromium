@@ -22,39 +22,39 @@
 
 namespace web {
 
-TestWebClient::TestWebClient() = default;
+FakeWebClient::FakeWebClient() = default;
 
-TestWebClient::~TestWebClient() = default;
+FakeWebClient::~FakeWebClient() = default;
 
-void TestWebClient::AddAdditionalSchemes(Schemes* schemes) const {
+void FakeWebClient::AddAdditionalSchemes(Schemes* schemes) const {
   schemes->standard_schemes.push_back(kTestWebUIScheme);
   schemes->standard_schemes.push_back(kTestAppSpecificScheme);
 }
 
-bool TestWebClient::IsAppSpecificURL(const GURL& url) const {
+bool FakeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kTestWebUIScheme) || url.SchemeIs(kTestAppSpecificScheme);
 }
 
-bool TestWebClient::ShouldBlockUrlDuringRestore(const GURL& url,
+bool FakeWebClient::ShouldBlockUrlDuringRestore(const GURL& url,
                                                 WebState* web_state) const {
   return false;
 }
 
-void TestWebClient::AddSerializableData(
+void FakeWebClient::AddSerializableData(
     web::SerializableUserDataManager* user_data_manager,
     web::WebState* web_state) {}
 
-base::string16 TestWebClient::GetPluginNotSupportedText() const {
+base::string16 FakeWebClient::GetPluginNotSupportedText() const {
   return plugin_not_supported_text_;
 }
 
-std::string TestWebClient::GetUserAgent(UserAgentType type) const {
+std::string FakeWebClient::GetUserAgent(UserAgentType type) const {
   if (type == UserAgentType::DESKTOP)
     return "Chromium/66.0.3333.0 CFNetwork/893.14 Darwin/16.7.0 Desktop";
   return "Chromium/66.0.3333.0 CFNetwork/893.14 Darwin/16.7.0 Mobile";
 }
 
-base::RefCountedMemory* TestWebClient::GetDataResourceBytes(
+base::RefCountedMemory* FakeWebClient::GetDataResourceBytes(
     int resource_id) const {
   if (!ui::ResourceBundle::HasSharedInstance())
     return nullptr;
@@ -62,25 +62,25 @@ base::RefCountedMemory* TestWebClient::GetDataResourceBytes(
       resource_id);
 }
 
-NSString* TestWebClient::GetDocumentStartScriptForMainFrame(
+NSString* FakeWebClient::GetDocumentStartScriptForMainFrame(
     BrowserState* browser_state) const {
   return early_page_script_ ? early_page_script_ : @"";
 }
 
-NSString* TestWebClient::GetDocumentStartScriptForAllFrames(
+NSString* FakeWebClient::GetDocumentStartScriptForAllFrames(
     BrowserState* browser_state) const {
   return web::test::GetPageScript(@"all_frames_web_test_bundle");
 }
 
-void TestWebClient::SetPluginNotSupportedText(const base::string16& text) {
+void FakeWebClient::SetPluginNotSupportedText(const base::string16& text) {
   plugin_not_supported_text_ = text;
 }
 
-void TestWebClient::SetEarlyPageScript(NSString* page_script) {
+void FakeWebClient::SetEarlyPageScript(NSString* page_script) {
   early_page_script_ = [page_script copy];
 }
 
-void TestWebClient::AllowCertificateError(
+void FakeWebClient::AllowCertificateError(
     WebState* web_state,
     int cert_error,
     const net::SSLInfo& ssl_info,
@@ -99,11 +99,11 @@ void TestWebClient::AllowCertificateError(
       base::BindOnce(std::move(callback), allow_certificate_errors_));
 }
 
-void TestWebClient::SetAllowCertificateErrors(bool flag) {
+void FakeWebClient::SetAllowCertificateErrors(bool flag) {
   allow_certificate_errors_ = flag;
 }
 
-void TestWebClient::PrepareErrorPage(
+void FakeWebClient::PrepareErrorPage(
     WebState* web_state,
     const GURL& url,
     NSError* error,
@@ -117,11 +117,11 @@ void TestWebClient::PrepareErrorPage(
       web_state, url, error, is_post, is_off_the_record, cert_status)));
 }
 
-UIView* TestWebClient::GetWindowedContainer() {
+UIView* FakeWebClient::GetWindowedContainer() {
   return UIApplication.sharedApplication.keyWindow.rootViewController.view;
 }
 
-UserAgentType TestWebClient::GetDefaultUserAgent(
+UserAgentType FakeWebClient::GetDefaultUserAgent(
     id<UITraitEnvironment> web_view,
     const GURL& url) {
   return default_user_agent_;
