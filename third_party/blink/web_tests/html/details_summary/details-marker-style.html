@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <body>
 <style>
-summary.withpadding::-webkit-details-marker {
+/* For ::marker, padding, border, width, and height should not work.
+   https://drafts.csswg.org/css-lists-3/#marker-properties */
+summary.withpadding::marker {
     padding: 8px 16px 24px 32px;
     border-width: 8px 16px 24px 32px;
     border-style: solid;
     border-color: lime;
 }
 
-summary.nopadding::-webkit-details-marker {
+summary.nopadding::marker {
     border: 8px solid lime;
     width: 48px;
     height: 24px;

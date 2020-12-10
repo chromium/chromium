@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
@@ -687,6 +688,15 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
         ignored_reasons->push_back(IgnoredReason(kAXEmptyText));
       return true;
     }
+    // Ignore TextAlternative of the list marker for SUMMARY because:
+    //  - TextAlternatives for disclosure-* are triangle symbol characters used
+    //    to visually indicate the expansion state.
+    //  - It's redundant. The host DETAILS exposes the expansion state.
+    if (layout_object_->Parent()->IsListMarkerForSummary()) {
+      if (ignored_reasons)
+        ignored_reasons->push_back(IgnoredReason(kAXPresentational));
+      return true;
+    }
     return false;
   }
 
@@ -695,8 +705,20 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   if (alt_text)
     return alt_text->IsEmpty();
 
-  if (IsWebArea() || layout_object_->IsListMarkerIncludingAll())
+  if (IsWebArea())
     return false;
+  if (layout_object_->IsListMarkerIncludingAll()) {
+    // Ignore TextAlternative of the list marker for SUMMARY because:
+    //  - TextAlternatives for disclosure-* are triangle symbol characters used
+    //    to visually indicate the expansion state.
+    //  - It's redundant. The host DETAILS exposes the expansion state.
+    if (layout_object_->IsListMarkerForSummary()) {
+      if (ignored_reasons)
+        ignored_reasons->push_back(IgnoredReason(kAXPresentational));
+      return true;
+    }
+    return false;
+  }
 
   // Positioned elements and scrollable containers are important for
   // determining bounding boxes.

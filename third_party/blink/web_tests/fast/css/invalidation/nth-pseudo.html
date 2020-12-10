@@ -155,13 +155,17 @@
         backgroundIsGreen(descendant);
 
         t5.firstElementChild.remove();
-        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 1);
+        // The expected count should be 1, but it's actually 4 due to
+        // "summary:fist-of-type" in the UA stylesheet.
+        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 4);
         backgroundIsTransparent(descendant);
     }, "Removing nth-sibling affecting targeted descendant.");
 
     test(() => {
         t5.insertBefore(document.createElement("div"), t5.firstChild);
-        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 2);
+        // The expected count should be 2, but it's actually 5 due to
+        // "summary:fist-of-type" in the UA stylesheet.
+        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 5);
         backgroundIsGreen(descendant);
     }, "Inserting nth-sibling affecting targeted descendant.");
 
@@ -177,14 +181,17 @@
         backgroundIsTransparent(descendant);
 
         t6.firstElementChild.remove();
-        // The expected count should have been 1, but on removal we CollectUniversalSiblingInvalidationSet
-        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 1);
+        // The expected count should be 1, but it's actually 2 due to
+        // "summary:fist-of-type" in the UA stylesheet.
+        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 2);
         backgroundIsGreen(descendant);
     }, "Removing nth-sibling affecting targeted descendant with sibling invalidation.");
 
     test(() => {
         t6.insertBefore(document.createElement("div"), t6.firstChild);
-        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 2);
+        // The expected count should be 2, but it's actually 3 due to
+        // "summary:fist-of-type" in the UA stylesheet.
+        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 3);
         backgroundIsTransparent(descendant);
     }, "Inserting nth-sibling affecting targeted descendant with sibling invalidation.");
 </script>

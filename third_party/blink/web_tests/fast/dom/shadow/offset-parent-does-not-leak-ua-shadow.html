@@ -42,7 +42,7 @@ shouldBe('child.offsetParent', 'container');
 // Test that when the offsetParent is in user agent Shadow DOM, it is
 // not exposed to script, but its shadow host or the host's ancestor
 // which is appropriate as an offsetParent is returned.
-host = document.createElement('summary');
+host = document.createElement('details');
 container.appendChild(host);
 host.setAttribute('open', 'open');
 host.appendChild(child);

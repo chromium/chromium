@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/html_summary_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/image_document.h"
@@ -626,6 +627,20 @@ bool LayoutObject::IsRenderedLegendInternal() const {
   const auto* parent_layout_block = DynamicTo<LayoutBlock>(parent);
   return parent_layout_block && IsA<HTMLFieldSetElement>(parent->GetNode()) &&
          LayoutFieldset::FindInFlowLegend(*parent_layout_block) == this;
+}
+
+bool LayoutObject::IsListMarkerForSummary() const {
+  if (!IsListMarkerIncludingAll())
+    return false;
+  if (const auto* summary =
+          DynamicTo<HTMLSummaryElement>(Parent()->GetNode())) {
+    if (!summary->IsMainSummary())
+      return false;
+    const auto type = StyleRef().ListStyleType();
+    return type == EListStyleType::kDisclosureOpen ||
+           type == EListStyleType::kDisclosureClosed;
+  }
+  return false;
 }
 
 LayoutObject* LayoutObject::NextInPreOrderAfterChildren() const {

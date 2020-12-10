@@ -1,32 +1,35 @@
 <html>
-<head>
-<script src="../../resources/js-test.js"></script>
-<script>
-function runTest()
-{
-    var targetDetails = document.getElementById("targetDetails");
-    var clonedDetails = targetDetails.cloneNode(true);
-    document.body.appendChild(clonedDetails);
-    var targetSummary = document.getElementById("targetSummary");
-    var clonedSummary = targetSummary.cloneNode(true);
-    targetDetails.appendChild(clonedSummary);
-
-    if (!window.internals)
-        return;
-
-    // On cloned <details>, marker shadow element should be created
-    var targetDetailsSummaryShadow = internals.shadowRoot(targetDetails.querySelector("summary"));
-    targetMarkerPseudoId = internals.shadowPseudoId(targetDetailsSummaryShadow.firstChild);
-    var clonedDetailsSummaryShadow = internals.shadowRoot(clonedDetails.querySelector("summary"));
-    clonedMarkerPseudoId = internals.shadowPseudoId(clonedDetailsSummaryShadow.firstChild);
-    shouldBe("targetMarkerPseudoId", "clonedMarkerPseudoId");
+<style>
+details {
+  display: inline-block;
+  background: #eee;
+  margin: 8px;
 }
-</script>
-<body onload="runTest()">
-<p id="description">Test to clone details and summary elements</p>
-<div id="console"></div>
-<details id="targetDetails" open>
-   <summary id="targetSummary"></summary>
+</style>
+<body>
+<p>Test to clone details and summary elements.  &lt;details> elements in the
+second row should be same as elements in the first row.</p>
+
+<hr>
+<div class="container">
+<details open>
+   <summary>Summary 1</summary>
+   Content 1
 </details>
+<details open>
+   Content 2
+</details>
+<details>
+   <summary>Summary 3</summary>
+   Content 3
+</details>
+<details>
+   Content 4
+</details>
+</div>
+<hr>
+<script>
+document.body.appendChild(document.querySelector('.container').cloneNode(true));
+</script>
 </body>
 </html>
