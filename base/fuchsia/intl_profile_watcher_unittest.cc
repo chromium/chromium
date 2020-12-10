@@ -30,22 +30,33 @@ namespace {
 const char kPrimaryTimeZoneName[] = "Australia/Darwin";
 const char kSecondaryTimeZoneName[] = "Africa/Djibouti";
 
-void CopyIdsToTimeZoneIds(
-    const std::vector<std::string>& zone_ids,
-    std::vector<::fuchsia::intl::TimeZoneId>* time_zone_ids) {
-  time_zone_ids->clear();
-  for (auto id : zone_ids) {
-    ::fuchsia::intl::TimeZoneId time_zone_id;
-    time_zone_id.id = id;
-    time_zone_ids->push_back(time_zone_id);
+const char kPrimaryLocaleName[] = "en-US";
+const char kSecondaryLocaleName[] = "es-419";
+
+template <typename FuchsiaStruct>
+void CopyIdsToFuchsiaStruct(const std::vector<std::string>& raw_ids,
+                            std::vector<FuchsiaStruct>* fuchsia_ids) {
+  fuchsia_ids->clear();
+  for (auto id : raw_ids) {
+    FuchsiaStruct fuchsia_id;
+    fuchsia_id.id = id;
+    fuchsia_ids->push_back(fuchsia_id);
   }
 }
 
 Profile CreateProfileWithTimeZones(const std::vector<std::string>& zone_ids) {
   Profile profile;
   std::vector<::fuchsia::intl::TimeZoneId> time_zone_ids;
-  CopyIdsToTimeZoneIds(zone_ids, &time_zone_ids);
+  CopyIdsToFuchsiaStruct(zone_ids, &time_zone_ids);
   profile.set_time_zones(time_zone_ids);
+  return profile;
+}
+
+Profile CreateProfileWithLocales(const std::vector<std::string>& locale_ids) {
+  Profile profile;
+  std::vector<::fuchsia::intl::LocaleId> fuchsia_locale_ids;
+  CopyIdsToFuchsiaStruct(locale_ids, &fuchsia_locale_ids);
+  profile.set_locales(fuchsia_locale_ids);
   return profile;
 }
 
@@ -66,7 +77,10 @@ class FakePropertyProvider
 
   void Close() { binding_.Close(ZX_ERR_PEER_CLOSED); }
   void SetTimeZones(const std::vector<std::string>& zone_ids) {
-    CopyIdsToTimeZoneIds(zone_ids, &time_zone_ids_);
+    CopyIdsToFuchsiaStruct(zone_ids, &time_zone_ids_);
+  }
+  void SetLocales(const std::vector<std::string>& locale_ids) {
+    CopyIdsToFuchsiaStruct(locale_ids, &fuchsia_locale_ids_);
   }
   void NotifyChange() { binding_.events().OnChange(); }
 
@@ -75,6 +89,7 @@ class FakePropertyProvider
       ::fuchsia::intl::PropertyProvider::GetProfileCallback callback) override {
     Profile profile;
     profile.set_time_zones(time_zone_ids_);
+    profile.set_locales(fuchsia_locale_ids_);
     callback(std::move(profile));
   }
   void NotImplemented_(const std::string& name) override {
@@ -85,6 +100,7 @@ class FakePropertyProvider
   ::fidl::Binding<::fuchsia::intl::PropertyProvider> binding_;
 
   std::vector<::fuchsia::intl::TimeZoneId> time_zone_ids_;
+  std::vector<::fuchsia::intl::LocaleId> fuchsia_locale_ids_;
 };
 
 class FakePropertyProviderAsync {
@@ -110,6 +126,10 @@ class FakePropertyProviderAsync {
     property_provider_.Post(FROM_HERE, &FakePropertyProvider::SetTimeZones,
                             zone_ids);
   }
+  void SetLocales(const std::vector<std::string>& locale_ids) {
+    property_provider_.Post(FROM_HERE, &FakePropertyProvider::SetLocales,
+                            locale_ids);
+  }
   void NotifyChange() {
     property_provider_.Post(FROM_HERE, &FakePropertyProvider::NotifyChange);
   }
@@ -121,20 +141,32 @@ class FakePropertyProviderAsync {
 
 }  // namespace
 
-class GetPrimaryTimeZoneIdFromPropertyProviderTest : public testing::Test {
+class GetValuesFromIntlPropertyProviderTest : public testing::Test {
  public:
-  GetPrimaryTimeZoneIdFromPropertyProviderTest()
+  GetValuesFromIntlPropertyProviderTest()
       : property_provider_(property_provider_ptr_.NewRequest()) {}
-  GetPrimaryTimeZoneIdFromPropertyProviderTest(
-      const GetPrimaryTimeZoneIdFromPropertyProviderTest&) = delete;
-  GetPrimaryTimeZoneIdFromPropertyProviderTest& operator=(
-      const GetPrimaryTimeZoneIdFromPropertyProviderTest&) = delete;
-  ~GetPrimaryTimeZoneIdFromPropertyProviderTest() override = default;
+  GetValuesFromIntlPropertyProviderTest(
+      const GetValuesFromIntlPropertyProviderTest&) = delete;
+  GetValuesFromIntlPropertyProviderTest& operator=(
+      const GetValuesFromIntlPropertyProviderTest&) = delete;
+  ~GetValuesFromIntlPropertyProviderTest() override = default;
 
  protected:
-  static std::string GetPrimaryTimeZoneIdFromPropertyProvider(
+  std::string GetPrimaryLocaleId() {
+    Profile profile =
+        GetProfileFromPropertyProvider(std::move(property_provider_ptr_));
+    return FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(profile);
+  }
+
+  std::string GetPrimaryTimeZoneId() {
+    Profile profile =
+        GetProfileFromPropertyProvider(std::move(property_provider_ptr_));
+    return FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(profile);
+  }
+
+  static Profile GetProfileFromPropertyProvider(
       ::fuchsia::intl::PropertyProviderSyncPtr property_provider) {
-    return FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromPropertyProvider(
+    return FuchsiaIntlProfileWatcher::GetProfileFromPropertyProvider(
         std::move(property_provider));
   }
 
@@ -183,40 +215,61 @@ TEST(IntlServiceNotAvailableTest, FuchsiaIntlProfileWatcher) {
   run_loop.RunUntilIdle();
 }
 
-TEST_F(GetPrimaryTimeZoneIdFromPropertyProviderTest, RemoteNotBound) {
+TEST_F(GetValuesFromIntlPropertyProviderTest,
+       GetPrimaryTimeZoneId_RemoteNotBound) {
   // Simulate the service not actually being available.
   property_provider_.Close();
-  EXPECT_STREQ("", GetPrimaryTimeZoneIdFromPropertyProvider(
-                       std::move(property_provider_ptr_))
-                       .c_str());
+  EXPECT_STREQ("", GetPrimaryTimeZoneId().c_str());
 }
 
-TEST_F(GetPrimaryTimeZoneIdFromPropertyProviderTest, NoZones) {
-  EXPECT_STREQ("", GetPrimaryTimeZoneIdFromPropertyProvider(
-                       std::move(property_provider_ptr_))
-                       .c_str());
+TEST_F(GetValuesFromIntlPropertyProviderTest, GetPrimaryTimeZoneId_NoZones) {
+  EXPECT_STREQ("", GetPrimaryTimeZoneId().c_str());
 }
 
-TEST_F(GetPrimaryTimeZoneIdFromPropertyProviderTest, SingleZone) {
+TEST_F(GetValuesFromIntlPropertyProviderTest, GetPrimaryTimeZoneId_SingleZone) {
   property_provider_.SetTimeZones({kPrimaryTimeZoneName});
-  EXPECT_STREQ(kPrimaryTimeZoneName, GetPrimaryTimeZoneIdFromPropertyProvider(
-                                         std::move(property_provider_ptr_))
-                                         .c_str());
+  EXPECT_STREQ(kPrimaryTimeZoneName, GetPrimaryTimeZoneId().c_str());
 }
 
-TEST_F(GetPrimaryTimeZoneIdFromPropertyProviderTest, SingleZoneIsEmpty) {
+TEST_F(GetValuesFromIntlPropertyProviderTest,
+       GetPrimaryTimeZoneId_SingleZoneIsEmpty) {
   property_provider_.SetTimeZones({""});
-  EXPECT_STREQ("", GetPrimaryTimeZoneIdFromPropertyProvider(
-                       std::move(property_provider_ptr_))
-                       .c_str());
+  EXPECT_STREQ("", GetPrimaryTimeZoneId().c_str());
 }
 
-TEST_F(GetPrimaryTimeZoneIdFromPropertyProviderTest, MoreThanOneZone) {
+TEST_F(GetValuesFromIntlPropertyProviderTest,
+       GetPrimaryTimeZoneId_MoreThanOneZone) {
   property_provider_.SetTimeZones(
       {kPrimaryTimeZoneName, kSecondaryTimeZoneName});
-  EXPECT_STREQ(kPrimaryTimeZoneName, GetPrimaryTimeZoneIdFromPropertyProvider(
-                                         std::move(property_provider_ptr_))
-                                         .c_str());
+  EXPECT_STREQ(kPrimaryTimeZoneName, GetPrimaryTimeZoneId().c_str());
+}
+
+TEST_F(GetValuesFromIntlPropertyProviderTest,
+       GetPrimaryLocaleId_RemoteNotBound) {
+  // Simulate the service not actually being available.
+  property_provider_.Close();
+  EXPECT_STREQ("", GetPrimaryLocaleId().c_str());
+}
+
+TEST_F(GetValuesFromIntlPropertyProviderTest, GetPrimaryLocaleId_NoZones) {
+  EXPECT_STREQ("", GetPrimaryLocaleId().c_str());
+}
+
+TEST_F(GetValuesFromIntlPropertyProviderTest, GetPrimaryLocaleId_SingleLocale) {
+  property_provider_.SetLocales({kPrimaryLocaleName});
+  EXPECT_STREQ(kPrimaryLocaleName, GetPrimaryLocaleId().c_str());
+}
+
+TEST_F(GetValuesFromIntlPropertyProviderTest,
+       GetPrimaryLocaleId_SingleLocaleIsEmpty) {
+  property_provider_.SetLocales({""});
+  EXPECT_STREQ("", GetPrimaryLocaleId().c_str());
+}
+
+TEST_F(GetValuesFromIntlPropertyProviderTest,
+       GetPrimaryLocaleId_MoreThanOneLocale) {
+  property_provider_.SetLocales({kPrimaryLocaleName, kSecondaryLocaleName});
+  EXPECT_STREQ(kPrimaryLocaleName, GetPrimaryLocaleId().c_str());
 }
 
 TEST_F(IntlProfileWatcherTest, NoZones_NoNotification) {
@@ -303,6 +356,29 @@ TEST(IntlProfileWatcherGetPrimaryTimeZoneIdFromProfileTest, TwoZones) {
             FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
                 CreateProfileWithTimeZones(
                     {kPrimaryTimeZoneName, kSecondaryTimeZoneName})));
+}
+
+TEST(IntlProfileWatcherGetPrimaryLocaleIdFromProfileTest, NoLocales) {
+  EXPECT_EQ(
+      "", FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(Profile()));
+}
+
+TEST(IntlProfileWatcherGetPrimaryLocaleIdFromProfileTest, EmptyLocalesList) {
+  EXPECT_EQ("", FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(
+                    CreateProfileWithLocales({})));
+}
+
+TEST(IntlProfileWatcherGetPrimaryLocaleIdFromProfileTest, OneLocale) {
+  EXPECT_EQ(kPrimaryLocaleName,
+            FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(
+                CreateProfileWithLocales({kPrimaryLocaleName})));
+}
+
+TEST(IntlProfileWatcherGetPrimaryLocaleIdFromProfileTest, MultipleLocales) {
+  EXPECT_EQ(kPrimaryLocaleName,
+            FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(
+                CreateProfileWithLocales(
+                    {kPrimaryLocaleName, kSecondaryLocaleName})));
 }
 
 }  // namespace base

@@ -56,8 +56,8 @@ std::string FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
 
   const std::vector<::fuchsia::intl::TimeZoneId>& time_zones =
       profile.time_zones();
-  if (time_zones.size() == 0) {
-    DLOG(WARNING) << "Profile contains an empty time zones list.";
+  if (time_zones.empty()) {
+    DLOG(ERROR) << "Profile contains an empty time zones list.";
     return std::string();
   }
 
@@ -67,23 +67,49 @@ std::string FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
 // static
 std::string
 FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdForIcuInitialization() {
-  ::fuchsia::intl::PropertyProviderSyncPtr provider;
-  ComponentContextForProcess()->svc()->Connect(provider.NewRequest());
-  return GetPrimaryTimeZoneIdFromPropertyProvider(std::move(provider));
+  return GetPrimaryTimeZoneIdFromProfile(GetCurrentProfileSync());
 }
 
 // static
-std::string FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromPropertyProvider(
+std::string FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(
+    const ::fuchsia::intl::Profile& profile) {
+  if (!profile.has_locales()) {
+    DLOG(ERROR) << "Profile does not contain locale information.";
+    return std::string();
+  }
+
+  const std::vector<::fuchsia::intl::LocaleId>& locale_preferences =
+      profile.locales();
+  if (locale_preferences.empty()) {
+    DLOG(ERROR) << "Profile contains an empty locale list.";
+    return std::string();
+  }
+
+  return locale_preferences[0].id;
+}
+
+// static
+std::string FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdForInitialization() {
+  return GetPrimaryLocaleIdFromProfile(GetCurrentProfileSync());
+}
+
+// static
+Profile FuchsiaIntlProfileWatcher::GetProfileFromPropertyProvider(
     ::fuchsia::intl::PropertyProviderSyncPtr property_provider) {
   DCHECK(property_provider.is_bound());
   Profile profile;
   zx_status_t status = property_provider->GetProfile(&profile);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "Failed to get intl Profile";
-    return std::string();
   }
+  return profile;
+}
 
-  return GetPrimaryTimeZoneIdFromProfile(profile);
+// static
+::fuchsia::intl::Profile FuchsiaIntlProfileWatcher::GetCurrentProfileSync() {
+  ::fuchsia::intl::PropertyProviderSyncPtr provider;
+  ComponentContextForProcess()->svc()->Connect(provider.NewRequest());
+  return GetProfileFromPropertyProvider(std::move(provider));
 }
 
 }  // namespace base
