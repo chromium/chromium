@@ -20,15 +20,11 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
-#include "ui/gfx/shadow_util.h"
 #include "ui/gfx/skia_paint_util.h"
 
 namespace ash {
 
 namespace {
-
-// Appearance.
-constexpr int kElevation = 2;
 
 // The duration of each of the preview icon bounce animation.
 constexpr base::TimeDelta kBounceAnimationSegmentDuration =
@@ -41,23 +37,9 @@ constexpr base::TimeDelta kBounceAnimationBaseDelay =
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns the shadow details to use when painting elevation.
-const gfx::ShadowDetails& GetShadowDetails() {
-  return gfx::ShadowDetails::Get(kElevation, /*radius=*/kTrayItemSize / 2);
-}
-
-// Returns contents bounds for painting, having accounted for shadow details.
-gfx::Rect GetContentsBounds() {
-  gfx::Size contents_size(kTrayItemSize, kTrayItemSize);
-  gfx::Rect contents_bounds(contents_size);
-
-  const gfx::ShadowDetails& shadow = GetShadowDetails();
-  const gfx::Insets shadow_margins(gfx::ShadowValue::GetMargin(shadow.values));
-
-  contents_size.Enlarge(shadow_margins.width(), shadow_margins.height());
-  contents_bounds.ClampToCenteredSize(contents_size);
-
-  return contents_bounds;
+// Returns the preview icon contents size.
+gfx::Size GetPreviewSize() {
+  return gfx::Size(kTrayItemSize, kTrayItemSize);
 }
 
 // Returns whether the specified `shelf_alignment` is horizontal.
@@ -105,7 +87,7 @@ class ContentsImageSource : public gfx::ImageSkiaSource {
     }
 
     // Resize to contents size (if necessary).
-    gfx::Size contents_size = GetContentsBounds().size();
+    gfx::Size contents_size = GetPreviewSize();
     if (image.size() != contents_size) {
       image = gfx::ImageSkiaOperations::CreateResizedImage(
           image, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
@@ -133,7 +115,7 @@ class ContentsImage : public gfx::ImageSkia {
   ContentsImage(const HoldingSpaceItem* item,
                 base::RepeatingClosure image_invalidated_closure)
       : gfx::ImageSkia(std::make_unique<ContentsImageSource>(item),
-                       GetContentsBounds().size()),
+                       GetPreviewSize()),
         image_invalidated_closure_(image_invalidated_closure) {
     image_subscription_ = item->image().AddImageSkiaChangedCallback(
         base::BindRepeating(&ContentsImage::OnHoldingSpaceItemImageChanged,
@@ -178,8 +160,9 @@ HoldingSpaceTrayIconPreview::~HoldingSpaceTrayIconPreview() = default;
 void HoldingSpaceTrayIconPreview::AnimateIn(size_t index) {
   DCHECK(transform_.IsIdentity());
 
+  const gfx::Size preview_size = GetPreviewSize();
   if (index > 0u) {
-    gfx::Vector2dF translation(index * kTrayItemSize / 2, 0);
+    gfx::Vector2dF translation(index * preview_size.width() / 2, 0);
     AdjustForShelfAlignmentAndTextDirection(&translation);
     transform_.Translate(translation);
   }
@@ -190,7 +173,7 @@ void HoldingSpaceTrayIconPreview::AnimateIn(size_t index) {
   CreateLayer();
 
   gfx::Transform pre_transform(transform_);
-  pre_transform.Translate(0, -kTrayItemSize);
+  pre_transform.Translate(0, -preview_size.height());
   layer_->SetTransform(pre_transform);
 
   icon_->layer()->Add(layer_.get());
@@ -202,7 +185,7 @@ void HoldingSpaceTrayIconPreview::AnimateIn(size_t index) {
   }
 
   gfx::Transform mid_transform(transform_);
-  mid_transform.Translate(0, kTrayItemSize * 0.25f);
+  mid_transform.Translate(0, preview_size.height() * 0.25f);
 
   ui::ScopedLayerAnimationSettings scoped_settings(layer_->GetAnimator());
   scoped_settings.SetPreemptionStrategy(
@@ -246,7 +229,7 @@ void HoldingSpaceTrayIconPreview::AnimateOut(
 }
 
 void HoldingSpaceTrayIconPreview::AnimateShift() {
-  gfx::Vector2dF translation(kTrayItemSize / 2, 0);
+  gfx::Vector2dF translation(GetPreviewSize().width() / 2, 0);
   AdjustForShelfAlignmentAndTextDirection(&translation);
   transform_.Translate(translation);
 
@@ -266,7 +249,7 @@ void HoldingSpaceTrayIconPreview::AnimateShift() {
 }
 
 void HoldingSpaceTrayIconPreview::AnimateUnshift() {
-  gfx::Vector2dF translation(-kTrayItemSize / 2, 0);
+  gfx::Vector2dF translation(-GetPreviewSize().width() / 2, 0);
   AdjustForShelfAlignmentAndTextDirection(&translation);
   transform_.Translate(translation);
 
@@ -341,16 +324,15 @@ void HoldingSpaceTrayIconPreview::OnShelfAlignmentChanged(
 // TODO(crbug.com/1142572): Support theming.
 void HoldingSpaceTrayIconPreview::OnPaintLayer(
     const ui::PaintContext& context) {
-  const gfx::Rect contents_bounds = GetContentsBounds();
+  const gfx::Rect contents_bounds = gfx::Rect(GetPreviewSize());
 
-  ui::PaintRecorder recorder(context, gfx::Size(kTrayItemSize, kTrayItemSize));
+  ui::PaintRecorder recorder(context, contents_bounds.size());
   gfx::Canvas* canvas = recorder.canvas();
 
   // Background.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(SK_ColorWHITE);
-  flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
   canvas->DrawCircle(
       contents_bounds.CenterPoint(),
       std::min(contents_bounds.width(), contents_bounds.height()) / 2, flags);
@@ -410,7 +392,7 @@ bool HoldingSpaceTrayIconPreview::NeedsLayer() const {
           /*horizontal=*/transform_.To2dTranslation().x(),
           /*vertical=*/transform_.To2dTranslation().y()));
   return primary_axis_translation <
-         kHoldingSpaceTrayIconMaxVisiblePreviews * kTrayItemSize / 2;
+         kHoldingSpaceTrayIconMaxVisiblePreviews * GetPreviewSize().width() / 2;
 }
 
 void HoldingSpaceTrayIconPreview::InvalidateLayer() {
@@ -438,12 +420,13 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   // right bound and translated with a negative offset. In all other cases,
   // `layer_` is aligned with its parent layer's left/top bound and translated
   // with a positive offset.
+  const gfx::Size size = GetPreviewSize();
   gfx::Point origin;
   if (icon_->shelf()->IsHorizontalAlignment() && base::i18n::IsRTL()) {
-    origin = icon_->GetLocalBounds().top_right();
-    origin -= gfx::Vector2d(kTrayItemSize, 0);
+    origin =
+        icon_->GetLocalBounds().top_right() - gfx::Vector2d(size.width(), 0);
   }
-  gfx::Rect bounds(origin, gfx::Size(kTrayItemSize, kTrayItemSize));
+  gfx::Rect bounds(origin, size);
   if (bounds != layer_->bounds())
     layer_->SetBounds(bounds);
 }
