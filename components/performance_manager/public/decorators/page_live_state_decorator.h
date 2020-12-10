@@ -89,6 +89,16 @@ class PageLiveStateDecorator::Data {
 
   static const Data* FromPageNode(const PageNode* page_node);
   static Data* GetOrCreateForTesting(PageNode* page_node);
+
+  virtual void SetIsConnectedToUSBDeviceForTesting(bool value) = 0;
+  virtual void SetIsConnectedToBluetoothDeviceForTesting(bool value) = 0;
+  virtual void SetIsCapturingVideoForTesting(bool value) = 0;
+  virtual void SetIsCapturingAudioForTesting(bool value) = 0;
+  virtual void SetIsBeingMirroredForTesting(bool value) = 0;
+  virtual void SetIsCapturingWindowForTesting(bool value) = 0;
+  virtual void SetIsCapturingDisplayForTesting(bool value) = 0;
+  virtual void SetIsAutoDiscardableForTesting(bool value) = 0;
+  virtual void SetWasDiscardedForTesting(bool value) = 0;
 };
 
 }  // namespace performance_manager

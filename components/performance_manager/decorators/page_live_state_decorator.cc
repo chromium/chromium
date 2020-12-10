@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 
 #include "components/performance_manager/decorators/decorators_utils.h"
+#include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
@@ -40,6 +41,34 @@ class PageLiveStateDataImpl
   bool IsCapturingDisplay() const override { return is_capturing_display_; }
   bool IsAutoDiscardable() const override { return is_auto_discardable_; }
   bool WasDiscarded() const override { return was_discarded_; }
+
+  void SetIsConnectedToUSBDeviceForTesting(bool value) override {
+    set_is_connected_to_usb_device(value);
+  }
+  void SetIsConnectedToBluetoothDeviceForTesting(bool value) override {
+    set_is_connected_to_bluetooth_device(value);
+  }
+  void SetIsCapturingVideoForTesting(bool value) override {
+    set_is_capturing_video(value);
+  }
+  void SetIsCapturingAudioForTesting(bool value) override {
+    set_is_capturing_audio(value);
+  }
+  void SetIsBeingMirroredForTesting(bool value) override {
+    set_is_being_mirrored(value);
+  }
+  void SetIsCapturingWindowForTesting(bool value) override {
+    set_is_capturing_window(value);
+  }
+  void SetIsCapturingDisplayForTesting(bool value) override {
+    set_is_capturing_display(value);
+  }
+  void SetIsAutoDiscardableForTesting(bool value) override {
+    set_is_auto_discardable(value);
+  }
+  void SetWasDiscardedForTesting(bool value) override {
+    set_was_discarded(value);
+  }
 
   void set_is_connected_to_usb_device(bool is_connected_to_usb_device) {
     is_connected_to_usb_device_ = is_connected_to_usb_device;
