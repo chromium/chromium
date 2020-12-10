@@ -201,52 +201,23 @@ TEST_F(IconUtilTest, TestBitmapToIconInvalidParameters) {
 // The following test case makes sure IconUtil::CreateIconFileFromImageFamily
 // fails gracefully when called with invalid input parameters.
 TEST_F(IconUtilTest, TestCreateIconFileInvalidParameters) {
-  std::unique_ptr<SkBitmap> bitmap;
   gfx::ImageFamily image_family;
   base::FilePath valid_icon_filename =
       temp_directory_.GetPath().AppendASCII(kTempIconFilename);
   base::FilePath invalid_icon_filename =
       temp_directory_.GetPath().AppendASCII("<>?.ico");
 
-  // Wrong bitmap format.
-  bitmap = std::make_unique<SkBitmap>();
-  ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
-  // Must allocate pixels or else ImageSkia will ignore the bitmap and just
-  // return an empty image.
-  bitmap->allocPixels(SkImageInfo::MakeA8(kSmallIconWidth, kSmallIconHeight));
-  memset(bitmap->getPixels(), 0, bitmap->width() * bitmap->height());
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(*bitmap));
-  EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
-                                                       valid_icon_filename));
-  EXPECT_FALSE(base::PathExists(valid_icon_filename));
-
-  // Invalid bitmap size.
-  image_family.clear();
-  bitmap = std::make_unique<SkBitmap>();
-  ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
-  bitmap->allocPixels(SkImageInfo::MakeN32Premul(0, 0));
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(*bitmap));
-  EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
-                                                       valid_icon_filename));
-  EXPECT_FALSE(base::PathExists(valid_icon_filename));
-
-  // Bitmap with no allocated pixels.
-  image_family.clear();
-  bitmap = std::make_unique<SkBitmap>();
-  ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
-  bitmap->setInfo(SkImageInfo::MakeN32Premul(kSmallIconWidth,
-                                             kSmallIconHeight));
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(*bitmap));
+  // Null bitmap.
+  SkBitmap bitmap;
+  image_family.Add(gfx::Image::CreateFrom1xBitmap(bitmap));
   EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                        valid_icon_filename));
   EXPECT_FALSE(base::PathExists(valid_icon_filename));
 
   // Invalid file name.
   image_family.clear();
-  bitmap->allocPixels();
-  // Setting the pixels to black.
-  memset(bitmap->getPixels(), 0, bitmap->width() * bitmap->height() * 4);
-  image_family.Add(gfx::Image::CreateFrom1xBitmap(*bitmap));
+  bitmap.allocN32Pixels(1, 1);
+  image_family.Add(gfx::Image::CreateFrom1xBitmap(bitmap));
   EXPECT_FALSE(IconUtil::CreateIconFileFromImageFamily(image_family,
                                                        invalid_icon_filename));
   EXPECT_FALSE(base::PathExists(invalid_icon_filename));
