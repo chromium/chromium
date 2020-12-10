@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/chromebox_for_meetings/cfm_chrome_services.h"
 
 #include "chrome/browser/chromeos/chromebox_for_meetings/browser/cfm_browser_service.h"
+#include "chrome/browser/chromeos/chromebox_for_meetings/diagnostics/diagnostics_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/logger/cfm_logger_service.h"
 #include "chromeos/components/chromebox_for_meetings/features/features.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
@@ -19,6 +20,7 @@ void InitializeCfmServices() {
 
   CfmBrowserService::Initialize();
   CfmLoggerService::Initialize();
+  DiagnosticsService::Initialize();
 }
 
 void ShutdownCfmServices() {
@@ -26,6 +28,7 @@ void ShutdownCfmServices() {
     return;
   }
 
+  DiagnosticsService::Shutdown();
   CfmLoggerService::Shutdown();
   CfmBrowserService::Shutdown();
 }
