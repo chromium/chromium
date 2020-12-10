@@ -160,6 +160,13 @@ void ScreenOrientationController::NotifyOrientationChanged() {
     // LocalDOMWindow, even though that should be impossible...
     SCOPED_CRASH_KEY_NUMBER("debug-1154141", supplement,
                             reinterpret_cast<uintptr_t>(GetSupplementable()));
+    SCOPED_CRASH_KEY_NUMBER(
+        "debug-1154141", supplement_frame,
+        reinterpret_cast<uintptr_t>(GetSupplementable()->GetFrame()));
+    SCOPED_CRASH_KEY_NUMBER("debug-1154141", execution_context,
+                            reinterpret_cast<uintptr_t>(GetExecutionContext()));
+    SCOPED_CRASH_KEY_BOOL("debug-1154141", is_context_destroyed,
+                          GetSupplementable()->IsContextDestroyed());
     base::debug::DumpWithoutCrashing();
     return;
   }

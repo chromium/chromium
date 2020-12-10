@@ -2394,15 +2394,15 @@ void WebLocalFrameImpl::SendOrientationChangeEvent() {
   if (!GetFrame() || !GetFrame()->DomWindow())
     return;
 
-  if (GetFrame()) {
-    // If GetFrame() returns non-null, the frame should be attached. Make sure
-    // the other state on WebLocalFrameImpl agrees.
-    CHECK(GetFrame()->IsAttached());
-    CHECK(GetFrame()->Client());
-    CHECK(Client());
-  }
+  // If GetFrame() returns non-null, the frame should be attached. Make sure
+  // the other state on WebLocalFrameImpl agrees.
+  CHECK(GetFrame()->IsAttached());
+  CHECK(GetFrame()->Client());
+  CHECK(Client());
 
-  SCOPED_CRASH_KEY_NUMBER("debug-1154141", web_dom_window,
+  SCOPED_CRASH_KEY_NUMBER("debug-1154141", web_frame_core_frame,
+                          reinterpret_cast<uintptr_t>(GetFrame()));
+  SCOPED_CRASH_KEY_NUMBER("debug-1154141", web_frame_dom_window,
                           reinterpret_cast<uintptr_t>(GetFrame()->DomWindow()));
 
   // Screen Orientation API
