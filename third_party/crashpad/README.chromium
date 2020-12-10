@@ -39,3 +39,5 @@ Local Modifications:
  - MultiprocessExec.MultiprocessExec is disabled when OS_POSIX and
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1153544
    (third_party/crashpad/crashpad/test/multiprocess_exec_test.cc)
+ - Add a dependency on //build/config/mac:sdk_inputs for MIG actions.
+   crbug.com/1157103
