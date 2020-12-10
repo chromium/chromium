@@ -73,6 +73,10 @@ class BASE_EXPORT PCScan final {
 
   void ClearRootsForTesting();
 
+  bool IsInProgress() const {
+    return in_progress_.load(std::memory_order_relaxed);
+  }
+
  private:
   class PCScanTask;
   class PCScanThread;
