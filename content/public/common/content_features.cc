@@ -859,8 +859,8 @@ const base::Feature kWebID{"WebID", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kExperimentalProductivityFeatures{
     "ExperimentalProductivityFeatures", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When this feature is enabled, the Web OTP API will use the User Consent
-// API to retrieve SMSes from the Android device.
+// Controls which backend is used to retrieve OTP on Android. When disabled
+// we use User Consent API.
 const base::Feature kWebOtpBackend{"WebOtpBackend",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
