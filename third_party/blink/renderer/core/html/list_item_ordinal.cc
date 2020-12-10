@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 
-#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
@@ -145,19 +146,27 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
 
   Node* list = EnclosingList(&item_node);
   auto* o_list_element = DynamicTo<HTMLOListElement>(list);
-  int value_step = 1;
-  if (o_list_element && o_list_element->IsReversed())
-    value_step = -1;
+  const bool is_reversed = o_list_element && o_list_element->IsReversed();
+  int value_step = is_reversed ? -1 : 1;
+  if (const auto* style = item_node.GetComputedStyle()) {
+    const auto directives =
+        style->GetCounterDirectives(AtomicString("list-item"));
+    if (directives.IsSet())
+      return directives.CombinedValue();
+    if (directives.IsIncrement())
+      value_step = directives.CombinedValue();
+  }
 
+  int64_t base_value = 0;
   // FIXME: This recurses to a possible depth of the length of the list.
   // That's not good -- we need to change this to an iterative algorithm.
-  if (NodeAndOrdinal previous = PreviousListItem(list, &item_node))
-    return base::ClampAdd(previous.ordinal->Value(*previous.node), value_step);
-
-  if (o_list_element)
-    return o_list_element->StartConsideringItemCount();
-
-  return 1;
+  if (NodeAndOrdinal previous = PreviousListItem(list, &item_node)) {
+    base_value = previous.ordinal->Value(*previous.node);
+  } else if (o_list_element) {
+    base_value = o_list_element->StartConsideringItemCount();
+    base_value += (is_reversed ? 1 : -1);
+  }
+  return base::saturated_cast<int>(base_value + value_step);
 }
 
 int ListItemOrdinal::Value(const Node& item_node) const {

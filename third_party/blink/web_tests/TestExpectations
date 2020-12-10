@@ -811,7 +811,6 @@ crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-c
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-005.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-004.html [ Failure ]
-crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-003.html [ Failure ]
 
 # [css-overflow]
 # Incorrect WPT tests.
@@ -2746,7 +2745,6 @@ crbug.com/626703 external/wpt/css/css-sizing/image-min-max-content-intrinsic-siz
 crbug.com/626703 external/wpt/xhr/event-readystatechange-loaded.any.worker.html [ Timeout Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-lists/li-list-item-counter.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-006.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-007.html [ Failure ]
