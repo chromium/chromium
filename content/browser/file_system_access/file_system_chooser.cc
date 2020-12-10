@@ -173,6 +173,7 @@ ui::SelectFileDialog::FileTypeInfo ConvertAcceptsToFileTypeInfo(
     file_types.include_all_files = true;
 
   file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
+  file_types.keep_extension_visible = true;
 
   return file_types;
 }

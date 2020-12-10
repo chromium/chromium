@@ -135,7 +135,13 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
     std::vector<base::string16> extension_description_overrides;
 
     // Specifies whether there will be a filter added for all files (i.e. *.*).
-    bool include_all_files;
+    bool include_all_files = false;
+
+    // Some implementations by default hide the extension of a file, in
+    // particular in a save file dialog. If this is set to true, where
+    // supported, the save file dialog will instead keep the file extension
+    // visible.
+    bool keep_extension_visible = false;
 
     // Specifies which type of paths the caller can handle.
     enum AllowedPaths {
@@ -153,7 +159,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       // docs.google.com URL.
       ANY_PATH_OR_URL
     };
-    AllowedPaths allowed_paths;
+    AllowedPaths allowed_paths = NATIVE_PATH;
   };
 
   // Returns a file path with a base name at most 255 characters long. This

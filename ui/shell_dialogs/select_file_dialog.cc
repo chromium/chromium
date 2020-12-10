@@ -26,8 +26,7 @@ ui::SelectFileDialogFactory* dialog_factory_ = NULL;
 
 namespace ui {
 
-SelectFileDialog::FileTypeInfo::FileTypeInfo()
-    : include_all_files(false), allowed_paths(NATIVE_PATH) {}
+SelectFileDialog::FileTypeInfo::FileTypeInfo() = default;
 
 SelectFileDialog::FileTypeInfo::FileTypeInfo(const FileTypeInfo& other) =
     default;

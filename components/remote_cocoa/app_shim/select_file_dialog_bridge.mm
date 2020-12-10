@@ -206,6 +206,8 @@ void SelectFileDialogBridge::Show(
     }
   }
 
+  const bool keep_extension_visible =
+      file_types ? file_types->keep_extension_visible : false;
   if (type_ != SelectFileDialogType::kFolder &&
       type_ != SelectFileDialogType::kUploadFolder &&
       type_ != SelectFileDialogType::kExistingFolder) {
@@ -227,7 +229,7 @@ void SelectFileDialogBridge::Show(
     // this by never hiding extensions in that case.
     base::FilePath::StringType penultimate_extension =
         default_path.RemoveFinalExtension().FinalExtension();
-    if (!penultimate_extension.empty()) {
+    if (!penultimate_extension.empty() || keep_extension_visible) {
       [dialog setExtensionHidden:NO];
     } else {
       [dialog setExtensionHidden:YES];
