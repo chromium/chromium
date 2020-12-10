@@ -443,6 +443,8 @@ target(link_target_type, "gles2_sources") {
       "shared_image_batch_access_manager.h",
       "shared_image_representation_gl_texture_android.cc",
       "shared_image_representation_gl_texture_android.h",
+      "shared_image_representation_gl_texture_passthrough_android.cc",
+      "shared_image_representation_gl_texture_passthrough_android.h",
       "shared_image_representation_skia_vk_android.cc",
       "shared_image_representation_skia_vk_android.h",
       "shared_image_video.cc",
