@@ -283,9 +283,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableContentSettingsRedesign",
       base::FeatureList::IsEnabled(features::kContentSettingsRedesign));
 
-  html_source->AddBoolean("isEphemeralGuestProfile",
-                          profile->IsEphemeralGuestProfile());
-
 #if defined(OS_WIN)
   html_source->AddBoolean(
       "safetyCheckChromeCleanerChildEnabled",

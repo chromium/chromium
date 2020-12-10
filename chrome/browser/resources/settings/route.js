@@ -101,8 +101,7 @@ function createBrowserSettingsRoutes() {
   r.SIGN_OUT.isNavigableDialog = true;
 
   r.SEARCH = r.BASIC.createSection('/search', 'search');
-  if (!loadTimeData.getBoolean('isGuest') ||
-      loadTimeData.getBoolean('isEphemeralGuestProfile')) {
+  if (!loadTimeData.getBoolean('isGuest')) {
     r.PEOPLE = r.BASIC.createSection('/people', 'people');
     r.SYNC = r.PEOPLE.createChild('/syncSetup');
     r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
