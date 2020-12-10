@@ -25,6 +25,7 @@ AXTreeFormatterBase::~AXTreeFormatterBase() = default;
 
 // static
 const char AXTreeFormatterBase::kChildrenDictAttr[] = "children";
+const char AXTreeFormatterBase::kScriptsDictAttr[] = "scripts";
 
 std::string AXTreeFormatterBase::Format(AXPlatformNodeDelegate* root) const {
   DCHECK(root);
@@ -33,7 +34,20 @@ std::string AXTreeFormatterBase::Format(AXPlatformNodeDelegate* root) const {
 
 std::string AXTreeFormatterBase::FormatTree(const base::Value& dict) const {
   std::string contents;
+
+  // Format the tree.
   RecursiveFormatTree(dict, &contents);
+
+  // Format scripts.
+  const base::Value* scripts = dict.FindListKey(kScriptsDictAttr);
+  if (!scripts)
+    return contents;
+
+  for (const base::Value& script : scripts->GetList()) {
+    WriteAttribute(false, script.GetString(), &contents);
+    contents += "\n";
+  }
+
   return contents;
 }
 
@@ -108,10 +122,21 @@ std::vector<AXPropertyNode> AXTreeFormatterBase::PropertyFilterNodesFor(
       case AXPropertyFilter::ALLOW:
         list.push_back(std::move(property_node));
         break;
+      case AXPropertyFilter::SCRIPT:
       case AXPropertyFilter::DENY:
         break;
       default:
         break;
+    }
+  }
+  return list;
+}
+
+std::vector<AXPropertyNode> AXTreeFormatterBase::ScriptPropertyNodes() const {
+  std::vector<AXPropertyNode> list;
+  for (const auto& filter : property_filters_) {
+    if (filter.type == AXPropertyFilter::SCRIPT) {
+      list.push_back(AXPropertyNode::From(filter));
     }
   }
   return list;

@@ -33,7 +33,12 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
       std::vector<ui::AXPropertyFilter>* property_filters) override;
 
  private:
+  base::Value BuildTree(const id root) const;
   base::Value BuildTreeForAXUIElement(AXUIElementRef node) const;
+
+  // Runs all scripts defined by given property filters.
+  void EvaluateScripts(const a11y::LineIndexer* line_indexer,
+                       base::Value* dict) const;
 
   void RecursiveBuildTree(const id node,
                           const a11y::LineIndexer* line_indexer,

@@ -33,6 +33,7 @@ bool AXTreeFormatter::MatchesPropertyFilters(
          base::MatchPattern(text, filter.match_str + "=*"))) {
       switch (filter.type) {
         case AXPropertyFilter::ALLOW_EMPTY:
+        case AXPropertyFilter::SCRIPT:
           allow = true;
           break;
         case AXPropertyFilter::ALLOW:
@@ -52,6 +53,9 @@ bool AXTreeFormatter::MatchesNodeFilters(
     const std::vector<AXNodeFilter>& node_filters,
     const base::Value& dict) {
   for (const auto& filter : node_filters) {
+    if (filter.property == "*") {
+      return true;
+    }
     const std::string* value = dict.FindStringKey(filter.property);
     if (value && base::MatchPattern(*value, filter.pattern)) {
       return true;

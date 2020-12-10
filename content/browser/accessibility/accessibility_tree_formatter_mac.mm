@@ -81,12 +81,9 @@ void AccessibilityTreeFormatterMac::AddDefaultFilters(
 base::Value AccessibilityTreeFormatterMac::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
   DCHECK(root);
-  BrowserAccessibilityCocoa* cocoa_root = ToBrowserAccessibilityCocoa(
-      BrowserAccessibility::FromAXPlatformNodeDelegate(root));
-  LineIndexer line_indexer(cocoa_root);
-  base::Value dict(base::Value::Type::DICTIONARY);
-  RecursiveBuildTree(cocoa_root, &line_indexer, &dict);
-  return dict;
+  BrowserAccessibility* internal_root =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
+  return BuildTree(ToBrowserAccessibilityCocoa(internal_root));
 }
 
 base::Value AccessibilityTreeFormatterMac::BuildTreeForWindow(
@@ -106,11 +103,42 @@ base::Value AccessibilityTreeFormatterMac::BuildTreeForSelector(
 
 base::Value AccessibilityTreeFormatterMac::BuildTreeForAXUIElement(
     AXUIElementRef node) const {
-  LineIndexer line_indexer(static_cast<id>(node));
+  return BuildTree(static_cast<id>(node));
+}
 
+base::Value AccessibilityTreeFormatterMac::BuildTree(const id root) const {
+  DCHECK(root);
+
+  LineIndexer line_indexer(root);
   base::Value dict(base::Value::Type::DICTIONARY);
-  RecursiveBuildTree(static_cast<id>(node), &line_indexer, &dict);
+
+  EvaluateScripts(&line_indexer, &dict);
+  RecursiveBuildTree(root, &line_indexer, &dict);
+
   return dict;
+}
+
+void AccessibilityTreeFormatterMac::EvaluateScripts(
+    const LineIndexer* line_indexer,
+    base::Value* dict) const {
+  base::Value scripts(base::Value::Type::LIST);
+  for (const AXPropertyNode& property_node : ScriptPropertyNodes()) {
+    AttributeInvoker invoker(line_indexer);
+    OptionalNSObject value = invoker.Invoke(property_node);
+    if (value.IsNotApplicable()) {
+      continue;
+    }
+
+    std::string result;
+    if (value.IsError()) {
+      result = kFailedToParseArgsError;
+    } else {
+      result = FormatAttributeValue(PopulateObject(*value, line_indexer));
+    }
+    std::string code = property_node.original_property;
+    scripts.Append(code + "=" + result);
+  }
+  dict->SetPath(kScriptsDictAttr, std::move(scripts));
 }
 
 void AccessibilityTreeFormatterMac::RecursiveBuildTree(

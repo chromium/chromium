@@ -22,12 +22,21 @@ namespace content {
 
 namespace {
 
+const ui::AXPropertyFilter::Type ALLOW_EMPTY =
+    ui::AXPropertyFilter::ALLOW_EMPTY;
+const ui::AXPropertyFilter::Type SCRIPT = ui::AXPropertyFilter::SCRIPT;
+
 class AccessibilityTreeFormatterMacBrowserTest : public ContentBrowserTest {
  public:
   AccessibilityTreeFormatterMacBrowserTest() {}
   ~AccessibilityTreeFormatterMacBrowserTest() override {}
 
   // Checks the formatted accessible tree for the given data URL.
+  void TestAndCheck(const char* url,
+                    const std::vector<ui::AXPropertyFilter>& property_filters,
+                    const std::vector<ui::AXNodeFilter>& node_filters,
+                    const char* expected) const;
+
   void TestAndCheck(const char* url,
                     const std::vector<const char*>& filters,
                     const char* expected) const;
@@ -48,7 +57,8 @@ class AccessibilityTreeFormatterMacBrowserTest : public ContentBrowserTest {
 
 void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
     const char* url,
-    const std::vector<const char*>& filters,
+    const std::vector<ui::AXPropertyFilter>& property_filters,
+    const std::vector<ui::AXNodeFilter>& node_filters,
     const char* expected) const {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
@@ -61,21 +71,26 @@ void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
   std::unique_ptr<ui::AXTreeFormatter> formatter =
       AXInspectFactory::CreatePlatformFormatter();
 
-  std::vector<ui::AXPropertyFilter> property_filters;
-
-  for (const char* filter : filters) {
-    property_filters.push_back(
-        ui::AXPropertyFilter(filter, ui::AXPropertyFilter::ALLOW_EMPTY));
-  }
-
   formatter->SetPropertyFilters(property_filters,
                                 ui::AXTreeFormatter::kFiltersDefaultSet);
+  formatter->SetNodeFilters(node_filters);
 
   BrowserAccessibility* root = GetManager()->GetRoot();
   ASSERT_NE(nullptr, root);
 
   std::string actual = formatter->Format(root);
   EXPECT_EQ(actual, expected);
+}
+
+void AccessibilityTreeFormatterMacBrowserTest::TestAndCheck(
+    const char* url,
+    const std::vector<const char*>& filters,
+    const char* expected) const {
+  std::vector<ui::AXPropertyFilter> property_filters;
+  for (const char* filter : filters) {
+    property_filters.emplace_back(filter, ALLOW_EMPTY);
+  }
+  TestAndCheck(url, property_filters, {}, expected);
 }
 
 void AccessibilityTreeFormatterMacBrowserTest::TestWrongParameters(
@@ -330,14 +345,21 @@ IN_PROC_BROWSER_TEST_F(
 )~~");
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
-                       NestedCalls_Attributes) {
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, NestedCalls) {
   TestAndCheck(R"~~(data:text/html,
                     <p>Text</p>)~~",
                {":1;AXIndexForTextMarker(AXTextMarkerForIndex(0))"},
                R"~~(AXWebArea AXIndexForTextMarker(AXTextMarkerForIndex(0))=0
 ++AXGroup
 ++++AXStaticText AXValue='Text'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script) {
+  TestAndCheck(R"~~(data:text/html,
+                    <input aria-label='input'>)~~",
+               {{":3.AXRole", SCRIPT}}, {{"*", "*"}},
+               R"~~(:3.AXRole='AXTextField'
 )~~");
 }
 

@@ -51,7 +51,7 @@ struct AX_EXPORT AXTreeSelector {
 // DumpAccessibilityTestBase::ParseHtmlForExtraDirectives() for more
 // information.
 struct AX_EXPORT AXPropertyFilter {
-  enum Type { ALLOW, ALLOW_EMPTY, DENY };
+  enum Type { ALLOW, ALLOW_EMPTY, DENY, SCRIPT };
 
   std::string match_str;
   std::string property_str;

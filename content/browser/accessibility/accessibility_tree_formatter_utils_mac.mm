@@ -109,30 +109,33 @@ std::string OptionalNSObject::ToString() const {
 
 // AttributeInvoker
 
+AttributeInvoker::AttributeInvoker(const LineIndexer* line_indexer)
+    : node(nullptr), line_indexer(line_indexer) {}
+
 AttributeInvoker::AttributeInvoker(const id node,
                                    const LineIndexer* line_indexer)
     : node(node), line_indexer(line_indexer) {
-  attributes = AttributeNamesOf(node);
-  parameterized_attributes = ParameterizedAttributeNamesOf(node);
 }
 
 OptionalNSObject AttributeInvoker::Invoke(
     const AXPropertyNode& property_node) const {
+  id target = TargetOf(property_node);
+
   // Attributes
-  for (NSString* attribute : attributes) {
+  for (NSString* attribute : AttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
       return OptionalNSObject::NotNullOrNotApplicable(
-          AttributeValueOf(node, attribute));
+          AttributeValueOf(target, attribute));
     }
   }
 
   // Parameterized attributes
-  for (NSString* attribute : parameterized_attributes) {
+  for (NSString* attribute : ParameterizedAttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
       OptionalNSObject param = ParamByPropertyNode(property_node);
       if (param.IsNotNil()) {
         return OptionalNSObject(
-            ParameterizedAttributeValueOf(node, attribute, *param));
+            ParameterizedAttributeValueOf(target, attribute, *param));
       }
       return param;
     }
@@ -145,7 +148,8 @@ OptionalNSObject AttributeInvoker::GetValue(
     const std::string& property_name,
     const OptionalNSObject& param) const {
   NSString* attribute = base::SysUTF8ToNSString(property_name);
-  if ([parameterized_attributes containsObject:attribute]) {
+  NSArray* attributes = ParameterizedAttributeNamesOf(node);
+  if ([attributes containsObject:attribute]) {
     if (param.IsNotNil()) {
       return OptionalNSObject(
           ParameterizedAttributeValueOf(node, attribute, *param));
@@ -159,7 +163,8 @@ OptionalNSObject AttributeInvoker::GetValue(
 OptionalNSObject AttributeInvoker::GetValue(
     const std::string& property_name) const {
   NSString* attribute = base::SysUTF8ToNSString(property_name);
-  if ([attributes containsObject:attribute]) {
+  NSArray* parameterized_attributes = AttributeNamesOf(node);
+  if ([parameterized_attributes containsObject:attribute]) {
     return OptionalNSObject::NotNullOrNotApplicable(
         AttributeValueOf(node, attribute));
   }
@@ -169,10 +174,17 @@ OptionalNSObject AttributeInvoker::GetValue(
 void AttributeInvoker::SetValue(const std::string& property_name,
                                 const OptionalNSObject& value) const {
   NSString* attribute = base::SysUTF8ToNSString(property_name);
+  NSArray* attributes = AttributeNamesOf(node);
   if ([attributes containsObject:attribute] &&
       IsAttributeSettable(node, attribute)) {
     SetAttributeValueOf(node, attribute, *value);
   }
+}
+
+id AttributeInvoker::TargetOf(const AXPropertyNode& property_node) const {
+  return property_node.target.empty()
+             ? node
+             : line_indexer->NodeBy(property_node.target);
 }
 
 OptionalNSObject AttributeInvoker::ParamByPropertyNode(

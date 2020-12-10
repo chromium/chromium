@@ -38,6 +38,7 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
 
  protected:
   static const char kChildrenDictAttr[];
+  static const char kScriptsDictAttr[];
 
   //
   // Overridden by platform subclasses.
@@ -51,6 +52,9 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
   // allow/allow_empty property filters.
   std::vector<AXPropertyNode> PropertyFilterNodesFor(
       const std::string& line_index) const;
+
+  // Returns a list of script property nodes.
+  std::vector<ui::AXPropertyNode> ScriptPropertyNodes() const;
 
   // Return true if match-all filter is present.
   bool HasMatchAllPropertyFilter() const;
