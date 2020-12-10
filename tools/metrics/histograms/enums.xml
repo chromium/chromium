@@ -13654,6 +13654,8 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="CRAS_CLIENT_TYPE_ARC"/>
   <int value="6" label="CRAS_CLIENT_TYPE_CROSVM"/>
   <int value="7" label="CRAS_CLIENT_TYPE_SERVER_STREAM"/>
+  <int value="8" label="CRAS_CLIENT_TYPE_LACROS"/>
+  <int value="9" label="CRAS_CLIENT_TYPE_PLUGIN"/>
 </enum>
 
 <enum name="CrasDeviceType">
