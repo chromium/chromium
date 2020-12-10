@@ -25,11 +25,6 @@
 {
   'android_browsertests': {
     'modifications': {
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
-        ],
-      },
       'android-pie-arm64-rel': {
         'args': [
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
@@ -662,12 +657,6 @@
           'shards': 3,
         },
       },
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        # https://crbug.com/1039860
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.cc_unittests.filter',
-        ],
-      },
       'android-marshmallow-x86-rel-non-cq': {
         # https://crbug.com/1039860
         'args': [
@@ -763,31 +752,6 @@
           'shards': 25,
         },
       },
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb',
-          # https://crbug.com/1046059
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter',
-        ],
-        'swarming': {
-          'named_caches': [
-            {
-              'name': 'avd_generic_playstore_android28',
-              'path': '.android',
-            },
-            {
-              'name': 'system_images_android_28_google_apis_playstore_x86',
-              'path': '.emulator_sdk',
-            },
-          ],
-          'dimension_sets': [
-            {
-              # Use 8-cores to shorten test runtime.
-              'machine_type': 'n1-standard-8',
-            },
-          ],
-        },
-      },
       'android-lollipop-arm-rel-swarming': {
         'swarming': {
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
@@ -843,7 +807,6 @@
     'remove_from': [
       'Lollipop Tablet Tester',
       'Marshmallow Tablet Tester',
-      'android-inverse-fieldtrials-pie-x86-fyi-rel',
       'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'android-pie-arm64-rel', # https://crbug.com/1010211
@@ -1053,14 +1016,6 @@
           'shards': 18,
         },
       },
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
       'android-marshmallow-arm64-rel': {
         'swarming': {
           'shards': 16,
@@ -1152,11 +1107,6 @@
       'android-code-coverage-native', # crbug/1018434
     ],
     'modifications': {
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--gtest_filter=-ContentViewScrollingTest.testFling',
-        ],
-      },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_shell_test_apk.filter',
@@ -1405,11 +1355,6 @@
           ],
         },
       },
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.gl_tests.filter',
-        ],
-      },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.gl_tests.filter',
@@ -1653,11 +1598,6 @@
   },
   'media_unittests': {
     'modifications': {
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.media_unittests.filter',
-        ],
-      },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.media_unittests.filter',
@@ -1847,12 +1787,6 @@
           'shards': 4,
         }
       },
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        # crbug.com/1046060
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter',
-        ],
-      },
       'android-marshmallow-x86-rel-non-cq': {
         # crbug.com/1046060
         'args': [
@@ -2010,31 +1944,6 @@
           'Feature=RenderTest', # https://crbug.com/1068294
         ],
       },
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb',
-          # https://crbug.com/1046059
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter',
-        ],
-        'swarming': {
-          'named_caches': [
-            {
-              'name': 'avd_generic_playstore_android28',
-              'path': '.android',
-            },
-            {
-              'name': 'system_images_android_28_google_apis_playstore_x86',
-              'path': '.emulator_sdk',
-            },
-          ],
-          'dimension_sets': [
-            {
-              # Use 8-cores to shorten test runtime.
-              'machine_type': 'n1-standard-8',
-            },
-          ],
-        },
-      },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter',
@@ -2107,14 +2016,6 @@
           'shards': 8,
         },
       },
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_browsertests.filter',
@@ -2153,11 +2054,6 @@
       'android-code-coverage-native', # crbug/1018434
     ],
     'modifications': {
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--gtest_filter=-ContentViewScrollingTest.testFling',
-        ],
-      },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_shell_test_apk.filter',
@@ -2185,14 +2081,6 @@
       'android-code-coverage-native', # https://crbug.com/1018431
     ],
     'modifications': {
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 15,
-        },
-      },
       'android-marshmallow-x86-rel-non-cq': {
         'swarming': {
           'shards': 15,
@@ -2296,7 +2184,6 @@
       'android-asan',
       'android-code-coverage',
       'android-code-coverage-native',
-      'android-inverse-fieldtrials-pie-x86-fyi-rel',
       'android-lollipop-arm-rel',
       'android-marshmallow-arm64-rel',
       'android-marshmallow-x86-rel-non-cq',
@@ -2447,11 +2334,6 @@
         'args': [
           '--shard-timeout=300',
         ],
-      },
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.sandbox_linux_unittests.filter',
-        ]
       },
       'android-lollipop-arm-rel': {
         'args': [
@@ -2812,11 +2694,6 @@
   },
   'viz_unittests': {
     'modifications': {
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.viz_unittests.filter',
-        ],
-      },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.viz_unittests.filter',
@@ -2831,7 +2708,6 @@
   },
   'vr_android_unittests': {
     'remove_from': [
-      'android-inverse-fieldtrials-pie-x86-fyi-rel',
       'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'android-code-coverage-native', # crbug/1018434
@@ -2839,7 +2715,6 @@
   },
   'vr_common_unittests': {
     'remove_from': [
-      'android-inverse-fieldtrials-pie-x86-fyi-rel',
       'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'android-code-coverage-native', # crbug/1018431
@@ -2847,7 +2722,6 @@
   },
   'vr_pixeltests': {
     'remove_from': [
-      'android-inverse-fieldtrials-pie-x86-fyi-rel',
       'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'VR Linux',
@@ -3045,11 +2919,6 @@
         # TODO(https://crbug.com/884413): Re-enable this once the tests are
         # either passing or there is more capacity.
         'experiment_percentage': 0,
-      },
-      'android-inverse-fieldtrials-pie-x86-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
-        ],
       },
       'android-pie-x86-rel': {
         'args': [
