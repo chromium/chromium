@@ -45,16 +45,23 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
 namespace {
 
+media::GpuVideoAcceleratorFactories* GetGpuFactoriesOnMainThread() {
+  DCHECK(IsMainThread());
+  return Platform::Current()->GetGpuFactories();
+}
+
 std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
     media::VideoCodecProfile profile,
-    const media::VideoEncoder::Options& options) {
-  auto* gpu_factories = Platform::Current()->GetGpuFactories();
+    const media::VideoEncoder::Options& options,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
   if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled())
     return nullptr;
 
@@ -94,7 +101,7 @@ std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
   if (!found_supported_profile)
     return nullptr;
 
-  auto task_runner = Thread::MainThread()->GetTaskRunner();
+  auto task_runner = Thread::Current()->GetTaskRunner();
   return std::make_unique<
       media::AsyncDestroyVideoEncoder<media::VideoEncodeAcceleratorAdapter>>(
       std::make_unique<media::VideoEncodeAcceleratorAdapter>(
@@ -136,8 +143,14 @@ VideoEncoder::VideoEncoder(ScriptState* script_state,
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
 
-  logger_ = std::make_unique<CodecLogger>(
-      GetExecutionContext(), Thread::MainThread()->GetTaskRunner());
+  // TODO(crbug.com/1151005): Use a real MediaLog in worker contexts too.
+  if (IsMainThread()) {
+    logger_ = std::make_unique<CodecLogger>(
+        GetExecutionContext(), Thread::MainThread()->GetTaskRunner());
+  } else {
+    // This will create a logger backed by a NullMediaLog, which does nothing.
+    logger_ = std::make_unique<CodecLogger>();
+  }
 
   media::MediaLog* log = logger_->log();
 
@@ -263,13 +276,19 @@ void VideoEncoder::UpdateEncoderLog(std::string encoder_name,
       is_hw_accelerated);
 }
 
-void VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown(
+void VideoEncoder::CreateAndInitializeEncoderWithoutAcceleration(
     Request* request) {
+  CreateAndInitializeEncoderOnEncoderSupportKnown(request, nullptr);
+}
+
+void VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown(
+    Request* request,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
   DCHECK(active_config_);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  media_encoder_ = CreateMediaVideoEncoder(*active_config_);
+  media_encoder_ = CreateMediaVideoEncoder(*active_config_, gpu_factories);
   if (!media_encoder_) {
     HandleError(logger_->MakeException(
         "Encoder creation error.",
@@ -308,20 +327,21 @@ void VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown(
 }
 
 std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
-    const ParsedConfig& config) {
+    const ParsedConfig& config,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
   // TODO(https://crbug.com/1119636): Implement / call a proper method for
   // detecting support of encoder configs.
   switch (config.acc_pref) {
     case AccelerationPreference::kRequire: {
-      auto result =
-          CreateAcceleratedVideoEncoder(config.profile, config.options);
+      auto result = CreateAcceleratedVideoEncoder(
+          config.profile, config.options, gpu_factories);
       if (result)
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
       return result;
     }
     case AccelerationPreference::kAllow:
-      if (auto result =
-              CreateAcceleratedVideoEncoder(config.profile, config.options)) {
+      if (auto result = CreateAcceleratedVideoEncoder(
+              config.profile, config.options, gpu_factories)) {
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
         return result;
       }
@@ -576,30 +596,53 @@ void VideoEncoder::ProcessEncode(Request* request) {
   request->frame->destroy();
 }
 
+void VideoEncoder::OnReceivedGpuFactories(
+    Request* request,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+    CreateAndInitializeEncoderWithoutAcceleration(request);
+    return;
+  }
+
+  // Delay create the hw encoder until HW encoder support is known, so that
+  // GetVideoEncodeAcceleratorSupportedProfiles() can give a reliable answer.
+  auto on_encoder_support_known_cb = WTF::Bind(
+      &VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown,
+      WrapCrossThreadWeakPersistent(this), WrapCrossThreadPersistent(request),
+      CrossThreadUnretained(gpu_factories));
+  gpu_factories->NotifyEncoderSupportKnown(
+      std::move(on_encoder_support_known_cb));
+}
+
 void VideoEncoder::ProcessConfigure(Request* request) {
   DCHECK_NE(state_.AsEnum(), V8CodecState::Enum::kClosed);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK(active_config_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto* gpu_factories = Platform::Current()->GetGpuFactories();
-
   stall_request_processing_ = true;
-  bool deny_hardware_encoder =
-      active_config_->acc_pref == AccelerationPreference::kDeny;
-  if (!deny_hardware_encoder && gpu_factories &&
-      gpu_factories->IsGpuVideoAcceleratorEnabled()) {
-    // Delay create the hw encoder until HW encoder support is known, so that
-    // GetVideoEncodeAcceleratorSupportedProfiles() can give a reliable answer.
-    auto on_encoder_support_known_cb = WTF::Bind(
-        &VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown,
-        WrapCrossThreadWeakPersistent(this),
-        WrapCrossThreadPersistent(request));
-    gpu_factories->NotifyEncoderSupportKnown(
-        std::move(on_encoder_support_known_cb));
-  } else {
-    CreateAndInitializeEncoderOnEncoderSupportKnown(request);
+
+  if (active_config_->acc_pref == AccelerationPreference::kDeny) {
+    CreateAndInitializeEncoderWithoutAcceleration(request);
+    return;
   }
+
+  if (IsMainThread()) {
+    OnReceivedGpuFactories(request, Platform::Current()->GetGpuFactories());
+    return;
+  }
+
+  auto on_gpu_factories_cb = CrossThreadBindOnce(
+      &VideoEncoder::OnReceivedGpuFactories,
+      WrapCrossThreadWeakPersistent(this), WrapCrossThreadPersistent(request));
+
+  Thread::MainThread()->GetTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      ConvertToBaseOnceCallback(
+          CrossThreadBindOnce(&GetGpuFactoriesOnMainThread)),
+      ConvertToBaseOnceCallback(std::move(on_gpu_factories_cb)));
 }
 
 void VideoEncoder::ProcessReconfigure(Request* request) {

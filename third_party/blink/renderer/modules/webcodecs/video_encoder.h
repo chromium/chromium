@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 
 namespace media {
+class GpuVideoAcceleratorFactories;
 class VideoEncoder;
 struct VideoEncoderOutput;
 }  // namespace media
@@ -133,11 +134,17 @@ class MODULES_EXPORT VideoEncoder final
   void ResetInternal();
   ScriptPromiseResolver* MakePromise();
 
+  void OnReceivedGpuFactories(Request*, media::GpuVideoAcceleratorFactories*);
+
   ParsedConfig* ParseConfig(const VideoEncoderConfig*, ExceptionState&);
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&);
-  void CreateAndInitializeEncoderOnEncoderSupportKnown(Request* request);
+  void CreateAndInitializeEncoderWithoutAcceleration(Request* request);
+  void CreateAndInitializeEncoderOnEncoderSupportKnown(
+      Request* request,
+      media::GpuVideoAcceleratorFactories* gpu_factories);
   std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(
-      const ParsedConfig& config);
+      const ParsedConfig& config,
+      media::GpuVideoAcceleratorFactories* gpu_factories);
   bool CanReconfigure(ParsedConfig& original_config, ParsedConfig& new_config);
 
   std::unique_ptr<CodecLogger> logger_;
