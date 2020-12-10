@@ -36,13 +36,37 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual ~IdentityRequestDialogController() = default;
 
   // Permission-oriented flow methods.
-  virtual void ShowInitialPermissionDialog(WebContents*,
-                                           InitialApprovalCallback) = 0;
-  virtual void ShowIdProviderWindow(WebContents*,
-                                    const GURL& idp_signin_url,
-                                    IdProviderWindowClosedCallback) = 0;
+
+  // Shows the initial permission dialog to the user. The |approval_callback|
+  // callback is called with appropriate status depending on whether user
+  // granted or denied the permission.
+  //
+  // 'IdentityRequestDialogController' is destroyed before
+  // |initiator_web_contents|.
+  virtual void ShowInitialPermissionDialog(
+      WebContents* initiator_web_contents,
+      InitialApprovalCallback approval_callback) = 0;
+
+  // Shows the identity provider sign-in page at the given URL using the
+  // |idp_web_contents| inside a modal window. The |on_closed| callback is
+  // called when the window is closed by user or programmatically as a result of
+  // invoking CloseIdProviderWindow().
+  //
+  // 'IdentityRequestDialogController' is destroyed before either WebContents.
+  virtual void ShowIdProviderWindow(
+      content::WebContents* initiator_web_contents,
+      content::WebContents* idp_web_contents,
+      const GURL& idp_signin_url,
+      IdProviderWindowClosedCallback on_closed) = 0;
+
+  // Closes the identity provider sign-in window if any.
+  virtual void CloseIdProviderWindow() = 0;
+
+  // Shows the secondary permission dialog to the user. The |approval_callback|
+  // callback is called with appropriate status depending on whether user
+  // granted or denied the permission.
   virtual void ShowTokenExchangePermissionDialog(
-      TokenExchangeApprovalCallback) = 0;
+      TokenExchangeApprovalCallback approval_callback) = 0;
 };
 
 }  // namespace content

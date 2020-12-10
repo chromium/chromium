@@ -31,14 +31,25 @@ void IdentityDialogController::ShowInitialPermissionDialog(
 }
 
 void IdentityDialogController::ShowIdProviderWindow(
-    content::WebContents* web_contents,
+    content::WebContents* initiator_web_contents,
+    content::WebContents* idp_web_contents,
     const GURL& idp_signin_url,
     IdProviderWindowClosedCallback callback) {
-  // TODO(majidvp): Pass in a callback to receive the token.
-  // http://crbug.com/1141125
-  ShowWebIDSigninWindow(web_contents, idp_signin_url,
-                        base::OnceCallback<void(std::string)>(),
-                        std::move(callback));
+  signin_window_ =
+      ShowWebIDSigninWindow(initiator_web_contents, idp_web_contents,
+                            idp_signin_url, std::move(callback));
+}
+
+void IdentityDialogController::CloseIdProviderWindow() {
+  // TODO(majidvp): This may race with user closing the signin window directly.
+  // So we should not really check the signin_window_ instead we should setup
+  // the on_close callback here here and check that to avoid lifetime issues.
+  if (!signin_window_)
+    return;
+
+  // Note that this leads to the window closed callback being run.
+  CloseWebIDSigninWindow(signin_window_);
+  signin_window_ = nullptr;
 }
 
 void IdentityDialogController::ShowTokenExchangePermissionDialog(

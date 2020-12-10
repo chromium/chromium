@@ -46,6 +46,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                       const std::string& id_request,
                       RequestIdTokenCallback) override;
 
+  void ProvideIdToken(const std::string& id_token,
+                      ProvideIdTokenCallback) override;
+
  private:
   FederatedAuthRequestImpl(
       RenderFrameHost*,
@@ -57,10 +60,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnSigninApproved(IdentityRequestDialogController::UserApproval approval);
   void OnSigninResponseReceived(IdpNetworkRequestManager::SigninResponse status,
                                 const std::string& response);
+  void OnTokenProvided(const std::string& id_token);
   void OnIdpPageClosed();
   void OnTokenProvisionApproved(
       IdentityRequestDialogController::UserApproval approval);
 
+  std::unique_ptr<WebContents> CreateIdpWebContents();
   void CompleteRequest(blink::mojom::RequestIdTokenStatus,
                        const std::string& id_token);
 
@@ -76,6 +81,13 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // should be wrapped in a struct at that time.
   GURL idp_endpoint_url_;
 
+  // The WebContents that is used to load the IDP sign-up page. This is created
+  // here to allow us to setup proper callbacks on it using
+  // |IdTokenRequestCallbackData|. It is then passed along to chrome/browser/ui
+  // machinery to be used to load IDP sign-in content.
+  std::unique_ptr<WebContents> idp_web_contents_;
+
+  std::string id_token_;
   RequestIdTokenCallback callback_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};

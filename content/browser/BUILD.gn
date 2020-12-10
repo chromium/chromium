@@ -1863,6 +1863,8 @@ source_set("browser") {
     "webauth/webauth_request_security_checker.h",
     "webid/federated_auth_request_impl.cc",
     "webid/federated_auth_request_impl.h",
+    "webid/id_token_request_callback_data.cc",
+    "webid/id_token_request_callback_data.h",
     "webid/idp_network_request_manager.cc",
     "webid/idp_network_request_manager.h",
     "webrtc/webrtc_internals.cc",

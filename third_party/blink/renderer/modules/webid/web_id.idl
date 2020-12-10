@@ -11,4 +11,6 @@
 ] interface WebID {
   [CallWith=ScriptState, RaisesException]
   Promise<DOMString> get(optional WebIDRequestOptions options = {});
+  [CallWith=ScriptState]
+  Promise<void> provide(optional DOMString id_token = "");
 };

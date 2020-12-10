@@ -7,9 +7,11 @@
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/public/common/content_client.h"
 #include "url/url_constants.h"
 
+using blink::mojom::ProvideIdTokenStatus;
 using blink::mojom::RequestIdTokenStatus;
 
 namespace content {
@@ -48,7 +50,11 @@ FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
     : FrameServiceBase(host, std::move(receiver)) {}
 
-FederatedAuthRequestImpl::~FederatedAuthRequestImpl() = default;
+FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
+  // Ensures key data members are destructed in proper order and resolves any
+  // pending promise.
+  CompleteRequest(RequestIdTokenStatus::kError, "");
+}
 
 // static
 void FederatedAuthRequestImpl::Create(
@@ -129,7 +135,7 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
   // Use the web contents of the page that initiated the WebID request (i.e.
   // the Relying Party) for showing the initial permission dialog.
   WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
+      WebContents::FromRenderFrameHost(render_frame_host());
 
   request_dialog_controller_->ShowInitialPermissionDialog(
       web_contents, base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
@@ -161,11 +167,14 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
         CompleteRequest(RequestIdTokenStatus::kError, "");
         return;
       }
-      WebContents* web_contents =
-          content::WebContents::FromRenderFrameHost(render_frame_host());
+      WebContents* rp_web_contents =
+          WebContents::FromRenderFrameHost(render_frame_host());
+
+      DCHECK(!idp_web_contents_);
+      idp_web_contents_ = CreateIdpWebContents();
 
       request_dialog_controller_->ShowIdProviderWindow(
-          web_contents, idp_signin_page_url,
+          rp_web_contents, idp_web_contents_.get(), idp_signin_page_url,
           base::BindOnce(&FederatedAuthRequestImpl::OnIdpPageClosed,
                          weak_ptr_factory_.GetWeakPtr()));
       return;
@@ -184,9 +193,52 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
   }
 }
 
+void FederatedAuthRequestImpl::OnTokenProvided(const std::string& id_token) {
+  id_token_ = id_token;
+
+  // Close the IDP window which leads to OnIdpPageClosed which is our common.
+  //
+  // TODO(majidvp): Consider if we should not wait on the IDP window closing and
+  // instead should directly call `OnIdpPageClosed` here.
+  request_dialog_controller_->CloseIdProviderWindow();
+
+  // Note that we always process the token on `OnIdpPageClosed()`.
+  // It is possible to get there either via:
+  //  (a) IDP providing a token as shown below, or
+  //  (b) User closing the sign-in window.
+  //
+  // +-----------------------+     +-------------------+     +-----------------+
+  // | FederatedAuthRequest  |     | DialogController  |     | IDPWebContents  |
+  // +-----------------------+     +-------------------+     +-----------------+
+  //             |                           |                        |
+  //             | ShowIdProviderWindow()    |                        |
+  //             |-------------------------->|                        |
+  //             |                           |                        |
+  //             |                           | navigate to idp.com    |
+  //             |                           |----------------------->|
+  //             |                           |                        |
+  //             |                           |  OnTokenProvided(token)|
+  //             |<---------------------------------------------------|
+  //             |                           |                        |
+  //             | CloseIdProviderWindow()   |                        |
+  //             |-------------------------->|                        |
+  //             |                           |                        |
+  //             |                    closed |                        |
+  //             |<--------------------------|                        |
+  //             |                           |                        |
+  //     OnIdpPageClosed()                   |                        |
+  //             |                           |                        |
+  //
+}
+
 void FederatedAuthRequestImpl::OnIdpPageClosed() {
-  // TODO(kenrb): This needs to take a token that was provided by the IDP,
-  // or have an abort path if none provided.
+  // This could happen if provider didn't provide any token or user closed the
+  // IdP window before it could.
+  if (id_token_.empty()) {
+    CompleteRequest(RequestIdTokenStatus::kError, "");
+    return;
+  }
+
   request_dialog_controller_->ShowTokenExchangePermissionDialog(
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenProvisionApproved,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -199,8 +251,20 @@ void FederatedAuthRequestImpl::OnTokenProvisionApproved(
     return;
   }
 
-  // TODO(kenrb): Token gets returned here.
-  CompleteRequest(RequestIdTokenStatus::kSuccess, "");
+  CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
+}
+
+std::unique_ptr<WebContents> FederatedAuthRequestImpl::CreateIdpWebContents() {
+  auto idp_web_contents = content::WebContents::Create(
+      WebContents::CreateParams(render_frame_host()->GetBrowserContext()));
+
+  // Store the callback on the provider web contents so that it can be
+  // used later.
+  IdTokenRequestCallbackData::Set(
+      idp_web_contents_.get(),
+      base::BindOnce(&FederatedAuthRequestImpl::OnTokenProvided,
+                     weak_ptr_factory_.GetWeakPtr()));
+  return idp_web_contents;
 }
 
 void FederatedAuthRequestImpl::CompleteRequest(
@@ -208,7 +272,43 @@ void FederatedAuthRequestImpl::CompleteRequest(
     const std::string& id_token) {
   request_dialog_controller_.reset();
   network_manager_.reset();
-  std::move(callback_).Run(status, id_token);
+  // Given that |request_dialog_controller_| has reference to this web content
+  // instance we destroy that first.
+  idp_web_contents_.reset();
+  if (callback_)
+    std::move(callback_).Run(status, id_token);
+}
+
+// ---- Provider logic -----
+
+void FederatedAuthRequestImpl::ProvideIdToken(const std::string& id_token,
+                                              ProvideIdTokenCallback callback) {
+  WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host());
+
+  auto* request_callback_data = IdTokenRequestCallbackData::Get(web_contents);
+
+  // TODO(majidvp): This may happen if the page is not loaded by the browser's
+  // WebID machinery. We need a way for IDP logic to detect that and not provide
+  // a token. The current plan is to send a special header but we may also need
+  // to not expose this in JS somehow. Investigate this further.
+  // http://crbug.com/1141125
+  if (!request_callback_data) {
+    std::move(callback).Run(ProvideIdTokenStatus::kError);
+    return;
+  }
+
+  if (request_callback_data->Notify(id_token)) {
+    std::move(callback).Run(ProvideIdTokenStatus::kSuccess);
+  } else {
+    std::move(callback).Run(ProvideIdTokenStatus::kErrorTooManyResponses);
+  }
+
+  // After calling `Notify` it is safe to remove the callback data.
+  // TODO(majidvp): This is now causing a DHECK. I belive it is because we are
+  // not calling it on the same RunLoop as the one that set it but needs more
+  // investigation.
+  // IdTokenRequestCallbackData::Remove(web_contents);
 }
 
 }  // namespace content

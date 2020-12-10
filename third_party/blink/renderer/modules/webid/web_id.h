@@ -28,10 +28,12 @@ class WebID final : public ScriptWrappable, public ExecutionContextClient {
 
   // WebID IDL interface.
   ScriptPromise get(ScriptState*, const WebIDRequestOptions*, ExceptionState&);
+  ScriptPromise provide(ScriptState*, String id_token);
 
   void Trace(blink::Visitor*) const override;
 
  private:
+  void BindAuthRequest();
   void OnConnectionError();
 
   HeapMojoRemote<mojom::blink::FederatedAuthRequest> auth_request_;

@@ -22,20 +22,25 @@ constexpr int kHeaderHeight = 75;
 
 class ModalDialog : public views::DialogDelegateView {
  public:
-  ModalDialog(content::WebContents* contents, const GURL& provider)
-      : initiator_web_contents_(contents), web_view_(nullptr) {
+  ModalDialog(content::WebContents* initiator_web_contents,
+              content::WebContents* idp_web_contents,
+              const GURL& provider)
+      : initiator_web_contents_(initiator_web_contents), web_view_(nullptr) {
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
     SetModalType(ui::MODAL_TYPE_CHILD);
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
-    web_view_ = AddChildView(CreateWebView(provider));
+    web_view_ = AddChildView(CreateWebView(idp_web_contents, provider));
     SetInitiallyFocusedView(web_view_);
   }
 
-  std::unique_ptr<views::WebView> CreateWebView(const GURL& provider) {
+  std::unique_ptr<views::WebView> CreateWebView(
+      content::WebContents* idp_web_contents,
+      const GURL& provider) {
     auto web_view = std::make_unique<views::WebView>(
         initiator_web_contents_->GetBrowserContext());
 
+    web_view->SetWebContents(idp_web_contents);
     web_view->LoadInitialURL(provider);
 
     // The webview must get an explicitly set height otherwise the layout
@@ -49,10 +54,11 @@ class ModalDialog : public views::DialogDelegateView {
     return web_view;
   }
 
-  void Show() {
+  views::Widget* Show() {
     // ShowWebModalDialogViews takes ownership of this, by way of the
     // DeleteDelegate method.
-    constrained_window::ShowWebModalDialogViews(this, initiator_web_contents_);
+    return constrained_window::ShowWebModalDialogViews(this,
+                                                       initiator_web_contents_);
   }
 
  private:
@@ -63,14 +69,22 @@ class ModalDialog : public views::DialogDelegateView {
 
 WebIDSigninWindow::WebIDSigninWindow(
     content::WebContents* initiator_web_contents,
+    content::WebContents* idp_web_contents,
     const GURL& provider,
-    base::OnceCallback<void(std::string)> on_done,
-    base::OnceCallback<void()> on_close)
-    : on_done_(std::move(on_done)) {
-  auto* modal = new ModalDialog(initiator_web_contents, provider);
+    IdProviderWindowClosedCallback on_done) {
+  // TODO(majidvp): What happens if we are handling multiple concurrent WebID
+  // requests? At the moment we keep creating modal dialogs. This may be fine
+  // when these requests belong to different tabs but may break down if they are
+  // from the same tab or even share the same |initiator_web_contents| (e.g.,
+  // two requests made from an iframe and its embedder frame). We need to
+  // investigate this to ensure we are providing appropriate UX.
+  // http://crbug.com/1141125
+  auto* modal =
+      new ModalDialog(initiator_web_contents, idp_web_contents, provider);
 
-  modal->SetCloseCallback(std::move(on_close));
-  // TODO(majidvp): Actually call on_done callback once we have a token.
+  // Set close callback to also call on_done. This ensures that if user closes
+  // the IDP window the caller promise is rejected accordingly.
+  modal->SetCloseCallback(std::move(on_done));
 
   // ModalDialog is a WidgetDelegate, owned by its views::Widget. It is
   // destroyed by `DeleteDelegate()` which is invoked by view hierarchy. Once
@@ -79,15 +93,24 @@ WebIDSigninWindow::WebIDSigninWindow(
       base::BindOnce([](WebIDSigninWindow* window) { delete window; },
                      base::Unretained(this)));
 
-  modal->Show();
+  modal_ = modal->Show();
+}
+
+void WebIDSigninWindow::Close() {
+  modal_->Close();
 }
 
 WebIDSigninWindow::~WebIDSigninWindow() = default;
 
-void ShowWebIDSigninWindow(content::WebContents* initiator_web_contents,
-                           const GURL& provider,
-                           base::OnceCallback<void(std::string)> on_done,
-                           base::OnceCallback<void()> on_close) {
-  new WebIDSigninWindow(initiator_web_contents, provider, std::move(on_done),
-                        std::move(on_close));
+WebIDSigninWindow* ShowWebIDSigninWindow(
+    content::WebContents* initiator_web_contents,
+    content::WebContents* idp_web_contents,
+    const GURL& provider,
+    IdProviderWindowClosedCallback on_done) {
+  return new WebIDSigninWindow(initiator_web_contents, idp_web_contents,
+                               provider, std::move(on_done));
+}
+
+void CloseWebIDSigninWindow(WebIDSigninWindow* window) {
+  window->Close();
 }

@@ -12,6 +12,8 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "url/gurl.h"
 
+class WebIDSigninWindow;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -25,13 +27,16 @@ void ShowWebIDPermissionInfoBar(
     content::IdentityRequestDialogController::InitialApprovalCallback callback);
 
 // Creates and shows a window that loads the identity provider sign in page at
-// the given URL. It takes two callbacks:
-//  - on_done: called when IDP has provided an id_token with the id_token as
-//             its parameter.
-//  - on_close: called when window is closed.
-void ShowWebIDSigninWindow(content::WebContents* web_contents,
-                           const GURL& idp_signin_url,
-                           base::OnceCallback<void(std::string)> on_done,
-                           base::OnceCallback<void()> on_close);
+// the given URL. The provided callback is called when IDP has provided an
+// id_token with the id_token a its argument, or when window is closed by user
+// with an empty string as its argument.
+WebIDSigninWindow* ShowWebIDSigninWindow(
+    content::WebContents* initiator_web_contents,
+    content::WebContents* idp_web_contents,
+    const GURL& idp_signin_url,
+    content::IdentityRequestDialogController::IdProviderWindowClosedCallback
+        on_done);
+
+void CloseWebIDSigninWindow(WebIDSigninWindow* window);
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOGS_H_

@@ -22,9 +22,16 @@ void ShowWebIDPermissionInfoBar(
   NOTIMPLEMENTED();
 }
 
-void ShowWebIDSigninWindow(content::WebContents* web_contents,
-                           const GURL& idp_signin_url,
-                           base::OnceCallback<void(std::string)> on_done,
-                           base::OnceCallback<void()> on_close) {
+WebIDSigninWindow* ShowWebIDSigninWindow(
+    content::WebContents* initiator_web_contents,
+    content::WebContents* idp_web_contents,
+    const GURL& idp_signin_url,
+    content::IdentityRequestDialogController::IdProviderWindowClosedCallback
+        on_done) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+void CloseWebIDSigninWindow(WebIDSigninWindow* window) {
   NOTIMPLEMENTED();
 }
