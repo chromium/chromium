@@ -54,11 +54,17 @@ class DmServerUploadService {
     // Will iterate over |records| and ensure they are in ascending sequence
     // order, and within the same generation. Any out of order records will be
     // discarded.
+    // |need_encryption_key| is set to `true` if the client needs to request
+    // the encryption key from the server (either because it does not have it
+    // or because the one it has is old and may be outdated). In that case
+    // it is ok for |records| to be empty (otherwise at least one record must
+    // be present).
     // Once the server has responded |upload_complete| is called with either the
     // highest accepted SequencingInformation, or an error detailing the failure
     // cause.
     // Any errors will result in |upload_complete| being called with a Status.
     virtual void HandleRecords(
+        bool need_encryption_key,
         std::unique_ptr<std::vector<EncryptedRecord>> records,
         DmServerUploadService::CompletionCallback upload_complete) = 0;
 
@@ -76,6 +82,7 @@ class DmServerUploadService {
   class DmServerUploader : public TaskRunnerContext<CompletionResponse> {
    public:
     DmServerUploader(
+        bool need_encryption_key,
         std::unique_ptr<std::vector<EncryptedRecord>> records,
         RecordHandler* handler,
         CompletionCallback completion_cb,
@@ -120,6 +127,7 @@ class DmServerUploadService {
         base::RepeatingClosure done_cb,
         SequencingInformation sequencing_information);
 
+    const bool need_encryption_key_;
     std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
     RecordHandler* handler_;
 
@@ -143,7 +151,8 @@ class DmServerUploadService {
           created_cb);
   ~DmServerUploadService();
 
-  Status EnqueueUpload(std::unique_ptr<std::vector<EncryptedRecord>> record);
+  Status EnqueueUpload(bool need_encryption_key,
+                       std::unique_ptr<std::vector<EncryptedRecord>> record);
 
  private:
   DmServerUploadService(policy::CloudPolicyClient* client,

@@ -39,6 +39,7 @@ class RecordHandlerImpl::ReportUploader
     : public TaskRunnerContext<DmServerUploadService::CompletionResponse> {
  public:
   ReportUploader(
+      bool need_encryption_key,
       std::unique_ptr<std::vector<EncryptedRecord>> records,
       policy::CloudPolicyClient* client,
       DmServerUploadService::CompletionCallback upload_complete_cb,
@@ -49,13 +50,21 @@ class RecordHandlerImpl::ReportUploader
 
   void OnStart() override;
 
-  void StartUpload(const EncryptedRecord& encrypted_record);
+  void StartUpload(bool need_encryption_key,
+                   const EncryptedRecord& encrypted_record);
   void OnUploadComplete(base::Optional<base::Value> response);
   void HandleFailedUpload();
   void HandleSuccessfulUpload();
 
+  // Populates upload request. Returns JSON request base::Value or nullopt,
+  // if an error was detected.
+  base::Optional<base::Value> PopulateRequest(
+      bool need_encryption_key,
+      const EncryptedRecord& encrypted_record);
+
   void Complete(DmServerUploadService::CompletionResponse result);
 
+  const bool need_encryption_key_;
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
   policy::CloudPolicyClient* client_;
 
@@ -70,6 +79,7 @@ class RecordHandlerImpl::ReportUploader
 };
 
 RecordHandlerImpl::ReportUploader::ReportUploader(
+    bool need_encryption_key,
     std::unique_ptr<std::vector<EncryptedRecord>> records,
     policy::CloudPolicyClient* client,
     DmServerUploadService::CompletionCallback client_cb,
@@ -77,6 +87,7 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
     : TaskRunnerContext<DmServerUploadService::CompletionResponse>(
           std::move(client_cb),
           sequenced_task_runner),
+      need_encryption_key_(need_encryption_key),
       records_(std::move(records)),
       client_(client) {}
 
@@ -108,10 +119,11 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
   // We'll be popping records off the back.
   std::reverse(records_->begin(), records_->end());
 
-  StartUpload(records_->back());
+  StartUpload(need_encryption_key_, records_->back());
 }
 
 void RecordHandlerImpl::ReportUploader::StartUpload(
+    bool need_encryption_key,
     const EncryptedRecord& encrypted_record) {
   auto response_cb =
       base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
@@ -212,7 +224,8 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
     return;
   }
 
-  StartUpload(records_->back());
+  // Upload the next record but do not request encryption key again.
+  StartUpload(/*need_encryption_key=*/false, records_->back());
 }
 
 void RecordHandlerImpl::ReportUploader::Complete(
@@ -228,11 +241,12 @@ RecordHandlerImpl::RecordHandlerImpl(policy::CloudPolicyClient* client)
 RecordHandlerImpl::~RecordHandlerImpl() = default;
 
 void RecordHandlerImpl::HandleRecords(
+    bool need_encryption_key,
     std::unique_ptr<std::vector<EncryptedRecord>> records,
     DmServerUploadService::CompletionCallback upload_complete_cb) {
-  Start<RecordHandlerImpl::ReportUploader>(std::move(records), GetClient(),
-                                           std::move(upload_complete_cb),
-                                           sequenced_task_runner_);
+  Start<RecordHandlerImpl::ReportUploader>(
+      need_encryption_key, std::move(records), GetClient(),
+      std::move(upload_complete_cb), sequenced_task_runner_);
 }
 
 }  // namespace reporting

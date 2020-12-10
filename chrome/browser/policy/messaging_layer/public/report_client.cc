@@ -571,7 +571,8 @@ ReportingClient::BuildUploader(Priority priority) {
   DCHECK(instance->upload_client_);
   return Uploader::Create(
       base::BindOnce(&UploadClient::EnqueueUpload,
-                     base::Unretained(instance->upload_client_.get())));
+                     base::Unretained(instance->upload_client_.get()),
+                     !instance->config_->storage->has_encryption_key()));
 }
 
 ReportingClient::TestEnvironment::TestEnvironment(

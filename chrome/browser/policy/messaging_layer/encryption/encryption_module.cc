@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 
+#include <atomic>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -90,8 +92,21 @@ void EncryptionModule::UpdateAsymmetricKey(
     base::StringPiece new_public_key,
     Encryptor::PublicKeyId new_public_key_id,
     base::OnceCallback<void(Status)> response_cb) {
-  encryptor_->UpdateAsymmetricKey(new_public_key, new_public_key_id,
-                                  std::move(response_cb));
+  encryptor_->UpdateAsymmetricKey(
+      new_public_key, new_public_key_id,
+      base::BindOnce(
+          [](EncryptionModule* encryption_module,
+             base::OnceCallback<void(Status)> response_cb, Status status) {
+            if (status.ok()) {
+              encryption_module->has_encryption_key_.store(true);
+            }
+            std::move(response_cb).Run(status);
+          },
+          base::Unretained(this), std::move(response_cb)));
+}
+
+bool EncryptionModule::has_encryption_key() const {
+  return has_encryption_key_.load();
 }
 
 }  // namespace reporting

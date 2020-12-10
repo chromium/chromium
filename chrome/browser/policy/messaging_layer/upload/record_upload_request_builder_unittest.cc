@@ -25,7 +25,7 @@ constexpr Priority kPriority = Priority::IMMEDIATE;
 constexpr char kEncryptionKey[] = "abcdef";
 constexpr uint64_t kPublicKeyId = 9876;
 
-class RecordUploadRequestBuilderTest : public ::testing::Test {
+class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
  public:
   RecordUploadRequestBuilderTest() = default;
 
@@ -52,9 +52,11 @@ class RecordUploadRequestBuilderTest : public ::testing::Test {
     static uint64_t sequencing_id = 0;
     return sequencing_id++;
   }
+
+  bool need_encryption_key() const { return GetParam(); }
 };
 
-TEST_F(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
+TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   const std::vector<std::string> kEncryptedWrappedRecords{
       "T", "E", "S", "T", "_", "I", "N", "F", "O"};
   static constexpr size_t kNumRecords = 10;
@@ -66,13 +68,17 @@ TEST_F(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
         base::StrCat({"TEST_INFO_", base::NumberToString(counter)})));
   }
 
-  UploadEncryptedReportingRequestBuilder builder;
+  UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
   for (const auto& record : records) {
     builder.AddRecord(record);
   }
   auto request_payload = builder.Build();
   ASSERT_TRUE(request_payload.has_value());
   ASSERT_TRUE(request_payload.value().is_dict());
+  const auto attach_ncryption_settings = request_payload.value().FindBoolKey(
+      UploadEncryptedReportingRequestBuilder::
+          GetAttachEncryptionSettingsPath());
+  EXPECT_EQ(need_encryption_key(), attach_ncryption_settings.has_value());
   base::Value* const record_list = request_payload.value().FindListKey(
       UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath());
   ASSERT_TRUE(record_list);
@@ -87,7 +93,7 @@ TEST_F(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   }
 }
 
-TEST_F(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
+TEST_P(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
   const std::vector<std::string> kEncryptedWrappedRecords{
       "T", "E", "S", "T", "_", "I", "N", "F", "O"};
   static constexpr size_t kNumRecords = 10;
@@ -103,7 +109,7 @@ TEST_F(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
       .mutable_sequencing_information()
       ->clear_generation_id();
 
-  UploadEncryptedReportingRequestBuilder builder;
+  UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
   for (const auto& record : records) {
     builder.AddRecord(record);
   }
@@ -111,7 +117,7 @@ TEST_F(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
   ASSERT_FALSE(request_payload.has_value()) << request_payload.value();
 }
 
-TEST_F(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
+TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
   // Reject empty record.
   EncryptedRecord record;
 
@@ -144,6 +150,10 @@ TEST_F(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
 
   EXPECT_TRUE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 }
+
+INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,
+                         RecordUploadRequestBuilderTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace reporting

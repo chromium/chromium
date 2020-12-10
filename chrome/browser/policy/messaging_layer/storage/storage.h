@@ -65,6 +65,13 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Returns error if cannot start upload.
   Status Flush(Priority priority);
 
+  // Returns `false` if encryption key has not been found in the Storage during
+  // initialization and not received from the server yet, and `true` otherwise.
+  // The result is lazy: the method may return `false` for some time even after
+  // the key has already been set - this is harmless, since resetting or even
+  // changing the key is OK at any time.
+  bool has_encryption_key() const;
+
   Storage(const Storage& other) = delete;
   Storage& operator=(const Storage& other) = delete;
 
@@ -79,7 +86,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
 
   // Private constructor, to be called by Create factory method only.
   // Queues need to be added afterwards.
-  Storage(const StorageOptions& options, StartUploadCb start_upload_cb);
+  Storage(const StorageOptions& options,
+          scoped_refptr<EncryptionModule> encryption_module,
+          StartUploadCb start_upload_cb);
 
   // Initializes the object by adding all queues for all priorities.
   // Must be called once and only once after construction.
@@ -92,7 +101,11 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // need to protect or serialize access to it.
   StatusOr<scoped_refptr<StorageQueue>> GetQueue(Priority priority);
 
+  // Immutable options, stored at the time of creation.
   const StorageOptions options_;
+
+  // Encryption module.
+  scoped_refptr<EncryptionModule> encryption_module_;
 
   // Map priority->StorageQueue.
   base::flat_map<Priority, scoped_refptr<StorageQueue>> queues_;

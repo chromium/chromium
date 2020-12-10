@@ -44,8 +44,8 @@ namespace reporting {
 //       }
 //     }
 //   ]
+//   "attachEncryptionSettings": true  // optional field
 // }
-// TODO(b/170054326): Add 'need_encryption_key' field, if requested.
 // TODO(b/159361496): Periodically add memory and disk space usage.
 //
 // This payload is added to the common payload of all reporting jobs, which
@@ -62,7 +62,8 @@ namespace reporting {
 
 class UploadEncryptedReportingRequestBuilder {
  public:
-  UploadEncryptedReportingRequestBuilder();
+  explicit UploadEncryptedReportingRequestBuilder(
+      bool attach_encryption_settings = false);
   ~UploadEncryptedReportingRequestBuilder();
 
   UploadEncryptedReportingRequestBuilder& AddRecord(
@@ -71,6 +72,7 @@ class UploadEncryptedReportingRequestBuilder {
   base::Optional<base::Value> Build();
 
   static base::StringPiece GetEncryptedRecordListPath();
+  static base::StringPiece GetAttachEncryptionSettingsPath();
 
   static const char kEncryptedRecordListKey_[];
 

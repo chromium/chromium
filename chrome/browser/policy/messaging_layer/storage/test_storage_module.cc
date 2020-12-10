@@ -43,5 +43,10 @@ void TestStorageModuleStrict::AddRecordSuccessfully(
   priority_ = priority;
   std::move(callback).Run(Status::StatusOK());
 }
+
+bool TestStorageModuleStrict::has_encryption_key() const {
+  return false;  // No encryption in test module.
+}
+
 }  // namespace test
 }  // namespace reporting

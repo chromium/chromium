@@ -238,7 +238,8 @@ TEST_F(UploadClientTest, CreateUploadClientAndUploadRecords) {
   ASSERT_OK(upload_client_result) << upload_client_result.status();
 
   auto upload_client = std::move(upload_client_result.ValueOrDie());
-  auto enqueue_result = upload_client->EnqueueUpload(std::move(records));
+  auto enqueue_result = upload_client->EnqueueUpload(
+      /*need_encryption_key=*/false, std::move(records));
   EXPECT_TRUE(enqueue_result.ok());
 
   waiter.Wait();

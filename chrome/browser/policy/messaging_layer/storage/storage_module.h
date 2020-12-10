@@ -44,6 +44,13 @@ class StorageModule : public base::RefCountedThreadSafe<StorageModule> {
   // can be passed back to the StorageModule here for record deletion.
   virtual void ReportSuccess(SequencingInformation sequencing_information);
 
+  // Returns `false` if encryption key has not been found in the Storage during
+  // initialization and not received from the server yet, and `true` otherwise.
+  // The result is lazy: the method may return `false` for some time even after
+  // the key has already been set - this is harmless, since resetting or even
+  // changing the key is OK at any time.
+  virtual bool has_encryption_key() const;
+
  protected:
   // Constructor can only be called by |Create| factory method.
   StorageModule();

@@ -34,6 +34,8 @@ class TestStorageModuleStrict : public StorageModule {
   Record record() const;
   Priority priority() const;
 
+  bool has_encryption_key() const override;
+
  protected:
   ~TestStorageModuleStrict() override;
 

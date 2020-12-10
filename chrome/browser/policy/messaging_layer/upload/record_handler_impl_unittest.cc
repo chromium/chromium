@@ -164,7 +164,8 @@ TEST_F(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   auto responder_callback = base::BindOnce(
       &TestCompletionResponder::RecordsHandled, base::Unretained(&responder));
 
-  handler.HandleRecords(std::move(test_records), std::move(responder_callback));
+  handler.HandleRecords(/*need_encryption_key=*/false, std::move(test_records),
+                        std::move(responder_callback));
 
   client_waiter.Wait();
   responder_waiter.Wait();
@@ -211,7 +212,8 @@ TEST_F(RecordHandlerImplTest, ReportsEarlyFailure) {
   auto responder_callback = base::BindOnce(
       &TestCompletionResponder::RecordsHandled, base::Unretained(&responder));
 
-  handler.HandleRecords(std::move(test_records), std::move(responder_callback));
+  handler.HandleRecords(/*need_encryption_key=*/false, std::move(test_records),
+                        std::move(responder_callback));
 
   client_waiter.Wait();
   responder_waiter.Wait();

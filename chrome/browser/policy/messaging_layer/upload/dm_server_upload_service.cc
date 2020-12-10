@@ -27,10 +27,6 @@
 
 namespace reporting {
 
-}  // namespace reporting
-
-namespace reporting {
-
 using DmServerUploader = DmServerUploadService::DmServerUploader;
 using ::policy::CloudPolicyClient;
 
@@ -73,12 +69,14 @@ DmServerUploadService::RecordHandler::RecordHandler(
     : client_(client) {}
 
 DmServerUploader::DmServerUploader(
+    bool need_encryption_key,
     std::unique_ptr<std::vector<EncryptedRecord>> records,
     RecordHandler* handler,
     CompletionCallback completion_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
+      need_encryption_key_(need_encryption_key),
       encrypted_records_(std::move(records)),
       handler_(handler) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -102,7 +100,6 @@ void DmServerUploader::OnStart() {
   }
   ProcessRecords();
 }
-
 
 void DmServerUploader::ProcessRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -140,7 +137,7 @@ void DmServerUploader::ProcessRecords() {
 void DmServerUploader::HandleRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   handler_->HandleRecords(
-      std::move(encrypted_records_),
+      need_encryption_key_, std::move(encrypted_records_),
       base::BindOnce(&DmServerUploader::Complete, base::Unretained(this)));
 }
 
@@ -194,9 +191,10 @@ DmServerUploadService::DmServerUploadService(
 DmServerUploadService::~DmServerUploadService() = default;
 
 Status DmServerUploadService::EnqueueUpload(
+    bool need_encryption_key,
     std::unique_ptr<std::vector<EncryptedRecord>> records) {
   Start<DmServerUploader>(
-      std::move(records), handler_.get(),
+      need_encryption_key, std::move(records), handler_.get(),
       base::BindOnce(&DmServerUploadService::UploadCompletion,
                      base::Unretained(this)),
       sequenced_task_runner_);

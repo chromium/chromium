@@ -67,4 +67,8 @@ void StorageModule::Create(
           std::move(instance), std::move(callback)));
 }
 
+bool StorageModule::has_encryption_key() const {
+  return storage_->has_encryption_key();
+}
+
 }  // namespace reporting

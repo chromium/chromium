@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_ENCRYPTION_ENCRYPTION_MODULE_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_ENCRYPTION_ENCRYPTION_MODULE_H_
 
+#include <atomic>
+
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
@@ -39,11 +41,22 @@ class EncryptionModule : public base::RefCountedThreadSafe<EncryptionModule> {
       Encryptor::PublicKeyId new_public_key_id,
       base::OnceCallback<void(Status)> response_cb);
 
+  // Returns `false` if encryption key has not been set yet, and `true`
+  // otherwise. The result is lazy: the method may return `false` for some time
+  // even after the key has already been set - this is harmless, since resetting
+  // or even changing the key is OK at any time.
+  bool has_encryption_key() const;
+
  protected:
   virtual ~EncryptionModule();
 
  private:
   friend base::RefCountedThreadSafe<EncryptionModule>;
+
+  // Lazy flag indicating public assymmetric key has been set.
+  // Initialized as `false`, set to `true` after |UpdateAsymmetricKey| is called
+  // for the first time.
+  std::atomic<bool> has_encryption_key_{false};
 
   // Encryptor.
   scoped_refptr<Encryptor> encryptor_;

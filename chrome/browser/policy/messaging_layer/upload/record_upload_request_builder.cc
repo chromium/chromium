@@ -21,6 +21,7 @@ namespace {
 
 // UploadEncryptedReportingRequestBuilder list key
 constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
+constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 
 // EncrypedRecordDictionaryBuilder strings
 constexpr char kEncryptedWrappedRecord[] = "encryptedWrappedRecord";
@@ -38,11 +39,14 @@ constexpr char kPublicKeyId[] = "publicKeyId";
 
 }  // namespace
 
-UploadEncryptedReportingRequestBuilder::
-    UploadEncryptedReportingRequestBuilder() {
+UploadEncryptedReportingRequestBuilder::UploadEncryptedReportingRequestBuilder(
+    bool attach_encryption_settings) {
   result_ = base::Value{base::Value::Type::DICTIONARY};
   result_.value().SetKey(GetEncryptedRecordListPath(),
                          base::Value{base::Value::Type::LIST});
+  if (attach_encryption_settings) {
+    result_.value().SetBoolKey(GetAttachEncryptionSettingsPath(), true);
+  }
 }
 
 UploadEncryptedReportingRequestBuilder::
@@ -81,6 +85,12 @@ base::Optional<base::Value> UploadEncryptedReportingRequestBuilder::Build() {
 base::StringPiece
 UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath() {
   return kEncryptedRecordListKey;
+}
+
+// static
+base::StringPiece
+UploadEncryptedReportingRequestBuilder::GetAttachEncryptionSettingsPath() {
+  return kAttachEncryptionSettingsKey;
 }
 
 EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
