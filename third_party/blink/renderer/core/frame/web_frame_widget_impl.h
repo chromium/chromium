@@ -1026,8 +1026,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   // closed.
   scoped_refptr<WebPagePopupImpl> last_hidden_page_popup_;
 
-  SelfKeepAlive<WebFrameWidgetImpl> self_keep_alive_;
-
   base::WeakPtrFactory<mojom::blink::FrameWidgetInputHandler>
       input_handler_weak_ptr_factory_{this};
 };
