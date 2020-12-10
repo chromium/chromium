@@ -122,21 +122,39 @@ class BuilderTest(LoggingTestCase):
             urls={
                 'https://test-results.appspot.com/testfile?buildnumber=5&'
                 'callback=ADD_RESULTS&builder=foo&name=full_results.json':
-                'ADD_RESULTS(%s);' % (json.dumps(
-                    [{
-                        "TestType": "blink_web_tests (with patch)"
-                    },
-                     {
-                         "TestType":
-                         "not_site_per_process_blink_web_tests (with patch)"
-                     }, {
-                         "TestType": "blink_web_tests (retry with patch)"
-                     }, {
-                         "TestType": "base_unittests (with patch)"
-                     }]))
+                'ADD_RESULTS(%s);' %
+                (json.dumps([{
+                    "TestType": "blink_web_tests (with patch)"
+                }, {
+                    "TestType":
+                    "not_site_per_process_blink_web_tests (with patch)"
+                }, {
+                    "TestType": "blink_web_tests (retry with patch)"
+                }, {
+                    "TestType": "base_unittests (with patch)"
+                }]))
             })
         step_name = fetcher.get_layout_test_step_name(Build('foo', 5))
         self.assertEqual(step_name, 'blink_web_tests (with patch)')
+        self.assertLog([])
+
+    def test_get_step_name_for_wpt(self):
+        fetcher = TestResultsFetcher()
+        fetcher.web = MockWeb(
+            urls={
+                'https://test-results.appspot.com/testfile?buildnumber=5&'
+                'callback=ADD_RESULTS&builder=foo&name=full_results.json':
+                'ADD_RESULTS(%s);' %
+                (json.dumps([{
+                    "TestType": "wpt_tests_suite (with patch)"
+                }, {
+                    "TestType": "wpt_tests_suite (retry with patch)"
+                }, {
+                    "TestType": "base_unittests (with patch)"
+                }]))
+            })
+        step_name = fetcher.get_layout_test_step_name(Build('foo', 5))
+        self.assertEqual(step_name, 'wpt_tests_suite (with patch)')
         self.assertLog([])
 
     def test_get_step_name_without_build_number(self):

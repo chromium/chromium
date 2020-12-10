@@ -981,36 +981,36 @@ class Port(object):
             WPTManifest.ensure_manifest(self, path)
         return WPTManifest(self.host, manifest_path)
 
-    def is_wpt_crash_test(self, test_file):
+    def is_wpt_crash_test(self, test_name):
         """Returns whether a WPT test is a crashtest.
 
         See https://web-platform-tests.org/writing-tests/crashtest.html.
         """
-        match = self.WPT_REGEX.match(test_file)
+        match = self.WPT_REGEX.match(test_name)
         if not match:
             return False
         wpt_path = match.group(1)
         path_in_wpt = match.group(2)
         return self.wpt_manifest(wpt_path).is_crash_test(path_in_wpt)
 
-    def is_slow_wpt_test(self, test_file):
+    def is_slow_wpt_test(self, test_name):
         # When DCHECK is enabled, idlharness tests run 5-6x slower due to the
         # amount of JavaScript they use (most web_tests run very little JS).
         # This causes flaky timeouts for a lot of them, as a 0.5-1s test becomes
         # close to the default 6s timeout.
-        if (self.is_wpt_idlharness_test(test_file)
+        if (self.is_wpt_idlharness_test(test_name)
                 and self._build_has_dcheck_always_on()):
             return True
 
-        match = self.WPT_REGEX.match(test_file)
+        match = self.WPT_REGEX.match(test_name)
         if not match:
             return False
         wpt_path = match.group(1)
         path_in_wpt = match.group(2)
         return self.wpt_manifest(wpt_path).is_slow_test(path_in_wpt)
 
-    def get_wpt_fuzzy_metadata(self, test_file):
-        """Returns the WPT fuzzy metadata for the given test.
+    def get_wpt_fuzzy_metadata(self, test_name):
+        """Returns the fuzzy metadata for the given WPT test.
 
         The metadata is a pair of lists, (maxDifference, totalPixels), where
         each list is a [min, max] range, inclusive. If the test is not a WPT
@@ -1018,12 +1018,28 @@ class Port(object):
 
         See https://web-platform-tests.org/writing-tests/reftests.html#fuzzy-matching
         """
-        match = self.WPT_REGEX.match(test_file)
+        match = self.WPT_REGEX.match(test_name)
         if not match:
             return None, None
         wpt_path = match.group(1)
         path_in_wpt = match.group(2)
         return self.wpt_manifest(wpt_path).extract_fuzzy_metadata(path_in_wpt)
+
+    def get_file_path_for_wpt_test(self, test_name):
+        """Returns the real file path for the given WPT test.
+
+        Or None if the test is not a WPT.
+        """
+        match = self.WPT_REGEX.match(test_name)
+        if not match:
+            return None
+        wpt_path = match.group(1)
+        path_in_wpt = match.group(2)
+        file_path_in_wpt = self.wpt_manifest(wpt_path).file_path_for_test_url(
+            path_in_wpt)
+        if not file_path_in_wpt:
+            return None
+        return self._filesystem.join(wpt_path, file_path_in_wpt)
 
     def test_key(self, test_name):
         """Turns a test name into a pair of sublists: the natural sort key of the

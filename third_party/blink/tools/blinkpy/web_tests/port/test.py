@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import base64
+import json
 import time
 
 from blinkpy.common import exit_codes
@@ -527,6 +528,105 @@ passes/slow.html [ Slow ]
 
     # Clear the list of written files so that we can watch what happens during testing.
     filesystem.clear_written_files()
+
+
+def add_manifest_to_mock_filesystem(port):
+    # Disable manifest update otherwise they'll be overwritten.
+    port.set_option_default('manifest_update', False)
+    filesystem = port.host.filesystem
+    filesystem.write_text_file(
+        WEB_TEST_DIR + '/external/wpt/MANIFEST.json',
+        json.dumps({
+            'items': {
+                'testharness': {
+                    'dom': {
+                        'ranges': {
+                            'Range-attributes.html': ['acbdef123', [None, {}]],
+                            'Range-attributes-slow.html':
+                            ['abcdef123', [None, {
+                                'timeout': 'long'
+                            }]],
+                        },
+                    },
+                    'console': {
+                        'console-is-a-namespace.any.js': [
+                            'abcdef1234',
+                            ['console/console-is-a-namespace.any.html', {}],
+                            [
+                                'console/console-is-a-namespace.any.worker.html',
+                                {
+                                    'timeout': 'long'
+                                }
+                            ],
+                        ],
+                    },
+                    'html': {
+                        'parse.html': [
+                            'abcdef123',
+                            ['html/parse.html?run_type=uri', {}],
+                            [
+                                'html/parse.html?run_type=write', {
+                                    'timeout': 'long'
+                                }
+                            ],
+                        ],
+                    },
+                },
+                'manual': {},
+                'reftest': {
+                    'html': {
+                        'dom': {
+                            'elements': {
+                                'global-attributes': {
+                                    'dir_auto-EN-L.html': [
+                                        'abcdef123',
+                                        [
+                                            None,
+                                            [[
+                                                '/html/dom/elements/global-attributes/dir_auto-EN-L-ref.html',
+                                                '=='
+                                            ]], {
+                                                'timeout': 'long'
+                                            }
+                                        ],
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                'crashtest': {
+                    'portals': {
+                        'portals-no-frame-crash.html':
+                        ['abcdef123', [None, {}]],
+                    },
+                },
+            }
+        }))
+    filesystem.write_text_file(
+        WEB_TEST_DIR + '/external/wpt/dom/ranges/Range-attributes.html', '')
+    filesystem.write_text_file(
+        WEB_TEST_DIR + '/external/wpt/dom/ranges/Range-attributes-slow.html',
+        '')
+    filesystem.write_text_file(
+        WEB_TEST_DIR + '/external/wpt/console/console-is-a-namespace.any.js',
+        '')
+    filesystem.write_text_file(
+        WEB_TEST_DIR + '/external/wpt/common/blank.html', 'foo')
+
+    filesystem.write_text_file(
+        WEB_TEST_DIR + '/wpt_internal/MANIFEST.json',
+        json.dumps({
+            'items': {
+                'testharness': {
+                    'dom': {
+                        'bar.html': ['abcdef123', [None, {}]]
+                    }
+                }
+            }
+        }))
+    filesystem.write_text_file(WEB_TEST_DIR + '/wpt_internal/dom/bar.html',
+                               'baz')
 
 
 class TestPort(Port):

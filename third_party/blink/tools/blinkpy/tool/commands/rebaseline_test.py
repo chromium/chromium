@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import json
 import logging
 
 from blinkpy.tool.commands.rebaseline import AbstractRebaseliningCommand
@@ -44,9 +43,16 @@ class RebaselineTest(AbstractRebaseliningCommand):
             options.builder)
         test_name = options.test
         for suffix in self._baseline_suffix_list:
-            self._rebaseline_test(port_name, test_name, suffix, results_url)
+            self._rebaseline_test(
+                port_name, test_name, suffix, results_url,
+                self._tool.builders.is_wpt_builder(options.builder))
 
-    def _rebaseline_test(self, port_name, test_name, suffix, results_url):
+    def _rebaseline_test(self,
+                         port_name,
+                         test_name,
+                         suffix,
+                         results_url,
+                         is_wpt=False):
         """Downloads a baseline file and saves it to the filesystem.
 
         Args:
@@ -56,16 +62,22 @@ class RebaselineTest(AbstractRebaseliningCommand):
             suffix: The baseline file extension (e.g. png); together with the
                 test name and results_url this determines what file to download.
             results_url: Base URL to download the actual result from.
+            is_wpt: (Optional, default to False) Whether this is a WPT builder.
         """
         port = self._tool.port_factory.get(port_name)
 
-        baseline_directory = port.baseline_version_dir()
+        # TODO(crbug.com/1154085): Undo this special case when we have WPT bots
+        # on more ports.
+        if is_wpt:
+            baseline_directory = port.web_tests_dir()
+        else:
+            baseline_directory = port.baseline_version_dir()
 
         source_baseline = '%s/%s' % (
             results_url, self._file_name_for_actual_result(test_name, suffix))
         target_baseline = self._tool.filesystem.join(
             baseline_directory,
-            self._file_name_for_expected_result(test_name, suffix))
+            self._file_name_for_expected_result(test_name, suffix, is_wpt))
 
         if suffix == 'png' and port.reference_files(test_name):
             _log.warning('Cannot rebaseline image result for reftest: %s',

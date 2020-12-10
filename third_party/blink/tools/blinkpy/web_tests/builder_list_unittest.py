@@ -35,6 +35,11 @@ class BuilderListTest(unittest.TestCase):
     @staticmethod
     def sample_builder_list():
         return BuilderList({
+            'some-wpt-bot': {
+                'port_name': 'port-c',
+                'specifiers': ['C', 'Release'],
+                'is_try_builder': True,
+            },
             'Blink A': {
                 'port_name': 'port-a',
                 'specifiers': ['A', 'Release']
@@ -95,8 +100,16 @@ class BuilderListTest(unittest.TestCase):
     def test_all_builder_names(self):
         builders = self.sample_builder_list()
         self.assertEqual([
-            'Blink A', 'Blink B', 'Blink B (dbg)', 'Blink C (dbg)', 'CQ Try A',
-            'CQ Try B', 'CQ Try C', 'Try A', 'Try B'
+            'Blink A',
+            'Blink B',
+            'Blink B (dbg)',
+            'Blink C (dbg)',
+            'CQ Try A',
+            'CQ Try B',
+            'CQ Try C',
+            'Try A',
+            'Try B',
+            'some-wpt-bot',
         ], builders.all_builder_names())
 
     def test_all_continuous_builder_names(self):
@@ -107,9 +120,10 @@ class BuilderListTest(unittest.TestCase):
 
     def test_all_try_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(
-            ['CQ Try A', 'CQ Try B', 'CQ Try C', 'Try A', 'Try B'],
-            builders.all_try_builder_names())
+        self.assertEqual([
+            'CQ Try A', 'CQ Try B', 'CQ Try C', 'Try A', 'Try B',
+            'some-wpt-bot'
+        ], builders.all_try_builder_names())
 
     def test_all_cq_try_builder_names(self):
         builders = self.sample_builder_list()
@@ -195,3 +209,8 @@ class BuilderListTest(unittest.TestCase):
         self.assertEqual('B',
                          builders.version_specifier_for_port_name('port-b'))
         self.assertIsNone(builders.version_specifier_for_port_name('port-x'))
+
+    def test_is_wpt_builder(self):
+        builders = self.sample_builder_list()
+        self.assertFalse(builders.is_wpt_builder('Blink A'))
+        self.assertTrue(builders.is_wpt_builder('some-wpt-bot'))

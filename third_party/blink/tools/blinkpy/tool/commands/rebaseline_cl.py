@@ -343,7 +343,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 if f.startswith(test_base)
             ]
 
-        test_baseline_set = TestBaselineSet(self._tool)
+        # Here we have a concrete list of tests so we don't need prefix lookup.
+        test_baseline_set = TestBaselineSet(self._tool, prefix_mode=False)
         for build, tests in builds_to_tests.iteritems():
             for test in tests:
                 if only_changed_tests and test not in tests_in_cl:

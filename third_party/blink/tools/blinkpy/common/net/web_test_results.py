@@ -37,6 +37,10 @@ class WebTestResult(object):
         self._test_name = test_name
         self._result_dict = result_dict
 
+    def __repr__(self):
+        return "WebTestResult(test_name=%s, result_dict=%s)" % \
+            (repr(self._test_name), repr(self._result_dict))
+
     def suffixes_for_test_result(self):
         suffixes = set()
         artifact_names = self._result_dict.get('artifacts', {}).keys()

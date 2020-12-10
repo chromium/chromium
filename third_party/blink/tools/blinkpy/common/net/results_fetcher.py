@@ -160,8 +160,8 @@ class TestResultsFetcher(object):
             # patch)'. Only make sure it starts with blink_web_tests and
             # runs with a patch. This should be changed eventually to use actual
             # structured data from the test results server.
-            if (entry['TestType'].startswith('blink_web_tests')
-                and entry['TestType'].endswith('(with patch)'))
+            if re.match(r'(blink_web_tests|wpt_tests_suite).*\(with patch\)$',
+                        entry['TestType'])
         ]
         # In manual testing, I sometimes saw results where the same suite was
         # repeated twice. De-duplicate here to try to catch this.
