@@ -63,6 +63,7 @@ public class MainActivity
     private Button mWarmupButton;
     private Button mMayLaunchButton;
     private Button mLaunchButton;
+    private Button mLaunchIncognitoButton;
     private MediaPlayer mMediaPlayer;
 
     /**
@@ -108,12 +109,14 @@ public class MainActivity
         mWarmupButton = (Button) findViewById(R.id.warmup_button);
         mMayLaunchButton = (Button) findViewById(R.id.may_launch_button);
         mLaunchButton = (Button) findViewById(R.id.launch_button);
+        mLaunchIncognitoButton = findViewById(R.id.launch_incognito_button);
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         mEditText.requestFocus();
         mConnectButton.setOnClickListener(this);
         mWarmupButton.setOnClickListener(this);
         mMayLaunchButton.setOnClickListener(this);
         mLaunchButton.setOnClickListener(this);
+        mLaunchIncognitoButton.setOnClickListener(this);
         mMediaPlayer = MediaPlayer.create(this, R.raw.amazing_grace);
         findViewById(R.id.register_twa_service).setOnClickListener(this);
 
@@ -227,7 +230,7 @@ public class MainActivity
             boolean success = false;
             if (mClient != null) success = session.mayLaunchUrl(Uri.parse(url), null, null);
             if (!success) mMayLaunchButton.setEnabled(false);
-        } else if (viewId == R.id.launch_button) {
+        } else if (viewId == R.id.launch_button || viewId == R.id.launch_incognito_button) {
             CustomTabsSession session = getSession();
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
             builder.setToolbarColor(Color.parseColor(TOOLBAR_COLOR)).setShowTitle(true);
@@ -239,6 +242,10 @@ public class MainActivity
             builder.setCloseButtonIcon(
                     BitmapFactory.decodeResource(getResources(), R.drawable.ic_arrow_back));
             CustomTabsIntent customTabsIntent = builder.build();
+            // NOTE: opening in incognito may be restricted. This assumes it is not.
+            customTabsIntent.intent.putExtra(
+                    "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
+                    viewId == R.id.launch_incognito_button);
             if (session != null) {
                 CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent);
             } else {
@@ -285,6 +292,7 @@ public class MainActivity
         mWarmupButton.setEnabled(true);
         mMayLaunchButton.setEnabled(true);
         mLaunchButton.setEnabled(true);
+        mLaunchIncognitoButton.setEnabled(true);
     }
 
     @Override
@@ -293,6 +301,7 @@ public class MainActivity
         mWarmupButton.setEnabled(false);
         mMayLaunchButton.setEnabled(false);
         mLaunchButton.setEnabled(false);
+        mLaunchIncognitoButton.setEnabled(false);
         mClient = null;
     }
 }

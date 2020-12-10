@@ -19,6 +19,7 @@
     <string name="warmup_button_text">Warmup Chrome</string>
     <string name="may_launch_button_text">May Launch URL</string>
     <string name="launch_button_text">Launch URL in a Chrome Custom Tab</string>
+    <string name="launch_incognito_button_text">Launch URL in an incognito Chrome Custom Tab</string>
     <string name="connect_button_text">Connect to the service</string>
     <string name="launch_browser_actions_button_text">Launch URL in Browser Actions Context Menu</string>
     <string name="register_twa_service">Register TrustedWebActivityService</string>

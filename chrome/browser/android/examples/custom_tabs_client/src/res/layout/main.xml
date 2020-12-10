@@ -96,6 +96,15 @@
             android:enabled="true" />
 
         <Button
+            android:id="@+id/launch_incognito_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:textAllCaps="false"
+            android:text="@string/launch_incognito_button_text"
+            android:enabled="true" />
+
+        <Button
             android:id="@+id/launch_browser_actions_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
