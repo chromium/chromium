@@ -47,34 +47,6 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     }
 
     /**
-     * Calculates the offset required for the focused LocationBar to appear as it's still
-     * unfocused so it can animate to a focused state.
-     *
-     * @param hasFocus True if the LocationBar has focus, this will be true between the focus
-     *         animation starting and the unfocus animation starting.
-     * @return The offset for the location bar when showing the DSE/loupe icon.
-     */
-    public int getLocationBarOffsetForFocusAnimation(boolean hasFocus) {
-        return mLocationBarPhone.getLocationBarOffsetForFocusAnimation(hasFocus);
-    }
-
-    /**
-     * Function used to position the URL bar inside the location bar during omnibox animation.
-     *
-     * @param urlExpansionFraction The current expansion progress, 1 is fully focused and 0 is
-     *         completely unfocused.
-     * @param hasFocus True if the LocationBar has focus, this will be true between the focus
-     *         animation starting and the unfocus animation starting.
-     * @return The number of pixels of horizontal translation for the URL bar, used in the
-     *         toolbar animation.
-     */
-    public float getUrlBarTranslationXForToolbarAnimation(
-            float urlExpansionFraction, boolean hasFocus) {
-        return mLocationBarPhone.getUrlBarTranslationXForToolbarAnimation(
-                urlExpansionFraction, hasFocus);
-    }
-
-    /**
      * Handles any actions to be performed after all other actions triggered by the URL focus
      * change. This will be called after any animations are performed to transition from one
      * focus state to the other.

@@ -412,6 +412,11 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarMediator.setUnfocusedWidth(unfocusedWidth);
     }
 
+    /** Returns the {@link StatusCoordiantor} for the LocationBar. */
+    public StatusCoordinator getStatusCoordinator() {
+        return mStatusCoordinator;
+    }
+
     public void setVoiceRecognitionHandlerForTesting(
             VoiceRecognitionHandler voiceRecognitionHandler) {
         mLocationBarMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
