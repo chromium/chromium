@@ -104,7 +104,7 @@ class ConnectToDeviceOperationBase
   const DeviceIdPair& device_id_pair() const { return device_id_pair_; }
 
  private:
-  const DeviceIdPair& device_id_pair_;
+  DeviceIdPair device_id_pair_;
   scoped_refptr<base::TaskRunner> task_runner_;
   base::Optional<ConnectionPriority> pending_connection_attempt_priority_;
   base::WeakPtrFactory<ConnectToDeviceOperationBase> weak_ptr_factory_{this};
