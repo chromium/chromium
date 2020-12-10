@@ -401,6 +401,7 @@
         'RemoteAccessHostAllowUiAccessForRemoteAssistance',
         'RemoteAccessHostAllowFileTransfer',
         'RemoteAccessHostEnableUserInterface',
+        'RemoteAccessHostAllowRemoteAccessConnections',
       ],
     },
     {
@@ -2300,7 +2301,36 @@
 
           This policy has no effect if it is set to true, left empty, or is not set.''',
     },
+    {
+      'name': 'RemoteAccessHostAllowRemoteAccessConnections',
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:89-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+        'platform_only': True,  # No cloud-policy support.
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow remote access connections to this machine',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent remote access connections to this machine',
+        },
+      ],
+      'default': True,
+      'example_value': False,
+      'id': 812,
+      'caption': '''Allow remote access connections to this machine''',
+      'tags': [],
+      'desc': '''If this policy is disabled, the remote access host service cannot be started or configured to accept incoming connections.  This policy does not affect remote support scenarios.
 
+          This policy has no effect if it is set to true, left empty, or is not set.''',
+    },
     {
       'name': 'PrintingEnabled',
       'owners': ['file://printing/OWNERS', 'thestig@chromium.org'],
@@ -24600,6 +24630,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'RemoteAccessHostAllowUiAccessForRemoteAssistance',
         'RemoteAccessHostAllowFileTransfer',
         'RemoteAccessHostEnableUserInterface',
+        'RemoteAccessHostAllowRemoteAccessConnections',
       ],
     },
     {
@@ -25046,6 +25077,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 811,
+  'highest_id_currently_used': 812,
   'highest_atomic_group_id_currently_used': 40
 }

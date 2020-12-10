@@ -9,8 +9,7 @@ namespace remoting {
 
 // Known host exit codes. The exit codes indicating permanent errors must be in
 // sync with:
-//  - remoting/host/installer/mac/PrivilegedHelperTools/
-//      org.chromium.chromoting.me2me.sh
+//  - remoting/host/mac/host_service_main.cc
 //  - remoting/host/linux/linux_me2me_host.py
 enum HostExitCodes {
   // Error codes that don't indicate a permanent error condition.
@@ -28,16 +27,17 @@ enum HostExitCodes {
   kLoginScreenNotSupportedExitCode = 104,
   kUsernameMismatchExitCode = 105,
   kHostDeletedExitCode = 106,
+  kRemoteAccessDisallowedExitCode = 107,
 
   // The range of the exit codes that should be interpreted as a permanent error
   // condition.
   kMinPermanentErrorExitCode = kInvalidHostConfigurationExitCode,
-  kMaxPermanentErrorExitCode = kHostDeletedExitCode
+  kMaxPermanentErrorExitCode = kRemoteAccessDisallowedExitCode
 };
 
 const char* ExitCodeToString(HostExitCodes exit_code);
 
-// Returns nullptr if |exit_code| is not a HostExitCodes.
+// Returns nullptr if |exit_code| is not contained within HostExitCodes.
 const char* ExitCodeToStringUnchecked(int exit_code);
 
 }  // namespace remoting

@@ -20,6 +20,7 @@ const NameMapElement<HostExitCodes> kHostExitCodeStrings[] = {
     {kLoginScreenNotSupportedExitCode, "LOGIN_SCREEN_NOT_SUPPORTED"},
     {kUsernameMismatchExitCode, "USERNAME_MISMATCH"},
     {kHostDeletedExitCode, "HOST_DELETED"},
+    {kRemoteAccessDisallowedExitCode, "REMOTE_ACCESS_DISALLOWED"},
 };
 
 const char* ExitCodeToString(HostExitCodes exit_code) {

@@ -270,8 +270,6 @@
 
   "RemoteAccessClientFirewallTraversal": {},
 
-  "RemoteAccessClientFirewallTraversal": {},
-
   "RemoteAccessHostClientDomain": {},
 
   "RemoteAccessHostClientDomainList": {},
@@ -311,6 +309,8 @@
   "RemoteAccessHostAllowFileTransfer": {},
 
   "RemoteAccessHostEnableUserInterface": {},
+
+  "RemoteAccessHostAllowRemoteAccessConnections": {},
 
   "PrintingEnabled": {
     "os": ["win", "linux", "mac", "chromeos"],

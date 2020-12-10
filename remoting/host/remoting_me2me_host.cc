@@ -312,6 +312,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   void ReportPolicyErrorAndRestartHost();
   void ApplyHostDomainListPolicy();
   void ApplyUsernamePolicy();
+  void ApplyAllowRemoteAccessConnections();
   bool OnClientDomainListPolicyUpdate(base::DictionaryValue* policies);
   bool OnHostDomainListPolicyUpdate(base::DictionaryValue* policies);
   bool OnUsernamePolicyUpdate(base::DictionaryValue* policies);
@@ -324,6 +325,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnGnubbyAuthPolicyUpdate(base::DictionaryValue* policies);
   bool OnFileTransferPolicyUpdate(base::DictionaryValue* policies);
   bool OnEnableUserInterfacePolicyUpdate(base::DictionaryValue* policies);
+  bool OnAllowRemoteAccessConnections(base::DictionaryValue* policies);
 
   void InitializeSignaling();
 
@@ -398,6 +400,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   PortRange udp_port_range_;
   bool allow_pairing_ = true;
   bool enable_user_interface_ = true;
+  bool allow_remote_access_connections_ = true;
 
   DesktopEnvironmentOptions desktop_environment_options_;
   ThirdPartyAuthConfig third_party_auth_config_;
@@ -623,6 +626,7 @@ void HostProcess::OnConfigUpdated(
     DCHECK_EQ(policy_state_, POLICY_LOADED);
     ApplyHostDomainListPolicy();
     ApplyUsernamePolicy();
+    ApplyAllowRemoteAccessConnections();
 
     // TODO(sergeyu): Here we assume that PIN is the only part of the config
     // that may change while the service is running. Change ApplyConfig() to
@@ -1079,6 +1083,7 @@ void HostProcess::OnPolicyUpdate(
   restart_required |= OnGnubbyAuthPolicyUpdate(policies.get());
   restart_required |= OnFileTransferPolicyUpdate(policies.get());
   restart_required |= OnEnableUserInterfacePolicyUpdate(policies.get());
+  restart_required |= OnAllowRemoteAccessConnections(policies.get());
 
   policy_state_ = POLICY_LOADED;
 
@@ -1139,9 +1144,21 @@ void HostProcess::ApplyHostDomainListPolicy() {
   }
 }
 
+void HostProcess::ApplyAllowRemoteAccessConnections() {
+  if (state_ != HOST_STARTED)
+    return;
+
+  HOST_LOG << "Policy allows remote access connections: "
+           << allow_remote_access_connections_;
+
+  if (!allow_remote_access_connections_) {
+    ShutdownHost(kRemoteAccessDisallowedExitCode);
+  }
+}
+
 bool HostProcess::OnHostDomainListPolicyUpdate(
     base::DictionaryValue* policies) {
-  // Returns true if the host has to be restarted after this policy update.
+  // Returns false: never restart the host after this policy update.
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   const base::ListValue* list;
@@ -1416,6 +1433,24 @@ bool HostProcess::OnEnableUserInterfacePolicyUpdate(
   return true;
 }
 
+bool HostProcess::OnAllowRemoteAccessConnections(
+    base::DictionaryValue* policies) {
+  // Returns false: never restart the host after this policy update.
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+
+  bool allow_remote_access_connections;
+  if (!policies->GetBoolean(
+          policy::key::kRemoteAccessHostAllowRemoteAccessConnections,
+          &allow_remote_access_connections)) {
+    return false;
+  }
+
+  // Update the value if the policy was set and retrieval was successful.
+  allow_remote_access_connections_ = allow_remote_access_connections;
+  ApplyAllowRemoteAccessConnections();
+  return false;
+}
+
 void HostProcess::InitializeSignaling() {
   DCHECK(!host_id_.empty());  // ApplyConfig() should already have been run.
 
@@ -1591,6 +1626,7 @@ void HostProcess::StartHost() {
 
   ApplyHostDomainListPolicy();
   ApplyUsernamePolicy();
+  ApplyAllowRemoteAccessConnections();
 }
 
 void HostProcess::OnAuthFailed() {

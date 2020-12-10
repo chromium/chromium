@@ -22794,6 +22794,7 @@ Called by update_document_policy_enum.py.-->
   <int value="809" label="ClearBrowsingDataOnExitList"/>
   <int value="810" label="ProfilePickerOnStartupAvailability"/>
   <int value="811" label="SigninInterceptionEnabled"/>
+  <int value="812" label="RemoteAccessHostAllowRemoteAccessConnections"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
