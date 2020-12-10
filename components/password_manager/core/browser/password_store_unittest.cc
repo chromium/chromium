@@ -31,7 +31,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_default.h"
+#include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -153,8 +153,8 @@ class PasswordStoreTest : public testing::Test {
     return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("login_test"));
   }
 
-  scoped_refptr<PasswordStoreDefault> CreatePasswordStore() {
-    return new PasswordStoreDefault(std::make_unique<LoginDatabase>(
+  scoped_refptr<PasswordStoreImpl> CreatePasswordStore() {
+    return new PasswordStoreImpl(std::make_unique<LoginDatabase>(
         test_login_db_file_path(), password_manager::IsAccountStore(false)));
   }
 
@@ -178,7 +178,7 @@ base::Optional<PasswordHashData> GetPasswordFromPref(
 }
 
 TEST_F(PasswordStoreTest, IgnoreOldWwwGoogleLogins) {
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   const time_t cutoff = 1325376000;  // 00:00 Jan 1 2012 UTC
@@ -286,7 +286,7 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
        L"", kTestLastUsageTime, 1}};
   /* clang-format on */
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   std::unique_ptr<PasswordForm> old_form(
@@ -337,7 +337,7 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
        L"", kTestLastUsageTime, 1};
   /* clang-format on */
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   std::unique_ptr<PasswordForm> test_form(
@@ -367,7 +367,7 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnRemoveLogin) {
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   /* clang-format off */
@@ -406,7 +406,7 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginUpdated) {
   CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   /* clang-format off */
@@ -445,7 +445,7 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginAdded) {
   CompromisedCredentials compromised_credentials(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   /* clang-format off */
@@ -497,7 +497,7 @@ TEST_F(PasswordStoreTest,
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
   store->AddLogin(*FillPasswordFormWithData(kTestCredentials));
   store->AddDatabaseCompromisedCredentialsObserver(&observer);
@@ -535,7 +535,7 @@ TEST_F(PasswordStoreTest,
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), CompromiseType::kLeaked, false);
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
   store->AddLogin(*FillPasswordFormWithData(kTestCredentials));
   store->AddCompromisedCredentials(compromised_credentials);
@@ -579,7 +579,7 @@ TEST_F(PasswordStoreTest,
                                                  kTestLastUsageTime,
                                                  1};
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
   store->AddLogin(*FillPasswordFormWithData(kTestCredentials));
   store->AddCompromisedCredentials(compromised_credentials);
@@ -625,7 +625,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
        L"", kTestLastUsageTime, 1}};
   /* clang-format on */
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -724,7 +724,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
           false,
       }};
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -890,7 +890,7 @@ TEST_F(PasswordStoreTest, UpdatePasswordsStoredForAffiliatedWebsites) {
     SCOPED_TRACE(testing::Message("test_remove_and_add_login: ")
                  << test_remove_and_add_login);
 
-    scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+    scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
     store->Init(nullptr);
     store->RemoveLoginsCreatedBetween(base::Time(), base::Time::Max(),
                                       base::NullCallback());
@@ -987,7 +987,7 @@ TEST_F(PasswordStoreTest, GetAllLogins) {
       {PasswordForm::Scheme::kHtml, kTestWebRealm3, kTestWebOrigin3, "", L"",
        L"", L"", nullptr, L"", kTestLastUsageTime, 1}};
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -1037,7 +1037,7 @@ TEST_F(PasswordStoreTest, GetLogisByPassword) {
       {PasswordForm::Scheme::kHtml, kTestWebRealm3, kTestWebOrigin3, "", L"",
        L"", L"", nullptr, tested_password, kTestLastUsageTime, 1}};
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -1092,7 +1092,7 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
       {PasswordForm::Scheme::kHtml, kTestWebRealm3, kTestWebOrigin3, "", L"",
        L"", L"", nullptr, L"", kTestLastUsageTime, 1}};
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -1171,7 +1171,7 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
        kTestUnrelatedWebOrigin2, "", L"", L"", L"", L"username", L"",
        kTestLastUsageTime, 1}};
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
@@ -1217,7 +1217,7 @@ TEST_F(PasswordStoreTest, CheckPasswordReuse) {
        "https://facebook.com", "", L"", L"", L"", L"username2", L"topsecret",
        kTestLastUsageTime, 1}};
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   for (const auto& test_credentials : kTestCredentials) {
@@ -1259,7 +1259,7 @@ TEST_F(PasswordStoreTest, CheckPasswordReuse) {
 }
 
 TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
 
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
@@ -1400,7 +1400,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
 }
 
 TEST_F(PasswordStoreTest, SubscriptionAndUnsubscriptionFromSignInEvents) {
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
 
   std::unique_ptr<MockPasswordStoreSigninNotifier> notifier =
       std::make_unique<MockPasswordStoreSigninNotifier>();
@@ -1417,7 +1417,7 @@ TEST_F(PasswordStoreTest, SubscriptionAndUnsubscriptionFromSignInEvents) {
 }
 
 TEST_F(PasswordStoreTest, ReportMetricsForAdvancedProtection) {
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
 
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
@@ -1451,7 +1451,7 @@ TEST_F(PasswordStoreTest, ReportMetricsForAdvancedProtection) {
 }
 
 TEST_F(PasswordStoreTest, ReportMetricsForNonSyncPassword) {
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
 
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
@@ -1497,7 +1497,7 @@ TEST_F(PasswordStoreTest, GetAllCompromisedCredentials) {
       {PasswordForm::Scheme::kHtml, "https://2.example.com/",
        "https://2.example.com/", "", L"", L"", L"", L"username2", L"topsecret",
        kTestLastUsageTime, 1}};
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   for (const auto& data : kTestCredentials)
@@ -1533,7 +1533,7 @@ TEST_F(PasswordStoreTest, GetAllCompromisedCredentials) {
 // Test GetMatchingCompromisedCredentials when affiliation service isn't
 // available.
 TEST_F(PasswordStoreTest, GetMatchingCompromisedWithoutAffiliations) {
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   constexpr PasswordFormData kTestCredentials[] = {
@@ -1565,7 +1565,7 @@ TEST_F(PasswordStoreTest, GetMatchingCompromisedWithoutAffiliations) {
 // Test GetMatchingCompromisedCredentials with some matching Android
 // credentials.
 TEST_F(PasswordStoreTest, GetMatchingCompromisedWithAffiliations) {
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   constexpr PasswordFormData kTestCredentials[] = {
@@ -1618,7 +1618,7 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsCreatedBetween) {
       "https://example3.com/", base::ASCIIToUTF16("username3"),
       base::Time::FromTimeT(300), CompromiseType::kLeaked, false);
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
   constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::Scheme::kHtml, "https://example1.com/",
@@ -1666,7 +1666,7 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsCreatedBetween) {
 // Test that updating a password in the store deletes the corresponding
 // compromised record synchronously.
 TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnUpdate) {
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   CompromisedCredentials compromised_credentials(
@@ -1702,7 +1702,7 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnUpdate) {
 // Test that deleting a password in the store deletes the corresponding
 // compromised record synchronously.
 TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnDelete) {
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   CompromisedCredentials compromised_credentials(
@@ -1744,7 +1744,7 @@ TEST_F(PasswordStoreTest, GetAllFieldInfo) {
   FieldInfo field_info2{autofill::FormSignature(1002),
                         autofill::FieldSignature(10), autofill::PASSWORD,
                         base::Time::FromTimeT(2)};
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   store->AddFieldInfo(field_info1);
@@ -1770,7 +1770,7 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
                         autofill::FieldSignature(11), autofill::PASSWORD,
                         base::Time::FromTimeT(300)};
 
-  scoped_refptr<PasswordStoreDefault> store = CreatePasswordStore();
+  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
   store->AddFieldInfo(field_info1);

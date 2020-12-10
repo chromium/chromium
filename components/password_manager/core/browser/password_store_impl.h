@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_DEFAULT_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_DEFAULT_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_IMPL_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -18,11 +18,11 @@ namespace password_manager {
 
 // Simple password store implementation that delegates everything to
 // the LoginDatabase.
-class PasswordStoreDefault : public PasswordStore {
+class PasswordStoreImpl : public PasswordStore {
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
-  explicit PasswordStoreDefault(std::unique_ptr<LoginDatabase> login_db);
+  explicit PasswordStoreImpl(std::unique_ptr<LoginDatabase> login_db);
 
   void ShutdownOnUIThread() override;
 
@@ -30,7 +30,7 @@ class PasswordStoreDefault : public PasswordStore {
   LoginDatabase* login_db() const { return login_db_.get(); }
 
  protected:
-  ~PasswordStoreDefault() override;
+  ~PasswordStoreImpl() override;
 
   // Opens |login_db_| on the background sequence.
   bool InitOnBackgroundSequence() override;
@@ -114,9 +114,9 @@ class PasswordStoreDefault : public PasswordStore {
   // fails, |login_db_| will be reset and stay NULL for the lifetime of |this|.
   std::unique_ptr<LoginDatabase> login_db_;
 
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreDefault);
+  DISALLOW_COPY_AND_ASSIGN(PasswordStoreImpl);
 };
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_DEFAULT_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_IMPL_H_

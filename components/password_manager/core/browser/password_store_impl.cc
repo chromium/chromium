@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store_default.h"
+#include "components/password_manager/core/browser/password_store_impl.h"
 
 #include <iterator>
 #include <set>
@@ -16,18 +16,17 @@
 
 namespace password_manager {
 
-PasswordStoreDefault::PasswordStoreDefault(
-    std::unique_ptr<LoginDatabase> login_db)
+PasswordStoreImpl::PasswordStoreImpl(std::unique_ptr<LoginDatabase> login_db)
     : login_db_(std::move(login_db)) {}
 
-PasswordStoreDefault::~PasswordStoreDefault() = default;
+PasswordStoreImpl::~PasswordStoreImpl() = default;
 
-void PasswordStoreDefault::ShutdownOnUIThread() {
+void PasswordStoreImpl::ShutdownOnUIThread() {
   PasswordStore::ShutdownOnUIThread();
-  ScheduleTask(base::BindOnce(&PasswordStoreDefault::ResetLoginDB, this));
+  ScheduleTask(base::BindOnce(&PasswordStoreImpl::ResetLoginDB, this));
 }
 
-bool PasswordStoreDefault::InitOnBackgroundSequence() {
+bool PasswordStoreImpl::InitOnBackgroundSequence() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(login_db_);
   bool success = true;
@@ -39,17 +38,15 @@ bool PasswordStoreDefault::InitOnBackgroundSequence() {
     LOG(ERROR) << "Could not create/open login database.";
   }
   if (success) {
-    login_db_->SetDeletionsHaveSyncedCallback(
-        base::BindRepeating(&PasswordStoreDefault::NotifyDeletionsHaveSynced,
-                            base::Unretained(this)));
+    login_db_->SetDeletionsHaveSyncedCallback(base::BindRepeating(
+        &PasswordStoreImpl::NotifyDeletionsHaveSynced, base::Unretained(this)));
   }
   return PasswordStore::InitOnBackgroundSequence() && success;
 }
 
-void PasswordStoreDefault::ReportMetricsImpl(
-    const std::string& sync_username,
-    bool custom_passphrase_sync_enabled,
-    BulkCheckDone bulk_check_done) {
+void PasswordStoreImpl::ReportMetricsImpl(const std::string& sync_username,
+                                          bool custom_passphrase_sync_enabled,
+                                          BulkCheckDone bulk_check_done) {
   if (!login_db_)
     return;
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
@@ -57,7 +54,7 @@ void PasswordStoreDefault::ReportMetricsImpl(
                            bulk_check_done);
 }
 
-PasswordStoreChangeList PasswordStoreDefault::AddLoginImpl(
+PasswordStoreChangeList PasswordStoreImpl::AddLoginImpl(
     const PasswordForm& form,
     AddLoginError* error) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
@@ -70,7 +67,7 @@ PasswordStoreChangeList PasswordStoreDefault::AddLoginImpl(
   return login_db_->AddLogin(form, error);
 }
 
-PasswordStoreChangeList PasswordStoreDefault::UpdateLoginImpl(
+PasswordStoreChangeList PasswordStoreImpl::UpdateLoginImpl(
     const PasswordForm& form,
     UpdateLoginError* error) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
@@ -83,7 +80,7 @@ PasswordStoreChangeList PasswordStoreDefault::UpdateLoginImpl(
   return login_db_->UpdateLogin(form, error);
 }
 
-PasswordStoreChangeList PasswordStoreDefault::RemoveLoginImpl(
+PasswordStoreChangeList PasswordStoreImpl::RemoveLoginImpl(
     const PasswordForm& form) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   PasswordStoreChangeList changes;
@@ -93,7 +90,7 @@ PasswordStoreChangeList PasswordStoreDefault::RemoveLoginImpl(
   return PasswordStoreChangeList();
 }
 
-PasswordStoreChangeList PasswordStoreDefault::RemoveLoginsByURLAndTimeImpl(
+PasswordStoreChangeList PasswordStoreImpl::RemoveLoginsByURLAndTimeImpl(
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end) {
@@ -114,7 +111,7 @@ PasswordStoreChangeList PasswordStoreDefault::RemoveLoginsByURLAndTimeImpl(
   return changes;
 }
 
-PasswordStoreChangeList PasswordStoreDefault::RemoveLoginsCreatedBetweenImpl(
+PasswordStoreChangeList PasswordStoreImpl::RemoveLoginsCreatedBetweenImpl(
     base::Time delete_begin,
     base::Time delete_end) {
   PasswordStoreChangeList changes;
@@ -125,7 +122,7 @@ PasswordStoreChangeList PasswordStoreDefault::RemoveLoginsCreatedBetweenImpl(
   return changes;
 }
 
-PasswordStoreChangeList PasswordStoreDefault::DisableAutoSignInForOriginsImpl(
+PasswordStoreChangeList PasswordStoreImpl::DisableAutoSignInForOriginsImpl(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
   PrimaryKeyToFormMap key_to_form_map;
   PasswordStoreChangeList changes;
@@ -154,7 +151,7 @@ PasswordStoreChangeList PasswordStoreDefault::DisableAutoSignInForOriginsImpl(
   return changes;
 }
 
-bool PasswordStoreDefault::RemoveStatisticsByOriginAndTimeImpl(
+bool PasswordStoreImpl::RemoveStatisticsByOriginAndTimeImpl(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::Time delete_begin,
     base::Time delete_end) {
@@ -163,7 +160,7 @@ bool PasswordStoreDefault::RemoveStatisticsByOriginAndTimeImpl(
 }
 
 std::vector<std::unique_ptr<PasswordForm>>
-PasswordStoreDefault::FillMatchingLogins(const FormDigest& form) {
+PasswordStoreImpl::FillMatchingLogins(const FormDigest& form) {
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   if (login_db_ && !login_db_->GetLogins(form, &matched_forms))
     return std::vector<std::unique_ptr<PasswordForm>>();
@@ -171,7 +168,7 @@ PasswordStoreDefault::FillMatchingLogins(const FormDigest& form) {
 }
 
 std::vector<std::unique_ptr<PasswordForm>>
-PasswordStoreDefault::FillMatchingLoginsByPassword(
+PasswordStoreImpl::FillMatchingLoginsByPassword(
     const base::string16& plain_text_password) {
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   if (login_db_ &&
@@ -180,58 +177,58 @@ PasswordStoreDefault::FillMatchingLoginsByPassword(
   return matched_forms;
 }
 
-bool PasswordStoreDefault::FillAutofillableLogins(
+bool PasswordStoreImpl::FillAutofillableLogins(
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   return login_db_ && login_db_->GetAutofillableLogins(forms);
 }
 
-bool PasswordStoreDefault::FillBlocklistLogins(
+bool PasswordStoreImpl::FillBlocklistLogins(
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   return login_db_ && login_db_->GetBlocklistLogins(forms);
 }
 
-DatabaseCleanupResult PasswordStoreDefault::DeleteUndecryptableLogins() {
+DatabaseCleanupResult PasswordStoreImpl::DeleteUndecryptableLogins() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (!login_db_)
     return DatabaseCleanupResult::kDatabaseUnavailable;
   return login_db_->DeleteUndecryptableLogins();
 }
 
-void PasswordStoreDefault::AddSiteStatsImpl(const InteractionsStats& stats) {
+void PasswordStoreImpl::AddSiteStatsImpl(const InteractionsStats& stats) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (login_db_)
     login_db_->stats_table().AddRow(stats);
 }
 
-void PasswordStoreDefault::RemoveSiteStatsImpl(const GURL& origin_domain) {
+void PasswordStoreImpl::RemoveSiteStatsImpl(const GURL& origin_domain) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (login_db_)
     login_db_->stats_table().RemoveRow(origin_domain);
 }
 
-std::vector<InteractionsStats> PasswordStoreDefault::GetAllSiteStatsImpl() {
+std::vector<InteractionsStats> PasswordStoreImpl::GetAllSiteStatsImpl() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   return login_db_ ? login_db_->stats_table().GetAllRows()
                    : std::vector<InteractionsStats>();
 }
 
-std::vector<InteractionsStats> PasswordStoreDefault::GetSiteStatsImpl(
+std::vector<InteractionsStats> PasswordStoreImpl::GetSiteStatsImpl(
     const GURL& origin_domain) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   return login_db_ ? login_db_->stats_table().GetRows(origin_domain)
                    : std::vector<InteractionsStats>();
 }
 
-bool PasswordStoreDefault::AddCompromisedCredentialsImpl(
+bool PasswordStoreImpl::AddCompromisedCredentialsImpl(
     const CompromisedCredentials& credentials) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   return login_db_ &&
          login_db_->insecure_credentials_table().AddRow(credentials);
 }
 
-bool PasswordStoreDefault::RemoveCompromisedCredentialsImpl(
+bool PasswordStoreImpl::RemoveCompromisedCredentialsImpl(
     const std::string& signon_realm,
     const base::string16& username,
     RemoveCompromisedCredentialsReason reason) {
@@ -241,7 +238,7 @@ bool PasswordStoreDefault::RemoveCompromisedCredentialsImpl(
 }
 
 std::vector<CompromisedCredentials>
-PasswordStoreDefault::GetAllCompromisedCredentialsImpl() {
+PasswordStoreImpl::GetAllCompromisedCredentialsImpl() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   std::vector<CompromisedCredentials> compromised_credentials =
       login_db_ ? login_db_->insecure_credentials_table().GetAllRows()
@@ -255,7 +252,7 @@ PasswordStoreDefault::GetAllCompromisedCredentialsImpl() {
 }
 
 std::vector<CompromisedCredentials>
-PasswordStoreDefault::GetMatchingCompromisedCredentialsImpl(
+PasswordStoreImpl::GetMatchingCompromisedCredentialsImpl(
     const std::string& signon_realm) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   std::vector<CompromisedCredentials> compromised_credentials =
@@ -269,7 +266,7 @@ PasswordStoreDefault::GetMatchingCompromisedCredentialsImpl(
   return compromised_credentials;
 }
 
-bool PasswordStoreDefault::RemoveCompromisedCredentialsByUrlAndTimeImpl(
+bool PasswordStoreImpl::RemoveCompromisedCredentialsByUrlAndTimeImpl(
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time remove_begin,
     base::Time remove_end) {
@@ -279,46 +276,46 @@ bool PasswordStoreDefault::RemoveCompromisedCredentialsByUrlAndTimeImpl(
              url_filter, remove_begin, remove_end);
 }
 
-void PasswordStoreDefault::AddFieldInfoImpl(const FieldInfo& field_info) {
+void PasswordStoreImpl::AddFieldInfoImpl(const FieldInfo& field_info) {
   if (login_db_)
     login_db_->field_info_table().AddRow(field_info);
 }
 
-std::vector<FieldInfo> PasswordStoreDefault::GetAllFieldInfoImpl() {
+std::vector<FieldInfo> PasswordStoreImpl::GetAllFieldInfoImpl() {
   return login_db_ ? login_db_->field_info_table().GetAllRows()
                    : std::vector<FieldInfo>();
 }
 
-void PasswordStoreDefault::RemoveFieldInfoByTimeImpl(base::Time remove_begin,
-                                                     base::Time remove_end) {
+void PasswordStoreImpl::RemoveFieldInfoByTimeImpl(base::Time remove_begin,
+                                                  base::Time remove_end) {
   if (login_db_)
     login_db_->field_info_table().RemoveRowsByTime(remove_begin, remove_end);
 }
 
-bool PasswordStoreDefault::IsEmpty() {
+bool PasswordStoreImpl::IsEmpty() {
   if (!login_db_)
     return true;
   return login_db_->IsEmpty();
 }
 
-bool PasswordStoreDefault::BeginTransaction() {
+bool PasswordStoreImpl::BeginTransaction() {
   if (login_db_)
     return login_db_->BeginTransaction();
   return false;
 }
 
-void PasswordStoreDefault::RollbackTransaction() {
+void PasswordStoreImpl::RollbackTransaction() {
   if (login_db_)
     login_db_->RollbackTransaction();
 }
 
-bool PasswordStoreDefault::CommitTransaction() {
+bool PasswordStoreImpl::CommitTransaction() {
   if (login_db_)
     return login_db_->CommitTransaction();
   return false;
 }
 
-FormRetrievalResult PasswordStoreDefault::ReadAllLogins(
+FormRetrievalResult PasswordStoreImpl::ReadAllLogins(
     PrimaryKeyToFormMap* key_to_form_map) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (!login_db_)
@@ -326,7 +323,7 @@ FormRetrievalResult PasswordStoreDefault::ReadAllLogins(
   return login_db_->GetAllLogins(key_to_form_map);
 }
 
-PasswordStoreChangeList PasswordStoreDefault::RemoveLoginByPrimaryKeySync(
+PasswordStoreChangeList PasswordStoreImpl::RemoveLoginByPrimaryKeySync(
     int primary_key) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   PasswordStoreChangeList changes;
@@ -336,19 +333,19 @@ PasswordStoreChangeList PasswordStoreDefault::RemoveLoginByPrimaryKeySync(
   return PasswordStoreChangeList();
 }
 
-PasswordStoreSync::MetadataStore* PasswordStoreDefault::GetMetadataStore() {
+PasswordStoreSync::MetadataStore* PasswordStoreImpl::GetMetadataStore() {
   return login_db_.get();
 }
 
-bool PasswordStoreDefault::IsAccountStore() const {
+bool PasswordStoreImpl::IsAccountStore() const {
   return login_db_ && login_db_->is_account_store();
 }
 
-bool PasswordStoreDefault::DeleteAndRecreateDatabaseFile() {
+bool PasswordStoreImpl::DeleteAndRecreateDatabaseFile() {
   return login_db_ && login_db_->DeleteAndRecreateDatabaseFile();
 }
 
-void PasswordStoreDefault::ResetLoginDB() {
+void PasswordStoreImpl::ResetLoginDB() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   login_db_.reset();
 }

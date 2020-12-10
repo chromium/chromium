@@ -182,10 +182,10 @@ static_library("browser") {
     "password_store_change.h",
     "password_store_consumer.cc",
     "password_store_consumer.h",
-    "password_store_default.cc",
-    "password_store_default.h",
     "password_store_factory_util.cc",
     "password_store_factory_util.h",
+    "password_store_impl.cc",
+    "password_store_impl.h",
     "password_store_signin_notifier.h",
     "password_store_sync.cc",
     "password_store_sync.h",
@@ -648,7 +648,7 @@ source_set("unit_tests") {
     "password_reuse_detection_manager_unittest.cc",
     "password_reuse_detector_unittest.cc",
     "password_save_manager_impl_unittest.cc",
-    "password_store_default_unittest.cc",
+    "password_store_impl_unittest.cc",
     "password_store_origin_unittest.h",
     "password_store_unittest.cc",
     "password_sync_util_unittest.cc",
@@ -679,7 +679,7 @@ source_set("unit_tests") {
     sources += [ "password_scripts_fetcher_impl_unittests.cc" ]
   }
   if (is_mac) {
-    sources -= [ "password_store_default_unittest.cc" ]
+    sources -= [ "password_store_impl_unittest.cc" ]
   }
   if (is_ios) {
     sources += [ "login_database_ios_unittest.cc" ]

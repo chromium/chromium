@@ -14,8 +14,8 @@
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store_default.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
+#include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -104,7 +104,7 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
           browser_state->GetStatePath()));
 
   scoped_refptr<password_manager::PasswordStore> ps =
-      new password_manager::PasswordStoreDefault(std::move(login_db));
+      new password_manager::PasswordStoreImpl(std::move(login_db));
   if (!ps->Init(browser_state->GetPrefs(),
                 base::BindRepeating(&SyncEnabledOrDisabled, browser_state))) {
     // TODO(crbug.com/479725): Remove the LOG once this error is visible in the

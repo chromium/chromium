@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_default.h"
+#include "components/password_manager/core/browser/password_store_impl.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
@@ -31,7 +31,7 @@ namespace {
 using password_manager::PasswordForm;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
-using password_manager::PasswordStoreDefault;
+using password_manager::PasswordStoreImpl;
 using password_manager::LoginDatabase;
 
 class CredentialProviderServiceTest : public PlatformTest {
@@ -75,8 +75,8 @@ class CredentialProviderServiceTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  scoped_refptr<PasswordStoreDefault> CreatePasswordStore() {
-    return base::MakeRefCounted<PasswordStoreDefault>(
+  scoped_refptr<PasswordStoreImpl> CreatePasswordStore() {
+    return base::MakeRefCounted<PasswordStoreImpl>(
         std::make_unique<LoginDatabase>(
             temp_dir_.GetPath().Append(FILE_PATH_LITERAL("login_test")),
             password_manager::IsAccountStore(false)));
@@ -85,7 +85,7 @@ class CredentialProviderServiceTest : public PlatformTest {
  protected:
   base::ScopedTempDir temp_dir_;
   web::WebTaskEnvironment task_environment_;
-  scoped_refptr<PasswordStoreDefault> password_store_;
+  scoped_refptr<PasswordStoreImpl> password_store_;
   ArchivableCredentialStore* credential_store_;
   AuthenticationServiceFake* auth_service_;
   std::unique_ptr<CredentialProviderService> credential_provider_service_;

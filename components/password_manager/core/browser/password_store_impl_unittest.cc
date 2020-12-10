@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/password_store_default.h"
+#include "components/password_manager/core/browser/password_store_impl.h"
 
 #include <memory>
 #include <utility>
@@ -75,14 +75,14 @@ PasswordFormData CreateTestPasswordFormData() {
   return data;
 }
 
-class PasswordStoreDefaultTestDelegate {
+class PasswordStoreImplTestDelegate {
  public:
-  PasswordStoreDefaultTestDelegate();
-  explicit PasswordStoreDefaultTestDelegate(
+  PasswordStoreImplTestDelegate();
+  explicit PasswordStoreImplTestDelegate(
       std::unique_ptr<LoginDatabase> database);
-  ~PasswordStoreDefaultTestDelegate();
+  ~PasswordStoreImplTestDelegate();
 
-  PasswordStoreDefault* store() { return store_.get(); }
+  PasswordStoreImpl* store() { return store_.get(); }
 
   void FinishAsyncProcessing();
 
@@ -91,64 +91,64 @@ class PasswordStoreDefaultTestDelegate {
 
   void ClosePasswordStore();
 
-  scoped_refptr<PasswordStoreDefault> CreateInitializedStore(
+  scoped_refptr<PasswordStoreImpl> CreateInitializedStore(
       std::unique_ptr<LoginDatabase> database);
 
   base::FilePath test_login_db_file_path() const;
 
-  base::test::TaskEnvironment task_environment_{base::test::TaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple prefs_;
-  scoped_refptr<PasswordStoreDefault> store_;
+  scoped_refptr<PasswordStoreImpl> store_;
 
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreDefaultTestDelegate);
+  DISALLOW_COPY_AND_ASSIGN(PasswordStoreImplTestDelegate);
 };
 
-PasswordStoreDefaultTestDelegate::PasswordStoreDefaultTestDelegate() {
+PasswordStoreImplTestDelegate::PasswordStoreImplTestDelegate() {
   OSCryptMocker::SetUp();
   SetupTempDir();
   store_ = CreateInitializedStore(std::make_unique<LoginDatabase>(
       test_login_db_file_path(), IsAccountStore(false)));
 }
 
-PasswordStoreDefaultTestDelegate::PasswordStoreDefaultTestDelegate(
+PasswordStoreImplTestDelegate::PasswordStoreImplTestDelegate(
     std::unique_ptr<LoginDatabase> database) {
   OSCryptMocker::SetUp();
   SetupTempDir();
   store_ = CreateInitializedStore(std::move(database));
 }
 
-PasswordStoreDefaultTestDelegate::~PasswordStoreDefaultTestDelegate() {
+PasswordStoreImplTestDelegate::~PasswordStoreImplTestDelegate() {
   ClosePasswordStore();
   OSCryptMocker::TearDown();
 }
 
-void PasswordStoreDefaultTestDelegate::FinishAsyncProcessing() {
+void PasswordStoreImplTestDelegate::FinishAsyncProcessing() {
   task_environment_.RunUntilIdle();
 }
 
-void PasswordStoreDefaultTestDelegate::SetupTempDir() {
+void PasswordStoreImplTestDelegate::SetupTempDir() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
 
-void PasswordStoreDefaultTestDelegate::ClosePasswordStore() {
+void PasswordStoreImplTestDelegate::ClosePasswordStore() {
   store_->ShutdownOnUIThread();
   FinishAsyncProcessing();
   ASSERT_TRUE(temp_dir_.Delete());
 }
 
-scoped_refptr<PasswordStoreDefault>
-PasswordStoreDefaultTestDelegate::CreateInitializedStore(
+scoped_refptr<PasswordStoreImpl>
+PasswordStoreImplTestDelegate::CreateInitializedStore(
     std::unique_ptr<LoginDatabase> database) {
-  scoped_refptr<PasswordStoreDefault> store(
-      new PasswordStoreDefault(std::move(database)));
+  scoped_refptr<PasswordStoreImpl> store(
+      new PasswordStoreImpl(std::move(database)));
   store->Init(&prefs_);
 
   return store;
 }
 
-base::FilePath PasswordStoreDefaultTestDelegate::test_login_db_file_path()
-    const {
+base::FilePath PasswordStoreImplTestDelegate::test_login_db_file_path() const {
   return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("login_test"));
 }
 
@@ -156,11 +156,11 @@ base::FilePath PasswordStoreDefaultTestDelegate::test_login_db_file_path()
 
 INSTANTIATE_TYPED_TEST_SUITE_P(Default,
                                PasswordStoreOriginTest,
-                               PasswordStoreDefaultTestDelegate);
+                               PasswordStoreImplTestDelegate);
 
-TEST(PasswordStoreDefaultTest, NonASCIIData) {
-  PasswordStoreDefaultTestDelegate delegate;
-  PasswordStoreDefault* store = delegate.store();
+TEST(PasswordStoreImplTest, NonASCIIData) {
+  PasswordStoreImplTestDelegate delegate;
+  PasswordStoreImpl* store = delegate.store();
 
   // Some non-ASCII password form data.
   static const PasswordFormData form_data[] = {
@@ -188,9 +188,9 @@ TEST(PasswordStoreDefaultTest, NonASCIIData) {
   delegate.FinishAsyncProcessing();
 }
 
-TEST(PasswordStoreDefaultTest, Notifications) {
-  PasswordStoreDefaultTestDelegate delegate;
-  PasswordStoreDefault* store = delegate.store();
+TEST(PasswordStoreImplTest, Notifications) {
+  PasswordStoreImplTestDelegate delegate;
+  PasswordStoreImpl* store = delegate.store();
 
   std::unique_ptr<PasswordForm> form =
       FillPasswordFormWithData(CreateTestPasswordFormData());
@@ -239,10 +239,9 @@ TEST(PasswordStoreDefaultTest, Notifications) {
 // Verify that operations on a PasswordStore with a bad database cause no
 // explosions, but fail without side effect, return no data and trigger no
 // notifications.
-TEST(PasswordStoreDefaultTest, OperationsOnABadDatabaseSilentlyFail) {
-  PasswordStoreDefaultTestDelegate delegate(
-      std::make_unique<BadLoginDatabase>());
-  PasswordStoreDefault* bad_store = delegate.store();
+TEST(PasswordStoreImplTest, OperationsOnABadDatabaseSilentlyFail) {
+  PasswordStoreImplTestDelegate delegate(std::make_unique<BadLoginDatabase>());
+  PasswordStoreImpl* bad_store = delegate.store();
   delegate.FinishAsyncProcessing();
   ASSERT_EQ(nullptr, bad_store->login_db());
 
