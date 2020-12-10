@@ -75,14 +75,14 @@
     --paper-progress-container-color: var(--google-grey-200);
   }
 </style>
-<div class="preview">
-  <div id="helpOrProgress" class="preview-item"
-      hidden$="[[showScannedImages_]]">
+<div class="preview" aria-label="[[previewAriaLabel_]]">
+  <div id="helpOrProgress" class="preview-item" hidden$="[[showScannedImages_]]"
+      aria-hidden="true">
     <div id="helperText" hidden$="[[!showHelperText_]]">
       <span inner-h-t-m-l="[[getHelperTextHtml_()]]"></span>
     </div>
     <div id="scanProgress" hidden$="[[!showScanProgress_]]">
-      <span id="progressText">[[getProgressTextString_(pageNumber)]]</span>
+      <span id="progressText">[[progressTextString_]]</span>
       <paper-progress id="scanProgressBar" value="[[progressPercent]]">
       </paper-progress>
     </div>
@@ -91,7 +91,7 @@
       <paper-progress id="cancelingProgressBar" indeterminate></paper-progress>
     </div>
   </div>
-  <div id="scannedImages" hidden$="[[!showScannedImages_]]">
+  <div id="scannedImages" hidden$="[[!showScannedImages_]]" aria-hidden="true">
     <template is="dom-repeat" items="[[objectUrls]]" as="url">
       <img class="preview-item scanned-image" src="[[url]]">
     </template>

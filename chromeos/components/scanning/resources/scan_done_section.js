@@ -44,8 +44,8 @@ Polymer({
 
   /** @override */
   created() {
+    // ScanningBrowserProxy is initialized when scanning_app.js is created.
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
-    this.browserProxy_.initialize();
   },
 
   /** @private */

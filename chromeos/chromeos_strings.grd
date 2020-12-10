@@ -600,6 +600,11 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_OK_BUTTON_LABEL" desc="The label for the button to acknowledge and close the dialog shown when a scan job fails.">
         Ok
       </message>
+      <message name="IDS_SCANNING_APP_SCANNED_IMAGES_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="The text read by the screen reader to announce a scan job is completed and the total number of pages scanned.">
+        {NUMBER_OF_PAGES, plural,
+        =1 {Scanning completed. 1 page scanned}
+        other {Scanning completed. {NUMBER_OF_PAGES} pages scanned}}
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

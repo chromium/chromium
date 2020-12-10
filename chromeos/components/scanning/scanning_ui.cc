@@ -109,7 +109,8 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
 
 void AddScanningAppPluralStrings(ScanningHandler* handler) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"fileSavedText", IDS_SCANNING_APP_FILE_SAVED_TEXT}};
+      {"fileSavedText", IDS_SCANNING_APP_FILE_SAVED_TEXT},
+      {"scannedImagesAriaLabel", IDS_SCANNING_APP_SCANNED_IMAGES_ARIA_LABEL}};
 
   for (const auto& str : kLocalizedStrings)
     handler->AddStringToPluralMap(str.name, str.id);

@@ -32,6 +32,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {getScanService} from './mojo_interface_provider.js';
 import {AppState, ScannerArr} from './scanning_app_types.js';
 import {colorModeFromString, fileTypeFromString, pageSizeFromString, tokenToString} from './scanning_app_util.js';
+import {ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
  * The default save directory for completed scans.
@@ -211,6 +212,8 @@ Polymer({
   created() {
     this.scanService_ = getScanService();
     this.selectedFilePath = DEFAULT_SAVE_DIRECTORY;
+
+    ScanningBrowserProxyImpl.getInstance().initialize();
   },
 
   /** @override */
