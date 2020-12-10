@@ -40,6 +40,7 @@
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
@@ -193,7 +194,12 @@ void SetupOnUIThread(
     auto reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
         rph->GetStoragePartition(), params->script_url,
         cross_origin_embedder_policy->reporting_endpoint,
-        cross_origin_embedder_policy->report_only_reporting_endpoint);
+        cross_origin_embedder_policy->report_only_reporting_endpoint,
+        // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a
+        // top-level browsing context, which shouldn't be use for ServiceWorkers
+        // used in iframes.
+        net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
+            url::Origin::Create(params->script_url)));
     reporter->BindObserver(std::move(reporting_observer_remote));
     mojo::MakeSelfOwnedReceiver(std::move(reporter),
                                 coep_reporter.BindNewPipeAndPassReceiver());
@@ -1149,7 +1155,12 @@ EmbeddedWorkerInstance::CreateFactoryBundles() {
         rph->GetStoragePartition(), owner_version_->script_url(),
         owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
         owner_version_->cross_origin_embedder_policy()
-            ->report_only_reporting_endpoint);
+            ->report_only_reporting_endpoint,
+        // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a
+        // top-level browsing context, which shouldn't be use for ServiceWorkers
+        // used in iframes.
+        net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
+            url::Origin::Create(owner_version_->script_url())));
     reporter->BindObserver(std::move(reporting_observer_remote));
     mojo::MakeSelfOwnedReceiver(std::move(reporter),
                                 coep_reporter_.BindNewPipeAndPassReceiver());

@@ -8139,6 +8139,10 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     bool is_same_document,
     bool is_same_document_history_api_navigation) {
   DCHECK(!is_same_document_history_api_navigation || is_same_document);
+
+  net::IsolationInfo isolation_info = ComputeIsolationInfoInternal(
+      origin, net::IsolationInfo::RequestType::kOther);
+
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter;
   // We don't switch the COEP reporter on same-document navigations, so create
   // one only for cross-document navigations.
@@ -8146,7 +8150,8 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     coep_reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
         GetProcess()->GetStoragePartition(), url,
         cross_origin_embedder_policy_.reporting_endpoint,
-        cross_origin_embedder_policy_.report_only_reporting_endpoint);
+        cross_origin_embedder_policy_.report_only_reporting_endpoint,
+        isolation_info.network_isolation_key());
   }
   std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info;
   if (is_same_document && web_bundle_handle_ &&
@@ -8165,9 +8170,7 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     method = last_http_method_;
   }
   return NavigationRequest::CreateForCommit(
-      frame_tree_node_, this, is_same_document, url, origin,
-      ComputeIsolationInfoInternal(origin,
-                                   net::IsolationInfo::RequestType::kOther),
+      frame_tree_node_, this, is_same_document, url, origin, isolation_info,
       std::move(referrer), transition, should_replace_current_entry, method,
       gesture, redirects, page_state, std::move(coep_reporter),
       std::move(web_bundle_navigation_info));

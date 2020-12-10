@@ -1744,10 +1744,13 @@ NavigationRequest::TakePolicyContainerHost() {
 
 void NavigationRequest::CreateCoepReporter(
     StoragePartition* storage_partition) {
+  DCHECK(!isolation_info_for_subresources_.IsEmpty());
+
   const auto& coep = client_security_state_->cross_origin_embedder_policy;
   coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
       storage_partition, common_params_->url, coep.reporting_endpoint,
-      coep.report_only_reporting_endpoint);
+      coep.report_only_reporting_endpoint,
+      isolation_info_for_subresources_.network_isolation_key());
 }
 
 std::unique_ptr<CrossOriginEmbedderPolicyReporter>
