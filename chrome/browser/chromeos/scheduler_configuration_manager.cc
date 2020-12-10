@@ -91,8 +91,10 @@ void SchedulerConfigurationManager::OnPrefChange() {
     // Next, if Finch isn't set, see if the command line passed in a default.
     config_name = cmdline_default;
   } else {
-    // If nothing is found, default to conservative.
-    config_name = debugd::scheduler_configuration::kConservativeScheduler;
+    // If nothing is found, default to core isolation scheduling. Note that
+    // only some kernels support core isolation. debugd checks for support and
+    // reverts to conservative if core isolation is unavailable.
+    config_name = debugd::scheduler_configuration::kCoreIsolationScheduler;
   }
 
   // NB: Also send an update when the config gets reset to let the system pick

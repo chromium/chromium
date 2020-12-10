@@ -117,7 +117,7 @@ TEST_F(SchedulerConfigurationManagerTest, ConfigChange) {
   manager.AddObserver(this);
 
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(debugd::scheduler_configuration::kConservativeScheduler,
+  EXPECT_EQ(debugd::scheduler_configuration::kCoreIsolationScheduler,
             debug_daemon_client_.scheduler_configuration_name());
   EXPECT_EQ(1u, configuration_set_count_);
 
@@ -144,7 +144,7 @@ TEST_F(SchedulerConfigurationManagerTest, ConfigChange) {
   // Dropping the policy as well reverts to the default configuration.
   local_state_.RemoveManagedPref(prefs::kSchedulerConfiguration);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(debugd::scheduler_configuration::kConservativeScheduler,
+  EXPECT_EQ(debugd::scheduler_configuration::kCoreIsolationScheduler,
             debug_daemon_client_.scheduler_configuration_name());
   EXPECT_EQ(5u, configuration_set_count_);
 }
