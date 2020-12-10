@@ -14,6 +14,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -30,13 +32,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
@@ -57,6 +61,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
@@ -68,9 +73,6 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LocationBarLayoutTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
     private static final String SEARCH_TERMS = "machine learning";
     private static final String SEARCH_TERMS_URL = "testing.com";
     private static final String GOOGLE_SRP_URL = "https://www.google.com/search?q=machine+learning";
@@ -80,6 +82,14 @@ public class LocationBarLayoutTest {
 
     private static final String GOOGLE_URL = "https://www.google.com";
     private static final String YAHOO_URL = "https://www.yahoo.com";
+
+    @Rule
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    AndroidPermissionDelegate mAndroidPermissionDelegate;
 
     private TestLocationBarModel mTestLocationBarModel;
 
@@ -142,6 +152,10 @@ public class LocationBarLayoutTest {
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
         setupModelsForCurrentTab();
+
+        doReturn(true).when(mAndroidPermissionDelegate).hasPermission(anyString());
+        mActivityTestRule.getActivity().getWindowAndroid().setAndroidPermissionDelegate(
+                mAndroidPermissionDelegate);
     }
 
     private void setupModelsForCurrentTab() {
@@ -218,7 +232,6 @@ public class LocationBarLayoutTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "Flaky. See https://crbug.com/1091646")
     public void testShowingVoiceSearchButtonIfUrlBarIsEmpty() throws ExecutionException {
         // When there's no text, the mic button should be visible.
         setUrlBarTextAndFocus("");
