@@ -723,7 +723,7 @@
     "prefix": "policy-container",
     "bases": [ "external/wpt/referrer-policy",
                "fast/dom/DOMImplementation" ],
-    "args": [ "--enable-features=PolicyContainer" ]
+    "args": [ "--disable-features=PolicyContainer" ]
   },
   {
     "prefix": "subresource-web-bundles-disabled",
