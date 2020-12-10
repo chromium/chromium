@@ -4504,6 +4504,7 @@ static_library("browser") {
       "//chromeos/ui/vector_icons",
       "//components/arc",
       "//components/arc:arc_base",
+      "//components/arc/enterprise",
       "//components/arc/mojom",
       "//components/full_restore",
       "//components/metrics/structured",

@@ -268,6 +268,8 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
         prefs::kArcDataRemoveRequested, true);
   }
 
+  virtual void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
   TestUpstartClient* upstart_client() { return upstart_client_.get(); }
   PrefService* local_state() { return &local_state_; }
   user_manager::FakeUserManager* user_manager() { return fake_user_manager_; }
@@ -349,7 +351,7 @@ class ArcDataSnapshotdManagerFlowTest
               "headless");
   }
 
-  void RunUntilIdle() {
+  void RunUntilIdle() override {
     if (is_dbus_client_available()) {
       task_environment_.RunUntilIdle();
       return;
@@ -731,15 +733,58 @@ TEST_P(ArcDataSnapshotdManagerStateTest, StartLoadingSnapshot) {
   run_loop.Run();
 }
 
+// Test that once snapshot feature is disabled by policy, manager clears
+// available snapshots and restarts the browser if in snapshot update flow.
+TEST_P(ArcDataSnapshotdManagerStateTest, OnSnapshotsDisabled) {
+  SetupLocalState(false /* blocked_ui_mode */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(true /* enabled */);
+
+  ExpectStopDaemon(false /* success */);
+  base::RunLoop run_loop;
+  auto* manager = CreateManager(run_loop.QuitClosure());
+  CheckSnapshots(2 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+  manager->set_state_for_testing(expected_state());
+  EXPECT_EQ(manager->state(), expected_state());
+  EXPECT_FALSE(manager->bridge());
+
+  ExpectStartDaemon(true /* success */);
+  ExpectStopDaemon(true /* success */);
+  ArcDataSnapshotdManager::set_snapshot_enabled_for_testing(
+      false /* enabled */);
+  manager->OnSnapshotsDisabled();
+
+  switch (expected_state()) {
+    case ArcDataSnapshotdManager::State::kBlockedUi:
+    case ArcDataSnapshotdManager::State::kMgsLaunched:
+    case ArcDataSnapshotdManager::State::kMgsToLaunch:
+    case ArcDataSnapshotdManager::State::kLoading:
+      EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kStopping);
+      run_loop.Run();
+      break;
+    case ArcDataSnapshotdManager::State::kNone:
+    case ArcDataSnapshotdManager::State::kRestored:
+    case ArcDataSnapshotdManager::State::kRunning:
+    case ArcDataSnapshotdManager::State::kStopping:
+      EXPECT_EQ(manager->state(), expected_state());
+      RunUntilIdle();
+      break;
+  }
+  CheckSnapshots(0 /* expected_snapshots_number */,
+                 false /* expected_blocked_ui_mode */);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ArcDataSnapshotdManagerTest,
     ArcDataSnapshotdManagerStateTest,
     ::testing::Values(ArcDataSnapshotdManager::State::kNone,
                       ArcDataSnapshotdManager::State::kBlockedUi,
+                      ArcDataSnapshotdManager::State::kLoading,
                       ArcDataSnapshotdManager::State::kMgsToLaunch,
                       ArcDataSnapshotdManager::State::kMgsLaunched,
                       ArcDataSnapshotdManager::State::kRestored,
-                      ArcDataSnapshotdManager::State::kRunning));
+                      ArcDataSnapshotdManager::State::kRunning,
+                      ArcDataSnapshotdManager::State::kStopping));
 
 // Test clear snapshots flow.
 TEST_P(ArcDataSnapshotdManagerFlowTest, ClearSnapshotsBasic) {
@@ -842,6 +887,8 @@ TEST_P(ArcDataSnapshotdManagerFlowTest, LoadSnapshotsBasic) {
   base::RunLoop run_loop;
   manager->StartLoadingSnapshot(
       base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kLoading);
+
   run_loop.Run();
   if (is_dbus_client_available()) {
     EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kRunning);

@@ -44,11 +44,6 @@ constexpr char kLast[] = "last";
 constexpr char kBlockedUiReboot[] = "blocked_ui_reboot";
 constexpr char kStarted[] = "started";
 
-bool IsSnapshotEnabled() {
-  // TODO(pbond): implement policy processing.
-  return ArcDataSnapshotdManager::is_snapshot_enabled_for_testing();
-}
-
 // Returns true if the Chrome session is restored after crash.
 bool IsRestoredSession() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -274,7 +269,8 @@ ArcDataSnapshotdManager::ArcDataSnapshotdManager(
     std::unique_ptr<Delegate> delegate,
     std::unique_ptr<ArcAppsTracker> apps_tracker,
     base::OnceClosure attempt_user_exit_callback)
-    : snapshot_{local_state},
+    : policy_service_{local_state},
+      snapshot_{local_state},
       delegate_(std::move(delegate)),
       apps_tracker_(std::move(apps_tracker)),
       attempt_user_exit_callback_(std::move(attempt_user_exit_callback)) {
@@ -286,6 +282,7 @@ ArcDataSnapshotdManager::ArcDataSnapshotdManager(
   g_arc_data_snapshotd_manager = this;
 
   snapshot_.Parse();
+  policy_service_.AddObserver(this);
 
   if (IsRestoredSession()) {
     state_ = State::kRestored;
@@ -305,6 +302,7 @@ ArcDataSnapshotdManager::~ArcDataSnapshotdManager() {
 
   if (session_controller_)
     session_controller_->RemoveObserver(this);
+  policy_service_.RemoveObserver(this);
 
   snapshot_.Sync();
   EnsureDaemonStopped(base::DoNothing());
@@ -339,6 +337,7 @@ void ArcDataSnapshotdManager::StartLoadingSnapshot(base::OnceClosure callback) {
   std::string account_id = GetCryptohomeAccountId();
   if (!account_id.empty() && IsSnapshotEnabled() &&
       (snapshot_.last() || snapshot_.previous())) {
+    state_ = State::kLoading;
     EnsureDaemonStarted(base::BindOnce(
         &ArcDataSnapshotdManager::LoadSnapshot, weak_ptr_factory_.GetWeakPtr(),
         std::move(account_id), std::move(callback)));
@@ -349,26 +348,30 @@ void ArcDataSnapshotdManager::StartLoadingSnapshot(base::OnceClosure callback) {
 
 bool ArcDataSnapshotdManager::IsAutoLoginConfigured() {
   switch (state_) {
-    case ArcDataSnapshotdManager::State::kBlockedUi:
-    case ArcDataSnapshotdManager::State::kMgsToLaunch:
-    case ArcDataSnapshotdManager::State::kMgsLaunched:
+    case State::kBlockedUi:
+    case State::kMgsToLaunch:
+    case State::kMgsLaunched:
       return true;
-    case ArcDataSnapshotdManager::State::kNone:
-    case ArcDataSnapshotdManager::State::kRestored:
-    case ArcDataSnapshotdManager::State::kRunning:
+    case State::kLoading:
+    case State::kNone:
+    case State::kRestored:
+    case State::kRunning:
+    case State::kStopping:
       return false;
   }
 }
 
 bool ArcDataSnapshotdManager::IsAutoLoginAllowed() {
   switch (state_) {
-    case ArcDataSnapshotdManager::State::kBlockedUi:
+    case State::kBlockedUi:
+    case State::kLoading:
+    case State::kStopping:
       return false;
-    case ArcDataSnapshotdManager::State::kNone:
-    case ArcDataSnapshotdManager::State::kRestored:
-    case ArcDataSnapshotdManager::State::kRunning:
-    case ArcDataSnapshotdManager::State::kMgsLaunched:
-    case ArcDataSnapshotdManager::State::kMgsToLaunch:
+    case State::kNone:
+    case State::kRestored:
+    case State::kRunning:
+    case State::kMgsLaunched:
+    case State::kMgsToLaunch:
       return true;
   }
 }
@@ -410,9 +413,11 @@ void ArcDataSnapshotdManager::OnSnapshotSessionFailed() {
       EnsureDaemonStopped(std::move(attempt_user_exit_callback_));
       break;
     case State::kBlockedUi:
+    case State::kLoading:
+    case State::kMgsToLaunch:
     case State::kNone:
     case State::kRestored:
-    case State::kMgsToLaunch:
+    case State::kStopping:
       NOTREACHED();
   }
 }
@@ -421,6 +426,45 @@ void ArcDataSnapshotdManager::OnSnapshotAppInstalled(int percent) {
   if (state_ != State::kMgsLaunched)
     return;
   Update(percent);
+}
+
+void ArcDataSnapshotdManager::OnSnapshotsDisabled() {
+  // Stop all ongoing flows.
+  daemon_weak_ptr_factory_.InvalidateWeakPtrs();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  switch (state_) {
+    // If in process of taking or loading a snapshot, stop and restart browser.
+    case State::kBlockedUi:
+    case State::kLoading:
+    case State::kMgsLaunched:
+    case State::kMgsToLaunch:
+      state_ = State::kStopping;
+      if (session_controller_)
+        session_controller_->RemoveObserver(this);
+      session_controller_.reset();
+      break;
+    // Otherwise, stop all flows, clear snapshots and do not restart browser.
+    case State::kNone:
+    case State::kRestored:
+    case State::kStopping:
+    case State::kRunning:
+      break;
+  }
+  DoClearSnapshots();
+}
+
+void ArcDataSnapshotdManager::OnSnapshotUpdateEndTimeChanged() {
+  if (policy_service_.snapshot_update_end_time().is_null())
+    return;
+  if (!IsSnapshotEnabled())
+    return;
+  // TODO(pbond): may be start a reboot process to update a snapshot.
+}
+
+bool ArcDataSnapshotdManager::IsSnapshotEnabled() {
+  if (ArcDataSnapshotdManager::is_snapshot_enabled_for_testing())
+    return true;
+  return policy_service_.is_snapshot_enabled();
 }
 
 void ArcDataSnapshotdManager::StopDaemon(base::OnceClosure callback) {
@@ -520,12 +564,17 @@ void ArcDataSnapshotdManager::OnSnapshotsCleared(bool success) {
       return;
     case State::kNone:
     case State::kRestored:
+    case State::kRunning:
       StopDaemon(base::DoNothing());
       return;
+    case State::kStopping:
+      StopDaemon(std::move(attempt_user_exit_callback_));
+      return;
+    case State::kLoading:
     case State::kMgsToLaunch:
     case State::kMgsLaunched:
-    case State::kRunning:
       LOG(WARNING) << "Snapshots are cleared while in incorrect state";
+      NOTREACHED();
       return;
   }
 }
@@ -657,6 +706,7 @@ void ArcDataSnapshotdManager::OnSnapshotLoaded(base::OnceClosure callback,
                                                bool last) {
   if (!success) {
     LOG(ERROR) << "Failed to load ARC data directory snapshot.";
+    state_ = State::kNone;
     std::move(callback).Run();
     return;
   }

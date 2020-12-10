@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/arc/enterprise/arc_apps_tracker.h"
+#include "components/arc/enterprise/snapshot_hours_policy_service.h"
 #include "components/arc/enterprise/snapshot_session_controller.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -31,21 +32,27 @@ class ArcDataSnapshotdBridge;
 // This class manages ARC data/ directory snapshots and controls the lifetime of
 // the arc-data-snapshotd daemon.
 class ArcDataSnapshotdManager final
-    : public SnapshotSessionController::Observer {
+    : public SnapshotSessionController::Observer,
+      public SnapshotHoursPolicyService::Observer {
  public:
   // State of the flow.
   enum class State {
     kNone,
     // Blocked UI mode is ON.
     kBlockedUi,
-    // Running with a snapshot.
-    kRunning,
+    // In process of loading a snapshot.
+    kLoading,
     // In blocked UI mode, MGS can be launched.
     kMgsToLaunch,
     // MGS is launched to create a snapshot.
     kMgsLaunched,
     // User session was restored.
     kRestored,
+    // Snapshot feature is disabled, in the process of stopping. The browser
+    // must be restarted once snapshots are cleared.
+    kStopping,
+    // Running with a snapshot.
+    kRunning,
   };
 
   // This class is a delegate to perform actions in Chrome.
@@ -224,6 +231,15 @@ class ArcDataSnapshotdManager final
     return is_snapshot_enabled_for_testing_;
   }
 
+  // SnapshotHoursPolicyService::Observer overrides:
+  void OnSnapshotsDisabled() override;
+  void OnSnapshotUpdateEndTimeChanged() override;
+
+  // Returns true if the feature is enabled.
+  bool IsSnapshotEnabled();
+
+  SnapshotHoursPolicyService* policy_service() { return &policy_service_; }
+
   // Get |bridge_| for testing.
   ArcDataSnapshotdBridge* bridge() { return bridge_.get(); }
 
@@ -296,6 +312,9 @@ class ArcDataSnapshotdManager final
   std::string GetCryptohomeAccountId();
 
   static bool is_snapshot_enabled_for_testing_;
+
+  SnapshotHoursPolicyService policy_service_;
+
   State state_ = State::kNone;
   Snapshot snapshot_;
 

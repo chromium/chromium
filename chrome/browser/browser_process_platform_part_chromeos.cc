@@ -33,6 +33,8 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/geolocation/simple_geolocation_provider.h"
 #include "chromeos/timezone/timezone_resolver.h"
+#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "components/arc/enterprise/snapshot_hours_policy_service.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -177,9 +179,19 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
   browser_policy_connector_chromeos()
       ->GetSystemProxyManager()
       ->StartObservingPrimaryProfilePrefs(primary_profile);
+
+  auto* manager = arc::data_snapshotd::ArcDataSnapshotdManager::Get();
+  if (manager) {
+    manager->policy_service()->StartObservingPrimaryProfilePrefs(
+        primary_profile->GetPrefs());
+  }
 }
 
 void BrowserProcessPlatformPart::ShutdownPrimaryProfileServices() {
+  auto* manager = arc::data_snapshotd::ArcDataSnapshotdManager::Get();
+  if (manager)
+    manager->policy_service()->StopObservingPrimaryProfilePrefs();
+
   browser_policy_connector_chromeos()
       ->GetSystemProxyManager()
       ->StopObservingPrimaryProfilePrefs();
