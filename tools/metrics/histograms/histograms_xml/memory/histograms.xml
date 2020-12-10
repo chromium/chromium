@@ -1735,6 +1735,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Memory.ParkableImage.TotalSize.5min" units="KiB"
+    expires_after="M95">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Total size of encoded image data of BitmapImages. Collected once, 5 minutes
+    after the first BitmapImage is created.
+  </summary>
+</histogram>
+
 <histogram name="Memory.ParkableString.CompressedSizeKb" units="KB"
     expires_after="M87">
   <owner>lizeb@chromium.org</owner>

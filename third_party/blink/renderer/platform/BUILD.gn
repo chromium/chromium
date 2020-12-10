@@ -1092,6 +1092,8 @@ component("platform") {
     "graphics/paint_worklet_paint_dispatcher.cc",
     "graphics/paint_worklet_paint_dispatcher.h",
     "graphics/paint_worklet_painter.h",
+    "graphics/parkable_image_manager.cc",
+    "graphics/parkable_image_manager.h",
     "graphics/path.cc",
     "graphics/path.h",
     "graphics/path_traversal_state.cc",

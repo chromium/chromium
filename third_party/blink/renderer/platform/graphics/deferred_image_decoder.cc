@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/graphics/decoding_image_generator.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoding_store.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
+#include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -169,9 +170,13 @@ DeferredImageDecoder::DeferredImageDecoder(
       can_yuv_decode_(false),
       has_hot_spot_(false),
       image_is_high_bit_depth_(false),
-      complete_frame_content_id_(PaintImage::GetNextContentId()) {}
+      complete_frame_content_id_(PaintImage::GetNextContentId()) {
+  ParkableImageManager::Instance().Add(this);
+}
 
-DeferredImageDecoder::~DeferredImageDecoder() = default;
+DeferredImageDecoder::~DeferredImageDecoder() {
+  ParkableImageManager::Instance().Remove(this);
+}
 
 String DeferredImageDecoder::FilenameExtension() const {
   return metadata_decoder_ ? metadata_decoder_->FilenameExtension()
