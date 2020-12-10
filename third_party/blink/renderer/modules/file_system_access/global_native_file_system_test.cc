@@ -60,6 +60,7 @@ class MockNativeFileSystemManager
   void ChooseEntries(
       mojom::ChooseFileSystemEntryType type,
       WTF::Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+      mojom::CommonDirectory starting_directory,
       bool include_accepts_all,
       ChooseEntriesCallback callback) override {
     if (choose_entries_response_callback_) {

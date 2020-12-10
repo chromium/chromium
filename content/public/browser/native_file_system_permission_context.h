@@ -9,6 +9,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/native_file_system_permission_grant.h"
 #include "content/public/browser/native_file_system_write_item.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-shared.h"
 #include "url/origin.h"
 
 namespace content {
@@ -129,8 +130,12 @@ class NativeFileSystemPermissionContext {
                                       const PathType type) = 0;
   // Returns the directory recently chosen using a file picker.
   virtual PathInfo GetLastPickedDirectory(const url::Origin& origin) = 0;
-  // Return the default directory used by the File System Access API.
-  virtual PathInfo GetDefaultDirectory() = 0;
+
+  // Return the path associated with well-known directories such as "desktop"
+  // and "music", or a default path if the |directory| cannot be matched to a
+  // well-known directory.
+  virtual base::FilePath GetCommonDirectoryPath(
+      blink::mojom::CommonDirectory directory) = 0;
 
  protected:
   virtual ~NativeFileSystemPermissionContext() = default;

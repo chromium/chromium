@@ -104,6 +104,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   void ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType type,
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+      blink::mojom::CommonDirectory starting_directory,
       bool include_accepts_all,
       ChooseEntriesCallback callback) override;
   void GetFileHandleFromToken(
@@ -265,7 +266,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       blink::mojom::ChooseFileSystemEntryType type,
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
       bool include_accepts_all,
-      storage::FileSystemURL url,
+      base::FilePath default_directory,
       ChooseEntriesCallback callback,
       base::File::Error result);
   void DidOpenSandboxedFileSystem(const BindingContext& binding_context,

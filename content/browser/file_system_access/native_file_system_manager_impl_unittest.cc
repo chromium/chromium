@@ -40,6 +40,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-shared.h"
 
 namespace content {
 
@@ -1039,9 +1040,10 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenFile) {
   EXPECT_CALL(permission_context_, CanObtainReadPermission(kTestOrigin))
       .WillOnce(testing::Return(true));
 
+  EXPECT_CALL(permission_context_,
+              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+      .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetDefaultDirectory())
       .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_,
               SetLastPickedDirectory(kTestOrigin, test_file.DirName(),
@@ -1072,7 +1074,7 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenFile) {
   base::RunLoop loop;
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kOpenFile, /*accepts=*/{},
-      /*include_accepts_all=*/true,
+      blink::mojom::CommonDirectory::kDefault, /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::NativeFileSystemErrorPtr result,
               std::vector<blink::mojom::NativeFileSystemEntryPtr> entries) {
@@ -1105,9 +1107,10 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_SaveFile) {
   EXPECT_CALL(permission_context_, CanObtainWritePermission(kTestOrigin))
       .WillOnce(testing::Return(true));
 
+  EXPECT_CALL(permission_context_,
+              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+      .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetDefaultDirectory())
       .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_,
               SetLastPickedDirectory(kTestOrigin, test_file.DirName(),
@@ -1138,7 +1141,7 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_SaveFile) {
   base::RunLoop loop;
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kSaveFile, /*accepts=*/{},
-      /*include_accepts_all=*/true,
+      blink::mojom::CommonDirectory::kDefault, /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::NativeFileSystemErrorPtr result,
               std::vector<blink::mojom::NativeFileSystemEntryPtr> entries) {
@@ -1168,9 +1171,10 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenDirectory) {
   EXPECT_CALL(permission_context_, CanObtainReadPermission(kTestOrigin))
       .WillOnce(testing::Return(true));
 
+  EXPECT_CALL(permission_context_,
+              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+      .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
-      .WillOnce(testing::Return(PathInfo()));
-  EXPECT_CALL(permission_context_, GetDefaultDirectory())
       .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_,
               SetLastPickedDirectory(kTestOrigin, test_dir, PathType::kLocal));
@@ -1199,7 +1203,8 @@ TEST_F(NativeFileSystemManagerImplTest, ChooseEntries_OpenDirectory) {
 
   base::RunLoop loop;
   manager_remote->ChooseEntries(
-      blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, {}, true,
+      blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, {},
+      blink::mojom::CommonDirectory::kDefault, true,
       base::BindLambdaForTesting(
           [&](blink::mojom::NativeFileSystemErrorPtr result,
               std::vector<blink::mojom::NativeFileSystemEntryPtr> entries) {

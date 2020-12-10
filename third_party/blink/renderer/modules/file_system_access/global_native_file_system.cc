@@ -6,12 +6,16 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_directory_picker_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_picker_accept_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_open_file_picker_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_save_file_picker_options.h"
@@ -27,6 +31,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -162,11 +167,36 @@ void VerifyIsAllowedToShowFilePicker(const LocalDOMWindow& window,
   }
 }
 
+mojom::blink::CommonDirectory ConvertCommonDirectory(
+    const String& starting_directory,
+    ExceptionState& exception_state) {
+  if (starting_directory == "")
+    return mojom::blink::CommonDirectory::kDefault;
+  else if (starting_directory == "desktop")
+    return mojom::blink::CommonDirectory::kDirDesktop;
+  else if (starting_directory == "documents")
+    return mojom::blink::CommonDirectory::kDirDocuments;
+  else if (starting_directory == "downloads")
+    return mojom::blink::CommonDirectory::kDirDownloads;
+  else if (starting_directory == "home")
+    return mojom::blink::CommonDirectory::kDirHome;
+  else if (starting_directory == "music")
+    return mojom::blink::CommonDirectory::kDirMusic;
+  else if (starting_directory == "pictures")
+    return mojom::blink::CommonDirectory::kDirPictures;
+  else if (starting_directory == "videos")
+    return mojom::blink::CommonDirectory::kDirVideos;
+
+  NOTREACHED();
+  return mojom::blink::CommonDirectory::kDefault;
+}
+
 ScriptPromise ShowFilePickerImpl(
     ScriptState* script_state,
     LocalDOMWindow& window,
     mojom::blink::ChooseFileSystemEntryType chooser_type,
     Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+    mojom::blink::CommonDirectory starting_directory,
     bool accept_all,
     bool return_as_sequence) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -182,7 +212,11 @@ ScriptPromise ShowFilePickerImpl(
 
   auto* raw_manager = manager.get();
   raw_manager->ChooseEntries(
-      chooser_type, std::move(accepts), accept_all,
+      chooser_type, std::move(accepts),
+      RuntimeEnabledFeatures::FileSystemAccessAPIExperimentalEnabled()
+          ? starting_directory
+          : mojom::blink::CommonDirectory::kDefault,
+      accept_all,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
              mojo::Remote<mojom::blink::NativeFileSystemManager>,
@@ -250,6 +284,14 @@ ScriptPromise GlobalNativeFileSystem::showOpenFilePicker(
     return ScriptPromise();
   }
 
+  auto starting_directory = mojom::blink::CommonDirectory::kDefault;
+  if (options->hasStartIn()) {
+    starting_directory =
+        ConvertCommonDirectory(options->startIn(), exception_state);
+    if (exception_state.HadException())
+      return ScriptPromise();
+  }
+
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
@@ -259,7 +301,8 @@ ScriptPromise GlobalNativeFileSystem::showOpenFilePicker(
       options->multiple()
           ? mojom::blink::ChooseFileSystemEntryType::kOpenMultipleFiles
           : mojom::blink::ChooseFileSystemEntryType::kOpenFile,
-      std::move(accepts), !options->excludeAcceptAllOption(),
+      std::move(accepts), starting_directory,
+      !options->excludeAcceptAllOption(),
       /*return_as_sequence=*/true);
 }
 
@@ -282,14 +325,23 @@ ScriptPromise GlobalNativeFileSystem::showSaveFilePicker(
     return ScriptPromise();
   }
 
+  auto starting_directory = mojom::blink::CommonDirectory::kDefault;
+  if (options->hasStartIn()) {
+    starting_directory =
+        ConvertCommonDirectory(options->startIn(), exception_state);
+    if (exception_state.HadException())
+      return ScriptPromise();
+  }
+
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
 
-  return ShowFilePickerImpl(
-      script_state, window, mojom::blink::ChooseFileSystemEntryType::kSaveFile,
-      std::move(accepts), !options->excludeAcceptAllOption(),
-      /*return_as_sequence=*/false);
+  return ShowFilePickerImpl(script_state, window,
+                            mojom::blink::ChooseFileSystemEntryType::kSaveFile,
+                            std::move(accepts), starting_directory,
+                            !options->excludeAcceptAllOption(),
+                            /*return_as_sequence=*/false);
 }
 
 // static
@@ -300,6 +352,13 @@ ScriptPromise GlobalNativeFileSystem::showDirectoryPicker(
     ExceptionState& exception_state) {
   UseCounter::Count(window, WebFeature::kFileSystemPickerMethod);
 
+  auto starting_directory = mojom::blink::CommonDirectory::kDefault;
+  if (options->hasStartIn()) {
+    starting_directory =
+        ConvertCommonDirectory(options->startIn(), exception_state);
+    if (exception_state.HadException())
+      return ScriptPromise();
+  }
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
@@ -307,6 +366,7 @@ ScriptPromise GlobalNativeFileSystem::showDirectoryPicker(
   return ShowFilePickerImpl(
       script_state, window,
       mojom::blink::ChooseFileSystemEntryType::kOpenDirectory, {},
+      starting_directory,
       /*accept_all=*/true,
       /*return_as_sequence=*/false);
 }

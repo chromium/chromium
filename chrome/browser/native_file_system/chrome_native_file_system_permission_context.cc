@@ -476,10 +476,36 @@ ChromeNativeFileSystemPermissionContext::GetLastPickedDirectory(
   return path_info;
 }
 
-ChromeNativeFileSystemPermissionContext::PathInfo
-ChromeNativeFileSystemPermissionContext::GetDefaultDirectory() {
-  PathInfo path_info;
-  // On failure, |path_info.path| will remain empty.
-  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &path_info.path);
-  return path_info;
+base::FilePath ChromeNativeFileSystemPermissionContext::GetCommonDirectoryPath(
+    blink::mojom::CommonDirectory directory) {
+  int key = base::PATH_START;
+  switch (directory) {
+    case blink::mojom::CommonDirectory::kDefault:
+      key = chrome::DIR_USER_DOCUMENTS;
+      break;
+    case blink::mojom::CommonDirectory::kDirDesktop:
+      key = base::DIR_USER_DESKTOP;
+      break;
+    case blink::mojom::CommonDirectory::kDirDocuments:
+      key = chrome::DIR_USER_DOCUMENTS;
+      break;
+    case blink::mojom::CommonDirectory::kDirDownloads:
+      key = chrome::DIR_DEFAULT_DOWNLOADS;
+      break;
+    case blink::mojom::CommonDirectory::kDirHome:
+      key = base::DIR_HOME;
+      break;
+    case blink::mojom::CommonDirectory::kDirMusic:
+      key = chrome::DIR_USER_MUSIC;
+      break;
+    case blink::mojom::CommonDirectory::kDirPictures:
+      key = chrome::DIR_USER_PICTURES;
+      break;
+    case blink::mojom::CommonDirectory::kDirVideos:
+      key = chrome::DIR_USER_VIDEOS;
+      break;
+  }
+  base::FilePath directory_path;
+  base::PathService::Get(key, &directory_path);
+  return directory_path;
 }

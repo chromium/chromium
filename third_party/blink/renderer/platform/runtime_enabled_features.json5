@@ -894,6 +894,11 @@
       status: "stable",
     },
     {
+      // In-development features for the File System Access API.
+      name: "FileSystemAccessAPIExperimental",
+      status: "experimental",
+    },
+    {
       name: "FlexAspectRatio",
       status: "stable",
     },

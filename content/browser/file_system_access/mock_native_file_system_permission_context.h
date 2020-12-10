@@ -64,7 +64,9 @@ class MockNativeFileSystemPermissionContext
                     const base::FilePath& path,
                     const PathType type));
   MOCK_METHOD1(GetLastPickedDirectory, PathInfo(const url::Origin& origin));
-  MOCK_METHOD0(GetDefaultDirectory, PathInfo());
+
+  MOCK_METHOD1(GetCommonDirectoryPath,
+               base::FilePath(blink::mojom::CommonDirectory directory));
 };
 
 }  // namespace content

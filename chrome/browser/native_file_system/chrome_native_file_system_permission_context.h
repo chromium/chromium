@@ -64,7 +64,8 @@ class ChromeNativeFileSystemPermissionContext
                               const base::FilePath& path,
                               const PathType type) override;
   PathInfo GetLastPickedDirectory(const url::Origin& origin) override;
-  PathInfo GetDefaultDirectory() override;
+  base::FilePath GetCommonDirectoryPath(
+      blink::mojom::CommonDirectory directory) override;
 
   ContentSetting GetReadGuardContentSetting(const url::Origin& origin);
   ContentSetting GetWriteGuardContentSetting(const url::Origin& origin);

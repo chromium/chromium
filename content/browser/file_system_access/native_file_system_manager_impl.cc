@@ -282,6 +282,7 @@ void NativeFileSystemManagerImpl::GetSandboxedFileSystem(
 void NativeFileSystemManagerImpl::ChooseEntries(
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+    blink::mojom::CommonDirectory starting_directory,
     bool include_accepts_all,
     ChooseEntriesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -331,7 +332,14 @@ void NativeFileSystemManagerImpl::ChooseEntries(
 
   PathInfo path_info;
   if (permission_context_) {
-    path_info = permission_context_->GetLastPickedDirectory(context.origin);
+    if (starting_directory != blink::mojom::CommonDirectory::kDefault) {
+      // Priotitize an explicitly stated starting directory over an implicitly
+      // remembered LastPicked directory.
+      path_info.path =
+          permission_context_->GetCommonDirectoryPath(starting_directory);
+    } else { /*starting_directory == blink::mojom::CommonDirectory::kDefault*/
+      path_info = permission_context_->GetLastPickedDirectory(context.origin);
+    }
   }
 
   auto url = CreateFileSystemURLFromPath(context.origin, path_info.type,
@@ -344,7 +352,8 @@ void NativeFileSystemManagerImpl::ChooseEntries(
           base::BindOnce(
               &NativeFileSystemManagerImpl::SetDefaultPathAndShowPicker,
               weak_factory_.GetWeakPtr(), context, type, std::move(accepts),
-              include_accepts_all, std::move(url).url, std::move(callback)),
+              include_accepts_all, std::move(url).url.path(),
+              std::move(callback)),
           base::SequencedTaskRunnerHandle::Get()));
 }
 
@@ -353,25 +362,20 @@ void NativeFileSystemManagerImpl::SetDefaultPathAndShowPicker(
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
     bool include_accepts_all,
-    storage::FileSystemURL url,
+    base::FilePath default_directory,
     ChooseEntriesCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::FilePath default_directory;
   if (result != base::File::Error::FILE_OK) {
-    if (permission_context_) {
-      auto default_path_info = permission_context_->GetDefaultDirectory();
-      auto default_url = CreateFileSystemURLFromPath(
-          context.origin, default_path_info.type, default_path_info.path);
-      default_directory = default_url.url.path();
-    }
-  } else /*result == base::File::Error::FILE_OK*/ {
-    default_directory = url.path();
+    // |path| does not exist. Resort to the default.
+    if (permission_context_)
+      default_directory = permission_context_->GetCommonDirectoryPath(
+          blink::mojom::CommonDirectory::kDefault);
   }
 
   // TODO(https://crbug.com/1019408): Append suggested filename to
-  // default_path.
+  // default_directory.
   FileSystemChooser::Options options(type, std::move(accepts),
                                      include_accepts_all,
                                      std::move(default_directory));

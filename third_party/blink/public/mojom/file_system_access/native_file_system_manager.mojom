@@ -18,6 +18,17 @@ enum ChooseFileSystemEntryType {
   kOpenDirectory
 };
 
+enum CommonDirectory {
+  kDefault,
+  kDirDesktop,
+  kDirDocuments,
+  kDirDownloads,
+  kDirHome,
+  kDirMusic,
+  kDirPictures,
+  kDirVideos,
+};
+
 // Struct to represent individual options for types of files that are accepted
 // by calls to ChooseEntry. Each type has an optional description, and any
 // number of mime types and/or extensions.
@@ -46,6 +57,7 @@ interface NativeFileSystemManager {
   // |include_accepts_all| is treated as if it was true.
   ChooseEntries(ChooseFileSystemEntryType type,
                 array<ChooseFileSystemEntryAcceptsOption> accepts,
+                CommonDirectory starting_directory,
                 bool include_accepts_all) =>
       (NativeFileSystemError result,
        array<NativeFileSystemEntry> entries);

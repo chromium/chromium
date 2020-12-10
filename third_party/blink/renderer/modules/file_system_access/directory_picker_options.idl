@@ -4,4 +4,5 @@
 
 // https://wicg.github.io/native-file-system/#dictdef-directorypickeroptions
 dictionary DirectoryPickerOptions {
+  [RuntimeEnabled=FileSystemAccessAPIExperimental] CommonDirectory? startIn;
 };
