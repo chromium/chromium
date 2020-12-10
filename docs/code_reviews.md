@@ -265,3 +265,9 @@ comments inside functions.
 
   * Be sure to actually send out the email for the code review. If you get one,
     please actually read the changes.
+
+## Automated code-review workflows
+
+For verifiably safe changes like translation files, we have automation that
+will vote +1 on the `Bot-Commit` and `Owners-Override` labels, allowing the
+CL to be submitted without human code-review.
