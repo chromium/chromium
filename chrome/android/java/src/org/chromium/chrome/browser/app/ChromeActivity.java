@@ -939,7 +939,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 MultiWindowUtils.getInstance().isInMultiWindowMode(this));
 
         if (mPictureInPictureController != null) {
-            mPictureInPictureController.cleanup(this);
+            mPictureInPictureController.cleanup();
         }
         VrModuleProvider.getDelegate().maybeRegisterVrEntryHook(this);
 
@@ -954,9 +954,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (isActivityFinishingOrDestroyed()) return;
 
         if (mPictureInPictureController == null) {
-            mPictureInPictureController = new PictureInPictureController();
+            mPictureInPictureController = new PictureInPictureController(
+                    this, getActivityTabProvider(), getFullscreenManager());
         }
-        mPictureInPictureController.attemptPictureInPicture(this);
+
+        mPictureInPictureController.attemptPictureInPicture();
     }
 
     @Override
@@ -1000,7 +1002,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void onNewIntentWithNative(Intent intent) {
         if (mPictureInPictureController != null) {
-            mPictureInPictureController.cleanup(this);
+            mPictureInPictureController.cleanup();
         }
 
         super.onNewIntentWithNative(intent);
