@@ -7,8 +7,6 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/federated_learning/floc_remote_permission_service.h"
-#include "chrome/browser/federated_learning/floc_remote_permission_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
@@ -19,11 +17,9 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
 using sync_pb::CommitResponse;
 using sync_pb::SyncEntity;
@@ -40,13 +36,7 @@ CommitResponse::ResponseType BounceType(
 
 class SingleClientUserEventsSyncTest : public SyncTest {
  public:
-  SingleClientUserEventsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    // Disable the floc-event-logging for this test suite. This event could be
-    // logged right after sync gets enabled, and could mess up with the test
-    // expectations. The scenario when the floc-event-logging is enabled is
-    // tested separately.
-    feature_list_.InitAndDisableFeature(features::kFlocIdComputedEventLogging);
-  }
+  SingleClientUserEventsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientUserEventsSyncTest() override = default;
 
   bool ExpectUserEvents(std::vector<UserEventSpecifics> expected_specifics) {
@@ -238,52 +228,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
 
   // No event should get synced up.
   EXPECT_TRUE(ExpectUserEvents({}));
-}
-
-class SingleClientUserEventsSyncTestFlocEventLoggingEnabled
-    : public SingleClientUserEventsSyncTest {
- public:
-  SingleClientUserEventsSyncTestFlocEventLoggingEnabled() {
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(features::kFlocIdComputedEventLogging);
-  }
-
-  void FinishOutstandingFlocRemotePermissionQueries() {
-    base::RunLoop run_loop;
-    FlocRemotePermissionServiceFactory::GetForProfile(GetProfile(0))
-        ->QueryFlocPermission(
-            base::BindLambdaForTesting([&](bool success) { run_loop.Quit(); }),
-            PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
-    run_loop.Run();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTestFlocEventLoggingEnabled,
-                       FlocEventAfterSyncSetup) {
-  ASSERT_TRUE(SetupSync());
-
-  FinishOutstandingFlocRemotePermissionQueries();
-
-  // When sync gets enabled, the floc calculation should start, and by this
-  // point it should have failed the remote permission check and logged an user
-  // event.
-  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::USER_EVENTS, 1).Wait());
-
-  UserEventSpecifics server_specifics =
-      GetFakeServer()
-          ->GetSyncEntitiesByModelType(syncer::USER_EVENTS)[0]
-          .specifics()
-          .user_event();
-
-  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
-            server_specifics.event_case());
-
-  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
-      server_specifics.floc_id_computed_event();
-
-  // It shouldn't have the floc_id field, because remote permission check should
-  // have failed.
-  EXPECT_FALSE(event.has_floc_id());
 }
 
 }  // namespace

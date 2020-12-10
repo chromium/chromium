@@ -58,6 +58,8 @@ FlocIdProviderImpl::FlocIdProviderImpl(
   base::Time last_compute_time = FlocId::ReadComputeTimeFromPrefs(prefs_);
 
   if (!last_compute_time.is_null()) {
+    first_floc_computed_ = true;
+
     base::TimeDelta time_since_last_compute =
         base::Time::Now() - last_compute_time;
     if (time_since_last_compute < GetFlocIdScheduledUpdateInterval()) {
@@ -101,7 +103,8 @@ std::string FlocIdProviderImpl::GetInterestCohortForJsApi(
   return floc_id_.ToStringForJsApi();
 }
 
-void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocResult result) {
+void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocTrigger trigger,
+                                                ComputeFlocResult result) {
   DCHECK(floc_computation_in_progress_);
   floc_computation_in_progress_ = false;
 
@@ -109,11 +112,11 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocResult result) {
   // this computation completely and recompute.
   if (need_recompute_) {
     need_recompute_ = false;
-    ComputeFloc();
+    ComputeFloc(trigger);
     return;
   }
 
-  LogFlocComputedEvent(result);
+  LogFlocComputedEvent(trigger, result);
   floc_id_ = result.floc_id;
 
   floc_id_.SaveToPrefs(prefs_);
@@ -122,8 +125,16 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocResult result) {
   ScheduleFlocComputation(GetFlocIdScheduledUpdateInterval());
 }
 
-void FlocIdProviderImpl::LogFlocComputedEvent(const ComputeFlocResult& result) {
+void FlocIdProviderImpl::LogFlocComputedEvent(ComputeFlocTrigger trigger,
+                                              const ComputeFlocResult& result) {
   if (!base::FeatureList::IsEnabled(features::kFlocIdComputedEventLogging))
+    return;
+
+  // Don't log if it's the 1st computation and sim_hash is not computed. This
+  // is likely due to sync just gets enabled but some floc permission settings
+  // are disabled. We don't want to mess up with the initial user event
+  // messagings (and some sync integration tests would fail otherwise).
+  if (trigger == ComputeFlocTrigger::kFirstCompute && !result.sim_hash_computed)
     return;
 
   auto specifics = std::make_unique<sync_pb::UserEventSpecifics>();
@@ -132,6 +143,24 @@ void FlocIdProviderImpl::LogFlocComputedEvent(const ComputeFlocResult& result) {
 
   sync_pb::UserEventSpecifics_FlocIdComputed* const floc_id_computed_event =
       specifics->mutable_floc_id_computed_event();
+
+  sync_pb::UserEventSpecifics_FlocIdComputed_EventTrigger event_trigger;
+  switch (trigger) {
+    case ComputeFlocTrigger::kFirstCompute:
+      event_trigger =
+          sync_pb::UserEventSpecifics_FlocIdComputed_EventTrigger_NEW;
+      break;
+    case ComputeFlocTrigger::kScheduledUpdate:
+      event_trigger =
+          sync_pb::UserEventSpecifics_FlocIdComputed_EventTrigger_REFRESHED;
+      break;
+    case ComputeFlocTrigger::kHistoryDelete:
+      event_trigger = sync_pb::
+          UserEventSpecifics_FlocIdComputed_EventTrigger_HISTORY_DELETE;
+      break;
+  }
+
+  floc_id_computed_event->set_event_trigger(event_trigger);
 
   if (result.sim_hash_computed)
     floc_id_computed_event->set_floc_id(result.sim_hash);
@@ -179,7 +208,7 @@ void FlocIdProviderImpl::OnURLsDeleted(
   // We log the invalidation event although it's technically not a recompute.
   // It'd give us a better idea how often the floc is invalidated due to
   // history-delete.
-  LogFlocComputedEvent(ComputeFlocResult());
+  LogFlocComputedEvent(ComputeFlocTrigger::kHistoryDelete, ComputeFlocResult());
   floc_id_ = FlocId();
   floc_id_.SaveToPrefs(prefs_);
 }
@@ -220,17 +249,27 @@ void FlocIdProviderImpl::MaybeTriggerImmediateComputation() {
   if (!first_sync_history_enabled_seen_ || !sorting_lsh_ready_or_not_required)
     return;
 
-  ComputeFloc();
+  ComputeFlocTrigger trigger = first_floc_computed_
+                                   ? ComputeFlocTrigger::kScheduledUpdate
+                                   : ComputeFlocTrigger::kFirstCompute;
+  ComputeFloc(trigger);
 }
 
-void FlocIdProviderImpl::ComputeFloc() {
+void FlocIdProviderImpl::OnComputeFlocScheduledUpdate() {
+  DCHECK(!floc_computation_in_progress_);
+  ComputeFloc(ComputeFlocTrigger::kScheduledUpdate);
+}
+
+void FlocIdProviderImpl::ComputeFloc(ComputeFlocTrigger trigger) {
+  DCHECK_NE(trigger, ComputeFlocTrigger::kHistoryDelete);
+
   DCHECK(!floc_computation_in_progress_);
 
   floc_computation_in_progress_ = true;
 
   auto compute_floc_completed_callback =
       base::BindOnce(&FlocIdProviderImpl::OnComputeFlocCompleted,
-                     weak_ptr_factory_.GetWeakPtr());
+                     weak_ptr_factory_.GetWeakPtr(), trigger);
 
   CheckCanComputeFloc(
       base::BindOnce(&FlocIdProviderImpl::OnCheckCanComputeFlocCompleted,
@@ -389,9 +428,10 @@ void FlocIdProviderImpl::DidApplySortingLshPostProcessing(
 }
 
 void FlocIdProviderImpl::ScheduleFlocComputation(base::TimeDelta delay) {
-  compute_floc_timer_.Start(FROM_HERE, delay,
-                            base::BindOnce(&FlocIdProviderImpl::ComputeFloc,
-                                           weak_ptr_factory_.GetWeakPtr()));
+  compute_floc_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&FlocIdProviderImpl::OnComputeFlocScheduledUpdate,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace federated_learning

@@ -481,6 +481,8 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   const sync_pb::UserEventSpecifics_FlocIdComputed& event =
       specifics.floc_id_computed_event();
+  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::NEW,
+            event.event_trigger());
   EXPECT_EQ(FlocId::SimHashHistory({test_host()}), event.floc_id());
 }
 
@@ -499,18 +501,10 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   InitializeHistorySync();
 
-  // Expect that the FlocIdComputed user event is recorded with sim-hash not
-  // set. The floc should also be invalid.
-  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
-  const sync_pb::UserEventSpecifics& specifics =
-      user_event_service()->GetRecordedUserEvents()[0];
-  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
-            specifics.event_case());
-
-  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
-      specifics.floc_id_computed_event();
-  EXPECT_FALSE(event.has_floc_id());
-
+  // Expect that the FlocIdComputed user event is not recorded, as we won't
+  // record the 1st event after browser/sync startup if there are permission
+  // errors. The floc is should also be invalid.
+  ASSERT_EQ(0u, user_event_service()->GetRecordedUserEvents().size());
   EXPECT_FALSE(GetFlocId().IsValid());
 }
 
@@ -545,6 +539,8 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
 
   const sync_pb::UserEventSpecifics_FlocIdComputed& event =
       specifics.floc_id_computed_event();
+  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::HISTORY_DELETE,
+            event.event_trigger());
   EXPECT_FALSE(event.has_floc_id());
 }
 

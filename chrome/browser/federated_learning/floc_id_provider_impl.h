@@ -63,6 +63,19 @@ class FlocIdProviderImpl : public FlocIdProvider,
                            public history::HistoryServiceObserver,
                            public syncer::SyncServiceObserver {
  public:
+  // TODO(crbug/1148358): Consider removing this. For event logging, we are not
+  // really interested in the trigger.
+  enum class ComputeFlocTrigger {
+    // When the first browser session of a profile starts.
+    kFirstCompute,
+
+    // A long period of time has passed since the last computation.
+    kScheduledUpdate,
+
+    // History is deleted.
+    kHistoryDelete,
+  };
+
   struct ComputeFlocResult {
     ComputeFlocResult() = default;
 
@@ -104,8 +117,10 @@ class FlocIdProviderImpl : public FlocIdProvider,
 
  protected:
   // protected virtual for testing.
-  virtual void OnComputeFlocCompleted(ComputeFlocResult result);
-  virtual void LogFlocComputedEvent(const ComputeFlocResult& result);
+  virtual void OnComputeFlocCompleted(ComputeFlocTrigger trigger,
+                                      ComputeFlocResult result);
+  virtual void LogFlocComputedEvent(ComputeFlocTrigger trigger,
+                                    const ComputeFlocResult& result);
 
  private:
   friend class FlocIdProviderUnitTest;
@@ -135,7 +150,9 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // browser session starts.
   void MaybeTriggerImmediateComputation();
 
-  void ComputeFloc();
+  void OnComputeFlocScheduledUpdate();
+
+  void ComputeFloc(ComputeFlocTrigger trigger);
 
   void CheckCanComputeFloc(CanComputeFlocCallback callback);
   void OnCheckCanComputeFlocCompleted(ComputeFlocCompletedCallback callback,
@@ -172,6 +189,9 @@ class FlocIdProviderImpl : public FlocIdProvider,
   FlocId floc_id_;
 
   bool floc_computation_in_progress_ = false;
+
+  // Whether the floc has ever been computed.
+  bool first_floc_computed_ = false;
 
   // True if history-delete occurs during an in-progress computation. When the
   // in-progress one finishes, we would disregard the result (i.e. no loggings

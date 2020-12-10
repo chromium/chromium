@@ -962,6 +962,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::UserEventSpecifics::FlocIdComputed& proto) {
+  VISIT_ENUM(event_trigger);
   VISIT(floc_id);
 }
 
