@@ -28,6 +28,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -259,6 +260,7 @@ public class FeedAppLifecycleTest {
     @Test
     @SmallTest
     @Feature({"Feed"})
+    @DisabledTest(message = "https://crbug.com/1157507")
     public void testSecondWindowDoesNotTriggerForegroundOrBackground() throws TimeoutException {
         verify(mAppLifecycleListener, times(1)).onEnterForeground();
 
