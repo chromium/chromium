@@ -208,7 +208,12 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
       const std::string& label,
       std::vector<content::DesktopMediaID> screen_capture_ids,
       StateChangeCallback state_change_callback) override {
-    DCHECK(!started_);
+    if (started_) {
+      // Ignore possibly-compromised renderers that might call
+      // MediaStreamDispatcherHost::OnStreamStarted() more than once.
+      // See: https://crbug.com/1155426
+      return 0;
+    }
     started_ = true;
 
     if (device_usage_) {
