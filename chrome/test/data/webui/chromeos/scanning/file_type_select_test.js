@@ -34,7 +34,7 @@ export function fileTypeSelectTest() {
 
   test('initializeFileTypeSelect', () => {
     // The dropdown should be initialized as enabled with three options. The
-    // default option should be PNG.
+    // default option should be PDF.
     const select =
         /** @type {!HTMLSelectElement} */ (fileTypeSelect.$$('select'));
     assertTrue(!!select);
@@ -43,7 +43,7 @@ export function fileTypeSelectTest() {
     assertEquals('JPG', select.options[0].textContent.trim());
     assertEquals('PNG', select.options[1].textContent.trim());
     assertEquals('PDF', select.options[2].textContent.trim());
-    assertEquals(FileType.PNG.toString(), select.value);
+    assertEquals(FileType.PDF.toString(), select.value);
 
     // Selecting a different option should update the selected value.
     return changeSelect(

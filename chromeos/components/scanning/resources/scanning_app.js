@@ -141,9 +141,6 @@ Polymer({
       computed: 'computePageSizes_(selectedSource)',
     },
 
-    /** @private {string} */
-    statusText_: String,
-
     /**
      * Determines whether settings should be disabled based on the current app
      * state. Settings should be disabled until after the selected scanner's
@@ -319,11 +316,7 @@ Polymer({
    */
   onCapabilitiesReceived_(response) {
     this.capabilities_ = response.capabilities;
-
-    // TODO(jschettler): Change default file type back to PDF when it's
-    // supported.
-    this.selectedFileType = chromeos.scanning.mojom.FileType.kPng.toString();
-
+    this.selectedFileType = chromeos.scanning.mojom.FileType.kPdf.toString();
     this.setAppState_(AppState.READY);
   },
 
@@ -370,15 +363,6 @@ Polymer({
       this.showToast_('startScanFailedToast');
       return;
     }
-
-    // TODO(jschettler): Remove this once ScanService supports PDF.
-    if (this.selectedFileType ==
-        chromeos.scanning.mojom.FileType.kPdf.toString()) {
-      this.statusText_ = 'PDF is not a supported file type.';
-      return;
-    }
-
-    this.statusText_ = '';
 
     const settings = {
       'sourceName': this.selectedSource,

@@ -264,9 +264,6 @@ export function scanningAppTest() {
   let cancelButton = null;
 
   /** @type {?HTMLElement} */
-  let statusText = null;
-
-  /** @type {?HTMLElement} */
   let helperText = null;
 
   /** @type {?HTMLElement} */
@@ -316,7 +313,6 @@ export function scanningAppTest() {
     resolutionSelect = null;
     scanButton = null;
     cancelButton = null;
-    statusText = null;
     helperText = null;
     scanProgress = null;
     progressText = null;
@@ -407,8 +403,6 @@ export function scanningAppTest() {
               /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
           cancelButton =
               /** @type {!CrButtonElement} */ (scanningApp.$$('#cancelButton'));
-          statusText =
-              /** @type {!HTMLElement} */ (scanningApp.$$('#statusText'));
           helperText = scanningApp.$$('#scanPreview').$$('#helperText');
           scanProgress = scanningApp.$$('#scanPreview').$$('#scanProgress');
           progressText = scanningApp.$$('#scanPreview').$$('#progressText');
@@ -423,7 +417,7 @@ export function scanningAppTest() {
           // if it exists.
           assertEquals(
               firstCapabilities.sources[1].name, scanningApp.selectedSource);
-          assertEquals(FileType.PNG.toString(), scanningApp.selectedFileType);
+          assertEquals(FileType.PDF.toString(), scanningApp.selectedFileType);
           assertEquals(
               firstCapabilities.colorModes[0].toString(),
               scanningApp.selectedColorMode);
@@ -446,7 +440,6 @@ export function scanningAppTest() {
           assertTrue(isVisible(/** @type {!CrButtonElement} */ (scanButton)));
           assertFalse(
               isVisible(/** @type {!CrButtonElement} */ (cancelButton)));
-          assertEquals('', statusText.textContent.trim());
           assertTrue(isVisible(/** @type {!HTMLElement} */ (helperText)));
           assertFalse(isVisible(/** @type {!HTMLElement} */ (scanProgress)));
           assertFalse(isVisible(
