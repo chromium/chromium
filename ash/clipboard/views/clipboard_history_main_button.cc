@@ -37,6 +37,10 @@ ClipboardHistoryMainButton::ClipboardHistoryMainButton(
 
 ClipboardHistoryMainButton::~ClipboardHistoryMainButton() = default;
 
+void ClipboardHistoryMainButton::OnHostPseudoFocusUpdated() {
+  SetShouldHighlight(container_->ShouldHighlight());
+}
+
 void ClipboardHistoryMainButton::SetShouldHighlight(bool should_highlight) {
   if (should_highlight_ == should_highlight)
     return;

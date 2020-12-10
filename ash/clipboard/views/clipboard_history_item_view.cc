@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -37,6 +38,18 @@ ClipboardHistoryItemView::ContentsView::~ContentsView() = default;
 
 void ClipboardHistoryItemView::ContentsView::InstallDeleteButton() {
   delete_button_ = CreateDeleteButton();
+}
+
+void ClipboardHistoryItemView::ContentsView::OnHostPseudoFocusUpdated() {
+  delete_button_->SetVisible(container_->ShouldShowDeleteButton());
+
+  const bool focused =
+      (container_->pseudo_focus_ == PseudoFocus::kDeleteButton);
+  delete_button_->GetInkDrop()->SetFocused(focused);
+  if (focused) {
+    delete_button_->NotifyAccessibilityEvent(ax::mojom::Event::kHover,
+                                             /*send_native_event*/ true);
+  }
 }
 
 const char* ClipboardHistoryItemView::ContentsView::GetClassName() const {
@@ -216,6 +229,10 @@ void ClipboardHistoryItemView::OnSelectionChanged() {
   InitiatePseudoFocus(/*reverse=*/false);
 }
 
+bool ClipboardHistoryItemView::ShouldHighlight() const {
+  return pseudo_focus_ == PseudoFocus::kMainButton;
+}
+
 void ClipboardHistoryItemView::RecordButtonPressedHistogram() const {
   switch (action_) {
     case Action::kDelete:
@@ -278,10 +295,6 @@ Action ClipboardHistoryItemView::CalculateActionForMainButtonClick() const {
   }
 }
 
-bool ClipboardHistoryItemView::ShouldHighlight() const {
-  return pseudo_focus_ == PseudoFocus::kMainButton;
-}
-
 bool ClipboardHistoryItemView::ShouldShowDeleteButton() const {
   return (pseudo_focus_ == PseudoFocus::kMainButton && IsMouseHovered()) ||
          pseudo_focus_ == PseudoFocus::kDeleteButton ||
@@ -299,27 +312,18 @@ void ClipboardHistoryItemView::InitiatePseudoFocus(bool reverse) {
 }
 
 void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
+  DCHECK_NE(PseudoFocus::kMaxValue, new_pseudo_focus);
   if (pseudo_focus_ == new_pseudo_focus)
     return;
 
   pseudo_focus_ = new_pseudo_focus;
-  contents_view_->delete_button()->SetVisible(ShouldShowDeleteButton());
-  main_button_->SetShouldHighlight(ShouldHighlight());
-  switch (pseudo_focus_) {
-    case PseudoFocus::kEmpty:
-      break;
-    case PseudoFocus::kMainButton:
-      NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                               /*send_native_event=*/true);
-      break;
-    case PseudoFocus::kDeleteButton:
-      contents_view_->delete_button()->NotifyAccessibilityEvent(
-          ax::mojom::Event::kHover, /*send_native_event*/ true);
-      break;
-    case PseudoFocus::kMaxValue:
-      NOTREACHED();
-      break;
+  if (pseudo_focus_ == PseudoFocus::kMainButton) {
+    NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
+                             /*send_native_event=*/true);
   }
+
+  contents_view_->OnHostPseudoFocusUpdated();
+  main_button_->OnHostPseudoFocusUpdated();
 }
 
 }  // namespace ash

@@ -50,6 +50,9 @@ class ClipboardHistoryItemView : public views::View {
   // Called when the selection state has changed.
   void OnSelectionChanged();
 
+  // Returns whether the highlight background should show.
+  bool ShouldHighlight() const;
+
   ClipboardHistoryUtil::Action action() const { return action_; }
 
   ClipboardHistoryDeleteButton* delete_button_for_test() {
@@ -71,6 +74,8 @@ class ClipboardHistoryItemView : public views::View {
 
     // Install DeleteButton on the contents view.
     void InstallDeleteButton();
+
+    void OnHostPseudoFocusUpdated();
 
     ClipboardHistoryDeleteButton* delete_button() { return delete_button_; }
     const ClipboardHistoryDeleteButton* delete_button() const {
@@ -142,9 +147,6 @@ class ClipboardHistoryItemView : public views::View {
 
   // Calculates the action type when `main_button_` is clicked.
   ClipboardHistoryUtil::Action CalculateActionForMainButtonClick() const;
-
-  // Returns whether the highlight background should show.
-  bool ShouldHighlight() const;
 
   bool ShouldShowDeleteButton() const;
 

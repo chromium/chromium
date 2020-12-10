@@ -60,6 +60,7 @@ void ClipboardHistoryDeleteButton::AddLayerBeneathView(ui::Layer* layer) {
 std::unique_ptr<views::InkDrop> ClipboardHistoryDeleteButton::CreateInkDrop() {
   std::unique_ptr<views::InkDrop> ink_drop = views::Button::CreateInkDrop();
   ink_drop->SetShowHighlightOnHover(false);
+  ink_drop->SetShowHighlightOnFocus(true);
   return ink_drop;
 }
 
@@ -77,6 +78,7 @@ void ClipboardHistoryDeleteButton::OnThemeChanged() {
       AshColorProvider::Get()->GetRippleAttributes();
   SetInkDropBaseColor(ripple_attributes.base_color);
   SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
+  SetInkDropHighlightOpacity(ripple_attributes.highlight_opacity);
 }
 
 void ClipboardHistoryDeleteButton::RemoveLayerBeneathView(ui::Layer* layer) {

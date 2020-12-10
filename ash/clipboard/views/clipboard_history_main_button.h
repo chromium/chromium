@@ -19,9 +19,11 @@ class ClipboardHistoryMainButton : public views::Button {
       delete;
   ~ClipboardHistoryMainButton() override;
 
-  void SetShouldHighlight(bool should_highlight);
+  void OnHostPseudoFocusUpdated();
 
  private:
+  void SetShouldHighlight(bool should_highlight);
+
   // views::Button:
   const char* GetClassName() const override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;

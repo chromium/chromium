@@ -31,6 +31,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -330,10 +331,18 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
       GetHistoryItemViewForIndex(/*index=*/0);
   ASSERT_FALSE(first_history_item_view->delete_button_for_test()->GetVisible());
 
-  // Press the tab key. Verify that the first menu item's delete button shows.
+  // Press the tab key.
   PressAndRelease(ui::VKEY_TAB);
   EXPECT_TRUE(first_menu_item_view->IsSelected());
-  ASSERT_TRUE(first_history_item_view->delete_button_for_test()->GetVisible());
+
+  // Verify that the first menu item's delete button shows. In addition, the
+  // delete button's inkdrop highlight should fade in or be visible.
+  const ash::ClipboardHistoryDeleteButton* delete_button =
+      first_history_item_view->delete_button_for_test();
+  ASSERT_TRUE(delete_button->GetVisible());
+  EXPECT_TRUE(const_cast<ash::ClipboardHistoryDeleteButton*>(delete_button)
+                  ->GetInkDrop()
+                  ->IsHighlightFadingInOrVisible());
 
   const views::MenuItemView* second_menu_item_view =
       GetMenuItemViewForIndex(/*index=*/1);
