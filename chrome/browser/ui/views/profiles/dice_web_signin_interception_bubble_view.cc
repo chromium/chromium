@@ -146,6 +146,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
                                          ->GetWebUI()
                                          ->GetController()
                                          ->GetAs<DiceWebSigninInterceptUI>();
+  SetInitiallyFocusedView(web_view.get());
   DCHECK(web_ui);
   // Unretained is fine because this outlives the inner web UI.
   web_ui->Initialize(

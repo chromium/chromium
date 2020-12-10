@@ -1,5 +1,5 @@
 <style include="signin-dialog-shared">
-  :host {
+  #interceptDialog {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -109,33 +109,36 @@
   }
 </style>
 
-<div id="header">
-  <div id="headerText">[[interceptionParameters_.headerText]]</div>
-  <div id="avatar-container">
-    <img id="avatar" alt=""
-        src="[[interceptionParameters_.interceptedAccount.pictureUrl]]">
-    <div class="work-badge" id="badge"
-        hidden="[[!interceptionParameters_.interceptedAccount.isManaged]]">
-      <iron-icon class="icon" icon="cr:domain"></iron-icon>
+<div role="dialog" id="interceptDialog" aria-labelledby="title"
+     aria-describedby="contents">
+  <div id="header">
+    <div id="headerText">[[interceptionParameters_.headerText]]</div>
+    <div id="avatar-container">
+      <img id="avatar" alt=""
+          src="[[interceptionParameters_.interceptedAccount.pictureUrl]]">
+      <div class="work-badge" id="badge"
+          hidden="[[!interceptionParameters_.interceptedAccount.isManaged]]">
+        <iron-icon class="icon" icon="cr:domain"></iron-icon>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="body">
-  <div id="title">[[interceptionParameters_.bodyTitle]]</div>
-  <div id="contents">[[interceptionParameters_.bodyText]]</div>
-</div>
+  <div id="body">
+    <div id="title">[[interceptionParameters_.bodyTitle]]</div>
+    <div id="contents">[[interceptionParameters_.bodyText]]</div>
+  </div>
 
-<div id="actionRow">
-  <paper-spinner-lite active="[[acceptButtonClicked_]]"></paper-spinner-lite>
-  <div class="action-container">
-    <cr-button id="acceptButton" class="action-button" on-click="onAccept_"
-        disabled="[[acceptButtonClicked_]]" autofocus>
-      [[interceptionParameters_.confirmButtonLabel]]
-    </cr-button>
-    <cr-button id="cancelButton" on-click="onCancel_"
-        disabled="[[acceptButtonClicked_]]">
-      [[interceptionParameters_.cancelButtonLabel]]
-    </cr-button>
+  <div id="actionRow">
+    <paper-spinner-lite active="[[acceptButtonClicked_]]"></paper-spinner-lite>
+    <div class="action-container">
+      <cr-button id="acceptButton" class="action-button" on-click="onAccept_"
+          disabled="[[acceptButtonClicked_]]" autofocus>
+        [[interceptionParameters_.confirmButtonLabel]]
+      </cr-button>
+      <cr-button id="cancelButton" on-click="onCancel_"
+          disabled="[[acceptButtonClicked_]]">
+        [[interceptionParameters_.cancelButtonLabel]]
+      </cr-button>
+    </div>
   </div>
 </div>
