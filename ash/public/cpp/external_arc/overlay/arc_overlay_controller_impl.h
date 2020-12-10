@@ -51,6 +51,7 @@ class ASH_PUBLIC_EXPORT ArcOverlayControllerImpl : public ArcOverlayController,
  private:
   void UpdateHostBounds();
   void ConvertPointFromWindow(aura::Window* window, gfx::Point* point);
+  void EnsureOverlayWindowClosed();
 
   aura::Window* host_window_ = nullptr;
   base::ScopedObservation<aura::Window, aura::WindowObserver>

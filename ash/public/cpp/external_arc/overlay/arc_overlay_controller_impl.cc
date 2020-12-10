@@ -29,7 +29,9 @@ ArcOverlayControllerImpl::ArcOverlayControllerImpl(aura::Window* host_window)
   widget->GetContentsView()->AddChildView(overlay_container_);
 }
 
-ArcOverlayControllerImpl::~ArcOverlayControllerImpl() = default;
+ArcOverlayControllerImpl::~ArcOverlayControllerImpl() {
+  EnsureOverlayWindowClosed();
+}
 
 void ArcOverlayControllerImpl::AttachOverlay(aura::Window* overlay_window) {
   if (!overlay_container_ || !host_window_)
@@ -56,6 +58,8 @@ void ArcOverlayControllerImpl::OnWindowDestroying(aura::Window* window) {
   if (host_window_observer_.IsObservingSource(window)) {
     host_window_ = nullptr;
     host_window_observer_.Reset();
+
+    EnsureOverlayWindowClosed();
   }
   if (overlay_window_observer_.IsObservingSource(window)) {
     overlay_window_ = nullptr;
@@ -99,6 +103,16 @@ void ArcOverlayControllerImpl::ConvertPointFromWindow(aura::Window* window,
   views::Widget* const widget = overlay_container_->GetWidget();
   aura::Window::ConvertPointToTarget(window, widget->GetNativeWindow(), point);
   views::View::ConvertPointFromWidget(widget->GetContentsView(), point);
+}
+
+void ArcOverlayControllerImpl::EnsureOverlayWindowClosed() {
+  // Ensure the overlay window is closed.
+  if (overlay_window_observer_.IsObserving()) {
+    VLOG(1) << "Forcing-closing overlay " << overlay_window_->GetName();
+    auto* const widget =
+        views::Widget::GetWidgetForNativeWindow(overlay_window_);
+    widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  }
 }
 
 }  // namespace ash
