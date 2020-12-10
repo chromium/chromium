@@ -106,6 +106,10 @@ void HungPagesTableModel::Reset() {
   widget_observer_.RemoveAll();
   tab_observers_.clear();
   render_widget_host_ = nullptr;
+
+  // Inform the table model observers that we cleared the model.
+  if (observer_)
+    observer_->OnModelChanged();
 }
 
 void HungPagesTableModel::RestartHangMonitorTimeout() {

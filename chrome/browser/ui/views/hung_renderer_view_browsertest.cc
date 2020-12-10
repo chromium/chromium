@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 // Interactive UI tests for the hung renderer (aka page unresponsive) dialog.
 class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
@@ -77,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, InactiveWindow) {
   // This is what happens when HungRendererDialogView::ShowForWebContents
   // returns early if the frame or the dialog are not active.
   HungRendererDialogView::Create(browser()->window()->GetNativeWindow());
-  EXPECT_TRUE(HungRendererDialogView::GetInstance());
+  ASSERT_TRUE(HungRendererDialogView::GetInstance());
 
   // Simulate the renderer becoming responsive again.
   content::WebContents* web_contents =
@@ -86,4 +87,35 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, InactiveWindow) {
       web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
   content::WebContentsDelegate* web_contents_delegate = browser();
   web_contents_delegate->RendererResponsive(web_contents, render_widget_host);
+}
+
+IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, ProcessClosed) {
+  HungRendererDialogView* dialog =
+      HungRendererDialogView::Create(browser()->window()->GetNativeWindow());
+  ASSERT_TRUE(dialog);
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // The Hung Dialog requires window activation, window activations does not
+  // work reliably in browser tests, especially in Mac because of the activation
+  // policy for obtaining window key status is set to prohibited. Instead of
+  // showing the window, populate the table model instead.
+  dialog->table_model_for_testing()->InitForWebContents(
+      web_contents,
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
+      base::DoNothing::Repeatedly());
+
+  // Makes sure the virtual accessibility views are in sync with the model when
+  // the dialog is created. Should consist of a single item.
+  views::ViewAccessibility& view_accessibility =
+      dialog->table_for_testing()->GetViewAccessibility();
+  EXPECT_EQ(size_t{1}, view_accessibility.virtual_children().size());
+
+  // Simulate an abrupt ending to webcontents. The accessibility tree for the
+  // TableView depends on the Hung Render View table model to send the right
+  // events. By checking the virtual tree, we can guarantee the sync is correct.
+  dialog->EndForWebContents(
+      web_contents,
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
+  EXPECT_EQ(size_t{0}, view_accessibility.virtual_children().size());
 }
