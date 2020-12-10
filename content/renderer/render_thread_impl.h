@@ -84,6 +84,7 @@ class GpuChannelHost;
 }
 
 namespace media {
+class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 }
 
@@ -102,6 +103,7 @@ namespace content {
 class AgentSchedulingGroup;
 class CategorizedWorkerPool;
 class GpuVideoAcceleratorFactoriesImpl;
+class MediaInterfaceFactory;
 class RenderThreadObserver;
 class RendererBlinkPlatformImpl;
 class ResourceDispatcher;
@@ -293,6 +295,7 @@ class CONTENT_EXPORT RenderThreadImpl
   SharedCompositorWorkerContextProvider(bool try_gpu_rasterization);
 
   media::GpuVideoAcceleratorFactories* GetGpuFactories();
+  media::DecoderFactory* GetMediaDecoderFactory();
 
   scoped_refptr<viz::ContextProviderCommandBuffer>
   SharedMainThreadContextProvider();
@@ -532,6 +535,10 @@ class CONTENT_EXPORT RenderThreadImpl
   // http://crbug.com/580386 is fixed.
   // NOTE(dcastagna): At worst this accumulates a few bytes per context lost.
   std::vector<std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>> gpu_factories_;
+
+  // Utility classes to allow WebRTC to create video decoders.
+  std::unique_ptr<MediaInterfaceFactory> media_interface_factory_;
+  std::unique_ptr<media::DecoderFactory> media_decoder_factory_;
 
   // Thread for running multimedia operations (e.g., video decoding).
   std::unique_ptr<base::Thread> media_thread_;

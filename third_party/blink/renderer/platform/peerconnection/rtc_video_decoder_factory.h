@@ -15,6 +15,7 @@ class VideoDecoder;
 }  // namespace webrtc
 
 namespace media {
+class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 }  // namespace media
 
@@ -24,7 +25,8 @@ namespace blink {
 class RTCVideoDecoderFactory : public webrtc::VideoDecoderFactory {
  public:
   explicit RTCVideoDecoderFactory(
-      media::GpuVideoAcceleratorFactories* gpu_factories);
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      media::DecoderFactory* decoder_factory);
   ~RTCVideoDecoderFactory() override;
 
   // Runs on Chrome_libJingle_WorkerThread. The child thread is blocked while
@@ -38,6 +40,7 @@ class RTCVideoDecoderFactory : public webrtc::VideoDecoderFactory {
   void CheckAndWaitDecoderSupportStatusIfNeeded() const;
 
   media::GpuVideoAcceleratorFactories* gpu_factories_;
+  media::DecoderFactory* decoder_factory_;
 
   GpuCodecSupportWaiter gpu_codec_support_waiter_;
 

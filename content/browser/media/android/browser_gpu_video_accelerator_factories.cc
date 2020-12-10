@@ -201,4 +201,10 @@ BrowserGpuVideoAcceleratorFactories::GetMediaContextProvider() {
 void BrowserGpuVideoAcceleratorFactories::SetRenderingColorSpace(
     const gfx::ColorSpace& color_space) {}
 
+const gfx::ColorSpace&
+BrowserGpuVideoAcceleratorFactories::GetRenderingColorSpace() const {
+  static constexpr gfx::ColorSpace cs = gfx::ColorSpace::CreateSRGB();
+  return cs;
+}
+
 }  // namespace content

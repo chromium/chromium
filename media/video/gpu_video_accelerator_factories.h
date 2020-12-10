@@ -189,8 +189,9 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
 
   virtual viz::RasterContextProvider* GetMediaContextProvider() = 0;
 
-  // Sets the current pipeline rendering color space.
+  // Sets or gets the current pipeline rendering color space.
   virtual void SetRenderingColorSpace(const gfx::ColorSpace& color_space) = 0;
+  virtual const gfx::ColorSpace& GetRenderingColorSpace() const = 0;
 
   virtual ~GpuVideoAcceleratorFactories() = default;
 };

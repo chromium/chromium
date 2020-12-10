@@ -25,6 +25,7 @@ class PortAllocator;
 }
 
 namespace media {
+class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 }
 
@@ -149,6 +150,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   void InitializeSignalingThread(
       media::GpuVideoAcceleratorFactories* gpu_factories,
+      media::DecoderFactory* media_decoder_factory,
       base::WaitableEvent* event);
 
   void CreateIpcNetworkManagerOnNetworkThread(

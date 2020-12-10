@@ -7,6 +7,7 @@
 #include <array>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
@@ -15,6 +16,7 @@
 #include "media/base/video_codecs.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_adapter.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_stream_adapter.h"
 #include "third_party/webrtc/media/base/h264_profile_level_id.h"
 #include "third_party/webrtc/media/base/media_constants.h"
 #include "third_party/webrtc/media/base/vp9_profile.h"
@@ -175,8 +177,11 @@ class ScopedVideoDecoder : public webrtc::VideoDecoder {
 }  // namespace
 
 RTCVideoDecoderFactory::RTCVideoDecoderFactory(
-    media::GpuVideoAcceleratorFactories* gpu_factories)
-    : gpu_factories_(gpu_factories), gpu_codec_support_waiter_(gpu_factories) {
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    media::DecoderFactory* decoder_factory)
+    : gpu_factories_(gpu_factories),
+      decoder_factory_(decoder_factory),
+      gpu_codec_support_waiter_(gpu_factories) {
   DVLOG(2) << __func__;
 }
 
@@ -194,6 +199,9 @@ std::vector<webrtc::SdpVideoFormat>
 RTCVideoDecoderFactory::GetSupportedFormats() const {
   CheckAndWaitDecoderSupportStatusIfNeeded();
 
+  // For now, ignore `kUseDecoderStreamForWebRTC`, and advertise support only
+  // for hardware-accelerated formats.  For some codecs, like AV1, which don't
+  // have an equivalent in rtc, we might want to include them anyway.
   std::vector<webrtc::SdpVideoFormat> supported_formats;
   for (auto& codec_config : kCodecConfigs) {
     media::VideoDecoderConfig config(
@@ -228,8 +236,13 @@ RTCVideoDecoderFactory::CreateVideoDecoder(
   DVLOG(2) << __func__;
   CheckAndWaitDecoderSupportStatusIfNeeded();
 
-  std::unique_ptr<webrtc::VideoDecoder> decoder =
-      RTCVideoDecoderAdapter::Create(gpu_factories_, format);
+  std::unique_ptr<webrtc::VideoDecoder> decoder;
+  if (base::FeatureList::IsEnabled(media::kUseDecoderStreamForWebRTC)) {
+    decoder = RTCVideoDecoderStreamAdapter::Create(gpu_factories_,
+                                                   decoder_factory_, format);
+  } else {
+    decoder = RTCVideoDecoderAdapter::Create(gpu_factories_, format);
+  }
   // ScopedVideoDecoder uses the task runner to make sure the decoder is
   // destructed on the correct thread.
   return decoder ? std::make_unique<ScopedVideoDecoder>(

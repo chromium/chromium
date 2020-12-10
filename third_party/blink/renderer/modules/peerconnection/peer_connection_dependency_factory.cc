@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "crypto/openssl_util.h"
 #include "jingle/glue/thread_wrapper.h"
+#include "media/base/decoder_factory.h"
 #include "media/base/media_permission.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -232,6 +233,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
           &PeerConnectionDependencyFactory::InitializeSignalingThread,
           CrossThreadUnretained(this),
           CrossThreadUnretained(Platform::Current()->GetGpuFactories()),
+          CrossThreadUnretained(Platform::Current()->GetMediaDecoderFactory()),
           CrossThreadUnretained(&start_signaling_event)));
 
   start_signaling_event.Wait();
@@ -240,6 +242,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 
 void PeerConnectionDependencyFactory::InitializeSignalingThread(
     media::GpuVideoAcceleratorFactories* gpu_factories,
+    media::DecoderFactory* media_decoder_factory,
     base::WaitableEvent* event) {
   DCHECK(chrome_signaling_thread_.task_runner()->BelongsToCurrentThread());
   DCHECK(network_thread_);
@@ -291,7 +294,8 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
       blink::CreateWebrtcVideoEncoderFactory(gpu_factories);
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
-      blink::CreateWebrtcVideoDecoderFactory(gpu_factories);
+      blink::CreateWebrtcVideoDecoderFactory(gpu_factories,
+                                             media_decoder_factory);
 
   // Enable Multiplex codec in SDP optionally.
   if (base::FeatureList::IsEnabled(blink::features::kWebRtcMultiplexCodec)) {

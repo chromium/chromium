@@ -211,12 +211,14 @@ std::unique_ptr<webrtc::VideoEncoderFactory> CreateWebrtcVideoEncoderFactory(
 }
 
 std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
-    media::GpuVideoAcceleratorFactories* gpu_factories) {
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    media::DecoderFactory* media_decoder_factory) {
   std::unique_ptr<webrtc::VideoDecoderFactory> decoder_factory;
 
   if (gpu_factories && gpu_factories->IsGpuVideoAcceleratorEnabled() &&
       Platform::Current()->IsWebRtcHWDecodingEnabled()) {
-    decoder_factory = std::make_unique<RTCVideoDecoderFactory>(gpu_factories);
+    decoder_factory = std::make_unique<RTCVideoDecoderFactory>(
+        gpu_factories, media_decoder_factory);
   }
 
   return std::make_unique<DecoderAdapter>(std::move(decoder_factory));

@@ -123,6 +123,7 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   viz::RasterContextProvider* GetMediaContextProvider() override;
 
   void SetRenderingColorSpace(const gfx::ColorSpace& color_space) override;
+  const gfx::ColorSpace& GetRenderingColorSpace() const override;
 
   // Called on the main thread. Returns whether the media thread has seen the
   // ContextProvider become lost, in which case this class should be replaced

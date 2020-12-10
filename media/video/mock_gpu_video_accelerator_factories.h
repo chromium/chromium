@@ -50,6 +50,7 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   MOCK_METHOD0(GetTaskRunner, scoped_refptr<base::SequencedTaskRunner>());
   MOCK_METHOD0(GetMediaContextProvider, viz::RasterContextProvider*());
   MOCK_METHOD1(SetRenderingColorSpace, void(const gfx::ColorSpace&));
+  MOCK_CONST_METHOD0(GetRenderingColorSpace, const gfx::ColorSpace&());
 
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,

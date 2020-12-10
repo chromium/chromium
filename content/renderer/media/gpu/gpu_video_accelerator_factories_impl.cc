@@ -514,6 +514,11 @@ void GpuVideoAcceleratorFactoriesImpl::SetRenderingColorSpace(
   rendering_color_space_ = color_space;
 }
 
+const gfx::ColorSpace&
+GpuVideoAcceleratorFactoriesImpl::GetRenderingColorSpace() const {
+  return rendering_color_space_;
+}
+
 bool GpuVideoAcceleratorFactoriesImpl::CheckContextProviderLostOnMainThread() {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   return context_provider_lost_;

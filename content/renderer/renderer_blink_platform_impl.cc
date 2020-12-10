@@ -964,6 +964,14 @@ RendererBlinkPlatformImpl::GetGpuFactories() {
   return render_thread->GetGpuFactories();
 }
 
+media::DecoderFactory* RendererBlinkPlatformImpl::GetMediaDecoderFactory() {
+  auto* render_thread = RenderThreadImpl::current();
+  if (!render_thread)
+    return nullptr;
+
+  return render_thread->GetMediaDecoderFactory();
+}
+
 void RendererBlinkPlatformImpl::SetRenderingColorSpace(
     const gfx::ColorSpace& color_space) {
   auto* render_thread = RenderThreadImpl::current();

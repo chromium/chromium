@@ -729,16 +729,31 @@ MediaFactory::GetWebMediaPlayerDelegate() {
 
 media::DecoderFactory* MediaFactory::GetDecoderFactory() {
   if (!decoder_factory_) {
-    std::unique_ptr<media::DecoderFactory> external_decoder_factory;
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) || BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
-    external_decoder_factory.reset(
-        new media::MojoDecoderFactory(GetMediaInterfaceFactory()));
+    media::mojom::InterfaceFactory* const interface_factory =
+        GetMediaInterfaceFactory();
+#else
+    media::mojom::InterfaceFactory* const interface_factory = nullptr;
 #endif
-    decoder_factory_.reset(
-        new media::DefaultDecoderFactory(std::move(external_decoder_factory)));
+    decoder_factory_ = CreateDecoderFactory(interface_factory);
   }
 
   return decoder_factory_.get();
+}
+
+// static
+std::unique_ptr<media::DefaultDecoderFactory>
+MediaFactory::CreateDecoderFactory(
+    media::mojom::InterfaceFactory* interface_factory) {
+  std::unique_ptr<media::DecoderFactory> external_decoder_factory;
+#if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) || BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+  if (interface_factory) {
+    external_decoder_factory =
+        std::make_unique<media::MojoDecoderFactory>(interface_factory);
+  }
+#endif
+  return std::make_unique<media::DefaultDecoderFactory>(
+      std::move(external_decoder_factory));
 }
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)

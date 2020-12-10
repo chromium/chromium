@@ -32,7 +32,9 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_PLATFORM_H_
 
 #include <memory>
+#include <vector>
 
+#include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics_action.h"
@@ -87,6 +89,7 @@ class GpuMemoryBufferManager;
 namespace media {
 struct AudioSinkParameters;
 struct AudioSourceParameters;
+class DecoderFactory;
 class MediaPermission;
 class GpuVideoAcceleratorFactories;
 }  // namespace media
@@ -739,6 +742,8 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual media::GpuVideoAcceleratorFactories* GetGpuFactories() {
     return nullptr;
   }
+
+  virtual media::DecoderFactory* GetMediaDecoderFactory() { return nullptr; }
 
   virtual void SetRenderingColorSpace(const gfx::ColorSpace& color_space) {}
 

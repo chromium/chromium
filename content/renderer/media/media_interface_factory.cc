@@ -21,6 +21,16 @@ MediaInterfaceFactory::MediaInterfaceFactory(
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
+MediaInterfaceFactory::MediaInterfaceFactory(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    mojo::PendingRemote<media::mojom::InterfaceFactory> interface_factory)
+    : media_interface_factory_(std::move(interface_factory)),
+      task_runner_(std::move(task_runner)) {
+  // `interface_broker_` remains null, but we don't need it since we already
+  // have `media_interface_factory_`.
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
+
 MediaInterfaceFactory::~MediaInterfaceFactory() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 }

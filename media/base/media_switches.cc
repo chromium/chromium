@@ -266,6 +266,15 @@ const base::Feature kMediaCastOverlayButton{"MediaCastOverlayButton",
 const base::Feature kUseAndroidOverlayAggressively{
     "UseAndroidOverlayAggressively", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, RTCVideoDecoderAdapter will wrap a DecoderStream as a video
+// decoder, rather than using MojoVideoDecoder.  This causes the RTC external
+// decoder to have all the decoder selection / fallback/forward logic of the
+// non-RTC pipeline.
+// TODO(liberato): This also causes the external decoder to use software
+// decoding sometimes, which changes the interpretation of "ExternalDecoder".
+const base::Feature kUseDecoderStreamForWebRTC{
+    "UseDecoderStreamForWebRTC", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Let video without audio be paused when it is playing in the background.
 const base::Feature kBackgroundVideoPauseOptimization{
     "BackgroundVideoPauseOptimization", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -34,6 +34,13 @@ class CONTENT_EXPORT MediaInterfaceFactory final
  public:
   explicit MediaInterfaceFactory(
       blink::BrowserInterfaceBrokerProxy* interface_broker);
+  // This ctor is intended for use by the RenderThread, which doesn't have an
+  // interface broker.  This is only necessary for WebRTC, and should be avoided
+  // if we can restructure WebRTC to create factories per-frame rather than
+  // per-process.
+  MediaInterfaceFactory(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojo::PendingRemote<media::mojom::InterfaceFactory> interface_factory);
   ~MediaInterfaceFactory() final;
 
   // media::mojom::InterfaceFactory implementation.
