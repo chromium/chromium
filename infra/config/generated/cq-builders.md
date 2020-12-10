@@ -386,6 +386,6 @@ as required builders.
 * [linux-rel-builderful](https://ci.chromium.org/p/chromium/builders/try/linux-rel-builderful) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-builderful)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-builderful))
   * Experiment percentage: 5
 
-* [linux-warmed](https://ci.chromium.org/p/chromium/builders/try/linux-warmed) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-warmed)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-warmed))
+* [linux-warmed-orchestrator](https://ci.chromium.org/p/chromium/builders/try/linux-warmed-orchestrator) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-warmed-orchestrator)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-warmed-orchestrator))
   * Experiment percentage: 5
 

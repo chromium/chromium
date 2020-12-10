@@ -3,9 +3,9 @@
 # This is consumed by presubmit checks that need to validate the config
 
 {
-  # 61510 (scheduler total) + 344750 (weighted CQ total)
-  # (weighted CQ total) = 6895 (CQ total) * 50 (CQ weight)
-  '*weighted total*': 406260,
+  # 61510 (scheduler total) + 344575 (weighted CQ total)
+  # (weighted CQ total) = 6891.5 (CQ total) * 50 (CQ weight)
+  '*weighted total*': 406085,
   'scheduler': {
     '*total*': 61510,
     'triggered': {
@@ -543,7 +543,7 @@
     },
   },
   'cq': {
-    '*total*': 6895,
+    '*total*': 6891.5,
     'try/android-binary-size': 150,
     'try/android-cronet-arm-dbg': 80,
     'try/android-lollipop-arm-rel': 150,
@@ -593,8 +593,8 @@
     'try/linux-rel': 150,
     # 150 jobs x 5% experiment
     'try/linux-rel-builderful': 7.5,
-    # 150 jobs x 5% experiment
-    'try/linux-warmed': 7.5,
+    # 80 jobs x 5% experiment
+    'try/linux-warmed-orchestrator': 4,
     'try/linux_chromium_asan_rel_ng': 150,
     'try/linux_chromium_compile_dbg_ng': 150,
     'try/linux_chromium_dbg_ng': 80,

@@ -2508,6 +2508,7 @@ ci.fyi_builder(
     goma_backend = None,
     properties = {
         "builder_to_warm": "linux-warmed",
+        "trigger_count": 2,
     },
     schedule = "with 2m interval",
     service_account = "chromium-led-tot-warmer@chops-service-accounts.iam.gserviceaccount.com",
