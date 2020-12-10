@@ -8,6 +8,7 @@
 
 #include "media/base/audio_renderer_sink.h"
 #include "media/fuchsia/audio/fuchsia_audio_capturer_source.h"
+#include "media/fuchsia/audio/fuchsia_audio_output_device.h"
 #include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom-blink.h"
 #include "media/fuchsia/mojom/fuchsia_media_resource_provider_mojom_traits.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,8 +35,60 @@ FuchsiaAudioDeviceFactory::CreateAudioRendererSink(
     WebAudioDeviceSourceType source_type,
     const LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
-  // Return nullptr to fallback to the default renderer implementation.
-  return nullptr;
+  switch (source_type) {
+    case WebAudioDeviceSourceType::kMediaElement:
+      // MediaElement uses CreateSwitchableAudioRendererSink().
+      NOTREACHED();
+      return nullptr;
+
+    case WebAudioDeviceSourceType::kWebRtc:
+    case WebAudioDeviceSourceType::kNonRtcAudioTrack:
+      // Return nullptr for WebRTC streams. This will cause the caller to
+      // fallback to AudioOutputDevice, which outputs through
+      // AudioOutputStreamFuchsia.
+      //
+      // TODO(crbug.com/1066203): Make sure FuchsiaAudioOutputDevice doesn't
+      // increase latency (or degrade quality otherwise) and then switch to
+      // using FuchsiaAudioOutputDevice for WebRTC.
+      return nullptr;
+
+    // kNone is used in WebAudioDeviceFactory::GetOutputDeviceInfo() to get
+    // default output device params.
+    case WebAudioDeviceSourceType::kNone:
+      break;
+
+    // Create FuchsiaAudioDeviceFactory for all WebAudio.
+    case WebAudioDeviceSourceType::kWebAudioInteractive:
+    case WebAudioDeviceSourceType::kWebAudioBalanced:
+    case WebAudioDeviceSourceType::kWebAudioPlayback:
+    case WebAudioDeviceSourceType::kWebAudioExact:
+      break;
+  }
+
+  auto* local_frame = LocalFrame::FromFrameToken(frame_token);
+  if (!local_frame) {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  // Connect FuchsiaMediaResourceProvider.
+  mojo::Remote<media::mojom::blink::FuchsiaMediaResourceProvider>
+      media_resource_provider;
+  local_frame->GetBrowserInterfaceBroker().GetInterface(
+      media_resource_provider.BindNewPipeAndPassReceiver());
+
+  // AudioConsumer can be used only to output to the default device.
+  if (!params.device_id.empty()) {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  // Connect AudioConsumer.
+  fidl::InterfaceHandle<fuchsia::media::AudioConsumer> audio_consumer;
+  media_resource_provider->CreateAudioConsumer(audio_consumer.NewRequest());
+
+  return media::FuchsiaAudioOutputDevice::CreateOnDefaultThread(
+      std::move(audio_consumer));
 }
 
 scoped_refptr<media::SwitchableAudioRendererSink>
