@@ -8,6 +8,7 @@
 // https://wicg.github.io/webhid/index.html#device-usage
 
 [
+    ActiveScriptWrappable,
     Exposed(Window WebHID),
     SecureContext
 ] interface HIDDevice : EventTarget {

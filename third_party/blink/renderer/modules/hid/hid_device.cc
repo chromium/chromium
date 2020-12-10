@@ -393,6 +393,12 @@ void HIDDevice::ContextDestroyed() {
   device_requests_.clear();
 }
 
+bool HIDDevice::HasPendingActivity() const {
+  // The object should be considered active if it is connected and has at least
+  // one event listener.
+  return connection_.is_bound() && HasEventListeners();
+}
+
 void HIDDevice::Trace(Visitor* visitor) const {
   visitor->Trace(parent_);
   visitor->Trace(connection_);
