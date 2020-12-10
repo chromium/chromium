@@ -55,32 +55,13 @@ class CategorizedWorkerPoolThread : public base::SimpleThread {
         categories_(categories),
         has_ready_to_run_tasks_cv_(has_ready_to_run_tasks_cv) {}
 
-  void SetBackgroundingCallback(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      base::OnceCallback<void(base::PlatformThreadId)> callback) {
-    DCHECK(!HasStartBeenAttempted());
-    background_task_runner_ = std::move(task_runner);
-    backgrounding_callback_ = std::move(callback);
-  }
-
   // base::SimpleThread:
-  void BeforeRun() override {
-    if (backgrounding_callback_) {
-      DCHECK(background_task_runner_);
-      background_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(std::move(backgrounding_callback_), tid()));
-    }
-  }
-
   void Run() override { pool_->Run(categories_, has_ready_to_run_tasks_cv_); }
 
  private:
   CategorizedWorkerPool* const pool_;
   const std::vector<cc::TaskCategory> categories_;
   base::ConditionVariable* const has_ready_to_run_tasks_cv_;
-
-  base::OnceCallback<void(base::PlatformThreadId)> backgrounding_callback_;
-  scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
 };
 
 }  // namespace
@@ -180,7 +161,9 @@ CategorizedWorkerPool::CategorizedWorkerPool()
   has_task_for_background_priority_thread_cv_.declare_only_used_while_idle();
 }
 
-void CategorizedWorkerPool::Start(int num_normal_threads) {
+void CategorizedWorkerPool::Start(
+    int num_normal_threads,
+    base::PlatformThreadHandle* background_worker_handle) {
   DCHECK(threads_.empty());
 
   // |num_normal_threads| normal threads and 1 background threads are created.
@@ -216,11 +199,9 @@ void CategorizedWorkerPool::Start(int num_normal_threads) {
       "CompositorTileWorkerBackground", thread_options, this,
       background_thread_prio_categories,
       &has_task_for_background_priority_thread_cv_);
-  if (backgrounding_callback_) {
-    thread->SetBackgroundingCallback(std::move(background_task_runner_),
-                                     std::move(backgrounding_callback_));
-  }
   thread->StartAsync();
+  if (background_worker_handle)
+    *background_worker_handle = thread->handle();
   threads_.push_back(std::move(thread));
 
   DCHECK_EQ(num_threads, threads_.size());
@@ -316,15 +297,6 @@ void CategorizedWorkerPool::FlushForTesting() {
 scoped_refptr<base::SequencedTaskRunner>
 CategorizedWorkerPool::CreateSequencedTaskRunner() {
   return new CategorizedWorkerPoolSequencedTaskRunner(this);
-}
-
-void CategorizedWorkerPool::SetBackgroundingCallback(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::OnceCallback<void(base::PlatformThreadId)> callback) {
-  // The callback must be set before the threads have been created.
-  DCHECK(threads_.empty());
-  backgrounding_callback_ = std::move(callback);
-  background_task_runner_ = std::move(task_runner);
 }
 
 CategorizedWorkerPool::~CategorizedWorkerPool() {}
