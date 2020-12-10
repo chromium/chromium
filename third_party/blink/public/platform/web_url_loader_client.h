@@ -37,6 +37,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -126,7 +127,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
   // BackForwardCache.
   // TODO(yuzus): ResponseBodyLoader should implement the eviction logic instead
   // of client. Move the capability to the loader.
-  virtual void EvictFromBackForwardCache() {}
+  virtual void EvictFromBackForwardCache(mojom::RendererEvictionReason) {}
 
   // Value passed to DidFinishLoading when total encoded data length isn't
   // known.

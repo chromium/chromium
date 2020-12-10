@@ -227,7 +227,8 @@ class TestResourceDispatcherDelegate : public ResourceDispatcherDelegate {
       original_peer_->OnCompletedRequest(status);
     }
 
-    void EvictFromBackForwardCache() override {}
+    void EvictFromBackForwardCache(
+        blink::mojom::RendererEvictionReason) override {}
 
    private:
     std::unique_ptr<blink::WebRequestPeer> original_peer_;

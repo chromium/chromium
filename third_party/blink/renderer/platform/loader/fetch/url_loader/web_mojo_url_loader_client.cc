@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_mojo_url_loader_client_observer.h"
 
@@ -189,7 +190,8 @@ class WebMojoURLLoaderClient::BodyBuffer final
 
     if (total_bytes_drained_ > max_bytes_drained_ &&
         owner_->IsDeferredWithBackForwardCache()) {
-      owner_->EvictFromBackForwardCache();
+      owner_->EvictFromBackForwardCache(
+          blink::mojom::RendererEvictionReason::kNetworkExceedsBufferLimit);
       return;
     }
     buffered_body_.emplace(static_cast<const char*>(data),
@@ -311,8 +313,9 @@ void WebMojoURLLoaderClient::OnReceiveResponse(
                                                     std::move(response_head));
   }
 }
-void WebMojoURLLoaderClient::EvictFromBackForwardCache() {
-  url_loader_client_observer_->EvictFromBackForwardCache(request_id_);
+void WebMojoURLLoaderClient::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason) {
+  url_loader_client_observer_->EvictFromBackForwardCache(reason, request_id_);
 }
 
 void WebMojoURLLoaderClient::OnReceiveRedirect(
@@ -321,7 +324,9 @@ void WebMojoURLLoaderClient::OnReceiveRedirect(
   DCHECK(!has_received_response_head_);
   if (deferred_state_ ==
       blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
-    EvictFromBackForwardCache();
+    url_loader_client_observer_->EvictFromBackForwardCache(
+        blink::mojom::RendererEvictionReason::kNetworkRequestRedirected,
+        request_id_);
     // Close the connections and dispatch and OnComplete message.
     url_loader_.reset();
     url_loader_client_receiver_.reset();

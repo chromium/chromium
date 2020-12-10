@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 
@@ -68,7 +69,7 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-  void EvictFromBackForwardCache();
+  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason);
   bool IsDeferredWithBackForwardCache() {
     return deferred_state_ ==
            blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache;

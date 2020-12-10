@@ -154,7 +154,7 @@ class ResourceFetcherTest : public testing::Test {
                         const ResourceError&,
                         int64_t encoded_data_length,
                         IsInternalRequest is_internal_request) override {}
-    void EvictFromBackForwardCache() override {}
+    void EvictFromBackForwardCache(mojom::RendererEvictionReason) override {}
     const base::Optional<PartialResourceRequest>& GetLastRequest() const {
       return request_;
     }

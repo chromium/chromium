@@ -72,7 +72,8 @@ void ExtensionLocalizationPeer::OnReceivedResponse(
   response_head_ = std::move(head);
 }
 
-void ExtensionLocalizationPeer::EvictFromBackForwardCache() {}
+void ExtensionLocalizationPeer::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason) {}
 
 void ExtensionLocalizationPeer::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {

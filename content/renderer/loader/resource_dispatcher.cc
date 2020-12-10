@@ -333,14 +333,6 @@ void ResourceDispatcher::OnRequestComplete(
   peer->OnCompletedRequest(renderer_status);
 }
 
-void ResourceDispatcher::EvictFromBackForwardCache(int request_id) {
-  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
-  if (!request_info)
-    return;
-
-  return request_info->peer->EvictFromBackForwardCache();
-}
-
 bool ResourceDispatcher::RemovePendingRequest(
     int request_id,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
@@ -415,6 +407,16 @@ void ResourceDispatcher::DidChangePriority(int request_id,
   }
 
   request_info->url_loader->SetPriority(new_priority, intra_priority_value);
+}
+
+void ResourceDispatcher::EvictFromBackForwardCache(
+    blink::mojom::RendererEvictionReason reason,
+    int request_id) {
+  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
+  if (!request_info)
+    return;
+
+  return request_info->peer->EvictFromBackForwardCache(reason);
 }
 
 void ResourceDispatcher::SetCorsExemptHeaderList(

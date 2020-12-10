@@ -193,7 +193,8 @@ class WorkerMainScriptLoaderTest : public testing::Test {
                       const ResourceError&,
                       int64_t encoded_data_length,
                       IsInternalRequest));
-    MOCK_METHOD0(EvictFromBackForwardCache, void());
+    MOCK_METHOD1(EvictFromBackForwardCache,
+                 void(blink::mojom::RendererEvictionReason));
   };
 
   MojoCreateDataPipeOptions CreateDataPipeOptions() {

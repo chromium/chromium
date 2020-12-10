@@ -112,7 +112,8 @@ class MockWebURLLoaderClientObserver
     context_->completion_status = status;
   }
 
-  void EvictFromBackForwardCache(int request_id) override {}
+  void EvictFromBackForwardCache(mojom::RendererEvictionReason reason,
+                                 int request_id) override {}
 
   Context* context() { return context_.get(); }
 

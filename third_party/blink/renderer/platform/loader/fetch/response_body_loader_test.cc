@@ -74,7 +74,7 @@ class ResponseBodyLoaderTest : public testing::Test {
       DCHECK(!failed_);
       cancelled_ = true;
     }
-    void EvictFromBackForwardCache() override {}
+    void EvictFromBackForwardCache(mojom::RendererEvictionReason) override {}
 
     void SetLoader(ResponseBodyLoader& loader) { loader_ = loader; }
     void Trace(Visitor* visitor) const override { visitor->Trace(loader_); }

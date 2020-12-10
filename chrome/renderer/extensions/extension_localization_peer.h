@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 
 namespace IPC {
@@ -64,7 +65,7 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
   void OnTransferSizeUpdated(int transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
-  void EvictFromBackForwardCache() override;
+  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
 
  private:
   friend class ExtensionLocalizationPeerTest;

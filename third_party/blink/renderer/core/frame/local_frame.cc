@@ -892,8 +892,10 @@ void LocalFrame::HookBackForwardCacheEviction() {
             LocalDOMWindow* window = LocalDOMWindow::From(script_state);
             DCHECK(window);
             LocalFrame* frame = window->GetFrame();
-            if (frame)
-              frame->EvictFromBackForwardCache();
+            if (frame) {
+              frame->EvictFromBackForwardCache(
+                  mojom::blink::RendererEvictionReason::kJavaScriptExecution);
+            }
           });
 }
 
@@ -2534,8 +2536,9 @@ void LocalFrame::WasAttachedAsLocalMainFrame() {
       &LocalFrame::BindToMainFrameReceiver, WrapWeakPersistent(this)));
 }
 
-void LocalFrame::EvictFromBackForwardCache() {
-  GetBackForwardCacheControllerHostRemote().EvictFromBackForwardCache();
+void LocalFrame::EvictFromBackForwardCache(
+    mojom::blink::RendererEvictionReason reason) {
+  GetBackForwardCacheControllerHostRemote().EvictFromBackForwardCache(reason);
 }
 
 void LocalFrame::AnimateDoubleTapZoom(const gfx::Point& point,

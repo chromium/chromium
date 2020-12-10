@@ -206,7 +206,7 @@ class CORE_EXPORT LocalFrame final
       Frame* child) override;
   void DidFocus() override;
 
-  void EvictFromBackForwardCache();
+  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason reason);
 
   void DidChangeThemeColor();
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);

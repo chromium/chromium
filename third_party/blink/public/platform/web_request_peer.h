@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace net {
@@ -75,7 +76,7 @@ class BLINK_PLATFORM_EXPORT WebRequestPeer {
   // Called when the page is in BackForwardCache, and when the network request
   // is redirected or the datapipe is already drained. This method evicts the
   // entry.
-  virtual void EvictFromBackForwardCache() = 0;
+  virtual void EvictFromBackForwardCache(mojom::RendererEvictionReason) = 0;
 
   virtual ~WebRequestPeer() {}
 };

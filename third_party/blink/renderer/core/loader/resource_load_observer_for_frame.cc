@@ -274,10 +274,11 @@ void ResourceLoadObserverForFrame::DidFailLoading(
   document_->CheckCompleted();
 }
 
-void ResourceLoadObserverForFrame::EvictFromBackForwardCache() {
+void ResourceLoadObserverForFrame::EvictFromBackForwardCache(
+    mojom::blink::RendererEvictionReason reason) {
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
-  frame->EvictFromBackForwardCache();
+  frame->EvictFromBackForwardCache(reason);
 }
 
 void ResourceLoadObserverForFrame::Trace(Visitor* visitor) const {

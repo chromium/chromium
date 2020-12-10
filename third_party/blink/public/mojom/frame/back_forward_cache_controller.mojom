@@ -4,6 +4,20 @@
 
 module blink.mojom;
 
+// This enum lists eviction reasons from the renderer.
+enum RendererEvictionReason {
+  // JavaScript execution ocurrs.
+  kJavaScriptExecution,
+  // Datapipe for reading network requests is already drained upon bfcache entrance.
+  kNetworkRequestDatapipeDrained,
+  // Network request is redirected.
+  kNetworkRequestRedirected,
+  // Network request is open for too long.
+  kNetworkRequestTimeout,
+  // Network request buffers too much data.
+  kNetworkExceedsBufferLimit,
+};
+//
 // This interface defines back-forward cache related methods that will be
 // invoked from the renderer process.
 //
@@ -13,6 +27,6 @@ module blink.mojom;
 // trigger a renderer kill, depending on policy.
 interface BackForwardCacheControllerHost {
   // Evicts the page from the back/forward cache due to e.g., JavaScript
-  // execution.
-  EvictFromBackForwardCache();
+  // execution and network request redirect.
+  EvictFromBackForwardCache(RendererEvictionReason reason);
 };

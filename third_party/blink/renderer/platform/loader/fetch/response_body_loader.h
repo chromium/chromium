@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -126,7 +127,7 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   void DidFinishLoadingBody() override;
   void DidFailLoadingBody() override;
   void DidCancelLoadingBody() override;
-  void EvictFromBackForwardCache() override;
+  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason) override;
 
   // BytesConsumer::Client implementation.
   void OnStateChange() override;
