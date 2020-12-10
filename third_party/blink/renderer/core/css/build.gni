@@ -634,6 +634,7 @@ blink_core_tests_css = [
   "css_style_sheet_test.cc",
   "css_syntax_string_parser_test.cc",
   "counter_style_map_test.cc",
+  "counter_style_test.cc",
   "cssom/computed_style_property_map_test.cc",
   "cssom/cross_thread_style_value_test.cc",
   "cssom/css_math_invert_test.cc",

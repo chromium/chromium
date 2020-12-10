@@ -34,6 +34,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   AtomicString GetName() const;
   CounterStyleSystem GetSystem() const { return system_; }
 
+  // https://drafts.csswg.org/css-counter-styles/#generate-a-counter
+  String GenerateRepresentation(int value) const;
+
   AtomicString GetExtendsName() const { return extends_name_; }
   const CounterStyle& GetExtendedStyle() const { return *extended_style_; }
   bool HasUnresolvedExtends() const {
@@ -58,6 +61,18 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   ~CounterStyle();
 
  private:
+  // https://drafts.csswg.org/css-counter-styles/#counter-style-range
+  bool RangeContains(int value) const;
+
+  // Returns true if a negative sign is needed for the value.
+  // https://drafts.csswg.org/css-counter-styles/#counter-style-negative
+  bool NeedsNegativeSign(int value) const;
+
+  // https://drafts.csswg.org/css-counter-styles/#initial-representation-for-the-counter-value
+  // Returns nullptr if the counter value cannot be represented with the given
+  // 'system', 'range' and 'symbols'/'additive-symbols' descriptor values.
+  String GenerateInitialRepresentation(int value) const;
+
   // The corresponding style rule in CSS.
   Member<const StyleRuleCounterStyle> style_rule_;
 
@@ -70,6 +85,17 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   AtomicString fallback_name_ = "decimal";
   Member<const CounterStyle> fallback_style_;
+
+  // True if we are looking for a fallback counter style to generate a counter
+  // value. Supports cycle detection in fallback.
+  mutable bool is_in_fallback_ = false;
+
+  // Value of 'symbols' for non-additive systems; Or symbol values in
+  // 'additive-symbols' for the 'additive' system.
+  Vector<String> symbols_;
+
+  // Additive weights, for the 'additive' system only.
+  Vector<wtf_size_t> additive_weights_;
 
   friend class CounterStyleMapTest;
 };

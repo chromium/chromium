@@ -11,9 +11,26 @@
   symbols: '0' '1' '2' '3' '4' '5' '6' '7' '8' '9';
 }
 
+@counter-style upper-roman {
+  system: additive;
+  range: 1 3999;
+  additive-symbols: 1000 M, 900 CM, 500 D, 400 CD, 100 C, 90 XC, 50 L, 40 XL, 10 X, 9 IX, 5 V, 4 IV, 1 I;
+}
+
+@counter-style lower-alpha {
+  system: alphabetic;
+  symbols: a b c d e f g h i j k l m n o p q r s t u v w x y z;
+}
+
 @counter-style disc {
   system: cyclic;
   symbols: \2022;
   suffix: " ";
+}
+
+@counter-style cjk-earthly-branch {
+  system: fixed;
+  symbols: "\5B50" "\4E11" "\5BC5" "\536F" "\8FB0" "\5DF3" "\5348" "\672A" "\7533" "\9149" "\620C" "\4EA5";
+  suffix: "\3001";
 }
 

@@ -7,14 +7,22 @@
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
 namespace {
+
+// User agents must support representations at least 60 Unicode codepoints long,
+// but they may choose to instead use the fallback style for representations
+// that would be longer than 60 codepoints. Since WTF::String may use UTF-16, we
+// limit string length at 120.
+const wtf_size_t kCounterLengthLimit = 120;
 
 CounterStyleSystem ToCounterStyleSystemEnum(const CSSValue* value) {
   if (!value)
@@ -72,6 +80,107 @@ bool SymbolsAreValid(const StyleRuleCounterStyle& rule,
   }
 }
 
+String SymbolToString(const CSSValue& value) {
+  if (const CSSStringValue* string = DynamicTo<CSSStringValue>(value))
+    return string->Value();
+  return To<CSSCustomIdentValue>(value).Value();
+}
+
+// https://drafts.csswg.org/css-counter-styles/#cyclic-system
+Vector<wtf_size_t> CyclicAlgorithm(int value, wtf_size_t num_symbols) {
+  DCHECK(num_symbols);
+  value -= 1;
+  value %= static_cast<int>(num_symbols);
+  if (value < 0)
+    value += num_symbols;
+  return {value};
+}
+
+// https://drafts.csswg.org/css-counter-styles/#fixed-system
+Vector<wtf_size_t> FixedAlgorithm(int value, wtf_size_t num_symbols) {
+  if (value < 0 || static_cast<wtf_size_t>(value) >= num_symbols)
+    return Vector<wtf_size_t>();
+  return {value};
+}
+
+// https://drafts.csswg.org/css-counter-styles/#symbolic-system
+Vector<wtf_size_t> SymbolicAlgorithm(int value, wtf_size_t num_symbols) {
+  DCHECK(num_symbols);
+  DCHECK_GE(value, 0);
+  if (value == 0)
+    return Vector<wtf_size_t>();
+  wtf_size_t index = (value - 1) % num_symbols;
+  wtf_size_t repetitions = (value + num_symbols - 1) / num_symbols;
+  if (repetitions > kCounterLengthLimit)
+    return Vector<wtf_size_t>();
+  return Vector<wtf_size_t>(repetitions, index);
+}
+
+// https://drafts.csswg.org/css-counter-styles/#alphabetic-system
+Vector<wtf_size_t> AlphabeticAlgorithm(int value, wtf_size_t num_symbols) {
+  DCHECK(num_symbols);
+  DCHECK_GE(value, 0);
+  if (value == 0)
+    return Vector<wtf_size_t>();
+  Vector<wtf_size_t> result;
+  while (value) {
+    value -= 1;
+    result.push_back(value % num_symbols);
+    value /= num_symbols;
+
+    // Since length is logarithmic to value, we won't exceed the length limit.
+    DCHECK_LE(result.size(), kCounterLengthLimit);
+  }
+  std::reverse(result.begin(), result.end());
+  return result;
+}
+
+// https://drafts.csswg.org/css-counter-styles/#numeric-system
+Vector<wtf_size_t> NumericAlgorithm(int value, wtf_size_t num_symbols) {
+  DCHECK_GT(num_symbols, 1u);
+  DCHECK_GE(value, 0);
+  if (value == 0)
+    return {0};
+
+  Vector<wtf_size_t> result;
+  while (value) {
+    result.push_back(value % num_symbols);
+    value /= num_symbols;
+
+    // Since length is logarithmic to value, we won't exceed the length limit.
+    DCHECK_LE(result.size(), kCounterLengthLimit);
+  }
+  std::reverse(result.begin(), result.end());
+  return result;
+}
+
+// https://drafts.csswg.org/css-counter-styles/#additive-system
+Vector<wtf_size_t> AdditiveAlgorithm(int value,
+                                     const Vector<wtf_size_t>& weights) {
+  DCHECK(weights.size());
+  DCHECK_GE(value, 0);
+  if (value == 0) {
+    if (weights.back() == 0u)
+      return {weights.size() - 1};
+    return Vector<wtf_size_t>();
+  }
+
+  Vector<wtf_size_t> result;
+  for (wtf_size_t index = 0; value && index < weights.size() && weights[index];
+       ++index) {
+    wtf_size_t repetitions = value / weights[index];
+    if (repetitions) {
+      if (result.size() + repetitions > kCounterLengthLimit)
+        return Vector<wtf_size_t>();
+      result.AppendVector(Vector<wtf_size_t>(repetitions, index));
+    }
+    value %= weights[index];
+  }
+  if (value)
+    return Vector<wtf_size_t>();
+  return result;
+}
+
 }  // namespace
 
 // static
@@ -113,6 +222,21 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
   if (const CSSValue* fallback = rule.GetFallback())
     fallback_name_ = To<CSSCustomIdentValue>(fallback)->Value();
 
+  if (system_ != CounterStyleSystem::kUnresolvedExtends) {
+    if (system_ == CounterStyleSystem::kAdditive) {
+      for (const CSSValue* symbol :
+           To<CSSValueList>(*rule.GetAdditiveSymbols())) {
+        const auto& pair = To<CSSValuePair>(*symbol);
+        additive_weights_.push_back(
+            To<CSSPrimitiveValue>(pair.First()).GetIntValue());
+        symbols_.push_back(SymbolToString(pair.Second()));
+      }
+    } else {
+      for (const CSSValue* symbol : To<CSSValueList>(*rule.GetSymbols()))
+        symbols_.push_back(SymbolToString(*symbol));
+    }
+  }
+
   // TODO(crbug.com/687225): Implement and populate other fields.
 }
 
@@ -126,6 +250,10 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
     fallback_name_ = extended.fallback_name_;
     fallback_style_ = nullptr;
   }
+
+  symbols_ = extended.symbols_;
+  if (system_ == CounterStyleSystem::kAdditive)
+    additive_weights_ = extended.additive_weights_;
 
   // TODO(crbug.com/687225): Implement and populate other fields.
 }
@@ -142,6 +270,106 @@ void CounterStyle::ResetFallback() {
   if (fallback_name_ == "decimal" || fallback_name_ == "disc")
     return;
   fallback_style_.Clear();
+}
+
+bool CounterStyle::RangeContains(int value) const {
+  // TODO(crbug.com/687225): Implement non-auto values of 'range'
+
+  // 'range' value is auto
+  switch (system_) {
+    case CounterStyleSystem::kCyclic:
+    case CounterStyleSystem::kNumeric:
+    case CounterStyleSystem::kFixed:
+      return true;
+    case CounterStyleSystem::kSymbolic:
+    case CounterStyleSystem::kAlphabetic:
+      return value >= 1;
+    case CounterStyleSystem::kAdditive:
+      return value >= 0;
+    case CounterStyleSystem::kUnresolvedExtends:
+      NOTREACHED();
+      return false;
+  }
+}
+
+bool CounterStyle::NeedsNegativeSign(int value) const {
+  if (value >= 0)
+    return false;
+  switch (system_) {
+    case CounterStyleSystem::kSymbolic:
+    case CounterStyleSystem::kAlphabetic:
+    case CounterStyleSystem::kNumeric:
+    case CounterStyleSystem::kAdditive:
+      return true;
+    case CounterStyleSystem::kCyclic:
+    case CounterStyleSystem::kFixed:
+      return false;
+    case CounterStyleSystem::kUnresolvedExtends:
+      NOTREACHED();
+      return false;
+  }
+}
+
+String CounterStyle::GenerateRepresentation(int value) const {
+  if (is_in_fallback_) {
+    // We are in a fallback cycle. Use decimal instead.
+    return GetDecimal().GenerateRepresentation(value);
+  }
+
+  String initial_representation = GenerateInitialRepresentation(value);
+  if (initial_representation.IsNull()) {
+    base::AutoReset<bool> in_fallback_scope(&is_in_fallback_, true);
+    return fallback_style_->GenerateRepresentation(value);
+  }
+
+  // TODO(crbug.com/687225): Implement non-default 'pad' and 'negative' values.
+
+  StringBuilder result;
+  if (NeedsNegativeSign(value))
+    result.Append("-");
+  result.Append(initial_representation);
+  return result.ToString();
+}
+
+String CounterStyle::GenerateInitialRepresentation(int value) const {
+  if (!RangeContains(value))
+    return String();
+  if (NeedsNegativeSign(value))
+    value = -value;
+
+  Vector<wtf_size_t> symbol_indexes;
+  switch (system_) {
+    case CounterStyleSystem::kCyclic:
+      symbol_indexes = CyclicAlgorithm(value, symbols_.size());
+      break;
+    case CounterStyleSystem::kFixed:
+      // TODO(crbug.com/687225): Implement non-default first symbol values.
+      symbol_indexes = FixedAlgorithm(value - 1, symbols_.size());
+      break;
+    case CounterStyleSystem::kNumeric:
+      symbol_indexes = NumericAlgorithm(value, symbols_.size());
+      break;
+    case CounterStyleSystem::kSymbolic:
+      symbol_indexes = SymbolicAlgorithm(value, symbols_.size());
+      break;
+    case CounterStyleSystem::kAlphabetic:
+      symbol_indexes = AlphabeticAlgorithm(value, symbols_.size());
+      break;
+    case CounterStyleSystem::kAdditive:
+      symbol_indexes = AdditiveAlgorithm(value, additive_weights_);
+      break;
+    case CounterStyleSystem::kUnresolvedExtends:
+      NOTREACHED();
+      break;
+  }
+
+  if (symbol_indexes.IsEmpty())
+    return String();
+
+  StringBuilder result;
+  for (wtf_size_t index : symbol_indexes)
+    result.Append(symbols_[index]);
+  return result.ToString();
 }
 
 void CounterStyle::Trace(Visitor* visitor) const {
