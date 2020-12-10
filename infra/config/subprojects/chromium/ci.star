@@ -409,8 +409,8 @@ ci.console_view(
 
 ci.builder(
     name = "android-androidx-packager",
-    console_view = "android.packager",
     console_view_entry = ci.console_view_entry(
+        console_view = "android.packager",
         short_name = "androidx",
     ),
     executable = "recipe:android/androidx_packager",
@@ -421,8 +421,8 @@ ci.builder(
 
 ci.builder(
     name = "android-avd-packager",
-    console_view = "android.packager",
     console_view_entry = ci.console_view_entry(
+        console_view = "android.packager",
         short_name = "avd",
     ),
     executable = "recipe:android/avd_packager",
@@ -444,8 +444,8 @@ ci.builder(
 
 ci.builder(
     name = "android-sdk-packager",
-    console_view = "android.packager",
     console_view_entry = ci.console_view_entry(
+        console_view = "android.packager",
         short_name = "sdk",
     ),
     executable = "recipe:android/sdk_packager",
@@ -1161,8 +1161,8 @@ ci.chromium_builder(
     builderless = False,
     # TODO(https://crbug.com/1072012) Use the default console view and add
     # main_console_view = 'main' once the build is green
-    console_view = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
+        console_view = "chromium.fyi",
         category = "linux",
         short_name = "off",
     ),
@@ -1201,8 +1201,8 @@ ci.chromium_builder(
     builderless = False,
     # TODO(https://crbug.com/1072012) Use the default console view and add
     # main_console_view = 'main' once the build is green
-    console_view = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
+        console_view = "chromium.fyi",
         category = "mac",
         short_name = "off",
     ),
@@ -4265,8 +4265,8 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Leak Detection Linux",
-    console_view = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
+        console_view = "chromium.fyi",
         category = "linux",
         short_name = "lk",
     ),
@@ -4419,8 +4419,8 @@ ci.linux_builder(
 ci.linux_builder(
     name = "Linux Ozone Tester (Headless)",
     branch_selector = branches.STANDARD_MILESTONE,
-    console_view = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
+        console_view = "chromium.fyi",
         category = "linux",
         short_name = "loh",
     ),
@@ -4432,8 +4432,8 @@ ci.linux_builder(
 ci.linux_builder(
     name = "Linux Ozone Tester (Wayland)",
     branch_selector = branches.STANDARD_MILESTONE,
-    console_view = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
+        console_view = "chromium.fyi",
         category = "linux",
         short_name = "low",
     ),
@@ -4445,8 +4445,8 @@ ci.linux_builder(
 ci.linux_builder(
     name = "Linux Ozone Tester (X11)",
     branch_selector = branches.STANDARD_MILESTONE,
-    console_view = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
+        console_view = "chromium.fyi",
         category = "linux",
         short_name = "lox",
     ),
@@ -4509,8 +4509,9 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "metadata-exporter",
-    console_view = "metadata.exporter",
-    console_view_entry = ci.console_view_entry(),
+    console_view_entry = ci.console_view_entry(
+        console_view = "metadata.exporter",
+    ),
     executable = "recipe:chromium_export_metadata",
     service_account = "component-mapping-updater@chops-service-accounts.iam.gserviceaccount.com",
     notifies = ["metadata-mapping"],
@@ -4691,10 +4692,10 @@ ci.mac_ios_builder(
 
 ci.memory_builder(
     name = "Android CFI",
-    # TODO(https://crbug.com/1008094) When this builder is not consistently
-    # failing, remove the console_view value
-    console_view = "chromium.android.fyi",
     console_view_entry = ci.console_view_entry(
+        # TODO(https://crbug.com/1008094) When this builder is not consistently
+        # failing, remove the console_view value
+        console_view = "chromium.android.fyi",
         category = "memory",
         short_name = "cfi",
     ),
