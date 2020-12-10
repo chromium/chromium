@@ -45,11 +45,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   bool operator==(const HoldingSpaceItem& rhs) const;
 
-  // Generates an item ID for a holding space item backed by a file, based on
-  // the file's file system URL.
-  static std::string GetFileBackedItemId(Type type,
-                                         const base::FilePath& file_path);
-
   // Creates a HoldingSpaceItem that's backed by a file system URL.
   // NOTE: `file_system_url` is expected to be non-empty.
   static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
@@ -57,9 +52,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       const base::FilePath& file_path,
       const GURL& file_system_url,
       std::unique_ptr<HoldingSpaceImage> image);
-
-  // Returns a file system URL for a given file path.
-  using FileSystemUrlResolver = base::OnceCallback<GURL(const base::FilePath&)>;
 
   // Returns an image for a given type and file path.
   using ImageResolver = base::OnceCallback<

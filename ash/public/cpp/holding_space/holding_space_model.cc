@@ -6,13 +6,13 @@
 
 #include <algorithm>
 
-#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/check.h"
 
 namespace ash {
 
 HoldingSpaceModel::HoldingSpaceModel() = default;
+
 HoldingSpaceModel::~HoldingSpaceModel() = default;
 
 void HoldingSpaceModel::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
@@ -96,6 +96,25 @@ const HoldingSpaceItem* HoldingSpaceModel::GetItem(
   if (item_it == items_.end())
     return nullptr;
   return item_it->get();
+}
+
+const HoldingSpaceItem* HoldingSpaceModel::GetItem(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) const {
+  auto item_it = std::find_if(
+      items_.begin(), items_.end(),
+      [&type, &file_path](const std::unique_ptr<HoldingSpaceItem>& item) {
+        return item->type() == type && item->file_path() == file_path;
+      });
+
+  if (item_it == items_.end())
+    return nullptr;
+  return item_it->get();
+}
+
+bool HoldingSpaceModel::ContainsItem(HoldingSpaceItem::Type type,
+                                     const base::FilePath& file_path) const {
+  return GetItem(type, file_path) != nullptr;
 }
 
 void HoldingSpaceModel::AddObserver(HoldingSpaceModelObserver* observer) {

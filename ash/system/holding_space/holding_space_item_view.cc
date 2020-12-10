@@ -348,9 +348,9 @@ void HoldingSpaceItemView::OnPaintSelect(gfx::Canvas* canvas, gfx::Size size) {
 }
 
 void HoldingSpaceItemView::OnPinPressed() {
-  const bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
-      HoldingSpaceItem::GetFileBackedItemId(HoldingSpaceItem::Type::kPinnedFile,
-                                            item()->file_path()));
+  const bool is_item_pinned =
+      HoldingSpaceController::Get()->model()->ContainsItem(
+          HoldingSpaceItem::Type::kPinnedFile, item()->file_path());
 
   // Unpinning `item()` may result in the destruction of this view.
   auto weak_ptr = weak_factory_.GetWeakPtr();
@@ -370,9 +370,9 @@ void HoldingSpaceItemView::UpdatePin() {
     return;
   }
 
-  const bool is_item_pinned = HoldingSpaceController::Get()->model()->GetItem(
-      HoldingSpaceItem::GetFileBackedItemId(HoldingSpaceItem::Type::kPinnedFile,
-                                            item()->file_path()));
+  const bool is_item_pinned =
+      HoldingSpaceController::Get()->model()->ContainsItem(
+          HoldingSpaceItem::Type::kPinnedFile, item()->file_path());
 
   pin_->SetToggled(!is_item_pinned);
   pin_->SetVisible(true);

@@ -117,8 +117,8 @@ void HoldingSpaceKeyedService::RegisterProfilePrefs(
 
 void HoldingSpaceKeyedService::AddPinnedFile(
     const storage::FileSystemURL& file_system_url) {
-  if (holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
-          HoldingSpaceItem::Type::kPinnedFile, file_system_url.path()))) {
+  if (holding_space_model_.ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
+                                        file_system_url.path())) {
     return;
   }
 
@@ -153,9 +153,8 @@ void HoldingSpaceKeyedService::AddPinnedFile(
 
 void HoldingSpaceKeyedService::RemovePinnedFile(
     const storage::FileSystemURL& file_system_url) {
-  const HoldingSpaceItem* holding_space_item =
-      holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
-          HoldingSpaceItem::Type::kPinnedFile, file_system_url.path()));
+  const HoldingSpaceItem* holding_space_item = holding_space_model_.GetItem(
+      HoldingSpaceItem::Type::kPinnedFile, file_system_url.path());
   if (!holding_space_item)
     return;
 
@@ -176,8 +175,8 @@ void HoldingSpaceKeyedService::RemovePinnedFile(
 
 bool HoldingSpaceKeyedService::ContainsPinnedFile(
     const storage::FileSystemURL& file_system_url) const {
-  return holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
-      HoldingSpaceItem::Type::kPinnedFile, file_system_url.path()));
+  return holding_space_model_.ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
+                                           file_system_url.path());
 }
 
 std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
@@ -205,9 +204,8 @@ void HoldingSpaceKeyedService::AddScreenshot(
 
 void HoldingSpaceKeyedService::AddDownload(
     const base::FilePath& download_file) {
-  const bool already_exists =
-      holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
-          HoldingSpaceItem::Type::kDownload, download_file));
+  const bool already_exists = holding_space_model_.ContainsItem(
+      HoldingSpaceItem::Type::kDownload, download_file);
   if (already_exists)
     return;
 
@@ -225,9 +223,8 @@ void HoldingSpaceKeyedService::AddDownload(
 
 void HoldingSpaceKeyedService::AddNearbyShare(
     const base::FilePath& nearby_share_path) {
-  const bool already_exists =
-      holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
-          HoldingSpaceItem::Type::kNearbyShare, nearby_share_path));
+  const bool already_exists = holding_space_model_.ContainsItem(
+      HoldingSpaceItem::Type::kNearbyShare, nearby_share_path);
   if (already_exists)
     return;
 

@@ -10,13 +10,17 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "url/gurl.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace ash {
 
-class HoldingSpaceItem;
 class HoldingSpaceModelObserver;
 
 // The data model for the temporary holding space UI. It contains the list of
@@ -56,6 +60,17 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   // Gets a single holding space item.
   // Returns nullptr if the item does not exist in the model.
   const HoldingSpaceItem* GetItem(const std::string& id) const;
+
+  // Gets a single holding space item with the specified `type` backed by the
+  // specified `file_path`. Returns `nullptr` if the item does not exist in the
+  // model.
+  const HoldingSpaceItem* GetItem(HoldingSpaceItem::Type type,
+                                  const base::FilePath& file_path) const;
+
+  // Returns whether or not there exists a holding space item of the specified
+  // `type` backed by the specified `file_path`.
+  bool ContainsItem(HoldingSpaceItem::Type type,
+                    const base::FilePath& file_path) const;
 
   const ItemList& items() const { return items_; }
 

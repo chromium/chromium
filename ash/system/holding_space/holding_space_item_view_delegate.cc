@@ -364,10 +364,8 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
 
   const bool is_any_unpinned = std::any_of(
       selection.begin(), selection.end(), [](const HoldingSpaceItemView* view) {
-        return !HoldingSpaceController::Get()->model()->GetItem(
-            HoldingSpaceItem::GetFileBackedItemId(
-                HoldingSpaceItem::Type::kPinnedFile,
-                view->item()->file_path()));
+        return !HoldingSpaceController::Get()->model()->ContainsItem(
+            HoldingSpaceItem::Type::kPinnedFile, view->item()->file_path());
       });
 
   if (is_any_unpinned) {

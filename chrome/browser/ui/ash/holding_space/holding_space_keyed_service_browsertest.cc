@@ -93,81 +93,123 @@ base::FilePath CreateTextFile(
   return path;
 }
 
-// Waits for a holding space item with the provided id to be added to the
-// holding space model.
-// Returns immediately if the item already exists.
-void WaitForItemAddition(const std::string& item_id) {
-  auto* holding_space_model = ash::HoldingSpaceController::Get()->model();
-  if (holding_space_model->GetItem(item_id))
+// Waits for a holding space item matching the provided `predicate` to be added
+// to the holding space model. Returns immediately if the item already exists.
+void WaitForItemAddition(
+    base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
+  auto* model = ash::HoldingSpaceController::Get()->model();
+  if (std::any_of(model->items().begin(), model->items().end(),
+                  [&predicate](const auto& item) {
+                    return predicate.Run(item.get());
+                  })) {
     return;
+  }
 
   testing::NiceMock<MockHoldingSpaceModelObserver> mock;
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       observer{&mock};
-  observer.Observe(holding_space_model);
+  observer.Observe(model);
 
   base::RunLoop run_loop;
   ON_CALL(mock, OnHoldingSpaceItemAdded)
       .WillByDefault([&](const HoldingSpaceItem* item) {
-        if (item->id() == item_id)
+        if (predicate.Run(item))
           run_loop.Quit();
       });
   run_loop.Run();
 }
 
-// Waits for a holding space item with the provided id to be removed from the
-// holding space model.
-// Returns immediately if the model does not contain such item.
-void WaitForItemRemoval(const std::string& item_id) {
-  auto* holding_space_model = ash::HoldingSpaceController::Get()->model();
-  if (!holding_space_model->GetItem(item_id))
+// Waits for a holding space item with the provided `item_id` to be added to the
+// holding space model. Returns immediately if the item already exists.
+void WaitForItemAddition(const std::string& item_id) {
+  WaitForItemAddition(
+      base::BindLambdaForTesting([&item_id](const HoldingSpaceItem* item) {
+        return item->id() == item_id;
+      }));
+}
+
+// Waits for a holding space item matching the provided `predicate` to be
+// removed from the holding space model. Returns immediately if the model does
+// not contain such an item.
+void WaitForItemRemoval(
+    base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
+  auto* model = ash::HoldingSpaceController::Get()->model();
+  if (std::none_of(model->items().begin(), model->items().end(),
+                   [&predicate](const auto& item) {
+                     return predicate.Run(item.get());
+                   })) {
     return;
+  }
 
   testing::NiceMock<MockHoldingSpaceModelObserver> mock;
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       observer{&mock};
-  observer.Observe(holding_space_model);
+  observer.Observe(model);
 
   base::RunLoop run_loop;
   ON_CALL(mock, OnHoldingSpaceItemRemoved)
       .WillByDefault([&](const HoldingSpaceItem* item) {
-        if (item->id() == item_id)
+        if (predicate.Run(item))
           run_loop.Quit();
       });
   run_loop.Run();
 }
 
-// Waits for a holding space item with the provided id to be added to the
-// holding space model and finalized.
-// Returns immediately if the item already exists and is finalized.
-void WaitForItemFinalization(const std::string& item_id) {
-  auto* holding_space_model = ash::HoldingSpaceController::Get()->model();
-  if (!holding_space_model->GetItem(item_id))
-    WaitForItemAddition(item_id);
+// Waits for a holding space item with the provided `item_id` to be removed from
+// the holding space model. Returns immediately if the model does not contain
+// such an item.
+void WaitForItemRemoval(const std::string& item_id) {
+  WaitForItemRemoval(
+      base::BindLambdaForTesting([&item_id](const HoldingSpaceItem* item) {
+        return item->id() == item_id;
+      }));
+}
 
-  const HoldingSpaceItem* item = holding_space_model->GetItem(item_id);
-  if (item->IsFinalized())
+// Waits for a holding space item matching the provided `predicate` to be added
+// to the holding space model and finalized. Returns immediately if the item
+// already exists and is finalized.
+void WaitForItemFinalization(
+    base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
+  WaitForItemAddition(predicate);
+
+  auto* model = ash::HoldingSpaceController::Get()->model();
+  auto item_it = std::find_if(
+      model->items().begin(), model->items().end(),
+      [&predicate](const auto& item) { return predicate.Run(item.get()); });
+
+  DCHECK(item_it != model->items().end());
+  if (item_it->get()->IsFinalized())
     return;
 
   testing::NiceMock<MockHoldingSpaceModelObserver> mock;
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       observer{&mock};
-  observer.Observe(holding_space_model);
+  observer.Observe(model);
 
   base::RunLoop run_loop;
   ON_CALL(mock, OnHoldingSpaceItemFinalized)
       .WillByDefault([&](const HoldingSpaceItem* item) {
-        if (item->id() == item_id)
+        if (item == item_it->get())
           run_loop.Quit();
       });
   ON_CALL(mock, OnHoldingSpaceItemRemoved)
       .WillByDefault([&](const HoldingSpaceItem* item) {
-        if (item->id() != item_id)
+        if (item != item_it->get())
           return;
-        ADD_FAILURE() << "Item unexpectedly removed " << item_id;
+        ADD_FAILURE() << "Item unexpectedly removed: " << item->id();
         run_loop.Quit();
       });
   run_loop.Run();
+}
+
+// Waits for a holding space item with the provided `item_id` to be added to the
+// holding space model and finalized. Returns immediately if the item already
+// exists and is finalized.
+void WaitForItemFinalization(const std::string& item_id) {
+  WaitForItemFinalization(
+      base::BindLambdaForTesting([&item_id](const HoldingSpaceItem* item) {
+        return item->id() == item_id;
+      }));
 }
 
 // Adds a holding space item backed by a txt file at `item_path`.
@@ -426,8 +468,11 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
                        RestoreItemsOnRestart) {
-  WaitForItemFinalization(HoldingSpaceItem::GetFileBackedItemId(
-      HoldingSpaceItem::Type::kDownload, GetPredefinedTestFile(0)));
+  WaitForItemFinalization(
+      base::BindLambdaForTesting([this](const HoldingSpaceItem* item) {
+        return item->type() == HoldingSpaceItem::Type::kDownload &&
+               item->file_path() == GetPredefinedTestFile(0);
+      }));
 }
 
 }  // namespace ash
