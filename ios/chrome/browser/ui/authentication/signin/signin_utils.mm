@@ -6,11 +6,14 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/version.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
@@ -59,6 +62,10 @@ bool SigninShouldPresentUserSigninUpgrade(ChromeBrowserState* browserState) {
   // There will be an error shown if the user chooses to sign in or select
   // another account while offline.
   if (net::NetworkChangeNotifier::IsOffline())
+    return false;
+
+  // Sign-in can be disabled by policy.
+  if (!signin::IsSigninAllowed(browserState->GetPrefs()))
     return false;
 
   AuthenticationService* authService =
@@ -124,3 +131,15 @@ void SigninRecordVersionSeen() {
 void SetSigninCurrentVersionForTesting(Version* version) {
   g_current_version_for_test = version;
 }
+
+// TODO(crbug.com/1157531): Move the other functions inside the signin namespace
+// as well.
+namespace signin {
+
+bool IsSigninAllowed(const PrefService* prefs) {
+  // Sign-in is always allowed if the policy handler isn't installed.
+  return !ShouldInstallBrowserSigninPolicyHandler() ||
+         prefs->GetBoolean(prefs::kSigninAllowed);
+}
+
+}  // namespace signin

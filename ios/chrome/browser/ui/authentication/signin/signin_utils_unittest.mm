@@ -9,11 +9,15 @@
 #include <memory>
 
 #import "base/bind.h"
+#import "base/command_line.h"
+#import "base/test/scoped_command_line.h"
 #import "base/version.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -98,7 +102,7 @@ TEST_F(SigninUtilsTest, TestWillNotDisplaySameVersion) {
       SigninShouldPresentUserSigninUpgrade(chrome_browser_state_.get()));
 }
 
-// Should not show the sign-in upgrade twice until to major version after.
+// Should not show the sign-in upgrade twice until two major version after.
 TEST_F(SigninUtilsTest, TestWillNotDisplayOneMinorVersion) {
   SigninRecordVersionSeen();
   // Set the future version to be one minor release ahead.
@@ -108,7 +112,7 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayOneMinorVersion) {
       SigninShouldPresentUserSigninUpgrade(chrome_browser_state_.get()));
 }
 
-// Should not show the sign-in upgrade twice until to major version after.
+// Should not show the sign-in upgrade twice until two major version after.
 TEST_F(SigninUtilsTest, TestWillNotDisplayTwoMinorVersions) {
   SigninRecordVersionSeen();
   // Set the future version to be two minor releases ahead.
@@ -118,7 +122,7 @@ TEST_F(SigninUtilsTest, TestWillNotDisplayTwoMinorVersions) {
       SigninShouldPresentUserSigninUpgrade(chrome_browser_state_.get()));
 }
 
-// Should not show the sign-in upgrade twice until to major version after.
+// Should not show the sign-in upgrade twice until two major version after.
 TEST_F(SigninUtilsTest, TestWillNotDisplayOneMajorVersion) {
   SigninRecordVersionSeen();
   // Set the future version to be one major release ahead.
@@ -235,6 +239,35 @@ TEST_F(SigninUtilsTest, TestWillNotShowNewAccountUntilTwoVersionBis) {
       ->AddIdentities(@[ @"foo1" ]);
   EXPECT_FALSE(
       SigninShouldPresentUserSigninUpgrade(chrome_browser_state_.get()));
+}
+
+// Should not show the sign-in upgrade if sign-in is disabled by policy.
+TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kInstallBrowserSigninHandler);
+
+  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
+      ->AddIdentities(@[ @"foo1" ]);
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  EXPECT_FALSE(
+      SigninShouldPresentUserSigninUpgrade(chrome_browser_state_.get()));
+}
+
+// signin::IsSigninAllowed should respect the kSigninAllowed pref.
+TEST_F(SigninUtilsTest, TestSigninAllowedPref) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kInstallBrowserSigninHandler);
+
+  // Sign-in is allowed by default.
+  EXPECT_TRUE(signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
+
+  // When sign-in is disabled by policy, the accessor should return false.
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  EXPECT_FALSE(
+      signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
 }
 
 }  // namespace

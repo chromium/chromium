@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class ChromeBrowserState;
+class PrefService;
 
 namespace base {
 class Version;
@@ -25,5 +26,12 @@ void SigninRecordVersionSeen();
 
 // Set the Chromium current version for sign-in. Used for tests only.
 void SetSigninCurrentVersionForTesting(base::Version* version);
+
+namespace signin {
+
+// Returns a boolean indicating whether browser sign-in is allowed by policy.
+bool IsSigninAllowed(const PrefService* prefs);
+
+}  // namespace signin
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SIGNIN_UTILS_H_

@@ -7,7 +7,16 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_command_line.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/sync_preferences/pref_service_mock_factory.h"
+#import "components/sync_preferences/pref_service_syncable.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_switches.h"
+#import "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
@@ -17,6 +26,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
@@ -31,6 +41,10 @@ using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
+using sync_preferences::PrefServiceMockFactory;
+using sync_preferences::PrefServiceSyncable;
+using user_prefs::PrefRegistrySyncable;
+using web::WebTaskEnvironment;
 
 namespace {
 
@@ -72,6 +86,15 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMStub([signin_promo_view_ secondaryButton]).andReturn(secondary_button_);
     close_button_ = OCMStrictClassMock([UIButton class]);
     OCMStub([signin_promo_view_ closeButton]).andReturn(close_button_);
+  }
+
+  std::unique_ptr<PrefServiceSyncable> CreatePrefService() {
+    PrefServiceMockFactory factory;
+    scoped_refptr<PrefRegistrySyncable> registry(new PrefRegistrySyncable);
+    std::unique_ptr<PrefServiceSyncable> prefs =
+        factory.CreateSyncable(registry.get());
+    RegisterBrowserStatePrefs(registry.get());
+    return prefs;
   }
 
   // Creates the default identity and adds it into the ChromeIdentityService.
@@ -183,6 +206,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     // Check the configurator received by the consumer.
     CheckSigninWithAccountConfigurator(configurator_);
   }
+
+  // Task environment.
+  WebTaskEnvironment task_environment_;
 
   // Mediator used for the tests.
   SigninPromoViewMediator* mediator_;
@@ -367,6 +393,23 @@ TEST_F(SigninPromoViewMediatorTest,
   // Finishs the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
   completion(YES);
+}
+
+// Tests that promos aren't shown if browser sign-in is disabled by policy
+TEST_F(SigninPromoViewMediatorTest,
+       ShouldNotDisplaySigninPromoViewIfDisabledByPolicy) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kInstallBrowserSigninHandler);
+  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
+  TestChromeBrowserState::Builder builder;
+  builder.SetPrefService(CreatePrefService());
+  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+  browser_state->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  EXPECT_FALSE([SigninPromoViewMediator
+      shouldDisplaySigninPromoViewWithAccessPoint:signin_metrics::AccessPoint::
+                                                      ACCESS_POINT_RECENT_TABS
+                                     browserState:browser_state.get()]);
 }
 
 }  // namespace

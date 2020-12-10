@@ -20,6 +20,7 @@
 #include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -384,6 +385,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
                                        browserState:
                                            (ChromeBrowserState*)browserState {
   PrefService* prefs = browserState->GetPrefs();
+  if (!signin::IsSigninAllowed(prefs)) {
+    return NO;
+  }
   const char* displayedCountPreferenceKey =
       DisplayedCountPreferenceKey(accessPoint);
   if (displayedCountPreferenceKey &&
