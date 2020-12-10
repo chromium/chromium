@@ -77,6 +77,11 @@ struct IndividualSettings {
   ExtensionManagement::InstallationMode installation_mode;
   std::string update_url;
 
+  // Boolean to indicate whether the update URL of the extension/app is
+  // overridden by the policy or not. It can be true only for extensions/apps
+  // which are marked as |force_installed|.
+  bool override_update_url{false};
+
   // Permissions block list for extensions. This setting won't grant permissions
   // to extensions automatically. Instead, this setting will provide a list of
   // blocked permissions for each extension. That is, if an extension requires a

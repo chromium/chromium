@@ -49,6 +49,27 @@ const char kExampleUpdateUrl[] = "http://example.com/update_url";
 const char kNonExistingExtension[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kNonExistingUpdateUrl[] = "http://example.net/update.xml";
 
+const char kExampleForceInstalledDictPreference[] = R"({
+  "abcdefghijklmnopabcdefghijklmnop" : {
+    "installation_mode" : "force_installed",
+    "update_url" : "http://example.com/update_url",
+    "override_update_url": true,
+  },
+  "bcdefghijklmnopabcdefghijklmnopa" : {
+    "installation_mode" : "force_installed",
+    "update_url" : "http://example.com/update_url"
+  }
+})";
+
+const char kExampleDictPreferenceWithoutInstallationMode[] = R"({
+  "abcdefghijklmnopabcdefghijklmnop" : {
+    "override_update_url": true,
+  },
+  "bcdefghijklmnopabcdefghijklmnopa" : {
+    "minimum_version_required": "1.1.0"
+  }
+})";
+
 const char kExampleDictPreference[] =
     R"(
 {
@@ -264,6 +285,10 @@ class ExtensionManagementServiceTest : public testing::Test {
     return extension;
   }
 
+  bool IsUpdateUrlOverridden(const ExtensionId& extension_id) {
+    return extension_management_->IsUpdateUrlOverridden(extension_id);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   sync_preferences::TestingPrefServiceSyncable* pref_service_;
@@ -470,6 +495,109 @@ TEST_F(ExtensionManagementServiceTest, LegacyInstallForcelist) {
             ExtensionManagement::INSTALLATION_ALLOWED);
 }
 
+// Verify that update url is overridden for extensions specified in
+// |kInstallForcelist| pref but |installation_mode| is missing in
+// |kExtensionSettings| pref.
+TEST_F(ExtensionManagementServiceTest,
+       InstallUpdateUrlEnforcedForceInstalledPref) {
+  base::DictionaryValue forced_list_pref;
+  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension,
+                                     kExampleUpdateUrl);
+  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension2,
+                                     kExampleUpdateUrl);
+
+  SetPref(true, pref_names::kInstallForceList,
+          forced_list_pref.CreateDeepCopy());
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension),
+            ExtensionManagement::INSTALLATION_FORCED);
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension2),
+            ExtensionManagement::INSTALLATION_FORCED);
+
+  SetExampleDictPref(kExampleDictPreferenceWithoutInstallationMode);
+
+  // Verify that the update URL is overridden for kTargetExtension.
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension),
+            ExtensionManagement::INSTALLATION_FORCED);
+  EXPECT_TRUE(IsUpdateUrlOverridden(kTargetExtension));
+
+  // Verify that the update URL is not overridden for kTargetExtension2 because
+  // |override_update_url| flag is not specified for it in |kExtensionSettings|
+  // pref.
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension2),
+            ExtensionManagement::INSTALLATION_FORCED);
+  EXPECT_FALSE(IsUpdateUrlOverridden(kTargetExtension2));
+}
+
+// Verify that update url is not overridden for extensions not specified in
+// |kInstallForcelist| and |installation_mode| is missing in
+// |kExtensionSettings|.
+TEST_F(ExtensionManagementServiceTest,
+       InstallUpdateUrlEnforcedForceInstalledPrefMissing) {
+  base::DictionaryValue forced_list_pref;
+  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension2,
+                                     kExampleUpdateUrl);
+  SetPref(true, pref_names::kInstallForceList,
+          forced_list_pref.CreateDeepCopy());
+
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension2),
+            ExtensionManagement::INSTALLATION_FORCED);
+
+  SetExampleDictPref(kExampleDictPreferenceWithoutInstallationMode);
+
+  // Verify that the update URL is not overridden for kTargetExtension as it is
+  // not listed in |kInstallForcelist| pref.
+  EXPECT_NE(GetInstallationModeById(kTargetExtension),
+            ExtensionManagement::INSTALLATION_FORCED);
+  EXPECT_FALSE(IsUpdateUrlOverridden(kTargetExtension));
+}
+
+// Verify that update url is overridden for extensions which are marked as
+// 'force_installed' and |override_update_url| is true for them in
+// |kExtensionSettings|.
+TEST_F(ExtensionManagementServiceTest,
+       InstallUpdateUrlEnforcedExtensionSettings) {
+  SetExampleDictPref(kExampleForceInstalledDictPreference);
+
+  // Verify that the update URL is overridden for kTargetExtension.
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension),
+            ExtensionManagement::INSTALLATION_FORCED);
+  EXPECT_TRUE(IsUpdateUrlOverridden(kTargetExtension));
+
+  // Verify that the update URL is not overridden for kTargetExtension2 because
+  // |override_update_url| flag is not specified for it in |kExtensionSettings|
+  // pref.
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension2),
+            ExtensionManagement::INSTALLATION_FORCED);
+  EXPECT_FALSE(IsUpdateUrlOverridden(kTargetExtension2));
+}
+
+// Verify that the force-installed extension specified in the preference
+// |kInstallUpdateUrlEnforced| is ignored if the update URL is a webstore update
+// URL.
+TEST_F(ExtensionManagementServiceTest,
+       InstallUpdateUrlEnforcedWebstoreUpdateUrl) {
+  base::DictionaryValue forced_list_pref;
+  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension,
+                                     extension_urls::kChromeWebstoreUpdateURL);
+  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension2,
+                                     kExampleUpdateUrl);
+
+  SetPref(true, pref_names::kInstallForceList,
+          forced_list_pref.CreateDeepCopy());
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension),
+            ExtensionManagement::INSTALLATION_FORCED);
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension2),
+            ExtensionManagement::INSTALLATION_FORCED);
+
+  SetExampleDictPref(kExampleDictPreferenceWithoutInstallationMode);
+
+  // Verify that the update URL is not overridden for kTargetExtension because
+  // |update_url| is a Chrome web store URL.
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension),
+            ExtensionManagement::INSTALLATION_FORCED);
+  EXPECT_FALSE(IsUpdateUrlOverridden(kTargetExtension));
+}
+
 // Tests handling of exceeding number of urls
 TEST_F(ExtensionManagementServiceTest, HostsMaximumExceeded) {
   const char policy_template[] =
@@ -609,7 +737,7 @@ TEST_F(ExtensionManagementServiceTest, InstallationModeConflictHandling) {
 TEST_F(ExtensionManagementServiceTest, BlockedPermissionsConflictHandling) {
   SetExampleDictPref(kExampleDictPreference);
 
-  // Both settings should be enforced.
+  // Both settings should be overridden.
   APIPermissionSet blocked_permissions_for_update_url;
   blocked_permissions_for_update_url.insert(APIPermission::kFileSystem);
   blocked_permissions_for_update_url.insert(APIPermission::kBookmark);

@@ -126,6 +126,10 @@ class ExtensionManagement : public KeyedService {
   // extensions.
   bool HasAllowlistedExtension() const;
 
+  // Returns if an extension with |id| is force installed and the update URL is
+  // overridden by policy.
+  bool IsUpdateUrlOverridden(const ExtensionId& id) const;
+
   // Returns if an extension with id |id| is explicitly allowed by enterprise
   // policy or not.
   bool IsInstallationExplicitlyAllowed(const ExtensionId& id) const;

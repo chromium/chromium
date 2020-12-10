@@ -26,6 +26,7 @@ const char kPolicyAllowedHosts[] = "runtime_allowed_hosts";
 const size_t kMaxItemsURLPatternSet = 100;
 
 const char kUpdateUrl[] = "update_url";
+const char kOverrideUpdateUrl[] = "override_update_url";
 const char kInstallSources[] = "install_sources";
 const char kAllowedTypes[] = "allowed_types";
 

@@ -31,6 +31,7 @@ extern const char kPolicyAllowedHosts[];
 extern const size_t kMaxItemsURLPatternSet;
 
 extern const char kUpdateUrl[];
+extern const char kOverrideUpdateUrl[];
 extern const char kInstallSources[];
 extern const char kAllowedTypes[];
 

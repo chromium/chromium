@@ -168,6 +168,14 @@ bool ExtensionManagement::HasAllowlistedExtension() const {
   return false;
 }
 
+bool ExtensionManagement::IsUpdateUrlOverridden(const ExtensionId& id) const {
+  auto it = settings_by_id_.find(id);
+  // No settings explicitly specified for |id|.
+  if (it == settings_by_id_.end())
+    return false;
+  return it->second->override_update_url;
+}
+
 bool ExtensionManagement::IsInstallationExplicitlyAllowed(
     const ExtensionId& id) const {
   auto it = settings_by_id_.find(id);
