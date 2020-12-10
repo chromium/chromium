@@ -43,13 +43,13 @@ var e_sRGB_TransparentBlueImage = [0.121521, 0.121521, 0.886230, 0.501953];
 // sRGB(226,31,31,128)
 var e_sRGB_TransparentBlackImage = [0.121521, 0.121521, 0.121521, 0.501953];
 
-function testPixels(ctx, tests, sourceType)
+function testPixels(ctx, tests, sourceType, image_color_setting)
 {
     var actual, expected, tolerance = 0.025;
     if (sourceType === 'video')
         tolerance = 0.03;
     for (var i = 0; i < tests.length; i++) {
-        actual = ctx.getImageData(tests[i][0], tests[i][1], 1, 1).data;
+        actual = ctx.getImageData(tests[i][0], tests[i][1], 1, 1, image_color_setting).data;
         expected = tests[i][2];
         assert_true(actual.length === expected.length);
         for (var j = 0; j < actual.length; j++)
@@ -64,6 +64,8 @@ function checkNoCrop(imageBitmap, colorInfo, sourceType)
     canvas.height = 50;
     var ctx = canvas.getContext('2d',
         {colorSpace: 'srgb', pixelFormat:'float16'});
+    var image_color_setting = {colorSpace: 'srgb', storageFormat:'float32'}
+    // var {color}
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(imageBitmap, 0, 0);
     var tests;
@@ -105,7 +107,7 @@ function checkNoCrop(imageBitmap, colorInfo, sourceType)
                      "This pixel should be e-sRGB transparent black."],
                  [41, 41, transparentBlack,
                      "This pixel should be transparent black."]];
-    testPixels(ctx, tests, sourceType);
+    testPixels(ctx, tests, sourceType, image_color_setting);
 }
 
 function checkCrop(imageBitmap, colorInfo, sourceType)
@@ -115,6 +117,7 @@ function checkCrop(imageBitmap, colorInfo, sourceType)
     canvas.height = 50;
     var ctx = canvas.getContext('2d',
         {colorSpace: 'srgb', pixelFormat:'float16'});
+    var image_color_setting = {colorSpace: 'srgb', storageFormat:'float32'}
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(imageBitmap, 0, 0);
     var tests;
@@ -156,7 +159,7 @@ function checkCrop(imageBitmap, colorInfo, sourceType)
                      "This pixel should be e-sRGB transparent black."],
                  [21, 21, transparentBlack,
                      "This pixel should be transparent black."]];
-    testPixels(ctx, tests, sourceType);
+    testPixels(ctx, tests, sourceType, image_color_setting);
 }
 
 
@@ -176,8 +179,9 @@ function compareBitmaps(bitmap1, bitmap2)
     ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
     ctx1.drawImage(bitmap1, 0, 0);
     ctx2.drawImage(bitmap2, 0, 0);
-    var data1 = ctx1.getImageData(0, 0, 50, 50).data;
-    var data2 = ctx2.getImageData(0, 0, 50, 50).data;
+    var image_data_setting = {colorSpace: 'srgb', storageFormat:'float32'}
+    var data1 = ctx1.getImageData(0, 0, 50, 50, image_data_setting).data;
+    var data2 = ctx2.getImageData(0, 0, 50, 50, image_data_setting).data;
     var dataMatched = true;
     for (var i = 0; i < data1.length; i++) {
         if (data1[i] != data2[i]) {
@@ -482,7 +486,8 @@ runAllCreateImageBitmapFromColorManagedBlobTests();
 promise_test(function() {
     var canvas = initializeTestCanvas('srgb', 'uint8');
     var ctx = canvas.getContext('2d');
-    var data = ctx.getImageData(0, 0, 20, 20);
+    var image_data_setting = {colorSpace: 'srgb', storageFormat:'uint8'}
+    var data = ctx.getImageData(0, 0, 20, 20, image_data_setting);
     return testImageBitmapOpaque(data);
 }, 'createImageBitmap in e-sRGB from an opaque sRGB ImageData with resize.');
 
@@ -491,7 +496,8 @@ promise_test(function() {
     var canvas = initializeTestCanvas('srgb', 'float16');
     var ctx = canvas.getContext('2d',
         {colorSpace: 'srgb', pixelFormat:'float16'});
-    var data = ctx.getImageData(0, 0, 20, 20);
+    var image_data_setting = {colorSpace: 'srgb', storageFormat:'float32'}
+    var data = ctx.getImageData(0, 0, 20, 20, image_data_setting);
     return testImageBitmapOpaque(data);
 }, 'createImageBitmap in e-sRGB from an opaque e-sRGB ImageData with resize.');
 
@@ -500,7 +506,8 @@ promise_test(function() {
     var canvas = initializeTestCanvas('rec2020', 'float16');
     var ctx = canvas.getContext('2d',
         {colorSpace: 'rec2020', pixelFormat:'float16'});
-    var data = ctx.getImageData(0, 0, 20, 20);
+    var image_data_setting = {colorSpace: 'rec2020', storageFormat:'float32'}
+    var data = ctx.getImageData(0, 0, 20, 20, image_data_setting);
     return testImageBitmapOpaque(data);
 }, 'createImageBitmap in e-sRGB from an opaque Rec2020 ImageData with resize.');
 
@@ -509,7 +516,8 @@ promise_test(function() {
     var canvas = initializeTestCanvas('p3', 'float16');
     var ctx = canvas.getContext('2d',
         {colorSpace: 'p3', pixelFormat:'float16'});
-    var data = ctx.getImageData(0, 0, 20, 20);
+    var image_data_setting = {colorSpace: 'p3', storageFormat:'float32'}
+    var data = ctx.getImageData(0, 0, 20, 20, image_data_setting);
     return testImageBitmapOpaque(data);
 }, 'createImageBitmap in e-sRGB from an opaque P3 ImageData with resize.');
 
@@ -519,7 +527,8 @@ promise_test(function() {
 promise_test(function() {
     var canvas = initializeTestCanvasTransparent('srgb', 'uint8');
     var ctx = canvas.getContext('2d');
-    var data = ctx.getImageData(0, 0, 20, 20);
+    var image_data_setting = {colorSpace: 'srgb', storageFormat:'uint8'}
+    var data = ctx.getImageData(0, 0, 20, 20, image_data_setting);
     return testImageBitmapTransparent(data);
 }, 'createImageBitmap in e-sRGB from a transparent sRGB ImageData with resize.');
 
@@ -528,7 +537,8 @@ promise_test(function() {
     var canvas = initializeTestCanvasTransparent('srgb', 'float16');
     var ctx = canvas.getContext('2d',
         {colorSpace: 'srgb', pixelFormat:'float16'});
-    var data = ctx.getImageData(0, 0, 20, 20);
+    var image_data_setting = {colorSpace: 'srgb', storageFormat:'float32'}
+    var data = ctx.getImageData(0, 0, 20, 20, image_data_setting);
     return testImageBitmapTransparent(data);
 }, 'createImageBitmap in e-sRGB from a transparent e-sRGB ImageData with resize.');
 
@@ -537,7 +547,8 @@ promise_test(function() {
     var canvas = initializeTestCanvasTransparent('rec2020', 'float16');
     var ctx = canvas.getContext('2d',
         {colorSpace: 'rec2020', pixelFormat:'float16'});
-    var data = ctx.getImageData(0, 0, 20, 20);
+    var image_data_setting = {colorSpace: 'rec2020', storageFormat:'float32'}
+    var data = ctx.getImageData(0, 0, 20, 20, image_data_setting);
     return testImageBitmapTransparent(data);
 }, 'createImageBitmap in e-sRGB from a transparent Rec2020 ImageData with resize.');
 
@@ -546,7 +557,8 @@ promise_test(function() {
     var canvas = initializeTestCanvasTransparent('p3', 'float16');
     var ctx = canvas.getContext('2d',
         {colorSpace: 'p3', pixelFormat:'float16'});
-    var data = ctx.getImageData(0, 0, 20, 20);
+    var image_data_setting = {colorSpace: 'p3', storageFormat:'float32'}
+    var data = ctx.getImageData(0, 0, 20, 20, image_data_setting);
     return testImageBitmapTransparent(data);
 }, 'createImageBitmap in e-sRGB from a transparent P3 ImageData with resize.');
 

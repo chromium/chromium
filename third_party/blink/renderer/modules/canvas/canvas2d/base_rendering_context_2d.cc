@@ -1599,8 +1599,9 @@ ImageData* BaseRenderingContext2D::createImageData(
 
   IntSize size(abs(sw), abs(sh));
   ImageData* result = nullptr;
-  ImageDataColorSettings* color_settings =
-      GetColorSettingsAsImageDataColorSettings();
+  ImageDataColorSettings* color_settings = ImageDataColorSettings::Create();
+  color_settings->setColorSpace(kSRGBCanvasColorSpaceName);
+  color_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
   result = ImageData::Create(size, color_settings);
 
   if (!result)
@@ -1686,8 +1687,13 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   }
 
   const IntRect image_data_rect(sx, sy, sw, sh);
-  if (!color_settings)
-    color_settings = GetColorSettingsAsImageDataColorSettings();
+
+  if (!color_settings) {
+    color_settings = ImageDataColorSettings::Create();
+    color_settings->setColorSpace(kSRGBCanvasColorSpaceName);
+    color_settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
+  }
+
   const ImageDataStorageFormat storage_format =
       ImageData::GetImageDataStorageFormat(color_settings->storageFormat());
   if (!CanCreateCanvas2dResourceProvider() || isContextLost()) {

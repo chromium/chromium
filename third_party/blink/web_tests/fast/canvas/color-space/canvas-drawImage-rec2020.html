@@ -15,11 +15,11 @@ var rec2020OpaqueBlue = [0.21558, 0.17249, 0.59961, 1.0];
 // sRGB(27,27,27,255)
 var rec2020OpaqueBlack = [0.15283, 0.15283, 0.15283, 1.0];
 
-function testPixels(ctx, tests)
+function testPixels(ctx, tests, colorSetting)
 {
     var actual, expected, tolerance = 0.01;
     for (var i = 0; i < tests.length; i++) {
-      actual = ctx.getImageData(tests[i].x, tests[i].y, 1, 1).data;
+      actual = ctx.getImageData(tests[i].x, tests[i].y, 1, 1, colorSetting).data;
       expected = tests[i].color;
       assert_true(actual.length === expected.length);
       for (var j = 0; j < actual.length; j++)
@@ -39,7 +39,7 @@ function drawSRGBImageOnRec2020Canvas(source)
                {x: 15, y: 5, color: rec2020OpaqueGreen},
                {x: 5, y: 15, color: rec2020OpaqueBlue},
                {x: 15, y: 15, color: rec2020OpaqueBlack}];
-  testPixels(ctx, tests);
+  testPixels(ctx, tests, {colorSpace: 'rec2020', storageFormat: 'float32'});
 }
 
 promise_test(function() {

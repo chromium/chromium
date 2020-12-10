@@ -11,11 +11,11 @@ var e_sRGB_TransparentGreen = [0.121521, 0.886230, 0.121521, 0.501953];
 var e_sRGB_TransparentBlue = [0.121521, 0.121521, 0.886230, 0.501953];
 var e_sRGB_TransparentBlack = [0.121521, 0.121521, 0.121521, 0.501953];
 
-function testPixels(ctx, tests)
+function testPixels(ctx, tests, imageSetting)
 {
     var actual, expected, tolerance = 0.01;
     for (var i = 0; i < tests.length; i++) {
-      actual = ctx.getImageData(tests[i].x, tests[i].y, 1, 1).data;
+      actual = ctx.getImageData(tests[i].x, tests[i].y, 1, 1, imageSetting).data;
       expected = tests[i].color;
       assert_true(actual.length === expected.length);
       for (var j = 0; j < actual.length; j++)
@@ -30,12 +30,13 @@ function drawSRGBImageOnLinearRGBCanvas(source)
   canvas.height = 20;
   var ctx = canvas.getContext('2d',
       {colorSpace: 'srgb', pixelFormat:'float16'});
+  var imageSetting = {colorSpace: 'srgb', storageFormat:'float32'}
   ctx.drawImage(source, 0, 0);
   var tests = [{x: 5, y: 5, color: e_sRGB_TransparentRed},
                {x: 15, y: 5, color: e_sRGB_TransparentGreen},
                {x: 5, y: 15, color: e_sRGB_TransparentBlue},
                {x: 15, y: 15, color: e_sRGB_TransparentBlack}];
-  testPixels(ctx, tests);
+  testPixels(ctx, tests, imageSetting);
 }
 
 promise_test(function() {

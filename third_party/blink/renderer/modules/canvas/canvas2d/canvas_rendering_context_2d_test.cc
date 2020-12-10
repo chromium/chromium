@@ -757,6 +757,7 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
     String filepath,
     CanvasRenderingContext2D* context,
     Document& document,
+    ImageDataColorSettings* color_setting,
     ScriptState* script_state) {
   scoped_refptr<SharedBuffer> pixel_buffer = test::ReadFromFile(filepath);
   ASSERT_EQ(false, pixel_buffer->IsEmpty());
@@ -782,7 +783,8 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
   image_union.SetHTMLImageElement(image_element);
   context->drawImage(script_state, image_union, 0, 0, exception_state);
 
-  ImageData* image_data = context->getImageData(0, 0, 2, 2, exception_state);
+  ImageData* image_data =
+      context->getImageData(0, 0, 2, 2, color_setting, exception_state);
   ImageDataArray data_array = image_data->data();
   ASSERT_TRUE(data_array.IsFloat32Array());
   DOMArrayBufferView* buffer_view = data_array.GetAsFloat32Array().View();
@@ -826,6 +828,9 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
   StringBuilder path;
   path.Append(test::CoreTestDataPath());
   path.Append("/png-16bit/");
+  ImageDataColorSettings* color_setting = ImageDataColorSettings::Create();
+  color_setting->setStorageFormat(kFloat32ArrayStorageFormatName);
+  color_setting->setColorSpace(canvas_color_space);
   for (auto interlace : interlace_status) {
     for (auto color_profile : color_profiles) {
       for (auto alpha : alpha_status) {
@@ -837,7 +842,8 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
         full_path.Append(alpha);
         full_path.Append(".png");
         TestDrawSingleHighBitDepthPNGOnCanvas(full_path.ToString(), context,
-                                              document, script_state);
+                                              document, color_setting,
+                                              script_state);
       }
     }
   }
@@ -971,8 +977,24 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
 
       image_data =
           ImageData::CreateForTest(IntSize(2, 2), data_array, color_settings);
+      unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
+      ImageDataColorSettings* canvas_color_setting =
+          ImageDataColorSettings::Create();
+      canvas_color_setting->setColorSpace(
+          ImageData::CanvasColorSpaceName(canvas_color_spaces[k]));
+      switch (canvas_pixel_formats[k]) {
+        case CanvasPixelFormat::kRGBA8:
+          canvas_color_setting->setStorageFormat(
+              kUint8ClampedArrayStorageFormatName);
+          break;
+        case CanvasPixelFormat::kF16:
+          canvas_color_setting->setStorageFormat(
+              kFloat32ArrayStorageFormatName);
+          break;
+        default:
+          NOTREACHED();
+      }
 
-      unsigned k = (unsigned)(canvas_colorspace_setting);
       // Convert the original data used to create ImageData to the
       // canvas color space and canvas pixel format.
       EXPECT_TRUE(
@@ -996,7 +1018,8 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       context->putImageData(image_data, 0, 0, exception_state);
 
       void* pixels_from_get_image_data =
-          context->getImageData(0, 0, 2, 2, exception_state)
+          context
+              ->getImageData(0, 0, 2, 2, canvas_color_setting, exception_state)
               ->BufferBase()
               ->Data();
       ColorCorrectionTestUtils::CompareColorCorrectedPixels(

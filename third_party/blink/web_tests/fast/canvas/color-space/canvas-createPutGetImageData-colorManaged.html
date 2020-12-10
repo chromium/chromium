@@ -18,6 +18,17 @@ function checkImageData(canvasColorSettings, imageData) {
   }
 }
 
+function getImageSetting(canvasColorSettings) {
+  var imageSetting = {};
+  imageSetting.colorSpace = canvasColorSettings.colorSpace;
+  if (canvasColorSettings.pixelFormat == "uint8") {
+    imageSetting.storageFormat = "uint8";
+  } else {
+    imageSetting.storageFormat = "float32";
+  }
+  return imageSetting;
+}
+
 // Test createImageData when the canvas is color managed
 var helperImageData = new ImageData(xWidth, xHeight);
 function runTestCreateImageData(canvasColorSettings) {
@@ -25,7 +36,8 @@ function runTestCreateImageData(canvasColorSettings) {
   aCanvas.width = xWidth;
   aCanvas.height = xHeight;
   var ctx = aCanvas.getContext('2d', canvasColorSettings);
-  var imageData = ctx.createImageData(xWidth, xHeight);
+  var imageSetting = getImageSetting(canvasColorSettings);
+  var imageData = ctx.createImageData(xWidth, xHeight, imageSetting);
   checkImageData(canvasColorSettings, imageData);
 
   imageData = ctx.createImageData(helperImageData);
@@ -51,7 +63,8 @@ function runTestGetImageData(canvasColorSettings) {
   aCanvas.width = xWidth;
   aCanvas.height = xHeight;
   var ctx = aCanvas.getContext('2d', canvasColorSettings);
-  var imageData = ctx.getImageData(0, 0, xWidth, xHeight);
+  var imageSetting = getImageSetting(canvasColorSettings);
+  var imageData = ctx.getImageData(0, 0, xWidth, xHeight, imageSetting);
   checkImageData(canvasColorSettings, imageData);
 }
 

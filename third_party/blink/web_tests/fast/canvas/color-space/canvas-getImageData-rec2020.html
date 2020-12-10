@@ -23,9 +23,10 @@ function drawSRGBThenGetImageDataRec2020() {
     canvas.height = 10;
     var ctx = canvas.getContext('2d',
         {colorSpace: 'rec2020', pixelFormat:'float16'});
+    var imageSetting =  {colorSpace: 'rec2020', storageFormat:'float32'};
     ctx.fillStyle = 'rgb(50, 100, 150)';
     ctx.fillRect(0, 0, 10, 10);
-    var pixel = ctx.getImageData(5, 5, 1, 1).data;
+    var pixel = ctx.getImageData(5, 5, 1, 1, imageSetting).data;
     // Check against the same color in Rec2020. 0.01 protects the test against
     // color conversion deviations.
     assert_array_approx_equals(pixel, [0.34106, 0.41553, 0.59180, 1.00000], 0.01);
@@ -39,12 +40,13 @@ function putImageDataRec2020ThenGetImageDataRec2020() {
         {colorSpace: 'rec2020', pixelFormat:'float16'})
     var imageData = ctx.createImageData(1, 1,
         {colorSpace: 'rec2020', storageFormat:'float32'});
+    var imageSetting =  {colorSpace: 'rec2020', storageFormat:'float32'};
     imageData.data[0] = 0.34106;
     imageData.data[1] = 0.41553;
     imageData.data[2] = 0.59180;
     imageData.data[3] = 1.00000;
     ctx.putImageData(imageData, 5, 5);
-    var pixel = ctx.getImageData(5, 5, 1, 1).data;
+    var pixel = ctx.getImageData(5, 5, 1, 1, imageSetting).data;
     // Check against the same color in Rec2020. 0.001 protects the test against
     // rounding errors.
     assert_array_approx_equals(pixel, [0.34106, 0.41553, 0.59180, 1.00000], 0.001);
@@ -58,12 +60,13 @@ function putImageDataSRGBThenGetImageDataRec2020() {
         {colorSpace: 'rec2020', pixelFormat:'float16'});
     var imageData = ctx.createImageData(1, 1,
         {colorSpace: 'srgb', storageFormat:'uint8'});
+    var imageSetting =  {colorSpace: 'rec2020', storageFormat:'float32'};
     imageData.data[0] = 50;
     imageData.data[1] = 100;
     imageData.data[2] = 150;
     imageData.data[3] = 255;
     ctx.putImageData(imageData, 5, 5);
-    var pixel = ctx.getImageData(5, 5, 1, 1).data;
+    var pixel = ctx.getImageData(5, 5, 1, 1, imageSetting).data;
     // Check against the same color in Rec2020. 0.01 protects the test against
     // color conversion deviations.
     assert_array_approx_equals(pixel, [0.34106, 0.41553, 0.59180, 1.00000], 0.01);

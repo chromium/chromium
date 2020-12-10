@@ -88,10 +88,10 @@ function initializeOffscreenCanvasTransparent(canvasColorSpace, canvasPixelForma
     return offscreen;
 }
 
-function testPixels(testCtx, refCtx, pixelFormat, isTrnasparent)
+function testPixels(testCtx, refCtx, pixelFormat, isTrnasparent, imageSetting)
 {
-    var actual = testCtx.getImageData(0, 0, 4, 4).data;
-    var expected = refCtx.getImageData(0, 0, 4, 4).data;
+    var actual = testCtx.getImageData(0, 0, 4, 4, imageSetting).data;
+    var expected = refCtx.getImageData(0, 0, 4, 4, imageSetting).data;
 
     var tolerance = 4;
     if (pixelFormat === 'float16')
@@ -112,7 +112,9 @@ function runDrawOffscreenCanvasTestOpaque(testScenario) {
         testScenario.imageColorSpace, testScenario.imagePixelFormat);
     canvas_ctx_blank.drawImage(offscreen_canvas_opaque, 0, 0);
     testPixels(canvas_ctx_blank, canvas_ctx_opaque,
-               testScenario.canvasPixelFormat, false);
+               testScenario.canvasPixelFormat, false,
+               {colorSpace: testScenario.canvasColorSpace,
+                storageFormat: testScenario.imageStorageFormat});
 }
 
 function runDrawOffscreenCanvasTestTransparent(testScenario) {
@@ -125,13 +127,15 @@ function runDrawOffscreenCanvasTestTransparent(testScenario) {
         testScenario.imageColorSpace, testScenario.imagePixelFormat);
     canvas_ctx_blank.drawImage(offscreen_canvas_transparent, 0, 0);
     testPixels(canvas_ctx_blank, canvas_ctx_transparent,
-               testScenario.canvasPixelFormat, true);
+               testScenario.canvasPixelFormat, true,
+               {colorSpace: testScenario.canvasColorSpace,
+                storageFormat: testScenario.imageStorageFormat});
 }
 
 function runAllTests() {
     var canvasColorSpaces = ['srgb', 'p3', 'rec2020'];
     var canvasPixelFormats = ['uint8', 'float16'];
-
+    var imageStorageFormat = ['uint8', 'float32']
     var testScenarioSet = [];
     for (var i = 0; i < canvasColorSpaces.length; i++) {
         for (var j = 0; j < canvasPixelFormats.length; j++) {
@@ -147,6 +151,7 @@ function runAllTests() {
                     testScenario.canvasPixelFormat = canvas_pixel_format;
                     testScenario.imageColorSpace = image_host_color_space;
                     testScenario.imagePixelFormat = image_host_pixel_format;
+                    testScenario.imageStorageFormat = imageStorageFormat[j];
                     testScenarioSet.push(testScenario);
                 }
             }
