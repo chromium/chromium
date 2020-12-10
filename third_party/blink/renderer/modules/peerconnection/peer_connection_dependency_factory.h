@@ -153,6 +153,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       media::DecoderFactory* media_decoder_factory,
       base::WaitableEvent* event);
 
+  void InitializeWorkerThread(rtc::Thread** thread, base::WaitableEvent* event);
+
   void CreateIpcNetworkManagerOnNetworkThread(
       base::WaitableEvent* event,
       std::unique_ptr<MdnsResponderAdapter> mdns_responder,
@@ -177,8 +179,10 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   // PeerConnection threads. signaling_thread_ is created from the
   // "current" chrome thread.
   rtc::Thread* signaling_thread_ = nullptr;
+  rtc::Thread* worker_thread_ = nullptr;
   rtc::Thread* network_thread_ = nullptr;
   base::Thread chrome_signaling_thread_;
+  base::Optional<base::Thread> chrome_worker_thread_;
   base::Thread chrome_network_thread_;
 
   THREAD_CHECKER(thread_checker_);

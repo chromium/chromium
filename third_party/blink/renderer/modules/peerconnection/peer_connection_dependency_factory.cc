@@ -117,6 +117,9 @@ PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
           create_p2p_socket_dispatcher ? new P2PSocketDispatcher() : nullptr),
       chrome_signaling_thread_("WebRTC_Signaling"),
       chrome_network_thread_("WebRTC_Network") {
+  if (base::FeatureList::IsEnabled(features::kWebRtcDistinctWorkerThread)) {
+    chrome_worker_thread_.emplace("WebRTC_Worker");
+  }
   TryScheduleStunProbeTrial();
 }
 
@@ -164,10 +167,12 @@ void PeerConnectionDependencyFactory::WillDestroyCurrentMessageLoop() {
 void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   DCHECK(!pc_factory_.get());
   DCHECK(!signaling_thread_);
+  DCHECK(!worker_thread_);
   DCHECK(!network_thread_);
   DCHECK(!network_manager_);
   DCHECK(!socket_factory_);
   DCHECK(!chrome_signaling_thread_.IsRunning());
+  DCHECK(!chrome_worker_thread_ || !chrome_worker_thread_->IsRunning());
   DCHECK(!chrome_network_thread_.IsRunning());
 
   DVLOG(1) << "PeerConnectionDependencyFactory::CreatePeerConnectionFactory()";
@@ -195,6 +200,19 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
     LOG(ERROR) << "Failed on InitializeSSL.";
     NOTREACHED();
     return;
+  }
+
+  base::WaitableEvent start_worker_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  if (chrome_worker_thread_) {
+    CHECK(chrome_worker_thread_->Start());
+    PostCrossThreadTask(
+        *chrome_worker_thread_->task_runner().get(), FROM_HERE,
+        CrossThreadBindOnce(
+            &PeerConnectionDependencyFactory::InitializeWorkerThread,
+            CrossThreadUnretained(this), CrossThreadUnretained(&worker_thread_),
+            CrossThreadUnretained(&start_worker_event)));
   }
 
   CHECK(chrome_signaling_thread_.Start());
@@ -236,6 +254,10 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
           CrossThreadUnretained(Platform::Current()->GetMediaDecoderFactory()),
           CrossThreadUnretained(&start_signaling_event)));
 
+  if (chrome_worker_thread_) {
+    start_worker_event.Wait();
+    CHECK(worker_thread_);
+  }
   start_signaling_event.Wait();
   CHECK(signaling_thread_);
 }
@@ -313,7 +335,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   }
 
   webrtc::PeerConnectionFactoryDependencies pcf_deps;
-  pcf_deps.worker_thread = signaling_thread_;
+  pcf_deps.worker_thread = worker_thread_ ? worker_thread_ : signaling_thread_;
   pcf_deps.signaling_thread = signaling_thread_;
   pcf_deps.network_thread = network_thread_;
   pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
@@ -533,6 +555,15 @@ PeerConnectionDependencyFactory::GetWebRtcAudioDevice() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   EnsureWebRtcAudioDeviceImpl();
   return audio_device_.get();
+}
+
+void PeerConnectionDependencyFactory::InitializeWorkerThread(
+    rtc::Thread** thread,
+    base::WaitableEvent* event) {
+  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
+  *thread = jingle_glue::JingleThreadWrapper::current();
+  event->Signal();
 }
 
 void PeerConnectionDependencyFactory::TryScheduleStunProbeTrial() {

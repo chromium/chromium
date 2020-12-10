@@ -851,5 +851,11 @@ const base::Feature kMediaStreamTrackUseConfigMaxFrameRate{
 // in Chrome 92.
 const base::Feature kCloneSessionStorageForNoOpener{
     "CloneSessionStorageForNoOpener", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, WebRTC's worker thread will run on a thread context distinct
+// from the WebRTC signaling and network threads.
+const base::Feature kWebRtcDistinctWorkerThread{
+    "WebRtcDistinctWorkerThread", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

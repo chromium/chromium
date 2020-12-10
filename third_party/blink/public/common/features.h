@@ -344,6 +344,9 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kMediaStreamTrackUseConfigMaxFrameRate;
 
 BLINK_COMMON_EXPORT extern const base::Feature kCloneSessionStorageForNoOpener;
+
+BLINK_COMMON_EXPORT extern const base::Feature kWebRtcDistinctWorkerThread;
+
 }  // namespace features
 }  // namespace blink
 
