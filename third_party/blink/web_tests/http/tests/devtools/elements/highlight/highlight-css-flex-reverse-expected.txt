@@ -172,7 +172,10 @@ test-1{
         ]
       ],
       "isHorizontalFlow": true,
+      "isReverse": true,
       "alignItemsStyle": "flex-start",
+      "mainGap": 10,
+      "crossGap": 10,
       "flexContainerHighlightConfig": {
         "containerBorder": {
           "color": "rgba(255, 0, 0, 0)",
@@ -382,7 +385,10 @@ test-2{
         ]
       ],
       "isHorizontalFlow": false,
+      "isReverse": true,
       "alignItemsStyle": "flex-start",
+      "mainGap": 10,
+      "crossGap": 10,
       "flexContainerHighlightConfig": {
         "containerBorder": {
           "color": "rgba(255, 0, 0, 0)",

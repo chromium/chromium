@@ -227,7 +227,10 @@ flex-container{
         ]
       ],
       "isHorizontalFlow": true,
+      "isReverse": false,
       "alignItemsStyle": "normal",
+      "mainGap": 10,
+      "crossGap": 10,
       "flexContainerHighlightConfig": {
         "containerBorder": {
           "color": "rgba(255, 0, 0, 0)",

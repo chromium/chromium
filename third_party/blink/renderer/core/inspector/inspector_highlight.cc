@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -992,9 +993,29 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
   flex_info->setValue("containerBorder", container_builder.Release());
   flex_info->setArray("lines", std::move(lines_info));
   flex_info->setBoolean("isHorizontalFlow", is_horizontal);
+  flex_info->setBoolean("isReverse", is_reverse);
   flex_info->setString(
       "alignItemsStyle",
       style->GetPropertyCSSValue(CSSPropertyID::kAlignItems)->CssText());
+
+  double row_gap_value = 0;
+  const CSSValue* row_gap = style->GetPropertyCSSValue(CSSPropertyID::kRowGap);
+  if (row_gap->IsNumericLiteralValue()) {
+    row_gap_value = To<CSSNumericLiteralValue>(row_gap)->DoubleValue();
+  }
+
+  double column_gap_value = 0;
+  const CSSValue* column_gap =
+      style->GetPropertyCSSValue(CSSPropertyID::kColumnGap);
+  if (column_gap->IsNumericLiteralValue()) {
+    column_gap_value = To<CSSNumericLiteralValue>(column_gap)->DoubleValue();
+  }
+
+  flex_info->setDouble("mainGap",
+                       is_horizontal ? column_gap_value : row_gap_value);
+  flex_info->setDouble("crossGap",
+                       is_horizontal ? row_gap_value : column_gap_value);
+
   flex_info->setValue(
       "flexContainerHighlightConfig",
       BuildFlexContainerHighlightConfigInfo(flex_container_highlight_config));
