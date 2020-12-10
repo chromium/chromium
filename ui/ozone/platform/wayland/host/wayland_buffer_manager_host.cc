@@ -790,9 +790,7 @@ bool WaylandBufferManagerHost::SupportsDmabuf() const {
 }
 
 bool WaylandBufferManagerHost::SupportsAcquireFence() const {
-  // TODO(fangzhoug@): Re-enable usage of linux_explicit_synchronization once
-  // crbug.com/1144179 is fixed.
-  return !!connection_->linux_explicit_synchronization_v1() && false;
+  return !!connection_->linux_explicit_synchronization_v1();
 }
 
 void WaylandBufferManagerHost::SetWaylandBufferManagerGpu(
