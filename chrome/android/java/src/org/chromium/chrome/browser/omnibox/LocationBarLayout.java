@@ -376,12 +376,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mStatusCoordinator.updateStatusIcon();
     }
 
-    public View getViewForUrlBackFocus() {
-        Tab tab = getCurrentTab();
-        if (tab == null) return null;
-        return tab.getView();
-    }
-
     /* package */ void setUrlBarFocus(
             boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason) {
         if (shouldBeFocused) {

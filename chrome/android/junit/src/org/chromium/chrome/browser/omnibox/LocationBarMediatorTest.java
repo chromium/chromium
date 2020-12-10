@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -18,6 +20,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -98,6 +101,8 @@ public class LocationBarMediatorTest {
     private OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
     @Mock
     private LocaleManager mLocaleManager;
+    @Mock
+    private View mView;
 
     @Captor
     private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -248,5 +253,18 @@ public class LocationBarMediatorTest {
 
         doReturn(true).when(mLocationBarDataProvider).isIncognito();
         assertFalse(mMediator.allowKeyboardLearning());
+    }
+
+    @Test
+    public void testGetViewForUrlBackFocus() {
+        doReturn(mView).when(mTab).getView();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        assertEquals(mView, mMediator.getViewForUrlBackFocus());
+        verify(mTab).getView();
+
+        doReturn(null).when(mLocationBarDataProvider).getTab();
+        assertNull(mMediator.getViewForUrlBackFocus());
+        verify(mLocationBarDataProvider, times(2)).getTab();
+        verify(mTab, times(1)).getView();
     }
 }

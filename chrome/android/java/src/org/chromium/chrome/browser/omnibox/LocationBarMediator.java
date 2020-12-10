@@ -431,7 +431,9 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     @Nullable
     @Override
     public View getViewForUrlBackFocus() {
-        return mLocationBarLayout.getViewForUrlBackFocus();
+        assert mLocationBarDataProvider != null;
+        Tab tab = mLocationBarDataProvider.getTab();
+        return tab == null ? null : tab.getView();
     }
 
     @Override
