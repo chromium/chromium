@@ -31,7 +31,6 @@ namespace federated_learning {
 
 namespace {
 
-using ComputeFlocTrigger = FlocIdProviderImpl::ComputeFlocTrigger;
 using ComputeFlocResult = FlocIdProviderImpl::ComputeFlocResult;
 using ComputeFlocCompletedCallback =
     FlocIdProviderImpl::ComputeFlocCompletedCallback;
@@ -119,33 +118,29 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
  public:
   using FlocIdProviderImpl::FlocIdProviderImpl;
 
-  void OnComputeFlocCompleted(ComputeFlocTrigger trigger,
-                              ComputeFlocResult result) override {
+  void OnComputeFlocCompleted(ComputeFlocResult result) override {
     if (should_pause_before_compute_floc_completed_) {
       DCHECK(!paused_);
       paused_ = true;
-      paused_trigger_ = trigger;
       paused_result_ = result;
       return;
     }
 
     ++compute_floc_completed_count_;
-    FlocIdProviderImpl::OnComputeFlocCompleted(trigger, result);
+    FlocIdProviderImpl::OnComputeFlocCompleted(result);
   }
 
   void ContinueLastOnComputeFlocCompleted() {
     DCHECK(paused_);
     paused_ = false;
     ++compute_floc_completed_count_;
-    FlocIdProviderImpl::OnComputeFlocCompleted(paused_trigger_, paused_result_);
+    FlocIdProviderImpl::OnComputeFlocCompleted(paused_result_);
   }
 
-  void LogFlocComputedEvent(ComputeFlocTrigger trigger,
-                            const ComputeFlocResult& result) override {
+  void LogFlocComputedEvent(const ComputeFlocResult& result) override {
     ++log_event_count_;
-    last_log_event_trigger_ = trigger;
     last_log_event_result_ = result;
-    FlocIdProviderImpl::LogFlocComputedEvent(trigger, result);
+    FlocIdProviderImpl::LogFlocComputedEvent(result);
   }
 
   size_t compute_floc_completed_count() const {
@@ -161,17 +156,7 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
     return paused_result_;
   }
 
-  ComputeFlocTrigger paused_trigger() const {
-    DCHECK(paused_);
-    return paused_trigger_;
-  }
-
   size_t log_event_count() const { return log_event_count_; }
-
-  ComputeFlocTrigger last_log_event_trigger() const {
-    DCHECK_LT(0u, log_event_count_);
-    return last_log_event_trigger_;
-  }
 
   ComputeFlocResult last_log_event_result() const {
     DCHECK_LT(0u, log_event_count_);
@@ -185,12 +170,10 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
   // execution and let it yield to other tasks posted to the same task runner.
   bool should_pause_before_compute_floc_completed_ = false;
   bool paused_ = false;
-  ComputeFlocTrigger paused_trigger_;
   ComputeFlocResult paused_result_;
 
   size_t compute_floc_completed_count_ = 0u;
   size_t log_event_count_ = 0u;
-  ComputeFlocTrigger last_log_event_trigger_;
   ComputeFlocResult last_log_event_result_;
 };
 
@@ -277,11 +260,10 @@ class FlocIdProviderUnitTest : public testing::Test {
     floc_id_provider_->OnURLsDeleted(history_service, deletion_info);
   }
 
-  void OnGetRecentlyVisitedURLsCompleted(ComputeFlocTrigger trigger,
-                                         history::QueryResults results) {
+  void OnGetRecentlyVisitedURLsCompleted(history::QueryResults results) {
     auto compute_floc_completed_callback =
         base::BindOnce(&FlocIdProviderImpl::OnComputeFlocCompleted,
-                       base::Unretained(floc_id_provider_.get()), trigger);
+                       base::Unretained(floc_id_provider_.get()));
 
     floc_id_provider_->OnGetRecentlyVisitedURLsCompleted(
         std::move(compute_floc_completed_callback), std::move(results));
@@ -311,10 +293,6 @@ class FlocIdProviderUnitTest : public testing::Test {
         floc_computation_in_progress;
   }
 
-  bool first_floc_computed() const {
-    return floc_id_provider_->first_floc_computed_;
-  }
-
   bool floc_computation_scheduled() const {
     return floc_id_provider_->compute_floc_timer_.IsRunning();
   }
@@ -327,10 +305,6 @@ class FlocIdProviderUnitTest : public testing::Test {
 
   void SetRemoteSwaaNacAccountEnabled(bool enabled) {
     fake_floc_remote_permission_service_->set_swaa_nac_account_enabled(enabled);
-  }
-
-  void ForceScheduledUpdate() {
-    floc_id_provider_->OnComputeFlocScheduledUpdate();
   }
 
  protected:
@@ -375,7 +349,6 @@ TEST_F(FlocIdProviderUnitTest, DefaultScheduledUpdateInterval) {
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(0u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
-  EXPECT_FALSE(first_floc_computed());
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_FALSE(floc_computation_scheduled());
 
@@ -453,7 +426,6 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, QualifiedInitialHistory) {
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(0u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
-  EXPECT_FALSE(first_floc_computed());
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_FALSE(floc_computation_scheduled());
 
@@ -687,11 +659,9 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest,
 
 TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, EventLogging) {
   const base::Time kTime1 = base::Time::FromTimeT(1);
-  const base::Time kTime2 = base::Time::FromTimeT(2);
 
-  // Event logging for browser start.
+  // Event logging for a computed sim-hash.
   floc_id_provider_->LogFlocComputedEvent(
-      ComputeFlocTrigger::kFirstCompute,
       ComputeFlocResult(12345ULL, FlocId(123ULL, kTime1, kTime1, 999)));
 
   EXPECT_EQ(1u, fake_user_event_service_->GetRecordedUserEvents().size());
@@ -705,16 +675,13 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, EventLogging) {
 
   const sync_pb::UserEventSpecifics_FlocIdComputed& event1 =
       specifics1.floc_id_computed_event();
-  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::NEW,
-            event1.event_trigger());
   EXPECT_EQ(12345ULL, event1.floc_id());
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(3));
 
-  // Event logging for scheduled update.
-  floc_id_provider_->LogFlocComputedEvent(
-      ComputeFlocTrigger::kScheduledUpdate,
-      ComputeFlocResult(999ULL, FlocId(777ULL, kTime1, kTime2, 888)));
+  // Event logging for when sim hash is not computed, i.e. floc permission
+  // denied, or history-delete invalidation.
+  floc_id_provider_->LogFlocComputedEvent(ComputeFlocResult());
 
   EXPECT_EQ(2u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics2 =
@@ -726,13 +693,10 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, EventLogging) {
 
   const sync_pb::UserEventSpecifics_FlocIdComputed& event2 =
       specifics2.floc_id_computed_event();
-  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
-            event2.event_trigger());
-  EXPECT_EQ(999ULL, event2.floc_id());
+  EXPECT_FALSE(event2.has_floc_id());
 
-  // Event logging for when sim hash is not computed.
-  floc_id_provider_->LogFlocComputedEvent(ComputeFlocTrigger::kScheduledUpdate,
-                                          ComputeFlocResult());
+  // Event logging for blocked floc.
+  floc_id_provider_->LogFlocComputedEvent(ComputeFlocResult(87654, FlocId()));
 
   EXPECT_EQ(3u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics3 =
@@ -744,45 +708,7 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, EventLogging) {
 
   const sync_pb::UserEventSpecifics_FlocIdComputed& event3 =
       specifics3.floc_id_computed_event();
-  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
-            event3.event_trigger());
-  EXPECT_FALSE(event3.has_floc_id());
-
-  // Event logging for history-delete invalidation.
-  floc_id_provider_->LogFlocComputedEvent(ComputeFlocTrigger::kHistoryDelete,
-                                          ComputeFlocResult());
-
-  EXPECT_EQ(4u, fake_user_event_service_->GetRecordedUserEvents().size());
-  const sync_pb::UserEventSpecifics& specifics4 =
-      fake_user_event_service_->GetRecordedUserEvents()[3];
-  EXPECT_EQ(specifics4.event_time_usec(),
-            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
-            specifics4.event_case());
-
-  const sync_pb::UserEventSpecifics_FlocIdComputed& event4 =
-      specifics4.floc_id_computed_event();
-  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::HISTORY_DELETE,
-            event4.event_trigger());
-  EXPECT_FALSE(event4.has_floc_id());
-
-  // Event logging for blocked floc.
-  floc_id_provider_->LogFlocComputedEvent(ComputeFlocTrigger::kScheduledUpdate,
-                                          ComputeFlocResult(87654, FlocId()));
-
-  EXPECT_EQ(5u, fake_user_event_service_->GetRecordedUserEvents().size());
-  const sync_pb::UserEventSpecifics& specifics5 =
-      fake_user_event_service_->GetRecordedUserEvents()[4];
-  EXPECT_EQ(specifics5.event_time_usec(),
-            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
-            specifics5.event_case());
-
-  const sync_pb::UserEventSpecifics_FlocIdComputed& event5 =
-      specifics5.floc_id_computed_event();
-  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
-            event5.event_trigger());
-  EXPECT_EQ(87654ULL, event5.floc_id());
+  EXPECT_EQ(87654ULL, event3.floc_id());
 }
 
 TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, HistoryDelete_AllHistory) {
@@ -890,8 +816,7 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest,
 
   set_floc_computation_in_progress(true);
 
-  OnGetRecentlyVisitedURLsCompleted(ComputeFlocTrigger::kFirstCompute,
-                                    std::move(query_results));
+  OnGetRecentlyVisitedURLsCompleted(std::move(query_results));
 
   EXPECT_FALSE(floc_id().IsValid());
 }
@@ -917,8 +842,7 @@ TEST_F(FlocIdProviderOneDayUpdateIntervalUnitTest, MultipleHistoryEntries) {
 
   set_floc_computation_in_progress(true);
 
-  OnGetRecentlyVisitedURLsCompleted(ComputeFlocTrigger::kFirstCompute,
-                                    std::move(query_results));
+  OnGetRecentlyVisitedURLsCompleted(std::move(query_results));
 
   EXPECT_EQ(
       FlocId(FlocId::SimHashHistory({"a.test", "b.test"}), kTime1, kTime2, 0),
@@ -1117,8 +1041,6 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
             floc_id());
   EXPECT_EQ(FlocId(456, kSixDaysBeforeStart, kFiveDaysBeforeStart, 999),
             floc_id_provider_->paused_result().floc_id);
-  EXPECT_EQ(ComputeFlocTrigger::kScheduledUpdate,
-            floc_id_provider_->paused_trigger());
 
   // Expire the "domain2" history entry right before the floc computation
   // completes. Since the computation is still considered to be in-progress, we
@@ -1137,8 +1059,6 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
   // rather than kHistoryDelete.
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(ComputeFlocTrigger::kScheduledUpdate,
-            floc_id_provider_->last_log_event_trigger());
   EXPECT_FALSE(need_recompute());
 
   // The final floc should be derived from "domain3".
@@ -1303,8 +1223,6 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
 
   const sync_pb::UserEventSpecifics_FlocIdComputed& event =
       specifics.floc_id_computed_event();
-  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
-            event.event_trigger());
   EXPECT_EQ(sim_hash, event.floc_id());
 
   // Configure the |sorting_lsh_service_| to map |sim_hash| to 6789.
@@ -1367,7 +1285,6 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, NextScheduledUpdate) {
   // occurred for this session.
   EXPECT_EQ(floc_id(),
             FlocId(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 999));
-  EXPECT_TRUE(first_floc_computed());
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
@@ -1404,8 +1321,6 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, NextScheduledUpdate) {
   const sync_pb::UserEventSpecifics_FlocIdComputed& event =
       fake_user_event_service_->GetRecordedUserEvents()[0]
           .floc_id_computed_event();
-  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
-            event.event_trigger());
   EXPECT_EQ(FlocId::SimHashHistory({"foo.com", "domain1.com", "domain2.com"}),
             event.floc_id());
 
@@ -1423,7 +1338,6 @@ TEST_F(FlocIdProviderUnitTestLastFlocUnexpired, HistoryDelete) {
   // occurred for this session.
   EXPECT_EQ(floc_id(),
             FlocId(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 999));
-  EXPECT_TRUE(first_floc_computed());
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
@@ -1481,7 +1395,6 @@ TEST_F(FlocIdProviderUnitTestLastFlocExpired, ComputeOnInitialSetupReady) {
   // Initially the floc is invalid as the last floc has expired. No computation
   // has occurred for this session.
   EXPECT_FALSE(floc_id().IsValid());
-  EXPECT_TRUE(first_floc_computed());
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_FALSE(floc_computation_scheduled());
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
@@ -1519,8 +1432,6 @@ TEST_F(FlocIdProviderUnitTestLastFlocExpired, ComputeOnInitialSetupReady) {
   const sync_pb::UserEventSpecifics_FlocIdComputed& event =
       fake_user_event_service_->GetRecordedUserEvents()[0]
           .floc_id_computed_event();
-  EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::REFRESHED,
-            event.event_trigger());
   EXPECT_EQ(FlocId::SimHashHistory({"foo.com"}), event.floc_id());
 
   EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));

@@ -190,7 +190,8 @@ message UserEventSpecifics {
       // Event added because the floc id is re-computed due to history deletion.
       HISTORY_DELETE = 3;
     }
-    optional EventTrigger event_trigger = 1;
+    reserved 1;
+    reserved "event_trigger";
 
     // If not set, it means that the floc is disabled.
     optional uint64 floc_id = 2;
