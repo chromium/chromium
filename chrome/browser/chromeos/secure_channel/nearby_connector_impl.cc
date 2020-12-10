@@ -164,7 +164,6 @@ void NearbyConnectorImpl::OnDisconnected(const base::UnguessableToken& id) {
   if (id_to_brokers_map_.empty()) {
     PA_LOG(VERBOSE) << "Releasing Nearby process reference";
     process_reference_.reset();
-    return;
   }
 
   ProcessQueuedConnectionRequests();
