@@ -8,6 +8,7 @@
 #include "components/ui_metrics/sadtab_metrics_types.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -26,8 +27,12 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SadTabCoordinator ()<SadTabViewControllerDelegate> {
+@interface SadTabCoordinator () <SadTabViewControllerDelegate,
+                                 BrowserObserving> {
   SadTabViewController* _viewController;
+  // Observe BrowserObserver to stop fullscreen disabling before the
+  // FullscreenController tied to the Browser is destroyed.
+  std::unique_ptr<BrowserObserverBridge> _browserObserver;
 }
 @end
 
@@ -46,7 +51,8 @@
                               ui_metrics::SadTabEvent::DISPLAYED,
                               ui_metrics::SadTabEvent::MAX_SAD_TAB_EVENT);
   }
-
+  _browserObserver = std::make_unique<BrowserObserverBridge>(self);
+  self.browser->AddObserver(_browserObserver.get());
   // Creates a fullscreen disabler.
   [self didStartFullscreenDisablingUI];
 
@@ -71,6 +77,8 @@
   if (!_viewController)
     return;
 
+  self.browser->RemoveObserver(_browserObserver.get());
+  _browserObserver.reset();
   [self didStopFullscreenDisablingUI];
 
   [_viewController willMoveToParentViewController:nil];
@@ -83,6 +91,12 @@
     (id<OverscrollActionsControllerDelegate>)delegate {
   _viewController.overscrollDelegate = delegate;
   _overscrollDelegate = delegate;
+}
+
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  [self stop];
 }
 
 #pragma mark - SadTabViewDelegate
