@@ -70,6 +70,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private boolean mWaitForUpdatedDetailsDefaultValue;
     private PaymentAppService mPaymentAppService;
     private PaymentAppFactoryDelegate mPaymentAppFactoryDelegate;
+    private JourneyLogger mJourneyLogger;
 
     /** The shadow of PaymentFeatureList. Not to use outside the test. */
     @Implements(PaymentFeatureList.class)
@@ -144,6 +145,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         List<PaymentApp> apps = new ArrayList();
         apps.add(app);
         Mockito.doReturn(apps).when(mBrowserPaymentRequest).getPaymentApps();
+
+        mJourneyLogger = Mockito.mock(JourneyLogger.class);
     }
 
     @Before
@@ -251,7 +254,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         return PaymentRequestServiceBuilder.defaultBuilder(
                 ()
                         -> mIsOnCloseListenerInvoked = true,
-                /*client=*/this, mPaymentAppService, mBrowserPaymentRequest);
+                /*client=*/this, mPaymentAppService, mBrowserPaymentRequest, mJourneyLogger);
     }
 
     private PaymentApp createDefaultPaymentApp() {
@@ -274,6 +277,11 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private void verifyShowAppSelector(int times) {
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(times))
                 .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
+    }
+
+    private void verifyJourneyLoggerRecordedTransactionAmount() {
+        Mockito.verify(mJourneyLogger, Mockito.times(1))
+                .recordTransactionAmount(Mockito.eq("CNY"), Mockito.eq("123"), Mockito.eq(false));
     }
 
     @Test
@@ -590,6 +598,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
                 .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+
+        verifyJourneyLoggerRecordedTransactionAmount();
     }
 
     @Test
@@ -605,6 +615,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         updateWith(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
                 .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+
+        verifyJourneyLoggerRecordedTransactionAmount();
     }
 
     @Test
@@ -620,6 +632,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
                 .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+
+        verifyJourneyLoggerRecordedTransactionAmount();
     }
 
     @Test

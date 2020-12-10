@@ -12,6 +12,7 @@ import org.chromium.components.payments.BrowserPaymentRequest.Factory;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -50,13 +51,14 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
 
     /* package */ static PaymentRequestServiceBuilder defaultBuilder(Runnable onClosedListener,
             PaymentRequestClient client, PaymentAppService appService,
-            BrowserPaymentRequest browserPaymentRequest) {
+            BrowserPaymentRequest browserPaymentRequest, JourneyLogger journeyLogger) {
         return new PaymentRequestServiceBuilder(
-                onClosedListener, client, appService, browserPaymentRequest);
+                onClosedListener, client, appService, browserPaymentRequest, journeyLogger);
     }
 
     private PaymentRequestServiceBuilder(Runnable onClosedListener, PaymentRequestClient client,
-            PaymentAppService appService, BrowserPaymentRequest browserPaymentRequest) {
+            PaymentAppService appService, BrowserPaymentRequest browserPaymentRequest,
+            JourneyLogger journeyLogger) {
         mDelegate = this;
         mWebContents = Mockito.mock(WebContents.class);
         setTopLevelOrigin("https://top.level.origin");
@@ -64,7 +66,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
         setFrameOrigin("https://frame.origin");
         Origin origin = Mockito.mock(Origin.class);
         Mockito.doReturn(origin).when(mRenderFrameHost).getLastCommittedOrigin();
-        mJourneyLogger = Mockito.mock(JourneyLogger.class);
+        mJourneyLogger = journeyLogger;
         mMethodData = new PaymentMethodData[1];
         mMethodData[0] = new PaymentMethodData();
         mMethodData[0].supportedMethod = "https://www.chromium.org";
@@ -74,7 +76,12 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
         mOptions = new PaymentOptions();
         mOptions.requestShipping = true;
         mSpec = Mockito.mock(PaymentRequestSpec.class);
-        Mockito.doReturn(new PaymentItem()).when(mSpec).getRawTotal();
+        PaymentCurrencyAmount amount = new PaymentCurrencyAmount();
+        amount.currency = "CNY";
+        amount.value = "123";
+        PaymentItem total = new PaymentItem();
+        total.amount = amount;
+        Mockito.doReturn(total).when(mSpec).getRawTotal();
         Map<String, PaymentMethodData> methodDataMap = new HashMap<>();
         Mockito.doReturn(methodDataMap).when(mSpec).getMethodData();
         mBrowserPaymentRequestFactory = (paymentRequestService) -> browserPaymentRequest;

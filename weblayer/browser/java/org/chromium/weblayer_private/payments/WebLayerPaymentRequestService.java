@@ -128,11 +128,6 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
         PaymentApp selectedPaymentApp = mAvailableApps.get(0);
         if (mShouldSkipAppSelector) {
             mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
-            assert mSpec.getRawTotal() != null;
-            // The total amount in details should be finalized at this point. So it is safe to
-            // record the triggered transaction amount.
-            mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
-                    mSpec.getRawTotal().amount.value, false /*completed*/);
             PaymentResponseHelperInterface paymentResponseHelper = new PaymentResponseHelper(
                     selectedPaymentApp.handlesShippingAddress(), mSpec.getPaymentOptions());
             mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
