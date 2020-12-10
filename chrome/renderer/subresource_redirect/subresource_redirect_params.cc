@@ -31,10 +31,25 @@ url::Origin GetSubresourceRedirectOrigin() {
 }
 
 bool IsPublicImageHintsBasedCompressionEnabled() {
-  return IsSubresourceRedirectEnabled() &&
-         base::GetFieldTrialParamByFeatureAsBool(
-             blink::features::kSubresourceRedirect,
-             "enable_public_image_hints_based_compression", true);
+  bool is_enabled = IsSubresourceRedirectEnabled() &&
+                    base::GetFieldTrialParamByFeatureAsBool(
+                        blink::features::kSubresourceRedirect,
+                        "enable_public_image_hints_based_compression", true);
+  // Only one of the public image hints or login and robots based image
+  // compression should be active.
+  DCHECK(!is_enabled || !IsLoginRobotsCheckedCompressionEnabled());
+  return is_enabled;
+}
+
+bool IsLoginRobotsCheckedCompressionEnabled() {
+  bool is_enabled = IsSubresourceRedirectEnabled() &&
+                    base::GetFieldTrialParamByFeatureAsBool(
+                        blink::features::kSubresourceRedirect,
+                        "enable_login_robots_based_compression", false);
+  // Only one of the public image hints or login and robots based image
+  // compression should be active.
+  DCHECK(!is_enabled || !IsPublicImageHintsBasedCompressionEnabled());
+  return is_enabled;
 }
 
 bool ShouldCompressionServerRedirectSubresource() {
@@ -61,6 +76,12 @@ base::TimeDelta GetRobotsRulesReceiveTimeout() {
       base::GetFieldTrialParamByFeatureAsInt(
           blink::features::kSubresourceRedirect, "robots_rules_receive_timeout",
           10));
+}
+
+int MaxRobotsRulesParsersCacheSize() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      blink::features::kSubresourceRedirect,
+      "max_robots_rules_parsers_cache_size", 20);
 }
 
 }  // namespace subresource_redirect

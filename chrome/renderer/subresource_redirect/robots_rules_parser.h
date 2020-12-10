@@ -64,7 +64,7 @@ class RobotsRulesParser {
   RobotsRulesParser& operator=(const RobotsRulesParser&) = delete;
 
   // Update the robots rules. This causes any pending check requests to be
-  // processed immediately and called with th result.
+  // processed immediately and called with the result.
   void UpdateRobotsRules(const std::string& rules);
 
   // Check whether the URL is allowed or disallowed by robots rules. When the

@@ -84,6 +84,8 @@ base::Optional<RedirectResult>
 PublicImageHintsDeciderAgent::ShouldRedirectSubresource(
     const GURL& url,
     ShouldRedirectDecisionCallback callback) {
+  if (!IsMainFrame())
+    return RedirectResult::kIneligibleSubframeResource;
   if (!public_image_urls_)
     return RedirectResult::kIneligibleImageHintsUnavailable;
 
@@ -152,9 +154,13 @@ void PublicImageHintsDeciderAgent::RecordMetrics(
     case RedirectResult::kUnknown:
     case RedirectResult::kIneligibleRedirectFailed:
     case RedirectResult::kIneligibleBlinkDisallowed:
+    case RedirectResult::kIneligibleSubframeResource:
       public_image_compression_data_use.SetIneligibleOtherImageBytes(
           content_length);
       break;
+    case RedirectResult::kIneligibleRobotsDisallowed:
+    case RedirectResult::kIneligibleRobotsTimeout:
+      NOTREACHED();
   }
   mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
   content::RenderThread::Get()->BindHostReceiver(

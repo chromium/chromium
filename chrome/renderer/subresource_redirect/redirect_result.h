@@ -22,6 +22,9 @@ enum class RedirectResult {
   // element, CSP/CORS security restrictions, javascript initiated image, etc.
   kIneligibleBlinkDisallowed,
 
+  // Because the resource is fetched for a subframe.
+  kIneligibleSubframeResource,
+
   // Because the compressed subresource fetch failed, and then the original
   // subresource was loaded.
   kIneligibleRedirectFailed,
@@ -45,7 +48,16 @@ enum class RedirectResult {
   // Because the image URL was not found in the image hints.
   kIneligibleMissingInImageHints,
 
-  kMaxValue = RedirectResult::kIneligibleMissingInImageHints
+  // Possible reasons for ineligibility due to login and robots rules
+  // based approach:
+
+  // Because the image was disallowed by robots rules of the image origin.
+  kIneligibleRobotsDisallowed,
+
+  // Because the robots rules fetch timedout.
+  kIneligibleRobotsTimeout,
+
+  kMaxValue = RedirectResult::kIneligibleRobotsTimeout
 };
 
 }  // namespace subresource_redirect

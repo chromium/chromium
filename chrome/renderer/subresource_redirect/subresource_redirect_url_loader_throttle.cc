@@ -50,8 +50,11 @@ std::unique_ptr<SubresourceRedirectURLLoaderThrottle>
 SubresourceRedirectURLLoaderThrottle::MaybeCreateThrottle(
     const blink::WebURLRequest& request,
     int render_frame_id) {
-  if (IsPublicImageHintsBasedCompressionEnabled() &&
-      request.GetRequestDestination() ==
+  if (!IsPublicImageHintsBasedCompressionEnabled() &&
+      !IsLoginRobotsCheckedCompressionEnabled()) {
+    return nullptr;
+  }
+  if (request.GetRequestDestination() ==
           network::mojom::RequestDestination::kImage &&
       request.Url().ProtocolIs(url::kHttpsScheme) &&
       blink::WebNetworkStateNotifier::SaveDataEnabled() &&
@@ -69,6 +72,8 @@ SubresourceRedirectURLLoaderThrottle::SubresourceRedirectURLLoaderThrottle(
     int render_frame_id,
     bool allowed_to_redirect)
     : render_frame_id_(render_frame_id) {
+  DCHECK(IsPublicImageHintsBasedCompressionEnabled() ||
+         IsLoginRobotsCheckedCompressionEnabled());
   redirect_result_ = allowed_to_redirect
                          ? RedirectResult::kRedirectable
                          : RedirectResult::kIneligibleBlinkDisallowed;
@@ -80,7 +85,6 @@ SubresourceRedirectURLLoaderThrottle::~SubresourceRedirectURLLoaderThrottle() =
 void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
-  DCHECK(IsPublicImageHintsBasedCompressionEnabled());
   DCHECK_EQ(request->destination, network::mojom::RequestDestination::kImage);
   DCHECK(request->url.SchemeIs(url::kHttpsScheme));
 

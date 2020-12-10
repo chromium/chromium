@@ -60,6 +60,7 @@
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
 #include "chrome/renderer/plugins/plugin_uma.h"
 #include "chrome/renderer/previews/resource_loading_hints_agent.h"
+#include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/public_image_hints_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "chrome/renderer/sync_encryption_keys_extension.h"
@@ -605,10 +606,13 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   new previews::ResourceLoadingHintsAgent(associated_interfaces, render_frame);
 
-  if (subresource_redirect::IsPublicImageHintsBasedCompressionEnabled())
+  if (subresource_redirect::IsPublicImageHintsBasedCompressionEnabled()) {
     new subresource_redirect::PublicImageHintsDeciderAgent(
         associated_interfaces, render_frame);
-
+  } else if (subresource_redirect::IsLoginRobotsCheckedCompressionEnabled()) {
+    new subresource_redirect::LoginRobotsDeciderAgent(associated_interfaces,
+                                                      render_frame);
+  }
   if (translate::IsSubFrameTranslationEnabled()) {
     new translate::PerFrameTranslateAgent(
         render_frame, ISOLATED_WORLD_ID_TRANSLATE, associated_interfaces);
