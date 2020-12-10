@@ -99,6 +99,8 @@ base::Optional<PermissionType> PermissionDescriptorToPermissionType(
       return PermissionType::WINDOW_PLACEMENT;
     case PermissionName::FONT_ACCESS:
       return PermissionType::FONT_ACCESS;
+    case PermissionName::DISPLAY_CAPTURE:
+      return PermissionType::DISPLAY_CAPTURE;
   }
 
   NOTREACHED();

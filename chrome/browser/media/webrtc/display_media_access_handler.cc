@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
@@ -137,6 +138,29 @@ void DisplayMediaAccessHandler::HandleRequest(
     return;
   }
 #endif  // defined(OS_MAC)
+
+  if (request.video_type ==
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+    // Repeat the permission test from the render process.
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+        request.render_process_id, request.render_frame_id);
+    if (!rfh) {
+      std::move(callback).Run(
+          blink::MediaStreamDevices(),
+          blink::mojom::MediaStreamRequestResult::INVALID_STATE, nullptr);
+      return;
+    }
+    if (!rfh->IsFeatureEnabled(
+            blink::mojom::FeaturePolicyFeature::kDisplayCapture)) {
+      bad_message::ReceivedBadMessage(
+          rfh->GetProcess(), bad_message::BadMessageReason::
+                                 RFH_DISPLAY_CAPTURE_PERMISSION_MISSING);
+      std::move(callback).Run(
+          blink::MediaStreamDevices(),
+          blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, nullptr);
+      return;
+    }
+  }
 
   std::unique_ptr<DesktopMediaPicker> picker =
       picker_factory_->CreatePicker(&request);

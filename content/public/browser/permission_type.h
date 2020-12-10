@@ -50,6 +50,7 @@ enum class PermissionType {
   CAMERA_PAN_TILT_ZOOM = 28,
   WINDOW_PLACEMENT = 29,
   FONT_ACCESS = 30,
+  DISPLAY_CAPTURE = 31,
 
   // Always keep this at the end.
   NUM,

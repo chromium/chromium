@@ -3438,6 +3438,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="bluetooth-guard" label="Bluetooth guard exceptions"/>
   <suffix name="client-hints" label="Client hints"/>
   <suffix name="cookies" label="Cookies exceptions"/>
+  <suffix name="display-capture" label="Display Capture Exceptions"/>
   <suffix name="durable-storage" label="Durable Storage Exceptions"/>
   <suffix name="fullscreen" label="Fullscreen exceptions"/>
   <suffix name="geolocation" label="Geolocation exceptions"/>
@@ -13838,6 +13839,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="AR" label="AR permission actions"/>
   <suffix name="AudioCapture" label="Microphone permission actions"/>
   <suffix name="ClipboardReadWrite" label="Clipboard permission actions"/>
+  <suffix name="DisplayCapture" label="Display capture permission actions"/>
   <suffix name="Flash" label="Flash permission actions">
     <obsolete>
       Removed in M88, as the feature will not be included in the M89 launch.

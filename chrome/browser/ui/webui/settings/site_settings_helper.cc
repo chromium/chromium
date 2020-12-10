@@ -148,6 +148,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::INSECURE_PRIVATE_NETWORK, nullptr},
     {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, nullptr},
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, nullptr},
+    {ContentSettingsType::DISPLAY_CAPTURE, nullptr},
 };
 
 // TODO(crbug.com/1149878): After removing ContentSettingsType::PLUGINS, remove

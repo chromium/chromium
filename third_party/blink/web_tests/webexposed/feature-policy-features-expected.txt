@@ -23,6 +23,7 @@ ch-width
 clipboard-read
 clipboard-write
 cross-origin-isolated
+display-capture
 document-domain
 encrypted-media
 execution-while-not-rendered

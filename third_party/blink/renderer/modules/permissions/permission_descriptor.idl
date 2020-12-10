@@ -23,6 +23,7 @@ enum PermissionName {
     // "clipboard",
     "screen-wake-lock",
     "nfc",
+    "display-capture",
 
     // Non-standard:
     "accessibility-events",

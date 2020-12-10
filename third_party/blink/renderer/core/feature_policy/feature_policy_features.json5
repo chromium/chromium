@@ -147,6 +147,11 @@
       depends_on: ["CrossOriginIsolation"],
     },
     {
+      name: "DisplayCapture",
+      feature_policy_name: "display-capture",
+      depends_on: ["GetCurrentBrowsingContextMedia"],
+    },
+    {
       name: "DocumentDomain",
       feature_policy_name: "document-domain",
       feature_default: "EnableForAll",

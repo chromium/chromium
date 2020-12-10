@@ -70,6 +70,8 @@ std::string PermissionUtil::GetPermissionString(
       return "WindowPlacement";
     case ContentSettingsType::FONT_ACCESS:
       return "FontAccess";
+    case ContentSettingsType::DISPLAY_CAPTURE:
+      return "DisplayCapture";
     default:
       break;
   }
@@ -178,6 +180,8 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     *out = PermissionType::FONT_ACCESS;
   } else if (type == ContentSettingsType::IDLE_DETECTION) {
     *out = PermissionType::IDLE_DETECTION;
+  } else if (type == ContentSettingsType::DISPLAY_CAPTURE) {
+    *out = PermissionType::DISPLAY_CAPTURE;
   } else {
     return false;
   }
@@ -212,6 +216,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::WINDOW_PLACEMENT:
     case ContentSettingsType::FONT_ACCESS:
     case ContentSettingsType::IDLE_DETECTION:
+    case ContentSettingsType::DISPLAY_CAPTURE:
       return true;
     default:
       return false;

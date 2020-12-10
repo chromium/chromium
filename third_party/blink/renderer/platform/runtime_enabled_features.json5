@@ -746,6 +746,13 @@
       status: "experimental",
     },
     {
+      name: "DisplayCapturePermissionPolicy",
+      implied_by: ["GetCurrentBrowsingContextMedia"],
+      // TODO(crbug.com/1150788): Implement for Android when this is applied
+      // to getDisplayMedia.
+      status: {"Android": "", "default": "test"},
+    },
+    {
       name: "DisplayCutoutAPI",
       settable_from_internals: true,
     },

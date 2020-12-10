@@ -12,6 +12,7 @@
 #include "chrome/browser/clipboard/clipboard_read_write_permission_context.h"
 #include "chrome/browser/clipboard/clipboard_sanitized_write_permission_context.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/display_capture/display_capture_permission_context.h"
 #include "chrome/browser/generic_sensor/sensor_permission_context.h"
 #include "chrome/browser/idle/idle_detection_permission_context.h"
 #include "chrome/browser/media/midi_permission_context.h"
@@ -131,6 +132,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<WindowPlacementPermissionContext>(profile);
   permission_contexts[ContentSettingsType::FONT_ACCESS] =
       std::make_unique<FontAccessPermissionContext>(profile);
+  permission_contexts[ContentSettingsType::DISPLAY_CAPTURE] =
+      std::make_unique<DisplayCapturePermissionContext>(profile);
   return permission_contexts;
 }
 }  // namespace

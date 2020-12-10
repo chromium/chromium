@@ -240,6 +240,14 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     }
     return CreatePermissionDescriptor(PermissionName::FONT_ACCESS);
   }
+  if (name == "display-capture") {
+    if (!RuntimeEnabledFeatures::DisplayCapturePermissionPolicyEnabled(
+            ExecutionContext::From(script_state))) {
+      exception_state.ThrowTypeError("Display Capture is not enabled.");
+      return nullptr;
+    }
+    return CreatePermissionDescriptor(PermissionName::DISPLAY_CAPTURE);
+  }
   return nullptr;
 }
 

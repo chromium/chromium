@@ -9,6 +9,7 @@
 "clipboard-read"
 "clipboard-write"
 "cross-origin-isolated"
+"display-capture"
 "document-domain"
 "document-write"
 "encrypted-media"

@@ -385,6 +385,8 @@ static_library("browser") {
     "data_use_measurement/chrome_data_use_measurement.h",
     "defaults.cc",
     "defaults.h",
+    "display_capture/display_capture_permission_context.cc",
+    "display_capture/display_capture_permission_context.h",
     "dom_distiller/dom_distiller_service_factory.cc",
     "dom_distiller/dom_distiller_service_factory.h",
     "dom_distiller/lazy_dom_distiller_service.cc",

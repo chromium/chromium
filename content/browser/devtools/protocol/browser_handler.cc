@@ -199,6 +199,8 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::WINDOW_PLACEMENT;
   } else if (name == "font-access") {
     *permission_type = PermissionType::FONT_ACCESS;
+  } else if (name == "display-capture") {
+    *permission_type = PermissionType::DISPLAY_CAPTURE;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);
@@ -258,6 +260,8 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::WAKE_LOCK_SYSTEM;
   } else if (type == protocol::Browser::PermissionTypeEnum::Nfc) {
     *out_type = PermissionType::NFC;
+  } else if (type == protocol::Browser::PermissionTypeEnum::DisplayCapture) {
+    *out_type = PermissionType::DISPLAY_CAPTURE;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }

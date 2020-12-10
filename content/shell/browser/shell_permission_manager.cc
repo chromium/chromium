@@ -55,6 +55,7 @@ bool IsWhitelistedPermissionType(PermissionType permission) {
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
     case PermissionType::WINDOW_PLACEMENT:
     case PermissionType::FONT_ACCESS:
+    case PermissionType::DISPLAY_CAPTURE:
       return false;
   }
 

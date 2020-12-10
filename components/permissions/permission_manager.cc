@@ -129,6 +129,8 @@ ContentSettingsType PermissionTypeToContentSettingSafe(
       return ContentSettingsType::WINDOW_PLACEMENT;
     case PermissionType::FONT_ACCESS:
       return ContentSettingsType::FONT_ACCESS;
+    case PermissionType::DISPLAY_CAPTURE:
+      return ContentSettingsType::DISPLAY_CAPTURE;
     case PermissionType::NUM:
       break;
   }

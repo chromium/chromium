@@ -6438,6 +6438,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="PPH_EXTRA_PREVIEW_MESSAGE"/>
   <int value="2" label="PMF_INVALID_INITIATOR_ORIGIN"/>
   <int value="3" label="RFH_INVALID_WEB_UI_CONTROLLER"/>
+  <int value="4" label="RFH_DISPLAY_CAPTURE_PERMISSION_MISSING"/>
 </enum>
 
 <enum name="BadMessageReasonContent">
@@ -12423,6 +12424,7 @@ Called by update_net_error_codes.py.-->
   <int value="69" label="Window placement"/>
   <int value="70" label="Insecure private network requests"/>
   <int value="71" label="Font Access"/>
+  <int value="74" label="Display Capture"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">
@@ -30651,6 +30653,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="78" label="WebShare"/>
   <int value="79" label="Gamepad"/>
   <int value="80" label="OTPCredentials"/>
+  <int value="81" label="DisplayCapture"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">
