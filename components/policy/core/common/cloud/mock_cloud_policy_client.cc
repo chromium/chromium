@@ -52,8 +52,8 @@ void MockCloudPolicyClient::SetStatus(DeviceManagementStatus status) {
   status_ = status;
 }
 
-MockCloudPolicyClientObserver::MockCloudPolicyClientObserver() {}
+MockCloudPolicyClientObserver::MockCloudPolicyClientObserver() = default;
 
-MockCloudPolicyClientObserver::~MockCloudPolicyClientObserver() {}
+MockCloudPolicyClientObserver::~MockCloudPolicyClientObserver() = default;
 
 }  // namespace policy

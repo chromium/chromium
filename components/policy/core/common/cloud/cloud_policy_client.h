@@ -28,7 +28,6 @@
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/policy/proto/record.pb.h"
 
 namespace content {
 class BrowserContext;
@@ -79,7 +78,7 @@ class POLICY_EXPORT CloudPolicyClient {
   using DeviceDMTokenCallback = base::RepeatingCallback<std::string(
       const std::vector<std::string>& user_affiliation_ids)>;
 
-  // A callback that processes response value received from the server,
+  // Callback that processes response value received from the server,
   // or nullopt, if there was a failure.
   using ResponseCallback =
       base::OnceCallback<void(base::Optional<base::Value>)>;
@@ -319,10 +318,10 @@ class POLICY_EXPORT CloudPolicyClient {
                                          base::Value report,
                                          StatusCallback callback);
 
-  // Uploads a report containing an EncryptedRecord. The client must be in a
-  // registered state. The |callback| will be called when the operation
-  // completes.
-  virtual void UploadEncryptedReport(const ::reporting::EncryptedRecord& record,
+  // Uploads a report containing |merging_payload| (merged into the default
+  // payload of the job). The client must be in a registered state. The
+  // |callback| will be called when the operation completes.
+  virtual void UploadEncryptedReport(base::Value merging_payload,
                                      base::Optional<base::Value> context,
                                      ResponseCallback callback);
 

@@ -111,7 +111,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                     StatusCallback&));
 
   MOCK_METHOD3(UploadEncryptedReport,
-               void(const ::reporting::EncryptedRecord&,
+               void(base::Value,
                     base::Optional<base::Value>,
                     ResponseCallback));
 
@@ -159,26 +159,25 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                  const enterprise_management::PolicyFetchResponse& policy);
 
   // Inject invalidation version.
-  void SetFetchedInvalidationVersion(
-      int64_t fetched_invalidation_version);
+  void SetFetchedInvalidationVersion(int64_t fetched_invalidation_version);
 
   // Sets the status field.
   void SetStatus(DeviceManagementStatus status);
 
   // Make the notification helpers public.
+  using CloudPolicyClient::NotifyClientError;
   using CloudPolicyClient::NotifyPolicyFetched;
   using CloudPolicyClient::NotifyRegistrationStateChanged;
-  using CloudPolicyClient::NotifyClientError;
 
-  using CloudPolicyClient::dm_token_;
   using CloudPolicyClient::client_id_;
+  using CloudPolicyClient::dm_token_;
+  using CloudPolicyClient::fetched_invalidation_version_;
+  using CloudPolicyClient::invalidation_payload_;
+  using CloudPolicyClient::invalidation_version_;
   using CloudPolicyClient::last_policy_timestamp_;
   using CloudPolicyClient::public_key_version_;
   using CloudPolicyClient::public_key_version_valid_;
   using CloudPolicyClient::types_to_fetch_;
-  using CloudPolicyClient::invalidation_version_;
-  using CloudPolicyClient::invalidation_payload_;
-  using CloudPolicyClient::fetched_invalidation_version_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockCloudPolicyClient);

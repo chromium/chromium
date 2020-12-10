@@ -607,7 +607,7 @@ void CloudPolicyClient::UploadSecurityEventReport(
 }
 
 void CloudPolicyClient::UploadEncryptedReport(
-    const ::reporting::EncryptedRecord& record,
+    base::Value merging_payload,
     base::Optional<base::Value> context,
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -619,11 +619,9 @@ void CloudPolicyClient::UploadEncryptedReport(
   std::unique_ptr<EncryptedReportingJobConfiguration> config =
       std::make_unique<EncryptedReportingJobConfiguration>(
           this, service()->configuration()->GetEncryptedReportingServerUrl(),
+          std::move(merging_payload),
           base::BindOnce(&CloudPolicyClient::OnEncryptedReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  if (!config->AddEncryptedRecord(record)) {
-    return;
-  }
   if (context.has_value()) {
     config->UpdateContext(context.value());
   }

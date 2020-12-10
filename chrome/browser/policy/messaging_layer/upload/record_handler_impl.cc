@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/queue.h"
@@ -17,6 +18,7 @@
 #include "base/task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -111,19 +113,31 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
 
 void RecordHandlerImpl::ReportUploader::StartUpload(
     const EncryptedRecord& encrypted_record) {
-  auto cb = base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
-                           base::Unretained(this));
+  auto response_cb =
+      base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
+                     base::Unretained(this));
+
+  auto request_result = UploadEncryptedReportingRequestBuilder()
+                            .AddRecord(encrypted_record)
+                            .Build();
+  if (!request_result.has_value()) {
+    std::move(response_cb).Run(base::nullopt);
+    return;
+  }
+  base::Value request = std::move(request_result.value());
+
   base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(
-          [](policy::CloudPolicyClient* client, const EncryptedRecord& record,
-             base::OnceCallback<void(base::Optional<base::Value>)> cb) {
+          [](policy::CloudPolicyClient* client, base::Value request,
+             base::OnceCallback<void(base::Optional<base::Value>)>
+                 response_cb) {
             client->UploadEncryptedReport(
-                record,
+                std::move(request),
                 reporting::GetContext(ProfileManager::GetPrimaryUserProfile()),
-                std::move(cb));
+                std::move(response_cb));
           },
-          client_, encrypted_record, std::move(cb)));
+          client_, std::move(request), std::move(response_cb)));
 }
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
@@ -167,17 +181,22 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   const base::Value* last_succeed_uploaded_record =
       last_response_.FindDictKey("lastSucceedUploadedRecord");
   if (last_succeed_uploaded_record != nullptr) {
-    SequencingInformation seq_info;
     // Note: Fields below are 'int', should be converted into 'uint64_t'.
-    const auto sequencing_id =
-        last_succeed_uploaded_record->FindIntKey("sequencingId");
-    const auto generation_id =
-        last_succeed_uploaded_record->FindIntKey("generationId");
+    const std::string* sequencing_id_str =
+        last_succeed_uploaded_record->FindStringKey("sequencingId");
+    const std::string* generation_id_str =
+        last_succeed_uploaded_record->FindStringKey("generationId");
     const auto priority = last_succeed_uploaded_record->FindIntKey("priority");
-    if (sequencing_id.has_value() && generation_id.has_value() &&
+    uint64_t sequencing_id = 0;
+    uint64_t generation_id = 0;
+    if (sequencing_id_str &&
+        base::StringToUint64(*sequencing_id_str, &sequencing_id) &&
+        generation_id_str &&
+        base::StringToUint64(*generation_id_str, &generation_id) &&
         priority.has_value() && Priority_IsValid(priority.value())) {
-      seq_info.set_sequencing_id(sequencing_id.value());
-      seq_info.set_generation_id(generation_id.value());
+      SequencingInformation seq_info;
+      seq_info.set_sequencing_id(sequencing_id);
+      seq_info.set_generation_id(generation_id);
       seq_info.set_priority(Priority(priority.value()));
       highest_sequencing_information_ = std::move(seq_info);
     }

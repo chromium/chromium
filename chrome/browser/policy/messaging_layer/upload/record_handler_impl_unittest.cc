@@ -82,18 +82,22 @@ class TestCompletionResponder {
 };
 
 // Helper function composes JSON represented as base::Value from Sequencing
-// information.
+// information in request.
 base::Value ValueFromSucceededSequencingInfo(
-    const SequencingInformation& sequencing_information) {
-  base::Value sequencing_info(base::Value::Type::DICTIONARY);
-  sequencing_info.SetIntKey("sequencingId",
-                            sequencing_information.sequencing_id());
-  sequencing_info.SetIntKey("generationId",
-                            sequencing_information.generation_id());
-  sequencing_info.SetIntKey("priority", sequencing_information.priority());
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
-  return result;
+    const base::Optional<base::Value> request) {
+  EXPECT_TRUE(request.has_value());
+  EXPECT_TRUE(request.value().is_dict());
+  const base::Value* const encrypted_record_list =
+      request.value().FindListKey("encryptedRecord");
+  EXPECT_TRUE(encrypted_record_list != nullptr);
+  EXPECT_FALSE(encrypted_record_list->GetList().empty());
+  const base::Value* seq_info =
+      encrypted_record_list->GetList().rbegin()->FindDictKey(
+          "sequencingInformation");
+  EXPECT_TRUE(seq_info != nullptr);
+  base::Value response(base::Value::Type::DICTIONARY);
+  response.SetPath("lastSucceedUploadedRecord", seq_info->Clone());
+  return response;
 }
 
 class RecordHandlerImplTest : public testing::Test {
@@ -111,13 +115,13 @@ class RecordHandlerImplTest : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
 };
 
-std::unique_ptr<std::vector<EncryptedRecord>> RecordListBuilder(
-    uint64_t number_of_test_records,
+std::unique_ptr<std::vector<EncryptedRecord>> BuildTestRecordsVector(
+    size_t number_of_test_records,
     uint64_t generation_id) {
   std::unique_ptr<std::vector<EncryptedRecord>> test_records =
       std::make_unique<std::vector<EncryptedRecord>>();
-
-  for (uint64_t i = 0; i < number_of_test_records; i++) {
+  test_records->reserve(number_of_test_records);
+  for (size_t i = 0; i < number_of_test_records; i++) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(
         base::StrCat({"Record Number ", base::NumberToString(i)}));
@@ -132,19 +136,19 @@ std::unique_ptr<std::vector<EncryptedRecord>> RecordListBuilder(
 }
 
 TEST_F(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
-  uint64_t kNumTestRecords = 10;
-  uint64_t kGenerationId = 1234;
-  auto test_records = RecordListBuilder(kNumTestRecords, kGenerationId);
+  constexpr size_t kNumTestRecords = 10;
+  constexpr uint64_t kGenerationId = 1234;
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   TestCallbackWaiterWithCounter client_waiter{kNumTestRecords};
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
       .Times(kNumTestRecords)
       .WillRepeatedly(WithArgs<0, 2>(
           Invoke([&client_waiter](
-                     const ::reporting::EncryptedRecord& record,
+                     base::Value request,
                      policy::CloudPolicyClient::ResponseCallback callback) {
-            std::move(callback).Run(ValueFromSucceededSequencingInfo(
-                record.sequencing_information()));
+            std::move(callback).Run(
+                ValueFromSucceededSequencingInfo(std::move(request)));
             client_waiter.Signal();
           })));
 
@@ -170,7 +174,7 @@ TEST_F(RecordHandlerImplTest, ReportsEarlyFailure) {
   uint64_t kNumSuccessfulUploads = 5;
   uint64_t kNumTestRecords = 10;
   uint64_t kGenerationId = 1234;
-  auto test_records = RecordListBuilder(kNumTestRecords, kGenerationId);
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
 
   // Wait kNumSuccessfulUploads times + 1 for the failure.
   TestCallbackWaiterWithCounter client_waiter{kNumSuccessfulUploads + 1};
@@ -178,12 +182,12 @@ TEST_F(RecordHandlerImplTest, ReportsEarlyFailure) {
   ::testing::InSequence seq;
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
       .Times(kNumSuccessfulUploads)
-      .WillRepeatedly(WithArgs<0, 2>(Invoke(
-          [&client_waiter](
-              const ::reporting::EncryptedRecord& record,
-              base::OnceCallback<void(base::Optional<base::Value>)> callback) {
-            std::move(callback).Run(ValueFromSucceededSequencingInfo(
-                record.sequencing_information()));
+      .WillRepeatedly(WithArgs<0, 2>(
+          Invoke([&client_waiter](
+                     base::Value request,
+                     policy::CloudPolicyClient::ResponseCallback callback) {
+            std::move(callback).Run(
+                ValueFromSucceededSequencingInfo(std::move(request)));
             client_waiter.Signal();
           })));
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))

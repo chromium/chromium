@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
@@ -18,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -112,6 +114,52 @@ const int64_t kTimestamp = 987654321;
 
 MATCHER_P(MatchProto, expected, "matches protobuf") {
   return arg.SerializePartialAsString() == expected.SerializePartialAsString();
+}
+
+base::Value ConvertEncryptedRecordToValue(
+    const ::reporting::EncryptedRecord& record) {
+  base::Value record_request(base::Value::Type::DICTIONARY);
+  if (record.has_encrypted_wrapped_record()) {
+    base::Value encrypted_wrapped_record(base::Value::Type::DICTIONARY);
+    std::string base64_encode;
+    base::Base64Encode(record.encrypted_wrapped_record(), &base64_encode);
+    record_request.SetStringKey("encryptedWrappedRecord", base64_encode);
+  }
+  if (record.has_encryption_info()) {
+    base::Value encryption_info(base::Value::Type::DICTIONARY);
+    if (record.encryption_info().has_encryption_key()) {
+      std::string base64_encode;
+      base::Base64Encode(record.encryption_info().encryption_key(),
+                         &base64_encode);
+      encryption_info.SetStringKey("encryptionKey", base64_encode);
+    }
+    if (record.encryption_info().has_public_key_id()) {
+      encryption_info.SetStringKey(
+          "publicKeyId",
+          base::NumberToString(record.encryption_info().public_key_id()));
+    }
+    record_request.SetPath("encryptionInfo", std::move(encryption_info));
+  }
+  if (record.has_sequencing_information()) {
+    base::Value sequencing_information(base::Value::Type::DICTIONARY);
+    if (record.sequencing_information().has_sequencing_id()) {
+      sequencing_information.SetStringKey(
+          "sequencingId", base::NumberToString(
+                              record.sequencing_information().sequencing_id()));
+    }
+    if (record.sequencing_information().has_generation_id()) {
+      sequencing_information.SetStringKey(
+          "generationId", base::NumberToString(
+                              record.sequencing_information().generation_id()));
+    }
+    if (record.sequencing_information().has_priority()) {
+      sequencing_information.SetIntKey(
+          "priority", record.sequencing_information().priority());
+    }
+    record_request.SetPath("sequencingInformation",
+                           std::move(sequencing_information));
+  }
+  return record_request;
 }
 
 // A mock class to allow us to set expectations on upload callbacks.
@@ -443,7 +491,8 @@ class CloudPolicyClientTest : public testing::Test {
     CloudPolicyClient::ResponseCallback response_callback =
         base::BindOnce(&MockResponseCallbackObserver::OnResponseReceived,
                        base::Unretained(&response_callback_observer_));
-    client_->UploadEncryptedReport(record, std::move(context),
+    client_->UploadEncryptedReport(ConvertEncryptedRecordToValue(record),
+                                   std::move(context),
                                    std::move(response_callback));
     base::RunLoop().RunUntilIdle();
   }
@@ -1580,53 +1629,6 @@ TEST_F(CloudPolicyClientTest, UploadEncryptedReport) {
       DeviceManagementService::JobConfiguration::TYPE_UPLOAD_ENCRYPTED_REPORT);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(client_->status(), DM_STATUS_SUCCESS);
-}
-
-TEST_F(CloudPolicyClientTest, DenyPoorlyFormedEncryptedRecords) {
-  RegisterClient();
-
-  // Create empty record
-  ::reporting::EncryptedRecord record;
-
-  EXPECT_CALL(response_callback_observer_, OnResponseReceived(Not(HasValue())))
-      .Times(1);
-  AttemptUploadEncryptedWaitUntilIdle(record);
-
-  // Add encrypted_wrapped_record without sequencing information.
-  record.set_encrypted_wrapped_record("Enterprise");
-
-  EXPECT_CALL(response_callback_observer_, OnResponseReceived(Not(HasValue())))
-      .Times(1);
-  AttemptUploadEncryptedWaitUntilIdle(record);
-
-  // Incorrectly set sequencing information by only setting sequencing id.
-  auto* sequencing_information = record.mutable_sequencing_information();
-  sequencing_information->set_sequencing_id(1701);
-
-  EXPECT_CALL(response_callback_observer_, OnResponseReceived(Not(HasValue())))
-      .Times(1);
-  AttemptUploadEncryptedWaitUntilIdle(record);
-
-  // Finish correctly setting sequencing information but incorrectly set
-  // encryption info.
-  sequencing_information->set_generation_id(12345678);
-  sequencing_information->set_priority(::reporting::IMMEDIATE);
-
-  auto* encryption_info = record.mutable_encryption_info();
-  encryption_info->set_encryption_key("Key");
-
-  EXPECT_CALL(response_callback_observer_, OnResponseReceived(Not(HasValue())))
-      .Times(1);
-  AttemptUploadEncryptedWaitUntilIdle(record);
-
-  // Finish correctly setting encryption info - expect complete call.
-  encryption_info->set_public_key_id(1234);
-
-  EXPECT_CALL(response_callback_observer_, OnResponseReceived(HasValue()))
-      .Times(1);
-  ExpectAndCaptureJSONJob(/*response=*/"{}");
-
-  AttemptUploadEncryptedWaitUntilIdle(record);
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {

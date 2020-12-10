@@ -120,18 +120,22 @@ class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
 };
 
 // Helper function composes JSON represented as base::Value from Sequencing
-// information.
+// information in request.
 base::Value ValueFromSucceededSequencingInfo(
-    const SequencingInformation& sequencing_information) {
-  base::Value sequencing_info(base::Value::Type::DICTIONARY);
-  sequencing_info.SetIntKey("sequencingId",
-                            sequencing_information.sequencing_id());
-  sequencing_info.SetIntKey("generationId",
-                            sequencing_information.generation_id());
-  sequencing_info.SetIntKey("priority", sequencing_information.priority());
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
-  return result;
+    const base::Optional<base::Value> request) {
+  EXPECT_TRUE(request.has_value());
+  EXPECT_TRUE(request.value().is_dict());
+  const base::Value* const encrypted_record_list =
+      request.value().FindListKey("encryptedRecord");
+  EXPECT_TRUE(encrypted_record_list != nullptr);
+  EXPECT_FALSE(encrypted_record_list->GetList().empty());
+  const base::Value* seq_info =
+      encrypted_record_list->GetList().rbegin()->FindDictKey(
+          "sequencingInformation");
+  EXPECT_TRUE(seq_info != nullptr);
+  base::Value response(base::Value::Type::DICTIONARY);
+  response.SetPath("lastSucceedUploadedRecord", seq_info->Clone());
+  return response;
 }
 
 class UploadClientTest : public ::testing::Test {
@@ -211,10 +215,10 @@ TEST_F(UploadClientTest, CreateUploadClientAndUploadRecords) {
 
   EXPECT_CALL(*client, UploadEncryptedReport(_, _, _))
       .WillRepeatedly(WithArgs<0, 2>(Invoke(
-          [&waiter](const ::reporting::EncryptedRecord& record,
-                    policy::CloudPolicyClient::ResponseCallback callback) {
-            std::move(callback).Run(ValueFromSucceededSequencingInfo(
-                record.sequencing_information()));
+          [&waiter](base::Value request,
+                    policy::CloudPolicyClient::ResponseCallback response_cb) {
+            std::move(response_cb)
+                .Run(ValueFromSucceededSequencingInfo(std::move(request)));
             base::ThreadPool::PostTask(
                 FROM_HERE, {base::TaskPriority::BEST_EFFORT},
                 base::BindOnce(&TestCallbackWaiterWithCounter::Signal,
