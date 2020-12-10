@@ -4,6 +4,8 @@
 
 #import "components/autofill/ios/browser/autofill_agent.h"
 
+#import <UIKit/UIKit.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -49,7 +51,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "ios/web/common/url_scheme_util.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"

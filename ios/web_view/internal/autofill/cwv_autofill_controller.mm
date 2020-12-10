@@ -27,7 +27,6 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #include "components/sync/driver/sync_service.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"

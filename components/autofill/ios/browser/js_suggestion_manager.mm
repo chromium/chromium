@@ -14,7 +14,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
 

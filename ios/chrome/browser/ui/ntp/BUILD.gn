@@ -134,7 +134,6 @@ source_set("ntp_internal") {
     "//ios/public/provider/chrome/browser/voice",
     "//ios/third_party/material_components_ios",
     "//ios/web",
-    "//ios/web/public/deprecated",
     "//net",
     "//skia",
     "//ui/base",

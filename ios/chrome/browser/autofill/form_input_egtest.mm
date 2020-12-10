@@ -13,7 +13,6 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/test/element_selector.h"
 #import "ios/web/public/web_state.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

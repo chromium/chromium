@@ -14,7 +14,6 @@
 #import "components/autofill/ios/browser/js_autofill_manager.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/web_state.h"

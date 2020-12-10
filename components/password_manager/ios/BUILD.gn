@@ -20,7 +20,6 @@ component("ios") {
     "//components/strings:components_strings_grit",
     "//ios/web/common",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ui/base",
     "//url",
