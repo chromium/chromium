@@ -4300,8 +4300,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, OriginReplication) {
 
 // Test that HasReceivedUserGesture and HasReceivedUserGestureBeforeNavigation
 // are propagated correctly across origins.
+// TODO(crbug.com/1014175): This test is flaky.
 IN_PROC_BROWSER_TEST_P(SitePerProcessAutoplayBrowserTest,
-                       PropagateUserGestureFlag) {
+                       DISABLED_PropagateUserGestureFlag) {
   GURL main_url(embedded_test_server()->GetURL(
       "example.com", "/media/autoplay/autoplay-enabled.html"));
   GURL foo_url(embedded_test_server()->GetURL(
