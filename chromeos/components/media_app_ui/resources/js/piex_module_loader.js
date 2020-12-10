@@ -22,9 +22,13 @@ function loadPiex() {
     });
     await loadJs('piex/piex.js.wasm');
     await loadJs('piex_module_scripts.js');
-    await new Promise(resolve => {
-      PiexModule['onRuntimeInitialized'] = resolve;
-    });
+    if (!PiexModule.calledRun) {
+      // In rare cases in tests (<1%), the runtime is already initialized.
+      // Waiting again for onRuntimeInitialized would hang indefinitely.
+      await new Promise(resolve => {
+        PiexModule['onRuntimeInitialized'] = resolve;
+      });
+    }
   }
   if (!_piexLoadPromise) {
     _piexLoadPromise = startLoad();
