@@ -130,8 +130,6 @@ void NavigationManagerImpl::SetBrowserState(BrowserState* browser_state) {
   browser_state_ = browser_state;
 }
 
-void NavigationManagerImpl::InitializeSession() {}
-
 void NavigationManagerImpl::OnNavigationItemCommitted() {
   NavigationItem* item = GetLastCommittedItemInCurrentOrRestoredSession();
   DCHECK(item);

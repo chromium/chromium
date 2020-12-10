@@ -64,12 +64,7 @@ web::WebState* ReturnWeakReference(base::WeakPtr<WebStateImpl> weak_web_state) {
 
 /* static */
 std::unique_ptr<WebState> WebState::Create(const CreateParams& params) {
-  std::unique_ptr<WebStateImpl> web_state(new WebStateImpl(params));
-
-  // Initialize the new session.
-  web_state->GetNavigationManagerImpl().InitializeSession();
-
-  return web_state;
+  return std::make_unique<WebStateImpl>(params);
 }
 
 /* static */

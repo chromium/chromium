@@ -135,11 +135,6 @@ class NavigationManagerImpl : public NavigationManager {
   void SetDelegate(NavigationManagerDelegate* delegate);
   void SetBrowserState(BrowserState* browser_state);
 
-  // Initializes a new session history.
-  // TODO(crbug.com/738020): Delete this method and its callsites since it is
-  // a no-op.
-  void InitializeSession();
-
   // Helper functions for notifying WebStateObservers of changes.
   // TODO(stuartmorgan): Make these private once the logic triggering them moves
   // into this layer.

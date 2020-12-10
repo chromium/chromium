@@ -164,7 +164,6 @@ class WebStateImplTest : public web::WebTest {
 
   // Adds PendingNavigationItem and commits it.
   void AddCommittedNavigationItem() {
-    web_state_->GetNavigationManagerImpl().InitializeSession();
     web_state_->GetNavigationManagerImpl().AddPendingItem(
         GURL::EmptyGURL(), web::Referrer(), ui::PAGE_TRANSITION_LINK,
         NavigationInitiationType::RENDERER_INITIATED);
@@ -1064,8 +1063,6 @@ TEST_F(WebStateImplTest, BuildStorageDuringRestore) {
 // Tests showing and clearing interstitial when NavigationManager is
 // empty.
 TEST_F(WebStateImplTest, ShowAndClearInterstitialWithNoCommittedItems) {
-  web_state_->GetNavigationManagerImpl().InitializeSession();
-
   // Existence of a pending item is a precondition for a transient item.
   web_state_->GetNavigationManagerImpl().AddPendingItem(
       GURL::EmptyGURL(), web::Referrer(), ui::PAGE_TRANSITION_LINK,

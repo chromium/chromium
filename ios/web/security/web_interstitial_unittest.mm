@@ -32,7 +32,6 @@ class WebInterstitialTest : public WebTest {
     WebTest::SetUp();
     WebState::CreateParams params(GetBrowserState());
     web_state_ = std::make_unique<WebStateImpl>(params);
-    web_state_->GetNavigationManagerImpl().InitializeSession();
 
     // Transient item can only be added for pending non-app-specific loads.
     web_state_->GetNavigationManagerImpl().AddPendingItem(
