@@ -957,6 +957,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.WKWebViewLinkPreview" enum="IOSWKWebViewLinkPreviewAction"
     expires_after="M73">
+  <obsolete>
+    Deprecated 12/2020 as it is no longer used for analysis.
+  </obsolete>
   <owner>kkhorimoto@chromium.org</owner>
   <owner>pkl@chromium.org</owner>
   <summary>

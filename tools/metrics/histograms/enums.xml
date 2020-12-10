@@ -39300,6 +39300,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="IOSWKWebViewLinkPreviewAction">
+  <obsolete>
+    Deprecated 12/2020 as it is no longer used for analysis.
+  </obsolete>
   <summary>
     This enum is used to track the user actions that occur when previewing links
     using the WKWebView 3D touch API. This feature is not currently supported,

@@ -237,19 +237,6 @@ void Record(ContextMenuHistogram action, bool is_image, bool is_link) {
   }
 }
 
-// Histogram that tracks user actions related to the WKWebView 3D touch link
-// preview API. These values are persisted to logs. Entries should not be
-// renumbered and numeric values should never be reused.
-enum class WKWebViewLinkPreviewAction {
-  kPreviewAttempted = 0,
-  kMaxValue = kPreviewAttempted,
-};
-
-// Records 3D touch link preview action histograms.
-void Record(WKWebViewLinkPreviewAction action) {
-  UMA_HISTOGRAM_ENUMERATION("IOS.WKWebViewLinkPreview", action);
-}
-
 // Returns the status bar background color.
 UIColor* StatusBarBackgroundColor() {
   return UIColor.blackColor;
@@ -3601,14 +3588,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       });
   WebStateDelegateTabHelper::FromWebState(webState)->OnAuthRequired(
       webState, protectionSpace, proposedCredential, std::move(callback));
-}
-
-- (BOOL)webState:(web::WebState*)webState
-    shouldPreviewLinkWithURL:(const GURL&)linkURL {
-  // Link previews are not currently supported.  The kPreviewAttempted histogram
-  // is used to gauge user interest in implementing this feature.
-  Record(WKWebViewLinkPreviewAction::kPreviewAttempted);
-  return NO;
 }
 
 - (UIView*)webViewContainerForWebState:(web::WebState*)webState {
