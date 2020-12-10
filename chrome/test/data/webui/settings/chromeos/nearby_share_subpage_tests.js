@@ -10,7 +10,7 @@
 // #import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
 // #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
 // #import {FakeReceiveManager} from './fake_receive_manager.m.js'
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
@@ -232,4 +232,19 @@ suite('NearbyShare', function() {
     assertTrue(!!dialog);
   });
 
+  test('show high visibility dialog', function() {
+    const params = new URLSearchParams;
+    params.append('receive', '1');
+    params.append('timeout', '600');  // 10 minutes
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NEARBY_SHARE, params);
+    Polymer.dom.flush();
+
+    const dialog = subpage.$$('nearby-share-receive-dialog');
+    assertTrue(!!dialog);
+
+    const highVisibilityDialog = dialog.$$('nearby-share-high-visibility-page');
+    assertTrue(test_util.isVisible(highVisibilityDialog));
+    assertGT(highVisibilityDialog.shutoffTimestamp, new Date().getTime());
+  });
 });

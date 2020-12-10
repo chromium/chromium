@@ -92,6 +92,13 @@ Polymer({
   /** @private {number} */
   closeTimeoutId_: 0,
 
+  /**
+   * Timestamp in milliseconds since unix epoch of when high visibility will
+   * be turned off.
+   * @private {number}
+   */
+  highVisibilityShutoffTimestamp_: 0,
+
   /** @override */
   attached() {
     this.closing_ = false;
@@ -223,13 +230,20 @@ Polymer({
 
   /**
    * Call to show the high visibility page.
+   * @param {number} shutoffTimeoutInSeconds Duration of the high
+   *     visibility session, after which the session would be turned off.
    */
-  showHighVisibilityPage() {
+  showHighVisibilityPage(shutoffTimeoutInSeconds) {
     // Check if we need to wait for settings values from mojo or if we need to
     // run onboarding first before showing the page.
-    if (this.deferCallIfNecessary(this.showHighVisibilityPage.bind(this))) {
+    if (this.deferCallIfNecessary(
+            this.showHighVisibilityPage.bind(this, shutoffTimeoutInSeconds))) {
       return;
     }
+
+    // Date().getTime() returns current time in milliseconds since unix epoch.
+    this.highVisibilityShutoffTimestamp_ =
+        new Date().getTime() + (shutoffTimeoutInSeconds * 1000);
 
     // Register a receive surface to enter high visibility and show the page.
     this.receiveManager_.registerForegroundReceiveSurface();

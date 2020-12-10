@@ -299,9 +299,11 @@ Polymer({
     }
 
     if (queryParams.has('receive')) {
+      // Get shutoffTimeoutInSeconds with a default of 5 minutes (300 seconds)
+      const shutoffTimeoutInSeconds = Number(queryParams.get('timeout')) || 300;
       this.showReceiveDialog_ = true;
       Polymer.dom.flush();
-      this.$$('#receiveDialog').showHighVisibilityPage();
+      this.$$('#receiveDialog').showHighVisibilityPage(shutoffTimeoutInSeconds);
     }
 
     if (queryParams.has('confirm')) {

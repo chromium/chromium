@@ -163,6 +163,12 @@ void NearbyShareDelegateImpl::SettingsOpener::ShowSettingsPage(
     // Append a timestamp to make the url unique per-call. Otherwise, settings
     // will not respond to successive calls if the url does not change.
     query_string += "?" + sub_page + "&time=" + GetTimestampString();
+
+    if (sub_page == kStartReceivingQueryParam) {
+      // Attach high visibility shutoff timeout for display in webui.
+      query_string +=
+          "&timeout=" + base::NumberToString(kShutoffTimeout.InSeconds());
+    }
   }
 
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(

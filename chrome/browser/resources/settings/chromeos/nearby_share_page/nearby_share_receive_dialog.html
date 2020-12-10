@@ -24,7 +24,8 @@
       <div id="content" slot="body" aria-live="polite">
         <cr-view-manager id="viewManager">
           <nearby-share-high-visibility-page id="[[Page.HIGH_VISIBILITY]]"
-              slot="view" device-name="[[settings.deviceName]]">
+              slot="view" device-name="[[settings.deviceName]]"
+              shutoff-timestamp="[[highVisibilityShutoffTimestamp_]]">
           </nearby-share-high-visibility-page>
           <nearby-share-confirm-page id="[[Page.CONFIRM]]" slot="view"
               share-target="[[shareTarget]]"

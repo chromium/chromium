@@ -20,16 +20,68 @@ Polymer({
       notify: true,
       type: String,
       value: 'DEVICE_NAME_NOT_SET',
+    },
+
+    /**
+     * Timestamp in milliseconds since unix epoch of when high visibility will
+     * be turned off.
+     * @type {number}
+     */
+    shutoffTimestamp: {
+      type: Number,
+      value: 0,
+    },
+  },
+
+  /**
+   * Calculated value of remaining seconds of high visibility mode.
+   * @private {number}
+   */
+  remainingTimeInSeconds_: 0,
+
+  /** @private {number} */
+  remainingTimeIntervalId_: -1,
+
+  /** @override */
+  attached() {
+    this.calculateRemainingTime_();
+    this.remainingTimeIntervalId_ = setInterval(() => {
+      this.calculateRemainingTime_();
+    }, 1000);
+  },
+
+  /** @override */
+  detached() {
+    if (this.remainingTimeIntervalId_ === -1) {
+      clearInterval(this.remainingTimeIntervalId_);
+      this.remainingTimeIntervalId_ = -1;
     }
+  },
+
+  /** @private */
+  calculateRemainingTime_() {
+    const now = new Date().getTime();
+    const remainingTimeInMs =
+        this.shutoffTimestamp > now ? this.shutoffTimestamp - now : 0;
+    this.remainingTimeInSeconds_ = Math.trunc(remainingTimeInMs / 1000);
   },
 
   /**
    * @return {string} localized string
-   * @private
+   * @protected
    */
   getSubTitle_() {
-    // TODO(joonbug): Get timer value and dynamically update this.
-    const timeValue = this.i18n('nearbyShareHighVisibilitySubTitleMinutes', 5);
+    let timeValue = '';
+    if (this.remainingTimeInSeconds_ > 60) {
+      timeValue = this.i18n(
+          'nearbyShareHighVisibilitySubTitleMinutes',
+          Math.ceil(this.remainingTimeInSeconds_ / 60));
+    } else {
+      timeValue = this.i18n(
+          'nearbyShareHighVisibilitySubTitleSeconds',
+          this.remainingTimeInSeconds_);
+    }
+
     return this.i18n(
         'nearbyShareHighVisibilitySubTitle', this.deviceName, timeValue);
   },
