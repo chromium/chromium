@@ -252,7 +252,7 @@ void PasswordStore::DisableAutoSignInForOrigins(
 void PasswordStore::Unblocklist(const PasswordStore::FormDigest& form_digest,
                                 base::OnceClosure completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::UnblacklistInternal, this,
+  ScheduleTask(base::BindOnce(&PasswordStore::UnblocklistInternal, this,
                               form_digest, std::move(completion)));
 }
 
@@ -1058,11 +1058,11 @@ void PasswordStore::DisableAutoSignInForOriginsInternal(
     main_task_runner_->PostTask(FROM_HERE, std::move(completion));
 }
 
-void PasswordStore::UnblacklistInternal(
+void PasswordStore::UnblocklistInternal(
     const PasswordStore::FormDigest& form_digest,
     base::OnceClosure completion) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords", "PasswordStore::UnblacklistInternal");
+  TRACE_EVENT0("passwords", "PasswordStore::UnblocklistInternal");
 
   std::vector<std::unique_ptr<PasswordForm>> all_matches =
       GetLoginsImpl(form_digest);
@@ -1138,7 +1138,7 @@ std::vector<std::unique_ptr<PasswordForm>> PasswordStore::GetAllLoginsImpl() {
   TRACE_EVENT0("passwords", "PasswordStore::GetAllLoginsImpl");
   std::vector<std::unique_ptr<PasswordForm>> results;
   for (auto fill_logins : {&PasswordStore::FillAutofillableLogins,
-                           &PasswordStore::FillBlacklistLogins}) {
+                           &PasswordStore::FillBlocklistLogins}) {
     std::vector<std::unique_ptr<PasswordForm>> obtained_forms;
     if ((this->*fill_logins)(&obtained_forms)) {
       results.insert(results.end(),

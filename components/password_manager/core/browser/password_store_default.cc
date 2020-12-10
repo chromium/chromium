@@ -186,10 +186,10 @@ bool PasswordStoreDefault::FillAutofillableLogins(
   return login_db_ && login_db_->GetAutofillableLogins(forms);
 }
 
-bool PasswordStoreDefault::FillBlacklistLogins(
+bool PasswordStoreDefault::FillBlocklistLogins(
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  return login_db_ && login_db_->GetBlacklistLogins(forms);
+  return login_db_ && login_db_->GetBlocklistLogins(forms);
 }
 
 DatabaseCleanupResult PasswordStoreDefault::DeleteUndecryptableLogins() {

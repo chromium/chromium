@@ -602,8 +602,8 @@ TEST_F(PasswordGenerationAgentTest, EditingEventsTest) {
             fake_driver_.last_focused_field_type());
 }
 
-TEST_F(PasswordGenerationAgentTest, UnblacklistedMultipleTest) {
-  // Receive two not blacklisted messages, one is for account creation form and
+TEST_F(PasswordGenerationAgentTest, UnblocklistedMultipleTest) {
+  // Receive two not blocklisted messages, one is for account creation form and
   // the other is not. Show password generation icon.
   LoadHTMLWithUserGesture(kAccountCreationFormHTML);
   SetFoundFormEligibleForGeneration(

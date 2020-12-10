@@ -1087,14 +1087,14 @@ TEST_F(LoginDatabaseTest, DisableAutoSignInForOrigin) {
   }
 }
 
-TEST_F(LoginDatabaseTest, BlacklistedLogins) {
+TEST_F(LoginDatabaseTest, BlocklistedLogins) {
   std::vector<std::unique_ptr<PasswordForm>> result;
 
   // Verify the database is empty.
-  EXPECT_TRUE(db().GetBlacklistLogins(&result));
+  EXPECT_TRUE(db().GetBlocklistLogins(&result));
   ASSERT_EQ(0U, result.size());
 
-  // Save a form as blacklisted.
+  // Save a form as blocklisted.
   PasswordForm form;
   form.url = GURL("http://accounts.google.com/LoginAuth");
   form.action = GURL("http://accounts.google.com/Login");
@@ -1113,21 +1113,21 @@ TEST_F(LoginDatabaseTest, BlacklistedLogins) {
   form.skip_zero_click = true;
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
-  // Get all non-blacklisted logins (should be none).
+  // Get all non-blocklisted logins (should be none).
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(0U, result.size());
 
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
 
-  // GetLogins should give the blacklisted result.
+  // GetLogins should give the blocklisted result.
   EXPECT_TRUE(db().GetLogins(PasswordStore::FormDigest(form), &result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form, *result[0]);
   result.clear();
 
-  // So should GetBlacklistedLogins.
-  EXPECT_TRUE(db().GetBlacklistLogins(&result));
+  // So should GetBlocklistedLogins.
+  EXPECT_TRUE(db().GetBlocklistLogins(&result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form, *result[0]);
   result.clear();
@@ -1769,8 +1769,8 @@ TEST_F(LoginDatabaseTest, DuplicatesMetrics_NoDuplicates) {
   password_form.username_value = ASCIIToUTF16("username_2");
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
 
-  // Blacklisted forms don't count as duplicates (neither against other
-  // blacklisted forms nor against actual saved credentials).
+  // Blocklisted forms don't count as duplicates (neither against other
+  // blocklisted forms nor against actual saved credentials).
   password_form.signon_realm = "http://example3.com/";
   password_form.url = GURL("http://example3.com/");
   password_form.username_value = ASCIIToUTF16("username_1");

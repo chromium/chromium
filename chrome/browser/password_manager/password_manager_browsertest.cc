@@ -3732,18 +3732,18 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, CorrectEntryForHttpAuth) {
 }
 
 // Test that if HTTP auth login (i.e., credentials not put through web forms)
-// succeeds, and there is a blacklisted entry with the HTML PasswordForm::Scheme
+// succeeds, and there is a blocklisted entry with the HTML PasswordForm::Scheme
 // for that origin, then
 // 1) The bubble is not shown if the auth realm is empty,
 // 2) The bubble is shown if the auth realm is not empty.
 // This inconsistency is a side-effect of only signon_realm, not
-// PasswordForm::Scheme, being used to match blacklisted entries to a form. It
+// PasswordForm::Scheme, being used to match blocklisted entries to a form. It
 // is a bug, but so rare that it has not been worth fixing yet.
 // TODO(crbug.com/862930) If the inconsistency is fixed, please ensure that the
 // code for removing duplicates in password_manager_util.cc is updated and does
-// not remove blacklisted credentials which are no longer duplicates.
+// not remove blocklisted credentials which are no longer duplicates.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       HTTPAuthEmptyRealmAfterHTMLBlacklisted) {
+                       HTTPAuthEmptyRealmAfterHTMLBlocklisted) {
   for (bool is_realm_empty : {false, true}) {
     // The embedded_test_server() is already started at this point and adding
     // the request handler to it would not be thread safe. Therefore, use a new

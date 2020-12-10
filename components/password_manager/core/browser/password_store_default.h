@@ -63,7 +63,7 @@ class PasswordStoreDefault : public PasswordStore {
       const base::string16& plain_text_password) override;
   bool FillAutofillableLogins(
       std::vector<std::unique_ptr<PasswordForm>>* forms) override;
-  bool FillBlacklistLogins(
+  bool FillBlocklistLogins(
       std::vector<std::unique_ptr<PasswordForm>>* forms) override;
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
   void AddSiteStatsImpl(const InteractionsStats& stats) override;

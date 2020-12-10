@@ -124,7 +124,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // All Get* methods below overwrite |forms| with the returned credentials. On
   // success, those methods return true.
 
-  // Gets a list of credentials matching |form|, including blacklisted matches
+  // Gets a list of credentials matching |form|, including blocklisted matches
   // and federated credentials.
   bool GetLogins(const PasswordStore::FormDigest& form,
                  std::vector<std::unique_ptr<PasswordForm>>* forms)
@@ -148,12 +148,12 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   FormRetrievalResult GetAllLogins(PrimaryKeyToFormMap* key_to_form_map)
       WARN_UNUSED_RESULT;
 
-  // Gets the complete list of not blacklisted credentials.
+  // Gets the complete list of not blocklisted credentials.
   bool GetAutofillableLogins(std::vector<std::unique_ptr<PasswordForm>>* forms)
       WARN_UNUSED_RESULT;
 
-  // Gets the complete list of blacklisted credentials.
-  bool GetBlacklistLogins(std::vector<std::unique_ptr<PasswordForm>>* forms)
+  // Gets the complete list of blocklisted credentials.
+  bool GetBlocklistLogins(std::vector<std::unique_ptr<PasswordForm>>* forms)
       WARN_UNUSED_RESULT;
 
   // Gets the list of auto-sign-inable credentials.
@@ -292,11 +292,11 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
       int* primary_key,
       PasswordForm* form) const WARN_UNUSED_RESULT;
 
-  // Gets all blacklisted or all non-blacklisted (depending on |blacklisted|)
+  // Gets all blocklisted or all non-blocklisted (depending on |blocklisted|)
   // credentials. On success returns true and overwrites |forms| with the
   // result.
-  bool GetAllLoginsWithBlacklistSetting(
-      bool blacklisted,
+  bool GetAllLoginsWithBlocklistSetting(
+      bool blocklisted,
       std::vector<std::unique_ptr<PasswordForm>>* forms);
 
   // Returns the DB primary key for the specified |form| and decrypted/encrypted
@@ -353,7 +353,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   std::string get_statement_federated_;
   std::string get_statement_psl_federated_;
   std::string created_statement_;
-  std::string blacklisted_statement_;
+  std::string blocklisted_statement_;
   std::string encrypted_password_statement_by_id_;
   std::string id_and_password_statement_;
 

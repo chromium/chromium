@@ -146,7 +146,7 @@ enum LoginDatabaseTableColumns {
   COLUMN_SUBMIT_ELEMENT,
   COLUMN_SIGNON_REALM,
   COLUMN_DATE_CREATED,
-  COLUMN_BLACKLISTED_BY_USER,
+  COLUMN_BLOCKLISTED_BY_USER,
   COLUMN_SCHEME,
   COLUMN_PASSWORD_TYPE,
   COLUMN_TIMES_USED,
@@ -204,7 +204,7 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   s->BindString16(COLUMN_SUBMIT_ELEMENT, form.submit_element);
   s->BindString(COLUMN_SIGNON_REALM, form.signon_realm);
   s->BindInt64(COLUMN_DATE_CREATED, form.date_created.ToInternalValue());
-  s->BindInt(COLUMN_BLACKLISTED_BY_USER, form.blocked_by_user);
+  s->BindInt(COLUMN_BLOCKLISTED_BY_USER, form.blocked_by_user);
   s->BindInt(COLUMN_SCHEME, static_cast<int>(form.scheme));
   s->BindInt(COLUMN_PASSWORD_TYPE, static_cast<int>(form.type));
   s->BindInt(COLUMN_TIMES_USED, form.times_used);
@@ -856,13 +856,13 @@ void LoginDatabase::ReportNumberOfAccountsMetrics(
 
   int total_user_created_accounts = 0;
   int total_generated_accounts = 0;
-  int blacklisted_sites = 0;
+  int blocklisted_sites = 0;
   while (s.Step()) {
     auto password_type = static_cast<PasswordForm::Type>(s.ColumnInt(1));
-    int blacklisted = s.ColumnInt(2);
+    int blocklisted = s.ColumnInt(2);
     int accounts_per_site = s.ColumnInt(3);
-    if (blacklisted) {
-      ++blacklisted_sites;
+    if (blocklisted) {
+      ++blocklisted_sites;
       continue;
     }
 
@@ -910,7 +910,7 @@ void LoginDatabase::ReportNumberOfAccountsMetrics(
   LogAccountStatHiRes(
       base::StrCat({kPasswordManager, store_suffix, ".BlacklistedSitesHiRes",
                     custom_passphrase_suffix}),
-      blacklisted_sites);
+      blocklisted_sites);
 }
 
 void LoginDatabase::ReportTimesPasswordUsedMetrics(
@@ -1009,8 +1009,8 @@ void LoginDatabase::ReportLoginsWithSchemesMetrics() {
   while (logins_with_schemes_statement.Step()) {
     std::string signon_realm = logins_with_schemes_statement.ColumnString(0);
     GURL origin_url = GURL(logins_with_schemes_statement.ColumnString(1));
-    bool blacklisted_by_user = !!logins_with_schemes_statement.ColumnInt(2);
-    if (blacklisted_by_user)
+    bool blocklisted_by_user = !!logins_with_schemes_statement.ColumnInt(2);
+    if (blocklisted_by_user)
       continue;
 
     if (IsValidAndroidFacetURI(signon_realm)) {
@@ -1478,7 +1478,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   form->signon_realm = tmp;
   form->date_created =
       base::Time::FromInternalValue(s.ColumnInt64(COLUMN_DATE_CREATED));
-  form->blocked_by_user = (s.ColumnInt(COLUMN_BLACKLISTED_BY_USER) > 0);
+  form->blocked_by_user = (s.ColumnInt(COLUMN_BLOCKLISTED_BY_USER) > 0);
   // TODO(crbug.com/1151214): Add metrics to capture how often these values fall
   // out of the valid enum range.
   form->scheme = static_cast<PasswordForm::Scheme>(s.ColumnInt(COLUMN_SCHEME));
@@ -1613,11 +1613,11 @@ bool LoginDatabase::GetLoginsByPassword(
   DCHECK(forms);
   forms->clear();
 
-  // Get all autofillable (not blacklisted) logins.
-  DCHECK(!blacklisted_statement_.empty());
+  // Get all autofillable (not blocklisted) logins.
+  DCHECK(!blocklisted_statement_.empty());
   sql::Statement s(
-      db_.GetCachedStatement(SQL_FROM_HERE, blacklisted_statement_.c_str()));
-  s.BindInt(0, 0);  // blacklisted = false
+      db_.GetCachedStatement(SQL_FROM_HERE, blocklisted_statement_.c_str()));
+  s.BindInt(0, 0);  // blocklisted = false
 
   // Apply query, check status and copy results if successful.
   PrimaryKeyToFormMap key_to_form_map;
@@ -1668,25 +1668,25 @@ FormRetrievalResult LoginDatabase::GetAllLogins(
 bool LoginDatabase::GetAutofillableLogins(
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   TRACE_EVENT0("passwords", "LoginDatabase::GetAutofillableLogins");
-  return GetAllLoginsWithBlacklistSetting(false, forms);
+  return GetAllLoginsWithBlocklistSetting(false, forms);
 }
 
-bool LoginDatabase::GetBlacklistLogins(
+bool LoginDatabase::GetBlocklistLogins(
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  TRACE_EVENT0("passwords", "LoginDatabase::GetBlacklistLogins");
-  return GetAllLoginsWithBlacklistSetting(true, forms);
+  TRACE_EVENT0("passwords", "LoginDatabase::GetBlocklistLogins");
+  return GetAllLoginsWithBlocklistSetting(true, forms);
 }
 
-bool LoginDatabase::GetAllLoginsWithBlacklistSetting(
-    bool blacklisted,
+bool LoginDatabase::GetAllLoginsWithBlocklistSetting(
+    bool blocklisted,
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   DCHECK(forms);
-  DCHECK(!blacklisted_statement_.empty());
+  DCHECK(!blocklisted_statement_.empty());
   forms->clear();
 
   sql::Statement s(
-      db_.GetCachedStatement(SQL_FROM_HERE, blacklisted_statement_.c_str()));
-  s.BindInt(0, blacklisted ? 1 : 0);
+      db_.GetCachedStatement(SQL_FROM_HERE, blocklisted_statement_.c_str()));
+  s.BindInt(0, blocklisted ? 1 : 0);
 
   PrimaryKeyToFormMap key_to_form_map;
 
@@ -1733,10 +1733,10 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
 
   DCHECK(db_.is_open());
 
-  // Get all autofillable (not blacklisted) logins.
+  // Get all autofillable (not blocklisted) logins.
   sql::Statement s(
-      db_.GetCachedStatement(SQL_FROM_HERE, blacklisted_statement_.c_str()));
-  s.BindInt(0, 0);  // blacklisted = false
+      db_.GetCachedStatement(SQL_FROM_HERE, blocklisted_statement_.c_str()));
+  s.BindInt(0, 0);  // blocklisted = false
 
   std::vector<PasswordForm> forms_to_be_deleted;
 
@@ -2127,8 +2127,8 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
       "SELECT " + all_column_names +
       " FROM logins WHERE date_created >= ? AND date_created < "
       "? ORDER BY origin_url";
-  DCHECK(blacklisted_statement_.empty());
-  blacklisted_statement_ =
+  DCHECK(blocklisted_statement_.empty());
+  blocklisted_statement_ =
       "SELECT " + all_column_names +
       " FROM logins WHERE blacklisted_by_user == ? ORDER BY origin_url";
   DCHECK(encrypted_password_statement_by_id_.empty());

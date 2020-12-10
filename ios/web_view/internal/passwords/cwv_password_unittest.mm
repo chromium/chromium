@@ -19,8 +19,8 @@ namespace ios_web_view {
 
 using CWVPasswordTest = PlatformTest;
 
-// Tests CWVPassword initialization for a blacklisted site.
-TEST_F(CWVPasswordTest, Blacklisted) {
+// Tests CWVPassword initialization for a blocked site.
+TEST_F(CWVPasswordTest, Blocked) {
   password_manager::PasswordForm password_form;
   password_form.url = GURL("http://www.example.com/accounts/LoginAuth");
   password_form.action = GURL("http://www.example.com/accounts/Login");
@@ -42,13 +42,13 @@ TEST_F(CWVPasswordTest, Blacklisted) {
   EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.first), password.title);
   EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.second.spec()),
               password.site);
-  EXPECT_TRUE(password.blacklisted);
+  EXPECT_TRUE(password.blocked);
   EXPECT_FALSE(password.username);
   EXPECT_FALSE(password.password);
 }
 
-// Tests CWVPassword initialization for a non-blacklisted site.
-TEST_F(CWVPasswordTest, NonBlacklisted) {
+// Tests CWVPassword initialization for a non-blocked site.
+TEST_F(CWVPasswordTest, NonBlocked) {
   password_manager::PasswordForm password_form;
   password_form.url = GURL("http://www.example.com/accounts/LoginAuth");
   password_form.action = GURL("http://www.example.com/accounts/Login");
@@ -70,7 +70,7 @@ TEST_F(CWVPasswordTest, NonBlacklisted) {
   EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.first), password.title);
   EXPECT_NSEQ(base::SysUTF8ToNSString(name_and_link.second.spec()),
               password.site);
-  EXPECT_FALSE(password.blacklisted);
+  EXPECT_FALSE(password.blocked);
   EXPECT_NSEQ(@"test@egmail.com", password.username);
   EXPECT_NSEQ(@"test", password.password);
 }

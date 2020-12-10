@@ -48,7 +48,7 @@ void UpdateLoginWithPrimaryKey(password_manager::PasswordStore* store,
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetLogins(
     password_manager::PasswordStore* store);
 
-// Returns all logins from |store| (including blacklisted ones)
+// Returns all logins from |store| (including blocklisted ones)
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetAllLogins(
     password_manager::PasswordStore* store);
 

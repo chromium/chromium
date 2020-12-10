@@ -241,17 +241,17 @@ class PasswordStore : protected PasswordStoreSync,
   void GetLoginsByPassword(const base::string16& plain_text_password,
                            PasswordStoreConsumer* consumer);
 
-  // Gets the complete list of PasswordForms that are not blacklist entries--and
+  // Gets the complete list of PasswordForms that are not blocklist entries--and
   // are thus auto-fillable. |consumer| will be notified on completion.
   // The request will be cancelled if the consumer is destroyed.
   virtual void GetAutofillableLogins(PasswordStoreConsumer* consumer);
 
-  // Gets the complete list of PasswordForms (regardless of their blacklist
+  // Gets the complete list of PasswordForms (regardless of their blocklist
   // status) and notify |consumer| on completion. The request will be cancelled
   // if the consumer is destroyed.
   virtual void GetAllLogins(PasswordStoreConsumer* consumer);
 
-  // Gets the complete list of PasswordForms, regardless of their blacklist
+  // Gets the complete list of PasswordForms, regardless of their blocklist
   // status. Also fills in affiliation and branding information for Android
   // credentials.
   virtual void GetAllLoginsWithAffiliationAndBrandingInformation(
@@ -529,19 +529,19 @@ class PasswordStore : protected PasswordStoreSync,
   virtual std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const FormDigest& form) = 0;
 
-  // Finds and returns all not-blacklisted PasswordForms with the specified
+  // Finds and returns all not-blocklisted PasswordForms with the specified
   // |plain_text_password| stored in the credential database.
   virtual std::vector<std::unique_ptr<PasswordForm>>
   FillMatchingLoginsByPassword(const base::string16& plain_text_password) = 0;
 
-  // Overwrites |forms| with all stored non-blacklisted credentials. Returns
+  // Overwrites |forms| with all stored non-blocklisted credentials. Returns
   // true on success.
   virtual bool FillAutofillableLogins(
       std::vector<std::unique_ptr<PasswordForm>>* forms) WARN_UNUSED_RESULT = 0;
 
-  // Overwrites |forms| with all stored blacklisted credentials. Returns true on
+  // Overwrites |forms| with all stored blocklisted credentials. Returns true on
   // success.
-  virtual bool FillBlacklistLogins(
+  virtual bool FillBlocklistLogins(
       std::vector<std::unique_ptr<PasswordForm>>* forms) WARN_UNUSED_RESULT = 0;
 
   // Synchronous implementation for manipulating with statistics.
@@ -729,7 +729,7 @@ class PasswordStore : protected PasswordStoreSync,
   void DisableAutoSignInForOriginsInternal(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion);
-  void UnblacklistInternal(const PasswordStore::FormDigest& form_digest,
+  void UnblocklistInternal(const PasswordStore::FormDigest& form_digest,
                            base::OnceClosure completion);
   bool RemoveCompromisedCredentialsByUrlAndTimeInternal(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
@@ -755,11 +755,11 @@ class PasswordStore : protected PasswordStoreSync,
   std::vector<std::unique_ptr<PasswordForm>> GetLoginsByPasswordImpl(
       const base::string16& plain_text_password);
 
-  // Finds all non-blacklist PasswordForms and returns the result.
+  // Finds all non-blocklist PasswordForms and returns the result.
   std::vector<std::unique_ptr<PasswordForm>> GetAutofillableLoginsImpl();
 
-  // Finds all blacklist PasswordForms and returns the result.
-  std::vector<std::unique_ptr<PasswordForm>> GetBlacklistLoginsImpl();
+  // Finds all blocklist PasswordForms and returns the result.
+  std::vector<std::unique_ptr<PasswordForm>> GetBlocklistLoginsImpl();
 
   // Finds all PasswordForms and returns the result.
   std::vector<std::unique_ptr<PasswordForm>> GetAllLoginsImpl();

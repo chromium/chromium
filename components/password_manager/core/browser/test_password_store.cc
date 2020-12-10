@@ -263,7 +263,7 @@ bool TestPasswordStore::FillAutofillableLogins(
   return true;
 }
 
-bool TestPasswordStore::FillBlacklistLogins(
+bool TestPasswordStore::FillBlocklistLogins(
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   for (const auto& forms_for_realm : stored_passwords_) {
     for (const PasswordForm& form : forms_for_realm.second) {

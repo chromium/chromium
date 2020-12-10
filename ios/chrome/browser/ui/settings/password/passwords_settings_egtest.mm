@@ -625,7 +625,7 @@ void CopyPasswordDetailWithID(int detail_id) {
 // Checks that deleting a blocked form from password details view goes
 // back to the list-of-passwords view which doesn't display that form anymore.
 - (void)testBlockedFormDeletionInDetailView {
-  // Save blacklisted form to be deleted later.
+  // Save blocked form to be deleted later.
   GREYAssert([PasswordSettingsAppInterface
                  saveExampleBlockedOrigin:@"https://blocked.com"],
              @"Stored form was not found in the PasswordStore results.");

@@ -93,8 +93,8 @@ TEST_F(ArchivableCredentialPasswordFormTest, AndroidCredentialCreation) {
               credentialAffiliatedRealm.serviceIdentifier);
 }
 
-// Tests the creation of blacklisted forms is not possible.
-TEST_F(ArchivableCredentialPasswordFormTest, BlacklistedCreation) {
+// Tests the creation of blocked forms is not possible.
+TEST_F(ArchivableCredentialPasswordFormTest, BlockedCreation) {
   PasswordForm form;
   form.signon_realm = "android://hash@com.example.my.app";
   form.password_element = base::ASCIIToUTF16("pwd");

@@ -106,7 +106,7 @@ class PasswordAccessoryControllerImpl
       password_manager::PasswordManagerClient* password_client);
 
   // Enables or disables saving for the focused origin. This involves removing
-  // or adding blacklisted entry in the |PasswordStore|.
+  // or adding blocklisted entry in the |PasswordStore|.
   void ChangeCurrentOriginSavePasswordsStatus(bool enabled);
 
   // Returns true if |suggestion| matches a credential for |origin|.

@@ -446,7 +446,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
         forSectionWithIdentifier:SectionIdentifierSavedPasswords];
   }
 
-  // Blacklisted passwords.
+  // Blocked passwords.
   if (!_blockedForms.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierBlocked];
     TableViewTextHeaderFooterItem* headerItem =

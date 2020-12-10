@@ -64,7 +64,7 @@ class MockPasswordStore : public PasswordStore {
       std::vector<std::unique_ptr<PasswordForm>>(const base::string16&));
   MOCK_METHOD1(FillAutofillableLogins,
                bool(std::vector<std::unique_ptr<PasswordForm>>*));
-  MOCK_METHOD1(FillBlacklistLogins,
+  MOCK_METHOD1(FillBlocklistLogins,
                bool(std::vector<std::unique_ptr<PasswordForm>>*));
   MOCK_METHOD0(DeleteUndecryptableLogins, DatabaseCleanupResult());
   MOCK_METHOD1(NotifyLoginsChanged, void(const PasswordStoreChangeList&));

@@ -236,7 +236,7 @@ TEST_F(SavePasswordInfoBarDelegateTest,
   EXPECT_TRUE(infobar->GetDetailsMessageText().empty());
 }
 
-TEST_F(SavePasswordInfoBarDelegateTest, RecordsSaveAfterUnblacklisting) {
+TEST_F(SavePasswordInfoBarDelegateTest, RecordsSaveAfterUnblocklisting) {
   std::unique_ptr<MockPasswordFormManager> password_form_manager(
       CreateMockFormManager(nullptr, false /* with_federation_origin */));
   ON_CALL(*password_form_manager, WasUnblocklisted)
@@ -252,7 +252,7 @@ TEST_F(SavePasswordInfoBarDelegateTest, RecordsSaveAfterUnblacklisting) {
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
-TEST_F(SavePasswordInfoBarDelegateTest, RecordNeverAfterUnblacklisting) {
+TEST_F(SavePasswordInfoBarDelegateTest, RecordNeverAfterUnblocklisting) {
   std::unique_ptr<MockPasswordFormManager> password_form_manager(
       CreateMockFormManager(nullptr, false /* with_federation_origin */));
   ON_CALL(*password_form_manager, WasUnblocklisted)
@@ -268,7 +268,7 @@ TEST_F(SavePasswordInfoBarDelegateTest, RecordNeverAfterUnblacklisting) {
       password_manager::metrics_util::CLICKED_NEVER, 1);
 }
 
-TEST_F(SavePasswordInfoBarDelegateTest, RecordDismissAfterUnblacklisting) {
+TEST_F(SavePasswordInfoBarDelegateTest, RecordDismissAfterUnblocklisting) {
   std::unique_ptr<MockPasswordFormManager> password_form_manager(
       CreateMockFormManager(nullptr, false /* with_federation_origin */));
   ON_CALL(*password_form_manager, WasUnblocklisted)
@@ -284,7 +284,7 @@ TEST_F(SavePasswordInfoBarDelegateTest, RecordDismissAfterUnblacklisting) {
       password_manager::metrics_util::CLICKED_CANCEL, 1);
 }
 
-TEST_F(SavePasswordInfoBarDelegateTest, DontRecordIfNotUnblacklisted) {
+TEST_F(SavePasswordInfoBarDelegateTest, DontRecordIfNotUnblocklisted) {
   std::unique_ptr<MockPasswordFormManager> password_form_manager(
       CreateMockFormManager(nullptr, false /* with_federation_origin */));
   ON_CALL(*password_form_manager, WasUnblocklisted)
