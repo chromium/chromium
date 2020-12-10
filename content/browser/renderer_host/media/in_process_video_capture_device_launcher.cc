@@ -32,10 +32,10 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
+#include "content/browser/media/capture/web_contents_video_capture_device.h"
 #if defined(OS_ANDROID)
 #include "content/browser/media/capture/screen_capture_device_android.h"
 #else
-#include "content/browser/media/capture/web_contents_video_capture_device.h"
 #if defined(USE_AURA)
 #include "content/browser/media/capture/aura_window_video_capture_device.h"
 #endif
@@ -140,14 +140,12 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     }
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
-#if !defined(OS_ANDROID)
     case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
       start_capture_closure = base::BindOnce(
           &InProcessVideoCaptureDeviceLauncher::DoStartTabCaptureOnDeviceThread,
           base::Unretained(this), device_id, params, std::move(receiver),
           std::move(after_start_capture_callback));
       break;
-#endif  // !defined(OS_ANDROID)
 
     case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
@@ -172,7 +170,6 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
         break;
       }
 
-#if !defined(OS_ANDROID)
       if (desktop_id.type == DesktopMediaID::TYPE_WEB_CONTENTS) {
         after_start_capture_callback = base::BindOnce(
             [](bool with_audio, ReceiveDeviceCallback callback,
@@ -196,7 +193,6 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
             std::move(after_start_capture_callback));
         break;
       }
-#endif  // !defined(OS_ANDROID)
 
 #if defined(USE_AURA)
       if (desktop_id.window_id != DesktopMediaID::kNullId) {
@@ -329,7 +325,6 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDeviceCaptureOnDeviceThread(
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
-#if !defined(OS_ANDROID)
 void InProcessVideoCaptureDeviceLauncher::DoStartTabCaptureOnDeviceThread(
     const std::string& device_id,
     const media::VideoCaptureParams& params,
@@ -346,7 +341,6 @@ void InProcessVideoCaptureDeviceLauncher::DoStartTabCaptureOnDeviceThread(
   }
   std::move(result_callback).Run(std::move(video_capture_device));
 }
-#endif  // !defined(OS_ANDROID)
 
 #if defined(USE_AURA)
 void InProcessVideoCaptureDeviceLauncher::

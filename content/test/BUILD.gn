@@ -1376,6 +1376,16 @@ test("content_browsertests") {
   }
 
   if (is_android || is_linux || is_chromeos || is_mac || is_win) {
+    sources += [
+      "../browser/media/capture/content_capture_device_browsertest_base.cc",
+      "../browser/media/capture/content_capture_device_browsertest_base.h",
+      "../browser/media/capture/fake_video_capture_stack.cc",
+      "../browser/media/capture/fake_video_capture_stack.h",
+      "../browser/media/capture/frame_test_util.cc",
+      "../browser/media/capture/frame_test_util.h",
+      "../browser/media/capture/web_contents_video_capture_device_browsertest.cc",
+    ]
+
     data += [
       "$root_out_dir/content_shell.pak",
       "data/",
@@ -1385,14 +1395,7 @@ test("content_browsertests") {
 
   if (is_linux || is_chromeos || is_mac || is_win) {
     sources += [
-      "../browser/media/capture/content_capture_device_browsertest_base.cc",
-      "../browser/media/capture/content_capture_device_browsertest_base.h",
-      "../browser/media/capture/fake_video_capture_stack.cc",
-      "../browser/media/capture/fake_video_capture_stack.h",
-      "../browser/media/capture/frame_test_util.cc",
-      "../browser/media/capture/frame_test_util.h",
       "../browser/media/capture/mouse_cursor_overlay_controller_browsertest.cc",
-      "../browser/media/capture/web_contents_video_capture_device_browsertest.cc",
     ]
 
     # For chromecast, content_browsertests does not provide a shell window.
@@ -2343,17 +2346,21 @@ test("content_unittests") {
   }
 
   # Screen capture unit tests.
-  if (enable_screen_capture && !is_android) {
-    deps += [
-      "//content/common:buildflags",
-      "//media/capture:test_support",
-      "//third_party/libyuv",
-      "//third_party/webrtc_overrides:webrtc_component",
-    ]
+  if (enable_screen_capture) {
     sources += [
-      "../browser/media/capture/desktop_capture_device_unittest.cc",
       "../browser/media/capture/frame_sink_video_capture_device_unittest.cc",
     ]
+
+    if (!is_android) {
+      deps += [
+        "//content/common:buildflags",
+        "//media/capture:test_support",
+        "//third_party/libyuv",
+        "//third_party/webrtc_overrides:webrtc_component",
+      ]
+      sources +=
+          [ "../browser/media/capture/desktop_capture_device_unittest.cc" ]
+    }
     if (is_chromeos_ash) {
       sources += [
         "../browser/media/capture/slow_capture_overlay_chromeos_unittest.cc",

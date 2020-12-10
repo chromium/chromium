@@ -373,12 +373,12 @@ class WebContentsVideoCaptureDeviceBrowserTestP
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebContentsVideoCaptureDeviceBrowserTestP,
     testing::Combine(
-        // Note: On ChromeOS, software compositing is not an option.
+        // Note: On ChromeOS and Android, software compositing is not an option.
         testing::Values(false /* GPU-accelerated compositing */),
         testing::Values(false /* variable aspect ratio */,
                         true /* fixed aspect ratio */),

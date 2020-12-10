@@ -154,7 +154,8 @@ bool PermissionBubbleMediaAccessHandler::SupportsStreamType(
   return type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
          type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
          type == blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
-         type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+         type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+         type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
 #else
   return type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
          type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE;

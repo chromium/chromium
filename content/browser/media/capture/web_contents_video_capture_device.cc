@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,6 +26,9 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 
+#if !defined(OS_ANDROID)
+#include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
+#endif
 namespace content {
 
 // Threading note: This is constructed on the device thread, while the
@@ -43,7 +46,10 @@ class WebContentsVideoCaptureDevice::FrameTracker final
         device_task_runner_(base::ThreadTaskRunnerHandle::Get()),
         cursor_controller_(cursor_controller) {
     DCHECK(device_task_runner_);
+#if !defined(OS_ANDROID)
     DCHECK(cursor_controller_);
+#endif
+    (void)cursor_controller_;
 
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -179,7 +185,9 @@ class WebContentsVideoCaptureDevice::FrameTracker final
         // Note: MouseCursorOverlayController runs on the UI thread. It's also
         // important that SetTargetView() be called in the current stack while
         // |native_view| is known to be a valid pointer. http://crbug.com/818679
+#if !defined(OS_ANDROID)
         cursor_controller_->SetTargetView(native_view);
+#endif
       }
     } else {
       device_task_runner_->PostTask(
@@ -187,7 +195,9 @@ class WebContentsVideoCaptureDevice::FrameTracker final
           base::BindOnce(
               &WebContentsVideoCaptureDevice::OnTargetPermanentlyLost,
               device_));
+#if !defined(OS_ANDROID)
       cursor_controller_->SetTargetView(gfx::NativeView());
+#endif
     }
   }
 

@@ -2217,18 +2217,22 @@ source_set("browser") {
 
   # Desktop/Window/WebContents screen capture implementations, conditionally
   # built depending on the available implementations for each platform.
-  if (enable_screen_capture && !is_android) {
+  if (enable_screen_capture) {
     sources += [
-      "media/capture/desktop_capture_device.cc",
-      "media/capture/desktop_capture_device.h",
       "media/capture/frame_sink_video_capture_device.cc",
       "media/capture/frame_sink_video_capture_device.h",
-      "media/capture/mouse_cursor_overlay_controller.cc",
-      "media/capture/mouse_cursor_overlay_controller.h",
       "media/capture/web_contents_video_capture_device.cc",
       "media/capture/web_contents_video_capture_device.h",
     ]
-    deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
+    if (!is_android) {
+      sources += [
+        "media/capture/desktop_capture_device.cc",
+        "media/capture/desktop_capture_device.h",
+        "media/capture/mouse_cursor_overlay_controller.cc",
+        "media/capture/mouse_cursor_overlay_controller.h",
+      ]
+      deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
+    }
     if (use_aura) {
       sources += [
         "media/capture/aura_window_video_capture_device.cc",

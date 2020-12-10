@@ -43,7 +43,9 @@ ScreenCaptureInfoBarDelegateAndroid::ScreenCaptureInfoBarDelegateAndroid(
   DCHECK(request.video_type ==
              blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
          request.video_type ==
-             blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE);
+             blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+         request.video_type ==
+             blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
 }
 
 ScreenCaptureInfoBarDelegateAndroid::~ScreenCaptureInfoBarDelegateAndroid() {
@@ -97,10 +99,21 @@ void ScreenCaptureInfoBarDelegateAndroid::RunCallback(
   blink::MediaStreamDevices devices;
   std::unique_ptr<content::MediaStreamUI> ui;
   if (result == blink::mojom::MediaStreamRequestResult::OK) {
-    content::DesktopMediaID screen_id = content::DesktopMediaID(
-        content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
-    devices.push_back(blink::MediaStreamDevice(request_.video_type,
-                                               screen_id.ToString(), "Screen"));
+    // TODO(https://crbug.com/1157166): Customize current tab capture prompt.
+    if (request_.video_type ==
+        blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+      content::DesktopMediaID screen_id;
+      screen_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
+      screen_id.web_contents_id = content::WebContentsMediaCaptureId(
+          request_.render_process_id, request_.render_frame_id);
+      devices.push_back(blink::MediaStreamDevice(
+          request_.video_type, screen_id.ToString(), "Current Tab"));
+    } else {
+      content::DesktopMediaID screen_id = content::DesktopMediaID(
+          content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
+      devices.push_back(blink::MediaStreamDevice(
+          request_.video_type, screen_id.ToString(), "Screen"));
+    }
 
     ui = MediaCaptureDevicesDispatcher::GetInstance()
              ->GetMediaStreamCaptureIndicator()
