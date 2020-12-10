@@ -20,9 +20,13 @@
 
 namespace ui {
 
-InputControllerEvdev::InputControllerEvdev(KeyboardEvdev* keyboard,
-                                           MouseButtonMapEvdev* button_map)
-    : keyboard_(keyboard), button_map_(button_map) {}
+InputControllerEvdev::InputControllerEvdev(
+    KeyboardEvdev* keyboard,
+    MouseButtonMapEvdev* mouse_button_map,
+    MouseButtonMapEvdev* pointing_stick_button_map)
+    : keyboard_(keyboard),
+      mouse_button_map_(mouse_button_map),
+      pointing_stick_button_map_(pointing_stick_button_map) {}
 
 InputControllerEvdev::~InputControllerEvdev() {
 }
@@ -183,7 +187,11 @@ void InputControllerEvdev::SetPointingStickAcceleration(bool enabled) {
 }
 
 void InputControllerEvdev::SetPrimaryButtonRight(bool right) {
-  button_map_->SetPrimaryButtonRight(right);
+  mouse_button_map_->SetPrimaryButtonRight(right);
+}
+
+void InputControllerEvdev::SetPointingStickPrimaryButtonRight(bool right) {
+  pointing_stick_button_map_->SetPrimaryButtonRight(right);
 }
 
 void InputControllerEvdev::SetMouseReverseScroll(bool enabled) {

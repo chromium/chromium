@@ -156,6 +156,10 @@ class PointingStickSettings {
   int GetSensitivity() const;
   bool IsSensitivitySet() const;
 
+  void SetPrimaryButtonRight(bool right);
+  bool GetPrimaryButtonRight() const;
+  bool IsPrimaryButtonRightSet() const;
+
   void SetAcceleration(bool enabled);
   bool GetAcceleration() const;
   bool IsAccelerationSet() const;
@@ -170,6 +174,7 @@ class PointingStickSettings {
 
  private:
   base::Optional<bool> acceleration_;
+  base::Optional<bool> primary_button_right_;
   base::Optional<int> sensitivity_;
 };
 
@@ -271,6 +276,10 @@ class InputDeviceSettings {
   // Sets the pointing stick sensitivity in the range [kMinPointerSensitivity,
   // kMaxPointerSensitivity].
   virtual void SetPointingStickSensitivity(int value) = 0;
+
+  // Sets the primary button for the pointing stick to the right button if
+  // |right| is true.
+  virtual void SetPointingStickPrimaryButtonRight(bool right) = 0;
 
   // Turns pointing stick acceleration on/off.
   virtual void SetPointingStickAcceleration(bool enabled) = 0;

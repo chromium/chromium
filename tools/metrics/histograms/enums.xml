@@ -55197,6 +55197,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="434" label="Display: Overscan"/>
   <int value="435" label="Pointing Stick: Speed"/>
   <int value="436" label="Pointing Stick: Acceleration"/>
+  <int value="437" label="Pointing Stick: Swap Primary Buttons"/>
   <int value="500" label="Open Wallpaper"/>
   <int value="501" label="Ambient Mode On/Off"/>
   <int value="502" label="Ambient Mode Source"/>
@@ -58900,6 +58901,11 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PNaClTranslationCacheEnum">
   <int value="0" label="Miss"/>
   <int value="1" label="Hit"/>
+</enum>
+
+<enum name="PointerPrimaryButton">
+  <int value="0" label="Left"/>
+  <int value="1" label="Right"/>
 </enum>
 
 <enum name="PointerSensitivity">

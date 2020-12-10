@@ -124,6 +124,7 @@ enum Setting {
   kDisplayOverscan = 434,
   kPointingStickSpeed = 435,
   kPointingStickAcceleration = 436,
+  kPointingStickSwapPrimaryButtons = 437,
 
   // Personalization section.
   kOpenWallpaper = 500,

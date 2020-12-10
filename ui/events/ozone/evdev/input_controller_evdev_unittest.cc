@@ -9,7 +9,7 @@
 namespace ui {
 
 TEST(InputControllerEvdevTest, AccelerationSuspension) {
-  InputControllerEvdev controller(nullptr, nullptr);
+  InputControllerEvdev controller(nullptr, nullptr, nullptr);
   controller.SetMouseAcceleration(true);
   controller.SetPointingStickAcceleration(true);
 
@@ -31,7 +31,7 @@ TEST(InputControllerEvdevTest, AccelerationSuspension) {
 }
 
 TEST(InputControllerEvdevTest, AccelerationChangeDuringSuspension) {
-  InputControllerEvdev controller(nullptr, nullptr);
+  InputControllerEvdev controller(nullptr, nullptr, nullptr);
   controller.SetMouseAcceleration(true);
   controller.SetPointingStickAcceleration(true);
 

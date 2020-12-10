@@ -24,7 +24,8 @@ class MouseButtonMapEvdev;
 class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
  public:
   InputControllerEvdev(KeyboardEvdev* keyboard,
-                       MouseButtonMapEvdev* button_map);
+                       MouseButtonMapEvdev* mouse_button_map,
+                       MouseButtonMapEvdev* pointing_stick_button_map);
   ~InputControllerEvdev() override;
 
   // Initialize device factory. This would be in the constructor if it was
@@ -68,6 +69,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void EndMouseAccelerationSuspension() override;
   void SetMouseScrollAcceleration(bool enabled) override;
   void SetPointingStickSensitivity(int value) override;
+  void SetPointingStickPrimaryButtonRight(bool right) override;
   void SetPointingStickAcceleration(bool enabled) override;
   void SetTouchpadAcceleration(bool enabled) override;
   void SetTouchpadScrollAcceleration(bool enabled) override;
@@ -129,7 +131,10 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   KeyboardEvdev* const keyboard_;
 
   // Mouse button map.
-  MouseButtonMapEvdev* const button_map_;
+  MouseButtonMapEvdev* const mouse_button_map_;
+
+  // Pointing stick button map.
+  MouseButtonMapEvdev* const pointing_stick_button_map_;
 
   // Device presence.
   bool has_mouse_ = false;

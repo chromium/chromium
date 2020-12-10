@@ -219,6 +219,8 @@ extern const char kAccountManagerNumTimesWelcomeScreenShown[];
 extern const char kTapToClickEnabled[];
 extern const char kEnableTouchpadThreeFingerClick[];
 extern const char kPrimaryMouseButtonRight[];
+extern const char kPrimaryPointingStickButtonRight[];
+extern const char kOwnerPrimaryPointingStickButtonRight[];
 extern const char kMouseAcceleration[];
 extern const char kMouseScrollAcceleration[];
 extern const char kPointingStickAcceleration[];

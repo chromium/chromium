@@ -50,7 +50,7 @@ void InputInjectorEvdev::InjectMouseButton(EventFlags button, bool down) {
 
   dispatcher_->DispatchMouseButtonEvent(MouseButtonEventParams(
       kDeviceIdForInjection, EF_NONE, cursor_->GetLocation(), code, down,
-      false /* allow_remap */, PointerDetails(EventPointerType::kMouse),
+      MouseButtonMapType::kNone, PointerDetails(EventPointerType::kMouse),
       EventTimeForNow()));
 }
 

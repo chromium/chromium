@@ -520,6 +520,9 @@
   <message name="IDS_OS_SETTINGS_TAG_MOUSE_SPEED" desc="Text for search result item which, when clicked, navigates the user to mouse settings, with a slider to set speed.">
     Mouse speed
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_POINTING_STICK_PRIMARY_BUTTON" desc="Text for search result item which, when clicked, navigates the user to pointing stick (TrackPoint) settings, with a dropdown to choose the primary button. (TrackPoint is a trademark that's not translated.)">
+    Primary TrackPoint button
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_POINTING_STICK_ACCELERATION" desc="Text for search result item which, when clicked, navigates the user to pointing stick (TrackPoint) settings, with a toggle to enable/disable acceleration. (TrackPoint is a trademark that's not translated.)">
     TrackPoint acceleration
   </message>

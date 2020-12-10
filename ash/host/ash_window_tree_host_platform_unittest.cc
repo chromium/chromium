@@ -58,6 +58,7 @@ class TestInputController : public ui::InputController {
   void SetMouseAcceleration(bool enabled) override {}
   void SetMouseScrollAcceleration(bool enabled) override {}
   void SetPointingStickSensitivity(int value) override {}
+  void SetPointingStickPrimaryButtonRight(bool right) override {}
   void SetPointingStickAcceleration(bool enabled) override {}
   void SetTouchpadAcceleration(bool enabled) override {}
   void SetTouchpadScrollAcceleration(bool enabled) override {}

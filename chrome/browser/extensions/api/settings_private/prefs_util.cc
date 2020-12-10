@@ -660,6 +660,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::prefs::kPrimaryMouseButtonRight] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kPrimaryPointingStickButtonRight] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kMouseReverseScroll] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kMouseAcceleration] =

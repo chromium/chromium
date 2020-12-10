@@ -357,6 +357,11 @@ cr.define('device_page_tests', function() {
           },
         },
         pointing_stick: {
+          primary_right: {
+            key: 'settings.pointing_stick.primary_right',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          },
           acceleration: {
             key: 'settings.pointing_stick.acceleration',
             type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -728,6 +733,28 @@ cr.define('device_page_tests', function() {
         expectEquals(5, slider.pref.value);
       });
 
+      test('mouse primary button also sets pointing stick', function() {
+        // TODO(crbug.com/1114828): remove once the feature is launched.
+        const dropdown = assert(pointersPage.$$('#mouseSwapButtonDropdown'));
+        function simulateChangeEvent(value) {
+          // TODO(crbug.com/1045266): This code should be deduplicated from
+          // dropdown_menu_tests.js once there's a good place to put it (i.e.
+          // once this test uses Polymer3 so ../test_util.js can be used).
+          const selectElement = dropdown.$$('select');
+          selectElement.value = value;
+          selectElement.dispatchEvent(new CustomEvent('change'));
+          return new Promise(function(resolve) {
+            dropdown.async(resolve);
+          });
+        }
+        expectEquals(false, dropdown.pref.value);
+        return simulateChangeEvent('true').then(function() {
+          expectEquals(
+              true,
+              devicePage.prefs.settings.pointing_stick.primary_right.value);
+        });
+      });
+
       test('mouse acceleration also sets pointing stick', function() {
         // TODO(crbug.com/1114828): remove once the feature is launched.
         const toggle = assert(pointersPage.$$('#mouseAcceleration'));
@@ -901,6 +928,13 @@ cr.define('device_page_tests', function() {
 
         pointersPage.set('prefs.settings.pointing_stick.sensitivity.value', 5);
         expectEquals(5, slider.pref.value);
+      });
+
+      test('deep link to primary button setting', async () => {
+        return checkDeepLink(
+            settings.routes.POINTERS, '437',
+            pointersPage.$$('#pointingStickSwapButtonDropdown').$$('select'),
+            'Pointing stick primary button dropdown');
       });
 
       test('deep link to acceleration setting', async () => {

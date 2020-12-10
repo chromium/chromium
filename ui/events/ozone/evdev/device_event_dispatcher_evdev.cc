@@ -51,7 +51,7 @@ MouseButtonEventParams::MouseButtonEventParams(int device_id,
                                                const gfx::PointF& location,
                                                unsigned int button,
                                                bool down,
-                                               bool allow_remap,
+                                               MouseButtonMapType map_type,
                                                const PointerDetails& details,
                                                base::TimeTicks timestamp)
     : device_id(device_id),
@@ -59,7 +59,7 @@ MouseButtonEventParams::MouseButtonEventParams(int device_id,
       location(location),
       button(button),
       down(down),
-      allow_remap(allow_remap),
+      map_type(map_type),
       pointer_details(details),
       timestamp(timestamp) {}
 

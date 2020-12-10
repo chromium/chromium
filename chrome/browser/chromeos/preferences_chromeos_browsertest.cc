@@ -62,6 +62,7 @@ class PreferencesTest : public LoginManagerTest {
     prefs->SetBoolean(ash::prefs::kNaturalScroll, variant);
     prefs->SetBoolean(prefs::kTapToClickEnabled, variant);
     prefs->SetBoolean(prefs::kPrimaryMouseButtonRight, !variant);
+    prefs->SetBoolean(prefs::kPrimaryPointingStickButtonRight, !variant);
     prefs->SetBoolean(prefs::kMouseAcceleration, variant);
     prefs->SetBoolean(prefs::kMouseScrollAcceleration, variant);
     prefs->SetBoolean(prefs::kPointingStickAcceleration, variant);
@@ -86,6 +87,9 @@ class PreferencesTest : public LoginManagerTest {
               input_settings_->current_touchpad_settings().GetTapToClick());
     EXPECT_EQ(prefs->GetBoolean(prefs::kPrimaryMouseButtonRight),
               input_settings_->current_mouse_settings()
+                  .GetPrimaryButtonRight());
+    EXPECT_EQ(prefs->GetBoolean(prefs::kPrimaryPointingStickButtonRight),
+              input_settings_->current_pointing_stick_settings()
                   .GetPrimaryButtonRight());
     EXPECT_EQ(prefs->GetBoolean(ash::prefs::kMouseReverseScroll),
               input_settings_->current_mouse_settings().GetReverseScroll());
@@ -137,6 +141,9 @@ class PreferencesTest : public LoginManagerTest {
               prefs->GetBoolean(prefs::kTapToClickEnabled));
     EXPECT_EQ(local_state->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight),
               prefs->GetBoolean(prefs::kPrimaryMouseButtonRight));
+    EXPECT_EQ(
+        local_state->GetBoolean(prefs::kOwnerPrimaryPointingStickButtonRight),
+        prefs->GetBoolean(prefs::kPrimaryPointingStickButtonRight));
   }
 
   LoginManagerMixin login_mixin_{&mixin_host_};

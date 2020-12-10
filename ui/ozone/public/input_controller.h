@@ -71,6 +71,9 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   // Mouse settings.
   virtual void SetMouseSensitivity(int value) = 0;
   virtual void SetMouseScrollSensitivity(int value) = 0;
+
+  // Sets the primary button for the mouse. Passing true sets the right button
+  // as primary, while false (the default) sets the left as primary.
   virtual void SetPrimaryButtonRight(bool right) = 0;
   virtual void SetMouseReverseScroll(bool enabled) = 0;
   virtual void SetMouseAcceleration(bool enabled) = 0;
@@ -80,6 +83,10 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
 
   // Pointing stick settings.
   virtual void SetPointingStickSensitivity(int value) = 0;
+
+  // Sets the primary button for the pointing stick. Passing true sets the right
+  // button as primary, while false (the default) sets the left as primary.
+  virtual void SetPointingStickPrimaryButtonRight(bool right) = 0;
   virtual void SetPointingStickAcceleration(bool enabled) = 0;
 
   // Touch log collection.

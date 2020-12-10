@@ -478,6 +478,15 @@ const char kEnableTouchpadThreeFingerClick[] =
 // A boolean pref set to true if primary mouse button is the left button.
 const char kPrimaryMouseButtonRight[] = "settings.mouse.primary_right";
 
+// A boolean pref set to true if primary pointing stick button is the left
+// button.
+const char kPrimaryPointingStickButtonRight[] =
+    "settings.pointing_stick.primary_right";
+
+// Copy of the primary pointing stick buttons option to use on login screen.
+const char kOwnerPrimaryPointingStickButtonRight[] =
+    "owner.pointing_stick.primary_right";
+
 // A boolean pref set to true if mouse acceleration is enabled. When disabled
 // only simple linear scaling is applied based on sensitivity.
 const char kMouseAcceleration[] = "settings.mouse.acceleration";

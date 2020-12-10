@@ -129,6 +129,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kTouchpadSpeed,
         chromeos.settings.mojom.Setting.kPointingStickAcceleration,
         chromeos.settings.mojom.Setting.kPointingStickSpeed,
+        chromeos.settings.mojom.Setting.kPointingStickSwapPrimaryButtons,
         chromeos.settings.mojom.Setting.kMouseSwapPrimaryButtons,
         chromeos.settings.mojom.Setting.kMouseReverseScrolling,
         chromeos.settings.mojom.Setting.kMouseAcceleration,
@@ -209,6 +210,16 @@ Polymer({
     if (event.path[0].tagName === 'A') {
       // Do not toggle reverse scrolling if the contained link is clicked.
       event.stopPropagation();
+    }
+  },
+
+  /** @private */
+  onMousePrimaryButtonChanged_: function() {
+    if (!loadTimeData.getBoolean('separatePointingStickSettings')) {
+      // To preserve the old behaviour, set pointing stick button too.
+      // TODO(crbug.com/1114828): remove once the feature is launched.
+      const value = this.getPref('settings.mouse.primary_right').value;
+      this.setPrefValue('settings.pointing_stick.primary_right', value);
     }
   },
 

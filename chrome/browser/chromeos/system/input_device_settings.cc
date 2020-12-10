@@ -367,6 +367,18 @@ bool PointingStickSettings::IsSensitivitySet() const {
   return sensitivity_.has_value();
 }
 
+void PointingStickSettings::SetPrimaryButtonRight(bool right) {
+  primary_button_right_ = right;
+}
+
+bool PointingStickSettings::GetPrimaryButtonRight() const {
+  return primary_button_right_.value();
+}
+
+bool PointingStickSettings::IsPrimaryButtonRightSet() const {
+  return primary_button_right_.has_value();
+}
+
 void PointingStickSettings::SetAcceleration(bool enabled) {
   acceleration_ = enabled;
 }
@@ -383,6 +395,10 @@ bool PointingStickSettings::Update(const PointingStickSettings& settings) {
   bool updated = false;
   if (UpdateIfHasValue(settings.sensitivity_, &sensitivity_))
     updated = true;
+  if (UpdateIfHasValue(settings.primary_button_right_,
+                       &primary_button_right_)) {
+    updated = true;
+  }
   if (UpdateIfHasValue(settings.acceleration_, &acceleration_))
     updated = true;
   return updated;
@@ -397,6 +413,10 @@ void PointingStickSettings::Apply(
   if (pointing_stick_settings.sensitivity_.has_value()) {
     input_device_settings->SetPointingStickSensitivity(
         pointing_stick_settings.sensitivity_.value());
+  }
+  if (pointing_stick_settings.primary_button_right_.has_value()) {
+    input_device_settings->SetPointingStickPrimaryButtonRight(
+        pointing_stick_settings.primary_button_right_.value());
   }
   if (pointing_stick_settings.acceleration_.has_value()) {
     input_device_settings->SetPointingStickAcceleration(

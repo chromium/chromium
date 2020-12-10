@@ -39,15 +39,15 @@
       <!-- Subsection title only appears if multiple sections are visible. -->
       <h2 hidden$="[[!showHeadings_]]">$i18n{mouseTitle}</h2>
       <div class$="[[subsectionClass_]]">
-        <!-- Do not change the mouse button pref before the mouse is released.
-             See crbug.com/686949 -->
         <div class="settings-box">
           <div class="start settings-box-text" id="mouseSwapButtonLabel">
             $i18n{mouseSwapButtons}
           </div>
-          <settings-dropdown-menu aria-labeledby="mouseSwapButtonLabel"
+          <settings-dropdown-menu id="mouseSwapButtonDropdown"
+              aria-labeledby="mouseSwapButtonLabel"
               pref="{{prefs.settings.mouse.primary_right}}"
               menu-options="[[swapPrimaryOptions]]"
+              on-settings-control-change="onMousePrimaryButtonChanged_"
               deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
           </settings-dropdown-menu>
         </div>
@@ -116,6 +116,19 @@
         <!-- Subsection title only appears if multiple sections are visible. -->
         <h2 hidden$="[[!showHeadings_]]">$i18n{pointingStickTitle}</h2>
         <div class$="[[subsectionClass_]]">
+          <div class="settings-box">
+            <div class="start settings-box-text"
+                id="pointingStickSwapButtonLabel">
+              $i18n{pointingStickPrimaryButton}
+            </div>
+            <settings-dropdown-menu id="pointingStickSwapButtonDropdown"
+                aria-labeledby="pointingStickSwapButtonLabel"
+                pref="{{prefs.settings.pointing_stick.primary_right}}"
+                menu-options="[[swapPrimaryOptions]]"
+                deep-link-focus-id$=
+                    "[[Setting.kPointingStickSwapPrimaryButtons]]">
+            </settings-dropdown-menu>
+          </div>
           <template is="dom-if" if="[[allowDisableAcceleration_]]">
             <settings-toggle-button id="pointingStickAcceleration"
                 class="hr"

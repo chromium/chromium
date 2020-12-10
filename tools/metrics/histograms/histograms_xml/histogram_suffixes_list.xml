@@ -14240,6 +14240,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Mouse.ScrollSensitivity"/>
   <affected-histogram name="PointingStick.Acceleration"/>
   <affected-histogram name="PointingStick.PointerSensitivity"/>
+  <affected-histogram name="PointingStick.PrimaryButtonRight"/>
   <affected-histogram name="Touchpad.ScrollAcceleration"/>
   <affected-histogram name="Touchpad.ScrollSensitivity"/>
 </histogram_suffixes>

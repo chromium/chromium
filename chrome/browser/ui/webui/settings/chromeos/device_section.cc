@@ -242,6 +242,12 @@ const std::vector<SearchConcept>& GetMouseSearchConcepts() {
 
 const std::vector<SearchConcept>& GetPointingStickSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_POINTING_STICK_PRIMARY_BUTTON,
+       mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPointingStickSwapPrimaryButtons}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_ACCELERATION,
        mojom::kPointersSubpagePath,
        mojom::SearchResultIcon::kLaptop,
@@ -908,6 +914,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kTouchpadAcceleration,
       mojom::Setting::kTouchpadScrollAcceleration,
       mojom::Setting::kTouchpadSpeed,
+      mojom::Setting::kPointingStickSwapPrimaryButtons,
       mojom::Setting::kPointingStickSpeed,
       mojom::Setting::kPointingStickAcceleration,
       mojom::Setting::kMouseSwapPrimaryButtons,
@@ -1176,6 +1183,8 @@ void DeviceSection::AddDevicePointersStrings(
       {"mouseSpeed", IDS_SETTINGS_MOUSE_SPEED_LABEL},
       {"pointingStickSpeed", IDS_SETTINGS_POINTING_STICK_SPEED_LABEL},
       {"mouseSwapButtons", IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL},
+      {"pointingStickPrimaryButton",
+       IDS_SETTINGS_POINTING_STICK_PRIMARY_BUTTON_LABEL},
       {"primaryMouseButtonLeft", IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_LEFT_LABEL},
       {"primaryMouseButtonRight",
        IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_RIGHT_LABEL},

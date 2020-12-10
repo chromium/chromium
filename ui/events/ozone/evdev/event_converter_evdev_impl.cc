@@ -243,7 +243,7 @@ void EventConverterEvdevImpl::OnButtonChange(int code,
 
   dispatcher_->DispatchMouseButtonEvent(MouseButtonEventParams(
       input_device_.id, EF_NONE, cursor_->GetLocation(), code, down,
-      /* allow_remap */ true, PointerDetails(EventPointerType::kMouse),
+      MouseButtonMapType::kMouse, PointerDetails(EventPointerType::kMouse),
       timestamp));
 }
 

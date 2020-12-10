@@ -158,6 +158,8 @@ Preferences::~Preferences() {
 // static
 void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(::prefs::kOwnerPrimaryMouseButtonRight, false);
+  registry->RegisterBooleanPref(::prefs::kOwnerPrimaryPointingStickButtonRight,
+                                false);
   registry->RegisterBooleanPref(::prefs::kOwnerTapToClickEnabled, true);
   // TODO(jamescook): Move ownership and registration into ash.
   registry->RegisterStringPref(::prefs::kLogoutStartedLast, std::string());
@@ -232,6 +234,9 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(
       ::prefs::kPrimaryMouseButtonRight, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+  registry->RegisterBooleanPref(
+      ::prefs::kPrimaryPointingStickButtonRight, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
       ::prefs::kMouseAcceleration, true,
@@ -527,6 +532,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                                    callback);
   primary_mouse_button_right_.Init(::prefs::kPrimaryMouseButtonRight, prefs,
                                    callback);
+  primary_pointing_stick_button_right_.Init(
+      ::prefs::kPrimaryPointingStickButtonRight, prefs, callback);
   mouse_acceleration_.Init(::prefs::kMouseAcceleration, prefs, callback);
   mouse_scroll_acceleration_.Init(::prefs::kMouseScrollAcceleration, prefs,
                                   callback);
@@ -835,6 +842,24 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       PrefService* prefs = g_browser_process->local_state();
       if (prefs->GetBoolean(::prefs::kOwnerPrimaryMouseButtonRight) != right)
         prefs->SetBoolean(::prefs::kOwnerPrimaryMouseButtonRight, right);
+    }
+  }
+  if (reason != REASON_PREF_CHANGED ||
+      pref_name == ::prefs::kPrimaryPointingStickButtonRight) {
+    const bool right = primary_pointing_stick_button_right_.GetValue();
+    if (user_is_active)
+      pointing_stick_settings.SetPrimaryButtonRight(right);
+    ReportBooleanPrefApplication(
+        reason, "PointingStick.PrimaryButtonRight.Changed",
+        "PointingStick.PrimaryButtonRight.Started", right);
+    // Save owner preference in local state to use on login screen.
+    if (user_is_owner) {
+      PrefService* prefs = g_browser_process->local_state();
+      if (prefs->GetBoolean(::prefs::kOwnerPrimaryPointingStickButtonRight) !=
+          right) {
+        prefs->SetBoolean(::prefs::kOwnerPrimaryPointingStickButtonRight,
+                          right);
+      }
     }
   }
   if (reason != REASON_PREF_CHANGED ||

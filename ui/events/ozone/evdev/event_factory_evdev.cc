@@ -195,7 +195,9 @@ EventFactoryEvdev::EventFactoryEvdev(CursorDelegateEvdev* cursor,
                 base::BindRepeating(&EventFactoryEvdev::DispatchUiEvent,
                                     base::Unretained(this))),
       cursor_(cursor),
-      input_controller_(&keyboard_, &button_map_),
+      input_controller_(&keyboard_,
+                        &mouse_button_map_,
+                        &pointing_stick_button_map_),
       touch_id_generator_(0) {
   DCHECK(device_manager_);
 }
@@ -263,8 +265,11 @@ void EventFactoryEvdev::DispatchMouseButtonEvent(
 
   // Mouse buttons can be remapped, touchpad taps & clicks cannot.
   unsigned int button = params.button;
-  if (params.allow_remap)
-    button = button_map_.GetMappedButton(button);
+  if (params.map_type == MouseButtonMapType::kMouse) {
+    button = mouse_button_map_.GetMappedButton(button);
+  } else if (params.map_type == MouseButtonMapType::kPointingStick) {
+    button = pointing_stick_button_map_.GetMappedButton(button);
+  }
 
   int modifier = MODIFIER_NONE;
   switch (button) {

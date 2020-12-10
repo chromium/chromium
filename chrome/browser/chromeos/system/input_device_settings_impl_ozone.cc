@@ -50,6 +50,7 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
   void UpdatePointingStickSettings(
       const PointingStickSettings& settings) override;
   void SetPointingStickSensitivity(int value) override;
+  void SetPointingStickPrimaryButtonRight(bool right) override;
   void SetPointingStickAcceleration(bool enabled) override;
   void SetTouchpadAcceleration(bool enabled) override;
   void SetTouchpadScrollAcceleration(bool enabled) override;
@@ -183,6 +184,12 @@ void InputDeviceSettingsImplOzone::SetPointingStickSensitivity(int value) {
   DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
   current_pointing_stick_settings_.SetSensitivity(value);
   input_controller()->SetPointingStickSensitivity(value);
+}
+
+void InputDeviceSettingsImplOzone::SetPointingStickPrimaryButtonRight(
+    bool right) {
+  current_pointing_stick_settings_.SetPrimaryButtonRight(right);
+  input_controller()->SetPointingStickPrimaryButtonRight(right);
 }
 
 void InputDeviceSettingsImplOzone::SetPointingStickAcceleration(bool enabled) {

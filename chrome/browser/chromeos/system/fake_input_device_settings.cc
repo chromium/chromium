@@ -122,6 +122,12 @@ void FakeInputDeviceSettings::SetPointingStickSensitivity(int value) {
   UpdatePointingStickSettings(settings);
 }
 
+void FakeInputDeviceSettings::SetPointingStickPrimaryButtonRight(bool right) {
+  PointingStickSettings settings;
+  settings.SetPrimaryButtonRight(right);
+  UpdatePointingStickSettings(settings);
+}
+
 void FakeInputDeviceSettings::SetPointingStickAcceleration(bool enabled) {
   PointingStickSettings settings;
   settings.SetAcceleration(enabled);

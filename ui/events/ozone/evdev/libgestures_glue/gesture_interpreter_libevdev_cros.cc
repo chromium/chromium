@@ -523,9 +523,14 @@ void GestureInterpreterLibevdevCros::DispatchMouseButton(unsigned int button,
   if (!SetMouseButtonState(button, down))
     return;  // No change.
 
-  bool allow_remap = is_mouse_ || is_pointing_stick_;
+  MouseButtonMapType map_type = MouseButtonMapType::kNone;
+  if (is_mouse_)
+    map_type = MouseButtonMapType::kMouse;
+  else if (is_pointing_stick_)
+    map_type = MouseButtonMapType::kPointingStick;
+
   dispatcher_->DispatchMouseButtonEvent(MouseButtonEventParams(
-      id_, EF_NONE, cursor_->GetLocation(), button, down, allow_remap,
+      id_, EF_NONE, cursor_->GetLocation(), button, down, map_type,
       PointerDetails(EventPointerType::kMouse), StimeToTimeTicks(time)));
 }
 

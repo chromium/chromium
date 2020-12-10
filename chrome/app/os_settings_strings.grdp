@@ -1751,6 +1751,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL" desc="In Device Settings, the text next to the checkbox to set the primary mouse button to the right button instead of the left button.">
     Swap primary mouse button
   </message>
+  <message name="IDS_SETTINGS_POINTING_STICK_PRIMARY_BUTTON_LABEL" desc="In Device Settings, the text next to the dropdown menu to set the primary pointing stick (a.k.a. TrackPoint) button. (TrackPoint is a trademark that's not translated.)">
+    Primary TrackPoint button
+  </message>
   <message name="IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_LEFT_LABEL" desc="In Device Settings, the text labelling the dropdown menu item for the left mouse button.">
     Left button
   </message>

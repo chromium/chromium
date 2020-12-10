@@ -1125,6 +1125,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
     // login screen.
     system::InputDeviceSettings::Get()->SetPrimaryButtonRight(
         prefs->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight));
+    system::InputDeviceSettings::Get()->SetPointingStickPrimaryButtonRight(
+        prefs->GetBoolean(prefs::kOwnerPrimaryPointingStickButtonRight));
     system::InputDeviceSettings::Get()->SetTapToClick(
         prefs->GetBoolean(prefs::kOwnerTapToClickEnabled));
   }

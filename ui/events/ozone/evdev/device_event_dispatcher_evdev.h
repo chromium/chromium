@@ -64,13 +64,20 @@ struct COMPONENT_EXPORT(EVDEV) MouseMoveEventParams {
   base::TimeTicks timestamp;
 };
 
+enum class COMPONENT_EXPORT(EVDEV) MouseButtonMapType : int {
+  kNone,
+  kMouse,
+  kPointingStick,
+  kMaxValue = kPointingStick,
+};
+
 struct COMPONENT_EXPORT(EVDEV) MouseButtonEventParams {
   MouseButtonEventParams(int device_id,
                          int flags,
                          const gfx::PointF& location,
                          unsigned int button,
                          bool down,
-                         bool allow_remap,
+                         MouseButtonMapType map_type,
                          const PointerDetails& details,
                          base::TimeTicks timestamp);
   MouseButtonEventParams(const MouseButtonEventParams& other);
@@ -82,7 +89,7 @@ struct COMPONENT_EXPORT(EVDEV) MouseButtonEventParams {
   gfx::PointF location;
   unsigned int button;
   bool down;
-  bool allow_remap;
+  MouseButtonMapType map_type;
   PointerDetails pointer_details;
   base::TimeTicks timestamp;
 };
