@@ -20,6 +20,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
 import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
@@ -992,6 +993,43 @@ public class InstantStartTest {
         ChromeRenderTestRule.sanitize(surface);
         // TODO(crbug.com/1065314): fix favicon.
         mRenderTestRule.render(surface, "singlePane_floatingTopToolbar");
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    public void testSingleAsHomepage_CloseTabInCarouselTabSwitcher()
+            throws IOException, ExecutionException {
+        // clang-format on
+        createTabStateFile(new int[] {0});
+        createThumbnailBitmapAndWriteToFile(0);
+        TabAttributeCache.setTitleForTesting(0, "Google");
+
+        startMainActivityFromLauncher();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        // Initializes native.
+        startAndWaitNativeInitialization();
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 0);
+
+        onView(withId(R.id.tab_list_view)).check(matches(isDisplayed()));
+        RecyclerView tabListView = mActivityTestRule.getActivity().findViewById(R.id.tab_list_view);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> tabListView.getChildAt(0).findViewById(R.id.action_button).performClick());
+
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 0, 0);
+        assertEquals(mActivityTestRule.getActivity()
+                             .findViewById(R.id.tab_switcher_title)
+                             .getVisibility(),
+                View.GONE);
     }
 
     /**
