@@ -217,6 +217,7 @@ bool X11Window::IsVisible() const {
 void X11Window::PrepareForShutdown() {
   DCHECK(X11EventSource::HasInstance());
   X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+  X11EventSource::GetInstance()->RemovePlatformEventDispatcher(this);
 }
 
 void X11Window::SetBounds(const gfx::Rect& bounds) {
@@ -541,32 +542,6 @@ bool X11Window::HandleAsAtkEvent(x11::Event* x11_event, bool transient) {
 #endif
 }
 
-// CheckCanDispatchNextPlatformEvent is called by X11EventSource so that
-// X11Window (XEventDispatcher implementation) can inspect |xev| and determine
-// whether it should be dispatched by this window once it gets translated into a
-// PlatformEvent.
-void X11Window::CheckCanDispatchNextPlatformEvent(x11::Event* xev) {
-  if (is_shutting_down_)
-    return;
-  if (XWindow::IsTargetedBy(*xev)) {
-    current_xevent_ = xev;
-    return;
-  }
-  if (XWindow::IsTransientWindowTargetedBy(*xev)) {
-    current_xevent_ = xev;
-    current_xevent_target_transient_ = true;
-  }
-}
-
-void X11Window::PlatformEventDispatchFinished() {
-  current_xevent_ = nullptr;
-  current_xevent_target_transient_ = false;
-}
-
-PlatformEventDispatcher* X11Window::GetPlatformEventDispatcher() {
-  return this;
-}
-
 bool X11Window::DispatchXEvent(x11::Event* xev) {
   auto* prop = xev->As<x11::PropertyNotifyEvent>();
   auto* target_current_context = drag_drop_client_->target_current_context();
@@ -582,8 +557,11 @@ bool X11Window::DispatchXEvent(x11::Event* xev) {
 }
 
 bool X11Window::CanDispatchEvent(const PlatformEvent& xev) {
+  if (is_shutting_down_)
+    return false;
   DCHECK_NE(window(), x11::Window::None);
-  return !!current_xevent_;
+  auto* dispatching_event = X11EventSource::GetInstance()->dispatching_event();
+  return dispatching_event && XWindow::IsTargetedBy(*dispatching_event);
 }
 
 uint32_t X11Window::DispatchEvent(const PlatformEvent& event) {
@@ -592,17 +570,20 @@ uint32_t X11Window::DispatchEvent(const PlatformEvent& event) {
 
   DCHECK_NE(window(), x11::Window::None);
   DCHECK(event);
-  DCHECK(current_xevent_);
+
+  auto* current_xevent = X11EventSource::GetInstance()->dispatching_event();
 
   if (event->IsMouseEvent())
     X11WindowManager::GetInstance()->MouseOnWindow(this);
 #if BUILDFLAG(USE_ATK)
   // TODO(crbug.com/1014934): Support ATK in Ozone/X11.
-  if (HandleAsAtkEvent(current_xevent_, current_xevent_target_transient_))
+  bool current_xevent_target_transient =
+      XWindow::IsTransientWindowTargetedBy(*current_xevent);
+  if (HandleAsAtkEvent(current_xevent, current_xevent_target_transient))
     return POST_DISPATCH_STOP_PROPAGATION;
 #endif
 
-  DispatchUiEvent(event, current_xevent_);
+  DispatchUiEvent(event, current_xevent);
   return POST_DISPATCH_STOP_PROPAGATION;
 }
 
@@ -668,6 +649,7 @@ void X11Window::OnXWindowCreated() {
 
   DCHECK(X11EventSource::HasInstance());
   X11EventSource::GetInstance()->AddXEventDispatcher(this);
+  X11EventSource::GetInstance()->AddPlatformEventDispatcher(this);
 
   x11_window_move_client_ =
       std::make_unique<ui::X11DesktopWindowMoveClient>(this);

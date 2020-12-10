@@ -250,18 +250,10 @@ X11EventSource::GetRootCursorLocationFromCurrentEvent() const {
 
 void X11EventSource::AddXEventDispatcher(XEventDispatcher* dispatcher) {
   dispatchers_xevent_.AddObserver(dispatcher);
-  PlatformEventDispatcher* event_dispatcher =
-      dispatcher->GetPlatformEventDispatcher();
-  if (event_dispatcher)
-    AddPlatformEventDispatcher(event_dispatcher);
 }
 
 void X11EventSource::RemoveXEventDispatcher(XEventDispatcher* dispatcher) {
   dispatchers_xevent_.RemoveObserver(dispatcher);
-  PlatformEventDispatcher* event_dispatcher =
-      dispatcher->GetPlatformEventDispatcher();
-  if (event_dispatcher)
-    RemovePlatformEventDispatcher(event_dispatcher);
 }
 
 void X11EventSource::AddXEventObserver(XEventObserver* observer) {
@@ -274,26 +266,6 @@ void X11EventSource::RemoveXEventObserver(XEventObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void X11EventSource::DispatchPlatformEvent(const PlatformEvent& event,
-                                           x11::Event* xevent) {
-  DCHECK(event);
-
-  // First, tell the XEventDispatchers, which can have PlatformEventDispatcher,
-  // an ui::Event is going to be sent next. It must make a promise to handle
-  // next translated |event| sent by PlatformEventSource based on a XID in
-  // |xevent| tested in CheckCanDispatchNextPlatformEvent(). This is needed
-  // because it is not possible to access |event|'s associated NativeEvent* and
-  // check if it is the event's target window (XID).
-  for (XEventDispatcher& dispatcher : dispatchers_xevent_)
-    dispatcher.CheckCanDispatchNextPlatformEvent(xevent);
-
-  DispatchEvent(event);
-
-  // Explicitly reset a promise to handle next translated event.
-  for (XEventDispatcher& dispatcher : dispatchers_xevent_)
-    dispatcher.PlatformEventDispatchFinished();
-}
-
 void X11EventSource::DispatchXEventToXEventDispatchers(x11::Event* xevent) {
   for (auto& observer : observers_)
     observer.WillProcessXEvent(xevent);
@@ -302,17 +274,6 @@ void X11EventSource::DispatchXEventToXEventDispatchers(x11::Event* xevent) {
     if (dispatcher.DispatchXEvent(xevent))
       break;
   }
-
-  for (auto& observer : observers_)
-    observer.DidProcessXEvent(xevent);
-}
-
-void XEventDispatcher::CheckCanDispatchNextPlatformEvent(x11::Event* xev) {}
-
-void XEventDispatcher::PlatformEventDispatchFinished() {}
-
-PlatformEventDispatcher* XEventDispatcher::GetPlatformEventDispatcher() {
-  return nullptr;
 }
 
 void X11EventSource::ProcessXEvent(x11::Event* xevent) {
@@ -330,7 +291,7 @@ void X11EventSource::ProcessXEvent(x11::Event* xevent) {
           translated_event->AsLocatedEvent()->location_f());
     }
 #endif
-    DispatchPlatformEvent(translated_event.get(), xevent);
+    DispatchEvent(translated_event.get());
   } else {
     // Only if we can't translate XEvent into ui::Event, try to dispatch XEvent
     // directly to XEventDispatchers.

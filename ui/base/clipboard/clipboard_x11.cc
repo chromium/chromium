@@ -68,7 +68,6 @@ class SelectionChangeObserver : public XEventObserver {
 
   // XEventObserver:
   void WillProcessXEvent(x11::Event* xev) override;
-  void DidProcessXEvent(x11::Event* xev) override {}
 
   x11::Atom clipboard_atom_{};
   uint64_t clipboard_sequence_number_{};

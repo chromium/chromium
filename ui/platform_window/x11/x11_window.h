@@ -128,10 +128,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   void SetOverrideRedirect(bool override_redirect) override;
   void SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) override;
 
-  // Overridden from ui::XEventDispatcher:
-  void CheckCanDispatchNextPlatformEvent(x11::Event* xev) override;
-  void PlatformEventDispatchFinished() override;
-  PlatformEventDispatcher* GetPlatformEventDispatcher() override;
+  // ui::XEventDispatcher:
   bool DispatchXEvent(x11::Event* event) override;
 
  protected:
@@ -237,15 +234,6 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
 
   // The bounds of our window before the window was maximized.
   gfx::Rect restored_bounds_in_pixels_;
-
-  // Tells if this dispatcher can process next translated event based on a
-  // previous check in ::CheckCanDispatchNextPlatformEvent based on a
-  // x11::Window target.
-  x11::Event* current_xevent_ = nullptr;
-
-  // True if the current_xevent_ target is not this window but a transient
-  // window that hangs from this one.
-  bool current_xevent_target_transient_ = false;
 
   std::unique_ptr<X11DesktopWindowMoveClient> x11_window_move_client_;
 

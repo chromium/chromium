@@ -80,7 +80,7 @@ void DispatchMouseMotionEvent(DesktopWindowTreeHostLinux* desktop_host,
   };
 
   x11::Event x11_event(xev);
-  ui::X11EventSource::GetInstance()->ProcessXEvent(&x11_event);
+  ui::X11EventSource::GetInstance()->DispatchXEvent(&x11_event);
 }
 
 // Blocks till |window| gets activated.

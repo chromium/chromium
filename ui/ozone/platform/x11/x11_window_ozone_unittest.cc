@@ -96,7 +96,7 @@ class X11WindowOzoneTest : public testing::Test {
     auto* device_event = event->As<x11::Input::DeviceEvent>();
     DCHECK(device_event);
     device_event->event = static_cast<x11::Window>(widget);
-    event_source_->ProcessXEvent(event);
+    event_source_->DispatchXEvent(event);
   }
 
   X11WindowManager* window_manager() const {

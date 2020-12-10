@@ -226,7 +226,7 @@ class X11WindowTest : public testing::Test {
     auto* device_event = x11_event->As<x11::Input::DeviceEvent>();
     DCHECK(device_event);
     device_event->event = window;
-    event_source_->ProcessXEvent(x11_event);
+    event_source_->DispatchXEvent(x11_event);
   }
 
  private:
