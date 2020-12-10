@@ -65,10 +65,10 @@ class CandidateSessionConfig;
 class SessionConfig {
  public:
   enum class Protocol {
-    // Current ICE-based protocol.
+    // ICE-based protocol (aka Chromotocol).
     ICE,
 
-    // New WebRTC-based protocol.
+    // WebRTC-based protocol.
     WEBRTC,
   };
 
@@ -82,7 +82,7 @@ class SessionConfig {
 
   // Extracts final protocol configuration. Must be used for the description
   // received in the session-accept stanza. If the selection is ambiguous
-  // (e.g. there is more than one configuration for one of the channel)
+  // (e.g. there is more than one configuration for one of the channels)
   // or undefined (e.g. no configurations for a channel) then nullptr is
   // returned.
   static std::unique_ptr<SessionConfig> GetFinalConfig(
@@ -167,23 +167,6 @@ class CandidateSessionConfig {
 
   std::list<ChannelConfig>* mutable_audio_configs() {
     return &audio_configs_;
-  }
-
-  // Old clients always list VP9 as supported and preferred even though they
-  // shouldn't have it enabled yet. I.e. the host cannot trust VP9 codec
-  // preference received from the client. To workaround this issue the client
-  // adds a hint in the session-initiate message to indicate that it actually
-  // wants VP9 to be enabled.
-  //
-  // TODO(sergeyu): Remove this kludge as soon as VP9 is enabled by default.
-  bool vp9_experiment_enabled() const { return vp9_experiment_enabled_; }
-  void set_vp9_experiment_enabled(bool value) {
-    vp9_experiment_enabled_ = value;
-  }
-
-  bool h264_experiment_enabled() const { return h264_experiment_enabled_; }
-  void set_h264_experiment_enabled(bool value) {
-    h264_experiment_enabled_ = value;
   }
 
   // Returns true if |config| is supported.

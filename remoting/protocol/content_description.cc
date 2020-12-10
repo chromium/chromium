@@ -34,8 +34,6 @@ const char kControlTag[] = "control";
 const char kEventTag[] = "event";
 const char kVideoTag[] = "video";
 const char kAudioTag[] = "audio";
-const char kVp9ExperimentTag[] = "vp9-experiment";
-const char kH264ExperimentTag[] = "h264-experiment";
 
 const char kTransportAttr[] = "transport";
 const char kVersionAttr[] = "version";
@@ -168,11 +166,6 @@ XmlElement* ContentDescription::ToXml() const {
     root->AddElement(new XmlElement(*authenticator_message_));
   }
 
-  if (config()->vp9_experiment_enabled()) {
-    root->AddElement(
-        new XmlElement(QName(kChromotingXmlNamespace, kVp9ExperimentTag)));
-  }
-
   return root;
 }
 
@@ -227,16 +220,6 @@ std::unique_ptr<ContentDescription> ContentDescription::ParseXml(
                              config->mutable_audio_configs())) {
       return nullptr;
     }
-  }
-
-  // Check if VP9 experiment is enabled.
-  if (element->FirstNamed(QName(kChromotingXmlNamespace, kVp9ExperimentTag))) {
-    config->set_vp9_experiment_enabled(true);
-  }
-
-  // Check if H264 experiment is enabled.
-  if (element->FirstNamed(QName(kChromotingXmlNamespace, kH264ExperimentTag))) {
-    config->set_h264_experiment_enabled(true);
   }
 
   std::unique_ptr<XmlElement> authenticator_message;

@@ -176,12 +176,6 @@ const char kAuthSocknameSwitchName[] = "ssh-auth-sockname";
 // when it is successfully started.
 const char kSignalParentSwitchName[] = "signal-parent";
 
-// Command line switch used to enable VP9 encoding.
-const char kEnableVp9SwitchName[] = "enable-vp9";
-
-// Command line switch used to enable hardware H264 encoding.
-const char kEnableH264SwitchName[] = "enable-h264";
-
 // Command line switch used to send a custom offline reason and exit.
 const char kReportOfflineReasonSwitchName[] = "report-offline-reason";
 
@@ -387,8 +381,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string serialized_config_;
   std::string host_owner_;
   bool is_googler_ = false;
-  bool enable_vp9_ = false;
-  bool enable_h264_ = false;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
@@ -1041,22 +1033,6 @@ bool HostProcess::ApplyConfig(const base::DictionaryValue& config) {
   is_googler_ = base::EndsWith(host_owner_, kGooglerEmailDomain,
                                base::CompareCase::INSENSITIVE_ASCII);
 
-  // Allow offering of VP9 encoding to be overridden by the command-line.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(kEnableVp9SwitchName)) {
-    enable_vp9_ = true;
-  } else {
-    config.GetBoolean(kEnableVp9ConfigPath, &enable_vp9_);
-  }
-
-  // Allow offering of hardware H264 encoding to be overridden by the command
-  // line.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kEnableH264SwitchName)) {
-    enable_h264_ = true;
-  } else {
-    config.GetBoolean(kEnableH264ConfigPath, &enable_h264_);
-  }
-
   return true;
 }
 
@@ -1552,10 +1528,6 @@ void HostProcess::StartHost() {
       protocol::CandidateSessionConfig::CreateDefault();
   if (!desktop_environment_factory_->SupportsAudioCapture())
     protocol_config->DisableAudioChannel();
-  if (enable_vp9_)
-    protocol_config->set_vp9_experiment_enabled(true);
-  if (enable_h264_)
-    protocol_config->set_h264_experiment_enabled(true);
   protocol_config->set_webrtc_supported(true);
   session_manager->set_protocol_config(std::move(protocol_config));
 

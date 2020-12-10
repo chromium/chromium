@@ -86,24 +86,12 @@ std::unique_ptr<SessionConfig> SessionConfig::SelectCommon(
 
   std::unique_ptr<SessionConfig> result(new SessionConfig(Protocol::ICE));
 
-  // If neither host nor the client have VP9 experiment enabled then remove it
-  // from the list of host video configs.
   std::list<ChannelConfig> host_video_configs = host_config->video_configs();
-  if (!client_config->vp9_experiment_enabled() &&
-      !host_config->vp9_experiment_enabled()) {
-    host_video_configs.remove_if([](const ChannelConfig& config) {
-      return config.codec == ChannelConfig::CODEC_VP9;
-    });
-  }
-
-  // If neither host nor the client have H264 experiment enabled then remove it
-  // from the list of host video configs.
-  if (!client_config->h264_experiment_enabled() &&
-      !host_config->h264_experiment_enabled()) {
-    host_video_configs.remove_if([](const ChannelConfig& config) {
-      return config.codec == ChannelConfig::CODEC_H264;
-    });
-  }
+  host_video_configs.remove_if([](const ChannelConfig& config) {
+    // Older ICE-based clients do not support VP9 or H.264 so remove them.
+    return config.codec == ChannelConfig::CODEC_H264 ||
+           config.codec == ChannelConfig::CODEC_VP9;
+  });
 
   if (!SelectCommonChannelConfig(host_config->control_configs(),
                                  client_config->control_configs(),

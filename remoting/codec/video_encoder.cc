@@ -4,7 +4,6 @@
 
 #include "remoting/codec/video_encoder.h"
 
-#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "remoting/codec/video_encoder_verbatim.h"
 #include "remoting/codec/video_encoder_vpx.h"
@@ -21,7 +20,7 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
   } else if (video_config.codec == protocol::ChannelConfig::CODEC_VP9) {
     return VideoEncoderVpx::CreateForVP9();
   } else if (video_config.codec == protocol::ChannelConfig::CODEC_VERBATIM) {
-    return base::WrapUnique(new VideoEncoderVerbatim());
+    return std::make_unique<VideoEncoderVerbatim>();
   }
 
   NOTREACHED() << "Unknown codec type: " << video_config.codec;
