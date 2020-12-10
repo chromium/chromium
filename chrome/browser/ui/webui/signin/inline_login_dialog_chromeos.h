@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_modal_delegate.h"
+#include "chromeos/components/account_manager/account_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
 class GURL;
@@ -66,6 +67,8 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
     kMaxValue = kFlowCompleted
   };
 
+  static bool IsShown();
+
   // Displays the dialog. |email| pre-fills the account email field in the
   // sign-in dialog - useful for account re-authentication. |source| specifies
   // the source UX surface used for launching the dialog.
@@ -99,6 +102,10 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   // from ARC. It's used to display the correct error message for Child users.
   explicit InlineLoginDialogChromeOS(bool is_arc_source);
   InlineLoginDialogChromeOS(const GURL& url, bool is_arc_source);
+
+  InlineLoginDialogChromeOS(const GURL& url,
+                            bool is_arc_source,
+                            base::OnceClosure close_dialog_closure);
   ~InlineLoginDialogChromeOS() override;
 
   // ui::WebDialogDelegate overrides
@@ -110,10 +117,30 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   void OnDialogClosed(const std::string& json_retval) override;
 
  private:
+  // `Show` method can be called directly only by `AccountManagerUIImpl` class.
+  // To show the dialog, use `AccountManagerFacade`.
+  friend class AccountManagerUIImpl;
+
+  // Displays the dialog. |close_dialog_closure| will be called when the dialog
+  // is closed.
+  static void Show(base::OnceClosure close_dialog_closure);
+
+  // Displays the dialog. |email| pre-fills the account email field in the
+  // sign-in dialog - useful for account re-authentication.
+  // |close_dialog_closure| will be called when the dialog is closed.
+  static void Show(const std::string& email,
+                   base::OnceClosure close_dialog_closure);
+
+  static void ShowInternal(
+      const std::string& email,
+      bool is_arc_source,
+      base::OnceClosure close_dialog_closure = base::DoNothing());
+
   InlineLoginHandlerModalDelegate delegate_;
   const bool is_arc_source_;
   const GURL url_;
   base::Optional<EduCoexistenceFlowResult> edu_coexistence_flow_result_;
+  base::OnceClosure close_dialog_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(InlineLoginDialogChromeOS);
 };

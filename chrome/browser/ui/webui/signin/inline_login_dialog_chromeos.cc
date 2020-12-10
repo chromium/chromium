@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
@@ -97,33 +98,19 @@ const char InlineLoginDialogChromeOS::kAccountAdditionSource[] =
     "AccountManager.AccountAdditionSource";
 
 // static
+bool InlineLoginDialogChromeOS::IsShown() {
+  return dialog != nullptr;
+}
+
+// static
 void InlineLoginDialogChromeOS::ShowDeprecated(const std::string& email,
                                                const Source& source) {
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
-  // If the dialog was triggered as a response to background request, it could
-  // get displayed on the lock screen. In this case it is safe to ignore it,
-  // since in this case user will get it again after a request to Google
-  // properties.
-  if (session_manager::SessionManager::Get()->IsUserSessionBlocked())
-    return;
-
-  if (dialog) {
-    dialog->dialog_window()->Focus();
-    return;
-  }
-
-  // Will be deleted by |SystemWebDialogDelegate::OnDialogClosed|.
   const bool is_arc_source = source == InlineLoginDialogChromeOS::Source::kArc;
-  dialog = new InlineLoginDialogChromeOS(
-      GetInlineLoginUrl(email, is_arc_source), is_arc_source);
-  dialog->ShowSystemDialog();
-
-  // TODO(crbug.com/1016828): Remove/update this after the dialog behavior on
-  // Chrome OS is defined.
-  ash::WindowBackdrop::Get(dialog->dialog_window())
-      ->SetBackdropType(ash::WindowBackdrop::BackdropType::kSemiOpaque);
+  ShowInternal(email, is_arc_source);
 }
 
+// static
 void InlineLoginDialogChromeOS::ShowDeprecated(const Source& source) {
   ShowDeprecated(/* email= */ std::string(), source);
 }
@@ -183,7 +170,24 @@ InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url,
   dialog = this;
 }
 
+InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(
+    const GURL& url,
+    bool is_arc_source,
+    base::OnceClosure close_dialog_closure)
+    : SystemWebDialogDelegate(url, base::string16() /* title */),
+      delegate_(this),
+      is_arc_source_(is_arc_source),
+      url_(url),
+      close_dialog_closure_(std::move(close_dialog_closure)) {
+  DCHECK(!dialog);
+  dialog = this;
+}
+
 InlineLoginDialogChromeOS::~InlineLoginDialogChromeOS() {
+  if (!close_dialog_closure_.is_null()) {
+    std::move(close_dialog_closure_).Run();
+  }
+
   DCHECK_EQ(this, dialog);
   dialog = nullptr;
 }
@@ -243,6 +247,46 @@ void InlineLoginDialogChromeOS::OnDialogClosed(const std::string& json_retval) {
                                   edu_coexistence_flow_result_.value());
   }
   SystemWebDialogDelegate::OnDialogClosed(json_retval);
+}
+
+// static
+void InlineLoginDialogChromeOS::Show(base::OnceClosure close_dialog_closure) {
+  Show(/* email= */ std::string(), std::move(close_dialog_closure));
+}
+
+// static
+void InlineLoginDialogChromeOS::Show(const std::string& email,
+                                     base::OnceClosure close_dialog_closure) {
+  ShowInternal(email, /*is_arc_source=*/false, std::move(close_dialog_closure));
+}
+
+// static
+void InlineLoginDialogChromeOS::ShowInternal(
+    const std::string& email,
+    bool is_arc_source,
+    base::OnceClosure close_dialog_closure) {
+  // If the dialog was triggered as a response to background request, it could
+  // get displayed on the lock screen. In this case it is safe to ignore it,
+  // since in this case user will get it again after a request to Google
+  // properties.
+  if (session_manager::SessionManager::Get()->IsUserSessionBlocked())
+    return;
+
+  if (dialog) {
+    dialog->dialog_window()->Focus();
+    return;
+  }
+
+  // Will be deleted by |SystemWebDialogDelegate::OnDialogClosed|.
+  dialog = new InlineLoginDialogChromeOS(
+      GetInlineLoginUrl(email, is_arc_source), is_arc_source,
+      std::move(close_dialog_closure));
+  dialog->ShowSystemDialog();
+
+  // TODO(crbug.com/1016828): Remove/update this after the dialog behavior on
+  // Chrome OS is defined.
+  ash::WindowBackdrop::Get(dialog->dialog_window())
+      ->SetBackdropType(ash::WindowBackdrop::BackdropType::kSemiOpaque);
 }
 
 }  // namespace chromeos

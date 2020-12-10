@@ -448,6 +448,8 @@ source_set("chromeos") {
     "account_manager/account_manager_policy_controller.h",
     "account_manager/account_manager_policy_controller_factory.cc",
     "account_manager/account_manager_policy_controller_factory.h",
+    "account_manager/account_manager_ui_impl.cc",
+    "account_manager/account_manager_ui_impl.h",
     "account_manager/account_manager_util.cc",
     "account_manager/account_manager_util.h",
     "account_manager/account_migration_runner.cc",

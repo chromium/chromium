@@ -14,6 +14,8 @@ component("account_manager") {
     "account_manager_facade_ash.h",
     "account_manager_factory.cc",
     "account_manager_factory.h",
+    "account_manager_ui.cc",
+    "account_manager_ui.h",
   ]
 
   public_deps = [
