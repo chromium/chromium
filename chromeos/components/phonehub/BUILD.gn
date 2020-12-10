@@ -80,6 +80,9 @@ static_library("phonehub") {
     "tether_controller.h",
     "tether_controller_impl.cc",
     "tether_controller_impl.h",
+    "user_action_recorder.h",
+    "user_action_recorder_impl.cc",
+    "user_action_recorder_impl.h",
     "util/histogram_util.cc",
     "util/histogram_util.h",
   ]
@@ -127,6 +130,8 @@ static_library("debug") {
     "fake_phone_hub_manager.h",
     "fake_tether_controller.cc",
     "fake_tether_controller.h",
+    "fake_user_action_recorder.cc",
+    "fake_user_action_recorder.h",
   ]
 
   public_deps = [ ":phonehub" ]
@@ -184,6 +189,7 @@ source_set("unit_tests") {
     "phone_status_model_unittest.cc",
     "phone_status_processor_unittest.cc",
     "tether_controller_impl_unittest.cc",
+    "user_action_recorder_impl_unittest.cc",
   ]
 
   deps = [

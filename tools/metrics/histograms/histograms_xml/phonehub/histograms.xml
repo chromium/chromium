@@ -39,6 +39,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The steady state feature status of PhoneHub on user login.</summary>
 </histogram>
 
+<histogram name="PhoneHub.CompletedUserAction" enum="PhoneHubUserAction"
+    expires_after="2021-12-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures actions taken by the user as part of the Phone Hub feature; emitted
+    when the user attempts the actions described in the PhoneHubUserAction enum.
+
+    Used to measure engagement and track 28DA user counts.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.Connection.Result" enum="BooleanSuccess"
     expires_after="2021-11-30">
   <owner>khorimoto@chromium.org</owner>
