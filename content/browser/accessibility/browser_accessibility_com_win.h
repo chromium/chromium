@@ -181,6 +181,7 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
   CONTENT_EXPORT IFACEMETHODIMP get_nHyperlinks(LONG* hyperlink_count) override;
 
   CONTENT_EXPORT IFACEMETHODIMP
+  // A hyperlink represents an embedded object character (leading to a subtree).
   get_hyperlink(LONG index, IAccessibleHyperlink** hyperlink) override;
 
   CONTENT_EXPORT IFACEMETHODIMP

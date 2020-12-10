@@ -10,6 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -502,8 +504,20 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
   }
 
   int32_t id = hypertext_.hyperlinks[index];
-  auto* link = static_cast<BrowserAccessibilityComWin*>(
-      AXPlatformNodeWin::GetFromUniqueId(id));
+  AXPlatformNode* node = AXPlatformNodeWin::GetFromUniqueId(id);
+  if (!node) {
+    // Error: possibly incorrect number of hyper links reported.
+    LONG num_hyperlinks = -1;
+    get_nHyperlinks(&num_hyperlinks);
+    std::ostringstream error;
+    error << "index=" << index << " nHyperLinks=" << num_hyperlinks;
+    static auto* hyperlink_err = base::debug::AllocateCrashKeyString(
+        "ax_hyperlink_err", base::debug::CrashKeySize::Size64);
+    NOTREACHED() << "Hyperlink error: " << error.str();
+    base::debug::SetCrashKeyString(hyperlink_err, error.str());
+    base::debug::DumpWithoutCrashing();
+  }
+  auto* link = static_cast<BrowserAccessibilityComWin*>(node);
   if (!link)
     return E_FAIL;
 
