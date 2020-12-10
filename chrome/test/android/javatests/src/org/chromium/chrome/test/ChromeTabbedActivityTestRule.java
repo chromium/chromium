@@ -58,6 +58,8 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
 
         Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(
                 getActivity().getPackageName());
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         getActivity().startActivity(launchIntent, noAnimationLaunchOptions());
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
     }
