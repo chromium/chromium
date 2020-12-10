@@ -126,14 +126,12 @@ TEST(NGExclusionSpaceTest, TwoExclusions) {
       /* offset */ {LayoutUnit(), LayoutUnit()},
       /* available_size */ LayoutUnit(400));
 
-  EXPECT_EQ(4u, opportunites.size());
+  EXPECT_EQ(3u, opportunites.size());
   TEST_OPPORTUNITY(opportunites[0], NGBfcOffset(LayoutUnit(150), LayoutUnit()),
                    NGBfcOffset(LayoutUnit(400), LayoutUnit(75)));
-  TEST_OPPORTUNITY(opportunites[1], NGBfcOffset(LayoutUnit(150), LayoutUnit()),
-                   NGBfcOffset(LayoutUnit(150), LayoutUnit::Max()));
-  TEST_OPPORTUNITY(opportunites[2], NGBfcOffset(LayoutUnit(), LayoutUnit(75)),
+  TEST_OPPORTUNITY(opportunites[1], NGBfcOffset(LayoutUnit(), LayoutUnit(75)),
                    NGBfcOffset(LayoutUnit(100), LayoutUnit::Max()));
-  TEST_OPPORTUNITY(opportunites[3], NGBfcOffset(LayoutUnit(), LayoutUnit(150)),
+  TEST_OPPORTUNITY(opportunites[2], NGBfcOffset(LayoutUnit(), LayoutUnit(150)),
                    NGBfcOffset(LayoutUnit(400), LayoutUnit::Max()));
 }
 

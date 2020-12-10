@@ -448,8 +448,22 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
         if (exclusion.shape_data)
           shelf.has_shape_exclusions = true;
 
-        // Just in case the shelf has a negative inline-size.
-        shelf.line_right = std::max(shelf.line_left, shelf.line_right);
+        // A shelf can be completely closed off and not needed anymore. For
+        // example:
+        //
+        //    0 1 2 3 4 5 6 7 8
+        // 0  +---+X----------X
+        //    |xxx|
+        // 10 |xxx|
+        //    +---+
+        // 20
+        //       +-----------+
+        // 30    |NEW (right)|
+        //       +-----------+
+        //
+        // In the above example "NEW (right)" will have shrunk the shelf such
+        // that line_right will now be smaller than line_left.
+        bool is_closed_off = shelf.line_left > shelf.line_right;
 
         // We can end up in a situation where a shelf is the same as the
         // previous one. For example:
@@ -469,7 +483,7 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
         bool is_same_as_previous =
             (i > 0) && shelf.line_left == shelves_[i - 1].line_left &&
             shelf.line_right == shelves_[i - 1].line_right;
-        if (is_same_as_previous) {
+        if (is_closed_off || is_same_as_previous) {
           shelves_.EraseAt(i);
           --i;
         }
