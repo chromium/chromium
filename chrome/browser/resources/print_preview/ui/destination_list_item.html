@@ -7,7 +7,7 @@
     min-height: var(--destination-item-height);
     opacity: .87;
     padding-inline-end: 2px;
-    padding-inline-start: 14px;
+    padding-inline-start: 0;
     vertical-align: middle;
   }
 
@@ -15,19 +15,24 @@
     align-items: center;
     color: var(--cr-secondary-text-color);
     font-size: calc(10/12 * 1em);
-    margin-inline-start: 1em;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
     white-space: nowrap;
   }
 
+  :host > span {
+    margin-inline-start: 1em;
+  }
+
   iron-icon {
+    --icon-margin: calc((var(--search-icon-size) - var(--iron-icon-width))/2);
     fill: var(--google-grey-600);
     flex: 0;
-    height: 20px;
-    margin-inline-end: 12px;
-    min-width: 20px;
+    height: var(--iron-icon-height);
+    margin-inline-end: var(--icon-margin);
+    margin-inline-start: var(--icon-margin);
+    min-width: var(--iron-icon-width);
     transition: opacity 150ms;
   }
 
@@ -37,10 +42,12 @@
     }
   }
 
-  .name {
+  :host .name {
     color: var(--cr-primary-text-color);
     font-size: 1em;
     margin-inline-start: 0;
+    /* Matches cr-input-padding-start */
+    padding-inline-start: 8px;
   }
 
   .extension-controlled-indicator {
@@ -48,6 +55,7 @@
     flex: 1;
     justify-content: flex-end;
     min-width: 150px;
+    padding-inline-end: 8px;
   }
 
   .extension-icon {
