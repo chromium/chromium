@@ -1,6 +1,5 @@
 Definitions of LUCI entities that test the chromium/src codebase.
 
-* consoles - Manually curated consoles for chromium subproject builders.
 * ci.star - builders that do post-submit testing against the master branch
 * try.star, gpu.trystar, swangle.try.star - builders that do pre-submit testing
 * fallback-cq.star - generator that sets up a do-nothing fallback CQ

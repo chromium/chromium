@@ -359,6 +359,17 @@ ci.console_view(
     header = None,
 )
 
+ci.console_view(
+    name = "sheriff.ios",
+    title = "iOS Sheriff Console",
+    ordering = {
+        "*type*": ci.ordering(short_names = ["dev", "sim"]),
+        None: ["chromium.mac", "chromium.fyi"],
+        "chromium.mac": "*type*",
+        "chromium.fyi|13": "*type*",
+    },
+)
+
 # The chromium.clang console includes some entries for builders from the chrome project
 [branches.console_view_entry(
     builder = "chrome:ci/{}".format(name),
@@ -3168,28 +3179,52 @@ ci.fyi_ios_builder(
 
 ci.fyi_ios_builder(
     name = "ios13-beta-simulator",
-    console_view_entry = ci.console_view_entry(
-        category = "iOS|iOS13",
-        short_name = "ios13",
-    ),
+    console_view_entry = [
+        ci.console_view_entry(
+            category = "iOS|iOS13",
+            short_name = "ios13",
+        ),
+        ci.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.fyi|13",
+            short_name = "ios13",
+        ),
+    ],
     schedule = "0 0,12 * * *",
     triggered_by = [],
 )
 
 ci.fyi_ios_builder(
     name = "ios13-sdk-device",
-    console_view_entry = ci.console_view_entry(
-        category = "iOS|iOS13",
-        short_name = "dev",
-    ),
+    console_view_entry = [
+        ci.console_view_entry(
+            category = "iOS|iOS13",
+            short_name = "dev",
+        ),
+        ci.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.fyi|13",
+            short_name = "dev",
+        ),
+    ],
 )
 
 ci.fyi_ios_builder(
     name = "ios13-sdk-simulator",
-    console_view_entry = ci.console_view_entry(
-        category = "iOS|iOS13",
-        short_name = "sdk13",
-    ),
+    console_view_entry = [
+        ci.console_view_entry(
+            category = "iOS|iOS13",
+            short_name = "sdk13",
+        ),
+        ci.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.fyi|13",
+            short_name = "sim",
+        ),
+    ],
     schedule = "0 6,18 * * *",
     triggered_by = [],
 )
@@ -4649,10 +4684,18 @@ ci.thin_tester(
 
 ci.mac_ios_builder(
     name = "ios-device",
-    console_view_entry = ci.console_view_entry(
-        category = "ios|default",
-        short_name = "dev",
-    ),
+    console_view_entry = [
+        ci.console_view_entry(
+            category = "ios|default",
+            short_name = "dev",
+        ),
+        ci.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.mac",
+            short_name = "dev",
+        ),
+    ],
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
     main_console_view = "main",
@@ -4661,10 +4704,18 @@ ci.mac_ios_builder(
 ci.mac_ios_builder(
     name = "ios-simulator",
     branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = ci.console_view_entry(
-        category = "ios|default",
-        short_name = "sim",
-    ),
+    console_view_entry = [
+        ci.console_view_entry(
+            category = "ios|default",
+            short_name = "sim",
+        ),
+        ci.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.mac",
+            short_name = "sim",
+        ),
+    ],
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
 )
@@ -4672,20 +4723,36 @@ ci.mac_ios_builder(
 ci.mac_ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = ci.console_view_entry(
-        category = "ios|default",
-        short_name = "ful",
-    ),
+    console_view_entry = [
+        ci.console_view_entry(
+            category = "ios|default",
+            short_name = "ful",
+        ),
+        ci.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.mac",
+            short_name = "ful",
+        ),
+    ],
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
 )
 
 ci.mac_ios_builder(
     name = "ios-simulator-noncq",
-    console_view_entry = ci.console_view_entry(
-        category = "ios|default",
-        short_name = "non",
-    ),
+    console_view_entry = [
+        ci.console_view_entry(
+            category = "ios|default",
+            short_name = "non",
+        ),
+        ci.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.ios",
+            category = "chromium.mac",
+            short_name = "non",
+        ),
+    ],
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
     main_console_view = "main",
