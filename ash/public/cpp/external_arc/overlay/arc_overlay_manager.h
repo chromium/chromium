@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -65,6 +66,7 @@ class ASH_PUBLIC_EXPORT ArcOverlayManager : public aura::EnvObserver,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
 
  private:
   void DeregisterHostWindow(const std::string& overlay_token);
@@ -76,9 +78,16 @@ class ASH_PUBLIC_EXPORT ArcOverlayManager : public aura::EnvObserver,
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
 
-  aura::Window* observed_window_ = nullptr;
+  // This tracks a single newly created window until we get a confirmation that
+  // it is an exo::ShellSurfaceBase with the right settings to be an overlay
+  // (which should happen immediately after creation), or until another new
+  // window is created.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
-      observed_window_observer_{this};
+      unknown_window_observation_{this};
+
+  // This tracks all the overlay candidates until they are actually ready
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      overlay_window_observations_{this};
 };
 
 }  // namespace ash
