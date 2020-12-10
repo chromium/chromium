@@ -9,8 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
-#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 
 #include "content/public/android/content_jni_headers/SmsProviderGms_jni.h"
 #include "content/public/browser/web_contents.h"
@@ -28,14 +27,14 @@ SmsProviderGms::SmsProviderGms() {
   // launched http://crbug.com/1101050
   GmsBackend backend = GmsBackend::kUserConsent;
 
-  std::string backend_value = base::GetFieldTrialParamValueByFeature(
-      features::kWebOtpBackend, "backend");
-
-  if (backend_value == "user_consent") {
+  auto switch_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kWebOtpBackend);
+  if (switch_value == switches::kWebOtpBackendUserConsent) {
     backend = GmsBackend::kUserConsent;
-  } else if (backend_value == "verification") {
+  } else if (switch_value == switches::kWebOtpBackendSmsVerification) {
     backend = GmsBackend::kVerification;
-  } else if (backend_value == "auto") {
+  } else if (switch_value == switches::kWebOtpBackendAuto) {
     backend = GmsBackend::kAuto;
   }
 

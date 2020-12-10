@@ -7,7 +7,6 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/sms/sms_fetcher_impl.h"
@@ -55,6 +54,8 @@ class SmsBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+    command_line->AppendSwitchASCII(switches::kWebOtpBackend,
+                                    switches::kWebOtpBackendSmsVerification);
     cert_verifier_.SetUpCommandLine(command_line);
   }
 
@@ -741,6 +742,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, AbortAfterSmsRetrieval) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsFetcherUAF) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kWebOtpBackend, switches::kWebOtpBackendUserConsent);
   GURL url = GetTestUrl(nullptr, "simple_page.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -964,7 +967,8 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
 // Disabled test (fails intermittently on Android): https://crbug.com/1154692
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_RecordUserCancelledAsOutcome) {
   base::HistogramTester histogram_tester;
-
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kWebOtpBackend, switches::kWebOtpBackendUserConsent);
   GURL url = GetTestUrl(nullptr, "simple_page.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 

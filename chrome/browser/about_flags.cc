@@ -2289,19 +2289,14 @@ const FeatureEntry::Choice kEnableCrOSActionRecorderChoices[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kWebOtpBackendUserConsent[] = {
-    {"backend", "user_consent"}};
-const FeatureEntry::FeatureParam kWebOtpBackendSmsVerification[] = {
-    {"backend", "verification"}};
-const FeatureEntry::FeatureParam kWebOtpBackendAuto[] = {{"backend", "auto"}};
-
-const FeatureEntry::FeatureVariation kWebOtpBackendVariations[] = {
-    {"with Automatic API selection", kWebOtpBackendAuto,
-     base::size(kWebOtpBackendAuto), nullptr},
-    {"with User Consent API", kWebOtpBackendUserConsent,
-     base::size(kWebOtpBackendUserConsent), nullptr},
-    {"with Code Browser API", kWebOtpBackendSmsVerification,
-     base::size(kWebOtpBackendSmsVerification), nullptr},
+const FeatureEntry::Choice kWebOtpBackendChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flag_descriptions::kWebOtpBackendSmsVerification, switches::kWebOtpBackend,
+     switches::kWebOtpBackendSmsVerification},
+    {flag_descriptions::kWebOtpBackendUserConsent, switches::kWebOtpBackend,
+     switches::kWebOtpBackendUserConsent},
+    {flag_descriptions::kWebOtpBackendAuto, switches::kWebOtpBackend,
+     switches::kWebOtpBackendAuto},
 };
 
 const FeatureEntry::Choice kQueryTilesCountryChoices[] = {
@@ -5930,9 +5925,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if defined(OS_ANDROID)
     {"web-otp-backend", flag_descriptions::kWebOtpBackendName,
      flag_descriptions::kWebOtpBackendDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kWebOtpBackend,
-                                    kWebOtpBackendVariations,
-                                    "WebOTPBackend")},
+     MULTI_VALUE_TYPE(kWebOtpBackendChoices)},
 
     {"darken-websites-checkbox-in-themes-setting",
      flag_descriptions::kDarkenWebsitesCheckboxInThemesSettingName,

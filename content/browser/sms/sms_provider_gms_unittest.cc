@@ -13,6 +13,7 @@
 #include "content/browser/sms/sms_provider_gms.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/content_unittests_jni_headers/SmsProviderFakes_jni.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,8 +58,8 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
   void SetUp() {
     RenderViewHostTestHarness::SetUp();
 
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kWebOtpBackend, {{"backend", GetBackend()}});
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kWebOtpBackend, GetSwitch());
 
     test_window_ = ui::WindowAndroid::CreateForTesting();
 
@@ -79,7 +80,7 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
   }
 
   void TriggerSms(const std::string& sms) {
-    if (GetBackend() == "user_consent") {
+    if (GetSwitch() == switches::kWebOtpBackendUserConsent) {
       TriggerSmsForUserConsent(sms);
     } else {
       TriggerSmsForVerification(sms);
@@ -102,7 +103,7 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
 
   void TriggerTimeout() {
     JNIEnv* env = base::android::AttachCurrentThread();
-    if (GetBackend() == "user_consent") {
+    if (GetSwitch() == switches::kWebOtpBackendUserConsent) {
       Java_FakeSmsRetrieverClient_triggerUserConsentTimeout(
           env, j_fake_sms_retriever_client_);
     } else {
@@ -134,7 +135,7 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
 
   NiceMock<MockObserver>* observer() { return &observer_; }
 
-  virtual std::string GetBackend() const = 0;
+  virtual std::string GetSwitch() const = 0;
 
  private:
   std::unique_ptr<SmsProviderGms> provider_;
@@ -148,18 +149,22 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
 
 class SmsProviderGmsTest : public ::testing::WithParamInterface<std::string>,
                            public SmsProviderGmsBaseTest {
-  std::string GetBackend() const override { return GetParam(); }
+  std::string GetSwitch() const override { return GetParam(); }
 };
 
 // Fixture to be used with tests that are only applicable to the auto backend.
 class SmsProviderGmsAutoTest : public SmsProviderGmsBaseTest {
-  std::string GetBackend() const override { return "auto"; }
+  std::string GetSwitch() const override {
+    return switches::kWebOtpBackendAuto;
+  }
 };
 
 // Fixture to be used with tests that are only applicable to the verification
 // backend.
 class SmsProviderGmsVerificationTest : public SmsProviderGmsBaseTest {
-  std::string GetBackend() const override { return "verification"; }
+  std::string GetSwitch() const override {
+    return switches::kWebOtpBackendSmsVerification;
+  }
 };
 
 }  // namespace
@@ -209,11 +214,12 @@ TEST_P(SmsProviderGmsTest, OneObserverTwoTasks) {
 
 // For common tests, instantiate the parametric tests three times:
 // with user consent backend, with verification backend, and  with auto.
-INSTANTIATE_TEST_SUITE_P(AllBackends,
-                         SmsProviderGmsTest,
-                         testing::Values("auto",
-                                         "verification",
-                                         "user_consent"));
+INSTANTIATE_TEST_SUITE_P(
+    AllBackends,
+    SmsProviderGmsTest,
+    testing::Values(switches::kWebOtpBackendAuto,
+                    switches::kWebOtpBackendSmsVerification,
+                    switches::kWebOtpBackendUserConsent));
 
 // These tests are only valid with auto backend.
 

@@ -814,6 +814,19 @@ const char kZygoteCmdPrefix[] = "zygote-cmd-prefix";
 // Causes the process to run as a zygote.
 const char kZygoteProcess[] = "zygote";
 
+// Enables specified backend for the Web OTP API.
+const char kWebOtpBackend[] = "web-otp-backend";
+
+// Enables Sms Verification backend for Web OTP API which requires app hash in
+// SMS body.
+const char kWebOtpBackendSmsVerification[] = "web-otp-backend-sms-verification";
+
+// Enables User Consent backend for Web OTP API.
+const char kWebOtpBackendUserConsent[] = "web-otp-backend-user-consent";
+
+// Enables auto backend selection for Web OTP API.
+const char kWebOtpBackendAuto[] = "web-otp-backend-auto";
+
 // Disables encryption of RTP Media for WebRTC. When Chrome embeds Content, it
 // ignores this switch on its stable and beta channels.
 const char kDisableWebRtcEncryption[]      = "disable-webrtc-encryption";
