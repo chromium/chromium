@@ -46,6 +46,7 @@ class CORE_EXPORT DOMException : public ScriptWrappable {
   // This constructor shouldn't be used except for V8ThrowDOMException. Note
   // that this constructor does not associate the stacktrace with the created
   // object.
+  // TODO(https://crbug.com/991544): Replace DOMException constructor calls.
   DOMException(DOMExceptionCode,
                const String& sanitized_message = String(),
                const String& unsanitized_message = String());
