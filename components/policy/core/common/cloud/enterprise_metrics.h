@@ -262,6 +262,20 @@ POLICY_EXPORT extern const char kUMAPrivateSetMembershipHashDanceComparison[];
 POLICY_EXPORT extern const char kUMAPrivateSetMembershipSuccessTime[];
 POLICY_EXPORT extern const char kUMAPrivateSetMembershipRequestStatus[];
 
+// DeviceAutoEnrollmentRequest i.e. hash dance request UMA histogram names.
+POLICY_EXPORT extern const char kUMAHashDanceSuccessTime[];
+// The following histogram names where added before private set membership
+// existed. They are only recorded for hash dance.
+POLICY_EXPORT extern const char kUMAHashDanceProtocolTime[];
+POLICY_EXPORT extern const char kUMAHashDanceBucketDownloadTime[];
+POLICY_EXPORT extern const char kUMAHashDanceExtraTime[];
+POLICY_EXPORT extern const char kUMAHashDanceRequestStatus[];
+POLICY_EXPORT extern const char kUMAHashDanceNetworkErrorCode[];
+// Suffix for initial enrollment.
+POLICY_EXPORT extern const char kUMAHashDanceSuffixInitialEnrollment[];
+// Suffix for Forced Re-Enrollment.
+POLICY_EXPORT extern const char kUMAHashDanceSuffixFRE[];
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_ENTERPRISE_METRICS_H_

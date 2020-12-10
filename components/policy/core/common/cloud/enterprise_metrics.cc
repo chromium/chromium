@@ -190,4 +190,18 @@ const char kUMAPrivateSetMembershipSuccessTime[] =
 const char kUMAPrivateSetMembershipRequestStatus[] =
     "Enterprise.AutoEnrollmentPrivateSetMembershipRequestStatus";
 
+const char kUMAHashDanceSuccessTime[] =
+    "Enterprise.AutoEnrollmentHashDanceSuccessTime";
+const char kUMAHashDanceProtocolTime[] =
+    "Enterprise.AutoEnrollmentProtocolTime";
+const char kUMAHashDanceBucketDownloadTime[] =
+    "Enterprise.AutoEnrollmentBucketDownloadTime";
+const char kUMAHashDanceExtraTime[] = "Enterprise.AutoEnrollmentExtraTime";
+const char kUMAHashDanceRequestStatus[] =
+    "Enterprise.AutoEnrollmentRequestStatus";
+const char kUMAHashDanceNetworkErrorCode[] =
+    "Enterprise.AutoEnrollmentRequestNetworkErrorCode";
+const char kUMAHashDanceSuffixInitialEnrollment[] = ".InitialEnrollment";
+const char kUMAHashDanceSuffixFRE[] = ".ForcedReenrollment";
+
 }  // namespace policy
