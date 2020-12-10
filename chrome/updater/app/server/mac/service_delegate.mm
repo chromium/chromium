@@ -27,7 +27,7 @@
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_version.h"
 
-@interface CRUUpdateCheckServiceXPCImpl : NSObject <CRUUpdateChecking>
+@interface CRUUpdateServiceXPCImpl : NSObject <CRUUpdateServicing>
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -41,7 +41,7 @@
 
 @end
 
-@implementation CRUUpdateCheckServiceXPCImpl {
+@implementation CRUUpdateServiceXPCImpl {
   updater::UpdateService* _service;
   scoped_refptr<updater::AppServerMac> _appServer;
   scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
@@ -60,7 +60,7 @@
   return self;
 }
 
-#pragma mark CRUUpdateChecking
+#pragma mark CRUUpdateServicing
 - (void)getVersionWithReply:(void (^_Nonnull)(NSString* version))reply {
   auto cb =
       base::BindOnce(base::RetainBlock(^(const base::Version& updaterVersion) {
@@ -206,7 +206,8 @@
 
 @end
 
-@interface CRUUpdateServiceInternalXPCImpl : NSObject <CRUControlling>
+@interface CRUUpdateServiceInternalXPCImpl
+    : NSObject <CRUUpdateServicingInternal>
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -241,10 +242,10 @@
   return self;
 }
 
-#pragma mark CRUControlling
-- (void)performControlTasksWithReply:(void (^)(void))reply {
+#pragma mark CRUUpdateServicingInternal
+- (void)performTasksWithReply:(void (^)(void))reply {
   auto cb = base::BindOnce(base::RetainBlock(^(void) {
-    VLOG(0) << "performControlTasks complete.";
+    VLOG(0) << "performTasks complete.";
     if (reply)
       reply();
 
@@ -296,10 +297,10 @@
   // Check to see if the other side of the connection is "okay";
   // if not, invalidate newConnection and return NO.
 
-  newConnection.exportedInterface = updater::GetXPCUpdateCheckingInterface();
+  newConnection.exportedInterface = updater::GetXPCUpdateServicingInterface();
 
-  base::scoped_nsobject<CRUUpdateCheckServiceXPCImpl> object(
-      [[CRUUpdateCheckServiceXPCImpl alloc]
+  base::scoped_nsobject<CRUUpdateServiceXPCImpl> object(
+      [[CRUUpdateServiceXPCImpl alloc]
           initWithUpdateService:_service.get()
                       appServer:_appServer
                  callbackRunner:_callbackRunner.get()]);
@@ -334,7 +335,8 @@
   // Check to see if the other side of the connection is "okay";
   // if not, invalidate newConnection and return NO.
 
-  newConnection.exportedInterface = updater::GetXPCControllingInterface();
+  newConnection.exportedInterface =
+      updater::GetXPCUpdateServicingInternalInterface();
 
   base::scoped_nsobject<CRUUpdateServiceInternalXPCImpl> object(
       [[CRUUpdateServiceInternalXPCImpl alloc]

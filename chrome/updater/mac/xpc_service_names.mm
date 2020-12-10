@@ -12,12 +12,13 @@
 
 namespace updater {
 
-const char kControlLaunchdName[] =
+const char kUpdateServiceInternalLaunchdName[] =
     MAC_BUNDLE_IDENTIFIER_STRING ".control." UPDATER_VERSION_STRING;
-const char kUpdateLaunchdName[] = MAC_BUNDLE_IDENTIFIER_STRING ".service";
+const char kUpdateServiceLaunchdName[] =
+    MAC_BUNDLE_IDENTIFIER_STRING ".service";
 
-base::ScopedCFTypeRef<CFStringRef> CopyServiceLaunchdName() {
-  return base::SysUTF8ToCFStringRef(kUpdateLaunchdName);
+base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceLaunchdName() {
+  return base::SysUTF8ToCFStringRef(kUpdateServiceLaunchdName);
 }
 
 base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName() {
@@ -25,13 +26,13 @@ base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName() {
                                     ".wake." UPDATER_VERSION_STRING);
 }
 
-base::ScopedCFTypeRef<CFStringRef> CopyControlLaunchdName() {
-  return base::SysUTF8ToCFStringRef(kControlLaunchdName);
+base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceInternalLaunchdName() {
+  return base::SysUTF8ToCFStringRef(kUpdateServiceInternalLaunchdName);
 }
 
-base::scoped_nsobject<NSString> GetServiceLaunchdLabel() {
+base::scoped_nsobject<NSString> GetUpdateServiceLaunchdLabel() {
   return base::scoped_nsobject<NSString>(
-      base::mac::CFToNSCast(CopyServiceLaunchdName().release()));
+      base::mac::CFToNSCast(CopyUpdateServiceLaunchdName().release()));
 }
 
 base::scoped_nsobject<NSString> GetWakeLaunchdLabel() {
@@ -39,25 +40,25 @@ base::scoped_nsobject<NSString> GetWakeLaunchdLabel() {
       base::mac::CFToNSCast(CopyWakeLaunchdName().release()));
 }
 
-base::scoped_nsobject<NSString> GetControlLaunchdLabel() {
+base::scoped_nsobject<NSString> GetUpdateServiceInternalLaunchdLabel() {
   return base::scoped_nsobject<NSString>(
-      base::mac::CFToNSCast(CopyControlLaunchdName().release()));
+      base::mac::CFToNSCast(CopyUpdateServiceInternalLaunchdName().release()));
 }
 
-base::scoped_nsobject<NSString> GetServiceMachName(
+base::scoped_nsobject<NSString> GetUpdateServiceMachName(
     base::scoped_nsobject<NSString> name) {
   return base::scoped_nsobject<NSString>(
       [name stringByAppendingFormat:@".%lu", [name hash]],
       base::scoped_policy::RETAIN);
 }
 
-base::scoped_nsobject<NSString> GetServiceMachName() {
-  return GetServiceMachName(GetServiceLaunchdLabel());
+base::scoped_nsobject<NSString> GetUpdateServiceMachName() {
+  return GetUpdateServiceMachName(GetUpdateServiceLaunchdLabel());
 }
 
-base::scoped_nsobject<NSString> GetVersionedServiceMachName() {
+base::scoped_nsobject<NSString> GetUpdateServiceInternalMachName() {
   base::scoped_nsobject<NSString> serviceLaunchdLabel(
-      GetServiceLaunchdLabel(), base::scoped_policy::RETAIN);
+      GetUpdateServiceLaunchdLabel(), base::scoped_policy::RETAIN);
   base::scoped_nsobject<NSString> updaterVersionString(
       base::SysUTF8ToNSString(UPDATER_VERSION_STRING),
       base::scoped_policy::RETAIN);
@@ -66,7 +67,7 @@ base::scoped_nsobject<NSString> GetVersionedServiceMachName() {
       [NSString stringWithFormat:@"%@.%@", serviceLaunchdLabel.get(),
                                  updaterVersionString.get()],
       base::scoped_policy::RETAIN);
-  return GetServiceMachName(name);
+  return GetUpdateServiceMachName(name);
 }
 
 }  // namespace updater

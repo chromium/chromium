@@ -284,7 +284,7 @@ class MacUpdateServiceProxyTest : public ::testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
-  ScopedXPCServiceMock mock_driver_ { @protocol (CRUUpdateChecking) };
+  ScopedXPCServiceMock mock_driver_ { @protocol (CRUUpdateServicing) };
   std::unique_ptr<base::RunLoop> run_loop_;
   scoped_refptr<UpdateServiceProxy> service_;
 };  // class MacUpdateOutOfProcessTest
@@ -450,7 +450,7 @@ TEST_F(MacUpdateServiceProxyTest, NoProductsUpdateAll) {
       mock_driver_.PrepareNewMockConnection();
   ScopedXPCServiceMock::RemoteObjectMockRecord* mock_rec =
       conn_rec->PrepareNewMockRemoteObject();
-  id<CRUUpdateChecking> mock_remote_object = mock_rec->mock_object.get();
+  id<CRUUpdateServicing> mock_remote_object = mock_rec->mock_object.get();
 
   OCMockBlockCapturer<void (^)(UpdateService::Result)> reply_block_capturer;
   // Create a pointer that can be copied into the .andDo block to refer to the
@@ -490,7 +490,7 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
       mock_driver_.PrepareNewMockConnection();
   ScopedXPCServiceMock::RemoteObjectMockRecord* mock_rec =
       conn_rec->PrepareNewMockRemoteObject();
-  id<CRUUpdateChecking> mock_remote_object = mock_rec->mock_object.get();
+  id<CRUUpdateServicing> mock_remote_object = mock_rec->mock_object.get();
 
   OCMockBlockCapturer<void (^)(UpdateService::Result)> reply_block_capturer;
   OCMockObjectCapturer<CRUUpdateStateObserver> update_state_observer_capturer;

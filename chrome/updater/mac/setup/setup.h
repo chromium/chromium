@@ -27,8 +27,8 @@ constexpr int kFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;
 // Failed to remove versioned update service job from Launchd.
 constexpr int kFailedToRemoveCandidateUpdateServiceJobFromLaunchd = 21;
 
-// Failed to remove versioned control job from Launchd.
-constexpr int kFailedToRemoveControlJobFromLaunchd = 22;
+// Failed to remove versioned update service internal job from Launchd.
+constexpr int kFailedToRemoveUpdateServiceInternalJobFromLaunchd = 22;
 
 // Failed to remove versioned wake job from Launchd.
 constexpr int kFailedToRemoveWakeJobFromLaunchd = 23;
@@ -39,8 +39,8 @@ constexpr int kFailedToCreateUpdateServiceLaunchdJobPlist = 30;
 // Failed to create the versioned update service Launchd plist.
 constexpr int kFailedToCreateVersionedUpdateServiceLaunchdJobPlist = 31;
 
-// Failed to create the versioned control Launchd plist.
-constexpr int kFailedToCreateControlLaunchdJobPlist = 32;
+// Failed to create the versioned update service internal Launchd plist.
+constexpr int kFailedToCreateUpdateServiceInternalLaunchdJobPlist = 32;
 
 // Failed to create the versioned wake Launchd plist.
 constexpr int kFailedToCreateWakeLaunchdJobPlist = 33;
@@ -51,14 +51,15 @@ constexpr int kFailedToStartLaunchdActiveServiceJob = 40;
 // Failed to start the versioned update service job.
 constexpr int kFailedToStartLaunchdVersionedServiceJob = 41;
 
-// Failed to start the control job.
-constexpr int kFailedToStartLaunchdControlJob = 42;
+// Failed to start the update service internal job.
+constexpr int kFailedToStartLaunchdUpdateServiceInternalJob = 42;
 
 // Failed to start the wake job.
 constexpr int kFailedToStartLaunchdWakeJob = 43;
 
-// Timed out while awaiting launchctl to become aware of the control job.
-constexpr int kFailedAwaitingLaunchdControlJob = 44;
+// Timed out while awaiting launchctl to become aware of the update service
+// internal job.
+constexpr int kFailedAwaitingLaunchdUpdateServiceInternalJob = 44;
 
 }  // namespace setup_exit_codes
 

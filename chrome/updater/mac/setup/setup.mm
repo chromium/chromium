@@ -97,7 +97,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
     const base::FilePath& updater_path) {
   // See the man page for launchd.plist.
   NSDictionary<NSString*, id>* launchd_plist = @{
-    @LAUNCH_JOBKEY_LABEL : GetServiceLaunchdLabel(),
+    @LAUNCH_JOBKEY_LABEL : GetUpdateServiceLaunchdLabel(),
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[
       base::SysUTF8ToNSString(updater_path.value()),
       MakeProgramArgument(kServerSwitch),
@@ -107,7 +107,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
       MakeProgramArgumentWithValue(kLoggingModuleSwitch,
                                    kLoggingModuleSwitchValue),
     ],
-    @LAUNCH_JOBKEY_MACHSERVICES : @{GetServiceMachName() : @YES},
+    @LAUNCH_JOBKEY_MACHSERVICES : @{GetUpdateServiceMachName() : @YES},
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @NO,
     @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"Aqua"
   };
@@ -142,11 +142,11 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
       base::scoped_policy::RETAIN);
 }
 
-base::ScopedCFTypeRef<CFDictionaryRef> CreateControlLaunchdPlist(
+base::ScopedCFTypeRef<CFDictionaryRef> CreateUpdateServiceInternalLaunchdPlist(
     const base::FilePath& updater_path) {
   // See the man page for launchd.plist.
   NSDictionary<NSString*, id>* launchd_plist = @{
-    @LAUNCH_JOBKEY_LABEL : GetControlLaunchdLabel(),
+    @LAUNCH_JOBKEY_LABEL : GetUpdateServiceInternalLaunchdLabel(),
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[
       base::SysUTF8ToNSString(updater_path.value()),
       MakeProgramArgument(kServerSwitch),
@@ -156,7 +156,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateControlLaunchdPlist(
       MakeProgramArgumentWithValue(kLoggingModuleSwitch,
                                    kLoggingModuleSwitchValue),
     ],
-    @LAUNCH_JOBKEY_MACHSERVICES : @{GetVersionedServiceMachName() : @YES},
+    @LAUNCH_JOBKEY_MACHSERVICES : @{GetUpdateServiceInternalMachName() : @YES},
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @NO,
     @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"Aqua"
   };
@@ -174,7 +174,8 @@ bool CreateUpdateServiceLaunchdJobPlist(const base::FilePath& updater_path) {
   base::ScopedCFTypeRef<CFDictionaryRef> plist(
       CreateServiceLaunchdPlist(updater_path));
   return Launchd::GetInstance()->WritePlistToFile(
-      LaunchdDomain(), ServiceLaunchdType(), CopyServiceLaunchdName(), plist);
+      LaunchdDomain(), ServiceLaunchdType(), CopyUpdateServiceLaunchdName(),
+      plist);
 }
 
 bool CreateWakeLaunchdJobPlist(const base::FilePath& updater_path) {
@@ -187,14 +188,16 @@ bool CreateWakeLaunchdJobPlist(const base::FilePath& updater_path) {
       LaunchdDomain(), ServiceLaunchdType(), CopyWakeLaunchdName(), plist);
 }
 
-bool CreateControlLaunchdJobPlist(const base::FilePath& updater_path) {
+bool CreateUpdateServiceInternalLaunchdJobPlist(
+    const base::FilePath& updater_path) {
   // We're creating directories and writing a file.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   base::ScopedCFTypeRef<CFDictionaryRef> plist(
-      CreateControlLaunchdPlist(updater_path));
+      CreateUpdateServiceInternalLaunchdPlist(updater_path));
   return Launchd::GetInstance()->WritePlistToFile(
-      LaunchdDomain(), ServiceLaunchdType(), CopyControlLaunchdName(), plist);
+      LaunchdDomain(), ServiceLaunchdType(),
+      CopyUpdateServiceInternalLaunchdName(), plist);
 }
 
 bool StartUpdateServiceVersionedLaunchdJob(
@@ -209,14 +212,14 @@ bool StartUpdateWakeVersionedLaunchdJob() {
       CFSTR("Aqua"));
 }
 
-bool StartUpdateControlVersionedLaunchdJob() {
+bool StartUpdateServiceInternalVersionedLaunchdJob() {
   return Launchd::GetInstance()->RestartJob(
-      LaunchdDomain(), ServiceLaunchdType(), CopyControlLaunchdName(),
-      CFSTR("Aqua"));
+      LaunchdDomain(), ServiceLaunchdType(),
+      CopyUpdateServiceInternalLaunchdName(), CFSTR("Aqua"));
 }
 
 bool StartLaunchdServiceJob() {
-  return StartUpdateServiceVersionedLaunchdJob(CopyServiceLaunchdName());
+  return StartUpdateServiceVersionedLaunchdJob(CopyUpdateServiceLaunchdName());
 }
 
 bool RemoveJobFromLaunchd(Launchd::Domain domain,
@@ -250,15 +253,15 @@ bool RemoveUpdateServiceJobFromLaunchd(
 }
 
 bool RemoveUpdateServiceJobFromLaunchd() {
-  return RemoveUpdateServiceJobFromLaunchd(CopyServiceLaunchdName());
+  return RemoveUpdateServiceJobFromLaunchd(CopyUpdateServiceLaunchdName());
 }
 
 bool RemoveUpdateWakeJobFromLaunchd() {
   return RemoveClientJobFromLaunchd(CopyWakeLaunchdName());
 }
 
-bool RemoveUpdateControlJobFromLaunchd() {
-  return RemoveServiceJobFromLaunchd(CopyControlLaunchdName());
+bool RemoveUpdateServiceInternalJobFromLaunchd() {
+  return RemoveServiceJobFromLaunchd(CopyUpdateServiceInternalLaunchdName());
 }
 
 bool DeleteFolder(const base::FilePath& installed_path) {
@@ -299,11 +302,12 @@ int Setup() {
   if (!CreateWakeLaunchdJobPlist(updater_executable_path))
     return setup_exit_codes::kFailedToCreateWakeLaunchdJobPlist;
 
-  if (!CreateControlLaunchdJobPlist(updater_executable_path))
-    return setup_exit_codes::kFailedToCreateControlLaunchdJobPlist;
+  if (!CreateUpdateServiceInternalLaunchdJobPlist(updater_executable_path))
+    return setup_exit_codes::
+        kFailedToCreateUpdateServiceInternalLaunchdJobPlist;
 
-  if (!StartUpdateControlVersionedLaunchdJob())
-    return setup_exit_codes::kFailedToStartLaunchdControlJob;
+  if (!StartUpdateServiceInternalVersionedLaunchdJob())
+    return setup_exit_codes::kFailedToStartLaunchdUpdateServiceInternalJob;
 
   if (!StartUpdateWakeVersionedLaunchdJob())
     return setup_exit_codes::kFailedToStartLaunchdWakeJob;
@@ -334,12 +338,12 @@ int UninstallCandidate() {
   if (!RemoveUpdateWakeJobFromLaunchd())
     return setup_exit_codes::kFailedToRemoveWakeJobFromLaunchd;
 
-  // Removing the Control job has to be the last step because launchd is likely
-  // to terminate the current process. Clients should expect the connection to
-  // invalidate (possibly with an interruption beforehand) as a result of
-  // service uninstallation.
-  if (!RemoveUpdateControlJobFromLaunchd())
-    return setup_exit_codes::kFailedToRemoveControlJobFromLaunchd;
+  // Removing the Update Internal job has to be the last step because launchd is
+  // likely to terminate the current process. Clients should expect the
+  // connection to invalidate (possibly with an interruption beforehand) as a
+  // result of service uninstallation.
+  if (!RemoveUpdateServiceInternalJobFromLaunchd())
+    return setup_exit_codes::kFailedToRemoveUpdateServiceInternalJobFromLaunchd;
 
   return setup_exit_codes::kSuccess;
 }

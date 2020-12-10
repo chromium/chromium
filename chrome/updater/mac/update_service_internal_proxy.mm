@@ -16,14 +16,15 @@
 #include "chrome/updater/service_scope.h"
 
 // Interface to communicate with the XPC Update Service Internal.
-@interface CRUUpdateServiceInternalProxyImpl : NSObject <CRUControlling>
+@interface CRUUpdateServiceInternalProxyImpl
+    : NSObject <CRUUpdateServicingInternal>
 
 - (instancetype)initPrivileged;
 
 @end
 
 @implementation CRUUpdateServiceInternalProxyImpl {
-  base::scoped_nsobject<NSXPCConnection> _controlXPCConnection;
+  base::scoped_nsobject<NSXPCConnection> _xpcConnection;
 }
 
 - (instancetype)init {
@@ -36,41 +37,42 @@
 
 - (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options {
   if ((self = [super init])) {
-    _controlXPCConnection.reset([[NSXPCConnection alloc]
-        initWithMachServiceName:updater::GetVersionedServiceMachName().get()
+    _xpcConnection.reset([[NSXPCConnection alloc]
+        initWithMachServiceName:updater::GetUpdateServiceInternalMachName()
+                                    .get()
                         options:options]);
 
-    _controlXPCConnection.get().remoteObjectInterface =
-        updater::GetXPCControllingInterface();
+    _xpcConnection.get().remoteObjectInterface =
+        updater::GetXPCUpdateServicingInternalInterface();
 
-    _controlXPCConnection.get().interruptionHandler = ^{
-      LOG(WARNING) << "CRUControlling: XPC connection interrupted.";
+    _xpcConnection.get().interruptionHandler = ^{
+      LOG(WARNING) << "CRUUpdateServicingInternal: XPC connection interrupted.";
     };
 
-    _controlXPCConnection.get().invalidationHandler = ^{
-      LOG(WARNING) << "CRUControlling: XPC connection invalidated.";
+    _xpcConnection.get().invalidationHandler = ^{
+      LOG(WARNING) << "CRUUpdateServicingInternal: XPC connection invalidated.";
     };
 
-    [_controlXPCConnection resume];
+    [_xpcConnection resume];
   }
 
   return self;
 }
 
 - (void)dealloc {
-  [_controlXPCConnection invalidate];
+  [_xpcConnection invalidate];
   [super dealloc];
 }
 
-- (void)performControlTasksWithReply:(void (^)(void))reply {
+- (void)performTasksWithReply:(void (^)(void))reply {
   auto errorHandler = ^(NSError* xpcError) {
     LOG(ERROR) << "XPC connection failed: "
                << base::SysNSStringToUTF8([xpcError description]);
     reply();
   };
 
-  [[_controlXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
-      performControlTasksWithReply:reply];
+  [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      performTasksWithReply:reply];
 }
 
 - (void)performInitializeUpdateServiceWithReply:(void (^)(void))reply {
@@ -80,7 +82,7 @@
     reply();
   };
 
-  [[_controlXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
+  [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
       performInitializeUpdateServiceWithReply:reply];
 }
 
@@ -109,7 +111,7 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
                                base::BindOnce(std::move(block_callback)));
   };
 
-  [client_ performControlTasksWithReply:reply];
+  [client_ performTasksWithReply:reply];
 }
 
 void UpdateServiceInternalProxy::InitializeUpdateService(

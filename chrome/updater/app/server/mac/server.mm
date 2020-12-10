@@ -58,14 +58,15 @@ void AppServerMac::ActiveDuty(
 
   if (service == kServerUpdateServiceInternalSwitchValue) {
     @autoreleasepool {
-      // Sets up a listener and delegate for the CRUControlling XPC connection.
+      // Sets up a listener and delegate for the
+      // CRUUpdateServicingInternal XPC connection.
       update_service_internal_delegate_.reset(
           [[CRUUpdateServiceInternalXPCDelegate alloc]
               initWithUpdateServiceInternal:update_service_internal
                                   appServer:scoped_refptr<AppServerMac>(this)]);
 
       update_service_internal_listener_.reset([[NSXPCListener alloc]
-          initWithMachServiceName:GetVersionedServiceMachName().get()]);
+          initWithMachServiceName:GetUpdateServiceInternalMachName().get()]);
       update_service_internal_listener_.get().delegate =
           update_service_internal_delegate_.get();
 
@@ -73,14 +74,14 @@ void AppServerMac::ActiveDuty(
     }
   } else if (service == kServerUpdateServiceSwitchValue) {
     @autoreleasepool {
-      // Sets up a listener and delegate for the CRUUpdateChecking XPC
+      // Sets up a listener and delegate for the CRUUpdateServicing XPC
       // connection.
       update_check_delegate_.reset([[CRUUpdateCheckServiceXPCDelegate alloc]
           initWithUpdateService:update_service
                       appServer:scoped_refptr<AppServerMac>(this)]);
 
       update_check_listener_.reset([[NSXPCListener alloc]
-          initWithMachServiceName:GetServiceMachName().get()]);
+          initWithMachServiceName:GetUpdateServiceMachName().get()]);
       update_check_listener_.get().delegate = update_check_delegate_.get();
 
       [update_check_listener_ resume];

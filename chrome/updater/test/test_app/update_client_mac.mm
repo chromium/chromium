@@ -23,7 +23,7 @@
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
 
-@interface CRUUpdateClientOnDemandImpl : NSObject <CRUUpdateChecking> {
+@interface CRUUpdateClientOnDemandImpl : NSObject <CRUUpdateServicing> {
   base::scoped_nsobject<NSXPCConnection> _xpcConnection;
 }
 
@@ -36,11 +36,11 @@
 - (instancetype)init {
   if (self = [super init]) {
     _xpcConnection.reset([[NSXPCConnection alloc]
-        initWithMachServiceName:updater::GetServiceMachName()
+        initWithMachServiceName:updater::GetUpdateServiceMachName()
                         options:0]);
 
     _xpcConnection.get().remoteObjectInterface =
-        updater::GetXPCUpdateCheckingInterface();
+        updater::GetXPCUpdateServicingInterface();
 
     _xpcConnection.get().interruptionHandler = ^{
       LOG(WARNING)

@@ -72,9 +72,10 @@ void Clean() {
   EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
       Launchd::User, Launchd::Agent, updater::CopyWakeLaunchdName()));
   EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
-      Launchd::User, Launchd::Agent, updater::CopyControlLaunchdName()));
+      Launchd::User, Launchd::Agent,
+      updater::CopyUpdateServiceInternalLaunchdName()));
   EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
-      Launchd::User, Launchd::Agent, updater::CopyServiceLaunchdName()));
+      Launchd::User, Launchd::Agent, updater::CopyUpdateServiceLaunchdName()));
   EXPECT_TRUE(base::DeletePathRecursively(GetDataDirPath()));
 
   @autoreleasepool {
@@ -93,9 +94,10 @@ void ExpectClean() {
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
       Launchd::User, Launchd::Agent, updater::CopyWakeLaunchdName()));
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent, updater::CopyControlLaunchdName()));
+      Launchd::User, Launchd::Agent,
+      updater::CopyUpdateServiceInternalLaunchdName()));
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent, updater::CopyServiceLaunchdName()));
+      Launchd::User, Launchd::Agent, updater::CopyUpdateServiceLaunchdName()));
   EXPECT_FALSE(base::PathExists(GetDataDirPath()));
 }
 
@@ -116,8 +118,8 @@ void ExpectInstalled() {
   EXPECT_TRUE(base::PathExists(GetProductPath()));
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(Launchd::User, Launchd::Agent,
                                                   CopyWakeLaunchdName()));
-  EXPECT_TRUE(Launchd::GetInstance()->PlistExists(Launchd::User, Launchd::Agent,
-                                                  CopyControlLaunchdName()));
+  EXPECT_TRUE(Launchd::GetInstance()->PlistExists(
+      Launchd::User, Launchd::Agent, CopyUpdateServiceInternalLaunchdName()));
 }
 
 void Install() {
@@ -133,8 +135,8 @@ void Install() {
 void ExpectActive() {
   // Files must exist on the file system.
   EXPECT_TRUE(base::PathExists(GetProductPath()));
-  EXPECT_TRUE(Launchd::GetInstance()->PlistExists(Launchd::User, Launchd::Agent,
-                                                  CopyServiceLaunchdName()));
+  EXPECT_TRUE(Launchd::GetInstance()->PlistExists(
+      Launchd::User, Launchd::Agent, CopyUpdateServiceLaunchdName()));
 }
 
 void RegisterTestApp() {
@@ -157,7 +159,7 @@ void ExpectCandidateUninstalled() {
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
       Launchd::User, Launchd::Agent, CopyWakeLaunchdName()));
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent, CopyControlLaunchdName()));
+      Launchd::User, Launchd::Agent, CopyUpdateServiceInternalLaunchdName()));
 }
 
 void Uninstall() {

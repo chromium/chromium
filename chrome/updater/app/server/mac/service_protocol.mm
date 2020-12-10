@@ -8,9 +8,9 @@
 
 namespace updater {
 
-NSXPCInterface* GetXPCUpdateCheckingInterface() {
+NSXPCInterface* GetXPCUpdateServicingInterface() {
   NSXPCInterface* updateCheckingInterface =
-      [NSXPCInterface interfaceWithProtocol:@protocol(CRUUpdateChecking)];
+      [NSXPCInterface interfaceWithProtocol:@protocol(CRUUpdateServicing)];
   NSXPCInterface* updateStateObservingInterface =
       [NSXPCInterface interfaceWithProtocol:@protocol(CRUUpdateStateObserving)];
 
@@ -30,8 +30,9 @@ NSXPCInterface* GetXPCUpdateCheckingInterface() {
   return updateCheckingInterface;
 }
 
-NSXPCInterface* GetXPCControllingInterface() {
-  return [NSXPCInterface interfaceWithProtocol:@protocol(CRUControlling)];
+NSXPCInterface* GetXPCUpdateServicingInternalInterface() {
+  return [NSXPCInterface
+      interfaceWithProtocol:@protocol(CRUUpdateServicingInternal)];
 }
 
 }  // namespace updater

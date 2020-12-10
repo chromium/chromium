@@ -23,13 +23,14 @@ void SetupDone(base::OnceCallback<void(int)> callback, int result) {
     return;
   }
   PollLaunchctlList(
-      kControlLaunchdName, base::TimeDelta::FromSeconds(3),
+      kUpdateServiceInternalLaunchdName, base::TimeDelta::FromSeconds(3),
       base::BindOnce(
           [](base::OnceCallback<void(int)> callback, bool service_exists) {
             std::move(callback).Run(
                 service_exists
                     ? setup_exit_codes::kSuccess
-                    : setup_exit_codes::kFailedAwaitingLaunchdControlJob);
+                    : setup_exit_codes::
+                          kFailedAwaitingLaunchdUpdateServiceInternalJob);
           },
           std::move(callback)));
 }
