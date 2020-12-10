@@ -34,11 +34,10 @@ public class TextDetectionImplTest {
             "The quick brown fox jumped over the lazy dog.", "Helvetica Neue 36."};
     private static final float[][] TEXT_BOUNDING_BOX = {
             {0.0f, 71.0f, 753.0f, 36.0f}, {4.0f, 173.0f, 307.0f, 28.0f}};
-    private static final org.chromium.skia.mojom.BitmapWithArbitraryBpp TEXT_DETECTION_BITMAP =
+    private static final org.chromium.skia.mojom.BitmapN32 TEXT_DETECTION_BITMAP =
             TestUtils.mojoBitmapFromText(DETECTION_EXPECTED_TEXT);
 
-    private static TextDetectionResult[] detect(
-            org.chromium.skia.mojom.BitmapWithArbitraryBpp mojoBitmap) {
+    private static TextDetectionResult[] detect(org.chromium.skia.mojom.BitmapN32 mojoBitmap) {
         TextDetection detector = new TextDetectionImpl();
 
         final ArrayBlockingQueue<TextDetectionResult[]> queue = new ArrayBlockingQueue<>(1);

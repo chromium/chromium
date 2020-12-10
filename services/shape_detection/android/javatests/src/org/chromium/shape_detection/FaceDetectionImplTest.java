@@ -34,9 +34,9 @@ import java.util.concurrent.TimeUnit;
 @Batch(Batch.UNIT_TESTS)
 @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.N_MR1, message = "crbug.com/1153716")
 public class FaceDetectionImplTest {
-    private static final org.chromium.skia.mojom.BitmapWithArbitraryBpp MONA_LISA_BITMAP =
+    private static final org.chromium.skia.mojom.BitmapN32 MONA_LISA_BITMAP =
             TestUtils.mojoBitmapFromFile("mona_lisa.jpg");
-    private static final org.chromium.skia.mojom.BitmapWithArbitraryBpp FACE_POSE_BITMAP =
+    private static final org.chromium.skia.mojom.BitmapN32 FACE_POSE_BITMAP =
             TestUtils.mojoBitmapFromFile("face_pose.png");
     // Different versions of Android have different implementations of FaceDetector.findFaces(), so
     // we have to use a large error threshold.
@@ -47,9 +47,8 @@ public class FaceDetectionImplTest {
 
     public FaceDetectionImplTest() {}
 
-    private static FaceDetectionResult[] detect(
-            org.chromium.skia.mojom.BitmapWithArbitraryBpp mojoBitmap, boolean fastMode,
-            DetectionProviderType api) {
+    private static FaceDetectionResult[] detect(org.chromium.skia.mojom.BitmapN32 mojoBitmap,
+            boolean fastMode, DetectionProviderType api) {
         FaceDetectorOptions options = new FaceDetectorOptions();
         options.fastMode = fastMode;
         options.maxDetectedFaces = 32;
@@ -116,8 +115,7 @@ public class FaceDetectionImplTest {
                 MONA_LISA_BITMAP.imageInfo.height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(paddedBitmap);
         canvas.drawBitmap(BitmapUtils.convertToBitmap(MONA_LISA_BITMAP), 0, 0, null);
-        org.chromium.skia.mojom.BitmapWithArbitraryBpp mojoBitmap =
-                TestUtils.mojoBitmapFromBitmap(paddedBitmap);
+        org.chromium.skia.mojom.BitmapN32 mojoBitmap = TestUtils.mojoBitmapFromBitmap(paddedBitmap);
         Assert.assertEquals(1, mojoBitmap.imageInfo.width % 2);
 
         FaceDetectionResult[] results = detect(mojoBitmap, true, DetectionProviderType.ANDROID);

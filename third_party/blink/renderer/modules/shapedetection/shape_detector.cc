@@ -121,8 +121,9 @@ ScriptPromise ShapeDetector::DetectShapesOnImageData(
 
   SkPixmap image_data_pixmap = image_data->GetSkPixmap();
   SkBitmap sk_bitmap;
-  if (!sk_bitmap.tryAllocPixels(image_data_pixmap.info(),
-                                image_data_pixmap.rowBytes())) {
+  if (!sk_bitmap.tryAllocPixels(
+          image_data_pixmap.info().makeColorType(kN32_SkColorType),
+          image_data_pixmap.rowBytes())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Failed to allocate pixels for current frame."));
