@@ -123,7 +123,7 @@ public abstract class NavigationCallback {
      *        not counting time spent in deep sleep. This comes from SystemClock.uptimeMillis().
      * @param firstContentfulPaintDurationMs the number of milliseconds to first contentful paint
      *        from navigation start.
-     * @since 89
+     * @since 88
      */
     public void onFirstContentfulPaint(
             long navigationStartMs, long firstContentfulPaintDurationMs) {}

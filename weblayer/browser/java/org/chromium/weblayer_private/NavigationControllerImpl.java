@@ -229,7 +229,7 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     @CalledByNative
     private void onFirstContentfulPaint2(
             long navigationStartTick, long firstContentfulPaintDurationMs) throws RemoteException {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 89) return;
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 88) return;
 
         // See logic in CustomTabsConnection.java that this was based on.
         if (!mNativeTickOffsetUsComputed) {

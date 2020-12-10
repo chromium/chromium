@@ -1239,7 +1239,7 @@ public class NavigationTest {
                 curFailedCount, STREAM_URL, LoadError.CONNECTIVITY_ERROR);
     }
 
-    @MinWebLayerVersion(89)
+    @MinWebLayerVersion(88)
     @Test
     @SmallTest
     public void testOnFirstContentfulPaintTiming() throws Exception {
