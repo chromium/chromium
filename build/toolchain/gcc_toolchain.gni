@@ -196,6 +196,7 @@ template("gcc_toolchain") {
       # number of jobs, but this results in too low a value on
       # Chrome OS builders. So we pass in an explicit value.
       goma_ld =
+          "$python_path " +
           rebase_path("//tools/clang/scripts/goma_ld.py", root_build_dir) +
           " --gomacc ${goma_path} --jobs 200 -- "
     } else {
