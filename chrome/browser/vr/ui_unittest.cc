@@ -141,8 +141,8 @@ TEST_F(UiTest, WebVrToastTransience) {
   browser_ui->SetCapturingState(CapturingStateModel(), CapturingStateModel(),
                                 CapturingStateModel());
   EXPECT_TRUE(IsVisible(kWebVrExclusiveScreenToast));
-  EXPECT_TRUE(
-      RunForSeconds(kWmrInitialIndicatorsTimeoutSeconds + kSmallDelaySeconds));
+  EXPECT_TRUE(RunForSeconds(kWindowsInitialIndicatorsTimeoutSeconds +
+                            kSmallDelaySeconds));
   EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
 
   browser_ui->SetWebVrMode(false);
@@ -222,7 +222,7 @@ TEST_F(UiTest, CaptureToasts) {
                                     potential_capturing);
       EXPECT_TRUE(IsVisible(kWebVrExclusiveScreenToast));
       EXPECT_TRUE(IsVisible(spec.webvr_name) == (string_id != 0));
-      EXPECT_TRUE(RunForSeconds(kWmrInitialIndicatorsTimeoutSeconds +
+      EXPECT_TRUE(RunForSeconds(kWindowsInitialIndicatorsTimeoutSeconds +
                                 kSmallDelaySeconds));
       EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
 

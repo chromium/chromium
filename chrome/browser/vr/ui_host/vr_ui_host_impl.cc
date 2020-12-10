@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/task/post_task.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
@@ -23,7 +24,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/xr_runtime_manager.h"
 #include "device/base/features.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace vr {
@@ -32,11 +32,17 @@ namespace {
 static constexpr base::TimeDelta kPermissionPromptTimeout =
     base::TimeDelta::FromSeconds(5);
 
+#if defined(OS_WIN)
+// Some runtimes on Windows have quite lengthy lengthy startup animations that
+// may cause indicators/permissions to not be visible during the normal timeout.
+static constexpr base::TimeDelta kFirstWindowsPermissionPromptTimeout =
+    base::TimeDelta::FromSeconds(10);
+#endif
+
 base::TimeDelta GetPermissionPromptTimeout(bool first_time) {
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-  if (base::FeatureList::IsEnabled(device::features::kWindowsMixedReality) &&
-      first_time)
-    return base::TimeDelta::FromSeconds(10);
+#if defined(OS_WIN)
+  if (first_time)
+    return kFirstWindowsPermissionPromptTimeout;
 #endif
   return kPermissionPromptTimeout;
 }

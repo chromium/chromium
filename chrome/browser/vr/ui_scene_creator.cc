@@ -79,7 +79,6 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "device/base/features.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/transform_util.h"
@@ -1097,11 +1096,13 @@ void BindIndicatorTranscience(
 #endif
 
 int GetIndicatorsTimeout() {
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-  if (base::FeatureList::IsEnabled(device::features::kWindowsMixedReality))
-    return kWmrInitialIndicatorsTimeoutSeconds;
-#endif
+  // Some runtimes on Windows have quite lengthy animations that may cause
+  // indicators to not be visible at our normal timeout length.
+#if defined(OS_WIN)
+  return kWindowsInitialIndicatorsTimeoutSeconds;
+#else
   return kToastTimeoutSeconds;
+#endif
 }
 
 NOINLINE void CrashIntentionally() {
