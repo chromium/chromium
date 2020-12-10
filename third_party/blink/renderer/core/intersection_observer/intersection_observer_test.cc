@@ -272,6 +272,55 @@ TEST_F(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
               root_observer_delegate->LastEntry()->intersectionRatio(), 1e-6);
 }
 
+TEST_F(IntersectionObserverTest, TargetRectIsEmptyAfterMapping) {
+  // Place a 100x100 target element in the middle of a 200x200 main frame.
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+    .clipper {
+      transform: rotatey(90deg);
+    }
+    .container {
+      overflow: hidden;
+    }
+    #target {
+      width: 10px;
+      height: 10px;
+    }
+    </style>
+    <div class=clipper>
+      <div class=container>
+        <div id=target></div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+
+  TestIntersectionObserverDelegate* target_observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* target_observer =
+      MakeGarbageCollected<IntersectionObserver>(
+          *target_observer_delegate, nullptr, Vector<Length>(),
+          Vector<float>{std::numeric_limits<float>::min()},
+          IntersectionObserver::kFractionOfTarget, 0, false, false,
+          IntersectionObserver::kApplyMarginToRoot);
+  DummyExceptionStateForTesting exception_state;
+  target_observer->observe(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_FALSE(Compositor().NeedsBeginFrame());
+
+  EXPECT_EQ(target_observer_delegate->CallCount(), 1);
+  EXPECT_EQ(target_observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(target_observer_delegate->LastEntry()->isIntersecting());
+}
+
 TEST_F(IntersectionObserverTest, ResumePostsTask) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
