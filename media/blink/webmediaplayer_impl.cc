@@ -3832,10 +3832,6 @@ bool WebMediaPlayerImpl::IsInPictureInPicture() const {
   return client_->GetDisplayType() == blink::DisplayType::kPictureInPicture;
 }
 
-void WebMediaPlayerImpl::OnPictureInPictureAvailabilityChanged(bool available) {
-  delegate_->DidPictureInPictureAvailabilityChange(delegate_id_, available);
-}
-
 void WebMediaPlayerImpl::MaybeSetContainerNameForMetrics() {
   // Pipeline startup failed before even getting a demuxer setup.
   if (!demuxer_)

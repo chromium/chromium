@@ -54,7 +54,6 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   void SetLatencyHint(double) override {}
   void SetPreservesPitch(bool) override {}
   void OnRequestPictureInPicture() override {}
-  void OnPictureInPictureAvailabilityChanged(bool available) override {}
   WebTimeRanges Buffered() const override { return WebTimeRanges(); }
   WebTimeRanges Seekable() const override { return WebTimeRanges(); }
   void SetSinkId(const WebString& sinkId,

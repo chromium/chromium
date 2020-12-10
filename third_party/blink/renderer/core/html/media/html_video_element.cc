@@ -259,8 +259,11 @@ void HTMLVideoElement::UpdatePictureInPictureAvailability() {
   if (!web_media_player_)
     return;
 
-  web_media_player_->OnPictureInPictureAvailabilityChanged(
-      SupportsPictureInPicture());
+  auto* media_player_observer_remote = GetMediaPlayerObserverRemote();
+  if (media_player_observer_remote) {
+    media_player_observer_remote->OnPictureInPictureAvailabilityChanged(
+        SupportsPictureInPicture());
+  }
 }
 
 // TODO(zqzhang): this callback could be used to hide native controls instead of

@@ -82,11 +82,6 @@ IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnMediaSizeChanged,
                     int /* delegate_id, distinguishes instances */,
                     gfx::Size /* new size of video */)
 
-IPC_MESSAGE_ROUTED2(
-    MediaPlayerDelegateHostMsg_OnPictureInPictureAvailabilityChanged,
-    int /* delegate_id, distinguishes instances */,
-    bool /* picture-in-picture availability */)
-
 IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
                     int /* delegate_id, distinguishes instances */,
                     std::string /* hashed_device_id */)

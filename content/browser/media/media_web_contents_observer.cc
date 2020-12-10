@@ -239,9 +239,6 @@ bool MediaWebContentsObserver::OnMessageReceived(
         OnMediaEffectivelyFullscreenChanged)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnMediaSizeChanged,
                         OnMediaSizeChanged)
-    IPC_MESSAGE_HANDLER(
-        MediaPlayerDelegateHostMsg_OnPictureInPictureAvailabilityChanged,
-        OnPictureInPictureAvailabilityChanged)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
                         OnAudioOutputSinkChanged);
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnBufferUnderflow,
@@ -341,6 +338,12 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
         const media_session::MediaPosition& media_position) {
   media_web_contents_observer_->session_controllers_manager()
       ->OnMediaPositionStateChanged(media_player_id_, media_position);
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnPictureInPictureAvailabilityChanged(bool available) {
+  media_web_contents_observer_->session_controllers_manager()
+      ->OnPictureInPictureAvailabilityChanged(media_player_id_, available);
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
@@ -458,14 +461,6 @@ void MediaWebContentsObserver::OnMediaSizeChanged(
     const gfx::Size& size) {
   const MediaPlayerId id(render_frame_host, delegate_id);
   web_contents_impl()->MediaResized(size, id);
-}
-
-void MediaWebContentsObserver::OnPictureInPictureAvailabilityChanged(
-    RenderFrameHost* render_frame_host,
-    int delegate_id,
-    bool available) {
-  session_controllers_manager_.OnPictureInPictureAvailabilityChanged(
-      MediaPlayerId(render_frame_host, delegate_id), available);
 }
 
 void MediaWebContentsObserver::OnAudioOutputSinkChanged(

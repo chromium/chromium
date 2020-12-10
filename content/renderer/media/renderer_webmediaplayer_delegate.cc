@@ -208,13 +208,6 @@ void RendererWebMediaPlayerDelegate::DidPlayerSizeChange(
                                                          delegate_id, size));
 }
 
-void RendererWebMediaPlayerDelegate::DidPictureInPictureAvailabilityChange(
-    int delegate_id,
-    bool available) {
-  Send(new MediaPlayerDelegateHostMsg_OnPictureInPictureAvailabilityChanged(
-      routing_id(), delegate_id, available));
-}
-
 void RendererWebMediaPlayerDelegate::DidAudioOutputSinkChange(
     int delegate_id,
     const std::string& hashed_device_id) {

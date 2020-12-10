@@ -635,6 +635,13 @@ bool HTMLMediaElement::IsMouseFocusable() const {
   return !IsFullscreen() && SupportsFocus();
 }
 
+media::mojom::blink::MediaPlayerObserver*
+HTMLMediaElement::GetMediaPlayerObserverRemote() {
+  if (!media_player_observer_remote_.is_bound())
+    return nullptr;
+  return media_player_observer_remote_.get();
+}
+
 void HTMLMediaElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;

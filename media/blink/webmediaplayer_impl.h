@@ -178,9 +178,6 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   bool PausedWhenHidden() const override;
 
-  // Informed when picture-in-picture availability changed.
-  void OnPictureInPictureAvailabilityChanged(bool available) override;
-
   // Internal states of loading and network.
   // TODO(hclam): Ask the pipeline about the state rather than having reading
   // them from members which would cause race conditions.

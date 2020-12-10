@@ -111,10 +111,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
   // Notify that the muted status of the media player has changed.
   virtual void DidPlayerMutedStatusChange(int delegate_id, bool muted) = 0;
 
-  // Notify that picture-in-picture availability has changed.
-  virtual void DidPictureInPictureAvailabilityChange(int delegate_id,
-                                                     bool available) = 0;
-
   // Notify that the audio output sink has changed
   virtual void DidAudioOutputSinkChange(
       int delegate_id,

@@ -41,6 +41,9 @@ interface MediaPlayerObserver {
   // and reports the new current position via |media_position|.
   OnMediaPositionStateChanged(media_session.mojom.MediaPosition media_position);
 
+  // Notifies the browser process of PictureinPicture playback's availability.
+  OnPictureInPictureAvailabilityChanged(bool available);
+
   // Notifies the browser process that the ability to switch audio output
   // devices for the associated media player has been disabled.
   OnAudioOutputSinkChangingDisabled();

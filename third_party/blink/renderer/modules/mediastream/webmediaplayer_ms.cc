@@ -815,10 +815,6 @@ void WebMediaPlayerMS::OnRequestPictureInPicture() {
   DCHECK(bridge_->GetSurfaceId().is_valid());
 }
 
-void WebMediaPlayerMS::OnPictureInPictureAvailabilityChanged(bool available) {
-  delegate_->DidPictureInPictureAvailabilityChange(delegate_id_, available);
-}
-
 void WebMediaPlayerMS::SetSinkId(
     const WebString& sink_id,
     WebSetSinkIdCompleteCallback completion_callback) {

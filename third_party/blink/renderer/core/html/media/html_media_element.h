@@ -358,6 +358,10 @@ class CORE_EXPORT HTMLMediaElement
   ~HTMLMediaElement() override;
   void Dispose();
 
+  // Returns a pointer to the media::mojom::blink::MediaPlayerObserver remote if
+  // already bound, or nullptr otherwise. Used from subclasses as well.
+  media::mojom::blink::MediaPlayerObserver* GetMediaPlayerObserverRemote();
+
   void ParseAttribute(const AttributeModificationParams&) override;
   void FinishParsingChildren() final;
   bool IsURLAttribute(const Attribute&) const override;

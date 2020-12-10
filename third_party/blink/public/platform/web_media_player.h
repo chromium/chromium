@@ -185,8 +185,6 @@ class WebMediaPlayer {
   // as it will be needed.
   virtual void OnRequestPictureInPicture() = 0;
 
-  virtual void OnPictureInPictureAvailabilityChanged(bool available) = 0;
-
   // Called to notify about changes of the associated media element's media
   // time, playback rate, and duration. During uninterrupted playback, the
   // calls are still made periodically.
