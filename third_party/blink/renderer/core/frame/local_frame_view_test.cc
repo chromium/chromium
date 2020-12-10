@@ -414,20 +414,24 @@ TEST_F(LocalFrameViewTest, TogglePaintEligibility) {
   // Mainframes are unthrottled by default.
   EXPECT_FALSE(GetDocument().View()->ShouldThrottleRenderingForTest());
   EXPECT_FALSE(parent_timing.FirstEligibleToPaint().is_null());
+
+  GetDocument().View()->MarkFirstEligibleToPaint();
+  EXPECT_FALSE(parent_timing.FirstEligibleToPaint().is_null());
+
   // Subframes are throttled when first loaded.
   EXPECT_TRUE(ChildDocument().View()->ShouldThrottleRenderingForTest());
 
-  // Unthrottling the subframe should enable paint eligibility.
+  // Toggle paint elgibility to true.
   ChildDocument().OverrideIsInitialEmptyDocument();
   ChildDocument().View()->BeginLifecycleUpdates();
+  ChildDocument().View()->MarkFirstEligibleToPaint();
   EXPECT_FALSE(ChildDocument().View()->ShouldThrottleRenderingForTest());
-  UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(child_timing.FirstEligibleToPaint().is_null());
 
-  // Throttling the subframe should disable paint eligibility.
-  ChildDocument().View()->SetLifecycleUpdatesThrottledForTesting();
+  // Toggle paint elgibility to false.
+  ChildDocument().View()->SetLifecycleUpdatesThrottledForTesting(true);
+  ChildDocument().View()->MarkIneligibleToPaint();
   EXPECT_TRUE(ChildDocument().View()->ShouldThrottleRenderingForTest());
-  UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(child_timing.FirstEligibleToPaint().is_null());
 }
 

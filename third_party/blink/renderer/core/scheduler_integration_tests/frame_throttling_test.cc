@@ -306,7 +306,8 @@ TEST_P(FrameThrottlingTest,
   auto* root_frame = LocalFrameRoot().GetFrame();
   auto* root_frame_view = root_frame->View();
   root_frame_view->SetNeedsLayout();
-  root_frame_view->SetLifecycleUpdatesThrottledForTesting();
+  root_frame_view->ScheduleAnimation();
+  root_frame_view->SetLifecycleUpdatesThrottledForTesting(true);
   ASSERT_TRUE(root_frame->IsLocalRoot());
   ASSERT_TRUE(root_frame_view->ShouldThrottleRenderingForTest());
 
@@ -1688,41 +1689,6 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
             GetDocument().View()->RootCcLayer()->children().size());
 }
 
-TEST_P(FrameThrottlingTest, GraphicsLayerCollectionLifecycleThrottling) {
-  // GraphicsLayers are not created with CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  SimRequest main_resource("https://example.com/", "text/html");
-  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
-
-  LoadURL("https://example.com/");
-  // The frame is initially throttled.
-  main_resource.Complete(
-      "<iframe id='frame' sandbox src='iframe.html'></iframe>");
-  frame_resource.Complete(
-      "<div id='div' style='will-change: transform'>Foo</div>");
-
-  CompositeFrame();
-  auto layer_count = GetDocument().View()->RootCcLayer()->children().size();
-  auto* frame_element =
-      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
-  auto* frame_document = frame_element->contentDocument();
-  frame_document->View()->SetLifecycleUpdatesThrottledForTesting();
-
-  CompositeFrame();
-  // We no longer collect the graphics layers of the iframe and the composited
-  // content.
-  EXPECT_GT(layer_count,
-            GetDocument().View()->RootCcLayer()->children().size());
-
-  frame_document->View()->BeginLifecycleUpdates();
-  CompositeFrame();
-  // Now we should collect all graphics layers again.
-  EXPECT_EQ(layer_count,
-            GetDocument().View()->RootCcLayer()->children().size());
-}
-
 TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   InitializeRemote();
 
@@ -1817,7 +1783,8 @@ TEST_P(FrameThrottlingTest, LifecycleThrottledFrameNeedsRepaint) {
   auto* frame_element =
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_document = frame_element->contentDocument();
-  frame_document->View()->SetLifecycleUpdatesThrottledForTesting();
+  frame_document->View()->SetLifecycleUpdatesThrottledForTesting(true);
+  GetDocument().View()->ScheduleAnimation();
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
 
   commands = CompositeFrame();
