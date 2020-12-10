@@ -1700,12 +1700,13 @@ void DocumentLoader::CommitNavigation() {
 
   SecurityContextInit security_init(frame_->DomWindow());
 
-  // The document constructed by XSLTProcessor should inherit Feature Policy and
-  // Document Policy from the previous Document. Note: In XSLT commit,
-  // |response_| no longer holds header fields. Going through regular
-  // initialization will cause empty policy even if there is header on xml
-  // document.
-  if (commit_reason_ == CommitReason::kXSLT) {
+  // The document constructed by XSLTProcessor and ScriptController should
+  // inherit Feature Policy and Document Policy from the previous Document.
+  // Note: In XSLT commit and JavaScript commit, |response_| no longer holds
+  // header fields. Going through regular initialization will cause empty policy
+  // even if there is header on xml document.
+  if (commit_reason_ == CommitReason::kXSLT ||
+      commit_reason_ == CommitReason::kJavascriptUrl) {
     DCHECK(response_.HttpHeaderField(http_names::kFeaturePolicy).IsEmpty());
     DCHECK(response_.HttpHeaderField(http_names::kPermissionsPolicy).IsEmpty());
     DCHECK(response_.HttpHeaderField(http_names::kDocumentPolicy).IsEmpty());

@@ -5790,8 +5790,6 @@ crbug.com/1123116 external/wpt/feature-policy/reporting/sync-xhr-reporting.html 
 crbug.com/1123116 external/wpt/feature-policy/reporting/usb-reporting.https.html [ Timeout ]
 crbug.com/1123116 external/wpt/feature-policy/reporting/xr-reporting.https.html [ Timeout ]
 
-crbug.com/1151954 http/tests/permissions-policy/permissions-policy-javascript-navigation.php [ Failure ]
-
 crbug.com/1140329 http/tests/devtools/network/network-filter-service-worker.js [ Pass Timeout Failure ]
 crbug.com/1140329 virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Pass Failure Timeout ]
 
