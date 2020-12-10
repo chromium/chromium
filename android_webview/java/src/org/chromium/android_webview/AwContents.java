@@ -1820,7 +1820,9 @@ public class AwContents implements SmartClipProvider {
         mContentsClient.getVisitedHistory(callback);
     }
 
-    private static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
+    /* package */ static final Pattern BAD_HEADER_CHAR = Pattern.compile("[\u0000\r\n]");
+    /* package */ static final String BAD_HEADER_MSG =
+            "HTTP headers must not contain null, CR, or NL characters. ";
 
     /**
      * WebView.loadUrl.
@@ -1846,17 +1848,18 @@ public class AwContents implements SmartClipProvider {
 
         LoadUrlParams params = new LoadUrlParams(url, PageTransition.TYPED);
         if (additionalHttpHeaders != null) {
-            boolean valid = true;
             for (Map.Entry<String, String> header : additionalHttpHeaders.entrySet()) {
                 String headerName = header.getKey();
                 String headerValue = header.getValue();
-                if ((headerName != null && BAD_HEADER_CHAR.matcher(headerName).find())
-                        || (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find())) {
-                    valid = false;
-                    break;
+                if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
+                    throw new IllegalArgumentException(
+                            BAD_HEADER_MSG + "Invalid header name '" + headerName + "'.");
+                }
+                if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
+                    throw new IllegalArgumentException(BAD_HEADER_MSG + "Header '" + headerName
+                            + "' has invalid value '" + headerValue + "'");
                 }
             }
-            RecordHistogram.recordBooleanHistogram("Android.WebView.ExtraHeaders.Valid", valid);
             params.setExtraHeaders(new HashMap<String, String>(additionalHttpHeaders));
         }
 

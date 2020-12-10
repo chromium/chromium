@@ -29,6 +29,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.UnsupportedEncodingException;
@@ -268,6 +269,36 @@ public class LoadUrlTest {
             return url.replace("127.0.0.1", "localhost");
         } else {
             throw new RuntimeException("Can't convert url " + url + " to different origin");
+        }
+    }
+
+    /** Call loadUrl() and expect it to throw IllegalArgumentException. */
+    private void loadWithInvalidHeaders(AwContents awContents, Map<String, String> extraHeaders)
+            throws Exception {
+        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> {
+            try {
+                awContents.loadUrl("about:blank", extraHeaders);
+                return false;
+            } catch (IllegalArgumentException e) {
+                return true;
+            }
+        }));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testLoadUrlWithInvalidExtraHeaders() throws Exception {
+        final TestAwContentsClient contentsClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
+        final AwContents awContents = testContainerView.getAwContents();
+
+        final String[] invalids = {"null\u0000", "cr\r", "nl\n"};
+        for (String invalid : invalids) {
+            // try each invalid string as a key and a value
+            loadWithInvalidHeaders(awContents, createHeadersMap(new String[] {"foo", invalid}));
+            loadWithInvalidHeaders(awContents, createHeadersMap(new String[] {invalid, "foo"}));
         }
     }
 

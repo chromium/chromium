@@ -1833,6 +1833,17 @@ public class AwSettingsTest {
         Assert.assertEquals(customUserAgentString, settings.getUserAgentString());
         settings.setUserAgentString(null);
         Assert.assertEquals(defaultUserAgentString, settings.getUserAgentString());
+
+        // Try to set invalid UAs and ensure they throw an exception.
+        final String[] invalids = {"null\u0000", "cr\r", "nl\n"};
+        for (String ua : invalids) {
+            try {
+                settings.setUserAgentString(ua);
+                Assert.fail("Invalid UA accepted: " + ua);
+            } catch (IllegalArgumentException e) {
+                // success
+            }
+        }
     }
 
     // Verify that the current UA override setting has a priority over UA
