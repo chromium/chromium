@@ -595,6 +595,10 @@ bool IsSchemefulSameSiteEnabled() {
   return base::FeatureList::IsEnabled(features::kSchemefulSameSite);
 }
 
+bool IsFirstPartySetsEnabled() {
+  return base::FeatureList::IsEnabled(features::kFirstPartySets);
+}
+
 base::OnceCallback<void(CookieAccessResult)> AdaptCookieAccessResultToBool(
     base::OnceCallback<void(bool)> callback) {
   return base::BindOnce(

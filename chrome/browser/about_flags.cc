@@ -6967,6 +6967,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(app_list_features::kEnableLauncherSearchNormalization)},
 #endif  // defined(OS_CHROMEOS)
 
+    {"enable-first-party-sets", flag_descriptions::kEnableFirstPartySetsName,
+     flag_descriptions::kEnableFirstPartySetsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kFirstPartySets)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -465,6 +465,38 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceWithFirstPartySetBrowserTest,
   EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 3);
 }
 
+class NetworkServiceWithoutFirstPartySetBrowserTest
+    : public NetworkServiceBrowserTest {
+ public:
+  NetworkServiceWithoutFirstPartySetBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Supplying this switch should not enable the feature, since the feature
+    // was explicitly disabled.
+    NetworkServiceBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        network::switches::kUseFirstPartySet,
+        "https://example.com,https://member1.com,https://member2.com");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceWithoutFirstPartySetBrowserTest,
+                       GetsEnableFirstPartySetsSwitch) {
+  if (IsInProcessNetworkService())
+    return;
+
+  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 0);
+
+  SimulateNetworkServiceCrash();
+
+  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 0);
+}
+
 // Tests that CORS is performed by the network service when |factory_override|
 // is used.
 IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {

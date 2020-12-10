@@ -1633,6 +1633,11 @@
     "expiry_milestone": 85
   },
   {
+    "name": "enable-first-party-sets",
+    "owners": [ "chrome-first-party-sets@chromium.org" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "enable-first-scroll-latency-measurement",
     "owners": [ "tommckee", "speed-metrics-dev" ],
     "expiry_milestone": 83

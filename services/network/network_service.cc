@@ -36,6 +36,7 @@
 #include "net/cert/cert_database.h"
 #include "net/cert/ct_log_response_parser.h"
 #include "net/cert/signed_tree_head.h"
+#include "net/cookies/cookie_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_config_overrides.h"
@@ -374,7 +375,8 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   trust_token_key_commitments_ = std::make_unique<TrustTokenKeyCommitments>();
 
   first_party_sets_ = std::make_unique<FirstPartySets>();
-  if (command_line->HasSwitch(switches::kUseFirstPartySet)) {
+  if (net::cookie_util::IsFirstPartySetsEnabled() &&
+      command_line->HasSwitch(switches::kUseFirstPartySet)) {
     first_party_sets_->SetManuallySpecifiedSet(
         command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
   }

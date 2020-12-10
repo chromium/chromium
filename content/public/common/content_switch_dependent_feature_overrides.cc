@@ -8,6 +8,7 @@
 #include "content/public/common/content_switches.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -94,6 +95,10 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kIsolationByDefault,
        std::cref(network::features::kCrossOriginOpenerPolicyByDefault),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
+      {network::switches::kUseFirstPartySet,
+       std::cref(net::features::kFirstPartySets),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
 

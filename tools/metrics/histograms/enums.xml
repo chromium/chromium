@@ -44582,6 +44582,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopMigration:disabled"/>
   <int value="436249288" label="ImeMojoDecoder:disabled"/>
   <int value="436682243" label="TabGroupsAndroid:disabled"/>
+  <int value="438307192" label="FirstPartySets:disabled"/>
   <int value="439525862" label="GlobalMediaControlsForCast:disabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
   <int value="444754854" label="LegacyTLSWarnings:disabled"/>
@@ -45852,6 +45853,7 @@ from previous Chrome versions.
   <int value="1661925474" label="silent-debugger-extension-api"/>
   <int value="1663574600" label="WebViewDisplayCutout:enabled"/>
   <int value="1664401033" label="ColorCorrectRendering:enabled"/>
+  <int value="1664463407" label="FirstPartySets:enabled"/>
   <int value="1665349789" label="spurious-power-button-window"/>
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
   <int value="1667584730" label="WebXR:disabled"/>

@@ -176,6 +176,11 @@ const char kDnsHttpssvcDescription[] =
     "to HTTPS. If the records indicate support for QUIC, Chrome may attempt "
     "QUIC on the first connection.";
 
+const char kEnableFirstPartySetsName[] = "Enable First-Party Sets";
+const char kEnableFirstPartySetsDescription[] =
+    "When enabled, Chrome will apply First-Party Sets to features such as the "
+    "SameParty cookie attribute.";
+
 const char kDnsOverHttpsName[] = "Secure DNS lookups";
 const char kDnsOverHttpsDescription[] =
     "Enables DNS over HTTPS. When this feature is enabled, your browser may "
