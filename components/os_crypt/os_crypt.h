@@ -40,11 +40,13 @@ class OSCrypt {
       std::unique_ptr<os_crypt::Config> config);
 #endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
 
-#if defined(OS_APPLE) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#if defined(OS_APPLE) || defined(OS_WIN) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   // On Linux returns true iff the real secret key (not hardcoded one) is
   // available. On MacOS returns true if Keychain is available (for mock
   // Keychain it returns true if not using locked Keychain, false if using
-  // locked mock Keychain).
+  // locked mock Keychain). On Windows returns true if non mock encryption
+  // key is available.
   static COMPONENT_EXPORT(OS_CRYPT) bool IsEncryptionAvailable();
 #endif
 

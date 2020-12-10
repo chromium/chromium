@@ -23,6 +23,11 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/url_request_context_builder_mojo.h"
 
+#if defined(HEADLESS_USE_PREFS)
+#include "components/os_crypt/os_crypt.h"
+#include "content/public/common/network_service_util.h"
+#endif
+
 namespace headless {
 
 namespace {
@@ -197,9 +202,8 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
     const HeadlessBrowserContextOptions* options,
     base::FilePath user_data_path)
     :
-// On Windows, Cookie encryption requires access to local_state prefs, which are
-// unavailable.
-#if defined(OS_WIN)
+// On Windows, Cookie encryption requires access to local_state prefs.
+#if defined(OS_WIN) && !defined(HEADLESS_USE_PREFS)
       cookie_encryption_enabled_(false),
 #else
       cookie_encryption_enabled_(
@@ -229,6 +233,14 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
   auto crypt_config = BuildCryptConfigOnce(user_data_path_);
   if (crypt_config)
     content::GetNetworkService()->SetCryptConfig(std::move(crypt_config));
+#elif defined(OS_WIN) && defined(HEADLESS_USE_PREFS)
+  // The OSCrypt keys are process bound, so if network service is out of
+  // process, send it the required key if it is available.
+  if (content::IsOutOfProcessNetworkService() &&
+      OSCrypt::IsEncryptionAvailable()) {
+    content::GetNetworkService()->SetEncryptionKey(
+        OSCrypt::GetRawEncryptionKey());
+  }
 #endif
 }
 

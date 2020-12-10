@@ -43,8 +43,14 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 
-#ifdef HEADLESS_USE_EMBEDDED_RESOURCES
+#if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
 #include "headless/embedded_resource_pak.h"
+#endif
+
+#if defined(HEADLESS_USE_PREFS)
+#include "components/os_crypt/os_crypt.h"
+#include "components/prefs/json_pref_store.h"
+#include "components/prefs/pref_service_factory.h"
 #endif
 
 #if defined(OS_MAC) || defined(OS_WIN)
@@ -68,6 +74,11 @@ const base::Feature kVirtualTime{"VirtualTime",
 
 const base::FilePath::CharType kDefaultProfileName[] =
     FILE_PATH_LITERAL("Default");
+
+#if defined(HEADLESS_USE_PREFS)
+const base::FilePath::CharType kLocalStateFilename[] =
+    FILE_PATH_LITERAL("Local State");
+#endif
 
 namespace {
 
@@ -484,6 +495,9 @@ HeadlessContentMainDelegate::CreateContentUtilityClient() {
 
 void HeadlessContentMainDelegate::PostEarlyInitialization(
     bool is_running_tests) {
+#if defined(HEADLESS_USE_PREFS)
+  CreatePrefService();
+#endif
   if (base::FeatureList::IsEnabled(features::kVirtualTime)) {
     // Only pass viz flags into the virtual time mode.
     const char* const switches[] = {
@@ -509,5 +523,34 @@ void HeadlessContentMainDelegate::PostEarlyInitialization(
       base::CommandLine::ForCurrentProcess()->AppendSwitch(flag);
   }
 }
+
+#if defined(HEADLESS_USE_PREFS)
+void HeadlessContentMainDelegate::CreatePrefService() {
+  if (options()->user_data_dir.empty()) {
+    LOG(WARNING) << "Cannot create Pref Service with no user data dir.";
+    return;
+  }
+
+  base::FilePath local_state_file =
+      options()->user_data_dir.Append(kLocalStateFilename);
+  auto pref_store = base::MakeRefCounted<JsonPrefStore>(local_state_file);
+  auto result = pref_store->ReadPrefs();
+  CHECK(result == JsonPrefStore::PREF_READ_ERROR_NONE ||
+        result == JsonPrefStore::PREF_READ_ERROR_NO_FILE);
+
+  auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
+#if defined(OS_WIN)
+  OSCrypt::RegisterLocalPrefs(pref_registry.get());
+#endif
+
+  PrefServiceFactory factory;
+  factory.set_user_prefs(pref_store);
+  local_state_ = factory.Create(std::move(pref_registry));
+
+#if defined(OS_WIN)
+  CHECK(OSCrypt::Init(local_state_.get()));
+#endif
+}
+#endif  // defined(HEADLESS_USE_PREFS)
 
 }  // namespace headless

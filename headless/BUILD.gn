@@ -506,6 +506,10 @@ component("headless_non_renderer") {
     deps += [ ":pak" ]
   }
 
+  if (headless_use_prefs) {
+    defines += [ "HEADLESS_USE_PREFS" ]
+  }
+
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -526,6 +530,7 @@ component("headless_non_renderer") {
 # includes headless classes that depend on the renderer.
 if (!is_component_build) {
   static_library("headless_renderer") {
+    defines = []
     sources = [
       "lib/browser/headless_web_contents_impl.cc",
       "lib/browser/headless_web_contents_impl.h",
@@ -542,7 +547,11 @@ if (!is_component_build) {
     }
 
     if (headless_use_embedded_resources) {
-      defines = [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
+      defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
+    }
+
+    if (headless_use_prefs) {
+      defines += [ "HEADLESS_USE_PREFS" ]
     }
 
     if (enable_basic_printing) {
@@ -664,6 +673,10 @@ test("headless_browsertests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
+  if (headless_use_prefs) {
+    defines += [ "HEADLESS_USE_PREFS" ]
+  }
+
   deps = [
     ":headless_shell_lib",
     "//base",
@@ -708,6 +721,9 @@ if (is_win) {
       "//net",
       "//sandbox",
     ]
+    if (headless_use_prefs) {
+      defines = [ "HEADLESS_USE_PREFS" ]
+    }
   }
 }
 
