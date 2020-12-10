@@ -31,7 +31,6 @@ exec("./swangle.try.star")
 #     source = "chromium-m86:try",
 # )
 
-branches.exec("./consoles/android.packager.star")
 branches.exec("./consoles/sheriff.ios.star")
 
 branches.exec("./fallback-cq.star")

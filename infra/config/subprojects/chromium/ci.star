@@ -88,6 +88,10 @@ luci.gitiles_poller(
 )]
 
 ci.console_view(
+    name = "android.packager",
+)
+
+ci.console_view(
     name = "chromium",
     branch_selector = branches.STANDARD_MILESTONE,
     include_experimental_builds = True,
@@ -405,6 +409,10 @@ ci.console_view(
 
 ci.builder(
     name = "android-androidx-packager",
+    console_view = "android.packager",
+    console_view_entry = ci.console_view_entry(
+        short_name = "androidx",
+    ),
     executable = "recipe:android/androidx_packager",
     schedule = "0 7,14,22 * * * *",
     service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
@@ -413,6 +421,10 @@ ci.builder(
 
 ci.builder(
     name = "android-avd-packager",
+    console_view = "android.packager",
+    console_view_entry = ci.console_view_entry(
+        short_name = "avd",
+    ),
     executable = "recipe:android/avd_packager",
     properties = {
         "avd_configs": [
@@ -432,6 +444,10 @@ ci.builder(
 
 ci.builder(
     name = "android-sdk-packager",
+    console_view = "android.packager",
+    console_view_entry = ci.console_view_entry(
+        short_name = "sdk",
+    ),
     executable = "recipe:android/sdk_packager",
     schedule = "0 7 * * 0 *",
     service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
