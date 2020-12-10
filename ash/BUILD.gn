@@ -510,8 +510,6 @@ component("ash") {
     "host/root_window_transformer.h",
     "host/transformer_helper.cc",
     "host/transformer_helper.h",
-    "hud_display/compositor_stats.cc",
-    "hud_display/compositor_stats.h",
     "hud_display/cpu_graph_page_view.cc",
     "hud_display/cpu_graph_page_view.h",
     "hud_display/cpu_status.cc",

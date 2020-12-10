@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/presentation_feedback.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
@@ -111,9 +112,10 @@ void FPSGraphPageView::OnPaint(gfx::Canvas* canvas) {
 void FPSGraphPageView::OnDidPresentCompositorFrame(
     uint32_t frame_token,
     const gfx::PresentationFeedback& feedback) {
-  compositor_stats_.OnDidPresentCompositorFrame(feedback);
-  float frame_rate_1s = compositor_stats_.frame_rate_for_last_second();
-  float frame_rate_500ms = compositor_stats_.frame_rate_for_last_half_second();
+  UpdateStats(feedback);
+
+  float frame_rate_1s = frame_rate_for_last_second();
+  float frame_rate_500ms = frame_rate_for_last_half_second();
 
   float refresh_rate = GetWidget()->GetCompositor()->refresh_rate();
 
@@ -158,6 +160,25 @@ void FPSGraphPageView::OnWindowRemovingFromRootWindow(aura::Window* window,
       GetWidget()->GetCompositor()->HasObserver(this)) {
     GetWidget()->GetCompositor()->RemoveObserver(this);
   }
+}
+
+void FPSGraphPageView::UpdateStats(const gfx::PresentationFeedback& feedback) {
+  constexpr base::TimeDelta kOneSec = base::TimeDelta::FromSeconds(1);
+  constexpr base::TimeDelta k500ms = base::TimeDelta::FromMilliseconds(500);
+  if (!feedback.failed())
+    presented_times_.push_back(feedback.timestamp);
+
+  const base::TimeTicks deadline_1s = feedback.timestamp - kOneSec;
+  while (!presented_times_.empty() && presented_times_.front() <= deadline_1s)
+    presented_times_.pop_front();
+
+  const base::TimeTicks deadline_500ms = feedback.timestamp - k500ms;
+  frame_rate_for_last_half_second_ = 0;
+  for (auto i = presented_times_.crbegin();
+       (i != presented_times_.crend()) && (*i > deadline_500ms); ++i) {
+    ++frame_rate_for_last_half_second_;
+  }
+  frame_rate_for_last_half_second_ *= 2;
 }
 
 void FPSGraphPageView::UpdateTopLabel(float refresh_rate) {

@@ -7,22 +7,25 @@
 
 #include "time.h"
 
-#include "ash/hud_display/compositor_stats.h"
 #include "ash/hud_display/graph.h"
 #include "ash/hud_display/graph_page_view_base.h"
+#include "base/containers/circular_deque.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/views/view_observer.h"
+
+namespace gfx {
+struct PresentationFeedback;
+}
 
 namespace ash {
 namespace hud_display {
 
 class Grid;
 
-// Draws FPS graphs.
-// Graph is updated in two ways:
-// 1. Regular update with UpdateData() sifts graph and adds new point.
-// 2. Every time OnFramePresented() is called, the last graph value is updated.
+// Draws several graphs per UI compositor frame.  Every time
+// OnDidPresentCompositorFrame() is called a new value is appended to the end
+// of the graph. Every time UpdateData() is called, legend values are updated.
 class FPSGraphPageView : public GraphPageViewBase,
                          public ui::CompositorObserver,
                          public views::ViewObserver,
@@ -53,8 +56,17 @@ class FPSGraphPageView : public GraphPageViewBase,
                                       aura::Window* new_root) override;
 
  private:
+  float frame_rate_for_last_second() const { return presented_times_.size(); }
+
+  float frame_rate_for_last_half_second() const {
+    return frame_rate_for_last_half_second_;
+  }
+
   // Sets grid top label to the maximum of the observed refresh rate.
   void UpdateTopLabel(float f_refresh_rate);
+
+  // Updates the stats with |feedback|.
+  void UpdateStats(const gfx::PresentationFeedback& feedback);
 
   // Number of frames per second presented.
   Graph frame_rate_1s_;
@@ -65,7 +77,10 @@ class FPSGraphPageView : public GraphPageViewBase,
 
   Grid* grid_;  // not owned
 
-  CompositorStats compositor_stats_;
+  float frame_rate_for_last_half_second_;
+
+  // |timestamp| from PresentationFeedback for one second.
+  base::circular_deque<base::TimeTicks> presented_times_;
 };
 
 }  // namespace hud_display
