@@ -56,7 +56,7 @@ If Chrome is not found there, it will use the system installed Chrome.
 To use ChromeDriver with Chrome on Android pass the Android package name in the
 chromeOptions.androidPackage capability when creating the driver. The path to
 adb_commands.py and the adb tool from the Android SDK must be set in PATH. For
-more detailed instructions see the user site.
+more detailed instructions see the [user site](https://chromedriver.chromium.org/getting-started/getting-started---android).
 
 ## Architecture
 
