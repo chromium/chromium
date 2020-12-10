@@ -224,10 +224,10 @@ const LayoutObject* IntersectionGeometry::GetRootLayoutObjectForTarget(
     root = To<Document>(root_node)->GetLayoutView();
   } else {
     root = root_node->GetLayoutObject();
-    if (target && check_containing_block_chain &&
-        !IsContainingBlockChainDescendant(target, root)) {
-      root = nullptr;
-    }
+  }
+  if (target && check_containing_block_chain &&
+      !IsContainingBlockChainDescendant(target, root)) {
+    root = nullptr;
   }
   return root;
 }
