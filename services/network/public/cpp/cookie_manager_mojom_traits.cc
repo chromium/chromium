@@ -320,6 +320,35 @@ bool StructTraits<network::mojom::CookieSameSiteContextDataView,
   return true;
 }
 
+bool EnumTraits<network::mojom::SamePartyCookieContextType,
+                net::CookieOptions::SamePartyCookieContextType>::
+    FromMojom(network::mojom::SamePartyCookieContextType context_type,
+              net::CookieOptions::SamePartyCookieContextType* out) {
+  switch (context_type) {
+    case network::mojom::SamePartyCookieContextType::kCrossParty:
+      *out = net::CookieOptions::SamePartyCookieContextType::kCrossParty;
+      return true;
+    case network::mojom::SamePartyCookieContextType::kSameParty:
+      *out = net::CookieOptions::SamePartyCookieContextType::kSameParty;
+      return true;
+  }
+  return false;
+}
+
+network::mojom::SamePartyCookieContextType
+EnumTraits<network::mojom::SamePartyCookieContextType,
+           net::CookieOptions::SamePartyCookieContextType>::
+    ToMojom(net::CookieOptions::SamePartyCookieContextType context_type) {
+  switch (context_type) {
+    case net::CookieOptions::SamePartyCookieContextType::kCrossParty:
+      return network::mojom::SamePartyCookieContextType::kCrossParty;
+    case net::CookieOptions::SamePartyCookieContextType::kSameParty:
+      return network::mojom::SamePartyCookieContextType::kSameParty;
+  }
+  NOTREACHED();
+  return network::mojom::SamePartyCookieContextType::kCrossParty;
+}
+
 bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
     Read(network::mojom::CookieOptionsDataView mojo_options,
          net::CookieOptions* cookie_options) {
@@ -354,6 +383,16 @@ bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
       return false;
   }
   cookie_options->set_full_party_context(full_party_context);
+
+  net::CookieOptions::SamePartyCookieContextType same_party_cookie_context_type;
+  if (!mojo_options.ReadSamePartyCookieContextType(
+          &same_party_cookie_context_type))
+    return false;
+  cookie_options->set_same_party_cookie_context_type(
+      same_party_cookie_context_type);
+
+  cookie_options->set_full_party_context_size(
+      mojo_options.full_party_context_size());
 
   return true;
 }

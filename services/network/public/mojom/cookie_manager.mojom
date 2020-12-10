@@ -102,6 +102,16 @@ struct CookieSameSiteContext {
   ContextType schemeful_context = CROSS_SITE;
 };
 
+// Computed for every cookie access attempt but is only relevant for SameParty
+// cookies.
+enum SamePartyCookieContextType {
+  // The opposite to kSameParty. Should be the default value.
+  kCrossParty,
+  // If the request URL is in the same First-Party Sets as the top-frame site
+  // and each member of the isolation_info.party_context.
+  kSameParty,
+};
+
 // What rules to apply when determining whether access to a particular cookie is
 // allowed.
 // Keep in sync with net/cookies/cookie_constants.h.
@@ -118,6 +128,10 @@ struct CookieOptions {
   bool update_access_time = true;
   bool return_excluded_cookies = false;
   array<SchemefulSite>? full_party_context;
+  SamePartyCookieContextType same_party_cookie_context_type = kCrossParty;
+  // The size of the isolation_info.party_context plus the top-frame site for
+  // logging purposes.
+  uint32 full_party_context_size = 0;
 };
 
 // See net/cookies/canonical_cookie.{h,cc} for documentation.

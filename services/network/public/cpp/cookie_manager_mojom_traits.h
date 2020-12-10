@@ -100,6 +100,16 @@ struct StructTraits<network::mojom::CookieSameSiteContextDataView,
 };
 
 template <>
+struct EnumTraits<network::mojom::SamePartyCookieContextType,
+                  net::CookieOptions::SamePartyCookieContextType> {
+  static network::mojom::SamePartyCookieContextType ToMojom(
+      net::CookieOptions::SamePartyCookieContextType context_type);
+
+  static bool FromMojom(network::mojom::SamePartyCookieContextType context_type,
+                        net::CookieOptions::SamePartyCookieContextType* out);
+};
+
+template <>
 struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
   static bool exclude_httponly(const net::CookieOptions& o) {
     return o.exclude_httponly();
@@ -118,6 +128,15 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
   static const base::Optional<std::set<net::SchemefulSite>>& full_party_context(
       const net::CookieOptions& o) {
     return o.full_party_context();
+  }
+
+  static net::CookieOptions::SamePartyCookieContextType
+  same_party_cookie_context_type(const net::CookieOptions& o) {
+    return o.same_party_cookie_context_type();
+  }
+
+  static uint32_t full_party_context_size(const net::CookieOptions& o) {
+    return o.full_party_context_size();
   }
 
   static bool Read(network::mojom::CookieOptionsDataView mojo_options,

@@ -307,12 +307,25 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
   }
 }
 
+TEST(CookieManagerTraitsTest, Roundtrips_SamePartyCookieContextType) {
+  using ContextType = net::CookieOptions::SamePartyCookieContextType;
+  for (ContextType context_type :
+       {ContextType::kCrossParty, ContextType::kSameParty}) {
+    ContextType roundtrip;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::SamePartyCookieContextType>(
+            context_type, roundtrip));
+    EXPECT_EQ(context_type, roundtrip);
+  }
+}
+
 TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
   {
     net::CookieOptions least_trusted, copy;
     EXPECT_FALSE(least_trusted.return_excluded_cookies());
 
     least_trusted.set_return_excluded_cookies();  // differ from default.
+    least_trusted.set_full_party_context_size(10u);
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
         least_trusted, copy));
@@ -322,6 +335,9 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
             net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
         copy.same_site_cookie_context());
     EXPECT_TRUE(copy.return_excluded_cookies());
+    EXPECT_EQ(net::CookieOptions::SamePartyCookieContextType::kCrossParty,
+              copy.same_party_cookie_context_type());
+    EXPECT_EQ(10u, copy.full_party_context_size());
   }
 
   {
@@ -332,6 +348,9 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     very_trusted.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     very_trusted.set_full_party_context(kPartyContext);
+    very_trusted.set_same_party_cookie_context_type(
+        net::CookieOptions::SamePartyCookieContextType::kSameParty);
+    very_trusted.set_full_party_context_size(kPartyContext.size());
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
         very_trusted, copy));
@@ -340,6 +359,9 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
               copy.same_site_cookie_context());
     EXPECT_FALSE(copy.return_excluded_cookies());
     EXPECT_EQ(kPartyContext, copy.full_party_context());
+    EXPECT_EQ(net::CookieOptions::SamePartyCookieContextType::kSameParty,
+              copy.same_party_cookie_context_type());
+    EXPECT_EQ(1u, copy.full_party_context_size());
   }
 }
 
