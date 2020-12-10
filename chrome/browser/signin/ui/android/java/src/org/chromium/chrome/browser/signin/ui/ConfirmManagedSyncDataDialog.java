@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -10,8 +10,6 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-
-import org.chromium.chrome.R;
 
 /**
  * A class to display the dialogs the user may encounter when switching to/from or signing into/out
@@ -43,8 +41,10 @@ public class ConfirmManagedSyncDataDialog extends DialogFragment {
      * (either through sign in or when switching accounts).
      * @param listener Callback for result.
      * @param domain The domain of the managed account.
+     *
+     * TODO(https://crbug.com/1155123): Change this method to package internal after modularization
      */
-    static ConfirmManagedSyncDataDialog create(Listener listener, String domain) {
+    public static ConfirmManagedSyncDataDialog create(Listener listener, String domain) {
         ConfirmManagedSyncDataDialog dialog = new ConfirmManagedSyncDataDialog();
         Bundle args = new Bundle();
         args.putString(KEY_DOMAIN, domain);

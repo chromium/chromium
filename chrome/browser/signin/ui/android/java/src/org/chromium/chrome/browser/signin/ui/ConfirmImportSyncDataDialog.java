@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -15,7 +15,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
@@ -28,9 +27,8 @@ import java.util.List;
  * A dialog that is displayed when the user switches the account they are syncing to. It gives the
  * option to merge the data of the two accounts or to keep them separate.
  */
-public class ConfirmImportSyncDataDialog extends DialogFragment
-        implements DialogInterface.OnClickListener {
-
+public class ConfirmImportSyncDataDialog
+        extends DialogFragment implements DialogInterface.OnClickListener {
     /**
      * Callback for completion of the dialog. Only one of {@link Listener#onConfirm} or
      * {@link Listener#onCancel} will be called and it will only be called once.
@@ -64,8 +62,10 @@ public class ConfirmImportSyncDataDialog extends DialogFragment
      *                        hitting cancel).
      * @param oldAccountName  The previous sync account name.
      * @param newAccountName  The potential next sync account name.
+     *
+     * TODO(https://crbug.com/1155123): Change the public to package internal after modularization
      */
-    static ConfirmImportSyncDataDialog create(
+    public static ConfirmImportSyncDataDialog create(
             Listener listener, String oldAccountName, String newAccountName) {
         ConfirmImportSyncDataDialog fragment = new ConfirmImportSyncDataDialog();
         Bundle args = new Bundle();
@@ -146,8 +146,8 @@ public class ConfirmImportSyncDataDialog extends DialogFragment
             assert mConfirmImportOption.isChecked() ^ mKeepSeparateOption.isChecked();
 
             RecordUserAction.record(mKeepSeparateOption.isChecked()
-                    ? "Signin_ImportDataPrompt_DontImport"
-                    : "Signin_ImportDataPrompt_ImportData");
+                            ? "Signin_ImportDataPrompt_DontImport"
+                            : "Signin_ImportDataPrompt_ImportData");
             mListener.onConfirm(mKeepSeparateOption.isChecked());
         } else {
             assert which == AlertDialog.BUTTON_NEGATIVE;
@@ -163,4 +163,3 @@ public class ConfirmImportSyncDataDialog extends DialogFragment
         mListener.onCancel();
     }
 }
-

@@ -14,6 +14,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.signin.ui.ConfirmImportSyncDataDialog;
+import org.chromium.chrome.browser.signin.ui.ConfirmManagedSyncDataDialog;
 
 /**
  * Class to decouple ConfirmSyncDataStateMachine from UI code and dialog management.

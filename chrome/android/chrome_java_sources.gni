@@ -1241,8 +1241,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sharing/shared_clipboard/SharedClipboardMetrics.java",
   "java/src/org/chromium/chrome/browser/sharing/shared_clipboard/SharedClipboardShareActivity.java",
   "java/src/org/chromium/chrome/browser/signin/AccountPickerDialogFragment.java",
-  "java/src/org/chromium/chrome/browser/signin/ConfirmImportSyncDataDialog.java",
-  "java/src/org/chromium/chrome/browser/signin/ConfirmManagedSyncDataDialog.java",
   "java/src/org/chromium/chrome/browser/signin/ConfirmSyncDataStateMachine.java",
   "java/src/org/chromium/chrome/browser/signin/ConfirmSyncDataStateMachineDelegate.java",
   "java/src/org/chromium/chrome/browser/signin/PersonalizedSigninPromoView.java",

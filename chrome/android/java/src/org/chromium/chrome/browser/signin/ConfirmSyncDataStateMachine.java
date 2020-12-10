@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.ui.ConfirmImportSyncDataDialog;
+import org.chromium.chrome.browser.signin.ui.ConfirmManagedSyncDataDialog;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

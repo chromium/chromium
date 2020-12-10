@@ -34,6 +34,8 @@ SPLIT_COMPAT_UTILS_IMPL_NAME_RE = re.compile(
 COMMENT_RE = re.compile(r'^\s*(//|/\*|\*)')
 
 BROWSER_ROOT = 'chrome/android/java/src/org/chromium/chrome/browser/'
+SIGNIN_UI_BROWSER_ROOT = 'chrome/browser/signin/ui/android'
+'/java/src/org/chromium/chrome/browser/signin/ui/'
 
 
 def CheckChangeOnUpload(input_api, output_api):
@@ -89,8 +91,8 @@ def _CheckAlertDialogBuilder(input_api, output_api):
       BROWSER_ROOT + r'settings[\\\/].*',
       BROWSER_ROOT + 'signin/AccountPickerDialogFragment.java',
       BROWSER_ROOT + 'signin/AccountSigninView.java',
-      BROWSER_ROOT + 'signin/ConfirmImportSyncDataDialog.java',
-      BROWSER_ROOT + 'signin/ConfirmManagedSyncDataDialog.java',
+      SIGNIN_UI_BROWSER_ROOT + 'ConfirmImportSyncDataDialog.java',
+      SIGNIN_UI_BROWSER_ROOT + 'ConfirmManagedSyncDataDialog.java',
       BROWSER_ROOT + 'signin/ConfirmSyncDataStateMachineDelegate.java',
       BROWSER_ROOT + 'signin/SigninFragmentBase.java',
       BROWSER_ROOT + 'signin/SignOutDialogFragment.java',

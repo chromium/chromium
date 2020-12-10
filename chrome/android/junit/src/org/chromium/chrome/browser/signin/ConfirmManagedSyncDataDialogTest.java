@@ -23,8 +23,13 @@ import org.robolectric.shadows.ShadowAlertDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.signin.ui.ConfirmManagedSyncDataDialog;
 
-/** Tests for {@link ConfirmManagedSyncDataDialog}. */
+/**
+ * Tests for {@link ConfirmManagedSyncDataDialog}.
+ * TODO(https://crbug.com/1156588): Modularize this class after moving the
+ * {@link ConfirmSyncDataStateMachineDelegate}.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ConfirmManagedSyncDataDialogTest {
     private static final String TEST_DOMAIN = "test.domain.example.com";

@@ -28,12 +28,16 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.ui.ConfirmImportSyncDataDialog;
 
-/** Tests for {@link ConfirmImportSyncDataDialog}. */
+/**
+ * Tests for {@link ConfirmImportSyncDataDialog}.
+ * TODO(https://crbug.com/1156585): Modularize this class after moving the
+ * {@link ConfirmSyncDataStateMachineDelegate}.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ConfirmImportSyncDataDialogTest {
     private static final String TEST_DOMAIN = "test.domain.example.com";
-
 
     @Mock
     private ConfirmImportSyncDataDialog.Listener mMockListener;
