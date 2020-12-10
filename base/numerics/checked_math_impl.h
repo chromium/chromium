@@ -27,15 +27,17 @@ constexpr bool CheckedAddImpl(T x, T y, T* result) {
   // it using the unsigned type of the same size.
   using UnsignedDst = typename std::make_unsigned<T>::type;
   using SignedDst = typename std::make_signed<T>::type;
-  UnsignedDst ux = static_cast<UnsignedDst>(x);
-  UnsignedDst uy = static_cast<UnsignedDst>(y);
-  UnsignedDst uresult = static_cast<UnsignedDst>(ux + uy);
-  *result = static_cast<T>(uresult);
+  const UnsignedDst ux = static_cast<UnsignedDst>(x);
+  const UnsignedDst uy = static_cast<UnsignedDst>(y);
+  const UnsignedDst uresult = static_cast<UnsignedDst>(ux + uy);
   // Addition is valid if the sign of (x + y) is equal to either that of x or
   // that of y.
-  return (std::is_signed<T>::value)
-             ? static_cast<SignedDst>((uresult ^ ux) & (uresult ^ uy)) >= 0
-             : uresult >= uy;  // Unsigned is either valid or underflow.
+  const bool is_valid =
+      std::is_signed<T>::value
+          ? static_cast<SignedDst>((uresult ^ ux) & (uresult ^ uy)) >= 0
+          : uresult >= uy;  // Unsigned is either valid or underflow.
+  *result = static_cast<T>(uresult);
+  return is_valid;
 }
 
 template <typename T, typename U, class Enable = void>
@@ -75,8 +77,9 @@ struct CheckedAddOp<T,
       is_valid = CheckedAddImpl(static_cast<Promotion>(x),
                                 static_cast<Promotion>(y), &presult);
     }
+    is_valid &= IsValueInRangeForNumericType<V>(presult);
     *result = static_cast<V>(presult);
-    return is_valid && IsValueInRangeForNumericType<V>(presult);
+    return is_valid;
   }
 };
 
@@ -87,15 +90,17 @@ constexpr bool CheckedSubImpl(T x, T y, T* result) {
   // it using the unsigned type of the same size.
   using UnsignedDst = typename std::make_unsigned<T>::type;
   using SignedDst = typename std::make_signed<T>::type;
-  UnsignedDst ux = static_cast<UnsignedDst>(x);
-  UnsignedDst uy = static_cast<UnsignedDst>(y);
-  UnsignedDst uresult = static_cast<UnsignedDst>(ux - uy);
-  *result = static_cast<T>(uresult);
+  const UnsignedDst ux = static_cast<UnsignedDst>(x);
+  const UnsignedDst uy = static_cast<UnsignedDst>(y);
+  const UnsignedDst uresult = static_cast<UnsignedDst>(ux - uy);
   // Subtraction is valid if either x and y have same sign, or (x-y) and x have
   // the same sign.
-  return (std::is_signed<T>::value)
-             ? static_cast<SignedDst>((uresult ^ ux) & (ux ^ uy)) >= 0
-             : x >= y;
+  const bool is_valid =
+      std::is_signed<T>::value
+          ? static_cast<SignedDst>((uresult ^ ux) & (ux ^ uy)) >= 0
+          : x >= y;
+  *result = static_cast<T>(uresult);
+  return is_valid;
 }
 
 template <typename T, typename U, class Enable = void>
@@ -135,8 +140,9 @@ struct CheckedSubOp<T,
       is_valid = CheckedSubImpl(static_cast<Promotion>(x),
                                 static_cast<Promotion>(y), &presult);
     }
+    is_valid &= IsValueInRangeForNumericType<V>(presult);
     *result = static_cast<V>(presult);
-    return is_valid && IsValueInRangeForNumericType<V>(presult);
+    return is_valid;
   }
 };
 
@@ -149,15 +155,17 @@ constexpr bool CheckedMulImpl(T x, T y, T* result) {
   using SignedDst = typename std::make_signed<T>::type;
   const UnsignedDst ux = SafeUnsignedAbs(x);
   const UnsignedDst uy = SafeUnsignedAbs(y);
-  UnsignedDst uresult = static_cast<UnsignedDst>(ux * uy);
+  const UnsignedDst uresult = static_cast<UnsignedDst>(ux * uy);
   const bool is_negative =
       std::is_signed<T>::value && static_cast<SignedDst>(x ^ y) < 0;
-  *result = is_negative ? 0 - uresult : uresult;
   // We have a fast out for unsigned identity or zero on the second operand.
   // After that it's an unsigned overflow check on the absolute value, with
   // a +1 bound for a negative result.
-  return uy <= UnsignedDst(!std::is_signed<T>::value || is_negative) ||
-         ux <= (std::numeric_limits<T>::max() + UnsignedDst(is_negative)) / uy;
+  const bool is_valid =
+      uy <= UnsignedDst(!std::is_signed<T>::value || is_negative) ||
+      ux <= (std::numeric_limits<T>::max() + UnsignedDst(is_negative)) / uy;
+  *result = is_negative ? 0 - uresult : uresult;
+  return is_valid;
 }
 
 template <typename T, typename U, class Enable = void>
@@ -194,8 +202,9 @@ struct CheckedMulOp<T,
       is_valid = CheckedMulImpl(static_cast<Promotion>(x),
                                 static_cast<Promotion>(y), &presult);
     }
+    is_valid &= IsValueInRangeForNumericType<V>(presult);
     *result = static_cast<V>(presult);
-    return is_valid && IsValueInRangeForNumericType<V>(presult);
+    return is_valid;
   }
 };
 
@@ -234,9 +243,10 @@ struct CheckedDivOp<T,
       return false;
     }
 
-    Promotion presult = Promotion(x) / Promotion(y);
+    const Promotion presult = Promotion(x) / Promotion(y);
+    const bool is_valid = IsValueInRangeForNumericType<V>(presult);
     *result = static_cast<V>(presult);
-    return IsValueInRangeForNumericType<V>(presult);
+    return is_valid;
   }
 };
 
@@ -265,9 +275,11 @@ struct CheckedModOp<T,
       return true;
     }
 
-    Promotion presult = static_cast<Promotion>(x) % static_cast<Promotion>(y);
+    const Promotion presult =
+        static_cast<Promotion>(x) % static_cast<Promotion>(y);
+    const bool is_valid = IsValueInRangeForNumericType<V>(presult);
     *result = static_cast<Promotion>(presult);
-    return IsValueInRangeForNumericType<V>(presult);
+    return is_valid;
   }
 };
 
@@ -296,8 +308,11 @@ struct CheckedLshOp<T,
     }
 
     // Handle the legal corner-case of a full-width signed shift of zero.
-    return std::is_signed<T>::value && !x &&
-           as_unsigned(shift) == as_unsigned(std::numeric_limits<T>::digits);
+    const bool is_valid =
+        std::is_signed<T>::value && !x &&
+        as_unsigned(shift) == as_unsigned(std::numeric_limits<T>::digits);
+    // TODO(pkasting): Doesn't this need to set *result = 0?
+    return is_valid;
   }
 };
 
@@ -315,14 +330,16 @@ struct CheckedRshOp<T,
   using result_type = T;
   template <typename V>
   static bool Do(T x, U shift, V* result) {
-    // Use the type conversion push negative values out of range.
-    if (BASE_NUMERICS_LIKELY(as_unsigned(shift) <
-                             IntegerBitsPlusSign<T>::value)) {
-      T tmp = x >> shift;
-      *result = static_cast<V>(tmp);
-      return IsValueInRangeForNumericType<V>(tmp);
+    // Use sign conversion to push negative values out of range.
+    if (BASE_NUMERICS_UNLIKELY(as_unsigned(shift) >=
+                               IntegerBitsPlusSign<T>::value)) {
+      return false;
     }
-    return false;
+
+    const T tmp = x >> shift;
+    const bool is_valid = IsValueInRangeForNumericType<V>(tmp);
+    *result = static_cast<V>(tmp);
+    return is_valid;
   }
 };
 
@@ -339,9 +356,11 @@ struct CheckedAndOp<T,
       typename MaxExponentPromotion<T, U>::type>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    result_type tmp = static_cast<result_type>(x) & static_cast<result_type>(y);
+    const result_type tmp =
+        static_cast<result_type>(x) & static_cast<result_type>(y);
+    const bool is_valid = IsValueInRangeForNumericType<V>(tmp);
     *result = static_cast<V>(tmp);
-    return IsValueInRangeForNumericType<V>(tmp);
+    return is_valid;
   }
 };
 
@@ -358,9 +377,11 @@ struct CheckedOrOp<T,
       typename MaxExponentPromotion<T, U>::type>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    result_type tmp = static_cast<result_type>(x) | static_cast<result_type>(y);
+    const result_type tmp =
+        static_cast<result_type>(x) | static_cast<result_type>(y);
+    const bool is_valid = IsValueInRangeForNumericType<V>(tmp);
     *result = static_cast<V>(tmp);
-    return IsValueInRangeForNumericType<V>(tmp);
+    return is_valid;
   }
 };
 
@@ -377,9 +398,11 @@ struct CheckedXorOp<T,
       typename MaxExponentPromotion<T, U>::type>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    result_type tmp = static_cast<result_type>(x) ^ static_cast<result_type>(y);
+    const result_type tmp =
+        static_cast<result_type>(x) ^ static_cast<result_type>(y);
+    const bool is_valid = IsValueInRangeForNumericType<V>(tmp);
     *result = static_cast<V>(tmp);
-    return IsValueInRangeForNumericType<V>(tmp);
+    return is_valid;
   }
 };
 
@@ -397,10 +420,12 @@ struct CheckedMaxOp<
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    result_type tmp = IsGreater<T, U>::Test(x, y) ? static_cast<result_type>(x)
-                                                  : static_cast<result_type>(y);
+    const result_type tmp = IsGreater<T, U>::Test(x, y)
+                                ? static_cast<result_type>(x)
+                                : static_cast<result_type>(y);
+    const bool is_valid = IsValueInRangeForNumericType<V>(tmp);
     *result = static_cast<V>(tmp);
-    return IsValueInRangeForNumericType<V>(tmp);
+    return is_valid;
   }
 };
 
@@ -418,10 +443,12 @@ struct CheckedMinOp<
   using result_type = typename LowestValuePromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    result_type tmp = IsLess<T, U>::Test(x, y) ? static_cast<result_type>(x)
-                                               : static_cast<result_type>(y);
+    const result_type tmp = IsLess<T, U>::Test(x, y)
+                                ? static_cast<result_type>(x)
+                                : static_cast<result_type>(y);
+    const bool is_valid = IsValueInRangeForNumericType<V>(tmp);
     *result = static_cast<V>(tmp);
-    return IsValueInRangeForNumericType<V>(tmp);
+    return is_valid;
   }
 };
 
@@ -437,9 +464,10 @@ struct CheckedMinOp<
     template <typename V>                                                \
     static constexpr bool Do(T x, U y, V* result) {                      \
       using Promotion = typename MaxExponentPromotion<T, U>::type;       \
-      Promotion presult = x OP y;                                        \
+      const Promotion presult = x OP y;                                  \
+      const bool is_valid = IsValueInRangeForNumericType<V>(presult);    \
       *result = static_cast<V>(presult);                                 \
-      return IsValueInRangeForNumericType<V>(presult);                   \
+      return is_valid;                                                   \
     }                                                                    \
   };
 
@@ -475,91 +503,52 @@ class CheckedNumericState {};
 // Integrals require quite a bit of additional housekeeping to manage state.
 template <typename T>
 class CheckedNumericState<T, NUMERIC_INTEGER> {
- private:
-  // is_valid_ precedes value_ because member intializers in the constructors
-  // are evaluated in field order, and is_valid_ must be read when initializing
-  // value_.
-  bool is_valid_;
-  T value_;
-
-  // Ensures that a type conversion does not trigger undefined behavior.
-  template <typename Src>
-  static constexpr T WellDefinedConversionOrZero(const Src value,
-                                                 const bool is_valid) {
-    using SrcType = typename internal::UnderlyingType<Src>::type;
-    return (std::is_integral<SrcType>::value || is_valid)
-               ? static_cast<T>(value)
-               : static_cast<T>(0);
-  }
-
  public:
-  template <typename Src, NumericRepresentation type>
-  friend class CheckedNumericState;
-
-  constexpr CheckedNumericState() : is_valid_(true), value_(0) {}
-
-  template <typename Src>
-  constexpr CheckedNumericState(Src value, bool is_valid)
+  template <typename Src = int>
+  constexpr explicit CheckedNumericState(Src value = 0, bool is_valid = true)
       : is_valid_(is_valid && IsValueInRangeForNumericType<T>(value)),
         value_(WellDefinedConversionOrZero(value, is_valid_)) {
     static_assert(std::is_arithmetic<Src>::value, "Argument must be numeric.");
   }
 
-  // Copy constructor.
   template <typename Src>
   constexpr CheckedNumericState(const CheckedNumericState<Src>& rhs)
-      : is_valid_(rhs.IsValid()),
-        value_(WellDefinedConversionOrZero(rhs.value(), is_valid_)) {}
-
-  template <typename Src>
-  constexpr explicit CheckedNumericState(Src value)
-      : is_valid_(IsValueInRangeForNumericType<T>(value)),
-        value_(WellDefinedConversionOrZero(value, is_valid_)) {}
+      : CheckedNumericState(rhs.value(), rhs.is_valid()) {}
 
   constexpr bool is_valid() const { return is_valid_; }
+
   constexpr T value() const { return value_; }
+
+ private:
+  // Ensures that a type conversion does not trigger undefined behavior.
+  template <typename Src>
+  static constexpr T WellDefinedConversionOrZero(Src value, bool is_valid) {
+    using SrcType = typename internal::UnderlyingType<Src>::type;
+    return (std::is_integral<SrcType>::value || is_valid)
+               ? static_cast<T>(value)
+               : 0;
+  }
+
+  // is_valid_ precedes value_ because member intializers in the constructors
+  // are evaluated in field order, and is_valid_ must be read when initializing
+  // value_.
+  bool is_valid_;
+  T value_;
 };
 
 // Floating points maintain their own validity, but need translation wrappers.
 template <typename T>
 class CheckedNumericState<T, NUMERIC_FLOATING> {
- private:
-  T value_;
-
-  // Ensures that a type conversion does not trigger undefined behavior.
-  template <typename Src>
-  static constexpr T WellDefinedConversionOrNaN(const Src value,
-                                                const bool is_valid) {
-    using SrcType = typename internal::UnderlyingType<Src>::type;
-    return (StaticDstRangeRelationToSrcRange<T, SrcType>::value ==
-                NUMERIC_RANGE_CONTAINED ||
-            is_valid)
-               ? static_cast<T>(value)
-               : std::numeric_limits<T>::quiet_NaN();
-  }
-
  public:
-  template <typename Src, NumericRepresentation type>
-  friend class CheckedNumericState;
-
-  constexpr CheckedNumericState() : value_(0.0) {}
-
-  template <typename Src>
-  constexpr CheckedNumericState(Src value, bool is_valid)
-      : value_(WellDefinedConversionOrNaN(value, is_valid)) {}
-
-  template <typename Src>
-  constexpr explicit CheckedNumericState(Src value)
+  template <typename Src = double>
+  constexpr explicit CheckedNumericState(Src value = 0.0, bool is_valid = true)
       : value_(WellDefinedConversionOrNaN(
             value,
-            IsValueInRangeForNumericType<T>(value))) {}
+            is_valid && IsValueInRangeForNumericType<T>(value))) {}
 
-  // Copy constructor.
   template <typename Src>
   constexpr CheckedNumericState(const CheckedNumericState<Src>& rhs)
-      : value_(WellDefinedConversionOrNaN(
-            rhs.value(),
-            rhs.is_valid() && IsValueInRangeForNumericType<T>(rhs.value()))) {}
+      : CheckedNumericState(rhs.value(), rhs.is_valid()) {}
 
   constexpr bool is_valid() const {
     // Written this way because std::isfinite is not reliably constexpr.
@@ -568,7 +557,22 @@ class CheckedNumericState<T, NUMERIC_FLOATING> {
                      value_ >= std::numeric_limits<T>::lowest()
                : std::isfinite(value_);
   }
+
   constexpr T value() const { return value_; }
+
+ private:
+  // Ensures that a type conversion does not trigger undefined behavior.
+  template <typename Src>
+  static constexpr T WellDefinedConversionOrNaN(Src value, bool is_valid) {
+    using SrcType = typename internal::UnderlyingType<Src>::type;
+    return (StaticDstRangeRelationToSrcRange<T, SrcType>::value ==
+                NUMERIC_RANGE_CONTAINED ||
+            is_valid)
+               ? static_cast<T>(value)
+               : std::numeric_limits<T>::quiet_NaN();
+  }
+
+  T value_;
 };
 
 }  // namespace internal

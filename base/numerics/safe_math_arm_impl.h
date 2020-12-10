@@ -36,8 +36,9 @@ struct CheckedMulFastAsmOp {
     Promotion presult;
 
     presult = static_cast<Promotion>(x) * static_cast<Promotion>(y);
+    const bool is_valid = IsValueInRangeForNumericType<V>(presult);
     *result = static_cast<V>(presult);
-    return IsValueInRangeForNumericType<V>(presult);
+    return is_valid;
   }
 };
 
@@ -104,9 +105,9 @@ struct ClampedMulFastAsmOp {
     if (!IsIntegerArithmeticSafe<int32_t, T, U>::value &&
         !IsIntegerArithmeticSafe<uint32_t, T, U>::value) {
       V result;
-      if (CheckedMulFastAsmOp<T, U>::Do(x, y, &result))
-        return result;
-      return CommonMaxOrMin<V>(IsValueNegative(x) ^ IsValueNegative(y));
+      return CheckedMulFastAsmOp<T, U>::Do(x, y, &result)
+                 ? result
+                 : CommonMaxOrMin<V>(IsValueNegative(x) ^ IsValueNegative(y));
     }
 
     assert((FastIntegerArithmeticPromotion<T, U>::is_contained));
