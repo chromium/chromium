@@ -232,6 +232,10 @@ void JobConfigurationBase::AddParameter(const std::string& name,
   query_params_[name] = value;
 }
 
+const DMAuth& JobConfigurationBase::GetAuth() const {
+  return auth_data_;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 JobConfigurationBase::GetUrlLoaderFactory() {
   return factory_;

@@ -65,6 +65,10 @@ ACTION_P(CreateCaptureQuertyParamsAction, params) {
   *params = arg0->GetConfiguration()->GetQueryParams();
 }
 
+ACTION_P(CreateCaptureAuthDataAction, auth_data) {
+  *auth_data = arg0->GetConfiguration()->GetAuth().Clone();
+}
+
 ACTION_P(CreateCaptureRequestAction, request) {
   std::string payload = arg0->GetConfiguration()->GetPayload();
   CHECK(request->ParseFromString(payload));
@@ -168,6 +172,11 @@ testing::Action<MockDeviceManagementService::StartJobFunction>
 MockDeviceManagementService::CaptureQueryParams(
     DeviceManagementService::JobConfiguration::ParameterMap* params) {
   return CreateCaptureQuertyParamsAction(params);
+}
+
+testing::Action<MockDeviceManagementService::StartJobFunction>
+MockDeviceManagementService::CaptureAuthData(DMAuth* auth_data) {
+  return CreateCaptureAuthDataAction(auth_data);
 }
 
 testing::Action<MockDeviceManagementService::StartJobFunction>

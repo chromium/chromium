@@ -204,6 +204,8 @@ class POLICY_EXPORT DeviceManagementService {
 
     virtual JobType GetType() = 0;
 
+    virtual const DMAuth& GetAuth() const = 0;
+
     virtual const ParameterMap& GetQueryParams() = 0;
 
     // Gets the factory to create URL fetchers for requests.
@@ -383,7 +385,7 @@ class POLICY_EXPORT JobConfigurationBase
   // already exists its value is replaced.
   void AddParameter(const std::string& name, const std::string& value);
 
-  const DMAuth& GetAuth() { return auth_data_; }
+  const DMAuth& GetAuth() const override;
 
   // DeviceManagementService::JobConfiguration.
   JobType GetType() override;

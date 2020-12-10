@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -98,6 +99,11 @@ class MockDeviceManagementService : public DeviceManagementService {
   //  passed to StartJob.
   testing::Action<StartJobFunction> CaptureQueryParams(
       DeviceManagementService::JobConfiguration::ParameterMap* params);
+
+  // Can be used as an action when mocking the StartJob method.
+  // Makes a copy of the DMAuth from the JobConfiguration of the Job passed
+  // to StartJob.
+  testing::Action<StartJobFunction> CaptureAuthData(DMAuth* auth_data);
 
   // Can be used as an action when mocking the StartJob method.
   // Makes a copy of the device management request from the JobConfiguration
