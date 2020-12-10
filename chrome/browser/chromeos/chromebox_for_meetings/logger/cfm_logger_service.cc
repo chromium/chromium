@@ -26,7 +26,6 @@ class CfmERPLoggerService : public CfmLoggerService {
         base::BindRepeating(&CfmERPLoggerService::NotifyStateObserver,
                             weak_ptr_factory_.GetWeakPtr()));
     SetDelegate(reporting_pipeline_.get());
-    OnAdaptorConnect(true);
   }
   CfmERPLoggerService(const CfmERPLoggerService&) = delete;
   CfmERPLoggerService& operator=(const CfmERPLoggerService&) = delete;
