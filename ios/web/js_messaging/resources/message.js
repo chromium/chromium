@@ -9,8 +9,7 @@
 
 goog.provide('__crWeb.message');
 
-goog.require('__crWeb.base');
-goog.require('__crWeb.common');
+// Requires __crWeb.base and __crWeb.common.
 
 /**
  * Namespace for this module.

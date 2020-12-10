@@ -203,10 +203,18 @@ js_compile_bundle("chrome_bundle_main_frame") {
 
 js_compile_checked("accessibility") {
   sources = [ "resources/accessibility.js" ]
+
+  js_modules = [ "//ios/web/web_state/js/resources/base.js" ]
 }
 
 js_compile_checked("image_fetch") {
   sources = [ "resources/image_fetch.js" ]
+
+  js_modules = [
+    "//ios/web/web_state/js/resources/base.js",
+    "//ios/web/web_state/js/resources/common.js",
+    "//ios/web/js_messaging/resources/message.js",
+  ]
 }
 
 source_set("java_script_console") {

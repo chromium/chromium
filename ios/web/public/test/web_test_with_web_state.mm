@@ -229,14 +229,18 @@ id WebTestWithWebState::ExecuteJavaScript(NSString* script) {
         // Most of executed JS does not return the result, and there is no need
         // to log WKErrorJavaScriptResultTypeIsUnsupported error code.
         if (error && error.code != WKErrorJavaScriptResultTypeIsUnsupported) {
-          DLOG(WARNING) << base::SysNSStringToUTF8(error.localizedDescription);
+          DLOG(WARNING) << "Script execution of:" << script
+                        << "\nfailed with error: "
+                        << base::SysNSStringToUTF8(error.description);
         }
         execution_result = [result copy];
         execution_completed = true;
       }];
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return execution_completed;
-  }));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout,
+                                          ^{
+                                            return execution_completed;
+                                          }))
+      << "Timed out trying to execute: " << script;
 
   return execution_result;
 }

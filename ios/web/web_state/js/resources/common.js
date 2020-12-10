@@ -6,7 +6,7 @@
 
 goog.provide('__crWeb.common');
 
-goog.require('__crWeb.base');
+// Requires __crWeb.base.
 
 /** @typedef {HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement} */
 var FormControlElement;

@@ -4,7 +4,7 @@
 
 goog.provide('__crWeb.findInPage');
 
-goog.require('__crWeb.base');
+// Requires __crWeb.base
 
 /**
  * Based on code from the Google iOS app.

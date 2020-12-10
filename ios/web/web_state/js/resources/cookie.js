@@ -6,7 +6,7 @@
  */
 goog.provide('__crWeb.cookie');
 
-goog.require('__crWeb.message');
+//Requires __crWeb.message
 
 /* Beginning of anonymous namespace. */
 (function() {

@@ -48,6 +48,12 @@ js_compile_checked("injected_js") {
     "resources/language_detection.js",
     "resources/translate_ios.js",
   ]
+
+  js_modules = [
+    "//ios/web/web_state/js/resources/base.js",
+    "//ios/web/web_state/js/resources/common.js",
+    "//ios/web/js_messaging/resources/message.js",
+  ]
 }
 
 source_set("unit_tests") {

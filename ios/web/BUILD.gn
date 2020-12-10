@@ -32,8 +32,11 @@ source_set("web") {
   ]
 
   deps = [
+    ":base_js",
+    ":common_js",
     ":core",
     ":js_resources",
+    ":message_js",
     ":navigation_resources",
     ":resources",
     ":threads",
@@ -608,11 +611,8 @@ js_compile_bundle("all_frames_web_bundle") {
   closure_entry_point = "__crWeb.allFramesWebBundle"
 
   sources = [
-    "js_messaging/resources/message.js",
     "web_state/js/resources/all_frames_context_menu.js",
     "web_state/js/resources/all_frames_web_bundle.js",
-    "web_state/js/resources/base.js",
-    "web_state/js/resources/common.js",
     "web_state/js/resources/cookie.js",
     "web_state/js/resources/find_in_page.js",
     "web_state/js/resources/share_workaround.js",
@@ -640,12 +640,39 @@ js_compile_bundle("main_frame_document_end_web_bundle") {
   ]
 }
 
+js_compile_bundle("base_js") {
+  visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.base"
+
+  sources = [ "web_state/js/resources/base.js" ]
+}
+
+js_compile_bundle("common_js") {
+  visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.common"
+
+  sources = [ "web_state/js/resources/common.js" ]
+}
+
+js_compile_bundle("message_js") {
+  visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.message"
+
+  sources = [ "js_messaging/resources/message.js" ]
+}
+
 js_compile_checked("js_resources") {
   public_deps = [
     ":all_frames_document_end_web_bundle",
     ":all_frames_web_bundle",
     ":main_frame_document_end_web_bundle",
     ":main_frame_web_bundle",
+  ]
+
+  js_modules = [
+    "//ios/web/web_state/js/resources/base.js",
+    "//ios/web/web_state/js/resources/common.js",
+    "//ios/web/js_messaging/resources/message.js",
   ]
 
   sources = [ "js_messaging/resources/window_id.js" ]

@@ -10,7 +10,7 @@
  * @suppress {checkTypes, checkVars}
  */
 
-goog.require('__crWeb.base');
+// Requires __crWeb.base
 
 /**
  * Namespace for this module.

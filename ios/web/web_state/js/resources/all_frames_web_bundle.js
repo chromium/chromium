@@ -5,10 +5,8 @@
 // Set of scripts required by web layer backed up by WKWebView.
 goog.provide('__crWeb.allFramesWebBundle');
 
+// Requires __crWeb.base, __crWeb.common, and __crWeb.message
 goog.require('__crWeb.allFramesContextMenu');
-goog.require('__crWeb.base');
-goog.require('__crWeb.common');
 goog.require('__crWeb.cookie');
 goog.require('__crWeb.findInPage');
-goog.require('__crWeb.message');
 goog.require('__crWeb.shareWorkaround');

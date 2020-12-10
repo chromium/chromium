@@ -8,8 +8,7 @@
 
 goog.provide('__crWeb.allFramesContextMenu');
 
-goog.require('__crWeb.base');
-goog.require('__crWeb.common');
+// Requires __crWeb.base and __crWeb.common
 
 /** Beginning of anonymous object */
 (function() {
