@@ -1468,7 +1468,7 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
     // These may have been destroyed since the original update occurred.
     if (!node) {
       if (!axid || !ObjectFromAXID(axid))
-        return;
+        continue;
     }
     base::OnceClosure& callback = tree_update->callback;
     // Insure the update is for the correct document.
