@@ -14,6 +14,8 @@
 
 namespace cr_fuchsia {
 
+// TODO(crbug.com/1156780): Replace bool returns with base::Optional.
+
 // Reads the contents of |buffer|, encoded in UTF-8, to a UTF-16 string.
 // Returns |false| if |buffer| is not valid UTF-8.
 bool ReadUTF8FromVMOAsUTF16(const fuchsia::mem::Buffer& buffer,
@@ -31,6 +33,10 @@ fuchsia::mem::Buffer MemBufferFromString16(const base::StringPiece16& data,
 // Returns true if the read operation succeeded.
 bool StringFromMemBuffer(const fuchsia::mem::Buffer& buffer,
                          std::string* output);
+
+// Reads the contents of |data| into |output|.
+// Returns true if the read operation succeeded.
+bool StringFromMemData(const fuchsia::mem::Data& data, std::string* output);
 
 // Creates a memory-mapped, read-only Buffer with the contents of |file|.
 // Will return an empty Buffer if the file could not be opened.

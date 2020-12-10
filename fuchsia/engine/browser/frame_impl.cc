@@ -1135,3 +1135,8 @@ void FrameImpl::ResourceLoadComplete(
         base::StringPrintf("WebEngine.ResourceRequestError:%d", net_error));
   }
 }
+
+// TODO(crbug.com/1136681#c6): Move below GetBindingChannelForTest when fixed.
+void FrameImpl::EnableExplicitSitesFilter(std::string error_page) {
+  explicit_sites_filter_error_page_ = std::move(error_page);
+}

@@ -10,6 +10,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
+#include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
@@ -198,6 +199,17 @@ WebEngineContentBrowserClient::CreateThrottlesForNavigation(
     throttles.push_back(std::make_unique<NavigationPolicyThrottle>(
         navigation_handle, frame_impl->navigation_policy_handler()));
   }
+
+  const base::Optional<std::string>& explicit_sites_filter_error_page =
+      frame_impl->explicit_sites_filter_error_page();
+
+  if (explicit_sites_filter_error_page) {
+    throttles.push_back(std::make_unique<SafeSitesNavigationThrottle>(
+        navigation_handle,
+        navigation_handle->GetWebContents()->GetBrowserContext(),
+        *explicit_sites_filter_error_page));
+  }
+
   return throttles;
 }
 

@@ -19,6 +19,7 @@
 
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/optional.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -97,6 +98,14 @@ class FrameImpl : public fuchsia::web::Frame,
   }
   CastStreamingSessionClient* cast_streaming_session_client_for_test() {
     return cast_streaming_session_client_.get();
+  }
+
+  // Enables explicit sites filtering and set the error page. If |error_page| is
+  // empty, the default error page will be used.
+  void EnableExplicitSitesFilter(std::string error_page);
+
+  const base::Optional<std::string>& explicit_sites_filter_error_page() const {
+    return explicit_sites_filter_error_page_;
   }
 
  private:
@@ -297,6 +306,11 @@ class FrameImpl : public fuchsia::web::Frame,
   media_control::MediaBlocker media_blocker_;
 
   ThemeManager theme_manager_;
+
+  // The error page to be displayed when a navigation to an explicit site is
+  // filtered. Explicit sites are filtered if it has a value. If set to the
+  // empty string, the default error page will be displayed.
+  base::Optional<std::string> explicit_sites_filter_error_page_;
 
   base::WeakPtrFactory<FrameImpl> weak_factory_{this};
 };

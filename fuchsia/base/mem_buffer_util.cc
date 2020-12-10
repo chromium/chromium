@@ -9,6 +9,7 @@
 #include <lib/zx/vmo.h>
 #include <string>
 
+#include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -63,6 +64,25 @@ bool StringFromMemBuffer(const fuchsia::mem::Buffer& buffer,
     return false;
   }
   return true;
+}
+
+bool StringFromMemData(const fuchsia::mem::Data& data, std::string* output) {
+  switch (data.Which()) {
+    case fuchsia::mem::Data::kBytes: {
+      const std::vector<uint8_t>& bytes = data.bytes();
+      output->assign(bytes.begin(), bytes.end());
+      return true;
+    }
+    case fuchsia::mem::Data::kBuffer:
+      return StringFromMemBuffer(data.buffer(), output);
+    case fuchsia::mem::Data::kUnknown:
+    case fuchsia::mem::Data::Invalid:
+      // TODO(fxbug.dev/66155): Determine whether to use a default case instead.
+      break;
+  }
+
+  NOTREACHED();
+  return false;
 }
 
 fuchsia::mem::Buffer MemBufferFromFile(base::File file) {

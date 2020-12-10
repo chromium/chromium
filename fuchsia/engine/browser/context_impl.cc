@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/cast_streaming/public/cast_streaming_session.h"
 #include "fuchsia/cast_streaming/public/network_context_getter.h"
 #include "fuchsia/engine/browser/frame_impl.h"
@@ -89,6 +90,20 @@ void ContextImpl::CreateFrameForWebContents(
   blink::web_pref::WebPreferences web_preferences =
       web_contents->GetOrCreateWebPreferences();
 
+  // Register the new Frame with the DevTools controller. The controller will
+  // reject registration if user-debugging is requested, but it is not enabled
+  // in the controller.
+  const bool user_debugging_requested =
+      params.has_enable_remote_debugging() && params.enable_remote_debugging();
+  if (!devtools_controller_->OnFrameCreated(web_contents.get(),
+                                            user_debugging_requested)) {
+    frame_request.Close(ZX_ERR_INVALID_ARGS);
+    return;
+  }
+
+  // |params.debug_name| is not currently supported.
+  // TODO(crbug.com/1051533): Determine whether it is still needed.
+
   // REQUIRE_USER_ACTIVATION is the default per the FIDL API.
   web_preferences.autoplay_policy =
       blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
@@ -107,13 +122,27 @@ void ContextImpl::CreateFrameForWebContents(
   }
   web_contents->SetWebPreferences(web_preferences);
 
-  // Register the new Frame with the DevTools controller. The controller will
-  // reject registration if user-debugging is requested, but it is not enabled
-  // in the controller.
-  const bool user_debugging_requested =
-      params.has_enable_remote_debugging() && params.enable_remote_debugging();
-  if (!devtools_controller_->OnFrameCreated(web_contents.get(),
-                                            user_debugging_requested)) {
+  // Verify the explicit sites filter error page content. If the parameter is
+  // present, it will be provided to the FrameImpl after it is created below.
+  base::Optional<std::string> explicit_sites_filter_error_page;
+  if (params.has_explicit_sites_filter_error_page()) {
+    explicit_sites_filter_error_page.emplace();
+    if (!cr_fuchsia::StringFromMemData(
+            params.explicit_sites_filter_error_page(),
+            &explicit_sites_filter_error_page.value())) {
+      frame_request.Close(ZX_ERR_INVALID_ARGS);
+      return;
+    }
+  }
+
+  // FrameImpl clones the params used to create it when creating popup Frames.
+  // Ensure the params can be cloned to avoid problems when creating popups.
+  // TODO(http://fxbug.dev/65750): Remove this limitation once a soft migration
+  // to a new solution has been completed.
+  fuchsia::web::CreateFrameParams cloned_params;
+  zx_status_t status = params.Clone(&cloned_params);
+  if (status != ZX_OK) {
+    ZX_LOG(ERROR, status) << "CreateFrameParams clone failed";
     frame_request.Close(ZX_ERR_INVALID_ARGS);
     return;
   }
@@ -122,6 +151,12 @@ void ContextImpl::CreateFrameForWebContents(
   auto frame_impl =
       std::make_unique<FrameImpl>(std::move(web_contents), this,
                                   std::move(params), std::move(frame_request));
+
+  if (explicit_sites_filter_error_page) {
+    frame_impl->EnableExplicitSitesFilter(
+        std::move(*explicit_sites_filter_error_page));
+  }
+
   frames_.insert(std::move(frame_impl));
 }
 
