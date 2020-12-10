@@ -130,6 +130,10 @@ void RecordAssistiveUserPrefForEmoji(bool value) {
   base::UmaHistogramBoolean("InputMethod.Assistive.UserPref.Emoji", value);
 }
 
+void RecordAssistiveNotAllowed(AssistiveType type) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.NotAllowed", type);
+}
+
 void RecordAssistiveCoverage(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Coverage", type);
 }
@@ -338,8 +342,11 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
 void AssistiveSuggester::RecordAssistiveMatchMetricsForAction(
     AssistiveType action) {
   RecordAssistiveMatch(action);
-  if (!IsActionEnabled(action))
+  if (!IsActionEnabled(action)) {
     RecordAssistiveDisabled(action);
+  } else if (!IsAllowedUrlOrAppForEmojiSuggestion()) {
+    RecordAssistiveNotAllowed(action);
+  }
 }
 
 void AssistiveSuggester::RecordAssistiveMatchMetrics(const base::string16& text,

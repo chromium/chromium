@@ -493,12 +493,22 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                        PersonalInfoDisabledReasonkUrlOrAppNotAllowed) {
   base::HistogramTester histogram_tester;
 
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.Disabled.PersonalInfo",
+      DisabledReason::kUrlOrAppNotAllowed, 0);
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.NotAllowed",
+                                      chromeos::AssistiveType::kPersonalName,
+                                      0);
+
   ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "my name is ");
 
   histogram_tester.ExpectUniqueSample(
       "InputMethod.Assistive.Disabled.PersonalInfo",
       DisabledReason::kUrlOrAppNotAllowed, 1);
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.NotAllowed",
+                                      chromeos::AssistiveType::kPersonalName,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestEmoji) {

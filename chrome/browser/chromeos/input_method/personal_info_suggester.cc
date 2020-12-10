@@ -93,6 +93,10 @@ void RecordTimeToDismiss(base::TimeDelta delta) {
                           delta);
 }
 
+void RecordAssistiveInsufficientData(AssistiveType type) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.InsufficientData", type);
+}
+
 }  // namespace
 
 AssistiveType ProposePersonalInfoAssistiveAction(const base::string16& text) {
@@ -253,8 +257,12 @@ bool PersonalInfoSuggester::Suggest(const base::string16& text) {
     return matched;
   } else {
     suggestion_ = GetSuggestion(text);
-    if (!suggestion_.empty())
+    if (suggestion_.empty()) {
+      if (proposed_action_type_ != AssistiveType::kGenericAction)
+        RecordAssistiveInsufficientData(proposed_action_type_);
+    } else {
       ShowSuggestion(suggestion_, 0);
+    }
     return suggestion_shown_;
   }
 }

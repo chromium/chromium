@@ -293,6 +293,26 @@ TEST_F(PersonalInfoSuggesterTest, SuggestNames) {
   suggestion_handler_->VerifySuggestion(full_name_, 0);
 }
 
+TEST_F(PersonalInfoSuggesterTest, SuggestNamesButInsufficientData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoName},
+      /*disabled_features=*/{});
+  autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
+                                             autofill::test::kEmptyOrigin);
+  personal_data_->AddProfile(autofill_profile);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.InsufficientData",
+                                      chromeos::AssistiveType::kPersonalName,
+                                      0);
+
+  suggester_->Suggest(base::UTF8ToUTF16("my name is "));
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.InsufficientData",
+                                      chromeos::AssistiveType::kPersonalName,
+                                      1);
+}
+
 TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNamesWhenFlagIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
