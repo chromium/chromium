@@ -1369,26 +1369,16 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
   }
 
   void ServerWillReplyWithPrivateSetMembershipOprfResponse() {
-    em::DeviceManagementResponse response;
-    em::PrivateSetMembershipResponse* private_set_membership_response =
-        response.mutable_private_set_membership_response();
-
-    *private_set_membership_response->mutable_rlwe_response()
-         ->mutable_oprf_response() =
-        private_set_membership_test_case_.oprf_response();
+    em::DeviceManagementResponse response =
+        GetPrivateSetMembershipOprfResponse();
 
     ServerWillReplyForPrivateSetMembership(
         net::OK, DeviceManagementService::kSuccess, response);
   }
 
   void ServerWillReplyWithPrivateSetMembershipQueryResponse() {
-    em::DeviceManagementResponse response;
-    em::PrivateSetMembershipResponse* private_set_membership_response =
-        response.mutable_private_set_membership_response();
-
-    *private_set_membership_response->mutable_rlwe_response()
-         ->mutable_query_response() =
-        private_set_membership_test_case_.query_response();
+    em::DeviceManagementResponse response =
+        GetPrivateSetMembershipQueryResponse();
 
     ServerWillReplyForPrivateSetMembership(
         net::OK, DeviceManagementService::kSuccess, response);
@@ -1421,12 +1411,13 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
         .RetiresOnSaturation();
   }
 
-  const em::PrivateSetMembershipRequest& private_set_membership_request() {
+  const em::PrivateSetMembershipRequest& private_set_membership_request()
+      const {
     return private_set_membership_last_request_
         .private_set_membership_request();
   }
 
-  StateDiscoveryResult GetStateDiscoveryResult() {
+  StateDiscoveryResult GetStateDiscoveryResult() const {
     const base::Value* device_state_value =
         local_state_->GetUserPref(prefs::kShouldRetrieveDeviceState);
     if (!device_state_value)
@@ -1438,7 +1429,7 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
 
   // Returns the expected membership result for the current private set
   // membership test case.
-  bool GetExpectedMembershipResult() {
+  bool GetExpectedMembershipResult() const {
     return private_set_membership_test_case_.is_positive_membership_expected();
   }
 
@@ -1457,7 +1448,7 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
 
   // Expects a sample for kUMAPrivateSetMembershipSuccessTime to be recorded
   // |count| times.
-  void ExpectPrivateSetMembershipSuccessTimeRecorded(int count) {
+  void ExpectPrivateSetMembershipSuccessTimeRecorded(int count) const {
     histogram_tester_.ExpectTotalCount(kUMAPrivateSetMembershipSuccessTime,
                                        count);
   }
@@ -1465,19 +1456,19 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
   // Expects a sample for kUMAPrivateSetMembershipHashDanceComparison to be
   // recorded once with value |comparison|.
   void ExpectPrivateSetMembershipHashDanceComparisonRecorded(
-      PrivateSetMembershipHashDanceComparison comparison) {
+      PrivateSetMembershipHashDanceComparison comparison) const {
     histogram_tester_.ExpectUniqueSample(
         kUMAPrivateSetMembershipHashDanceComparison, comparison,
         /*expected_count=*/1);
   }
 
-  void VerifyPrivateSetMembershipLastRequestJobType() {
+  void VerifyPrivateSetMembershipLastRequestJobType() const {
     EXPECT_EQ(DeviceManagementService::JobConfiguration::
                   TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
               private_set_membership_last_job_type_);
   }
 
-  void VerifyPrivateSetMembershipRlweOprfRequest() {
+  void VerifyPrivateSetMembershipRlweOprfRequest() const {
     EXPECT_EQ(private_set_membership_test_case_.expected_oprf_request()
                   .SerializeAsString(),
               private_set_membership_request()
@@ -1486,7 +1477,7 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
                   .SerializeAsString());
   }
 
-  void VerifyPrivateSetMembershipRlweQueryRequest() {
+  void VerifyPrivateSetMembershipRlweQueryRequest() const {
     EXPECT_EQ(private_set_membership_test_case_.expected_query_request()
                   .SerializeAsString(),
               private_set_membership_request()
@@ -1502,6 +1493,28 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
       const PrivateSetMembershipHelperTest&) = delete;
 
  private:
+  em::DeviceManagementResponse GetPrivateSetMembershipOprfResponse() const {
+    em::DeviceManagementResponse response;
+    em::PrivateSetMembershipResponse* private_set_membership_response =
+        response.mutable_private_set_membership_response();
+
+    *private_set_membership_response->mutable_rlwe_response()
+         ->mutable_oprf_response() =
+        private_set_membership_test_case_.oprf_response();
+    return response;
+  }
+
+  em::DeviceManagementResponse GetPrivateSetMembershipQueryResponse() const {
+    em::DeviceManagementResponse response;
+    em::PrivateSetMembershipResponse* private_set_membership_response =
+        response.mutable_private_set_membership_response();
+
+    *private_set_membership_response->mutable_rlwe_response()
+         ->mutable_query_response() =
+        private_set_membership_test_case_.query_response();
+    return response;
+  }
+
   psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase
       private_set_membership_test_case_;
   DeviceManagementService::JobConfiguration::JobType
