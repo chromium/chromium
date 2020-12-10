@@ -237,13 +237,19 @@ void VideoCaptureDeviceFactoryLinux::GetDevicesInfo(
           VideoFacingMode::MEDIA_VIDEO_FACING_NONE;
 #endif
 
+      VideoCaptureFormats supported_formats;
+      GetSupportedFormatsForV4L2BufferType(fd.get(), &supported_formats);
+      if (supported_formats.empty()) {
+        DVLOG(1) << "No supported formats: " << unique_id;
+        continue;
+      }
+
       devices_info.emplace_back(VideoCaptureDeviceDescriptor(
           display_name, unique_id, model_id,
           VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE, GetControlSupport(fd.get()),
           VideoCaptureTransportType::OTHER_TRANSPORT, facing_mode));
 
-      GetSupportedFormatsForV4L2BufferType(
-          fd.get(), &devices_info.back().supported_formats);
+      devices_info.back().supported_formats = std::move(supported_formats);
     }
   }
 
