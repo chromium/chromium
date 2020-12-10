@@ -34,12 +34,18 @@
 namespace blink {
 
 ScopedSVGPaintState::~ScopedSVGPaintState() {
+  // Paint mask before clip path as mask because if both exist, the ClipPathMask
+  // effect node is a child of the Mask node (see object_paint_properties.h for
+  // the node hierarchy), to ensure the clip-path mask will be applied to the
+  // mask to create an intersection of the masks, then the intersection will be
+  // applied to the masked content.
+  if (should_paint_mask_)
+    SVGMaskPainter::Paint(paint_info_.context, object_, display_item_client_);
+
   if (should_paint_clip_path_as_mask_image_) {
     ClipPathClipper::PaintClipPathAsMaskImage(
         paint_info_.context, object_, display_item_client_, PhysicalOffset());
   }
-  if (should_paint_mask_)
-    SVGMaskPainter::Paint(paint_info_.context, object_, display_item_client_);
 }
 
 void ScopedSVGPaintState::ApplyEffects() {
