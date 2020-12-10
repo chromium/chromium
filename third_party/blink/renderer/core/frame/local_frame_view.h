@@ -349,8 +349,7 @@ class CORE_EXPORT LocalFrameView final
   void WillBeRemovedFromFrame();
 
   bool IsUpdatingLifecycle() {
-    return current_update_lifecycle_phases_target_state_ !=
-           DocumentLifecycle::kUninitialized;
+    return target_state_ != DocumentLifecycle::kUninitialized;
   }
 
   // Run all needed lifecycle stages. After calling this method, all frames will
@@ -402,7 +401,9 @@ class CORE_EXPORT LocalFrameView final
   // desired state.
   bool UpdateLifecycleToLayoutClean(DocumentUpdateReason reason);
 
-  void SetInLifecycleUpdateForTest(bool val) { in_lifecycle_update_ = val; }
+  void SetTargetStateForTest(DocumentLifecycle::LifecycleState state) {
+    target_state_ = state;
+  }
 
   // This for doing work that needs to run synchronously at the end of lifecyle
   // updates, but needs to happen outside of the lifecycle code. It's OK to
@@ -1072,8 +1073,7 @@ class CORE_EXPORT LocalFrameView final
   bool allow_throttling_ = false;
 
   // This is set on the local root frame view only.
-  DocumentLifecycle::LifecycleState
-      current_update_lifecycle_phases_target_state_;
+  DocumentLifecycle::LifecycleState target_state_;
   bool past_layout_lifecycle_update_;
 
   using AnchoringAdjustmentQueue =
@@ -1092,7 +1092,6 @@ class CORE_EXPORT LocalFrameView final
   bool needs_forced_compositing_update_;
 
   bool needs_focus_on_fragment_;
-  bool in_lifecycle_update_;
 
   // True if the frame has deferred commits at least once per document load.
   // We won't defer again for the same document.

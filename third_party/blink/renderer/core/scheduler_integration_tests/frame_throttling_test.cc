@@ -197,10 +197,12 @@ TEST_P(FrameThrottlingTest, IntersectionObservationOverridesThrottling) {
   inner_frame_document->View()->SetIntersectionObservationState(
       LocalFrameView::kRequired);
   {
-    GetDocument().GetFrame()->View()->SetInLifecycleUpdateForTest(true);
+    GetDocument().GetFrame()->View()->SetTargetStateForTest(
+        DocumentLifecycle::kPaintClean);
     EXPECT_FALSE(
         inner_frame_document->View()->ShouldThrottleRenderingForTest());
-    GetDocument().GetFrame()->View()->SetInLifecycleUpdateForTest(false);
+    GetDocument().GetFrame()->View()->SetTargetStateForTest(
+        DocumentLifecycle::kUninitialized);
   }
 
   inner_frame_document->View()->ScheduleAnimation();
@@ -353,9 +355,11 @@ TEST_P(FrameThrottlingTest,
       LocalFrameView::kRequired);
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
   {
-    GetDocument().GetFrame()->View()->SetInLifecycleUpdateForTest(true);
+    GetDocument().GetFrame()->View()->SetTargetStateForTest(
+        DocumentLifecycle::kPaintClean);
     EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
-    GetDocument().GetFrame()->View()->SetInLifecycleUpdateForTest(false);
+    GetDocument().GetFrame()->View()->SetTargetStateForTest(
+        DocumentLifecycle::kUninitialized);
   }
 
   // A lifecycle update can update the throttled frame to just LayoutClean but
