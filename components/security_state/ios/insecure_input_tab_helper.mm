@@ -18,6 +18,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "url/origin.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -64,9 +65,16 @@ InsecureInputTabHelper* InsecureInputTabHelper::GetOrCreateForWebState(
   return helper;
 }
 
+bool InsecureInputTabHelper::IsInsecureContext() {
+  // We don't want to mark data URLs as secure, so we check the origin rather
+  // than calling network::IsUrlPotentiallyTrustworthy.
+  // See https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
+  return !network::IsOriginPotentiallyTrustworthy(
+      url::Origin::Create(web_state_->GetLastCommittedURL()));
+}
+
 void InsecureInputTabHelper::DidEditFieldInInsecureContext() {
-  DCHECK(
-      !network::IsUrlPotentiallyTrustworthy(web_state_->GetLastCommittedURL()));
+  DCHECK(IsInsecureContext());
 
   security_state::SSLStatusInputEventData* input_events =
       GetOrCreateSSLStatusInputEventData(web_state_);
@@ -93,8 +101,7 @@ void InsecureInputTabHelper::FormActivityRegistered(
     web::WebFrame* sender_frame,
     const autofill::FormActivityParams& params) {
   DCHECK_EQ(web_state_, web_state);
-  if (params.type == "input" &&
-      !network::IsUrlPotentiallyTrustworthy(web_state->GetLastCommittedURL())) {
+  if (params.type == "input" && IsInsecureContext()) {
     DidEditFieldInInsecureContext();
   }
 }
@@ -105,8 +112,7 @@ void InsecureInputTabHelper::DidFinishNavigation(
   DCHECK_EQ(web_state_, web_state);
   // Check if the navigation should clear insecure input event data (i.e., not a
   // same-document navigation).
-  if (!network::IsUrlPotentiallyTrustworthy(web_state->GetLastCommittedURL()) &&
-      navigation_context->HasCommitted() &&
+  if (IsInsecureContext() && navigation_context->HasCommitted() &&
       !navigation_context->IsSameDocument()) {
     security_state::SSLStatusInputEventData* input_events =
         GetOrCreateSSLStatusInputEventData(web_state_);
