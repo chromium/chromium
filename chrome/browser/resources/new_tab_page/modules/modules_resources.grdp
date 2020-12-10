@@ -8,7 +8,8 @@
       file="modules/dummy/foo_proxy.js" type="BINDATA" />
 </if>
   <include name="IDR_NEW_TAB_PAGE_MODULES_KALEIDOSCOPE_MODULE_JS"
-      file="modules/kaleidoscope/module.js" type="BINDATA" />
+      file="${root_gen_dir}/chrome/browser/resources/new_tab_page/modules/kaleidoscope/module.js"
+      use_base_dir="false" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_MODULES_MODULE_DESCRIPTOR_JS"
       file="modules/module_descriptor.js" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_MODULES_MODULE_HEADER_JS"

@@ -237,7 +237,10 @@ js_library("doodle_share_dialog") {
 }
 
 js_library("background_manager") {
-  deps = [ ":utils" ]
+  deps = [
+    ":utils",
+    "//ui/webui/resources/js:event_tracker.m",
+  ]
 }
 
 js_library("one_google_bar_api") {

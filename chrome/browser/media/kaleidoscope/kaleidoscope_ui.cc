@@ -252,8 +252,6 @@ void ConfigureMainFrameWebUIDataSource(content::WebUIDataSource* html_source) {
 
   html_source->SetDefaultResource(IDR_KALEIDOSCOPE_HTML);
 #endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
-
-  html_source->AddResourcePath("module.js", IDR_KALEIDOSCOPE_NTP_MODULE_JS);
 }
 
 content::WebUIDataSource* CreateUntrustedPALChildWebUIDataSource() {

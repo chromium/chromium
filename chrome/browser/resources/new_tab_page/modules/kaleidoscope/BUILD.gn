@@ -2,10 +2,33 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-js_library("module") {
-  deps = [ "..:module_descriptor" ]
+# TODO(crbug.com/1152230): Upstream the Kaleidoscope module code and remove the
+# fallback module.
+# TODO(tiborg): Make this if(enable_kaleidoscope) once downstream changes have
+# landed.
+if (false) {
+  group("module") {
+    public_deps =
+        [ "//chrome/browser/media/kaleidoscope/internal/resources/module" ]
+  }
 
-  externs_list = [ "externs.js" ]
+  copy("web_components") {
+    sources = [ "$root_gen_dir/chrome/browser/media/kaleidoscope/internal/resources/module/module.js" ]
+    outputs = [ "$target_gen_dir/module.js" ]
+    deps = [ "//chrome/browser/media/kaleidoscope/internal/resources/module:web_components" ]
+  }
+} else {
+  js_library("module") {
+    deps = [ "..:module_descriptor" ]
+    externs_list = [ "externs.js" ]
+  }
+
+  copy("web_components") {
+    sources = [ "module.js" ]
+    outputs = [ "$target_gen_dir/module.js" ]
+    deps = [ ":module" ]
+  }
 }

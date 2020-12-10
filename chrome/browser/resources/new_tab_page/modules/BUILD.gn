@@ -9,6 +9,7 @@ import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/webui_features.gni")
 
 js_library("module_descriptor") {
+  deps = [ "..:browser_proxy" ]
 }
 
 js_library("modules") {
@@ -53,6 +54,7 @@ group("web_components") {
   public_deps = [
     ":web_components_local",
     "dummy:web_components",
+    "kaleidoscope:web_components",
     "task_module:web_components",
   ]
 }
@@ -68,7 +70,6 @@ if (optimize_webui) {
 
     out_folder = "$target_gen_dir/$preprocess_folder"
     in_files = [
-      "kaleidoscope/module.js",
       "module_descriptor.js",
       "modules.js",
       "module_registry.js",
@@ -88,6 +89,7 @@ if (optimize_webui) {
       "module_header.js",
       "module_wrapper.js",
       "dummy/module.js",
+      "kaleidoscope/module.js",
       "task_module/module.js",
     ]
   }
