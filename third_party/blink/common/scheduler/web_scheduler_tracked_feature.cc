@@ -4,175 +4,112 @@
 
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
-#include <map>
-
 namespace blink {
 namespace scheduler {
 
-namespace {
-
-struct FeatureNames {
-  std::string short_name;
-  std::string human_readable;
-};
-
-FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
+const char* FeatureToString(WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
-      return {"WebSocket", "WebSocket"};
+      return "WebSocket";
     case WebSchedulerTrackedFeature::kWebRTC:
-      return {"WebRTC", "WebRTC"};
+      return "WebRTC";
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
-      return {"MainResourceHasCacheControlNoCache",
-              "main resource has Cache-Control: No-Cache"};
+      return "main resource has Cache-Control: No-Cache";
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
-      return {"MainResourceHasCacheControlNoStore",
-              "main resource has Cache-Control: No-Store"};
+      return "main resource has Cache-Control: No-Store";
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache:
-      return {"SubresourceHasCacheControlNoCache",
-              "subresource has Cache-Control: No-Cache"};
+      return "subresource has Cache-Control: No-Cache";
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
-      return {"SubresourceHasCacheControlNoStore",
-              "subresource has Cache-Control: No-Store"};
+      return "subresource has Cache-Control: No-Store";
     case WebSchedulerTrackedFeature::kPageShowEventListener:
-      return {"PageShowEventListener", "onpageshow() event listener"};
+      return "onpageshow() event listener";
     case WebSchedulerTrackedFeature::kPageHideEventListener:
-      return {"PageHideEventListener", "onpagehide() event listener"};
+      return "onpagehide() event listener";
     case WebSchedulerTrackedFeature::kBeforeUnloadEventListener:
-      return {"BeforeUnloadEventListener", "onbeforeunload() event listener"};
+      return "onbeforeunload() event listener";
     case WebSchedulerTrackedFeature::kUnloadEventListener:
-      return {"UnloadEventListener", "onunload() event listener"};
+      return "onunload() event listener";
     case WebSchedulerTrackedFeature::kFreezeEventListener:
-      return {"FreezeEventListener", "onfreeze() event listener"};
+      return "onfreeze() event listener";
     case WebSchedulerTrackedFeature::kResumeEventListener:
-      return {"ResumeEventListener", "onresume() event listener"};
+      return "onresume() event listener";
     case WebSchedulerTrackedFeature::kContainsPlugins:
-      return {"ContainsPlugins", "page contains plugins"};
+      return "page contains plugins";
     case WebSchedulerTrackedFeature::kDocumentLoaded:
-      return {"DocumentLoaded", "document loaded"};
+      return "document loaded";
     case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
-      return {"DedicatedWorkerOrWorklet",
-              "Dedicated worker or worklet present"};
+      return "Dedicated worker or worklet present";
     case WebSchedulerTrackedFeature::kSharedWorker:
-      return {"SharedWorker", "Shared worker present"};
+      return "Shared worker present";
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
-      return {"OutstandingNetworkRequestFetch",
-              "outstanding network request (fetch)"};
+      return "outstanding network request (fetch)";
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
-      return {"OutstandingNetworkRequestXHR",
-              "outstanding network request (XHR)"};
+      return "outstanding network request (XHR)";
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
-      return {"OutstandingNetworkRequestOthers",
-              "outstanding network request (others)"};
+      return "outstanding network request (others)";
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
-      return {"OutstandingIndexedDBTransaction",
-              "outstanding IndexedDB transaction"};
+      return "outstanding IndexedDB transaction";
     case WebSchedulerTrackedFeature::kRequestedGeolocationPermission:
-      return {"RequestedGeolocationPermission",
-              "requested geolocation permission"};
+      return "requested geolocation permission";
     case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
-      return {"RequestedNotificationsPermission",
-              "requested notifications permission"};
+      return "requested notifications permission";
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
-      return {"RequestedMIDIPermission", "requested midi permission"};
+      return "requested midi permission";
     case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
-      return {"RequestedAudioCapturePermission",
-              "requested audio capture permission"};
+      return "requested audio capture permission";
     case WebSchedulerTrackedFeature::kRequestedVideoCapturePermission:
-      return {"RequestedVideoCapturePermission",
-              "requested video capture permission"};
+      return "requested video capture permission";
     case WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors:
-      return {"RequestedBackForwardCacheBlockedSensors",
-              "requested sensors permission"};
+      return "requested sensors permission";
     case WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission:
-      return {"RequestedBackgroundWorkPermission",
-              "requested background work permission"};
+      return "requested background work permission";
     case WebSchedulerTrackedFeature::kBroadcastChannel:
-      return {"BroadcastChannel", "requested broadcast channel permission"};
+      return "requested broadcast channel permission";
     case WebSchedulerTrackedFeature::kIndexedDBConnection:
-      return {"IndexedDBConnection", "IndexedDB connection present"};
+      return "IndexedDB connection present";
     case WebSchedulerTrackedFeature::kWebVR:
-      return {"WebVR", "WebVR"};
+      return "WebVR";
     case WebSchedulerTrackedFeature::kWebXR:
-      return {"WebXR", "WebXR"};
+      return "WebXR";
     case WebSchedulerTrackedFeature::kWebLocks:
-      return {"WebLocks", "WebLocks"};
+      return "WebLocks";
     case WebSchedulerTrackedFeature::kWebHID:
-      return {"WebHID", "WebHID"};
+      return "WebHID";
     case WebSchedulerTrackedFeature::kWakeLock:
-      return {"WakeLock", "WakeLock"};
+      return "WakeLock";
     case WebSchedulerTrackedFeature::kWebShare:
-      return {"WebShare", "WebShare"};
+      return "WebShare";
     case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
-      return {"RequestedStorageAccessGrant",
-              "requested storage access permission"};
+      return "requested storage access permission";
     case WebSchedulerTrackedFeature::kWebNfc:
-      return {"WebNfc", "WebNfc"};
+      return "WebNfc";
     case WebSchedulerTrackedFeature::kWebFileSystem:
-      return {"WebFileSystem", "WebFileSystem"};
+      return "WebFileSystem";
     case WebSchedulerTrackedFeature::kAppBanner:
-      return {"AppBanner", "AppBanner"};
+      return "AppBanner";
     case WebSchedulerTrackedFeature::kPrinting:
-      return {"Printing", "Printing"};
+      return "Printing";
     case WebSchedulerTrackedFeature::kWebDatabase:
-      return {"WebDatabase", "WebDatabase"};
+      return "WebDatabase";
     case WebSchedulerTrackedFeature::kPictureInPicture:
-      return {"PictureInPicture", "PictureInPicture"};
+      return "PictureInPicture";
     case WebSchedulerTrackedFeature::kPortal:
-      return {"Portal", "Portal"};
+      return "Portal";
     case WebSchedulerTrackedFeature::kSpeechRecognizer:
-      return {"SpeechRecognizer", "SpeechRecognizer"};
+      return "SpeechRecognizer";
     case WebSchedulerTrackedFeature::kIdleManager:
-      return {"IdleManager", "IdleManager"};
+      return "IdleManager";
     case WebSchedulerTrackedFeature::kPaymentManager:
-      return {"PaymentManager", "PaymentManager"};
+      return "PaymentManager";
     case WebSchedulerTrackedFeature::kSpeechSynthesis:
-      return {"SpeechSynthesis", "SpeechSynthesis"};
+      return "SpeechSynthesis";
     case WebSchedulerTrackedFeature::kKeyboardLock:
-      return {"KeyboardLock", "KeyboardLock"};
+      return "KeyboardLock";
     case WebSchedulerTrackedFeature::kWebOTPService:
-      return {"WebOTPService", "SMSService"};
+      return "SMSService";
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
-      return {"OutstandingNetworkRequestDirectSocket",
-              "outstanding network request (direct socket)"};
+      return "outstanding network request (direct socket)";
   }
-  return {};
-}
-
-std::map<std::string, WebSchedulerTrackedFeature> MakeShortNameToFeature() {
-  std::map<std::string, WebSchedulerTrackedFeature> short_name_to_feature;
-  for (int i = 0; i <= static_cast<int>(WebSchedulerTrackedFeature::kMaxValue);
-       i++) {
-    WebSchedulerTrackedFeature feature =
-        static_cast<WebSchedulerTrackedFeature>(i);
-    FeatureNames strs = FeatureToNames(feature);
-    if (strs.short_name.size())
-      short_name_to_feature[strs.short_name] = feature;
-  }
-  return short_name_to_feature;
-}
-
-const std::map<std::string, WebSchedulerTrackedFeature>&
-ShortStringToFeatureMap() {
-  static const std::map<std::string, WebSchedulerTrackedFeature>
-      short_name_to_feature = MakeShortNameToFeature();
-  return short_name_to_feature;
-}
-
-}  // namespace
-
-std::string FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
-  return FeatureToNames(feature).human_readable;
-}
-
-base::Optional<WebSchedulerTrackedFeature> StringToFeature(
-    const std::string& str) {
-  auto map = ShortStringToFeatureMap();
-  auto it = map.find(str);
-  if (it == map.end()) {
-    return base::nullopt;
-  }
-  return it->second;
 }
 
 bool IsFeatureSticky(WebSchedulerTrackedFeature feature) {
