@@ -4499,8 +4499,8 @@ void RenderFrameHostImpl::UpdateBrowserControlsState(
     bool animate) {
   DCHECK(frame_tree_node_->IsMainFrame());
 
-  // TODO(https://crbug.com/1154852): Don't update browser control state for a
-  // frame that hasn't been created yet.
+  // TODO(https://crbug.com/1154852): Asking for the LocalMainFrame interface
+  // before the RenderFrame is created is racy.
   if (!IsRenderFrameCreated())
     return;
 
