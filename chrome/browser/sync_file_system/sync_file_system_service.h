@@ -60,7 +60,7 @@ class SyncFileSystemService
 
   void InitializeForApp(storage::FileSystemContext* file_system_context,
                         const GURL& app_origin,
-                        const SyncStatusCallback& callback);
+                        SyncStatusCallback callback);
 
   void GetExtensionStatusMap(const ExtensionStatusMapCallback& callback);
   void DumpFiles(const GURL& origin, const DumpFilesCallback& callback);
@@ -103,10 +103,10 @@ class SyncFileSystemService
 
   // Callbacks for InitializeForApp.
   void DidInitializeFileSystem(const GURL& app_origin,
-                               const SyncStatusCallback& callback,
+                               SyncStatusCallback callback,
                                SyncStatusCode status);
   void DidRegisterOrigin(const GURL& app_origin,
-                         const SyncStatusCallback& callback,
+                         SyncStatusCallback callback,
                          SyncStatusCode status);
 
   void DidInitializeFileSystemForDump(const GURL& app_origin,

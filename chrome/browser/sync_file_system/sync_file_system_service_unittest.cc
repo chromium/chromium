@@ -37,6 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
+using ::testing::_;
 using storage::FileSystemURL;
 using storage::FileSystemURLSet;
 using ::testing::AnyNumber;
@@ -45,7 +46,7 @@ using ::testing::InSequence;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::StrictMock;
-using ::testing::_;
+using ::testing::WithArg;
 
 namespace sync_file_system {
 
@@ -100,21 +101,8 @@ class MockSyncEventObserver : public SyncEventObserver {
                     SyncDirection direction));
 };
 
-ACTION_P3(NotifyStateAndCallback,
-          mock_remote_service, service_state, operation_status) {
-  mock_remote_service->NotifyRemoteServiceStateUpdated(
-      service_state, "Test event.");
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(arg1, operation_status));
-}
-
 ACTION_P(RecordState, states) {
   states->push_back(arg1);
-}
-
-ACTION_P(MockStatusCallback, status) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(arg4, status));
 }
 
 ACTION_P2(MockSyncFileCallback, status, url) {
@@ -216,11 +204,13 @@ class SyncFileSystemServiceTest : public testing::Test {
         .Times(AnyNumber())
         .WillRepeatedly(Return(state_to_notify));
 
-    EXPECT_CALL(*mock_remote_service(),
-                RegisterOrigin(GURL(kOrigin), _))
-        .WillOnce(NotifyStateAndCallback(mock_remote_service(),
-                                         state_to_notify,
-                                         status_to_return));
+    EXPECT_CALL(*mock_remote_service(), RegisterOrigin(GURL(kOrigin), _))
+        .WillOnce(WithArg<1>([&](SyncStatusCallback callback) {
+          mock_remote_service()->NotifyRemoteServiceStateUpdated(
+              state_to_notify, "Test event.");
+          base::ThreadTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), status_to_return));
+        }));
 
     std::vector<SyncServiceState> actual_states;
     EXPECT_CALL(event_observer, OnSyncStateUpdated(GURL(), _, _))
@@ -351,7 +341,10 @@ TEST_F(SyncFileSystemServiceTest, SimpleLocalSyncFlow) {
                           SYNC_FILE_TYPE_FILE);
   EXPECT_CALL(*mock_local_change_processor(),
               ApplyLocalChange(change, _, _, kFile, _))
-      .WillOnce(MockStatusCallback(SYNC_STATUS_OK));
+      .WillOnce(WithArg<4>([](SyncStatusCallback callback) {
+        base::ThreadTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
+      }));
   EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
       .WillRepeatedly(MockSyncFileCallback(SYNC_STATUS_NO_CHANGE_TO_SYNC,
                                            FileSystemURL()));

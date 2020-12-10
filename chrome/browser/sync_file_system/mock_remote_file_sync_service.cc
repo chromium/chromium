@@ -91,17 +91,17 @@ void MockRemoteFileSyncService::AddFileStatusObserverStub(
 
 void MockRemoteFileSyncService::RegisterOriginStub(
     const GURL& origin,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, SYNC_STATUS_OK));
+      FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
 }
 
 void MockRemoteFileSyncService::DeleteOriginDirectoryStub(
     const GURL& origin,
     UninstallFlag flag,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, SYNC_STATUS_OK));
+      FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
 }
 
 void MockRemoteFileSyncService::ProcessRemoteChangeStub(

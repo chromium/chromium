@@ -67,19 +67,19 @@ LocalFileSyncContext::LocalFileSyncContext(
 void LocalFileSyncContext::MaybeInitializeFileSystemContext(
     const GURL& source_url,
     FileSystemContext* file_system_context,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   if (base::Contains(file_system_contexts_, file_system_context)) {
     // The context has been already initialized. Just dispatch the callback
     // with SYNC_STATUS_OK.
-    ui_task_runner_->PostTask(FROM_HERE,
-                              base::BindOnce(callback, SYNC_STATUS_OK));
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
     return;
   }
 
   StatusCallbackQueue& callback_queue =
       pending_initialize_callbacks_[file_system_context];
-  callback_queue.push_back(callback);
+  callback_queue.push_back(std::move(callback));
   if (callback_queue.size() > 1)
     return;
 
@@ -273,13 +273,14 @@ void LocalFileSyncContext::ApplyRemoteChange(
     const FileChange& change,
     const base::FilePath& local_path,
     const FileSystemURL& url,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   if (!io_task_runner_->RunsTasksInCurrentSequence()) {
     DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
     io_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&LocalFileSyncContext::ApplyRemoteChange,
-                                  this, base::RetainedRef(file_system_context),
-                                  change, local_path, url, callback));
+        FROM_HERE,
+        base::BindOnce(&LocalFileSyncContext::ApplyRemoteChange, this,
+                       base::RetainedRef(file_system_context), change,
+                       local_path, url, std::move(callback)));
     return;
   }
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -289,21 +290,21 @@ void LocalFileSyncContext::ApplyRemoteChange(
   FileSystemOperation::StatusCallback operation_callback;
   switch (change.change()) {
     case FileChange::FILE_CHANGE_DELETE:
-      HandleRemoteDelete(file_system_context, url, callback);
+      HandleRemoteDelete(file_system_context, url, std::move(callback));
       return;
     case FileChange::FILE_CHANGE_ADD_OR_UPDATE:
-      HandleRemoteAddOrUpdate(
-          file_system_context, change, local_path, url, callback);
+      HandleRemoteAddOrUpdate(file_system_context, change, local_path, url,
+                              std::move(callback));
       return;
   }
   NOTREACHED();
-  callback.Run(SYNC_STATUS_FAILED);
+  std::move(callback).Run(SYNC_STATUS_FAILED);
 }
 
 void LocalFileSyncContext::HandleRemoteDelete(
     FileSystemContext* file_system_context,
     const FileSystemURL& url,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   FileSystemURL url_for_sync = CreateSyncableFileSystemURLForSync(
       file_system_context, url);
 
@@ -313,7 +314,7 @@ void LocalFileSyncContext::HandleRemoteDelete(
     root_delete_helper_ = std::make_unique<RootDeleteHelper>(
         file_system_context, sync_status(), url,
         base::BindOnce(&LocalFileSyncContext::DidApplyRemoteChange, this, url,
-                       callback));
+                       std::move(callback)));
     root_delete_helper_->Run();
     return;
   }
@@ -321,7 +322,7 @@ void LocalFileSyncContext::HandleRemoteDelete(
   file_system_context->operation_runner()->Remove(
       url_for_sync, true /* recursive */,
       base::BindOnce(&LocalFileSyncContext::DidApplyRemoteChange, this, url,
-                     callback));
+                     std::move(callback)));
 }
 
 void LocalFileSyncContext::HandleRemoteAddOrUpdate(
@@ -329,12 +330,12 @@ void LocalFileSyncContext::HandleRemoteAddOrUpdate(
     const FileChange& change,
     const base::FilePath& local_path,
     const FileSystemURL& url,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   FileSystemURL url_for_sync = CreateSyncableFileSystemURLForSync(
       file_system_context, url);
 
   if (storage::VirtualPath::IsRootPath(url.path())) {
-    DidApplyRemoteChange(url, callback, base::File::FILE_OK);
+    DidApplyRemoteChange(url, std::move(callback), base::File::FILE_OK);
     return;
   }
 
@@ -343,7 +344,7 @@ void LocalFileSyncContext::HandleRemoteAddOrUpdate(
       base::BindOnce(
           &LocalFileSyncContext::DidRemoveExistingEntryForRemoteAddOrUpdate,
           this, base::RetainedRef(file_system_context), change, local_path, url,
-          callback));
+          std::move(callback)));
 }
 
 void LocalFileSyncContext::DidRemoveExistingEntryForRemoteAddOrUpdate(
@@ -351,13 +352,13 @@ void LocalFileSyncContext::DidRemoveExistingEntryForRemoteAddOrUpdate(
     const FileChange& change,
     const base::FilePath& local_path,
     const FileSystemURL& url,
-    const SyncStatusCallback& callback,
+    SyncStatusCallback callback,
     base::File::Error error) {
   // Remove() may fail if the target entry does not exist (which is ok),
   // so we ignore |error| here.
 
   if (shutdown_on_io_) {
-    callback.Run(SYNC_FILE_ERROR_ABORT);
+    std::move(callback).Run(SYNC_FILE_ERROR_ABORT);
     return;
   }
 
@@ -367,8 +368,9 @@ void LocalFileSyncContext::DidRemoveExistingEntryForRemoteAddOrUpdate(
 
   FileSystemURL url_for_sync = CreateSyncableFileSystemURLForSync(
       file_system_context, url);
-  FileSystemOperation::StatusCallback operation_callback = base::BindOnce(
-      &LocalFileSyncContext::DidApplyRemoteChange, this, url, callback);
+  FileSystemOperation::StatusCallback operation_callback =
+      base::BindOnce(&LocalFileSyncContext::DidApplyRemoteChange, this, url,
+                     std::move(callback));
 
   DCHECK_EQ(FileChange::FILE_CHANGE_ADD_OR_UPDATE, change.change());
   switch (change.file_type()) {
@@ -406,7 +408,7 @@ void LocalFileSyncContext::RecordFakeLocalChange(
     FileSystemContext* file_system_context,
     const FileSystemURL& url,
     const FileChange& change,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   // This is called on UI thread and to be relayed to FILE thread.
   DCHECK(file_system_context);
   if (!file_system_context->default_file_task_runner()->
@@ -415,7 +417,7 @@ void LocalFileSyncContext::RecordFakeLocalChange(
     file_system_context->default_file_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&LocalFileSyncContext::RecordFakeLocalChange,
                                   this, base::RetainedRef(file_system_context),
-                                  url, change, callback));
+                                  url, change, std::move(callback)));
     return;
   }
 
@@ -427,8 +429,8 @@ void LocalFileSyncContext::RecordFakeLocalChange(
   backend->change_tracker()->RecordChange(url, change);
 
   // Fire the callback on UI thread.
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(callback, SYNC_STATUS_OK));
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
 }
 
 void LocalFileSyncContext::GetFileMetadata(
@@ -757,9 +759,10 @@ void LocalFileSyncContext::DidInitialize(
 
   StatusCallbackQueue& callback_queue =
       pending_initialize_callbacks_[file_system_context];
-  for (StatusCallbackQueue::iterator iter = callback_queue.begin();
-       iter != callback_queue.end(); ++iter) {
-    ui_task_runner_->PostTask(FROM_HERE, base::BindOnce(*iter, status));
+  while (!callback_queue.empty()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_queue.front()), status));
+    callback_queue.pop_front();
   }
   pending_initialize_callbacks_.erase(file_system_context);
 }
@@ -1010,13 +1013,13 @@ void LocalFileSyncContext::FinalizeSnapshotSyncOnIOThread(
 
 void LocalFileSyncContext::DidApplyRemoteChange(
     const FileSystemURL& url,
-    const SyncStatusCallback& callback_on_ui,
+    SyncStatusCallback callback_on_ui,
     base::File::Error file_error) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   root_delete_helper_.reset();
   ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(callback_on_ui, FileErrorToSyncStatusCode(file_error)));
+      FROM_HERE, base::BindOnce(std::move(callback_on_ui),
+                                FileErrorToSyncStatusCode(file_error)));
 }
 
 void LocalFileSyncContext::DidGetFileMetadata(

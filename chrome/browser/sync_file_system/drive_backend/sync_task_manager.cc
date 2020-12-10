@@ -30,8 +30,8 @@ class SyncTaskAdapter : public ExclusiveTask {
       : task_(std::move(task)) {}
   ~SyncTaskAdapter() override = default;
 
-  void RunExclusive(const SyncStatusCallback& callback) override {
-    std::move(task_).Run(callback);
+  void RunExclusive(SyncStatusCallback callback) override {
+    std::move(task_).Run(std::move(callback));
   }
 
  private:
@@ -92,49 +92,53 @@ void SyncTaskManager::Initialize(SyncStatusCode status) {
 void SyncTaskManager::ScheduleTask(const base::Location& from_here,
                                    Task task,
                                    Priority priority,
-                                   const SyncStatusCallback& callback) {
+                                   SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   ScheduleSyncTask(from_here,
                    std::make_unique<SyncTaskAdapter>(std::move(task)), priority,
-                   callback);
+                   std::move(callback));
 }
 
 void SyncTaskManager::ScheduleSyncTask(const base::Location& from_here,
                                        std::unique_ptr<SyncTask> task,
                                        Priority priority,
-                                       const SyncStatusCallback& callback) {
+                                       SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
-  std::unique_ptr<SyncTaskToken> token(GetToken(from_here, callback));
+  std::unique_ptr<SyncTaskToken> token(GetUnupdatedToken());
   if (!token) {
-    PushPendingTask(base::BindOnce(&SyncTaskManager::ScheduleSyncTask,
-                                   weak_ptr_factory_.GetWeakPtr(), from_here,
-                                   std::move(task), priority, callback),
-                    priority);
+    PushPendingTask(
+        base::BindOnce(&SyncTaskManager::ScheduleSyncTask,
+                       weak_ptr_factory_.GetWeakPtr(), from_here,
+                       std::move(task), priority, std::move(callback)),
+        priority);
     return;
   }
+  token->UpdateTask(from_here, std::move(callback));
   RunTask(std::move(token), std::move(task));
 }
 
 bool SyncTaskManager::ScheduleTaskIfIdle(const base::Location& from_here,
                                          Task task,
-                                         const SyncStatusCallback& callback) {
+                                         SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   return ScheduleSyncTaskIfIdle(
-      from_here, std::make_unique<SyncTaskAdapter>(std::move(task)), callback);
+      from_here, std::make_unique<SyncTaskAdapter>(std::move(task)),
+      std::move(callback));
 }
 
-bool SyncTaskManager::ScheduleSyncTaskIfIdle(
-    const base::Location& from_here,
-    std::unique_ptr<SyncTask> task,
-    const SyncStatusCallback& callback) {
+bool SyncTaskManager::ScheduleSyncTaskIfIdle(const base::Location& from_here,
+                                             std::unique_ptr<SyncTask> task,
+                                             SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
-  std::unique_ptr<SyncTaskToken> token(GetToken(from_here, callback));
+  std::unique_ptr<SyncTaskToken> token(GetUnupdatedToken());
   if (!token)
     return false;
+
+  token->UpdateTask(from_here, std::move(callback));
   RunTask(std::move(token), std::move(task));
   return true;
 }
@@ -147,9 +151,7 @@ void SyncTaskManager::NotifyTaskDone(std::unique_ptr<SyncTaskToken> token,
   SyncTaskManager* manager = token->manager();
   if (token->token_id() == SyncTaskToken::kTestingTaskTokenID) {
     DCHECK(!manager);
-    SyncStatusCallback callback = token->callback();
-    token->clear_callback();
-    callback.Run(status);
+    token->take_callback().Run(status);
     return;
   }
 
@@ -228,8 +230,7 @@ void SyncTaskManager::NotifyTaskDoneBody(std::unique_ptr<SyncTaskToken> token,
   }
 
   std::unique_ptr<SyncTask> task;
-  SyncStatusCallback callback = token->callback();
-  token->clear_callback();
+  SyncStatusCallback callback = token->take_callback();
   if (token->token_id() == SyncTaskToken::kForegroundTaskTokenID) {
     token_ = std::move(token);
     task = std::move(running_foreground_task_);
@@ -249,7 +250,7 @@ void SyncTaskManager::NotifyTaskDoneBody(std::unique_ptr<SyncTaskToken> token,
     client_->NotifyLastOperationStatus(status, task_used_network);
 
   if (!callback.is_null())
-    callback.Run(status);
+    std::move(callback).Run(status);
 
   // Post MaybeStartNextForegroundTask rather than calling it directly to avoid
   // making the call-chaing longer.
@@ -287,8 +288,7 @@ void SyncTaskManager::UpdateTaskBlockerBody(
   // current foreground task to finish.
   if (!foreground_task_token) {
     DCHECK(background_task_token);
-    foreground_task_token = GetToken(background_task_token->location(),
-                                     SyncStatusCallback());
+    foreground_task_token = GetUnupdatedToken();
     if (!foreground_task_token) {
       PushPendingTask(
           base::BindOnce(&SyncTaskManager::UpdateTaskBlockerBody,
@@ -300,6 +300,9 @@ void SyncTaskManager::UpdateTaskBlockerBody(
       MaybeStartNextForegroundTask(nullptr);
       return;
     }
+
+    foreground_task_token->UpdateTask(background_task_token->location(),
+                                      SyncStatusCallback());
   }
 
   // Check if the task can run as a background task now.
@@ -325,13 +328,12 @@ void SyncTaskManager::UpdateTaskBlockerBody(
     background_task_token->set_task_blocker(std::move(task_blocker));
   } else {
     base::Location from_here = foreground_task_token->location();
-    SyncStatusCallback callback = foreground_task_token->callback();
-    foreground_task_token->clear_callback();
 
     background_task_token = SyncTaskToken::CreateForBackgroundTask(
         weak_ptr_factory_.GetWeakPtr(), task_runner_.get(), task_token_seq_++,
         std::move(task_blocker));
-    background_task_token->UpdateTask(from_here, callback);
+    background_task_token->UpdateTask(from_here,
+                                      foreground_task_token->take_callback());
     running_background_tasks_[background_task_token->token_id()] =
         std::move(running_foreground_task_);
   }
@@ -342,14 +344,8 @@ void SyncTaskManager::UpdateTaskBlockerBody(
   std::move(continuation).Run(std::move(background_task_token));
 }
 
-std::unique_ptr<SyncTaskToken> SyncTaskManager::GetToken(
-    const base::Location& from_here,
-    const SyncStatusCallback& callback) {
+std::unique_ptr<SyncTaskToken> SyncTaskManager::GetUnupdatedToken() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-
-  if (!token_)
-    return nullptr;
-  token_->UpdateTask(from_here, callback);
   return std::move(token_);
 }
 

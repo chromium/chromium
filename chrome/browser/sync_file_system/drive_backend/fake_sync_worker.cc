@@ -33,36 +33,36 @@ void FakeSyncWorker::Initialize(
 }
 
 void FakeSyncWorker::RegisterOrigin(const GURL& origin,
-                                    const SyncStatusCallback& callback) {
+                                    SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // TODO(peria): Check how it should act on installing installed app?
   status_map_[origin] = REGISTERED;
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 void FakeSyncWorker::EnableOrigin(const GURL& origin,
-                                  const SyncStatusCallback& callback) {
+                                  SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // TODO(peria): Check how it should act on enabling non-installed app?
   status_map_[origin] = ENABLED;
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 void FakeSyncWorker::DisableOrigin(const GURL& origin,
-                                   const SyncStatusCallback& callback) {
+                                   SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // TODO(peria): Check how it should act on disabling non-installed app?
   status_map_[origin] = DISABLED;
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 void FakeSyncWorker::UninstallOrigin(const GURL& origin,
                                      RemoteFileSyncService::UninstallFlag flag,
-                                     const SyncStatusCallback& callback) {
+                                     SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // TODO(peria): Check how it should act on uninstalling non-installed app?
   status_map_[origin] = UNINSTALLED;
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 void FakeSyncWorker::ProcessRemoteChange(
@@ -141,9 +141,9 @@ void FakeSyncWorker::ApplyLocalChange(const FileChange& local_change,
                                       const base::FilePath& local_path,
                                       const SyncFileMetadata& local_metadata,
                                       const storage::FileSystemURL& url,
-                                      const SyncStatusCallback& callback) {
+                                      SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 void FakeSyncWorker::ActivateService(RemoteServiceState service_state,

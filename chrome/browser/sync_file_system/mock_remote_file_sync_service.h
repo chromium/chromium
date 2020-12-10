@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -36,15 +37,15 @@ class MockRemoteFileSyncService : public RemoteFileSyncService {
   MOCK_METHOD1(AddFileStatusObserver,
                void(FileStatusObserver* observer));
   MOCK_METHOD2(RegisterOrigin,
-               void(const GURL& origin, const SyncStatusCallback& callback));
+               void(const GURL& origin, SyncStatusCallback callback));
   MOCK_METHOD2(EnableOrigin,
-               void(const GURL& origin, const SyncStatusCallback& callback));
+               void(const GURL& origin, SyncStatusCallback callback));
   MOCK_METHOD2(DisableOrigin,
-               void(const GURL& origin, const SyncStatusCallback& callback));
+               void(const GURL& origin, SyncStatusCallback callback));
   MOCK_METHOD3(UninstallOrigin,
                void(const GURL& origin,
                     UninstallFlag flag,
-                    const SyncStatusCallback& callback));
+                    SyncStatusCallback callback));
   MOCK_METHOD1(ProcessRemoteChange,
                void(const SyncFileCallback& callback));
   MOCK_METHOD1(SetRemoteChangeProcessor,
@@ -77,11 +78,10 @@ class MockRemoteFileSyncService : public RemoteFileSyncService {
  private:
   void AddServiceObserverStub(Observer* observer);
   void AddFileStatusObserverStub(FileStatusObserver* observer);
-  void RegisterOriginStub(
-      const GURL& origin, const SyncStatusCallback& callback);
-  void DeleteOriginDirectoryStub(
-      const GURL& origin, UninstallFlag flag,
-      const SyncStatusCallback& callback);
+  void RegisterOriginStub(const GURL& origin, SyncStatusCallback callback);
+  void DeleteOriginDirectoryStub(const GURL& origin,
+                                 UninstallFlag flag,
+                                 SyncStatusCallback callback);
   void ProcessRemoteChangeStub(const SyncFileCallback& callback);
   RemoteServiceState GetCurrentStateStub() const;
 

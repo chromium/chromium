@@ -62,15 +62,14 @@ class SyncWorkerInterface {
 
   // See RemoteFileSyncService for the details.
   virtual void RegisterOrigin(const GURL& origin,
-                              const SyncStatusCallback& callback) = 0;
+                              SyncStatusCallback callback) = 0;
   virtual void EnableOrigin(const GURL& origin,
-                            const SyncStatusCallback& callback) = 0;
+                            SyncStatusCallback callback) = 0;
   virtual void DisableOrigin(const GURL& origin,
-                             const SyncStatusCallback& callback) = 0;
-  virtual void UninstallOrigin(
-      const GURL& origin,
-      RemoteFileSyncService::UninstallFlag flag,
-      const SyncStatusCallback& callback) = 0;
+                             SyncStatusCallback callback) = 0;
+  virtual void UninstallOrigin(const GURL& origin,
+                               RemoteFileSyncService::UninstallFlag flag,
+                               SyncStatusCallback callback) = 0;
   virtual void ProcessRemoteChange(const SyncFileCallback& callback) = 0;
   virtual void SetRemoteChangeProcessor(
       RemoteChangeProcessorOnWorker* remote_change_processor_on_worker) = 0;
@@ -87,7 +86,7 @@ class SyncWorkerInterface {
                                 const base::FilePath& local_path,
                                 const SyncFileMetadata& local_metadata,
                                 const storage::FileSystemURL& url,
-                                const SyncStatusCallback& callback) = 0;
+                                SyncStatusCallback callback) = 0;
 
   virtual void ActivateService(RemoteServiceState service_state,
                                const std::string& description) = 0;

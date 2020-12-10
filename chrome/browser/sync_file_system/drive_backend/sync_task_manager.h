@@ -43,7 +43,7 @@ struct TaskBlocker;
 // doesn't block the new background task, and queues it up if it can't run.
 class SyncTaskManager {
  public:
-  using Task = base::OnceCallback<void(const SyncStatusCallback& callback)>;
+  using Task = base::OnceCallback<void(SyncStatusCallback callback)>;
   using Continuation =
       base::OnceCallback<void(std::unique_ptr<SyncTaskToken> token)>;
 
@@ -85,20 +85,20 @@ class SyncTaskManager {
   void ScheduleTask(const base::Location& from_here,
                     Task task,
                     Priority priority,
-                    const SyncStatusCallback& callback);
+                    SyncStatusCallback callback);
   void ScheduleSyncTask(const base::Location& from_here,
                         std::unique_ptr<SyncTask> task,
                         Priority priority,
-                        const SyncStatusCallback& callback);
+                        SyncStatusCallback callback);
 
   // Runs the posted task only when we're idle.  Returns true if that task is
   // scheduled.
   bool ScheduleTaskIfIdle(const base::Location& from_here,
                           Task task,
-                          const SyncStatusCallback& callback);
+                          SyncStatusCallback callback);
   bool ScheduleSyncTaskIfIdle(const base::Location& from_here,
                               std::unique_ptr<SyncTask> task,
-                              const SyncStatusCallback& callback);
+                              SyncStatusCallback callback);
 
   // Notifies SyncTaskManager that the task associated to |token| has finished
   // with |status|.
@@ -158,12 +158,12 @@ class SyncTaskManager {
       Continuation continuation);
 
   // This should be called when an async task needs to get a task token.
-  std::unique_ptr<SyncTaskToken> GetToken(const base::Location& from_here,
-                                          const SyncStatusCallback& callback);
+  // SyncTasksToken::UpdateTask must be called manually on the returned token.
+  std::unique_ptr<SyncTaskToken> GetUnupdatedToken();
 
   std::unique_ptr<SyncTaskToken> GetTokenForBackgroundTask(
       const base::Location& from_here,
-      const SyncStatusCallback& callback,
+      SyncStatusCallback callback,
       std::unique_ptr<TaskBlocker> task_blocker);
 
   void PushPendingTask(base::OnceClosure closure, Priority priority);

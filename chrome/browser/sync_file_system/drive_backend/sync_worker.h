@@ -77,15 +77,12 @@ class SyncWorker : public SyncWorkerInterface,
   void RecordTaskLog(std::unique_ptr<TaskLogger::TaskLog> task_log) override;
 
   // SyncWorkerInterface overrides
-  void RegisterOrigin(const GURL& origin,
-                      const SyncStatusCallback& callback) override;
-  void EnableOrigin(const GURL& origin,
-                    const SyncStatusCallback& callback) override;
-  void DisableOrigin(const GURL& origin,
-                     const SyncStatusCallback& callback) override;
+  void RegisterOrigin(const GURL& origin, SyncStatusCallback callback) override;
+  void EnableOrigin(const GURL& origin, SyncStatusCallback callback) override;
+  void DisableOrigin(const GURL& origin, SyncStatusCallback callback) override;
   void UninstallOrigin(const GURL& origin,
                        RemoteFileSyncService::UninstallFlag flag,
-                       const SyncStatusCallback& callback) override;
+                       SyncStatusCallback callback) override;
   void ProcessRemoteChange(const SyncFileCallback& callback) override;
   void SetRemoteChangeProcessor(RemoteChangeProcessorOnWorker*
                                     remote_change_processor_on_worker) override;
@@ -100,7 +97,7 @@ class SyncWorker : public SyncWorkerInterface,
                         const base::FilePath& local_path,
                         const SyncFileMetadata& local_metadata,
                         const storage::FileSystemURL& url,
-                        const SyncStatusCallback& callback) override;
+                        SyncStatusCallback callback) override;
   void ActivateService(RemoteServiceState service_state,
                        const std::string& description) override;
   void DeactivateService(const std::string& description) override;
@@ -119,10 +116,8 @@ class SyncWorker : public SyncWorkerInterface,
 
   using AppStatusMap = std::unordered_map<std::string, AppStatus>;
 
-  void DoDisableApp(const std::string& app_id,
-                    const SyncStatusCallback& callback);
-  void DoEnableApp(const std::string& app_id,
-                   const SyncStatusCallback& callback);
+  void DoDisableApp(const std::string& app_id, SyncStatusCallback callback);
+  void DoEnableApp(const std::string& app_id, SyncStatusCallback callback);
 
   void PostInitializeTask();
   void DidInitialize(SyncEngineInitializer* initializer,
@@ -140,7 +135,7 @@ class SyncWorker : public SyncWorkerInterface,
                               const SyncFileCallback& callback,
                               SyncStatusCode status);
   void DidApplyLocalChange(LocalToRemoteSyncer* syncer,
-                           const SyncStatusCallback& callback,
+                           SyncStatusCallback callback,
                            SyncStatusCode status);
 
   // Returns true if a FetchChanges task is scheduled.

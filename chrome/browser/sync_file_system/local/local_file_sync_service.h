@@ -84,7 +84,7 @@ class LocalFileSyncService
   void MaybeInitializeFileSystemContext(
       const GURL& app_origin,
       storage::FileSystemContext* file_system_context,
-      const SyncStatusCallback& callback);
+      SyncStatusCallback callback);
 
   void AddChangeObserver(Observer* observer);
 
@@ -138,13 +138,13 @@ class LocalFileSyncService
   void ApplyRemoteChange(const FileChange& change,
                          const base::FilePath& local_path,
                          const storage::FileSystemURL& url,
-                         const SyncStatusCallback& callback) override;
+                         SyncStatusCallback callback) override;
   void FinalizeRemoteSync(const storage::FileSystemURL& url,
                           bool clear_local_changes,
                           const base::Closure& completion_callback) override;
   void RecordFakeLocalChange(const storage::FileSystemURL& url,
                              const FileChange& change,
-                             const SyncStatusCallback& callback) override;
+                             SyncStatusCallback callback) override;
 
   // LocalOriginChangeObserver override.
   void OnChangesAvailableInOrigins(const std::set<GURL>& origins) override;
@@ -191,7 +191,7 @@ class LocalFileSyncService
   void DidInitializeFileSystemContext(
       const GURL& app_origin,
       storage::FileSystemContext* file_system_context,
-      const SyncStatusCallback& callback,
+      SyncStatusCallback callback,
       SyncStatusCode status);
   void DidInitializeForRemoteSync(
       const storage::FileSystemURL& url,
@@ -200,9 +200,7 @@ class LocalFileSyncService
       SyncStatusCode status);
 
   // Callback for ApplyRemoteChange.
-  void DidApplyRemoteChange(
-      const SyncStatusCallback& callback,
-      SyncStatusCode status);
+  void DidApplyRemoteChange(SyncStatusCallback callback, SyncStatusCode status);
 
   // Callbacks for ProcessLocalChange.
   void DidGetFileForLocalSync(const SyncFileCallback& callback,

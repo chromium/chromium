@@ -72,7 +72,7 @@ class SyncEngineInitializer : public SyncTask {
   std::unique_ptr<MetadataDatabase> PassMetadataDatabase();
 
  private:
-  typedef base::Callback<void(const SyncStatusCallback& callback)> Task;
+  typedef base::Callback<void(SyncStatusCallback callback)> Task;
 
   void GetAboutResource(std::unique_ptr<SyncTaskToken> token);
   void DidGetAboutResource(

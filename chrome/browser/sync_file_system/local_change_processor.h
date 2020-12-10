@@ -36,7 +36,7 @@ class LocalChangeProcessor {
                                 const base::FilePath& local_file_path,
                                 const SyncFileMetadata& local_file_metadata,
                                 const storage::FileSystemURL& url,
-                                const SyncStatusCallback& callback) = 0;
+                                SyncStatusCallback callback) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LocalChangeProcessor);

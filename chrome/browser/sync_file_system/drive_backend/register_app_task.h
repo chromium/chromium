@@ -33,17 +33,17 @@ class RegisterAppTask : public ExclusiveTask {
   ~RegisterAppTask() override;
 
   bool CanFinishImmediately();
-  void RunExclusive(const SyncStatusCallback& callback) override;
+  void RunExclusive(SyncStatusCallback callback) override;
 
  private:
-  void CreateAppRootFolder(const SyncStatusCallback& callback);
-  void DidCreateAppRootFolder(const SyncStatusCallback& callback,
+  void CreateAppRootFolder(SyncStatusCallback callback);
+  void DidCreateAppRootFolder(SyncStatusCallback callback,
                               const std::string& file_id,
                               SyncStatusCode status);
   bool FilterCandidates(const TrackerIDSet& trackers,
                         FileTracker* candidate);
   void RegisterAppIntoDatabase(const FileTracker& tracker,
-                               const SyncStatusCallback& callback);
+                               SyncStatusCallback callback);
 
   MetadataDatabase* metadata_database();
   drive::DriveServiceInterface* drive_service();

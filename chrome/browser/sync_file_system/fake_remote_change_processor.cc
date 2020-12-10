@@ -68,7 +68,7 @@ void FakeRemoteChangeProcessor::ApplyRemoteChange(
     const FileChange& change,
     const base::FilePath& local_path,
     const storage::FileSystemURL& url,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   SyncStatusCode status = SYNC_STATUS_UNKNOWN;
   base::FilePath ancestor = storage::VirtualPath::DirName(url.path());
   while (true) {
@@ -97,7 +97,7 @@ void FakeRemoteChangeProcessor::ApplyRemoteChange(
     status = SYNC_STATUS_OK;
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, status));
+      FROM_HERE, base::BindOnce(std::move(callback), status));
 }
 
 void FakeRemoteChangeProcessor::FinalizeRemoteSync(
@@ -110,10 +110,10 @@ void FakeRemoteChangeProcessor::FinalizeRemoteSync(
 void FakeRemoteChangeProcessor::RecordFakeLocalChange(
     const storage::FileSystemURL& url,
     const FileChange& change,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   local_changes_[url].Update(change);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, SYNC_STATUS_OK));
+      FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
 }
 
 void FakeRemoteChangeProcessor::UpdateLocalFileMetadata(

@@ -108,15 +108,12 @@ class SyncEngine
   // RemoteFileSyncService overrides.
   void AddServiceObserver(SyncServiceObserver* observer) override;
   void AddFileStatusObserver(FileStatusObserver* observer) override;
-  void RegisterOrigin(const GURL& origin,
-                      const SyncStatusCallback& callback) override;
-  void EnableOrigin(const GURL& origin,
-                    const SyncStatusCallback& callback) override;
-  void DisableOrigin(const GURL& origin,
-                     const SyncStatusCallback& callback) override;
+  void RegisterOrigin(const GURL& origin, SyncStatusCallback callback) override;
+  void EnableOrigin(const GURL& origin, SyncStatusCallback callback) override;
+  void DisableOrigin(const GURL& origin, SyncStatusCallback callback) override;
   void UninstallOrigin(const GURL& origin,
                        UninstallFlag flag,
-                       const SyncStatusCallback& callback) override;
+                       SyncStatusCallback callback) override;
   void ProcessRemoteChange(const SyncFileCallback& callback) override;
   void SetRemoteChangeProcessor(RemoteChangeProcessor* processor) override;
   LocalChangeProcessor* GetLocalChangeProcessor() override;
@@ -132,7 +129,7 @@ class SyncEngine
                         const base::FilePath& local_path,
                         const SyncFileMetadata& local_metadata,
                         const storage::FileSystemURL& url,
-                        const SyncStatusCallback& callback) override;
+                        SyncStatusCallback callback) override;
 
   // drive::DriveNotificationObserver overrides.
   void OnNotificationReceived(
@@ -183,7 +180,7 @@ class SyncEngine
   void UpdateServiceState(RemoteServiceState state,
                           const std::string& description);
 
-  SyncStatusCallback TrackCallback(const SyncStatusCallback& callback);
+  SyncStatusCallback TrackCallback(SyncStatusCallback callback);
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;

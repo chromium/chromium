@@ -75,7 +75,7 @@ class SyncProcessRunner {
   virtual ~SyncProcessRunner();
 
   // Subclass must implement this.
-  virtual void StartSync(const SyncStatusCallback& callback) = 0;
+  virtual void StartSync(SyncStatusCallback callback) = 0;
 
   // Schedules a new sync.
   void Schedule();

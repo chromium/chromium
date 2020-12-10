@@ -96,9 +96,8 @@ class SyncFileSystemBackend : public storage::FileSystemBackend {
 
   storage::SandboxFileSystemBackendDelegate* GetDelegate() const;
 
-  void InitializeSyncFileSystemService(
-      const GURL& origin_url,
-      const SyncStatusCallback& callback);
+  void InitializeSyncFileSystemService(const GURL& origin_url,
+                                       SyncStatusCallback callback);
   void DidInitializeSyncFileSystemService(storage::FileSystemContext* context,
                                           const GURL& origin_url,
                                           storage::FileSystemType type,

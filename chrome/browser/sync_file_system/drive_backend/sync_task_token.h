@@ -35,7 +35,7 @@ class SyncTaskToken {
   static const int64_t kMinimumBackgroundTaskTokenID;
 
   static std::unique_ptr<SyncTaskToken> CreateForTesting(
-      const SyncStatusCallback& callback);
+      SyncStatusCallback callback);
   static std::unique_ptr<SyncTaskToken> CreateForForegroundTask(
       const base::WeakPtr<SyncTaskManager>& manager,
       base::SequencedTaskRunner* task_runner);
@@ -45,8 +45,7 @@ class SyncTaskToken {
       int64_t token_id,
       std::unique_ptr<TaskBlocker> task_blocker);
 
-  void UpdateTask(const base::Location& location,
-                  const SyncStatusCallback& callback);
+  void UpdateTask(const base::Location& location, SyncStatusCallback callback);
 
   const base::Location& location() const { return location_; }
   virtual ~SyncTaskToken();
@@ -56,8 +55,7 @@ class SyncTaskToken {
 
   SyncTaskManager* manager() { return manager_.get(); }
 
-  const SyncStatusCallback& callback() const { return callback_; }
-  void clear_callback() { callback_.Reset(); }
+  SyncStatusCallback take_callback() { return std::move(callback_); }
 
   void set_task_blocker(std::unique_ptr<TaskBlocker> task_blocker);
   const TaskBlocker* task_blocker() const;
@@ -78,7 +76,7 @@ class SyncTaskToken {
                 const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                 int64_t token_id,
                 std::unique_ptr<TaskBlocker> task_blocker,
-                const SyncStatusCallback& callback);
+                SyncStatusCallback callback);
 
   base::WeakPtr<SyncTaskManager> manager_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

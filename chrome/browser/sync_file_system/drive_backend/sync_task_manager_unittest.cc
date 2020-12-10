@@ -32,10 +32,9 @@ namespace drive_backend {
 
 namespace {
 
-void PostCallbackTask(SyncStatusCode status,
-                      const SyncStatusCallback& callback) {
+void PostCallbackTask(SyncStatusCode status, SyncStatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, status));
+      FROM_HERE, base::BindOnce(std::move(callback), status));
 }
 
 void IncrementAndAssign(int expected_before_counter,
@@ -75,12 +74,12 @@ class TaskManagerClient
   void RecordTaskLog(std::unique_ptr<TaskLogger::TaskLog>) override {}
 
   void ScheduleTask(SyncStatusCode status_to_return,
-                    const SyncStatusCallback& callback) {
+                    SyncStatusCallback callback) {
     task_manager_->ScheduleTask(
         FROM_HERE,
         base::BindOnce(&TaskManagerClient::DoTask, AsWeakPtr(),
                        status_to_return, false /* idle */),
-        SyncTaskManager::PRIORITY_MED, callback);
+        SyncTaskManager::PRIORITY_MED, std::move(callback));
   }
 
   void ScheduleTaskIfIdle(SyncStatusCode status_to_return) {
@@ -103,12 +102,12 @@ class TaskManagerClient
  private:
   void DoTask(SyncStatusCode status_to_return,
               bool is_idle_task,
-              const SyncStatusCallback& callback) {
+              SyncStatusCallback callback) {
     ++task_scheduled_count_;
     if (is_idle_task)
       ++idle_task_scheduled_count_;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, status_to_return));
+        FROM_HERE, base::BindOnce(std::move(callback), status_to_return));
   }
 
   std::unique_ptr<SyncTaskManager> task_manager_;
@@ -132,20 +131,21 @@ class MultihopSyncTask : public ExclusiveTask {
 
   ~MultihopSyncTask() override {}
 
-  void RunExclusive(const SyncStatusCallback& callback) override {
+  void RunExclusive(SyncStatusCallback callback) override {
     DCHECK(!*task_started_);
     *task_started_ = true;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&MultihopSyncTask::CompleteTask,
-                                  weak_ptr_factory_.GetWeakPtr(), callback));
+        FROM_HERE,
+        base::BindOnce(&MultihopSyncTask::CompleteTask,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
  private:
-  void CompleteTask(const SyncStatusCallback& callback) {
+  void CompleteTask(SyncStatusCallback callback) {
     DCHECK(*task_started_);
     DCHECK(!*task_completed_);
     *task_completed_ = true;
-    callback.Run(SYNC_STATUS_OK);
+    std::move(callback).Run(SYNC_STATUS_OK);
   }
 
   bool* task_started_;

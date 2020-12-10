@@ -749,21 +749,22 @@ void RemoteToLocalSyncer::FinalizeSync(std::unique_ptr<SyncTaskToken> token,
   SyncTaskManager::NotifyTaskDone(std::move(token), status);
 }
 
-void RemoteToLocalSyncer::Prepare(const SyncStatusCallback& callback) {
+void RemoteToLocalSyncer::Prepare(SyncStatusCallback callback) {
   DCHECK(url_.is_valid());
+  // TODO(https://crbug.com/1152272): convert passed parameters to moved
+  // parameters when this is converted to base::BindOnce.
   remote_change_processor()->PrepareForProcessRemoteChange(
       url_,
       base::Bind(&RemoteToLocalSyncer::DidPrepare,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 callback));
+                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
 }
 
-void RemoteToLocalSyncer::DidPrepare(const SyncStatusCallback& callback,
+void RemoteToLocalSyncer::DidPrepare(SyncStatusCallback callback,
                                      SyncStatusCode status,
                                      const SyncFileMetadata& local_metadata,
                                      const FileChangeList& local_changes) {
   if (status != SYNC_STATUS_OK) {
-    callback.Run(status);
+    std::move(callback).Run(status);
     return;
   }
   prepared_ = true;
@@ -771,7 +772,7 @@ void RemoteToLocalSyncer::DidPrepare(const SyncStatusCallback& callback,
   local_metadata_.reset(new SyncFileMetadata(local_metadata));
   local_changes_.reset(new FileChangeList(local_changes));
 
-  callback.Run(status);
+  std::move(callback).Run(status);
 }
 
 void RemoteToLocalSyncer::DeleteLocalFile(

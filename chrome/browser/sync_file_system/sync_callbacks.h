@@ -18,8 +18,7 @@ namespace sync_file_system {
 
 class SyncFileMetadata;
 
-typedef base::Callback<void(SyncStatusCode status)>
-    SyncStatusCallback;
+typedef base::OnceCallback<void(SyncStatusCode status)> SyncStatusCallback;
 
 typedef base::Callback<
     void(SyncStatusCode status, const storage::FileSystemURL& url)>

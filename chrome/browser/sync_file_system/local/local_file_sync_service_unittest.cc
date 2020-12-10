@@ -43,8 +43,12 @@ using content::BrowserThread;
 using storage::FileSystemURL;
 using ::testing::_;
 using ::testing::AtLeast;
+using ::testing::DoAll;
+using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::StrictMock;
+using ::testing::WithArg;
+using ::testing::WithArgs;
 
 namespace sync_file_system {
 
@@ -91,16 +95,31 @@ void OnGetFileMetadata(const base::Location& where,
   oncompleted.Run();
 }
 
-ACTION_P(MockStatusCallback, status) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(arg4, status));
-}
+struct PostStatusFunctor {
+  explicit PostStatusFunctor(SyncStatusCode status) : status_(status) {}
+  void operator()(SyncStatusCallback callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), status_));
+  }
 
-ACTION_P2(MockStatusCallbackAndRecordChange, status, changes) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(arg4, status));
-  changes->push_back(arg0);
-}
+ private:
+  SyncStatusCode status_;
+};
+
+struct PostStatusAndRecordChangeFunctor {
+  PostStatusAndRecordChangeFunctor(SyncStatusCode status,
+                                   std::vector<FileChange>* changes)
+      : status_(status), changes_(changes) {}
+  void operator()(FileChange change, SyncStatusCallback callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), status_));
+    changes_->push_back(change);
+  }
+
+ private:
+  SyncStatusCode status_;
+  std::vector<FileChange>* changes_;
+};
 
 }  // namespace
 
@@ -369,9 +388,10 @@ TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_CreateFile) {
   StrictMock<MockLocalChangeProcessor> local_change_processor;
   const FileChange change(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
                           SYNC_FILE_TYPE_FILE);
+  PostStatusFunctor post_ok_status(SYNC_STATUS_OK);
   EXPECT_CALL(local_change_processor,
               ApplyLocalChange(change, _, metadata, kFile, _))
-      .WillOnce(MockStatusCallback(SYNC_STATUS_OK));
+      .WillOnce(WithArg<4>(Invoke(post_ok_status)));
 
   local_service_->SetLocalChangeProcessor(&local_change_processor);
   local_service_->ProcessLocalChange(
@@ -405,10 +425,11 @@ TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_CreateAndRemoveFile) {
   // with DELETE change for TYPE_FILE.
   // The file will NOT exist in the remote side and the processor might
   // return SYNC_FILE_ERROR_NOT_FOUND (as mocked).
+  PostStatusFunctor post_not_found_status(SYNC_FILE_ERROR_NOT_FOUND);
   StrictMock<MockLocalChangeProcessor> local_change_processor;
   const FileChange change(FileChange::FILE_CHANGE_DELETE, SYNC_FILE_TYPE_FILE);
   EXPECT_CALL(local_change_processor, ApplyLocalChange(change, _, _, kFile, _))
-      .WillOnce(MockStatusCallback(SYNC_FILE_ERROR_NOT_FOUND));
+      .WillOnce(WithArg<4>(Invoke(post_not_found_status)));
 
   // The sync should succeed anyway.
   local_service_->SetLocalChangeProcessor(&local_change_processor);
@@ -478,10 +499,14 @@ TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_MultipleChanges) {
   // twice for FILE_TYPE and FILE_DIRECTORY.
   StrictMock<MockLocalChangeProcessor> local_change_processor;
   std::vector<FileChange> changes;
+  PostStatusAndRecordChangeFunctor post_ok_and_record_change(SYNC_STATUS_OK,
+                                                             &changes);
+  // auto post_ok_and_record_change =
+  //     DoAll(WithArg<4>(Invoke(post_ok_status)), RecordChange(&changes));
   EXPECT_CALL(local_change_processor, ApplyLocalChange(_, _, _, kPath, _))
       .Times(2)
-      .WillOnce(MockStatusCallbackAndRecordChange(SYNC_STATUS_OK, &changes))
-      .WillOnce(MockStatusCallbackAndRecordChange(SYNC_STATUS_OK, &changes));
+      .WillOnce(WithArgs<0, 4>(Invoke(post_ok_and_record_change)))
+      .WillOnce(WithArgs<0, 4>(Invoke(post_ok_and_record_change)));
   local_service_->SetLocalChangeProcessor(&local_change_processor);
 
   // OnWriteEnabled will be notified on kPath (in multi-threaded this
@@ -568,8 +593,10 @@ TEST_F(LocalFileSyncServiceTest, RecordFakeChange) {
   // Next local sync should pick up the recorded change.
   StrictMock<MockLocalChangeProcessor> local_change_processor;
   std::vector<FileChange> changes;
+  PostStatusAndRecordChangeFunctor post_ok_and_record_change(SYNC_STATUS_OK,
+                                                             &changes);
   EXPECT_CALL(local_change_processor, ApplyLocalChange(_, _, _, kURL, _))
-      .WillOnce(MockStatusCallbackAndRecordChange(SYNC_STATUS_OK, &changes));
+      .WillOnce(WithArgs<0, 4>(Invoke(post_ok_and_record_change)));
   {
     base::RunLoop run_loop;
     local_service_->SetLocalChangeProcessor(&local_change_processor);

@@ -157,10 +157,10 @@ class LocalSyncRunner : public SyncProcessRunner,
                           nullptr, /* timer_helper */
                           1 /* max_parallel_task */) {}
 
-  void StartSync(const SyncStatusCallback& callback) override {
+  void StartSync(SyncStatusCallback callback) override {
     GetSyncService()->local_service_->ProcessLocalChange(
         base::Bind(&LocalSyncRunner::DidProcessLocalChange,
-                   factory_.GetWeakPtr(), callback));
+                   factory_.GetWeakPtr(), base::Passed(&callback)));
   }
 
   // LocalFileSyncService::Observer overrides.
@@ -174,15 +174,14 @@ class LocalSyncRunner : public SyncProcessRunner,
   }
 
  private:
-  void DidProcessLocalChange(
-      const SyncStatusCallback& callback,
-      SyncStatusCode status,
-      const FileSystemURL& url) {
+  void DidProcessLocalChange(SyncStatusCallback callback,
+                             SyncStatusCode status,
+                             const FileSystemURL& url) {
     util::Log(logging::LOG_VERBOSE, FROM_HERE,
               "ProcessLocalChange finished with status=%d (%s) for url=%s",
               status, SyncStatusCodeToString(status),
               url.DebugString().c_str());
-    callback.Run(status);
+    std::move(callback).Run(status);
   }
 
   base::WeakPtrFactory<LocalSyncRunner> factory_{this};
@@ -203,10 +202,10 @@ class RemoteSyncRunner : public SyncProcessRunner,
         remote_service_(remote_service),
         last_state_(REMOTE_SERVICE_OK) {}
 
-  void StartSync(const SyncStatusCallback& callback) override {
+  void StartSync(SyncStatusCallback callback) override {
     remote_service_->ProcessRemoteChange(
         base::Bind(&RemoteSyncRunner::DidProcessRemoteChange,
-                   factory_.GetWeakPtr(), callback));
+                   factory_.GetWeakPtr(), base::Passed(&callback)));
   }
 
   SyncServiceState GetServiceState() override {
@@ -231,10 +230,9 @@ class RemoteSyncRunner : public SyncProcessRunner,
   }
 
  private:
-  void DidProcessRemoteChange(
-      const SyncStatusCallback& callback,
-      SyncStatusCode status,
-      const FileSystemURL& url) {
+  void DidProcessRemoteChange(SyncStatusCallback callback,
+                              SyncStatusCode status,
+                              const FileSystemURL& url) {
     util::Log(logging::LOG_VERBOSE, FROM_HERE,
               "ProcessRemoteChange finished with status=%d (%s) for url=%s",
               status, SyncStatusCodeToString(status),
@@ -245,7 +243,7 @@ class RemoteSyncRunner : public SyncProcessRunner,
           url, base::Bind(&RemoteSyncRunner::Schedule,
                           factory_.GetWeakPtr()));
     }
-    callback.Run(status);
+    std::move(callback).Run(status);
   }
 
   RemoteFileSyncService* remote_service_;
@@ -286,7 +284,7 @@ SyncFileSystemService::~SyncFileSystemService() {
 void SyncFileSystemService::InitializeForApp(
     storage::FileSystemContext* file_system_context,
     const GURL& app_origin,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   DCHECK(local_service_);
   DCHECK(remote_service_);
   DCHECK(app_origin == app_origin.GetOrigin());
@@ -296,8 +294,8 @@ void SyncFileSystemService::InitializeForApp(
 
   local_service_->MaybeInitializeFileSystemContext(
       app_origin, file_system_context,
-      base::Bind(&SyncFileSystemService::DidInitializeFileSystem,
-                 AsWeakPtr(), app_origin, callback));
+      base::Bind(&SyncFileSystemService::DidInitializeFileSystem, AsWeakPtr(),
+                 app_origin, base::Passed(&callback)));
 }
 
 void SyncFileSystemService::GetExtensionStatusMap(
@@ -481,42 +479,39 @@ void SyncFileSystemService::Initialize(
   ExtensionRegistry::Get(profile_)->AddObserver(this);
 }
 
-void SyncFileSystemService::DidInitializeFileSystem(
-    const GURL& app_origin,
-    const SyncStatusCallback& callback,
-    SyncStatusCode status) {
+void SyncFileSystemService::DidInitializeFileSystem(const GURL& app_origin,
+                                                    SyncStatusCallback callback,
+                                                    SyncStatusCode status) {
   DVLOG(1) << "DidInitializeFileSystem: "
            << app_origin.spec() << " " << status;
 
   if (status != SYNC_STATUS_OK) {
-    callback.Run(status);
+    std::move(callback).Run(status);
     return;
   }
 
   // Local side of initialization for the app is done.
   // Continue on initializing the remote side.
   if (!remote_service_) {
-    callback.Run(SYNC_STATUS_ABORT);
+    std::move(callback).Run(SYNC_STATUS_ABORT);
     return;
   }
 
   remote_service_->RegisterOrigin(
-      app_origin,
-      base::Bind(&SyncFileSystemService::DidRegisterOrigin,
-                 AsWeakPtr(), app_origin, callback));
+      app_origin, base::Bind(&SyncFileSystemService::DidRegisterOrigin,
+                             AsWeakPtr(), app_origin, base::Passed(&callback)));
 }
 
-void SyncFileSystemService::DidRegisterOrigin(
-    const GURL& app_origin,
-    const SyncStatusCallback& callback,
-    SyncStatusCode status) {
+void SyncFileSystemService::DidRegisterOrigin(const GURL& app_origin,
+                                              SyncStatusCallback callback,
+                                              SyncStatusCode status) {
   util::Log(logging::LOG_VERBOSE, FROM_HERE,
             "DidInitializeForApp (registered the origin): %s: %s",
             app_origin.spec().c_str(),
             SyncStatusCodeToString(status));
 
   if (!remote_service_) {
-    callback.Run(SYNC_STATUS_ABORT);
+    std::move(callback).Run(SYNC_STATUS_ABORT);
     return;
   }
 
@@ -528,17 +523,17 @@ void SyncFileSystemService::DidRegisterOrigin(
     // If we got generic error return the service status information.
     switch (remote_service_->GetCurrentState()) {
       case REMOTE_SERVICE_AUTHENTICATION_REQUIRED:
-        callback.Run(SYNC_STATUS_AUTHENTICATION_FAILED);
+        std::move(callback).Run(SYNC_STATUS_AUTHENTICATION_FAILED);
         return;
       case REMOTE_SERVICE_TEMPORARY_UNAVAILABLE:
-        callback.Run(SYNC_STATUS_SERVICE_TEMPORARILY_UNAVAILABLE);
+        std::move(callback).Run(SYNC_STATUS_SERVICE_TEMPORARILY_UNAVAILABLE);
         return;
       default:
         break;
     }
   }
 
-  callback.Run(status);
+  std::move(callback).Run(status);
 }
 
 void SyncFileSystemService::DidInitializeFileSystemForDump(

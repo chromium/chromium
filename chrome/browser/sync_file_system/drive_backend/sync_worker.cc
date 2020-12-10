@@ -38,9 +38,9 @@ namespace drive_backend {
 namespace {
 
 void InvokeIdleCallback(const base::Closure& idle_callback,
-                        const SyncStatusCallback& callback) {
+                        SyncStatusCallback callback) {
   idle_callback.Run();
-  callback.Run(SYNC_STATUS_OK);
+  std::move(callback).Run(SYNC_STATUS_OK);
 }
 
 }  // namespace
@@ -82,9 +82,8 @@ void SyncWorker::Initialize(std::unique_ptr<SyncEngineContext> context) {
   PostInitializeTask();
 }
 
-void SyncWorker::RegisterOrigin(
-    const GURL& origin,
-    const SyncStatusCallback& callback) {
+void SyncWorker::RegisterOrigin(const GURL& origin,
+                                SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   if (!GetMetadataDatabase())
@@ -93,52 +92,45 @@ void SyncWorker::RegisterOrigin(
   std::unique_ptr<RegisterAppTask> task(
       new RegisterAppTask(context_.get(), origin.host()));
   if (task->CanFinishImmediately()) {
-    callback.Run(SYNC_STATUS_OK);
+    std::move(callback).Run(SYNC_STATUS_OK);
     return;
   }
 
   task_manager_->ScheduleSyncTask(FROM_HERE, std::move(task),
-                                  SyncTaskManager::PRIORITY_HIGH, callback);
+                                  SyncTaskManager::PRIORITY_HIGH,
+                                  std::move(callback));
 }
 
-void SyncWorker::EnableOrigin(
-    const GURL& origin,
-    const SyncStatusCallback& callback) {
+void SyncWorker::EnableOrigin(const GURL& origin, SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   task_manager_->ScheduleTask(
       FROM_HERE,
-      base::Bind(&SyncWorker::DoEnableApp,
-                 weak_ptr_factory_.GetWeakPtr(),
+      base::Bind(&SyncWorker::DoEnableApp, weak_ptr_factory_.GetWeakPtr(),
                  origin.host()),
-      SyncTaskManager::PRIORITY_HIGH,
-      callback);
+      SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
-void SyncWorker::DisableOrigin(
-    const GURL& origin,
-    const SyncStatusCallback& callback) {
+void SyncWorker::DisableOrigin(const GURL& origin,
+                               SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   task_manager_->ScheduleTask(
       FROM_HERE,
-      base::Bind(&SyncWorker::DoDisableApp,
-                 weak_ptr_factory_.GetWeakPtr(),
+      base::Bind(&SyncWorker::DoDisableApp, weak_ptr_factory_.GetWeakPtr(),
                  origin.host()),
-      SyncTaskManager::PRIORITY_HIGH,
-      callback);
+      SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
-void SyncWorker::UninstallOrigin(
-    const GURL& origin,
-    RemoteFileSyncService::UninstallFlag flag,
-    const SyncStatusCallback& callback) {
+void SyncWorker::UninstallOrigin(const GURL& origin,
+                                 RemoteFileSyncService::UninstallFlag flag,
+                                 SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   task_manager_->ScheduleSyncTask(
-      FROM_HERE, std::unique_ptr<SyncTask>(
-                     new UninstallAppTask(context_.get(), origin.host(), flag)),
-      SyncTaskManager::PRIORITY_HIGH, callback);
+      FROM_HERE,
+      std::make_unique<UninstallAppTask>(context_.get(), origin.host(), flag),
+      SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
 void SyncWorker::ProcessRemoteChange(const SyncFileCallback& callback) {
@@ -239,7 +231,7 @@ void SyncWorker::ApplyLocalChange(const FileChange& local_change,
                                   const base::FilePath& local_path,
                                   const SyncFileMetadata& local_metadata,
                                   const storage::FileSystemURL& url,
-                                  const SyncStatusCallback& callback) {
+                                  SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   LocalToRemoteSyncer* syncer = new LocalToRemoteSyncer(
@@ -247,8 +239,9 @@ void SyncWorker::ApplyLocalChange(const FileChange& local_change,
   task_manager_->ScheduleSyncTask(
       FROM_HERE, std::unique_ptr<SyncTask>(syncer),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorker::DidApplyLocalChange,
-                 weak_ptr_factory_.GetWeakPtr(), syncer, callback));
+      base::BindOnce(&SyncWorker::DidApplyLocalChange,
+                     weak_ptr_factory_.GetWeakPtr(), syncer,
+                     std::move(callback)));
 }
 
 void SyncWorker::MaybeScheduleNextTask() {
@@ -324,29 +317,29 @@ void SyncWorker::AddObserver(Observer* observer) {
 }
 
 void SyncWorker::DoDisableApp(const std::string& app_id,
-                              const SyncStatusCallback& callback) {
+                              SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   if (!GetMetadataDatabase()) {
-    callback.Run(SYNC_STATUS_OK);
+    std::move(callback).Run(SYNC_STATUS_OK);
     return;
   }
 
   SyncStatusCode status = GetMetadataDatabase()->DisableApp(app_id);
-  callback.Run(status);
+  std::move(callback).Run(status);
 }
 
 void SyncWorker::DoEnableApp(const std::string& app_id,
-                             const SyncStatusCallback& callback) {
+                             SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
   if (!GetMetadataDatabase()) {
-    callback.Run(SYNC_STATUS_OK);
+    std::move(callback).Run(SYNC_STATUS_OK);
     return;
   }
 
   SyncStatusCode status = GetMetadataDatabase()->EnableApp(app_id);
-  callback.Run(status);
+  std::move(callback).Run(status);
 }
 
 void SyncWorker::PostInitializeTask() {
@@ -516,7 +509,7 @@ void SyncWorker::DidProcessRemoteChange(RemoteToLocalSyncer* syncer,
 }
 
 void SyncWorker::DidApplyLocalChange(LocalToRemoteSyncer* syncer,
-                                     const SyncStatusCallback& callback,
+                                     SyncStatusCallback callback,
                                      SyncStatusCode status) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
@@ -556,7 +549,7 @@ void SyncWorker::DidApplyLocalChange(LocalToRemoteSyncer* syncer,
   if (status == SYNC_STATUS_OK)
     should_check_conflict_ = true;
 
-  callback.Run(status);
+  std::move(callback).Run(status);
 }
 
 bool SyncWorker::MaybeStartFetchChanges() {

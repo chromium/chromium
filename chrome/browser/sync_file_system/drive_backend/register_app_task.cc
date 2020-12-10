@@ -47,14 +47,14 @@ bool RegisterAppTask::CanFinishImmediately() {
          metadata_database()->FindAppRootTracker(app_id_, nullptr);
 }
 
-void RegisterAppTask::RunExclusive(const SyncStatusCallback& callback) {
+void RegisterAppTask::RunExclusive(SyncStatusCallback callback) {
   if (create_folder_retry_count_++ >= kMaxRetry) {
-    callback.Run(SYNC_STATUS_FAILED);
+    std::move(callback).Run(SYNC_STATUS_FAILED);
     return;
   }
 
   if (!metadata_database() || !drive_service()) {
-    callback.Run(SYNC_STATUS_FAILED);
+    std::move(callback).Run(SYNC_STATUS_FAILED);
     return;
   }
 
@@ -62,27 +62,27 @@ void RegisterAppTask::RunExclusive(const SyncStatusCallback& callback) {
   TrackerIDSet trackers;
   if (!metadata_database()->FindTrackersByParentAndTitle(
           sync_root, app_id_, &trackers)) {
-    CreateAppRootFolder(callback);
+    CreateAppRootFolder(std::move(callback));
     return;
   }
 
   FileTracker candidate;
   if (!FilterCandidates(trackers, &candidate)) {
-    CreateAppRootFolder(callback);
+    CreateAppRootFolder(std::move(callback));
     return;
   }
 
   if (candidate.active()) {
     DCHECK(candidate.tracker_kind() == TRACKER_KIND_APP_ROOT ||
            candidate.tracker_kind() == TRACKER_KIND_DISABLED_APP_ROOT);
-    callback.Run(SYNC_STATUS_OK);
+    std::move(callback).Run(SYNC_STATUS_OK);
     return;
   }
 
-  RegisterAppIntoDatabase(candidate, callback);
+  RegisterAppIntoDatabase(candidate, std::move(callback));
 }
 
-void RegisterAppTask::CreateAppRootFolder(const SyncStatusCallback& callback) {
+void RegisterAppTask::CreateAppRootFolder(SyncStatusCallback callback) {
   int64_t sync_root_tracker_id = metadata_database()->GetSyncRootTrackerID();
   FileTracker sync_root_tracker;
   bool should_success = metadata_database()->FindTrackerByTrackerID(
@@ -91,25 +91,24 @@ void RegisterAppTask::CreateAppRootFolder(const SyncStatusCallback& callback) {
   DCHECK(should_success);
 
   DCHECK(!folder_creator_);
-  folder_creator_.reset(new FolderCreator(
-      drive_service(), metadata_database(),
-      sync_root_tracker.file_id(), app_id_));
-  folder_creator_->Run(base::Bind(
-      &RegisterAppTask::DidCreateAppRootFolder,
-      weak_ptr_factory_.GetWeakPtr(), callback));
+  folder_creator_ =
+      std::make_unique<FolderCreator>(drive_service(), metadata_database(),
+                                      sync_root_tracker.file_id(), app_id_);
+  folder_creator_->Run(base::Bind(&RegisterAppTask::DidCreateAppRootFolder,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  base::Passed(&callback)));
 }
 
-void RegisterAppTask::DidCreateAppRootFolder(
-    const SyncStatusCallback& callback,
-    const std::string& folder_id,
-    SyncStatusCode status) {
+void RegisterAppTask::DidCreateAppRootFolder(SyncStatusCallback callback,
+                                             const std::string& folder_id,
+                                             SyncStatusCode status) {
   std::unique_ptr<FolderCreator> deleter = std::move(folder_creator_);
   if (status != SYNC_STATUS_OK) {
-    callback.Run(status);
+    std::move(callback).Run(status);
     return;
   }
 
-  RunExclusive(callback);
+  RunExclusive(std::move(callback));
 }
 
 bool RegisterAppTask::FilterCandidates(const TrackerIDSet& trackers,
@@ -164,12 +163,11 @@ bool RegisterAppTask::FilterCandidates(const TrackerIDSet& trackers,
   return true;
 }
 
-void RegisterAppTask::RegisterAppIntoDatabase(
-    const FileTracker& tracker,
-    const SyncStatusCallback& callback) {
+void RegisterAppTask::RegisterAppIntoDatabase(const FileTracker& tracker,
+                                              SyncStatusCallback callback) {
   SyncStatusCode status =
       metadata_database()->RegisterApp(app_id_, tracker.file_id());
-  callback.Run(status);
+  std::move(callback).Run(status);
 }
 
 MetadataDatabase* RegisterAppTask::metadata_database() {

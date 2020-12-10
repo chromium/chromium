@@ -181,11 +181,11 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
 namespace {
 
 void DidRegisterOrigin(const base::TimeTicks& start_time,
-                       const SyncStatusCallback& callback,
+                       SyncStatusCallback callback,
                        SyncStatusCode status) {
   base::TimeDelta delta(base::TimeTicks::Now() - start_time);
   LOCAL_HISTOGRAM_TIMES("SyncFileSystem.RegisterOriginTime", delta);
-  callback.Run(status);
+  std::move(callback).Run(status);
 }
 
 }  // namespace
@@ -376,80 +376,78 @@ void SyncEngine::AddFileStatusObserver(FileStatusObserver* observer) {
 }
 
 void SyncEngine::RegisterOrigin(const GURL& origin,
-                                const SyncStatusCallback& callback) {
+                                SyncStatusCallback callback) {
   if (!sync_worker_) {
     // TODO(tzik): Record |origin| and retry the registration after late
     // sign-in.  Then, return SYNC_STATUS_OK.
     if (!identity_manager_ || !identity_manager_->HasPrimaryAccount())
-      callback.Run(SYNC_STATUS_AUTHENTICATION_FAILED);
+      std::move(callback).Run(SYNC_STATUS_AUTHENTICATION_FAILED);
     else
-      callback.Run(SYNC_STATUS_ABORT);
+      std::move(callback).Run(SYNC_STATUS_ABORT);
     return;
   }
 
   SyncStatusCallback relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, base::Bind(&DidRegisterOrigin, base::TimeTicks::Now(),
-                            TrackCallback(callback)));
+      FROM_HERE, base::BindOnce(&DidRegisterOrigin, base::TimeTicks::Now(),
+                                TrackCallback(std::move(callback))));
 
   worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncWorkerInterface::RegisterOrigin,
                                 base::Unretained(sync_worker_.get()), origin,
-                                relayed_callback));
+                                std::move(relayed_callback)));
 }
 
-void SyncEngine::EnableOrigin(
-    const GURL& origin, const SyncStatusCallback& callback) {
+void SyncEngine::EnableOrigin(const GURL& origin, SyncStatusCallback callback) {
   if (!sync_worker_) {
     // It's safe to return OK immediately since this is also checked in
     // SyncWorker initialization.
-    callback.Run(SYNC_STATUS_OK);
+    std::move(callback).Run(SYNC_STATUS_OK);
     return;
   }
 
   SyncStatusCallback relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, TrackCallback(callback));
+      FROM_HERE, TrackCallback(std::move(callback)));
 
   worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncWorkerInterface::EnableOrigin,
                                 base::Unretained(sync_worker_.get()), origin,
-                                relayed_callback));
+                                std::move(relayed_callback)));
 }
 
-void SyncEngine::DisableOrigin(
-    const GURL& origin, const SyncStatusCallback& callback) {
+void SyncEngine::DisableOrigin(const GURL& origin,
+                               SyncStatusCallback callback) {
   if (!sync_worker_) {
     // It's safe to return OK immediately since this is also checked in
     // SyncWorker initialization.
-    callback.Run(SYNC_STATUS_OK);
+    std::move(callback).Run(SYNC_STATUS_OK);
     return;
   }
 
   SyncStatusCallback relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, TrackCallback(callback));
+      FROM_HERE, TrackCallback(std::move(callback)));
 
   worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncWorkerInterface::DisableOrigin,
                                 base::Unretained(sync_worker_.get()), origin,
-                                relayed_callback));
+                                std::move(relayed_callback)));
 }
 
-void SyncEngine::UninstallOrigin(
-    const GURL& origin,
-    UninstallFlag flag,
-    const SyncStatusCallback& callback) {
+void SyncEngine::UninstallOrigin(const GURL& origin,
+                                 UninstallFlag flag,
+                                 SyncStatusCallback callback) {
   if (!sync_worker_) {
     // It's safe to return OK immediately since this is also checked in
     // SyncWorker initialization.
-    callback.Run(SYNC_STATUS_OK);
+    std::move(callback).Run(SYNC_STATUS_OK);
     return;
   }
 
   SyncStatusCallback relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, TrackCallback(callback));
+      FROM_HERE, TrackCallback(std::move(callback)));
   worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncWorkerInterface::UninstallOrigin,
                                 base::Unretained(sync_worker_.get()), origin,
-                                flag, relayed_callback));
+                                flag, std::move(relayed_callback)));
 }
 
 void SyncEngine::ProcessRemoteChange(const SyncFileCallback& callback) {
@@ -618,24 +616,24 @@ void SyncEngine::ApplyLocalChange(const FileChange& local_change,
                                   const base::FilePath& local_path,
                                   const SyncFileMetadata& local_metadata,
                                   const storage::FileSystemURL& url,
-                                  const SyncStatusCallback& callback) {
+                                  SyncStatusCallback callback) {
   if (GetCurrentState() == REMOTE_SERVICE_DISABLED) {
-    callback.Run(SYNC_STATUS_SYNC_DISABLED);
+    std::move(callback).Run(SYNC_STATUS_SYNC_DISABLED);
     return;
   }
 
   if (!sync_worker_) {
-    callback.Run(SYNC_STATUS_ABORT);
+    std::move(callback).Run(SYNC_STATUS_ABORT);
     return;
   }
 
   SyncStatusCallback relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, TrackCallback(callback));
+      FROM_HERE, TrackCallback(std::move(callback)));
   worker_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SyncWorkerInterface::ApplyLocalChange,
-                     base::Unretained(sync_worker_.get()), local_change,
-                     local_path, local_metadata, url, relayed_callback));
+      FROM_HERE, base::BindOnce(&SyncWorkerInterface::ApplyLocalChange,
+                                base::Unretained(sync_worker_.get()),
+                                local_change, local_path, local_metadata, url,
+                                std::move(relayed_callback)));
 }
 
 void SyncEngine::OnNotificationReceived(
@@ -773,11 +771,16 @@ void SyncEngine::UpdateServiceState(RemoteServiceState state,
     observer.OnRemoteServiceStateUpdated(GetCurrentState(), description);
 }
 
-SyncStatusCallback SyncEngine::TrackCallback(
-    const SyncStatusCallback& callback) {
-  return callback_tracker_.Register(
-      base::Bind(callback, SYNC_STATUS_ABORT),
-      callback);
+SyncStatusCallback SyncEngine::TrackCallback(SyncStatusCallback callback) {
+  // This creates a repeating callback which will call |callback| once, and
+  // ignore subsequent invocations, much like the callback tracker does.
+  // However, this allows us to bind |repeating| without giving away ownership
+  // of |callback|.
+  // TODO(https://crbug.com/1156809): Use SplitOnceCallback once it's available.
+  auto repeating = base::AdaptCallbackForRepeating(std::move(callback));
+
+  return callback_tracker_.Register(base::Bind(repeating, SYNC_STATUS_ABORT),
+                                    repeating);
 }
 
 }  // namespace drive_backend

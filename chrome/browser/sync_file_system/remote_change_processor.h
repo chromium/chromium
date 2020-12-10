@@ -61,7 +61,7 @@ class RemoteChangeProcessor {
   virtual void ApplyRemoteChange(const FileChange& change,
                                  const base::FilePath& local_path,
                                  const storage::FileSystemURL& url,
-                                 const SyncStatusCallback& callback) = 0;
+                                 SyncStatusCallback callback) = 0;
 
   // Finalizes the remote sync started by PrepareForProcessRemoteChange.
   // This clears sync flag on |url| to unlock the file for future writes/sync.
@@ -79,7 +79,7 @@ class RemoteChangeProcessor {
   // resolve a conflict by uploading the local file).
   virtual void RecordFakeLocalChange(const storage::FileSystemURL& url,
                                      const FileChange& change,
-                                     const SyncStatusCallback& callback) = 0;
+                                     SyncStatusCallback callback) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(RemoteChangeProcessor);

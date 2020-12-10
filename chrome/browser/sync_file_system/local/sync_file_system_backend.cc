@@ -98,7 +98,8 @@ void SyncFileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
       &SyncFileSystemBackend::DidInitializeSyncFileSystemService,
       base::Unretained(this), base::RetainedRef(context_),
       url.origin().GetURL(), url.type(), mode, base::Passed(&callback));
-  InitializeSyncFileSystemService(url.origin().GetURL(), initialize_callback);
+  InitializeSyncFileSystemService(url.origin().GetURL(),
+                                  std::move(initialize_callback));
 }
 
 storage::AsyncFileUtil* SyncFileSystemBackend::GetAsyncFileUtil(
@@ -232,7 +233,7 @@ storage::SandboxFileSystemBackendDelegate* SyncFileSystemBackend::GetDelegate()
 
 void SyncFileSystemBackend::InitializeSyncFileSystemService(
     const GURL& origin_url,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   // Repost to switch from IO thread to UI thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -240,20 +241,21 @@ void SyncFileSystemBackend::InitializeSyncFileSystemService(
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&SyncFileSystemBackend::InitializeSyncFileSystemService,
-                       base::Unretained(this), origin_url, callback));
+                       base::Unretained(this), origin_url,
+                       std::move(callback)));
     return;
   }
 
   if (!g_browser_process->profile_manager()->IsValidProfile(profile_)) {
     // Profile was destroyed.
-    callback.Run(SYNC_FILE_ERROR_FAILED);
+    std::move(callback).Run(SYNC_FILE_ERROR_FAILED);
     return;
   }
 
   SyncFileSystemService* service =
       SyncFileSystemServiceFactory::GetForProfile(profile_);
   DCHECK(service);
-  service->InitializeForApp(context_, origin_url, callback);
+  service->InitializeForApp(context_, origin_url, std::move(callback));
 }
 
 void SyncFileSystemBackend::DidInitializeSyncFileSystemService(

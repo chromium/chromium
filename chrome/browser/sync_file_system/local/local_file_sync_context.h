@@ -86,7 +86,7 @@ class LocalFileSyncContext
   void MaybeInitializeFileSystemContext(
       const GURL& source_url,
       storage::FileSystemContext* file_system_context,
-      const SyncStatusCallback& callback);
+      SyncStatusCallback callback);
 
   // Called when the corresponding LocalFileSyncService exits.
   // This method must be called on UI thread.
@@ -162,13 +162,13 @@ class LocalFileSyncContext
                          const FileChange& change,
                          const base::FilePath& local_path,
                          const storage::FileSystemURL& url,
-                         const SyncStatusCallback& callback);
+                         SyncStatusCallback callback);
 
   // Records a fake local change in the local change tracker.
   void RecordFakeLocalChange(storage::FileSystemContext* file_system_context,
                              const storage::FileSystemURL& url,
                              const FileChange& change,
-                             const SyncStatusCallback& callback);
+                             SyncStatusCallback callback);
 
   // This must be called on UI thread.
   void GetFileMetadata(storage::FileSystemContext* file_system_context,
@@ -293,23 +293,23 @@ class LocalFileSyncContext
 
   void HandleRemoteDelete(storage::FileSystemContext* file_system_context,
                           const storage::FileSystemURL& url,
-                          const SyncStatusCallback& callback);
+                          SyncStatusCallback callback);
   void HandleRemoteAddOrUpdate(storage::FileSystemContext* file_system_context,
                                const FileChange& change,
                                const base::FilePath& local_path,
                                const storage::FileSystemURL& url,
-                               const SyncStatusCallback& callback);
+                               SyncStatusCallback callback);
   void DidRemoveExistingEntryForRemoteAddOrUpdate(
       storage::FileSystemContext* file_system_context,
       const FileChange& change,
       const base::FilePath& local_path,
       const storage::FileSystemURL& url,
-      const SyncStatusCallback& callback,
+      SyncStatusCallback callback,
       base::File::Error error);
 
   // Callback routine for ApplyRemoteChange.
   void DidApplyRemoteChange(const storage::FileSystemURL& url,
-                            const SyncStatusCallback& callback_on_ui,
+                            SyncStatusCallback callback_on_ui,
                             base::File::Error file_error);
 
   void DidGetFileMetadata(

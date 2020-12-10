@@ -172,8 +172,8 @@ class RemoteToLocalSyncer : public SyncTask {
   void FinalizeSync(std::unique_ptr<SyncTaskToken> token,
                     SyncStatusCode status);
 
-  void Prepare(const SyncStatusCallback& callback);
-  void DidPrepare(const SyncStatusCallback& callback,
+  void Prepare(SyncStatusCallback callback);
+  void DidPrepare(SyncStatusCallback callback,
                   SyncStatusCode status,
                   const SyncFileMetadata& metadata,
                   const FileChangeList& changes);

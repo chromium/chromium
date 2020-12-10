@@ -39,9 +39,9 @@ namespace {
 
 const char kAppID[] = "app_id";
 
-void EmptyTask(SyncStatusCode status, const SyncStatusCallback& callback) {
+void EmptyTask(SyncStatusCode status, SyncStatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, status));
+      FROM_HERE, base::BindOnce(std::move(callback), status));
 }
 
 }  // namespace
@@ -53,8 +53,8 @@ class MockSyncTask : public ExclusiveTask {
   }
   ~MockSyncTask() override {}
 
-  void RunExclusive(const SyncStatusCallback& callback) override {
-    callback.Run(SYNC_STATUS_OK);
+  void RunExclusive(SyncStatusCallback callback) override {
+    std::move(callback).Run(SYNC_STATUS_OK);
   }
 
  private:

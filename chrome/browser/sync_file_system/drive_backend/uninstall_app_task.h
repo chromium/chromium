@@ -35,10 +35,10 @@ class UninstallAppTask : public ExclusiveTask {
                    UninstallFlag uninstall_flag);
   ~UninstallAppTask() override;
 
-  void RunExclusive(const SyncStatusCallback& callback) override;
+  void RunExclusive(SyncStatusCallback callback) override;
 
  private:
-  void DidDeleteAppRoot(const SyncStatusCallback& callback,
+  void DidDeleteAppRoot(SyncStatusCallback callback,
                         int64_t change_id,
                         google_apis::DriveApiErrorCode error);
 

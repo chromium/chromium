@@ -70,13 +70,6 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
   int64_t real_default_quota_;
 };
 
-ACTION_P(NotifyOkStateAndCallback, mock_remote_service) {
-  mock_remote_service->NotifyRemoteServiceStateUpdated(
-      sync_file_system::REMOTE_SERVICE_OK, "Test event description.");
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(arg1, sync_file_system::SYNC_STATUS_OK));
-}
-
 ACTION_P2(UpdateRemoteChangeQueue, origin, mock_remote_service) {
   *origin = arg0;
   mock_remote_service->NotifyRemoteChangeQueueUpdated(1);
@@ -161,7 +154,15 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnServiceStatusChanged) {
   EXPECT_CALL(*mock_remote_service(), RegisterOrigin(_, _))
-      .WillOnce(NotifyOkStateAndCallback(mock_remote_service()));
+      .WillOnce([this](::testing::Unused,
+                       sync_file_system::SyncStatusCallback callback) {
+        mock_remote_service()->NotifyRemoteServiceStateUpdated(
+            sync_file_system::REMOTE_SERVICE_OK, "Test event description.");
+        base::ThreadTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback),
+                                      sync_file_system::SYNC_STATUS_OK));
+      });
+
   ASSERT_TRUE(RunPlatformAppTest("sync_file_system/on_service_status_changed"))
       << message_;
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync_file_system/drive_backend/remote_change_processor_wrapper.h"
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/remote_change_processor.h"
 
@@ -25,10 +26,10 @@ void RemoteChangeProcessorWrapper::ApplyRemoteChange(
     const FileChange& change,
     const base::FilePath& local_path,
     const storage::FileSystemURL& url,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  remote_change_processor_->ApplyRemoteChange(
-      change, local_path, url,  callback);
+  remote_change_processor_->ApplyRemoteChange(change, local_path, url,
+                                              std::move(callback));
 }
 
 void RemoteChangeProcessorWrapper::FinalizeRemoteSync(
@@ -43,9 +44,10 @@ void RemoteChangeProcessorWrapper::FinalizeRemoteSync(
 void RemoteChangeProcessorWrapper::RecordFakeLocalChange(
     const storage::FileSystemURL& url,
     const FileChange& change,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  remote_change_processor_->RecordFakeLocalChange(url, change, callback);
+  remote_change_processor_->RecordFakeLocalChange(url, change,
+                                                  std::move(callback));
 }
 
 }  // namespace drive_backend

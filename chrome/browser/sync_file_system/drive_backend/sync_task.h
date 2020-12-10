@@ -41,7 +41,7 @@ class ExclusiveTask : public SyncTask {
   ~ExclusiveTask() override;
 
   void RunPreflight(std::unique_ptr<SyncTaskToken> token) final;
-  virtual void RunExclusive(const SyncStatusCallback& callback) = 0;
+  virtual void RunExclusive(SyncStatusCallback callback) = 0;
 
  private:
   base::WeakPtrFactory<ExclusiveTask> weak_ptr_factory_{this};
