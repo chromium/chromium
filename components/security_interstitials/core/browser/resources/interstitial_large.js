@@ -59,7 +59,8 @@ function appendDebuggingField(title, value, fixedWidth) {
 }
 
 function toggleDebuggingInfo() {
-  $('error-debugging-info').classList.toggle(HIDDEN_CLASS);
+  const hiddenDebug = $('error-debugging-info').classList.toggle(HIDDEN_CLASS);
+  $('error-code').setAttribute('aria-expanded', !hiddenDebug);
 }
 
 function setupEvents() {
@@ -201,8 +202,12 @@ function setupEvents() {
     // interstitials don't have details buttons.
     $('details-button').classList.add('hidden');
   } else {
+    $('details-button')
+        .setAttribute(
+            'aria-expanded', !$('details').classList.contains(HIDDEN_CLASS));
     $('details-button').addEventListener('click', function(event) {
       const hiddenDetails = $('details').classList.toggle(HIDDEN_CLASS);
+      $('details-button').setAttribute('aria-expanded', !hiddenDetails);
 
       if (mobileNav) {
         // Details appear over the main content on small screens.
