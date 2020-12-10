@@ -1131,6 +1131,7 @@ test("ui_base_unittests") {
   if (use_x11) {
     sources += [
       "dragdrop/os_exchange_data_provider_x11_unittest.cc",
+      "x/property_cache_unittest.cc",
       "x/selection_requestor_unittest.cc",
     ]
     deps += [ "//ui/gfx/x:unit_test" ]

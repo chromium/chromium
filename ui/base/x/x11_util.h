@@ -34,6 +34,7 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"
 
 typedef unsigned long Cursor;
@@ -172,14 +173,14 @@ bool GetProperty(x11::Window window, const x11::Atom name, T* value) {
 }
 
 template <typename T>
-void SetArrayProperty(x11::Window window,
-                      x11::Atom name,
-                      x11::Atom type,
-                      const std::vector<T>& values) {
+x11::Future<void> SetArrayProperty(x11::Window window,
+                                   x11::Atom name,
+                                   x11::Atom type,
+                                   const std::vector<T>& values) {
   static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "");
   std::vector<uint8_t> data(sizeof(T) * values.size());
   memcpy(data.data(), values.data(), sizeof(T) * values.size());
-  x11::Connection::Get()->ChangeProperty(x11::ChangePropertyRequest{
+  return x11::Connection::Get()->ChangeProperty(x11::ChangePropertyRequest{
       .window = static_cast<x11::Window>(window),
       .property = name,
       .type = type,
@@ -189,11 +190,11 @@ void SetArrayProperty(x11::Window window,
 }
 
 template <typename T>
-void SetProperty(x11::Window window,
-                 x11::Atom name,
-                 x11::Atom type,
-                 const T& value) {
-  SetArrayProperty(window, name, type, std::vector<T>{value});
+x11::Future<void> SetProperty(x11::Window window,
+                              x11::Atom name,
+                              x11::Atom type,
+                              const T& value) {
+  return SetArrayProperty(window, name, type, std::vector<T>{value});
 }
 
 COMPONENT_EXPORT(UI_BASE_X)
