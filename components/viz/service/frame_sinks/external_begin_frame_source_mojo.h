@@ -82,7 +82,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
   // IssueExternalBeginFrame. Note this is likely to be different from our
   // source id, but this is what will be reported to FrameSinkObserver methods.
   uint64_t original_source_id_ = BeginFrameArgs::kStartingSourceId;
-  bool last_frame_acknowledged_ = false;
 
   base::flat_set<FrameSinkId> pending_frame_sinks_;
   Display* display_ = nullptr;

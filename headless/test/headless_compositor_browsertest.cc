@@ -155,5 +155,7 @@ HEADLESS_COMPOSITOR_TEST(RendererCanvas, "sanity/renderer-canvas.js")
 
 HEADLESS_COMPOSITOR_TEST(RendererOpacityAnimation,
                          "sanity/renderer-opacity-animation.js")
+HEADLESS_COMPOSITOR_TEST(ScreenshotAfterMetricsOverride,
+                         "sanity/screenshot-after-metrics-override.js")
 
 }  // namespace headless
