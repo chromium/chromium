@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -301,7 +302,8 @@ void CameraHalDispatcherImpl::RegisterClientWithToken(
       base::BindOnce(
           &CameraHalDispatcherImpl::RegisterClientWithTokenOnProxyThread,
           base::Unretained(this), std::move(client), type,
-          std::move(client_auth_token), std::move(callback)));
+          std::move(client_auth_token),
+          media::BindToCurrentLoop(std::move(callback))));
 }
 
 void CameraHalDispatcherImpl::GetJpegDecodeAccelerator(
@@ -508,7 +510,8 @@ void CameraHalDispatcherImpl::RegisterClientWithTokenOnProxyThread(
   client_observer->client().set_disconnect_handler(base::BindOnce(
       &CameraHalDispatcherImpl::OnCameraHalClientConnectionError,
       base::Unretained(this), base::Unretained(client_observer.get())));
-  AddClientObserver(std::move(client_observer), std::move(callback));
+  AddClientObserverOnProxyThread(std::move(client_observer),
+                                 std::move(callback));
 }
 
 void CameraHalDispatcherImpl::AddClientObserverOnProxyThread(
