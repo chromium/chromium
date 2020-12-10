@@ -15,15 +15,6 @@ var allTests = [
     firstTextField.doDefault();
   },
 
-  function testDoDefaultViews() {
-    listenOnce(rootNode, 'focus', function(node) {
-      chrome.test.succeed();
-    }, true);
-    var button = rootNode.find(
-        {role: 'button', attributes: {name: 'Bookmark this page'}});
-    button.doDefault();
-  },
-
   function testContextMenu() {
     var addressBar = rootNode.find({role: 'textField'});
     listenOnce(rootNode, EventType.MENU_START, function(e) {

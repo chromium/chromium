@@ -48,3 +48,13 @@ function getUrlFromConfig(path, callback) {
     callback(url)
   });
 }
+
+function createTabAndWaitUntilLoaded(url, callback) {
+  chrome.tabs.create({'url': url}, function(tab) {
+    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+      if (tabId == tab.id && changeInfo.status == 'complete') {
+        callback(tab);
+      }
+    });
+  });
+}

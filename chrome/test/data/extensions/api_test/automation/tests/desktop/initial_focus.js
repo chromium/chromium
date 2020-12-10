@@ -7,8 +7,6 @@ var allTests = [
     var url = 'data:text/html,<!doctype html>' +
         encodeURI('<input autofocus title=abc>');
     chrome.automation.getDesktop(function(rootNode) {
-      chrome.tabs.create({url: url});
-
       rootNode.addEventListener('focus', function(event) {
         if (event.target.root.url == url) {
           chrome.automation.getFocus(function(focus) {
@@ -19,6 +17,8 @@ var allTests = [
         }
       }, false);
     });
+
+    chrome.tabs.create({url: url});
   },
 ];
 

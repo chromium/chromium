@@ -157,8 +157,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
   EXPECT_EQ(expected_mode, web_contents->GetAccessibilityMode());
 }
 
-// TODO(aboxhall): Fix flakiness
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_GetTreeByTabId) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, GetTreeByTabId) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionSubtest("automation/tests/tabs", "tab_id.html"))
       << message_;
@@ -237,15 +236,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TabsAutomationHostsPermissions) {
 }
 
 #if defined(USE_AURA)
-// TODO(https://crbug.com/754870): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_Desktop) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, Desktop) {
   ASSERT_TRUE(RunExtensionSubtest("automation/tests/desktop", "desktop.html"))
       << message_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(https://crbug.com/754870): Flaky on CrOS sanitizers.
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_DesktopInitialFocus) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopInitialFocus) {
   ASSERT_TRUE(
       RunExtensionSubtest("automation/tests/desktop", "initial_focus.html"))
       << message_;
@@ -257,24 +254,21 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusWeb) {
       << message_;
 }
 
-// TODO(https://crbug.com/622387): flaky.
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_DesktopFocusIframe) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusIframe) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(
       RunExtensionSubtest("automation/tests/desktop", "focus_iframe.html"))
       << message_;
 }
 
-// TODO(https://crbug.com/622387): flaky.
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_DesktopHitTestIframe) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestIframe) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(
       RunExtensionSubtest("automation/tests/desktop", "hit_test_iframe.html"))
       << message_;
 }
 
-// TODO(https://crbug.com/892960): flaky.
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_DesktopFocusViews) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusViews) {
   AutomationManagerAura::GetInstance()->Enable();
   // Trigger the shelf subtree to be computed.
   ash::AcceleratorController::Get()->PerformActionIfEnabled(ash::FOCUS_SHELF,
@@ -292,13 +286,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopGetNextTextMatch) {
       << message_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
-// TODO(http://crbug.com/1113853): flaky on ChromeOS.
-#define MAYBE_LocationInWebView DISABLED_LocationInWebView
-#else
-#define MAYBE_LocationInWebView LocationInWebView
-#endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_LocationInWebView) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, LocationInWebView) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunPlatformAppTest("automation/tests/webview")) << message_;
 }
@@ -310,8 +298,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(https://crbug.com/894016): flaky.
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_DesktopActions) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopActions) {
   AutomationManagerAura::GetInstance()->Enable();
   // Trigger the shelf subtree to be computed.
   ash::AcceleratorController::Get()->PerformActionIfEnabled(ash::FOCUS_SHELF,
@@ -326,8 +313,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTest) {
       << message_;
 }
 
-// TODO(https://crbug.com/754870): flaky.
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_DesktopLoadTabs) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopLoadTabs) {
   ASSERT_TRUE(RunExtensionSubtest("automation/tests/desktop", "load_tabs.html"))
       << message_;
 }
@@ -340,8 +326,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotSupported) {
 }
 #endif  // defined(USE_AURA)
 
-// Flaky test on site_per_browser_tests: https://crbug.com/833318
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_CloseTab) {
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, CloseTab) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionSubtest("automation/tests/tabs", "close_tab.html"))
       << message_;

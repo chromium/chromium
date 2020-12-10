@@ -24,9 +24,9 @@ var allTests = [
   function testLoadTabs() {
     runWithDocument(html, function() {
       var webViews = getAllWebViews();
-      assertEq(2, webViews.length);
-      var subroot = webViews[1].firstChild;
-      assertEq(webViews[1], subroot.parent);
+      assertEq(1, webViews.length);
+      var subroot = webViews[0].firstChild;
+      assertEq(webViews[0], subroot.parent);
       assertEq(subroot, subroot.parent.children[0]);
       var button = subroot.firstChild.firstChild;
       assertEq(chrome.automation.RoleType.BUTTON, button.role);
@@ -40,12 +40,12 @@ var allTests = [
     runWithDocument(html, function(subroot) {
       var button = null;
 
-      rootNode.addEventListener(chrome.automation.EventType.FOCUS,
-          function(evt) {
-            assertEq(button, evt.target);
-            chrome.test.succeed();
-          },
-          false);
+      rootNode.addEventListener(
+          chrome.automation.EventType.FOCUS, function(evt) {
+            if (button == evt.target) {
+              chrome.test.succeed();
+            }
+          }, false);
 
       button = subroot.firstChild.firstChild;
       button.focus();

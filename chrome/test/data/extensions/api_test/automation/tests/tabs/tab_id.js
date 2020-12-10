@@ -46,9 +46,6 @@ var allTests = [
           chrome.automation.getTree(backgroundTab.id, function(rootNode) {
             chrome.test.assertFalse(rootNode === undefined,
                                     "Got automation tree for background tab");
-            chrome.test.assertFalse(
-                rootNode.docLoaded,
-                "Load complete never fires unless tab is foregrounded");
 
             chrome.tabs.update(backgroundTab.id, { active: true }, function() {
               if (rootNode.docLoaded) {
