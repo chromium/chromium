@@ -4429,6 +4429,20 @@ void HTMLMediaElement::DidBufferUnderflow() {
   media_player_observer_remote_->OnBufferUnderflow();
 }
 
+void HTMLMediaElement::DidSeek() {
+  // The remote to the MediaPlayerObserver could be not set yet.
+  if (!media_player_observer_remote_.is_bound())
+    return;
+
+  // Send the seek updates to the browser process only once per second.
+  if (last_seek_update_time_.is_null() ||
+      (base::TimeTicks::Now() - last_seek_update_time_ >=
+       base::TimeDelta::FromSeconds(1))) {
+    last_seek_update_time_ = base::TimeTicks::Now();
+    media_player_observer_remote_->OnSeek();
+  }
+}
+
 media::mojom::blink::MediaPlayerHost&
 HTMLMediaElement::GetMediaPlayerHostRemote() {
   // It is an error to call this before having access to the document's frame.

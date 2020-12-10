@@ -57,6 +57,9 @@ interface MediaPlayerObserver {
 
   // Notifies that a buffer underflow event happened for the media player.
   OnBufferUnderflow();
+
+  // Notifies that a playback seek event happened for the media player.
+  OnSeek();
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

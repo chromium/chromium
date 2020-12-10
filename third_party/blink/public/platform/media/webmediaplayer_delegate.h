@@ -106,9 +106,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
       int delegate_id,
       const std::string& hashed_device_id) = 0;
 
-  // Notify that a playback seek event happened for the media player.
-  virtual void DidSeek(int player_id) = 0;
-
   // Notify that playback is stopped. This will drop wake locks and remove any
   // external controls.
   //

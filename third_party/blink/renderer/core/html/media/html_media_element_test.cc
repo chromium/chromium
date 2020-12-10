@@ -132,6 +132,8 @@ class MockMediaPlayerObserverReceiverForTesting
     run_loop_->Quit();
   }
 
+  void OnSeek() override {}
+
   // Getters used from HTMLMediaElementTest.
   const base::Optional<bool>& received_muted_status() const {
     return received_muted_status_type_;

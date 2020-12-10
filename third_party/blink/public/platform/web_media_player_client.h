@@ -184,6 +184,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Notify the client that a buffer underflow happened for the media player.
   virtual void DidBufferUnderflow() = 0;
 
+  // Notify that a playback seek event happened for the media player.
+  virtual void DidSeek() = 0;
+
   // Notify the client that one of the state used by Picture-in-Picture has
   // changed. The client will then have to poll the states from the associated
   // WebMediaPlayer.

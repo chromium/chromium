@@ -162,6 +162,7 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_METHOD0(DidDisableAudioOutputSinkChanges, void());
   MOCK_METHOD1(DidPlayerSizeChange, void(const gfx::Size&));
   MOCK_METHOD0(DidBufferUnderflow, void());
+  MOCK_METHOD0(DidSeek, void());
   MOCK_METHOD0(GetFeatures, Features(void));
   MOCK_METHOD0(OnRequestVideoFrameCallback, void());
   MOCK_METHOD0(GetTextTrackMetadata, std::vector<blink::TextTrackMetadata>());
@@ -239,8 +240,6 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
       blink::WebFullscreenVideoStatus fullscreen_video_status) override {
     DCHECK_EQ(player_id_, player_id);
   }
-
-  void DidSeek(int player_id) override { DCHECK_EQ(player_id_, player_id); }
 
   bool IsFrameHidden() override { return is_hidden_; }
 

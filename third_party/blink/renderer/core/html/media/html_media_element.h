@@ -477,6 +477,7 @@ class CORE_EXPORT HTMLMediaElement
   void DidDisableAudioOutputSinkChanges() override;
   void DidPlayerSizeChange(const gfx::Size& size) override;
   void DidBufferUnderflow() override;
+  void DidSeek() override;
 
   // Returns a reference to the mojo remote for the MediaPlayerHost interface,
   // requesting it first from the BrowserInterfaceBroker if needed. It is an
@@ -722,6 +723,9 @@ class CORE_EXPORT HTMLMediaElement
   // Whether or not |web_media_player_| should apply pitch adjustments at
   // playback raters other than 1.0.
   bool preserves_pitch_ = true;
+
+  // Keeps track of when the player seek event was sent to the browser process.
+  base::TimeTicks last_seek_update_time_;
 
   Member<AudioTrackList> audio_tracks_;
   Member<VideoTrackList> video_tracks_;

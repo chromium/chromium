@@ -237,7 +237,6 @@ bool MediaWebContentsObserver::OnMessageReceived(
         OnMediaEffectivelyFullscreenChanged)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
                         OnAudioOutputSinkChanged);
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnSeek, OnSeek)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -361,6 +360,11 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnBufferUnderflow() {
   media_web_contents_observer_->web_contents_impl()->MediaBufferUnderflow(
+      media_player_id_);
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnSeek() {
+  media_web_contents_observer_->web_contents_impl()->MediaPlayerSeek(
       media_player_id_);
 }
 
@@ -508,12 +512,6 @@ MediaWebContentsObserver::GetMediaPlayerRemote(const MediaPlayerId& player_id) {
   DCHECK(media_player_remotes_.contains(player_id));
   DCHECK(media_player_remotes_[player_id].is_bound());
   return media_player_remotes_[player_id];
-}
-
-void MediaWebContentsObserver::OnSeek(RenderFrameHost* render_frame_host,
-                                      int delegate_id) {
-  const MediaPlayerId id(render_frame_host, delegate_id);
-  web_contents_impl()->MediaPlayerSeek(id);
 }
 
 void MediaWebContentsObserver::OnMediaPlayerHostDisconnected(

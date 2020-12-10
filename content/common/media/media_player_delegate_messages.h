@@ -78,7 +78,4 @@ IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
                     int /* delegate_id, distinguishes instances */,
                     std::string /* hashed_device_id */)
 
-IPC_MESSAGE_ROUTED1(MediaPlayerDelegateHostMsg_OnSeek,
-                    int /* delegate_id, distinguishes instances */)
-
 #endif  // CONTENT_COMMON_MEDIA_MEDIA_PLAYER_DELEGATE_MESSAGES_H_

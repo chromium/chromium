@@ -123,10 +123,6 @@ class FakeWebMediaPlayerDelegate
     playing_ = false;
   }
 
-  void DidSeek(int delegate_id) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
   void PlayerGone(int delegate_id) override {
     EXPECT_EQ(delegate_id_, delegate_id);
     is_gone_ = true;
@@ -596,6 +592,7 @@ class WebMediaPlayerMSTest
   void DidDisableAudioOutputSinkChanges() override {}
   void DidPlayerSizeChange(const gfx::Size& size) override {}
   void DidBufferUnderflow() override {}
+  void DidSeek() override {}
 
   Features GetFeatures() override { return Features(); }
 

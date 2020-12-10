@@ -198,6 +198,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
     void OnPictureInPictureAvailabilityChanged(bool available) override;
     void OnAudioOutputSinkChangingDisabled() override;
     void OnBufferUnderflow() override;
+    void OnSeek() override;
 
    private:
     MediaPlayerId media_player_id_;
@@ -235,7 +236,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   void OnAudioOutputSinkChanged(RenderFrameHost* render_frame_host,
                                 int delegate_id,
                                 std::string hashed_device_id);
-  void OnSeek(RenderFrameHost* render_frame_host, int delegate_id);
 
   // Used to notify when the renderer -> browser mojo connection via the
   // interface media::mojom::MediaPlayerHost gets disconnected.
