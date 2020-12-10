@@ -154,6 +154,12 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(item);
 
+  base::android::ScopedJavaLocalRef<jobject> otr_profile_id;
+  if (browser_context && browser_context->IsOffTheRecord()) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    otr_profile_id = profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env);
+  }
+
   base::Optional<OfflineItemSchedule> offline_item_schedule;
   auto download_schedule = item->GetDownloadSchedule();
   if (download_schedule.has_value()) {
@@ -170,9 +176,10 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       ConvertUTF8ToJavaString(env, item->GetMimeType()),
       item->GetReceivedBytes(), item->GetTotalBytes(),
       browser_context ? browser_context->IsOffTheRecord() : false,
-      item->GetState(), item->PercentComplete(), item->IsPaused(),
-      DownloadUtils::IsDownloadUserInitiated(item), item->CanResume(),
-      item->IsParallelDownload(), ConvertUTF8ToJavaString(env, original_url),
+      otr_profile_id, item->GetState(), item->PercentComplete(),
+      item->IsPaused(), DownloadUtils::IsDownloadUserInitiated(item),
+      item->CanResume(), item->IsParallelDownload(),
+      ConvertUTF8ToJavaString(env, original_url),
       ConvertUTF8ToJavaString(env, item->GetReferrerUrl().spec()),
       time_remaining_known ? time_delta.InMilliseconds()
                            : kUnknownRemainingTime,

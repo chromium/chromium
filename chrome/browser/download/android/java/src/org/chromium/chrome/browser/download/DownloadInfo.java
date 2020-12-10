@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download;
 import android.graphics.Bitmap;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
@@ -43,6 +44,7 @@ public final class DownloadInfo {
     private final boolean mIsResumable;
     private final boolean mIsPaused;
     private final boolean mIsOffTheRecord;
+    private final OTRProfileID mOTRProfileId;
     private final boolean mIsOfflinePage;
     private final int mState;
     private final long mLastAccessTime;
@@ -82,6 +84,7 @@ public final class DownloadInfo {
         mIsResumable = builder.mIsResumable;
         mIsPaused = builder.mIsPaused;
         mIsOffTheRecord = builder.mIsOffTheRecord;
+        mOTRProfileId = builder.mOTRProfileId;
         mIsOfflinePage = builder.mIsOfflinePage;
         mState = builder.mState;
         mLastAccessTime = builder.mLastAccessTime;
@@ -183,6 +186,10 @@ public final class DownloadInfo {
 
     public boolean isOffTheRecord() {
         return mIsOffTheRecord;
+    }
+
+    public OTRProfileID getOTRProfileId() {
+        return mOTRProfileId;
     }
 
     public boolean isOfflinePage() {
@@ -331,6 +338,7 @@ public final class DownloadInfo {
         private boolean mIsResumable = true;
         private boolean mIsPaused;
         private boolean mIsOffTheRecord;
+        private OTRProfileID mOTRProfileId;
         private boolean mIsOfflinePage;
         private int mState = DownloadState.IN_PROGRESS;
         private long mLastAccessTime;
@@ -447,6 +455,11 @@ public final class DownloadInfo {
             return this;
         }
 
+        public Builder setOTRProfileId(OTRProfileID otrProfileId) {
+            mOTRProfileId = otrProfileId;
+            return this;
+        }
+
         public Builder setIsOfflinePage(boolean isOfflinePage) {
             mIsOfflinePage = isOfflinePage;
             return this;
@@ -544,6 +557,7 @@ public final class DownloadInfo {
                     .setIsResumable(downloadInfo.isResumable())
                     .setIsPaused(downloadInfo.isPaused())
                     .setIsOffTheRecord(downloadInfo.isOffTheRecord())
+                    .setOTRProfileId(downloadInfo.getOTRProfileId())
                     .setIsOfflinePage(downloadInfo.isOfflinePage())
                     .setState(downloadInfo.state())
                     .setLastAccessTime(downloadInfo.getLastAccessTime())
@@ -561,15 +575,16 @@ public final class DownloadInfo {
     @CalledByNative
     private static DownloadInfo createDownloadInfo(String downloadGuid, String fileName,
             String filePath, String url, String mimeType, long bytesReceived, long bytesTotalSize,
-            boolean isIncognito, int state, int percentCompleted, boolean isPaused,
-            boolean hasUserGesture, boolean isResumable, boolean isParallelDownload,
-            String originalUrl, String referrerUrl, long timeRemainingInMs, long lastAccessTime,
-            boolean isDangerous, @FailState int failState, OfflineItemSchedule schedule) {
+            boolean isOffTheRecord, OTRProfileID otrProfileId, int state, int percentCompleted,
+            boolean isPaused, boolean hasUserGesture, boolean isResumable,
+            boolean isParallelDownload, String originalUrl, String referrerUrl,
+            long timeRemainingInMs, long lastAccessTime, boolean isDangerous,
+            @FailState int failState, OfflineItemSchedule schedule) {
         String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url, fileName);
 
         Progress progress = new Progress(bytesReceived,
                 percentCompleted == -1 ? null : bytesTotalSize, OfflineItemProgressUnit.BYTES);
-
+        if (isOffTheRecord) assert otrProfileId != null;
         return new DownloadInfo.Builder()
                 .setBytesReceived(bytesReceived)
                 .setBytesTotalSize(bytesTotalSize)
@@ -578,7 +593,8 @@ public final class DownloadInfo {
                 .setFileName(fileName)
                 .setFilePath(filePath)
                 .setHasUserGesture(hasUserGesture)
-                .setIsOffTheRecord(isIncognito)
+                .setIsOffTheRecord(isOffTheRecord)
+                .setOTRProfileId(otrProfileId)
                 .setIsPaused(isPaused)
                 .setIsResumable(isResumable)
                 .setIsParallelDownload(isParallelDownload)
