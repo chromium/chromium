@@ -1978,18 +1978,6 @@ IN_PROC_BROWSER_TEST_F(WorkerDevToolsSanityTest,
   CloseDevToolsWindow();
 }
 
-IN_PROC_BROWSER_TEST_F(WorkerDevToolsSanityTest,
-                       InspectSharedWorkerNetworkPanel) {
-  GURL url = embedded_test_server()->GetURL(kSharedWorkerTestPage);
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  scoped_refptr<DevToolsAgentHost> host =
-      WaitForFirstSharedWorker(kSharedWorkerTestWorker);
-  OpenDevToolsWindow(host);
-  RunTestFunction(window_, "testSharedWorkerNetworkPanel");
-  CloseDevToolsWindow();
-}
-
 class DevToolsAgentHostTest : public InProcessBrowserTest {};
 
 // Tests DevToolsAgentHost retention by its target.
