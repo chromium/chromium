@@ -1,0 +1,3 @@
+Tests that \0x7f passes through the protocol as is
+Got: "", 127 (length: 1)
+
