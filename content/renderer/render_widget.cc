@@ -69,9 +69,6 @@ void RenderWidget::Initialize(blink::WebWidget* web_widget,
   InitCompositing(screen_info);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// WebWidgetClient
-
 void RenderWidget::InitCompositing(const blink::ScreenInfo& screen_info) {
   TRACE_EVENT0("blink", "RenderWidget::InitializeLayerTreeView");
 

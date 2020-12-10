@@ -193,9 +193,8 @@ void ChromeClientImpl::SetWindowRect(const IntRect& r, LocalFrame& frame) {
 }
 
 IntRect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
-  // The WindowRect() for each WebWidgetClient will be the same rect of the top
-  // level window. Since there is not always a WebWidgetClient attached to the
-  // WebView, we ask the WebWidget associated with the |frame|'s local root.
+  // The WindowRect() for each WebFrameWidget will be the same rect of the top
+  // level window.
   return IntRect(frame.GetWidgetForLocalRoot()->WindowRect());
 }
 
@@ -273,8 +272,6 @@ void ChromeClientImpl::DidOverscroll(
     const gfx::Vector2dF& accumulated_overscroll,
     const gfx::PointF& position_in_viewport,
     const gfx::Vector2dF& velocity_in_viewport) {
-  // WebWidgetClient can be null when not compositing, and this behaviour only
-  // applies when compositing is enabled.
   if (!web_view_->does_composite())
     return;
   // TODO(darin): Change caller to pass LocalFrame.

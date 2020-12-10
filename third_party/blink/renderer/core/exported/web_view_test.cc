@@ -77,12 +77,12 @@
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_non_composited_widget_client.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_widget.h"
-#include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document.h"
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
@@ -289,7 +289,6 @@ class WebViewTest : public testing::Test {
   // Copy the steps done from WebViewHelper::InitializeWithOpener() to set up
   // the appropriate pointers!
   frame_test_helpers::TestWebFrameWidget* CreateWidgetForMainFrame(
-      WebWidgetClient* client,
       WebLocalFrame* frame) {
     mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget;
     mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
@@ -310,10 +309,10 @@ class WebViewTest : public testing::Test {
     // installed a create hook to ensure the widget created is of type
     // `frame_test_helpers::TestWebFrameWidget`.
     return static_cast<frame_test_helpers::TestWebFrameWidget*>(
-        blink::WebFrameWidget::CreateForMainFrame(
-            client, frame, frame_widget_host.Unbind(),
-            std::move(frame_widget_receiver), widget_host_remote.Unbind(),
-            std::move(widget_receiver), viz::FrameSinkId()));
+        frame->InitializeFrameWidget(
+            frame_widget_host.Unbind(), std::move(frame_widget_receiver),
+            widget_host_remote.Unbind(), std::move(widget_receiver),
+            viz::FrameSinkId()));
   }
 
   std::string base_url_{"http://www.test.com/"};
@@ -510,7 +509,6 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   // Note: this test doesn't use WebViewHelper since it intentionally runs
   // initialization code between WebView and WebLocalFrame creation.
   frame_test_helpers::TestWebViewClient web_view_client;
-  WebWidgetClient web_widget_client;
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler =
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
@@ -539,7 +537,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   {
     // Copy the steps done from WebViewHelper::InitializeWithOpener() to set up
     // the appropriate pointers!
-    widget = CreateWidgetForMainFrame(&web_widget_client, frame);
+    widget = CreateWidgetForMainFrame(frame);
     cc::LayerTreeSettings layer_tree_settings =
         frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
     widget->InitializeCompositing(
@@ -2766,20 +2764,14 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
       /*compositing_enabled=*/false, /*opener=*/nullptr,
       mojo::NullAssociatedReceiver(), *agent_group_scheduler));
   frame_test_helpers::TestWebFrameClient web_frame_client;
-  WebWidgetClient web_widget_client;
   WebLocalFrame* local_frame =
       WebLocalFrame::CreateMainFrame(web_view, &web_frame_client, nullptr,
                                      base::UnguessableToken::Create(), nullptr);
   web_frame_client.Bind(local_frame);
+  WebNonCompositedWidgetClient widget_client;
   frame_test_helpers::TestWebFrameWidget* widget =
-      CreateWidgetForMainFrame(&web_widget_client, local_frame);
-  cc::LayerTreeSettings layer_tree_settings =
-      frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
-  widget->InitializeCompositing(widget->main_thread_scheduler(),
-                                widget->task_graph_runner(), ScreenInfo(),
-                                std::make_unique<cc::TestUkmRecorderFactory>(),
-                                &layer_tree_settings);
-  widget->SetCompositorVisible(true);
+      CreateWidgetForMainFrame(local_frame);
+  widget->InitializeNonCompositing(&widget_client);
   web_view->DidAttachLocalMainFrame();
 
   WebGestureEvent event(WebInputEvent::Type::kGestureTap,
@@ -3786,7 +3778,7 @@ class ViewCreatingWebViewClient : public frame_test_helpers::TestWebViewClient {
  public:
   ViewCreatingWebViewClient() : did_focus_called_(false) {}
 
-  // WebViewClient methods
+  // WebViewClient overrides.
   WebView* CreateView(WebLocalFrame* opener,
                       const WebURLRequest&,
                       const WebWindowFeatures&,
@@ -3797,8 +3789,6 @@ class ViewCreatingWebViewClient : public frame_test_helpers::TestWebViewClient {
                       bool& consumed_user_gesture) override {
     return web_view_helper_.InitializeWithOpener(opener);
   }
-
-  // WebWidgetClient methods
   void DidFocus() override { did_focus_called_ = true; }
 
   bool DidFocusCalled() const { return did_focus_called_; }
@@ -4244,7 +4234,6 @@ TEST_F(WebViewTest, SetHasTouchEventConsumers) {
   // Note: this test doesn't use WebViewHelper since it intentionally runs
   // initialization code between WebView and WebLocalFrame creation.
   frame_test_helpers::TestWebViewClient web_view_client;
-  WebWidgetClient web_widget_client;
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
       agent_group_scheduler =
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
@@ -4281,12 +4270,12 @@ TEST_F(WebViewTest, SetHasTouchEventConsumers) {
 
     // Copy the steps done from WebViewHelper::InitializeWithOpener() to set up
     // the appropriate pointers!
-    frame_test_helpers::TestWebFrameWidget* widget =
-        static_cast<frame_test_helpers::TestWebFrameWidget*>(
-            blink::WebFrameWidget::CreateForMainFrame(
-                &web_widget_client, frame, std::move(blink_frame_widget_host),
-                std::move(frame_widget_receiver), widget_host_remote.Unbind(),
-                std::move(widget_receiver), viz::FrameSinkId()));
+
+    auto* widget = static_cast<frame_test_helpers::TestWebFrameWidget*>(
+        frame->InitializeFrameWidget(
+            std::move(blink_frame_widget_host),
+            std::move(frame_widget_receiver), widget_host_remote.Unbind(),
+            std::move(widget_receiver), viz::FrameSinkId()));
     cc::LayerTreeSettings layer_tree_settings =
         frame_test_helpers::GetSynchronousSingleThreadLayerTreeSettings();
     widget->InitializeCompositing(

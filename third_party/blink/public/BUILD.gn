@@ -356,6 +356,7 @@ source_set("blink_headers") {
     "web/web_navigation_policy.h",
     "web/web_navigation_type.h",
     "web/web_node.h",
+    "web/web_non_composited_widget_client.h",
     "web/web_optimization_guide_hints.h",
     "web/web_option_element.h",
     "web/web_origin_policy.h",
@@ -402,7 +403,6 @@ source_set("blink_headers") {
     "web/web_view.h",
     "web/web_view_client.h",
     "web/web_widget.h",
-    "web/web_widget_client.h",
     "web/web_window_features.h",
   ]
 

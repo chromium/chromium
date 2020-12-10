@@ -274,9 +274,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
   blink::WebView::ApplyWebPreferences(preferences, web_view_);
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       web_view_, this, nullptr, base::UnguessableToken::Create(), nullptr);
-  // The created WebFrameWidget is owned by the |web_frame|.
-  WebFrameWidget* widget = WebFrameWidget::CreateForMainFrame(
-      this, web_frame,
+  blink::WebFrameWidget* frame_widget = web_frame->InitializeFrameWidget(
       blink::CrossVariantMojoAssociatedRemote<
           blink::mojom::FrameWidgetHostInterfaceBase>(),
       blink::CrossVariantMojoAssociatedReceiver<
@@ -284,7 +282,8 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
       blink_widget_host_receiver_.BindNewEndpointAndPassDedicatedRemote(),
       blink_widget_.BindNewEndpointAndPassDedicatedReceiver(),
       viz::FrameSinkId());
-  widget->DisableDragAndDrop();
+  frame_widget->InitializeNonCompositing(this);
+  frame_widget->DisableDragAndDrop();
 
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call

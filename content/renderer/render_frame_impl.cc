@@ -1584,16 +1584,14 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   // Non-owning pointer that is self-referencing and destroyed by calling
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
   // WebFrameWidget, which is now attached here.
-  auto* web_frame_widget = blink::WebFrameWidget::CreateForMainFrame(
-      render_widget.get(), web_frame, std::move(params->frame_widget_host),
-      std::move(params->frame_widget), std::move(params->widget_host),
-      std::move(params->widget),
+  blink::WebFrameWidget* web_frame_widget = web_frame->InitializeFrameWidget(
+      std::move(params->frame_widget_host), std::move(params->frame_widget),
+      std::move(params->widget_host), std::move(params->widget),
       viz::FrameSinkId(RenderThread::Get()->GetClientId(),
                        params->main_frame_widget_routing_id),
       /*is_for_nested_main_frame=*/params->type !=
           mojom::ViewWidgetType::kTopLevel,
       /*hidden=*/true, render_view->widgets_never_composited());
-
   render_widget->InitForMainFrame(web_frame_widget,
                                   params->visual_properties.screen_info);
 
@@ -1750,8 +1748,7 @@ void RenderFrameImpl::CreateFrame(
     // Non-owning pointer that is self-referencing and destroyed by calling
     // Close(). The RenderViewImpl has a RenderWidget already, but not a
     // WebFrameWidget, which is now attached here.
-    auto* web_frame_widget = blink::WebFrameWidget::CreateForMainFrame(
-        render_widget.get(), web_frame,
+    blink::WebFrameWidget* web_frame_widget = web_frame->InitializeFrameWidget(
         std::move(widget_params->frame_widget_host),
         std::move(widget_params->frame_widget),
         std::move(widget_params->widget_host), std::move(widget_params->widget),
@@ -1800,15 +1797,14 @@ void RenderFrameImpl::CreateFrame(
     // Close(). We use the new RenderWidget as the client for this
     // WebFrameWidget, *not* the RenderWidget of the MainFrame, which is
     // accessible from the RenderViewImpl.
-    auto* web_frame_widget = blink::WebFrameWidget::CreateForChildLocalRoot(
-        render_widget.get(), web_frame,
+    blink::WebFrameWidget* web_frame_widget = web_frame->InitializeFrameWidget(
         std::move(widget_params->frame_widget_host),
         std::move(widget_params->frame_widget),
         std::move(widget_params->widget_host), std::move(widget_params->widget),
         viz::FrameSinkId(RenderThread::Get()->GetClientId(),
                          widget_params->routing_id),
+        /*is_for_nested_main_frame=*/false,
         /*hidden=*/true, render_view->widgets_never_composited());
-
     // Adds a reference on RenderWidget, making it self-referencing. So it
     // will not be destroyed by scoped_refptr unless Close() has been called
     // and run.

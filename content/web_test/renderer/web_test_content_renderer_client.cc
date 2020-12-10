@@ -64,8 +64,7 @@ RenderFrameImpl* CreateWebFrameTestProxy(RenderFrameImpl::CreateParams params) {
 }
 
 blink::WebFrameWidget* CreateWebTestWebFrameWidget(
-    base::PassKey<blink::WebFrameWidget> pass_key,
-    blink::WebWidgetClient& widget_client,
+    base::PassKey<blink::WebLocalFrame> pass_key,
     blink::CrossVariantMojoAssociatedRemote<
         blink::mojom::FrameWidgetHostInterfaceBase> frame_widget_host,
     blink::CrossVariantMojoAssociatedReceiver<
@@ -81,7 +80,7 @@ blink::WebFrameWidget* CreateWebTestWebFrameWidget(
     bool is_for_child_local_root,
     bool is_for_nested_main_frame) {
   return blink::FrameWidgetTestHelper::CreateTestWebFrameWidget(
-      std::move(pass_key), widget_client, std::move(frame_widget_host),
+      std::move(pass_key), std::move(frame_widget_host),
       std::move(frame_widget), std::move(widget_host), std::move(widget),
       std::move(task_runner), frame_sink_id, hidden, never_composited,
       is_for_child_local_root, is_for_nested_main_frame,

@@ -155,6 +155,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   cc::AnimationHost* AnimationHost() const;
   cc::LayerTreeHost* LayerTreeHost() const;
+  bool IsComposited() const;
   scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
       const;
 

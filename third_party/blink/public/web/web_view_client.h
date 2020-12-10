@@ -41,7 +41,6 @@
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
-#include "third_party/blink/public/web/web_widget_client.h"
 
 namespace blink {
 
@@ -62,7 +61,7 @@ class WebViewClient {
   // The request parameter is only for the client to check if the request
   // could be fulfilled.  The client should not load the request.
   // The policy parameter indicates how the new view will be displayed in
-  // WebWidgetClient::Show.
+  // LocalMainFrameHost::ShowCreatedWidget.
   virtual WebView* CreateView(
       WebLocalFrame* creator,
       const WebURLRequest& request,

@@ -51,11 +51,11 @@
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_non_composited_widget_client.h"
 #include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
-#include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -219,116 +219,10 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
 
 // WebFrameWidget ------------------------------------------------------------
 
-static CreateWebFrameWidgetCallback* g_create_web_frame_widget = nullptr;
-
-void InstallCreateWebFrameWidgetHook(
-    CreateWebFrameWidgetCallback* create_widget) {
-  g_create_web_frame_widget = create_widget;
-}
-
-WebFrameWidget* WebFrameWidget::CreateForMainFrame(
-    WebWidgetClient* client,
-    WebLocalFrame* main_frame,
-    CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
-        mojo_frame_widget_host,
-    CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
-        mojo_frame_widget,
-    CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
-        mojo_widget_host,
-    CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-        mojo_widget,
-    const viz::FrameSinkId& frame_sink_id,
-    bool is_for_nested_main_frame,
-    bool hidden,
-    bool never_composited) {
-  DCHECK(client) << "A valid WebWidgetClient must be supplied.";
-  DCHECK(!main_frame->Parent());  // This is the main frame.
-
-  // Grabs the WebViewImpl associated with the |main_frame|, which will then
-  // be wrapped by the WebFrameWidgetImpl, with calls being forwarded to the
-  // |main_frame|'s WebViewImpl.
-  // Note: this can't DCHECK that the view's main frame points to
-  // |main_frame|, as provisional frames violate this precondition.
-  WebLocalFrameImpl& main_frame_impl = To<WebLocalFrameImpl>(*main_frame);
-  DCHECK(main_frame_impl.ViewImpl());
-  WebViewImpl& web_view_impl = *main_frame_impl.ViewImpl();
-
-  WebFrameWidgetImpl* widget = nullptr;
-  if (g_create_web_frame_widget) {
-    widget = static_cast<WebFrameWidgetImpl*>(g_create_web_frame_widget->Run(
-        base::PassKey<WebFrameWidget>(), *client,
-        std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
-        std::move(mojo_widget_host), std::move(mojo_widget),
-        main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-        frame_sink_id, hidden, never_composited,
-        /*is_for_child_local_root=*/false, is_for_nested_main_frame));
-  } else {
-    // Note: this isn't a leak, as the object has a self-reference that the
-    // caller needs to release by calling Close().
-    // TODO(dcheng): Remove the special bridge class for main frame widgets.
-    widget = MakeGarbageCollected<WebFrameWidgetImpl>(
-        base::PassKey<WebFrameWidget>(), *client,
-        std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
-        std::move(mojo_widget_host), std::move(mojo_widget),
-        main_frame->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-        frame_sink_id, hidden, never_composited,
-        /*is_for_child_local_root=*/false, is_for_nested_main_frame);
-  }
-  widget->BindLocalRoot(*main_frame);
-  web_view_impl.SetMainFrameViewWidget(widget);
-  return widget;
-}
-
-WebFrameWidget* WebFrameWidget::CreateForChildLocalRoot(
-    WebWidgetClient* client,
-    WebLocalFrame* local_root,
-    CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
-        mojo_frame_widget_host,
-    CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
-        mojo_frame_widget,
-    CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
-        mojo_widget_host,
-    CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-        mojo_widget,
-    const viz::FrameSinkId& frame_sink_id,
-    bool hidden,
-    bool never_composited) {
-  DCHECK(client) << "A valid WebWidgetClient must be supplied.";
-  DCHECK(local_root->Parent());  // This is not the main frame.
-  // Frames whose direct ancestor is a remote frame are local roots. Verify this
-  // is one. Other frames should be using the widget for their nearest local
-  // root.
-  DCHECK(local_root->Parent()->IsWebRemoteFrame());
-
-  WebFrameWidgetImpl* widget = nullptr;
-  if (g_create_web_frame_widget) {
-    widget = static_cast<WebFrameWidgetImpl*>(g_create_web_frame_widget->Run(
-        base::PassKey<WebFrameWidget>(), *client,
-        std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
-        std::move(mojo_widget_host), std::move(mojo_widget),
-        local_root->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-        frame_sink_id, hidden, never_composited,
-        /*is_for_child_local_root=*/true, /*is_for_nested_main_frame=*/false));
-  } else {
-    // Note: this isn't a leak, as the object has a self-reference that the
-    // caller needs to release by calling Close().
-    widget = MakeGarbageCollected<WebFrameWidgetImpl>(
-        base::PassKey<WebFrameWidget>(), *client,
-        std::move(mojo_frame_widget_host), std::move(mojo_frame_widget),
-        std::move(mojo_widget_host), std::move(mojo_widget),
-        local_root->Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
-        frame_sink_id, hidden, never_composited,
-        /*is_for_child_local_root=*/true, /*is_for_nested_main_frame=*/false);
-  }
-  widget->BindLocalRoot(*local_root);
-  return widget;
-}
-
 bool WebFrameWidgetImpl::ignore_input_events_ = false;
 
 WebFrameWidgetImpl::WebFrameWidgetImpl(
-    base::PassKey<WebFrameWidget>,
-    WebWidgetClient& client,
+    base::PassKey<WebLocalFrame>,
     CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
         frame_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
@@ -350,7 +244,6 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
                                                 hidden,
                                                 never_composited,
                                                 is_for_child_local_root)),
-      client_(&client),
       frame_sink_id_(frame_sink_id),
       is_for_child_local_root_(is_for_child_local_root),
       self_keep_alive_(PERSISTENT_FROM_HERE, this) {
@@ -371,7 +264,6 @@ WebFrameWidgetImpl::~WebFrameWidgetImpl() {
 
 void WebFrameWidgetImpl::BindLocalRoot(WebLocalFrame& local_root) {
   local_root_ = To<WebLocalFrameImpl>(local_root);
-  local_root_->SetFrameWidget(this);
 }
 
 bool WebFrameWidgetImpl::ForTopMostMainFrame() const {
@@ -402,9 +294,8 @@ void WebFrameWidgetImpl::Close() {
   }
 
   mutator_dispatcher_ = nullptr;
-  local_root_->SetFrameWidget(nullptr);
+  local_root_->ClearFrameWidget();
   local_root_ = nullptr;
-  client_ = nullptr;
   widget_base_->Shutdown();
   widget_base_.reset();
   // These WeakPtrs must be invalidated for WidgetInputHandlerManager at the
@@ -1433,7 +1324,7 @@ void WebFrameWidgetImpl::DidCompletePageScaleAnimation() {
 
 void WebFrameWidgetImpl::ScheduleAnimation() {
   if (!View()->does_composite()) {
-    Client()->ScheduleNonCompositedAnimation();
+    non_composited_client_->ScheduleNonCompositedAnimation();
     return;
   }
   widget_base_->LayerTreeHost()->SetNeedsAnimate();
@@ -1985,6 +1876,8 @@ void WebFrameWidgetImpl::InitializeCompositing(
     const ScreenInfo& screen_info,
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
     const cc::LayerTreeSettings* settings) {
+  DCHECK(View()->does_composite());
+  DCHECK(!non_composited_client_);  // Assure only one initialize is called.
   widget_base_->InitializeCompositing(
       main_thread_scheduler, task_graph_runner, is_for_child_local_root_,
       screen_info, std::move(ukm_recorder_factory), settings,
@@ -2002,6 +1895,16 @@ void WebFrameWidgetImpl::InitializeCompositing(
   }
 
   GetPage()->AnimationHostInitialized(*AnimationHost(), frame_view);
+}
+
+void WebFrameWidgetImpl::InitializeNonCompositing(
+    WebNonCompositedWidgetClient* client) {
+  DCHECK(!non_composited_client_);
+  DCHECK(client);
+  DCHECK(!View()->does_composite());
+  // Assure only one initialize is called.
+  DCHECK(!widget_base_->IsComposited());
+  non_composited_client_ = client;
 }
 
 void WebFrameWidgetImpl::SetCompositorVisible(bool visible) {

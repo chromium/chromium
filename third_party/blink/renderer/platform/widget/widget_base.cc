@@ -280,6 +280,10 @@ cc::LayerTreeHost* WidgetBase::LayerTreeHost() const {
   return layer_tree_view_->layer_tree_host();
 }
 
+bool WidgetBase::IsComposited() const {
+  return !!layer_tree_view_;
+}
+
 cc::AnimationHost* WidgetBase::AnimationHost() const {
   return layer_tree_view_->animation_host();
 }
@@ -950,7 +954,10 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     // new RenderFrameMetadata, as the IME will need this info to be updated.
     // TODO(ericrk): Consider folding the above IPC into RenderFrameMetadata.
     // https://crbug.com/912309
-    LayerTreeHost()->RequestForceSendMetadata();
+    // Compositing might not be initialized but input can still be dispatched
+    // to non-composited widgets so LayerTreeHost may be null.
+    if (IsComposited())
+      LayerTreeHost()->RequestForceSendMetadata();
 #endif
   }
 }

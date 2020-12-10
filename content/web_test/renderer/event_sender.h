@@ -24,7 +24,6 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
-#include "third_party/blink/public/web/web_widget_client.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace blink {

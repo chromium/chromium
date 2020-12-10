@@ -31,8 +31,7 @@ class FrameWidgetTestHelper {
   // Creates a special subclass of WebFrameWidget that also implements
   // the FrameWidgetTestHelper interface.
   static WebFrameWidget* CreateTestWebFrameWidget(
-      base::PassKey<WebFrameWidget>,
-      WebWidgetClient&,
+      base::PassKey<WebLocalFrame>,
       CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>
           frame_widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::FrameWidgetInterfaceBase>

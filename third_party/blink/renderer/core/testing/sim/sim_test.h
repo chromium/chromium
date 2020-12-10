@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class WebFrameWidget;
 class WebViewImpl;
 class WebLocalFrameImpl;
 class Document;
@@ -54,8 +53,7 @@ class SimTest : public testing::Test {
   // Creates a SimWebFrameWidget. Subclasses can override this if the
   // wish to create their own.
   virtual SimWebFrameWidget* CreateSimWebFrameWidget(
-      base::PassKey<WebFrameWidget> pass_key,
-      WebWidgetClient& widget_client,
+      base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
@@ -74,8 +72,7 @@ class SimTest : public testing::Test {
 
  private:
   frame_test_helpers::TestWebFrameWidget* CreateTestWebFrameWidget(
-      base::PassKey<WebFrameWidget> pass_key,
-      WebWidgetClient& widget_client,
+      base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>

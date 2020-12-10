@@ -587,6 +587,34 @@ static WebDocumentLoader* DocumentLoaderForDocLoader(DocumentLoader* loader) {
 
 // WebFrame -------------------------------------------------------------------
 
+static CreateWebFrameWidgetCallback* g_create_web_frame_widget = nullptr;
+
+void InstallCreateWebFrameWidgetHook(
+    CreateWebFrameWidgetCallback* create_widget) {
+  g_create_web_frame_widget = create_widget;
+}
+
+WebFrameWidget* WebLocalFrame::InitializeFrameWidget(
+    CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
+        mojo_frame_widget_host,
+    CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
+        mojo_frame_widget,
+    CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+        mojo_widget_host,
+    CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+        mojo_widget,
+    const viz::FrameSinkId& frame_sink_id,
+    bool is_for_nested_main_frame,
+    bool hidden,
+    bool never_composited) {
+  CreateFrameWidgetInternal(
+      base::PassKey<WebLocalFrame>(), std::move(mojo_frame_widget_host),
+      std::move(mojo_frame_widget), std::move(mojo_widget_host),
+      std::move(mojo_widget), frame_sink_id, is_for_nested_main_frame, hidden,
+      never_composited);
+  return FrameWidget();
+}
+
 int WebFrame::InstanceCount() {
   return g_frame_count;
 }
@@ -2440,8 +2468,64 @@ void WebLocalFrameImpl::WillDetachParent() {
   }
 }
 
-void WebLocalFrameImpl::SetFrameWidget(WebFrameWidgetImpl* frame_widget) {
-  frame_widget_ = frame_widget;
+void WebLocalFrameImpl::ClearFrameWidget() {
+  frame_widget_ = nullptr;
+}
+
+void WebLocalFrameImpl::CreateFrameWidgetInternal(
+    base::PassKey<WebLocalFrame> pass_key,
+    CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
+        mojo_frame_widget_host,
+    CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
+        mojo_frame_widget,
+    CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+        mojo_widget_host,
+    CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+        mojo_widget,
+    const viz::FrameSinkId& frame_sink_id,
+    bool is_for_nested_main_frame,
+    bool hidden,
+    bool never_composited) {
+  DCHECK(!frame_widget_);
+  DCHECK(frame_->IsLocalRoot());
+  bool is_for_child_local_root = Parent();
+
+  // Check that if this is for a child local root |is_for_nested_main_frame|
+  // is false.
+  DCHECK(!is_for_child_local_root || !is_for_nested_main_frame);
+
+  if (g_create_web_frame_widget) {
+    // It is safe to cast to WebFrameWidgetImpl because the only concrete
+    // subclass of WebFrameWidget that is allowed is WebFrameWidgetImpl. This
+    // is enforced via a private constructor (and friend class) on
+    // WebFrameWidget.
+    frame_widget_ =
+        static_cast<WebFrameWidgetImpl*>(g_create_web_frame_widget->Run(
+            std::move(pass_key), std::move(mojo_frame_widget_host),
+            std::move(mojo_frame_widget), std::move(mojo_widget_host),
+            std::move(mojo_widget),
+            Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
+            frame_sink_id, hidden, never_composited, is_for_child_local_root,
+            is_for_nested_main_frame));
+  } else {
+    frame_widget_ = MakeGarbageCollected<WebFrameWidgetImpl>(
+        std::move(pass_key), std::move(mojo_frame_widget_host),
+        std::move(mojo_frame_widget), std::move(mojo_widget_host),
+        std::move(mojo_widget),
+        Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
+        frame_sink_id, hidden, never_composited, is_for_child_local_root,
+        is_for_nested_main_frame);
+  }
+  frame_widget_->BindLocalRoot(*this);
+
+  // If this is for a main frame grab the associated WebViewImpl and
+  // assign this widget as the main frame widget.
+  // Note: this can't DCHECK that the view's main frame points to
+  // |this|, as provisional frames violate this precondition.
+  if (!is_for_child_local_root) {
+    DCHECK(ViewImpl());
+    ViewImpl()->SetMainFrameViewWidget(frame_widget_);
+  }
 }
 
 WebFrameWidget* WebLocalFrameImpl::FrameWidget() const {

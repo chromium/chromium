@@ -28,21 +28,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_CLIENT_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_CLIENT_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NON_COMPOSITED_WIDGET_CLIENT_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NON_COMPOSITED_WIDGET_CLIENT_H_
 
 namespace blink {
 
-class WebWidgetClient {
+class WebNonCompositedWidgetClient {
  public:
-  virtual ~WebWidgetClient() = default;
+  virtual ~WebNonCompositedWidgetClient() = default;
 
   // Called to request a BeginMainFrame from the compositor. This is only
-  // called for widget's WebView's that do not composite.
+  // called for widget's WebViews that do not composite.
   virtual void ScheduleNonCompositedAnimation() {}
-
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NON_COMPOSITED_WIDGET_CLIENT_H_

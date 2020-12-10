@@ -104,8 +104,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       public PageWidgetEventHandler {
  public:
   WebFrameWidgetImpl(
-      base::PassKey<WebFrameWidget>,
-      WebWidgetClient&,
+      base::PassKey<WebLocalFrame>,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
@@ -177,7 +176,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   HitTestResult CoreHitTestResultAt(const gfx::PointF&);
 
   // FrameWidget overrides.
-  WebWidgetClient* Client() const final { return client_; }
   cc::AnimationHost* AnimationHost() const final;
   void SetOverscrollBehavior(
       const cc::OverscrollBehavior& overscroll_behavior) final;
@@ -277,6 +275,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ImeFinishComposingTextForPlugin(bool keep_selection) override;
 
   // WebFrameWidget overrides.
+  void InitializeNonCompositing(WebNonCompositedWidgetClient* client) override;
   WebLocalFrame* LocalRoot() const override;
   void UpdateCompositorScrollState(
       const cc::CompositorCommitData& commit_data) override;
@@ -865,8 +864,6 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   static bool ignore_input_events_;
 
-  WebWidgetClient* client_;
-
   const viz::FrameSinkId frame_sink_id_;
 
   // WebFrameWidget is associated with a subtree of the frame tree,
@@ -939,6 +936,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Whether drag and drop is supported by this widget. When disabled
   // any drag operation that is started will be canceled immediately.
   bool drag_and_drop_disabled_ = false;
+
+  // A callback client for non-composited frame widgets.
+  WebNonCompositedWidgetClient* non_composited_client_ = nullptr;
 
   // This struct contains data that is only valid for child local root widgets.
   // You should use `child_data()` to access it.

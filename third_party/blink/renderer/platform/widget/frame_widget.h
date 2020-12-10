@@ -13,7 +13,6 @@
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_swap_result.h"
-#include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
@@ -43,9 +42,6 @@ struct ScreenInfo;
 class PLATFORM_EXPORT FrameWidget {
  public:
   virtual ~FrameWidget();
-
-  // Returns the WebWidgetClient, which is implemented outside of blink.
-  virtual WebWidgetClient* Client() const = 0;
 
   // Returns the compositors's AnimationHost for the widget.
   virtual cc::AnimationHost* AnimationHost() const = 0;

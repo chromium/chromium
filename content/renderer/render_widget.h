@@ -45,7 +45,6 @@
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/web/web_widget.h"
-#include "third_party/blink/public/web/web_widget_client.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
@@ -80,12 +79,11 @@ class CompositorDependencies;
 // RenderFrameProxy. Each local root has a corresponding RenderWidget. This
 // RenderWidget is used to route input and graphical output between the browser
 // and the renderer.
-class CONTENT_EXPORT RenderWidget : public blink::WebWidgetClient {
+class CONTENT_EXPORT RenderWidget {
  public:
   RenderWidget(base::PassKey<RenderWidget>,
                CompositorDependencies* compositor_deps);
-
-  ~RenderWidget() override;
+  ~RenderWidget();
 
   // Creates a RenderWidget that is meant to be associated with a RenderFrame.
   static std::unique_ptr<RenderWidget> CreateForFrame(

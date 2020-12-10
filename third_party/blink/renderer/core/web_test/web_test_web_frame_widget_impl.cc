@@ -18,8 +18,7 @@
 namespace blink {
 
 WebFrameWidget* FrameWidgetTestHelper::CreateTestWebFrameWidget(
-    base::PassKey<WebFrameWidget> pass_key,
-    WebWidgetClient& widget_client,
+    base::PassKey<WebLocalFrame> pass_key,
     CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
         frame_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
@@ -36,15 +35,14 @@ WebFrameWidget* FrameWidgetTestHelper::CreateTestWebFrameWidget(
     bool is_for_nested_main_frame,
     content::TestRunner* test_runner) {
   return MakeGarbageCollected<WebTestWebFrameWidgetImpl>(
-      pass_key, widget_client, std::move(frame_widget_host),
-      std::move(frame_widget), std::move(widget_host), std::move(widget),
-      std::move(task_runner), frame_sink_id, hidden, never_composited,
-      is_for_child_local_root, is_for_nested_main_frame, test_runner);
+      pass_key, std::move(frame_widget_host), std::move(frame_widget),
+      std::move(widget_host), std::move(widget), std::move(task_runner),
+      frame_sink_id, hidden, never_composited, is_for_child_local_root,
+      is_for_nested_main_frame, test_runner);
 }
 
 WebTestWebFrameWidgetImpl::WebTestWebFrameWidgetImpl(
-    base::PassKey<WebFrameWidget> pass_key,
-    WebWidgetClient& widget_client,
+    base::PassKey<WebLocalFrame> pass_key,
     CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
         frame_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
@@ -61,7 +59,6 @@ WebTestWebFrameWidgetImpl::WebTestWebFrameWidgetImpl(
     bool is_for_nested_main_frame,
     content::TestRunner* test_runner)
     : WebFrameWidgetImpl(pass_key,
-                         widget_client,
                          std::move(frame_widget_host),
                          std::move(frame_widget),
                          std::move(widget_host),

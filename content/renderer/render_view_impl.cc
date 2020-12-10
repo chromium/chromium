@@ -594,8 +594,6 @@ int RenderViewImpl::HistoryForwardListCount() {
   return history_list_length_ - HistoryBackListCount() - 1;
 }
 
-// blink::WebWidgetClient ----------------------------------------------------
-
 void RenderViewImpl::OnPageVisibilityChanged(PageVisibilityState visibility) {
 #if defined(OS_ANDROID)
   SuspendVideoCaptureDevices(visibility != PageVisibilityState::kVisible);

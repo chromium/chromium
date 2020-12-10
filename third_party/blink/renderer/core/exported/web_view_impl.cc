@@ -72,7 +72,6 @@
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_render_theme.h"
 #include "third_party/blink/public/web/web_view_client.h"
-#include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
@@ -1936,7 +1935,7 @@ void WebViewImpl::DidAttachRemoteMainFrame() {
 }
 
 void WebViewImpl::DidDetachLocalMainFrame() {
-  // The WebWidgetClient that generated the |scoped_defer_main_frame_update_|
+  // The WebFrameWidget that generated the |scoped_defer_main_frame_update_|
   // for a local main frame is going away.
   scoped_defer_main_frame_update_ = nullptr;
   local_main_frame_host_remote_.reset();

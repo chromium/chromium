@@ -149,8 +149,7 @@ Vector<String>& SimTest::ConsoleMessages() {
 }
 
 SimWebFrameWidget* SimTest::CreateSimWebFrameWidget(
-    base::PassKey<WebFrameWidget> pass_key,
-    WebWidgetClient& widget_client,
+    base::PassKey<WebLocalFrame> pass_key,
     CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
         frame_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
@@ -167,16 +166,14 @@ SimWebFrameWidget* SimTest::CreateSimWebFrameWidget(
     bool is_for_nested_main_frame,
     SimCompositor* compositor) {
   return MakeGarbageCollected<SimWebFrameWidget>(
-      compositor, std::move(pass_key), widget_client,
-      std::move(frame_widget_host), std::move(frame_widget),
-      std::move(widget_host), std::move(widget), std::move(task_runner),
-      frame_sink_id, hidden, never_composited, is_for_child_local_root,
-      is_for_nested_main_frame);
+      compositor, std::move(pass_key), std::move(frame_widget_host),
+      std::move(frame_widget), std::move(widget_host), std::move(widget),
+      std::move(task_runner), frame_sink_id, hidden, never_composited,
+      is_for_child_local_root, is_for_nested_main_frame);
 }
 
 frame_test_helpers::TestWebFrameWidget* SimTest::CreateTestWebFrameWidget(
-    base::PassKey<WebFrameWidget> pass_key,
-    WebWidgetClient& widget_client,
+    base::PassKey<WebLocalFrame> pass_key,
     CrossVariantMojoAssociatedRemote<mojom::blink::FrameWidgetHostInterfaceBase>
         frame_widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
@@ -192,7 +189,7 @@ frame_test_helpers::TestWebFrameWidget* SimTest::CreateTestWebFrameWidget(
     bool is_for_child_local_root,
     bool is_for_nested_main_frame) {
   return CreateSimWebFrameWidget(
-      std::move(pass_key), widget_client, std::move(frame_widget_host),
+      std::move(pass_key), std::move(frame_widget_host),
       std::move(frame_widget), std::move(widget_host), std::move(widget),
       std::move(task_runner), frame_sink_id, hidden, never_composited,
       is_for_child_local_root, is_for_nested_main_frame, compositor_.get());

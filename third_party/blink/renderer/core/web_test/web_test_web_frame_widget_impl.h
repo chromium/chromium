@@ -28,8 +28,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
                                   public FrameWidgetTestHelper {
  public:
   WebTestWebFrameWidgetImpl(
-      base::PassKey<WebFrameWidget>,
-      WebWidgetClient&,
+      base::PassKey<WebLocalFrame>,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>

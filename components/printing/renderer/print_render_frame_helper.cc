@@ -61,6 +61,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_navigation_control.h"
+#include "third_party/blink/public/web/web_non_composited_widget_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/public/web/web_print_params.h"
@@ -69,7 +70,6 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_view_client.h"
-#include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -698,7 +698,6 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
       web_view, &frame_client, nullptr, base::UnguessableToken::Create(),
       nullptr);
 
-  blink::WebWidgetClient web_widget_client;
   mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
       frame_widget_receiver =
@@ -714,10 +713,12 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
   mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host_remote;
   ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
 
-  blink::WebFrameWidget::CreateForMainFrame(
-      &web_widget_client, frame, frame_widget_host.Unbind(),
-      std::move(frame_widget_receiver), widget_host_remote.Unbind(),
-      std::move(widget_receiver), viz::FrameSinkId());
+  blink::WebNonCompositedWidgetClient client;
+  blink::WebFrameWidget* web_frame_widget = frame->InitializeFrameWidget(
+      frame_widget_host.Unbind(), std::move(frame_widget_receiver),
+      widget_host_remote.Unbind(), std::move(widget_receiver),
+      viz::FrameSinkId());
+  web_frame_widget->InitializeNonCompositing(&client);
   web_view->DidAttachLocalMainFrame();
 
   base::Value html(
@@ -774,7 +775,7 @@ float PrintRenderFrameHelper::RenderPageContent(blink::WebLocalFrame* frame,
 // Class that calls the Begin and End print functions on the frame and changes
 // the size of the view temporarily to support full page printing..
 class PrepareFrameAndViewForPrint : public blink::WebViewClient,
-                                    public blink::WebWidgetClient,
+                                    public blink::WebNonCompositedWidgetClient,
                                     public blink::WebLocalFrameClient {
  public:
   PrepareFrameAndViewForPrint(const mojom::PrintParams& params,
@@ -960,7 +961,6 @@ void PrepareFrameAndViewForPrint::CopySelection(
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
       web_view, this, nullptr, base::UnguessableToken::Create(), nullptr);
   frame_.Reset(main_frame);
-  blink::WebWidgetClient web_widget_client;
   mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
       frame_widget_receiver =
@@ -976,10 +976,12 @@ void PrepareFrameAndViewForPrint::CopySelection(
   mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host_remote;
   ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
 
-  blink::WebFrameWidget::CreateForMainFrame(
-      this, main_frame, frame_widget_host.Unbind(),
-      std::move(frame_widget_receiver), widget_host_remote.Unbind(),
-      std::move(widget_receiver), viz::FrameSinkId());
+  blink::WebFrameWidget* main_frame_widget = main_frame->InitializeFrameWidget(
+      frame_widget_host.Unbind(), std::move(frame_widget_receiver),
+      widget_host_remote.Unbind(), std::move(widget_receiver),
+      viz::FrameSinkId());
+  main_frame_widget->InitializeNonCompositing(this);
+
   web_view->DidAttachLocalMainFrame();
   node_to_print_.Reset();
 

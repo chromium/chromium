@@ -305,8 +305,7 @@ class TestWebViewClient : public WebViewClient {
 
 using CreateTestWebFrameWidgetCallback =
     base::RepeatingCallback<TestWebFrameWidget*(
-        base::PassKey<WebFrameWidget>,
-        WebWidgetClient&,
+        base::PassKey<WebLocalFrame>,
         CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>
             frame_widget_host,
         CrossVariantMojoAssociatedReceiver<mojom::FrameWidgetInterfaceBase>
@@ -400,8 +399,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
 
   template <class C = TestWebFrameWidget>
   static TestWebFrameWidget* CreateTestWebFrameWidget(
-      base::PassKey<WebFrameWidget> pass_key,
-      WebWidgetClient& client,
+      base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
@@ -417,7 +415,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       bool is_for_child_local_root,
       bool is_for_nested_main_frame) {
     return MakeGarbageCollected<C>(
-        std::move(pass_key), client, std::move(frame_widget_host),
+        std::move(pass_key), std::move(frame_widget_host),
         std::move(frame_widget), std::move(widget_host), std::move(widget),
         std::move(task_runner), frame_sink_id, hidden, never_composited,
         is_for_child_local_root, is_for_nested_main_frame);
@@ -460,8 +458,6 @@ class TestWebFrameClient : public WebLocalFrameClient {
   // TestWebFrameClient should delete itself on frame detach.
   void Bind(WebLocalFrame*,
             std::unique_ptr<TestWebFrameClient> self_owned = nullptr);
-  // Note: only needed for local roots.
-  void BindWidgetClient(std::unique_ptr<WebWidgetClient>);
 
   // WebLocalFrameClient:
   void FrameDetached() override;
@@ -520,7 +516,6 @@ class TestWebFrameClient : public WebLocalFrameClient {
   WebNavigationControl* frame_ = nullptr;
 
   base::CancelableOnceCallback<void()> navigation_callback_;
-  std::unique_ptr<WebWidgetClient> owned_widget_client_;
   WebEffectiveConnectionType effective_connection_type_;
   Vector<String> console_messages_;
   int visually_non_empty_layout_count_ = 0;

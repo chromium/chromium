@@ -12706,7 +12706,7 @@ TEST_F(WebFrameTest, ShowVirtualKeyboardOnElementFocus) {
                       "document.querySelector('input').focus();"));
 
   RunPendingTasks();
-  // Verify that the right WebWidgetClient has been notified.
+  // Verify that the right WidgetHost has been notified.
 #if BUILDFLAG(IS_ASH)
   EXPECT_EQ(0u, widget_host.VirtualKeyboardRequestCount());
 #else
