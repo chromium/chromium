@@ -30,8 +30,6 @@ action("gen_main_html") {
     rebase_path("//ui/file_manager/file_manager/main.html", root_build_dir),
     "--target",
     rebase_path("$target_gen_dir/main.html", root_build_dir),
-    "--root",
-    rebase_path("//"),  # root of the chrome source checkout.
   ]
 
   outputs = [

@@ -14,7 +14,7 @@ import sys
 
 _SWA = '<script type="module" src="chrome://file-manager/main.js"></script>'
 
-def GenerateSwaMainHtml(source, target, root):
+def GenerateSwaMainHtml(source, target):
   """Copy source file to target, do SWA edits, then add BUILD time stamp."""
 
   # Copy source (main.html) file to the target (main.html) file.
@@ -28,13 +28,6 @@ def GenerateSwaMainHtml(source, target, root):
     # Add <meta> charset="utf-8" attribute.
     elif line.find('<meta ') >= 0:
       sys.stdout.write(line.replace('<meta ', '<meta charset="utf-8" '))
-    # Root rewrite files app <link> stylesheet href attribute.
-    elif line.find('<link rel="stylesheet"') >= 0:
-      if not 'href="chrome://' in line:
-        href = 'href="' + root + 'ui/file_manager/file_manager/'
-        sys.stdout.write(line.replace('href="', href))
-      else:
-        sys.stdout.write(line)
     # Remove files app foreground/js <script> tags: SWA app must load
     # them after the SWA app has initialized needed resources.
     elif line.find('<script src="foreground/js/') == -1:
@@ -48,13 +41,12 @@ def main(args):
 
   parser.add_option('--source', help='Files app main.html source file.')
   parser.add_option('--target', help='Target SWA main.html for output.')
-  parser.add_option('--root', help='Source root: chrome/src path.')
 
   options, _ = parser.parse_args(args)
 
-  if options.source and options.target and options.root:
+  if options.source and options.target:
     target = os.path.join(os.getcwd(), options.target)
-    GenerateSwaMainHtml(options.source, target, options.root)
+    GenerateSwaMainHtml(options.source, target)
     return
 
   raise SyntaxError('Usage: all arguments are required.')

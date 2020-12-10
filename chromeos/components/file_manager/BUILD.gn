@@ -22,6 +22,7 @@ static_library("file_manager_ui") {
     "//chromeos/constants",
     "//chromeos/resources:file_manager_resources",
     "//content/public/browser",
+    "//ui/file_manager:file_manager_gen_resources",
     "//ui/file_manager:resources",
     "//ui/webui",
   ]

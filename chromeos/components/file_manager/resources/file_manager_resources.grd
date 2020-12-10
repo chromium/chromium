@@ -17,7 +17,7 @@
         <include name="IDR_FILE_MANAGER_SWA_MOJO_LITE_JS" file="$root_gen_dir/chromeos/components/file_manager/mojom/file_manager.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_BROWSER_PROXY_JS" file="browser_proxy.js" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_SCRIPT_LOADER_JS" file="script_loader.js" type="BINDATA" />
-        <include name="IDR_FILE_MANAGER_SWA_MAIN_HTML" file="${root_gen_dir}/chromeos/components/file_manager/resources/main.html" flattenhtml="true" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_MAIN_HTML" file="${root_gen_dir}/chromeos/components/file_manager/resources/main.html" use_base_dir="false" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_MAIN_JS" file="main.js" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_ICON_192" file="images/icon192.png" type="BINDATA" />
       </if>

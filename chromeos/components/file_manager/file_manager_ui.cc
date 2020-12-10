@@ -5,16 +5,34 @@
 #include "chromeos/components/file_manager/file_manager_ui.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "chromeos/components/file_manager/file_manager_page_handler.h"
 #include "chromeos/components/file_manager/url_constants.h"
 #include "chromeos/grit/chromeos_file_manager_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/file_manager/grit/file_manager_gen_resources_map.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
+#include "ui/file_manager/grit/file_manager_resources_map.h"
 
 namespace chromeos {
 namespace file_manager {
+
+void AddFilesAppResources(content::WebUIDataSource* source,
+                          const GritResourceMap* entries,
+                          size_t size) {
+  for (size_t i = 0; i < size; ++i) {
+    std::string path(entries[i].name);
+    // Only load resources for Files app.
+    if (base::StartsWith(path, "file_manager/")) {
+      // Files app UI has all paths relative to //ui/file_manager/file_manager/
+      // so we remove the leading file_manager/ to match the existing paths.
+      base::ReplaceFirstSubstringAfterOffset(&path, 0, "file_manager/", "");
+      source->AddResourcePath(path, entries[i].value);
+    }
+  }
+}
 
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,
                              std::unique_ptr<FileManagerUIDelegate> delegate)
@@ -46,6 +64,11 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
   // developer and be able to identify an error occurred.
   source->SetDefaultResource(IDR_FILE_MANAGER_SWA_MAIN_HTML);
 #endif  // !DCHECK_IS_ON()
+
+  AddFilesAppResources(source.get(), kFileManagerResources,
+                       kFileManagerResourcesSize);
+  AddFilesAppResources(source.get(), kFileManagerGenResources,
+                       kFileManagerGenResourcesSize);
 
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
