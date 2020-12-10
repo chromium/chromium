@@ -29,6 +29,7 @@
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -207,6 +208,7 @@ class TpmChallengeKeySubtleTest : public ::testing::Test {
 
 TpmChallengeKeySubtleTest::TpmChallengeKeySubtleTest()
     : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+  ::chromeos::TpmManagerClient::InitializeFake();
   ::chromeos::AttestationClient::InitializeFake();
   CHECK(testing_profile_manager_.SetUp());
 
@@ -220,6 +222,7 @@ TpmChallengeKeySubtleTest::TpmChallengeKeySubtleTest()
 
 TpmChallengeKeySubtleTest::~TpmChallengeKeySubtleTest() {
   ::chromeos::AttestationClient::Shutdown();
+  ::chromeos::TpmManagerClient::Shutdown();
 }
 
 void TpmChallengeKeySubtleTest::InitSigninProfile() {
@@ -472,7 +475,10 @@ TEST_F(TpmChallengeKeySubtleTest, AttestationUnsupported) {
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(false);
-  cryptohome_client_.set_tpm_is_enabled(false);
+  chromeos::TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_nonsensitive_status_reply()
+      ->set_is_enabled(false);
 
   RunOneStepAndExpect(
       KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,

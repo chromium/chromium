@@ -28,7 +28,8 @@
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -418,9 +419,11 @@ void TpmChallengeKeySubtleImpl::GetEnrollmentPreparationsCallback(
   }
 
   if (!AttestationClient::IsAttestationPrepared(reply)) {
-    CryptohomeClient::Get()->TpmIsEnabled(base::BindOnce(
-        &TpmChallengeKeySubtleImpl::PrepareKeyErrorHandlerCallback,
-        weak_factory_.GetWeakPtr()));
+    TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+        ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
+        base::BindOnce(
+            &TpmChallengeKeySubtleImpl::PrepareKeyErrorHandlerCallback,
+            weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -433,15 +436,16 @@ void TpmChallengeKeySubtleImpl::GetEnrollmentPreparationsCallback(
 }
 
 void TpmChallengeKeySubtleImpl::PrepareKeyErrorHandlerCallback(
-    base::Optional<bool> is_tpm_enabled) {
+    const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!is_tpm_enabled.has_value()) {
+  if (reply.status() != ::tpm_manager::STATUS_SUCCESS) {
+    LOG(ERROR) << "Failed to get TPM status; status: " << reply.status();
     std::move(callback_).Run(Result::MakeError(ResultCode::kDbusError));
     return;
   }
 
-  if (is_tpm_enabled.value()) {
+  if (reply.is_enabled()) {
     std::move(callback_).Run(
         Result::MakeError(ResultCode::kResetRequiredError));
   } else {

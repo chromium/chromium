@@ -19,7 +19,7 @@
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 
@@ -204,7 +204,8 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
 
   void GetEnrollmentPreparationsCallback(
       const ::attestation::GetEnrollmentPreparationsReply& reply);
-  void PrepareKeyErrorHandlerCallback(base::Optional<bool> is_tpm_enabled);
+  void PrepareKeyErrorHandlerCallback(
+      const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply);
   void DoesKeyExistCallback(const ::attestation::GetKeyInfoReply& reply);
   void AskForUserConsent(base::OnceCallback<void(bool)> callback) const;
   void AskForUserConsentCallback(bool result);
