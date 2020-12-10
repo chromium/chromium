@@ -39,7 +39,7 @@ Polymer({
 
   /** @private */
   onManageContacts_() {
-    // TODO(vecore): this is not a final link
+    // TODO(crbug.com/1157108): this is not a final link
     window.open('https://contacts.google.com', '_blank');
   },
 
