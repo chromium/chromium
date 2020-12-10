@@ -55,6 +55,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -158,12 +159,7 @@ const int CookieMonster::kSafeFromGlobalPurgeDays = 30;
 namespace {
 
 bool ContainsControlCharacter(const std::string& s) {
-  for (std::string::const_iterator i = s.begin(); i != s.end(); ++i) {
-    if ((*i >= 0) && (*i <= 31))
-      return true;
-  }
-
-  return false;
+  return base::ranges::any_of(s, [](char c) { return c >= 0 && c <= 31; });
 }
 
 typedef std::vector<CanonicalCookie*> CanonicalCookieVector;
@@ -897,10 +893,10 @@ void CookieMonster::TrimDuplicateCookiesForKey(const std::string& key,
 
   // Otherwise, delete all the duplicate cookies, both from our in-memory store
   // and from the backing store.
-  for (auto it = equivalent_cookies.begin(); it != equivalent_cookies.end();
-       ++it) {
-    const CanonicalCookie::UniqueCookieKey& signature = it->first;
-    CookieSet& dupes = it->second;
+  for (std::pair<const CanonicalCookie::UniqueCookieKey, CookieSet>&
+           equivalent_cookie : equivalent_cookies) {
+    const CanonicalCookie::UniqueCookieKey& signature = equivalent_cookie.first;
+    CookieSet& dupes = equivalent_cookie.second;
 
     if (dupes.size() <= 1)
       continue;  // This cookiename/path has no duplicates.
@@ -921,8 +917,8 @@ void CookieMonster::TrimDuplicateCookiesForKey(const std::string& key,
     // Remove all the cookies identified by |dupes|. It is valid to delete our
     // list of iterators one at a time, since |cookies_| is a multimap (they
     // don't invalidate existing iterators following deletion).
-    for (auto dupes_it = dupes.begin(); dupes_it != dupes.end(); ++dupes_it) {
-      InternalDeleteCookie(*dupes_it, true,
+    for (const CookieMap::iterator& dupe : dupes) {
+      InternalDeleteCookie(dupe, true,
                            DELETE_COOKIE_DUPLICATE_IN_BACKING_STORE);
     }
   }
@@ -972,24 +968,23 @@ void CookieMonster::FilterCookiesWithOptions(
       cookie_access_delegate() &&
       cookie_access_delegate()->ShouldTreatUrlAsTrustworthy(url);
 
-  for (std::vector<CanonicalCookie*>::iterator it = cookie_ptrs->begin();
-       it != cookie_ptrs->end(); it++) {
+  for (CanonicalCookie* cookie_ptr : *cookie_ptrs) {
     // Filter out cookies that should not be included for a request to the
     // given |url|. HTTP only cookies are filtered depending on the passed
     // cookie |options|.
-    CookieAccessResult access_result = (*it)->IncludeForRequestURL(
+    CookieAccessResult access_result = cookie_ptr->IncludeForRequestURL(
         url, options,
-        CookieAccessParams{GetAccessSemanticsForCookie(**it),
+        CookieAccessParams{GetAccessSemanticsForCookie(*cookie_ptr),
                            delegate_treats_url_as_trustworthy});
 
     if (!access_result.status.IsInclude()) {
       if (options.return_excluded_cookies())
-        excluded_cookies->push_back({**it, access_result});
+        excluded_cookies->push_back({*cookie_ptr, access_result});
       continue;
     }
 
     if (options.update_access_time())
-      InternalUpdateCookieAccessTime(*it, current_time);
+      InternalUpdateCookieAccessTime(cookie_ptr, current_time);
 
     int destination_port = url.EffectiveIntPort();
 
@@ -999,26 +994,26 @@ void CookieMonster::FilterCookiesWithOptions(
           ReducePortRangeForCookieHistogram(destination_port));
       UMA_HISTOGRAM_ENUMERATION(
           "Cookie.Port.ReadDiffersFromSet.Localhost",
-          IsCookieSentToSamePortThatSetIt(url, (*it)->SourcePort(),
-                                          (*it)->SourceScheme()));
+          IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
+                                          cookie_ptr->SourceScheme()));
     } else {
       UMA_HISTOGRAM_ENUMERATION(
           "Cookie.Port.Read.RemoteHost",
           ReducePortRangeForCookieHistogram(destination_port));
       UMA_HISTOGRAM_ENUMERATION(
           "Cookie.Port.ReadDiffersFromSet.RemoteHost",
-          IsCookieSentToSamePortThatSetIt(url, (*it)->SourcePort(),
-                                          (*it)->SourceScheme()));
+          IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
+                                          cookie_ptr->SourceScheme()));
     }
 
-    if ((*it)->IsDomainCookie()) {
+    if (cookie_ptr->IsDomainCookie()) {
       UMA_HISTOGRAM_ENUMERATION(
           "Cookie.Port.ReadDiffersFromSet.DomainSet",
-          IsCookieSentToSamePortThatSetIt(url, (*it)->SourcePort(),
-                                          (*it)->SourceScheme()));
+          IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
+                                          cookie_ptr->SourceScheme()));
     }
 
-    included_cookies->push_back({**it, access_result});
+    included_cookies->push_back({*cookie_ptr, access_result});
   }
 }
 
@@ -1738,18 +1733,17 @@ bool CookieMonster::HasCookieableScheme(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Make sure the request is on a cookie-able url scheme.
-  for (size_t i = 0; i < cookieable_schemes_.size(); ++i) {
-    // We matched a scheme.
-    if (url.SchemeIs(cookieable_schemes_[i].c_str())) {
-      // We've matched a supported scheme.
-      return true;
-    }
-  }
+  bool is_cookieable = base::ranges::any_of(
+      cookieable_schemes_, [&url](const std::string& cookieable_scheme) {
+        return url.SchemeIs(cookieable_scheme.c_str());
+      });
 
-  // The scheme didn't match any in our allowed list.
-  DVLOG(net::cookie_util::kVlogPerCookieMonster)
-      << "WARNING: Unsupported cookie scheme: " << url.scheme();
-  return false;
+  if (!is_cookieable) {
+    // The scheme didn't match any in our allowed list.
+    DVLOG(net::cookie_util::kVlogPerCookieMonster)
+        << "WARNING: Unsupported cookie scheme: " << url.scheme();
+  }
+  return is_cookieable;
 }
 
 CookieAccessSemantics CookieMonster::GetAccessSemanticsForCookie(
