@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/renderer/subresource_redirect/login_robots_decider_test_util.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
 #include "components/data_reduction_proxy/proto/robots_rules.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,20 +17,7 @@
 
 namespace subresource_redirect {
 
-namespace {
-
 constexpr char kTestOrigin[] = "https://test.com";
-
-const bool kRuleTypeAllow = true;
-const bool kRuleTypeDisallow = false;
-
-struct Rule {
-  Rule(bool rule_type, std::string pattern)
-      : rule_type(rule_type), pattern(pattern) {}
-
-  bool rule_type;
-  std::string pattern;
-};
 
 class CheckResultReceiver {
  public:
@@ -51,19 +39,6 @@ class CheckResultReceiver {
   base::WeakPtrFactory<CheckResultReceiver> weak_ptr_factory_{this};
 };
 
-std::string GetRobotsRulesProtoString(const std::vector<Rule>& patterns) {
-  proto::RobotsRules robots_rules;
-  for (const auto& pattern : patterns) {
-    auto* new_rule = robots_rules.add_image_ordered_rules();
-    if (pattern.rule_type == kRuleTypeAllow) {
-      new_rule->set_allowed_pattern(pattern.pattern);
-    } else {
-      new_rule->set_disallowed_pattern(pattern.pattern);
-    }
-  }
-  return robots_rules.SerializeAsString();
-}
-
 class SubresourceRedirectRobotsRulesParserTest : public testing::Test {
  public:
   SubresourceRedirectRobotsRulesParserTest()
@@ -75,24 +50,35 @@ class SubresourceRedirectRobotsRulesParserTest : public testing::Test {
 
   void SetUpRobotsRules(const std::vector<Rule>& patterns) {
     robots_rules_parser_.UpdateRobotsRules(GetRobotsRulesProtoString(patterns));
+    VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kSuccess);
   }
 
+  // Verify robots rules check result is received synchronously with the
+  // expected result.
   void CheckRobotsRules(const std::string& url_path_with_query,
                         RobotsRulesParser::CheckResult expected_result) {
     CheckResultReceiver result_receiver;
-    robots_rules_parser_.CheckRobotsRules(
+    auto result = robots_rules_parser_.CheckRobotsRules(
         GURL(kTestOrigin + url_path_with_query), result_receiver.GetCallback());
-    EXPECT_TRUE(result_receiver.did_receive_result());
-    EXPECT_EQ(expected_result, result_receiver.check_result());
+    EXPECT_FALSE(result_receiver.did_receive_result());
+    EXPECT_EQ(expected_result, result);
   }
 
+  // Verify robots rules check result is received asynchronously, and returns
+  // the receiver that can be used to check the result.
   std::unique_ptr<CheckResultReceiver> CheckRobotsRulesAsync(
       const std::string& url_path_with_query) {
     auto result_receiver = std::make_unique<CheckResultReceiver>();
-    robots_rules_parser_.CheckRobotsRules(
+    EXPECT_FALSE(robots_rules_parser_.CheckRobotsRules(
         GURL(kTestOrigin + url_path_with_query),
-        result_receiver->GetCallback());
+        result_receiver->GetCallback()));
     return result_receiver;
+  }
+
+  void VerifyRulesReceiveState(
+      RobotsRulesParser::RulesReceiveState expected_rules_receive_state) {
+    EXPECT_EQ(robots_rules_parser_.rules_receive_state_,
+              expected_rules_receive_state);
   }
 
   void VerifyRobotsRulesReceiveResultHistogram(
@@ -122,7 +108,9 @@ class SubresourceRedirectRobotsRulesParserTest : public testing::Test {
 
 TEST_F(SubresourceRedirectRobotsRulesParserTest,
        InvalidProtoParseErrorDisallowsAllPaths) {
+  VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kTimerRunning);
   robots_rules_parser_.UpdateRobotsRules("INVALID PROTO");
+  VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kParseFailed);
   VerifyRobotsRulesReceiveResultHistogram(
       RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::
           kParseError);
@@ -138,6 +126,7 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest,
 }
 
 TEST_F(SubresourceRedirectRobotsRulesParserTest, EmptyRulesAllowsAllPaths) {
+  VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kTimerRunning);
   SetUpRobotsRules({});
   VerifyRobotsRulesReceiveResultHistogram(
       RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kSuccess);
@@ -154,15 +143,20 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest, EmptyRulesAllowsAllPaths) {
 TEST_F(SubresourceRedirectRobotsRulesParserTest,
        RulesReceiveTimeoutDisallowsAllPaths) {
   // Let the rule fetch timeout.
+  VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kTimerRunning);
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
   VerifyRobotsRulesReceiveResultHistogram(
       RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kTimeout);
+  VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kTimeout);
 
-  // All url paths should be disallowed.
-  CheckRobotsRules("", RobotsRulesParser::CheckResult::kDisallowed);
-  CheckRobotsRules("/", RobotsRulesParser::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo.jpg", RobotsRulesParser::CheckResult::kDisallowed);
-  CheckRobotsRules("/foo/bar.jpg", RobotsRulesParser::CheckResult::kDisallowed);
+  // All url paths should be disallowed due to timeout.
+  CheckRobotsRules("", RobotsRulesParser::CheckResult::kDisallowedAfterTimeout);
+  CheckRobotsRules("/",
+                   RobotsRulesParser::CheckResult::kDisallowedAfterTimeout);
+  CheckRobotsRules("/foo.jpg",
+                   RobotsRulesParser::CheckResult::kDisallowedAfterTimeout);
+  CheckRobotsRules("/foo/bar.jpg",
+                   RobotsRulesParser::CheckResult::kDisallowedAfterTimeout);
   VerifyTotalRobotsRulesApplyHistograms(0);
 }
 
@@ -175,6 +169,7 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest,
   VerifyTotalRobotsRulesApplyHistograms(0);
 
   // Once the rules are received the callback should get called with the result.
+  VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kTimerRunning);
   SetUpRobotsRules({{kRuleTypeAllow, "/foo"}, {kRuleTypeDisallow, "/"}});
   VerifyRobotsRulesReceiveResultHistogram(
       RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kSuccess);
@@ -237,6 +232,7 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
   VerifyRobotsRulesReceiveResultHistogram(
       RobotsRulesParser::SubresourceRedirectRobotsRulesReceiveResult::kTimeout);
+  VerifyRulesReceiveState(RobotsRulesParser::RulesReceiveState::kTimeout);
 
   EXPECT_TRUE(receiver1->did_receive_result());
   EXPECT_TRUE(receiver2->did_receive_result());
@@ -375,7 +371,5 @@ TEST_F(SubresourceRedirectRobotsRulesParserTest, TestRulesAreCaseSensitive) {
 
   VerifyTotalRobotsRulesApplyHistograms(6);
 }
-
-}  // namespace
 
 }  // namespace subresource_redirect

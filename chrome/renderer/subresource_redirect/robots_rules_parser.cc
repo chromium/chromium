@@ -90,6 +90,7 @@ RobotsRulesParser::RobotsRulesParser() {
       FROM_HERE, GetRobotsRulesReceiveTimeout(),
       base::BindOnce(&RobotsRulesParser::OnRulesReceiveTimeout,
                      base::Unretained(this)));
+  rules_receive_state_ = RulesReceiveState::kTimerRunning;
 }
 
 RobotsRulesParser::~RobotsRulesParser() {
@@ -99,7 +100,7 @@ RobotsRulesParser::~RobotsRulesParser() {
 }
 
 void RobotsRulesParser::UpdateRobotsRules(const std::string& rules) {
-  robots_rules_.reset();
+  robots_rules_.clear();
   rules_receive_timeout_timer_.Stop();
 
   proto::RobotsRules robots_rules;
@@ -108,67 +109,68 @@ void RobotsRulesParser::UpdateRobotsRules(const std::string& rules) {
       is_parse_success
           ? SubresourceRedirectRobotsRulesReceiveResult::kSuccess
           : SubresourceRedirectRobotsRulesReceiveResult::kParseError);
+  rules_receive_state_ = is_parse_success ? RulesReceiveState::kSuccess
+                                          : RulesReceiveState::kParseFailed;
   if (is_parse_success) {
-    robots_rules_ = std::vector<RobotsRule>();
-    robots_rules_->reserve(robots_rules.image_ordered_rules_size());
+    robots_rules_.reserve(robots_rules.image_ordered_rules_size());
     for (const auto& rule : robots_rules.image_ordered_rules()) {
       if (rule.has_allowed_pattern()) {
-        robots_rules_->emplace_back(true, rule.allowed_pattern());
+        robots_rules_.emplace_back(true, rule.allowed_pattern());
       } else if (rule.has_disallowed_pattern()) {
-        robots_rules_->emplace_back(false, rule.disallowed_pattern());
+        robots_rules_.emplace_back(false, rule.disallowed_pattern());
       }
     }
-  }
-  if (robots_rules_) {
     UMA_HISTOGRAM_COUNTS_1000("SubresourceRedirect.RobotRulesDecider.Count",
-                              robots_rules_->size());
+                              robots_rules_.size());
   }
 
   // Respond to the pending requests, even if robots proto parse failed.
   for (auto& request : pending_check_requests_) {
-    std::move(request.first)
-        .Run(IsAllowed(request.second) ? CheckResult::kAllowed
-                                       : CheckResult::kDisallowed);
+    std::move(request.first).Run(CheckRobotsRulesImmediate(request.second));
   }
   pending_check_requests_.clear();
 }
 
-void RobotsRulesParser::CheckRobotsRules(const GURL& url,
-                                         CheckResultCallback callback) {
+base::Optional<RobotsRulesParser::CheckResult>
+RobotsRulesParser::CheckRobotsRules(const GURL& url,
+                                    CheckResultCallback callback) {
   std::string path_with_query = url.path();
   if (url.has_query())
     base::StrAppend(&path_with_query, {"?", url.query()});
-  if (rules_receive_timeout_timer_.IsRunning()) {
-    // Rules have not been received yet.
+  if (rules_receive_state_ == RulesReceiveState::kTimerRunning) {
+    DCHECK(rules_receive_timeout_timer_.IsRunning());
     pending_check_requests_.emplace_back(
         std::make_pair(std::move(callback), path_with_query));
-    return;
+    return base::nullopt;
   }
-  std::move(callback).Run(IsAllowed(path_with_query)
-                              ? CheckResult::kAllowed
-                              : CheckResult::kDisallowed);
+  return CheckRobotsRulesImmediate(path_with_query);
 }
 
-bool RobotsRulesParser::IsAllowed(const std::string& url_path) const {
-  // Rules not received. Could be rule parse error or timeout.
-  if (!robots_rules_)
-    return false;
+RobotsRulesParser::CheckResult RobotsRulesParser::CheckRobotsRulesImmediate(
+    const std::string& url_path) const {
+  if (rules_receive_state_ == RulesReceiveState::kParseFailed)
+    return CheckResult::kDisallowed;
+  if (rules_receive_state_ == RulesReceiveState::kTimeout)
+    return CheckResult::kDisallowedAfterTimeout;
+  DCHECK_EQ(rules_receive_state_, RulesReceiveState::kSuccess);
 
   base::ElapsedTimer rules_apply_timer;
-  for (const auto& rule : *robots_rules_) {
+  for (const auto& rule : robots_rules_) {
     if (rule.Match(url_path)) {
       RecordRobotsRulesApplyDurationHistogram(rules_apply_timer.Elapsed());
-      return rule.is_allow_rule_;
+      return rule.is_allow_rule_ ? CheckResult::kAllowed
+                                 : CheckResult::kDisallowed;
     }
   }
   RecordRobotsRulesApplyDurationHistogram(rules_apply_timer.Elapsed());
 
   // Treat as allowed when none of the allow/disallow rules match.
-  return true;
+  return CheckResult::kAllowed;
 }
 
 void RobotsRulesParser::OnRulesReceiveTimeout() {
   DCHECK(!rules_receive_timeout_timer_.IsRunning());
+  rules_receive_state_ = RulesReceiveState::kTimeout;
   for (auto& request : pending_check_requests_)
     std::move(request.first).Run(CheckResult::kTimedout);
   pending_check_requests_.clear();

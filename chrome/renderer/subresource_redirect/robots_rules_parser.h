@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "url/gurl.h"
 
@@ -33,9 +32,26 @@ class RobotsRulesParser {
   };
 
   enum CheckResult {
-    kAllowed,     // The resource URL passed the robots rules check
-    kDisallowed,  // The resource URL failed the robots rules check
-    kTimedout,    // Timeout in retrieving the robots rules
+    kAllowed,                 // The resource URL passed the robots rules check
+    kDisallowed,              // The resource URL failed the robots rules check
+    kTimedout,                // Timeout in retrieving the robots rules
+    kDisallowedAfterTimeout,  // Timeout got triggered already, and the resource
+                              // was disallowed
+  };
+
+  enum class RulesReceiveState {
+    // Rules are not received yet, and rules receive timer is still running.
+    // This is the default startup state, and is a non-terminal state.
+    kTimerRunning,
+
+    // Rules are not received, and rules retrieval timeout happened.
+    kTimeout,
+
+    // Rules were received but parsing failed.
+    kParseFailed,
+
+    // Rules were received and are parsed successfully.
+    kSuccess,
   };
 
   // Callback to notify the check robot rules result.
@@ -51,16 +67,19 @@ class RobotsRulesParser {
   // processed immediately and called with th result.
   void UpdateRobotsRules(const std::string& rules);
 
-  // Check whether the URL is allowed or disallowed by robots rules. |callback|
-  // will be called with the result. The callback could be immediate if rules
-  // are available. Otherwise the callback will be added to
-  // |pending_check_requests_| and called when a decision can be made like when
-  // rules are retrieved, or rule fetch timeout, etc.
+  // Check whether the URL is allowed or disallowed by robots rules. When the
+  // determination can be made immediately, the decision should be returned.
+  // Otherwise base::nullopt should be returned and the |callback| will be
+  // added to |pending_check_requests_| and called when a decision can be made
+  // like when rules are retrieved, or rule fetch timeout, etc.
   // The robots rules check will make use of the |url| path and query
-  // parameters. The |url| origin, ref fragment, etc are immaterial.
-  void CheckRobotsRules(const GURL& url, CheckResultCallback callback);
+  // parameters.The |url| origin, ref fragment, etc are immaterial.
+  base::Optional<CheckResult> CheckRobotsRules(const GURL& url,
+                                               CheckResultCallback callback);
 
  private:
+  friend class SubresourceRedirectRobotsRulesParserTest;
+
   // Contains one robots.txt rule.
   struct RobotsRule {
     RobotsRule(bool is_allow_rule, const std::string& pattern)
@@ -72,17 +91,21 @@ class RobotsRulesParser {
     const std::string pattern_;
   };
 
-  // Returns if allowed or disallowed by robots rules.
-  bool IsAllowed(const std::string& url_path) const;
+  // Returns the immediate result of whether the URL path is allowed or
+  // disallowed by robots rules. Should be called only when rules retrieval
+  // state is in a terminal state, i.e., rules receive timer is not running.
+  CheckResult CheckRobotsRulesImmediate(const std::string& url_path) const;
 
   // Called on rules receive timeout. All pending checks for robots rules are
   // notified that the timeout expired and the requests known to |this| are
   // cleared.
   void OnRulesReceiveTimeout();
 
-  // The list of robots rules. When this is empty, it could mean either the
-  // rules were not received yet, or rules parsing failed.
-  base::Optional<std::vector<RobotsRule>> robots_rules_;
+  // Current state of the rules retrieval.
+  RulesReceiveState rules_receive_state_;
+
+  // Ordered list of robots rules from longest to shortest.
+  std::vector<RobotsRule> robots_rules_;
 
   // Contains the requests that are pending for robots rules to be received.
   // Holds the URL path and the callback.
