@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/environment.h"
 #include "base/logging.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -29,6 +30,9 @@ GtkUiDelegateWayland::GtkUiDelegateWayland(WaylandConnection* connection)
     : connection_(connection) {
   DCHECK(connection_);
   gdk_set_allowed_backends("wayland");
+  // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so override
+  // it to ensure we get the wayland backend.
+  base::Environment::Create()->SetVar("GDK_BACKEND", "wayland");
 }
 
 GtkUiDelegateWayland::~GtkUiDelegateWayland() = default;

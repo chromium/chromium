@@ -7,6 +7,7 @@
 #include <gtk/gtk.h>
 
 #include "base/check.h"
+#include "base/environment.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_widget_types.h"
@@ -32,6 +33,9 @@ GtkUiDelegateX11::GtkUiDelegateX11(x11::Connection* connection)
     : connection_(connection) {
   DCHECK(connection_);
   gdk_set_allowed_backends("x11");
+  // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so override
+  // it to ensure we get the x11 backend.
+  base::Environment::Create()->SetVar("GDK_BACKEND", "x11");
   x11::InitXlib();
 }
 
