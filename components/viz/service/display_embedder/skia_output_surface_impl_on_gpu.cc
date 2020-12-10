@@ -571,12 +571,13 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     end_semaphores.insert(end_semaphores.end(), end_paint_semaphores.begin(),
                           end_paint_semaphores.end());
 
+    const bool end_semaphores_empty = end_semaphores.empty();
     auto result = scoped_output_device_paint_->Flush(vulkan_context_provider_,
                                                      std::move(end_semaphores),
                                                      std::move(on_finished));
 
     if (result != GrSemaphoresSubmitted::kYes &&
-        !(begin_semaphores.empty() && end_semaphores.empty())) {
+        !(begin_semaphores.empty() && end_semaphores_empty)) {
       // TODO(penghuang): handle vulkan device lost.
       DLOG(ERROR) << "output_sk_surface()->flush() failed.";
       return;
