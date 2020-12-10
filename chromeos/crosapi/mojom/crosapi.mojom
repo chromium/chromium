@@ -230,9 +230,12 @@ struct LacrosInitParams {
 // are accessed from ash-chrome.
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91"]
 interface LacrosChromeService {
+  // DEPRECATED: in M89. In new versions, memory backed file based
+  // initialization data passing is used.
+  //
   // Ash-chrome can pass initialize parameters via this method.
   // The parameters are available on lacros-chrome startup.
-  Init@2(LacrosInitParams params);
+  InitDeprecated@2(LacrosInitParams params);
 
   // Returns the pending_receiver of AshChromeService.
   // Ash-chrome is expected to call this method on initialization.

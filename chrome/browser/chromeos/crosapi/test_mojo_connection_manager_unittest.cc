@@ -23,6 +23,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/startup/startup_switches.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
@@ -41,7 +42,7 @@ class TestLacrosChromeService : public crosapi::mojom::LacrosChromeService {
 
   ~TestLacrosChromeService() override = default;
 
-  void Init(crosapi::mojom::LacrosInitParamsPtr params) override {
+  void InitDeprecated(crosapi::mojom::LacrosInitParamsPtr params) override {
     init_is_called_ = true;
   }
 
@@ -134,16 +135,19 @@ TEST_F(TestMojoConnectionManagerTest, ConnectWithLacrosChrome) {
   run_loop2.Run();
   EXPECT_EQ(1, size);
   EXPECT_EQ(0u, buf[0]);
-  ASSERT_EQ(1u, descriptors.size());
+  ASSERT_EQ(2u, descriptors.size());
 
   // Test launches lacros-chrome as child process.
   base::LaunchOptions options;
   options.fds_to_remap.emplace_back(descriptors[0].get(), descriptors[0].get());
   base::CommandLine lacros_cmd(base::GetMultiProcessTestChildBaseCommandLine());
   lacros_cmd.AppendSwitchASCII(mojo::PlatformChannel::kHandleSwitch,
-                               base::NumberToString(descriptors[0].release()));
+                               base::NumberToString(descriptors[0].get()));
+  lacros_cmd.AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
+                               base::NumberToString(descriptors[1].get()));
   base::Process lacros_process =
       base::SpawnMultiProcessTestChild("LacrosMain", lacros_cmd, options);
+  descriptors.clear();  // Close descriptors.
 
   // lacros-chrome accepts the invitation to establish mojo connection with
   // ash-chrome.

@@ -26,6 +26,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/startup/startup_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "google_apis/google_api_keys.h"
@@ -348,6 +350,18 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
     // the new process.
     options.fds_to_remap.push_back(std::make_pair(logfd.get(), STDOUT_FILENO));
     options.fds_to_remap.push_back(std::make_pair(logfd.get(), STDERR_FILENO));
+  }
+
+  base::ScopedFD startup_fd =
+      browser_util::CreateStartupData(environment_provider_.get());
+  if (startup_fd.is_valid()) {
+    // Hardcoded to use FD 3 to make the ash-chrome's behavior more predictable.
+    // Lacros-chrome should not depend on the hardcoded value though. Instead
+    // it should take a look at the value passed via the command line flag.
+    constexpr int kStartupDataFD = 3;
+    argv.push_back(base::StringPrintf(
+        "--%s=%d", chromeos::switches::kCrosStartupDataFD, kStartupDataFD));
+    options.fds_to_remap.emplace_back(startup_fd.get(), kStartupDataFD);
   }
 
   // Set up Mojo channel.

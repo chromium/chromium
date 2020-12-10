@@ -216,6 +216,16 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // if this method returns true.
   bool IsOnLacrosStartupAvailable();
 
+  // Returns LacrosInitParams which is passed from ash-chrome. On launching
+  // lacros-chrome from ash-chrome, ash-chrome creates a memory backed file
+  // serializes the LacrosInitParams to it, and the forked/executed
+  // lacros-chrome process inherits the file descriptor. The data is read
+  // in the constructor so is available from the beginning.
+  // Note that, in older versions, ash-chrome passes the data via
+  // LacrosChromeService::Init() mojo call to lacros-chrome. That case is still
+  // handled for backward compatibility, and planned to be removed in the
+  // future (crbug.com/1156033). Though, until the removal, it is recommended
+  // to consider both cases, specifically, at least not to cause a crash.
   const crosapi::mojom::LacrosInitParams* init_params() const {
     return init_params_.get();
   }

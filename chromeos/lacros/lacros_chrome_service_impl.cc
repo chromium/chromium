@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
+#include "chromeos/startup/startup.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
 
@@ -35,6 +36,23 @@ crosapi::mojom::LacrosInfoPtr ToMojo(const std::string& lacros_version) {
   return mojo_lacros_info;
 }
 
+// Reads and parses the startup data to LacrosInitParams.
+// If data is missing, or failed to parse, returns a null StructPtr.
+crosapi::mojom::LacrosInitParamsPtr ReadStartupLacrosInitParams() {
+  base::Optional<std::string> content = ReadStartupData();
+  if (!content)
+    return {};
+
+  crosapi::mojom::LacrosInitParamsPtr result;
+  if (!crosapi::mojom::LacrosInitParams::Deserialize(
+          content->data(), content->size(), &result)) {
+    LOG(ERROR) << "Failed to parse startup data";
+    return {};
+  }
+
+  return result;
+}
+
 }  // namespace
 
 // This class that holds all state that is affine to a single, never-blocking
@@ -50,7 +68,6 @@ class LacrosChromeServiceNeverBlockingState
       : owner_sequence_(owner_sequence),
         owner_(owner),
         init_params_(init_params) {
-    DCHECK(init_params);
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
   ~LacrosChromeServiceNeverBlockingState() override {
@@ -58,8 +75,9 @@ class LacrosChromeServiceNeverBlockingState
   }
 
   // crosapi::mojom::LacrosChromeService:
-  void Init(crosapi::mojom::LacrosInitParamsPtr params) override {
-    *init_params_ = std::move(params);
+  void InitDeprecated(crosapi::mojom::LacrosInitParamsPtr params) override {
+    if (init_params_)
+      *init_params_ = std::move(params);
     initialized_.Signal();
   }
 
@@ -244,7 +262,7 @@ class LacrosChromeServiceNeverBlockingState
   // Owned by LacrosChromeServiceImpl.
   crosapi::mojom::LacrosInitParamsPtr* const init_params_;
 
-  // Lock to wait for Init() invocation.
+  // Lock to wait for InitDeprecated() invocation.
   // Because the parameters are needed before starting the affined thread's
   // message pumping, it is necessary to use sync primitive here, instead.
   base::WaitableEvent initialized_;
@@ -265,9 +283,13 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
     : delegate_(std::move(delegate)),
       sequenced_state_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   if (g_disable_all_crosapi_for_tests) {
-    // Tests don't call LacrosChromeService::Init(), so provide LacrosInitParams
-    // with default values.
+    // Tests don't call LacrosChromeService::InitDeprecated(), so provide
+    // LacrosInitParams with default values.
     init_params_ = crosapi::mojom::LacrosInitParams::New();
+  } else {
+    // Try to read the startup data. If ash-chrome is too old, the data
+    // may not available, then fallback to the older approach.
+    init_params_ = ReadStartupLacrosInitParams();
   }
 
   // The sequence on which this object was constructed, and thus affine to.
@@ -281,7 +303,8 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   sequenced_state_ = std::unique_ptr<LacrosChromeServiceNeverBlockingState,
                                      base::OnTaskRunnerDeleter>(
       new LacrosChromeServiceNeverBlockingState(
-          affine_sequence, weak_factory_.GetWeakPtr(), &init_params_),
+          affine_sequence, weak_factory_.GetWeakPtr(),
+          init_params_.is_null() ? &init_params_ : nullptr),
       base::OnTaskRunnerDeleter(never_blocking_sequence_));
   weak_sequenced_state_ = sequenced_state_->GetWeakPtr();
 
@@ -307,7 +330,11 @@ void LacrosChromeServiceImpl::BindReceiver(
       FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
                                     BindLacrosChromeServiceReceiver,
                                 weak_sequenced_state_, std::move(receiver)));
-  sequenced_state_->WaitForInit();
+  // If ash-chrome is too old, LacrosInitParams may not be passed from
+  // a memory backed file directly. Then, try to wait for InitDeprecated()
+  // invocation for backward compatibility.
+  if (!init_params_)
+    sequenced_state_->WaitForInit();
   DCHECK(init_params_);
   delegate_->OnInitialized(*init_params_);
   did_bind_receiver_ = true;

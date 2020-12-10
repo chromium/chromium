@@ -107,8 +107,16 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
           &TestMojoConnectionManager::OnAshChromeServiceReceiverReceived,
           weak_factory_.GetWeakPtr()));
 
+  base::ScopedFD startup_fd =
+      browser_util::CreateStartupData(environment_provider_.get());
+  if (!startup_fd.is_valid()) {
+    LOG(ERROR) << "Failed to create startup data";
+    return;
+  }
+
   std::vector<base::ScopedFD> fds;
-  fds.emplace_back(channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
+  fds.push_back(channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD());
+  fds.push_back(std::move(startup_fd));
 
   // Version of protocol Chrome is using.
   uint8_t protocol_version = 0;

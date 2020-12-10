@@ -79,6 +79,11 @@ SendMojoInvitationToLacrosChrome(
         void(mojo::PendingReceiver<crosapi::mojom::AshChromeService>)>
         ash_chrome_service_callback);
 
+// Creates a memory backed file containing the serialized |params|,
+// and returns its FD.
+base::ScopedFD CreateStartupData(
+    ::crosapi::EnvironmentProvider* environment_provider);
+
 }  // namespace browser_util
 }  // namespace crosapi
 

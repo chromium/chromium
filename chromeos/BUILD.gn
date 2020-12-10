@@ -176,6 +176,7 @@ test("chromeos_unittests") {
     "//chromeos/network:unit_tests",
     "//chromeos/services:unit_tests",
     "//chromeos/settings:unit_tests",
+    "//chromeos/startup:unit_tests",
     "//chromeos/system:unit_tests",
     "//chromeos/timezone:unit_tests",
     "//chromeos/tpm:unit_tests",

@@ -119,6 +119,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/startup/startup_switches.h"  // nogncheck
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
@@ -385,11 +386,22 @@ void BrowserTestBase::SetUp() {
         PLOG(ERROR) << "Error receiving message from the socket";
       ASSERT_EQ(1, size);
       EXPECT_EQ(0u, buf[0]);
-      ASSERT_EQ(1u, descriptors.size());
+      // Older ash-chrome gives us one FD, which will become a Mojo connection.
+      // Newer ash-chrome gives us another FD, too, which contains startup
+      // data.
+      // TODO(crbug.com/1156033): Clean up when both ash-chrome and
+      // lacros-chrome become new enough.
+      ASSERT_LE(descriptors.size(), 2u);
       // It's OK to release the FD because lacros-chrome's code will consume it.
       command_line->AppendSwitchASCII(
           mojo::PlatformChannel::kHandleSwitch,
           base::NumberToString(descriptors[0].release()));
+      if (descriptors.size() == 2) {
+        // Ok to release the FD here, too.
+        command_line->AppendSwitchASCII(
+            chromeos::switches::kCrosStartupDataFD,
+            base::NumberToString(descriptors[1].release()));
+      }
     }
   }
 #endif

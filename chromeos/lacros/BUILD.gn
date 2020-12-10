@@ -15,6 +15,7 @@ component("lacros") {
   deps = [
     "//base",
     "//chromeos/crosapi/mojom",
+    "//chromeos/startup",
     "//mojo/public/cpp/bindings",
   ]
   sources = [

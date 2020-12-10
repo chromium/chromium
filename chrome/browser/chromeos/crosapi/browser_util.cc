@@ -4,12 +4,17 @@
 
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <utility>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
@@ -197,13 +202,45 @@ SendMojoInvitationToLacrosChrome(
           invitation.AttachMessagePipe(0 /* token */), /*version=*/0));
   lacros_chrome_service.set_disconnect_handler(
       std::move(mojo_disconnected_callback));
-  lacros_chrome_service->Init(GetLacrosInitParams(environment_provider));
+
+  // This is for backward compatibility.
+  // TODO(crbug.com/1156033): Remove InitDeperecated() invocation when lacros
+  // becomes new enough.
+  lacros_chrome_service->InitDeprecated(
+      GetLacrosInitParams(environment_provider));
+
   lacros_chrome_service->RequestAshChromeServiceReceiver(
       std::move(ash_chrome_service_callback));
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  std::move(local_endpoint));
   return lacros_chrome_service;
+}
+
+base::ScopedFD CreateStartupData(EnvironmentProvider* environment_provider) {
+  auto data = GetLacrosInitParams(environment_provider);
+  std::vector<uint8_t> serialized =
+      crosapi::mojom::LacrosInitParams::Serialize(&data);
+
+  base::ScopedFD fd(memfd_create("startup_data", 0));
+  if (!fd.is_valid()) {
+    PLOG(ERROR) << "Failed to create a memory backed file";
+    return base::ScopedFD();
+  }
+
+  if (!base::WriteFileDescriptor(
+          fd.get(), reinterpret_cast<const char*>(serialized.data()),
+          serialized.size())) {
+    LOG(ERROR) << "Failed to dump the serialized startup data";
+    return base::ScopedFD();
+  }
+
+  if (lseek(fd.get(), 0, SEEK_SET) < 0) {
+    PLOG(ERROR) << "Failed to reset the FD position";
+    return base::ScopedFD();
+  }
+
+  return fd;
 }
 
 }  // namespace browser_util

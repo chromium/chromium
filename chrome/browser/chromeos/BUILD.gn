@@ -232,6 +232,7 @@ source_set("chromeos") {
     "//chromeos/services/secure_channel/public/cpp/client",
     "//chromeos/services/secure_channel/public/mojom",
     "//chromeos/settings",
+    "//chromeos/startup:constants",
     "//chromeos/system",
     "//chromeos/timezone",
     "//chromeos/tpm",
