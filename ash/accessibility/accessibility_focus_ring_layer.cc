@@ -4,7 +4,6 @@
 
 #include "ash/accessibility/accessibility_focus_ring_layer.h"
 
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -101,8 +100,6 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
-  aura::Window* container = Shell::GetContainer(
-      root_window, kShellWindowId_AccessibilityPanelContainer);
 
   if (SkColorGetA(background_color_) > 0) {
     bounds = display.bounds();
@@ -110,8 +107,8 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
     int inset = kGradientWidth;
     bounds.Inset(-inset, -inset, -inset, -inset);
   }
-  ::wm::ConvertRectFromScreen(container, &bounds);
-  CreateOrUpdateLayer(container, "AccessibilityFocusRing", bounds);
+  ::wm::ConvertRectFromScreen(root_window, &bounds);
+  CreateOrUpdateLayer(root_window, "AccessibilityFocusRing", bounds);
 }
 
 void AccessibilityFocusRingLayer::SetAppearance(FocusRingType type,
