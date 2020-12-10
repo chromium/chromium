@@ -209,7 +209,7 @@ const base::Feature kCrostiniEnableDlc{"CrostiniEnableDlc",
 
 // Enables or disables using Cryptauth's GetDevicesActivityStatus API.
 const base::Feature kCryptAuthV2DeviceActivityStatus{
-    "CryptAuthV2DeviceActivityStatus", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CryptAuthV2DeviceActivityStatus", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables use of the connectivity status from Cryptauth's
 // GetDevicesActivityStatus API to sort devices.
