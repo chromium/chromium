@@ -366,7 +366,8 @@ class AutoEnrollmentClientImplTest
 
   void ServerWillReplyAsync(DeviceManagementService::JobControl** job) {
     EXPECT_CALL(*service_, StartJob(_))
-        .WillOnce(service_->StartJobFullControl(job));
+        .WillOnce(DoAll(service_->CaptureJobType(&last_async_job_type_),
+                        service_->StartJobFullControl(job)));
   }
 
   bool HasCachedDecision() {
@@ -505,6 +506,8 @@ class AutoEnrollmentClientImplTest
   em::DeviceManagementRequest last_request_;
   AutoEnrollmentState state_;
   DeviceManagementService::JobConfiguration::JobType failed_job_type_ =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobConfiguration::JobType last_async_job_type_ =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobConfiguration::JobType auto_enrollment_job_type_ =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
@@ -1411,6 +1414,52 @@ class PrivateSetMembershipHelperTest : public AutoEnrollmentClientImplTest {
         .RetiresOnSaturation();
   }
 
+  // Holds the full control of the given job in |job| and captures the job type
+  // in |private_set_membership_last_job_type_|, and its request in
+  // |private_set_membership_last_request_|.
+  void ServerWillReplyAsyncForPrivateSetMembership(
+      DeviceManagementService::JobControl** job) {
+    EXPECT_CALL(*service_, StartJob(_))
+        .WillOnce(DoAll(
+            service_->CaptureJobType(&private_set_membership_last_job_type_),
+            service_->CaptureRequest(&private_set_membership_last_request_),
+            service_->StartJobFullControl(job)));
+  }
+
+  void ServerReplyForPrivateSetMembershipAsyncJobWithOprfResponse(
+      DeviceManagementService::JobControl** job) {
+    em::DeviceManagementResponse response =
+        GetPrivateSetMembershipOprfResponse();
+
+    ServerReplyForAsyncJob(job, net::OK, DeviceManagementService::kSuccess,
+                           response);
+  }
+
+  void ServerReplyForPrivateSetMembershipAsyncJobWithQueryResponse(
+      DeviceManagementService::JobControl** job) {
+    em::DeviceManagementResponse response =
+        GetPrivateSetMembershipQueryResponse();
+
+    ServerReplyForAsyncJob(job, net::OK, DeviceManagementService::kSuccess,
+                           response);
+  }
+
+  void ServerFailsForAsyncJob(DeviceManagementService::JobControl** job) {
+    em::DeviceManagementResponse dummy_response;
+    ServerReplyForAsyncJob(job, net::OK,
+                           DeviceManagementService::kServiceUnavailable,
+                           dummy_response);
+  }
+
+  // Mocks the server reply for the full controlled job |job|.
+  void ServerReplyForAsyncJob(
+      DeviceManagementService::JobControl** job,
+      int net_error,
+      int response_code,
+      const enterprise_management::DeviceManagementResponse& response) {
+    service_->DoURLCompletion(job, net_error, response_code, response);
+  }
+
   const em::PrivateSetMembershipRequest& private_set_membership_request()
       const {
     return private_set_membership_last_request_
@@ -2093,6 +2142,156 @@ TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
   // dance.
   ExpectPrivateSetMembershipHashDanceComparisonRecorded(
       PrivateSetMembershipHashDanceComparison::kBothError);
+}
+
+TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
+       RetryWhileWaitingForPrivateSetMembershipOprfResponseAndHashDanceFails) {
+  InSequence sequence;
+
+  DeviceManagementService::JobControl* psm_rlwe_oprf_job = nullptr;
+  DeviceManagementService::JobControl* hash_dance_job = nullptr;
+
+  // Expect two requests and capture them, in order, when available in
+  // |psm_rlwe_oprf_job| and |hash_dance_job|.
+  ServerWillReplyAsyncForPrivateSetMembership(&psm_rlwe_oprf_job);
+  ServerWillReplyAsync(&hash_dance_job);
+
+  // Expect none of the jobs have been captured.
+  EXPECT_FALSE(psm_rlwe_oprf_job);
+  EXPECT_FALSE(hash_dance_job);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the only job that has been captured is the PSM RLWE OPRF request.
+  VerifyPrivateSetMembershipRlweOprfRequest();
+  VerifyPrivateSetMembershipLastRequestJobType();
+  ASSERT_TRUE(psm_rlwe_oprf_job);
+  EXPECT_FALSE(hash_dance_job);
+
+  // Trigger RetryStep.
+  client()->Retry();
+
+  // Verify hash dance job has not been triggered after RetryStep.
+  EXPECT_FALSE(hash_dance_job);
+
+  // Fail for private set membership RLWE OPRF request.
+  ServerFailsForAsyncJob(&psm_rlwe_oprf_job);
+
+  // Verify failure of private set membership protocol.
+  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  ExpectPrivateSetMembershipHistograms({PrivateSetMembershipStatus::kAttempt,
+                                        PrivateSetMembershipStatus::kError},
+                                       /*success_time_recorded=*/false);
+
+  // Verify hash dance job has been captured.
+  ASSERT_TRUE(hash_dance_job);
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            last_async_job_type_);
+
+  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
+  ServerFailsForAsyncJob(&hash_dance_job);
+
+  // Verify failure of Hash dance by inexistence of its cached decision.
+  EXPECT_FALSE(HasCachedDecision());
+
+  // Verify that no enrollment has been done, and no state has been retrieved.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+  EXPECT_FALSE(HasServerBackedState());
+
+  // Verify recorded comparison between private set membership and Hash
+  // dance.
+  ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      PrivateSetMembershipHashDanceComparison::kBothError);
+
+  // Verify both jobs have finished.
+  EXPECT_EQ(hash_dance_job, nullptr);
+  EXPECT_EQ(psm_rlwe_oprf_job, nullptr);
+}
+
+TEST_P(PrivateSetMembershipHelperAndHashDanceTest,
+       RetryWhileWaitingForPrivateSetMembershipQueryResponseAndHashDanceFails) {
+  InSequence sequence;
+
+  DeviceManagementService::JobControl* psm_rlwe_oprf_job = nullptr;
+  DeviceManagementService::JobControl* psm_rlwe_query_job = nullptr;
+  DeviceManagementService::JobControl* hash_dance_job = nullptr;
+
+  // Expect three requests and capture them, in order, when available in
+  // |psm_rlwe_oprf_job|, |psm_rlwe_query_job|, and |hash_dance_job|.
+  ServerWillReplyAsyncForPrivateSetMembership(&psm_rlwe_oprf_job);
+  ServerWillReplyAsyncForPrivateSetMembership(&psm_rlwe_query_job);
+  ServerWillReplyAsync(&hash_dance_job);
+
+  // Expect none of the jobs have been captured.
+  EXPECT_FALSE(psm_rlwe_oprf_job);
+  EXPECT_FALSE(psm_rlwe_query_job);
+  EXPECT_FALSE(hash_dance_job);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the only job that has been captured is the PSM RLWE OPRF request.
+  VerifyPrivateSetMembershipRlweOprfRequest();
+  VerifyPrivateSetMembershipLastRequestJobType();
+  ASSERT_TRUE(psm_rlwe_oprf_job);
+  EXPECT_FALSE(psm_rlwe_query_job);
+  EXPECT_FALSE(hash_dance_job);
+
+  // Reply with PSM RLWE OPRF response.
+  ServerReplyForPrivateSetMembershipAsyncJobWithOprfResponse(
+      &psm_rlwe_oprf_job);
+
+  // Verify the only job that has been captured is the PSM RLWE Query request.
+  VerifyPrivateSetMembershipRlweQueryRequest();
+  VerifyPrivateSetMembershipLastRequestJobType();
+  ASSERT_TRUE(psm_rlwe_query_job);
+  EXPECT_FALSE(hash_dance_job);
+
+  // Trigger RetryStep.
+  client()->Retry();
+
+  // Verify hash dance job has not been triggered after RetryStep.
+  EXPECT_FALSE(hash_dance_job);
+
+  // Reply with PSM RLWE Query response.
+  ServerReplyForPrivateSetMembershipAsyncJobWithQueryResponse(
+      &psm_rlwe_query_job);
+
+  // Verify private set membership result.
+  EXPECT_EQ(GetStateDiscoveryResult(),
+            GetExpectedMembershipResult()
+                ? StateDiscoveryResult::kSuccessHasServerSideState
+                : StateDiscoveryResult::kSuccessNoServerSideState);
+  ExpectPrivateSetMembershipHistograms(
+      {PrivateSetMembershipStatus::kAttempt,
+       PrivateSetMembershipStatus::kSuccessfulDetermination},
+      /*success_time_recorded=*/true);
+
+  // Verify hash dance job has been captured.
+  ASSERT_TRUE(hash_dance_job);
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            last_async_job_type_);
+
+  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
+  ServerFailsForAsyncJob(&hash_dance_job);
+
+  // Verify failure of Hash dance by inexistence of its cached decision.
+  EXPECT_FALSE(HasCachedDecision());
+
+  // Verify that no enrollment has been done, and no state has been retrieved.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+  EXPECT_FALSE(HasServerBackedState());
+
+  // Verify recorded comparison between private set membership and Hash
+  // dance.
+  ExpectPrivateSetMembershipHashDanceComparisonRecorded(
+      PrivateSetMembershipHashDanceComparison::kPSMSuccessHashDanceError);
+
+  // Verify all jobs have finished.
+  EXPECT_EQ(hash_dance_job, nullptr);
+  EXPECT_EQ(psm_rlwe_oprf_job, nullptr);
+  EXPECT_EQ(psm_rlwe_query_job, nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -167,8 +167,8 @@ class AutoEnrollmentClientImpl
 
   // Retries running private set membership protocol, if the protocol
   // is enabled and it is possible to start. Returns true if the protocol is
-  // enabled and progress has been made, false if the protocol is done. Also,
-  // that protocol is being started only one time.
+  // enabled or it's in progress, false if the protocol is done. Note that the
+  // PSM protocol is only performed once per OOBE flow.
   bool PrivateSetMembershipRetryStep();
 
   // Cleans up and invokes |progress_callback_|.

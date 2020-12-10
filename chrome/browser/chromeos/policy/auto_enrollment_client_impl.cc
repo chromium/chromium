@@ -1027,12 +1027,17 @@ bool AutoEnrollmentClientImpl::RetryStep() {
 }
 
 bool AutoEnrollmentClientImpl::PrivateSetMembershipRetryStep() {
-  // Don't retry if the protocol is disabled, protocol is still running, or an
-  // error occurred while executing the protocol.
+  // Don't retry if the protocol is disabled, or an error occurred while
+  // executing the protocol.
   if (!private_set_membership_helper_ ||
-      private_set_membership_helper_->HasPrivateSetMembershipError() ||
-      private_set_membership_helper_->IsCheckMembershipInProgress())
+      private_set_membership_helper_->HasPrivateSetMembershipError()) {
     return false;
+  }
+
+  // If the private set membership protocol is in progress, signal to the caller
+  // that nothing else needs to be done.
+  if (private_set_membership_helper_->IsCheckMembershipInProgress())
+    return true;
 
   const base::Optional<bool> private_set_membership_server_state =
       private_set_membership_helper_->GetPrivateSetMembershipCachedDecision();
