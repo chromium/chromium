@@ -323,6 +323,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/omaha/StringSanitizerTest.java",
   "javatests/src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelperTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/LocationBarLayoutTest.java",
+  "javatests/src/org/chromium/chrome/browser/omnibox/LocationBarTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/OmniboxTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/OmniboxUrlEmphasizerTest.java",
   "javatests/src/org/chromium/chrome/browser/omnibox/UrlBarIntegrationTest.java",

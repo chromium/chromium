@@ -308,39 +308,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         // When we restore tabs, we focus the selected tab so the URL of the page shows.
     }
 
-    /**
-     * Sets the query string in the omnibox (ensuring the URL bar has focus and triggering
-     * autocomplete for the specified query) as if the user typed it.
-     *
-     * @param query The query to be set in the omnibox.
-     */
-    /* package */ void setSearchQuery(final String query) {
-        if (TextUtils.isEmpty(query)) return;
-
-        if (!mNativeInitialized) {
-            mDeferredNativeRunnables.add(new Runnable() {
-                @Override
-                public void run() {
-                    setSearchQuery(query);
-                }
-            });
-            return;
-        }
-
-        // Ensure the UrlBar has focus before entering text. If the UrlBar is not focused,
-        // autocomplete text will be updated but the visible text will not.
-        setUrlBarFocus(true, null, OmniboxFocusReason.SEARCH_QUERY);
-        setUrlBarText(UrlBarData.forNonUrlText(query), UrlBar.ScrollType.NO_SCROLL,
-                SelectionState.SELECT_ALL);
-        mAutocompleteCoordinator.startAutocompleteForQuery(query);
-        post(new Runnable() {
-            @Override
-            public void run() {
-                getWindowAndroid().getKeyboardDelegate().showKeyboard(mUrlBar);
-            }
-        });
-    }
-
     @Override
     public void onClick(View v) {
         if (v == mDeleteButton) {

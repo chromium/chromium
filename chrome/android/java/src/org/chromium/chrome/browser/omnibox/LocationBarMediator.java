@@ -18,6 +18,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -36,15 +37,16 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -70,6 +72,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private CallbackController mCallbackController = new CallbackController();
     private final OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
     private final LocaleManager mLocaleManager;
+    private final List<Runnable> mDeferredNativeRunnables = new ArrayList<>();
+    private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
 
     private boolean mNativeInitialized;
 
@@ -79,17 +83,19 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull PrivacyPreferencesManagerImpl privacyPreferencesManager,
             @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
-            @NonNull LocaleManager localeManager) {
+            @NonNull LocaleManager localeManager,
+            @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier) {
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
         mLocationBarDataProvider.addObserver(this);
         mAssistantVoiceSearchSupplier = assistantVoiceSearchSupplier;
+        mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
+        mLocaleManager = localeManager;
         mVoiceRecognitionHandler = new VoiceRecognitionHandler(this, mAssistantVoiceSearchSupplier);
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));
         mPrivacyPreferencesManager = privacyPreferencesManager;
-        mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
-        mLocaleManager = localeManager;
+        mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
     }
 
     /**
@@ -116,6 +122,9 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mAutocompleteCoordinator = null;
         mUrlCoordinator = null;
         mPrivacyPreferencesManager = null;
+        mVoiceRecognitionHandler = null;
+        mLocationBarDataProvider.removeObserver(this);
+        mDeferredNativeRunnables.clear();
     }
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
@@ -127,11 +136,16 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mOmniboxPrerender = new OmniboxPrerender();
         Context context = mLocationBarLayout.getContext();
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(context,
-                AppHooks.get().getExternalAuthUtils(), TemplateUrlServiceFactory.get(),
+                AppHooks.get().getExternalAuthUtils(), mTemplateUrlServiceSupplier.get(),
                 GSAState.getInstance(context), this, SharedPreferencesManager.getInstance());
         mAssistantVoiceSearchSupplier.set(mAssistantVoiceSearchService);
         mLocationBarLayout.onFinishNativeInitialization();
         setProfile(mProfileSupplier.get());
+
+        for (Runnable deferredRunnable : mDeferredNativeRunnables) {
+            mLocationBarLayout.post(deferredRunnable);
+        }
+        mDeferredNativeRunnables.clear();
     }
 
     /*package */ void setUrlFocusChangeFraction(float fraction) {
@@ -348,12 +362,13 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     public void performSearchQuery(String query, List<String> searchParams) {
         if (TextUtils.isEmpty(query)) return;
 
-        String queryUrl = TemplateUrlServiceFactory.get().getUrlForSearchQuery(query, searchParams);
+        String queryUrl =
+                mTemplateUrlServiceSupplier.get().getUrlForSearchQuery(query, searchParams);
 
         if (!TextUtils.isEmpty(queryUrl)) {
             loadUrl(queryUrl, PageTransition.GENERATED, 0);
         } else {
-            mLocationBarLayout.setSearchQuery(query);
+            setSearchQuery(query);
         }
     }
 
@@ -408,7 +423,20 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void setSearchQuery(String query) {
-        mLocationBarLayout.setSearchQuery(query);
+        if (TextUtils.isEmpty(query)) return;
+
+        if (!mNativeInitialized) {
+            mDeferredNativeRunnables.add(() -> setSearchQuery(query));
+            return;
+        }
+
+        // Ensure the UrlBar has focus before entering text. If the UrlBar is not focused,
+        // autocomplete text will be updated but the visible text will not.
+        mLocationBarLayout.setUrlBarFocus(true, null, OmniboxFocusReason.SEARCH_QUERY);
+        mLocationBarLayout.setUrlBarText(UrlBarData.forNonUrlText(query),
+                UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
+        mAutocompleteCoordinator.startAutocompleteForQuery(query);
+        mUrlCoordinator.setKeyboardVisibility(true, false);
     }
 
     @Override
@@ -438,7 +466,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public boolean allowKeyboardLearning() {
-        assert mLocationBarDataProvider != null;
         return !mLocationBarDataProvider.isIncognito();
     }
 

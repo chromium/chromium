@@ -33,8 +33,10 @@ import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -68,6 +70,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     private View mAutocompleteAnchorView;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
+    private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
+            new OneshotSupplierImpl<>();
     private CallbackController mCallbackController = new CallbackController();
 
     private boolean mNativeInitialized;
@@ -128,7 +132,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarMediator = new LocationBarMediator(mLocationBarLayout, locationBarDataProvider,
                 assistantVoiceSearchSupplier, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
-                LocaleManager.getInstance());
+                LocaleManager.getInstance(), mTemplateUrlServiceSupplier);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -186,6 +190,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
 
     @Override
     public void onFinishNativeInitialization() {
+        mTemplateUrlServiceSupplier.set(TemplateUrlServiceFactory.get());
         mLocationBarMediator.onFinishNativeInitialization();
         mAutocompleteCoordinator.onNativeInitialized();
         mStatusCoordinator.onNativeInitialized();
@@ -410,5 +415,9 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     public void setVoiceRecognitionHandlerForTesting(
             VoiceRecognitionHandler voiceRecognitionHandler) {
         mLocationBarMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
+    }
+
+    /* package */ LocationBarMediator getMediatorForTesting() {
+        return mLocationBarMediator;
     }
 }
