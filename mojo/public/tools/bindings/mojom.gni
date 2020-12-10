@@ -66,10 +66,10 @@ declare_args() {
 # check |target_os| explicitly, as it's consistent across all toolchains.
 enable_scrambled_message_ids =
     enable_mojom_message_id_scrambling &&
-    (is_mac || is_win || (is_linux && !is_chromeos && !is_chromecast &&
-                          !chromeos_is_browser_only) ||
+    (is_mac || is_win ||
+     (is_linux && !is_chromeos_ash && !is_chromecast && !is_chromeos_lacros) ||
      ((enable_nacl || is_nacl || is_nacl_nonsfi) &&
-      (target_os != "chromeos" && !chromeos_is_browser_only)))
+      (target_os != "chromeos" && !is_chromeos_lacros)))
 
 _mojom_tools_root = "//mojo/public/tools"
 _mojom_library_root = "$_mojom_tools_root/mojom/mojom"
@@ -616,13 +616,13 @@ template("mojom") {
     }
     if (is_android) {
       enabled_features += [ "is_android" ]
-    } else if (is_chromeos) {
+    } else if (is_chromeos_ash) {
       enabled_features += [ "is_chromeos" ]
     } else if (is_fuchsia) {
       enabled_features += [ "is_fuchsia" ]
     } else if (is_ios) {
       enabled_features += [ "is_ios" ]
-    } else if (is_linux) {
+    } else if (is_linux || is_chromeos_lacros) {
       enabled_features += [ "is_linux" ]
     } else if (is_mac) {
       enabled_features += [ "is_mac" ]

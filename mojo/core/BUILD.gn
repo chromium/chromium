@@ -200,7 +200,7 @@ if (is_chromeos || is_linux || is_android || is_win) {
     }
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     if (target_cpu == "arm" || target_cpu == "arm64") {
       android32_toolchain = "android_clang_arm"
       android64_toolchain = "android_clang_arm64"
