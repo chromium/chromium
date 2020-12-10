@@ -203,6 +203,16 @@ class DeferAllScriptBrowserTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(DeferAllScriptBrowserTest);
 };
 
+namespace {
+
+GURL SetQuery(GURL url, const std::string& query) {
+  url::Replacements<char> repls;
+  repls.SetQuery(query.c_str(), url::Component(0, query.length()));
+  return url.ReplaceComponents(repls);
+}
+
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(
     DeferAllScriptBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(DeferAllScriptHttpsWhitelisted)) {
@@ -214,7 +224,9 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  // Set query to ensure that it's not treated as a reload as preview metrics
+  // are not recorded for reloads.
+  ui_test_utils::NavigateToURL(browser(), SetQuery(url, "foo"));
 
   RetryForHistogramUntilCountReached(
       &histogram_tester, "PageLoad.DocumentTiming.NavigationToLoadEventFired",
@@ -287,7 +299,10 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
-  ui_test_utils::NavigateToURL(browser(), server_denylist_url());
+  // Set query to ensure that it's not treated as a reload as preview metrics
+  // are not recorded for reloads.
+  ui_test_utils::NavigateToURL(browser(),
+                               SetQuery(server_denylist_url(), "foo"));
 
   RetryForHistogramUntilCountReached(
       &histogram_tester, "PageLoad.DocumentTiming.NavigationToLoadEventFired",
@@ -320,7 +335,9 @@ IN_PROC_BROWSER_TEST_F(
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   // The URL is not whitelisted.
-  ui_test_utils::NavigateToURL(browser(), url);
+  // Set query to ensure that it's not treated as a reload as preview metrics
+  // are not recorded for reloads.
+  ui_test_utils::NavigateToURL(browser(), SetQuery(url, "foo"));
 
   RetryForHistogramUntilCountReached(
       &histogram_tester, "PageLoad.DocumentTiming.NavigationToLoadEventFired",
@@ -365,7 +382,9 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  // Set query to ensure that it's not treated as a reload as preview metrics
+  // are not recorded for reloads.
+  ui_test_utils::NavigateToURL(browser(), SetQuery(url, "foo"));
 
   RetryForHistogramUntilCountReached(
       &histogram_tester, "PageLoad.DocumentTiming.NavigationToLoadEventFired",
@@ -556,7 +575,9 @@ IN_PROC_BROWSER_TEST_F(DeferAllScriptBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   // Navigate to DeferAllScript url expecting a DeferAllScript preview.
-  ui_test_utils::NavigateToURL(browser(), url);
+  // Set query to ensure that it's not treated as a reload as preview metrics
+  // are not recorded for reloads.
+  ui_test_utils::NavigateToURL(browser(), SetQuery(url, "foo"));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
@@ -742,7 +763,9 @@ IN_PROC_BROWSER_TEST_P(
 
   base::HistogramTester histogram_tester;
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  // Set query to ensure that it's not treated as a reload as preview metrics
+  // are not recorded for reloads.
+  ui_test_utils::NavigateToURL(browser(), SetQuery(url, "foo"));
 
   RetryForHistogramUntilCountReached(
       &histogram_tester, "PageLoad.DocumentTiming.NavigationToLoadEventFired",

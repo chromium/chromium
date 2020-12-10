@@ -3109,6 +3109,7 @@ void NavigationControllerImpl::NavigateWithoutEntry(
           false /* is_reload */, false /* is_navigation_to_existing_entry */,
           GetLastCommittedEntry())) {
     reload_type = ReloadType::NORMAL;
+    pending_entry_->set_reload_type(reload_type);
 
     // If this is a reload of an existing FrameNavigationEntry and we had a
     // policy container for it, then we should copy it into the pending entry,

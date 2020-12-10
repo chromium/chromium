@@ -166,6 +166,11 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   }
 
   // WebContentsObserver:
+  void DidStartNavigation(NavigationHandle* navigation) override {
+    navigated_url_ = navigation->GetURL();
+    last_reload_type_ = navigation->GetReloadType();
+  }
+
   void NavigationEntryCommitted(
       const LoadCommittedDetails& load_details) override {
     navigation_entry_committed_counter_++;
@@ -184,6 +189,8 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   void NavigationEntriesDeleted() override {
     navigation_entries_deleted_counter_++;
   }
+
+  const GURL& navigated_url() const { return navigated_url_; }
 
   NavigationControllerImpl& controller_impl() {
     return static_cast<NavigationControllerImpl&>(controller());
@@ -215,11 +222,13 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
   FrameTreeNode* root_ftn() { return contents()->GetFrameTree()->root(); }
 
  protected:
+  GURL navigated_url_;
   size_t navigation_entry_committed_counter_ = 0;
   size_t navigation_entry_changed_counter_ = 0;
   size_t navigation_list_pruned_counter_ = 0;
   size_t navigation_entries_deleted_counter_ = 0;
   PrunedDetails last_navigation_entry_pruned_details_;
+  ReloadType last_reload_type_;
 };
 
 class TestWebContentsDelegate : public WebContentsDelegate {
@@ -1256,7 +1265,8 @@ TEST_F(NavigationControllerTest, ReloadOriginalRequestURL) {
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
-  // The reload is pending.  The request should point to the original URL.
+  // The reload is pending. The request should point to the original URL.
+  EXPECT_EQ(original_url, navigated_url());
   EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
   EXPECT_EQ(controller.GetPendingEntryIndex(), 0);
@@ -4103,6 +4113,79 @@ TEST_F(NavigationControllerTest, StaleNavigationsResurrected) {
   EXPECT_EQ(url_a, controller.GetEntryAtIndex(0)->GetURL());
   EXPECT_EQ(url_c, controller.GetEntryAtIndex(1)->GetURL());
   EXPECT_EQ(url_b, controller.GetEntryAtIndex(2)->GetURL());
+}
+
+// Tests that successive navigations with intermittent duplicate navigations
+// are correctly marked as reload in the navigation controller.
+// We test the cases where in a navigation is pending/committed before the new
+// navigation is initiated.
+// http://crbug.com/664319
+TEST_F(NavigationControllerTest, MultipleNavigationsAndReload) {
+  NavigationControllerImpl& controller = controller_impl();
+
+  GURL initial_url("http://www.google.com");
+  GURL url_1("http://foo.com");
+  GURL url_2("http://foo2.com");
+
+  // Test 1.
+  // A normal navigation to initial_url should not be marked as a reload.
+  auto navigation1 =
+      NavigationSimulator::CreateBrowserInitiated(initial_url, contents());
+  navigation1->Start();
+  EXPECT_EQ(initial_url, controller.GetVisibleEntry()->GetURL());
+  navigation1->Commit();
+  EXPECT_EQ(ReloadType::NONE, last_reload_type_);
+
+  // Test 2.
+  // A navigation to initial_url with the navigation commit delayed should be
+  // marked as a reload.
+  auto navigation2 =
+      NavigationSimulator::CreateBrowserInitiated(initial_url, contents());
+  navigation2->Start();
+  EXPECT_EQ(initial_url, controller.GetVisibleEntry()->GetURL());
+  navigation2->ReadyToCommit();
+  EXPECT_EQ(initial_url, controller.GetVisibleEntry()->GetURL());
+  EXPECT_EQ(ReloadType::NORMAL, last_reload_type_);
+
+  // Test 3.
+  // A navigation to url_1 while the navigation to intial_url is still pending
+  // should not be marked as a reload.
+  auto navigation3 =
+      NavigationSimulator::CreateBrowserInitiated(url_1, contents());
+  navigation3->Start();
+  EXPECT_EQ(url_1, controller.GetVisibleEntry()->GetURL());
+  EXPECT_EQ(ReloadType::NONE, last_reload_type_);
+
+  // Test 4.
+  // A navigation to url_1 while the previous navigation to url_1 is pending
+  // should not be marked as reload. Even though the URL is the same as the
+  // previous navigation, the previous navigation did not commit. We can only
+  // reload navigations that committed. See https://crbug.com/809040.
+  auto navigation4 =
+      NavigationSimulator::CreateBrowserInitiated(url_1, contents());
+  navigation4->Start();
+  EXPECT_EQ(url_1, controller.GetVisibleEntry()->GetURL());
+  EXPECT_EQ(ReloadType::NONE, last_reload_type_);
+
+  navigation2->Commit();
+
+  // Test 5
+  // A navigation to url_2 followed by a navigation to the previously pending
+  // url_1 should not be marked as a reload.
+  auto navigation5 =
+      NavigationSimulator::CreateBrowserInitiated(url_2, contents());
+  navigation5->Start();
+  EXPECT_EQ(url_2, controller.GetVisibleEntry()->GetURL());
+  EXPECT_EQ(ReloadType::NONE, last_reload_type_);
+
+  controller.LoadURL(url_1, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                     std::string());
+  auto navigation6 =
+      NavigationSimulator::CreateBrowserInitiated(url_1, contents());
+  navigation6->ReadyToCommit();
+  EXPECT_EQ(url_1, controller.GetVisibleEntry()->GetURL());
+  EXPECT_EQ(ReloadType::NONE, last_reload_type_);
+  navigation6->Commit();
 }
 
 // Tests that NavigationUIData has been passed to the NavigationHandle.

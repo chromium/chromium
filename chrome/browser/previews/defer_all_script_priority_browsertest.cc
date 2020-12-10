@@ -235,6 +235,16 @@ class DeferAllScriptPriorityBrowserTest
   DISALLOW_COPY_AND_ASSIGN(DeferAllScriptPriorityBrowserTest);
 };
 
+namespace {
+
+GURL SetQuery(GURL url, const std::string& query) {
+  url::Replacements<char> repls;
+  repls.SetQuery(query.c_str(), url::Component(0, query.length()));
+  return url.ReplaceComponents(repls);
+}
+
+}  // namespace
+
 // Parameter is true if the test should be run with defer feature enabled.
 INSTANTIATE_TEST_SUITE_P(All,
                          DeferAllScriptPriorityBrowserTest,
@@ -262,7 +272,9 @@ IN_PROC_BROWSER_TEST_P(
     SetDeferAllScriptHintWithPageWithPattern(url, "*");
   }
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  // Set query to ensure that it's not treated as a reload as preview metrics
+  // are not recorded for reloads.
+  ui_test_utils::NavigateToURL(browser(), SetQuery(url, "foo"));
 
   double delay_milliseconds = GetFetchTimeForJavaScriptFileInMilliseconds();
 

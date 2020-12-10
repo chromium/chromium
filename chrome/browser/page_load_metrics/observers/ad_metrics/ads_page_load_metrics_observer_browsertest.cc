@@ -1913,9 +1913,11 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   // Create a new waiter for the next navigation and navigate.
   waiter = CreateAdsPageLoadMetricsTestWaiter();
+  // Set query to ensure that it's not treated as a reload as preview metrics
+  // are not recorded for reloads.
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "foo.com", "/ad_tagging/frame_factory.html"));
+                     "foo.com", "/ad_tagging/frame_factory.html?avoid_reload"));
 
   // Load and block the resource. The ads intervention framework should
   // be triggered at this point.

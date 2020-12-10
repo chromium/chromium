@@ -447,10 +447,6 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
       "navigation,rail", "NavigationTiming navigationStart",
       TRACE_EVENT_SCOPE_GLOBAL, request->common_params().navigation_start);
 
-  // Save destination url, as it is needed for
-  // DidStartNavigationToPendingEntry and request could be destroyed after
-  // BeginNavigation below.
-  GURL dest_url = request->common_params().url;
   FrameTreeNode* frame_tree_node = request->frame_tree_node();
 
   navigation_data_ = std::make_unique<NavigationMetricsData>(
