@@ -34,7 +34,8 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 }  // namespace
 
-@interface CredentialDetailsViewController () <UITableViewDataSource>
+@interface CredentialDetailsViewController () <TooltipViewDelegate,
+                                               UITableViewDataSource>
 
 // Current credential.
 @property(nonatomic, weak) id<Credential> credential;
@@ -89,11 +90,8 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
                                   reuseIdentifier:kCellIdentifier];
   }
 
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  cell.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
 
   switch (indexPath.row) {
@@ -164,6 +162,13 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
   }
 }
 
+#pragma mark - TooltipViewDelegate
+
+- (void)tooltipViewWillDismiss:(TooltipView*)tooltipView {
+  NSIndexPath* selectedIndexPath = self.tableView.indexPathForSelectedRow;
+  [self.tableView deselectRowAtIndexPath:selectedIndexPath animated:YES];
+}
+
 #pragma mark - Private
 
 // Copy credential URL to clipboard.
@@ -219,7 +224,6 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
   HighlightButton* button = [HighlightButton buttonWithType:UIButtonTypeCustom];
   button.frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height);
-  button.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   [button setBackgroundImage:image forState:UIControlStateNormal];
   [button setTintColor:[UIColor colorNamed:kBlueColor]];
   [button addTarget:self
@@ -287,6 +291,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
   TooltipView* tooltip = [[TooltipView alloc] initWithKeyWindow:self.view
                                                          target:self
                                                          action:action];
+  tooltip.delegate = self;
   [tooltip showMessage:message atBottomOf:cell];
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   tooltip);

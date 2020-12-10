@@ -121,6 +121,7 @@ static __weak TooltipView* _active;
   if (self == _active) {
     _active = nil;
   }
+  [self.delegate tooltipViewWillDismiss:self];
   [UIView animateWithDuration:kTooltipFadeInTime
       delay:0.0
       options:UIViewAnimationOptionCurveEaseOut

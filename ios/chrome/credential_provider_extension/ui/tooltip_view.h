@@ -7,7 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
+@class TooltipView;
+
+@protocol TooltipViewDelegate
+
+// Informs the delegate that the tooltip is going to be dismissed.
+- (void)tooltipViewWillDismiss:(TooltipView*)tooltipView;
+
+@end
+
 @interface TooltipView : UIView
+
+// Delegate for a tooltip view instance.
+@property(nonatomic, weak) id<TooltipViewDelegate> delegate;
 
 // Init with the target and |action| parameter-less selector.
 - (instancetype)initWithKeyWindow:(UIView*)keyWindow
