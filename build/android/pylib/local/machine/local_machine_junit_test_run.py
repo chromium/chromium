@@ -280,8 +280,10 @@ def _GetTestClasses(file_path):
 
     # Bots write the classpath indexed from src.
     if not os.path.exists(test_jar_path):
-      if test_jar.startswith('src' + os.path.sep):
-        test_jar_path = os.path.join(constants.DIR_SOURCE_ROOT, test_jar[4:])
+      src_relpath = os.path.relpath(constants.DIR_SOURCE_ROOT) + os.path.sep
+      if test_jar.startswith(src_relpath):
+        test_jar_path = os.path.join(constants.DIR_SOURCE_ROOT,
+                                     test_jar[len(src_relpath):])
 
     test_classes += _GetTestClassesFromJar(test_jar_path)
 
