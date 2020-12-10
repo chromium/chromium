@@ -2565,8 +2565,7 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
   if (CompositingReasonFinder::RequiresCompositingForRootScroller(*layer_))
     return true;
 
-  if (!layer_->ScrollsOverflow() &&
-      !layer_->NeedsReorderOverlayOverflowControls())
+  if (!layer_->ScrollsOverflow())
     return false;
 
   if (layer_->Size().IsEmpty())
