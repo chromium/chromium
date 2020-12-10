@@ -26,9 +26,15 @@ class UploadClient {
   using ReportSuccessfulUploadCallback =
       base::RepeatingCallback<void(SequencingInformation)>;
 
+  // ReceivedEncryptionKeyCallback is called if server attached encryption key
+  // to the response.
+  using EncryptionKeyAttachedCallback =
+      base::RepeatingCallback<void(SignedEncryptionInfo)>;
+
   static void Create(
       policy::CloudPolicyClient* cloud_policy_client,
       ReportSuccessfulUploadCallback report_upload_success_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
       base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
           created_cb);
 
@@ -36,7 +42,7 @@ class UploadClient {
   UploadClient(const UploadClient& other) = delete;
   UploadClient& operator=(const UploadClient& other) = delete;
 
-  Status EnqueueUpload(bool need_encryption_key,
+  Status EnqueueUpload(bool need_encryption_keys,
                        std::unique_ptr<std::vector<EncryptedRecord>> record);
 
  private:

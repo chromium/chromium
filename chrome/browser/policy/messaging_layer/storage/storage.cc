@@ -166,6 +166,14 @@ void Storage::Create(
 
     void OnStart() override {
       CheckOnValidSequence();
+
+      // TODO(b/170054326): Locate the latest signed_encryption_key file with
+      // matching key signature after deserialization. Call
+      // storage_->encryption_module_->UpdateAsymmetricKey(...) with the key and
+      // id.
+      // DCHECK(storage_->encryption_module_->has_encryption_key());
+
+      // Construct all queues.
       for (const auto& queue_options : queues_options_) {
         StorageQueue::Create(
             /*options=*/queue_options.second,
@@ -262,6 +270,24 @@ Status Storage::Flush(Priority priority) {
   ASSIGN_OR_RETURN(scoped_refptr<StorageQueue> queue, GetQueue(priority));
   queue->Flush();
   return Status::StatusOK();
+}
+
+void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
+  // TODO(b/170054326): Verify received key signature. Bail out if failed.
+
+  // TODO(b/170054326): Serialize whole signed_encryption_key to a new file,
+  // discard the old one.
+
+  // Assign the received key to encryption module.
+  encryption_module_->UpdateAsymmetricKey(
+      signed_encryption_key.public_asymmetric_key(),
+      signed_encryption_key.public_key_id(), base::BindOnce([](Status status) {
+        if (!status.ok()) {
+          LOG(WARNING) << "Encryption key update failed, status=" << status;
+          return;
+        }
+        // Encryption key updated successfully.
+      }));
 }
 
 bool Storage::has_encryption_key() const {

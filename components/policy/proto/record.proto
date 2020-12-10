@@ -102,5 +102,23 @@ message EncryptedRecord {
   // TODO(b/153651358): Disable an option to send record not encrypted.
   optional EncryptionInfo encryption_info = 2;
 
+  // Sequencing information (required). Must be present to allow
+  // tracking and confirmation of the events by server.
   optional SequencingInformation sequencing_information = 3;
+}
+
+// Encryption public key as delivered from the server and stored in Storage.
+// Signature ensures the key was actually sent by the server and not manipulated
+// afterwards.
+message SignedEncryptionInfo {
+  // Public asymmetric key (required).
+  optional bytes public_asymmetric_key = 1;
+
+  // Public key id (required).
+  // Identifies private key matching |public_asymmetric_key| for the server.
+  optional uint64 public_key_id = 2;
+
+  // Signature of |public_asymmetric_key| (required).
+  // Verified by client against a well-known signature.
+  optional bytes signature = 3;
 }

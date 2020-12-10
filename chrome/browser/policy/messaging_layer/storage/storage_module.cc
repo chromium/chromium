@@ -41,6 +41,11 @@ void StorageModule::ReportSuccess(
       }));
 }
 
+void StorageModule::UpdateEncryptionKey(
+    SignedEncryptionInfo signed_encryption_key) {
+  storage_->UpdateEncryptionKey(std::move(signed_encryption_key));
+}
+
 // static
 void StorageModule::Create(
     const StorageOptions& options,

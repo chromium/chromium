@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 
+#include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
@@ -28,7 +29,9 @@
 
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::MockFunction;
 using ::testing::Return;
+using ::testing::StrictMock;
 using ::testing::WithArgs;
 
 namespace reporting {
@@ -60,26 +63,24 @@ class TestCallbackWaiter {
 
 class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
  public:
-  explicit TestCallbackWaiterWithCounter(int counter_limit)
+  explicit TestCallbackWaiterWithCounter(size_t counter_limit)
       : counter_limit_(counter_limit) {}
 
   void Signal() override {
-    DCHECK_GT(counter_limit_, 0);
-    if (--counter_limit_ == 0) {
+    DCHECK_GT(counter_limit_, 0u);
+    if (--counter_limit_ == 0u) {
       run_loop_.Quit();
     }
   }
 
  private:
-  std::atomic<int> counter_limit_;
+  std::atomic<size_t> counter_limit_;
 };
 
-class TestCompletionResponder {
- public:
-  MOCK_METHOD(void,
-              RecordsHandled,
-              (DmServerUploadService::CompletionResponse));
-};
+using TestCompletionResponder =
+    MockFunction<void(DmServerUploadService::CompletionResponse)>;
+
+using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
 // Helper function composes JSON represented as base::Value from Sequencing
 // information in request.
@@ -87,6 +88,9 @@ base::Value ValueFromSucceededSequencingInfo(
     const base::Optional<base::Value> request) {
   EXPECT_TRUE(request.has_value());
   EXPECT_TRUE(request.value().is_dict());
+  base::Value response(base::Value::Type::DICTIONARY);
+
+  // Retrieve and process sequencing information
   const base::Value* const encrypted_record_list =
       request.value().FindListKey("encryptedRecord");
   EXPECT_TRUE(encrypted_record_list != nullptr);
@@ -95,12 +99,30 @@ base::Value ValueFromSucceededSequencingInfo(
       encrypted_record_list->GetList().rbegin()->FindDictKey(
           "sequencingInformation");
   EXPECT_TRUE(seq_info != nullptr);
-  base::Value response(base::Value::Type::DICTIONARY);
   response.SetPath("lastSucceedUploadedRecord", seq_info->Clone());
+
+  // If attach_encryption_settings it true, process that.
+  const auto attach_encryption_settings =
+      request.value().FindBoolKey("attachEncryptionSettings");
+  if (attach_encryption_settings.has_value() &&
+      attach_encryption_settings.value()) {
+    base::Value encryption_settings{base::Value::Type::DICTIONARY};
+    std::string public_key;
+    base::Base64Encode("PUBLIC KEY", &public_key);
+    encryption_settings.SetStringKey("publicKey", public_key);
+    encryption_settings.SetIntKey("publicKeyId", 12345);
+    std::string public_key_signature;
+    // TODO(b/170054326): Generate signature.
+    base::Base64Encode("PUBLIC KEY SIG", &public_key_signature);
+    encryption_settings.SetStringKey("publicKeySignature",
+                                     public_key_signature);
+    response.SetPath("encryptionSettings", std::move(encryption_settings));
+  }
+
   return response;
 }
 
-class RecordHandlerImplTest : public testing::Test {
+class RecordHandlerImplTest : public ::testing::TestWithParam<bool> {
  public:
   RecordHandlerImplTest()
       : client_(std::make_unique<policy::MockCloudPolicyClient>()) {}
@@ -110,6 +132,9 @@ class RecordHandlerImplTest : public testing::Test {
     client_->SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
   }
+
+  bool need_encryption_key() const { return GetParam(); }
+
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
@@ -135,7 +160,7 @@ std::unique_ptr<std::vector<EncryptedRecord>> BuildTestRecordsVector(
   return test_records;
 }
 
-TEST_F(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
+TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   constexpr size_t kNumTestRecords = 10;
   constexpr uint64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
@@ -154,24 +179,34 @@ TEST_F(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
 
   RecordHandlerImpl handler(client_.get());
 
+  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
+  StrictMock<TestCompletionResponder> responder;
   TestCallbackWaiter responder_waiter;
-  TestCompletionResponder responder;
-  ::testing::InSequence seq;
-  EXPECT_CALL(responder, RecordsHandled(ValueEqualsProto(
-                             test_records->back().sequencing_information())))
+
+  EXPECT_CALL(encryption_key_attached, Call(_))
+      .Times(need_encryption_key() ? 1 : 0);
+
+  EXPECT_CALL(
+      responder,
+      Call(ValueEqualsProto(test_records->back().sequencing_information())))
       .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
 
-  auto responder_callback = base::BindOnce(
-      &TestCompletionResponder::RecordsHandled, base::Unretained(&responder));
+  auto encryption_key_attached_callback =
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
 
-  handler.HandleRecords(/*need_encryption_key=*/false, std::move(test_records),
-                        std::move(responder_callback));
+  auto responder_callback = base::BindOnce(&TestCompletionResponder::Call,
+                                           base::Unretained(&responder));
+
+  handler.HandleRecords(need_encryption_key(), std::move(test_records),
+                        std::move(responder_callback),
+                        encryption_key_attached_callback);
 
   client_waiter.Wait();
   responder_waiter.Wait();
 }
 
-TEST_F(RecordHandlerImplTest, ReportsEarlyFailure) {
+TEST_P(RecordHandlerImplTest, ReportsEarlyFailure) {
   uint64_t kNumSuccessfulUploads = 5;
   uint64_t kNumTestRecords = 10;
   uint64_t kGenerationId = 1234;
@@ -180,44 +215,59 @@ TEST_F(RecordHandlerImplTest, ReportsEarlyFailure) {
   // Wait kNumSuccessfulUploads times + 1 for the failure.
   TestCallbackWaiterWithCounter client_waiter{kNumSuccessfulUploads + 1};
 
-  ::testing::InSequence seq;
-  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
-      .Times(kNumSuccessfulUploads)
-      .WillRepeatedly(WithArgs<0, 2>(
-          Invoke([&client_waiter](
-                     base::Value request,
-                     policy::CloudPolicyClient::ResponseCallback callback) {
-            std::move(callback).Run(
-                ValueFromSucceededSequencingInfo(std::move(request)));
-            client_waiter.Signal();
-          })));
-  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
-      .WillOnce(WithArgs<2>(Invoke(
-          [&client_waiter](
-              base::OnceCallback<void(base::Optional<base::Value>)> callback) {
-            std::move(callback).Run(base::nullopt);
-            client_waiter.Signal();
-          })));
-
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+        .Times(kNumSuccessfulUploads)
+        .WillRepeatedly(WithArgs<0, 2>(
+            Invoke([&client_waiter](
+                       base::Value request,
+                       policy::CloudPolicyClient::ResponseCallback callback) {
+              std::move(callback).Run(
+                  ValueFromSucceededSequencingInfo(std::move(request)));
+              client_waiter.Signal();
+            })));
+    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+        .WillOnce(WithArgs<2>(Invoke(
+            [&client_waiter](base::OnceCallback<void(
+                                 base::Optional<base::Value>)> callback) {
+              std::move(callback).Run(base::nullopt);
+              client_waiter.Signal();
+            })));
+  }
   RecordHandlerImpl handler(client_.get());
 
+  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
+  StrictMock<TestCompletionResponder> responder;
   TestCallbackWaiter responder_waiter;
-  TestCompletionResponder responder;
+
+  EXPECT_CALL(encryption_key_attached, Call(_))
+      .Times(need_encryption_key() ? 1 : 0);
+
   EXPECT_CALL(
       responder,
-      RecordsHandled(ValueEqualsProto(
+      Call(ValueEqualsProto(
           (*test_records)[kNumSuccessfulUploads - 1].sequencing_information())))
       .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
 
-  auto responder_callback = base::BindOnce(
-      &TestCompletionResponder::RecordsHandled, base::Unretained(&responder));
+  auto encryption_key_attached_callback =
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
 
-  handler.HandleRecords(/*need_encryption_key=*/false, std::move(test_records),
-                        std::move(responder_callback));
+  auto responder_callback = base::BindOnce(&TestCompletionResponder::Call,
+                                           base::Unretained(&responder));
+
+  handler.HandleRecords(need_encryption_key(), std::move(test_records),
+                        std::move(responder_callback),
+                        encryption_key_attached_callback);
 
   client_waiter.Wait();
   responder_waiter.Wait();
 }
+
+INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,
+                         RecordHandlerImplTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace reporting

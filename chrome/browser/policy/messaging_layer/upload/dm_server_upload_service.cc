@@ -73,11 +73,13 @@ DmServerUploader::DmServerUploader(
     std::unique_ptr<std::vector<EncryptedRecord>> records,
     RecordHandler* handler,
     CompletionCallback completion_cb,
+    EncryptionKeyAttachedCallback encryption_key_attached_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
       need_encryption_key_(need_encryption_key),
       encrypted_records_(std::move(records)),
+      encryption_key_attached_cb_(encryption_key_attached_cb),
       handler_(handler) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -138,7 +140,8 @@ void DmServerUploader::HandleRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   handler_->HandleRecords(
       need_encryption_key_, std::move(encrypted_records_),
-      base::BindOnce(&DmServerUploader::Complete, base::Unretained(this)));
+      base::BindOnce(&DmServerUploader::Complete, base::Unretained(this)),
+      encryption_key_attached_cb_);
 }
 
 void DmServerUploader::Complete(CompletionResponse completion_response) {
@@ -168,6 +171,7 @@ Status DmServerUploader::IsRecordValid(
 void DmServerUploadService::Create(
     policy::CloudPolicyClient* client,
     ReportSuccessfulUploadCallback report_upload_success_cb,
+    EncryptionKeyAttachedCallback encryption_key_attached_cb,
     base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
         created_cb) {
   if (client == nullptr) {
@@ -176,16 +180,18 @@ void DmServerUploadService::Create(
     return;
   }
 
-  auto uploader = base::WrapUnique(
-      new DmServerUploadService(std::move(client), report_upload_success_cb));
+  auto uploader = base::WrapUnique(new DmServerUploadService(
+      std::move(client), report_upload_success_cb, encryption_key_attached_cb));
   InitRecordHandler(std::move(uploader), std::move(created_cb));
 }
 
 DmServerUploadService::DmServerUploadService(
     policy::CloudPolicyClient* client,
-    ReportSuccessfulUploadCallback upload_cb)
+    ReportSuccessfulUploadCallback upload_cb,
+    EncryptionKeyAttachedCallback encryption_key_attached_cb)
     : client_(std::move(client)),
       upload_cb_(upload_cb),
+      encryption_key_attached_cb_(encryption_key_attached_cb),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
 
 DmServerUploadService::~DmServerUploadService() = default;
@@ -197,7 +203,7 @@ Status DmServerUploadService::EnqueueUpload(
       need_encryption_key, std::move(records), handler_.get(),
       base::BindOnce(&DmServerUploadService::UploadCompletion,
                      base::Unretained(this)),
-      sequenced_task_runner_);
+      encryption_key_attached_cb_, sequenced_task_runner_);
   return Status::StatusOK();
 }
 

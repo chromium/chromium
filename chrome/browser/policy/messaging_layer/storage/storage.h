@@ -65,6 +65,10 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Returns error if cannot start upload.
   Status Flush(Priority priority);
 
+  // If the server attached signed encryption key to the response, it needs to
+  // be paased here.
+  void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key);
+
   // Returns `false` if encryption key has not been found in the Storage during
   // initialization and not received from the server yet, and `true` otherwise.
   // The result is lazy: the method may return `false` for some time even after

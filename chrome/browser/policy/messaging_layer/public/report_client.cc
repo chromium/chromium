@@ -414,6 +414,8 @@ void ReportingClient::InitializingContext::CreateUploadClient() {
       std::move(client_config_->cloud_policy_client),
       base::BindRepeating(&StorageModule::ReportSuccess,
                           client_config_->storage),
+      base::BindRepeating(&StorageModule::UpdateEncryptionKey,
+                          client_config_->storage),
       base::BindOnce(&InitializingContext::OnUploadClientCreated,
                      base::Unretained(this)));
 }
