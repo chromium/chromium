@@ -219,23 +219,19 @@ NTPResourceCache::WindowType NTPResourceCache::GetWindowType(
 }
 
 base::RefCountedMemory* NTPResourceCache::GetNewTabGuestHTML() {
-  if (!profile_->IsEphemeralGuestProfile()) {
-    if (!new_tab_guest_html_) {
-      GuestNTPInfo guest_ntp_info{kLearnMoreGuestSessionUrl, IDR_GUEST_TAB_HTML,
-                                  IDS_NEW_TAB_GUEST_SESSION_HEADING,
-                                  IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION};
-      new_tab_guest_html_ = CreateNewTabGuestHTML(guest_ntp_info);
-    }
-
-    return new_tab_guest_html_.get();
+  // TODO(crbug.com/1134111): For full launch of ephemeral Guest profiles,
+  // instead of the below code block, use IdentityManager for ephemeral Guest
+  // profiles to check sign in status and return either
+  // |CreateNewTabEphemeralGuestSignedInHTML()| or
+  // |CreateNewTabEphemeralGuestSignedOutHTML()|.
+  if (!new_tab_guest_html_) {
+    GuestNTPInfo guest_ntp_info{kLearnMoreGuestSessionUrl, IDR_GUEST_TAB_HTML,
+                                IDS_NEW_TAB_GUEST_SESSION_HEADING,
+                                IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION};
+    new_tab_guest_html_ = CreateNewTabGuestHTML(guest_ntp_info);
   }
 
-  // TODO(crbug.com/1134111): Use IdentityManager to check sign in status when
-  // Ephemeral Guest sign in functioncality is implemented.
-  const bool is_signed_in =
-      signin_util::GuestSignedInUserData::IsSignedIn(profile_);
-  return is_signed_in ? CreateNewTabEphemeralGuestSignedInHTML()
-                      : CreateNewTabEphemeralGuestSignedOutHTML();
+  return new_tab_guest_html_.get();
 }
 
 base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(WindowType win_type) {
