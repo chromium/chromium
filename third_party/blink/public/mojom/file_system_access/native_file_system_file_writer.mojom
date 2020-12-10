@@ -32,9 +32,6 @@ interface NativeFileSystemFileWriter {
 
   // Closes the file writer. This will materialize the writes operations on the
   // intended file target in the case of atomic writes.
-  // Close() will close the mojo pipe after completion.
-  // If the mojo pipe closes before Close() is invoked, the write operation is deemed
-  // unsuccessful. Any temporary artifacts will be deleted.
   // Returns whether the operation succeeded.
   Close() => (NativeFileSystemError result);
 };

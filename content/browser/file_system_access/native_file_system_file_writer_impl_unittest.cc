@@ -647,7 +647,8 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest, Block) {
       file_system_context_.get(), test_file_url_, 0));
 }
 
-TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest, HandleCloseDuringCheck) {
+TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
+       HandleCloseDuringCheckOK) {
   uint64_t bytes_written;
   NativeFileSystemStatus result = WriteSync(0, "abc", &bytes_written);
   EXPECT_EQ(result, NativeFileSystemStatus::kOk);
@@ -678,6 +679,48 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest, HandleCloseDuringCheck) {
 
   std::move(sb_callback)
       .Run(NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow);
+
+  // Swap file should now be deleted, target file should be written out.
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_swap_url_,
+      storage::AsyncFileTestHelper::kDontCheckSize));
+  EXPECT_TRUE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_file_url_, 3));
+}
+
+TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
+       HandleCloseDuringCheckNotOK) {
+  uint64_t bytes_written;
+  NativeFileSystemStatus result = WriteSync(0, "abc", &bytes_written);
+  EXPECT_EQ(result, NativeFileSystemStatus::kOk);
+  EXPECT_EQ(bytes_written, 3u);
+
+  using SBCallback = base::OnceCallback<void(
+      NativeFileSystemPermissionContext::AfterWriteCheckResult)>;
+  SBCallback sb_callback;
+  base::RunLoop loop;
+  EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
+      .WillOnce(testing::Invoke([&](NativeFileSystemWriteItem* item,
+                                    GlobalFrameRoutingId frame_id,
+                                    SBCallback& callback) {
+        sb_callback = std::move(callback);
+        loop.Quit();
+      }));
+
+  handle_->Close(base::DoNothing());
+  loop.Run();
+
+  remote_.reset();
+  // Destructor should not have deleted swap file with an active safe browsing
+  // check pending.
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_swap_url_,
+      storage::AsyncFileTestHelper::kDontCheckSize));
+
+  std::move(sb_callback)
+      .Run(NativeFileSystemPermissionContext::AfterWriteCheckResult::kBlock);
 
   // Swap file should now be deleted, target file should be unmodified.
   task_environment_.RunUntilIdle();

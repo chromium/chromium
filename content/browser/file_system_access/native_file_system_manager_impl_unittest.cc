@@ -517,7 +517,7 @@ TEST_F(NativeFileSystemManagerImplTest,
       storage::AsyncFileTestHelper::kDontCheckSize));
 }
 
-TEST_F(NativeFileSystemManagerImplTest, FileWriterCloseAbortsOnDestruct) {
+TEST_F(NativeFileSystemManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
   auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
       kTestOrigin, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("test"));
@@ -541,17 +541,53 @@ TEST_F(NativeFileSystemManagerImplTest, FileWriterCloseAbortsOnDestruct) {
       storage::AsyncFileTestHelper::kDontCheckSize));
   writer_remote->Close(base::DoNothing());
 
-  // Severs the mojo pipe, causing the writer to be destroyed.
+  EXPECT_CALL(permission_context_,
+              PerformAfterWriteChecks_(testing::_, kFrameId, testing::_))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          NativeFileSystemPermissionContext::AfterWriteCheckResult::kAllow));
+
+  // Severs the mojo pipe, but the writer should not be destroyed.
   writer_remote.reset();
   base::RunLoop().RunUntilIdle();
 
-  // Since the writer was destroyed before close completed, the swap file should
-  // have been destroyed and the target file should have been left untouched.
+  // Since the close should complete, the swap file should have been destroyed
+  // and the write should be reflected in the target file.
   ASSERT_FALSE(storage::AsyncFileTestHelper::FileExists(
       file_system_context_.get(), test_swap_url,
       storage::AsyncFileTestHelper::kDontCheckSize));
+  ASSERT_TRUE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_file_url, 3));
+}
+
+TEST_F(NativeFileSystemManagerImplTest,
+       FileWriterNoWritesIfConnectionLostBeforeClose) {
+  auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestOrigin, storage::kFileSystemTypeTest,
+      base::FilePath::FromUTF8Unsafe("test"));
+
+  auto test_swap_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestOrigin, storage::kFileSystemTypeTest,
+      base::FilePath::FromUTF8Unsafe("test.crswap"));
+
+  ASSERT_EQ(base::File::FILE_OK,
+            storage::AsyncFileTestHelper::CreateFileWithData(
+                file_system_context_.get(), test_swap_url, "foo", 3));
+
+  mojo::Remote<blink::mojom::NativeFileSystemFileWriter> writer_remote(
+      manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
+                                 NativeFileSystemManagerImpl::SharedHandleState(
+                                     allow_grant_, allow_grant_, {})));
+
+  // Severs the mojo pipe. The writer should be destroyed.
+  writer_remote.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Neither the target file nor the swap file should exist.
   ASSERT_FALSE(storage::AsyncFileTestHelper::FileExists(
       file_system_context_.get(), test_file_url,
+      storage::AsyncFileTestHelper::kDontCheckSize));
+  ASSERT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_swap_url,
       storage::AsyncFileTestHelper::kDontCheckSize));
 }
 

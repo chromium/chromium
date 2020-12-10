@@ -79,6 +79,10 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
 
   void OnDisconnect();
 
+  // Delete the FileWriter after Close if the mojo pipe is unbound.
+  void CallCloseCallbackAndMaybeDeleteThis(
+      blink::mojom::NativeFileSystemErrorPtr result);
+
   void WriteImpl(uint64_t offset,
                  mojo::PendingRemote<blink::mojom::Blob> data,
                  WriteCallback callback);
@@ -91,34 +95,18 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
                 bool complete);
   void TruncateImpl(uint64_t length, TruncateCallback callback);
   void CloseImpl(CloseCallback callback);
-  // The following two methods are static, because they need to be invoked to
-  // perform cleanup even if the writer was deleted before they were invoked.
-  static void DoAfterWriteCheck(
-      base::WeakPtr<NativeFileSystemFileWriterImpl> file_writer,
-      scoped_refptr<NativeFileSystemManagerImpl> manager,
-      const storage::FileSystemURL& swap_url,
-      NativeFileSystemFileWriterImpl::CloseCallback callback,
-      base::File::Error hash_result,
-      const std::string& hash,
-      int64_t size);
-  static void DidAfterWriteCheck(
-      base::WeakPtr<NativeFileSystemFileWriterImpl> file_writer,
-      scoped_refptr<NativeFileSystemManagerImpl> manager,
-      const storage::FileSystemURL& swap_url,
-      NativeFileSystemFileWriterImpl::CloseCallback callback,
+  void DoAfterWriteCheck(base::File::Error hash_result,
+                         const std::string& hash,
+                         int64_t size);
+  void DidAfterWriteCheck(
       NativeFileSystemPermissionContext::AfterWriteCheckResult result);
-  void DidPassAfterWriteCheck(CloseCallback callback);
-  void DidSwapFileSkipQuarantine(CloseCallback callback,
-                                 base::File::Error result);
-  static void DidSwapFileDoQuarantine(
-      base::WeakPtr<NativeFileSystemFileWriterImpl> file_writer,
+  void DidSwapFileSkipQuarantine(base::File::Error result);
+  void DidSwapFileDoQuarantine(
       const storage::FileSystemURL& target_url,
       const GURL& referrer_url,
       mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote,
-      CloseCallback callback,
       base::File::Error result);
   void DidAnnotateFile(
-      CloseCallback callback,
       mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote,
       quarantine::mojom::QuarantineFileResult result);
 
@@ -156,7 +144,20 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
   // execute a move operation from the swap URL to the target URL at `url_`. In
   // most filesystems, this move operation is atomic.
   storage::FileSystemURL swap_url_;
+
+  // NativeFileSystemWriter lifetime management has the following cases:
+  // 1) The mojo pipe is severed before Close() is invoked.
+  //    - Abort the transaction from the OnDisconnect method.
+  // 2) The mojo pipe is severed before Close() finishes.
+  //    - The Close() call is allowed to finish.
+  //    - The Writer is destroyed immediately afterwards, via the
+  //      CallCloseCallbackAndMaybeDeleteThis method.
+  // 3) The mojo pipe exists when Close() finishes.
+  //    - The Writer will exist for as long as the mojo pipe is connected.
+  //    - The Writer is destroyed via the OnDisconnect method.
   State state_ = State::kOpen;
+  // This callback is non-null when the State is kClosePending or kCloseError.
+  CloseCallback close_callback_;
 
   download::QuarantineConnectionCallback quarantine_connection_callback_;
 
