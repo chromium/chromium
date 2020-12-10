@@ -747,8 +747,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableNewSectioning",
+                    "name": "AllEnabledFeatures",
                     "enable_features": [
+                        "AutofillFixFillableFieldTypes",
                         "AutofillUseNewSectioningMethod"
                     ]
                 }
