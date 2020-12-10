@@ -461,8 +461,6 @@ class CORE_EXPORT HTMLMediaElement
   bool IsInAutoPIP() const override { return false; }
   void ResumePlayback() final;
   void PausePlayback() final;
-  void RequestEnterPictureInPicture() override {}
-  void RequestExitPictureInPicture() override {}
 
   // Returns a reference to the mojo remote for the MediaPlayerHost interface,
   // requesting it first from the BrowserInterfaceBroker if needed. It is an
@@ -474,6 +472,8 @@ class CORE_EXPORT HTMLMediaElement
   void RequestPause(bool triggered_by_user) override;
   void RequestSeekForward(base::TimeDelta seek_time) override;
   void RequestSeekBackward(base::TimeDelta seek_time) override;
+  void RequestEnterPictureInPicture() override {}
+  void RequestExitPictureInPicture() override {}
 
   void LoadTimerFired(TimerBase*);
   void ProgressEventTimerFired(TimerBase*);

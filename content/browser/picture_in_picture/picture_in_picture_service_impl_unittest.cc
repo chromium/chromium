@@ -112,11 +112,13 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  // content::mojom::MediaPlayer implementation.
+  // media::mojom::MediaPlayer implementation.
   void RequestPlay() override {}
   void RequestPause(bool triggered_by_user) override {}
   void RequestSeekForward(base::TimeDelta seek_time) override {}
   void RequestSeekBackward(base::TimeDelta seek_time) override {}
+  void RequestEnterPictureInPicture() override {}
+  void RequestExitPictureInPicture() override {}
 
  private:
   mojo::Receiver<media::mojom::MediaPlayer> receiver_{this};

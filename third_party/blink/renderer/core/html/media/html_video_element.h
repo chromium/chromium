@@ -188,8 +188,6 @@ class CORE_EXPORT HTMLVideoElement final
   void MediaRemotingStopped(int error_code) final;
   DisplayType GetDisplayType() const final;
   bool IsInAutoPIP() const final;
-  void RequestEnterPictureInPicture() final;
-  void RequestExitPictureInPicture() final;
   void OnPictureInPictureStateChange() final;
 
   // Used by the PictureInPictureController as callback when the video element
@@ -236,6 +234,12 @@ class CORE_EXPORT HTMLVideoElement final
   void OnPlay() final;
   void OnLoadStarted() final;
   void OnLoadFinished() final;
+
+  // Video-specific overrides for part of the media::mojom::MediaPlayer
+  // interface, fully implemented in the parent class HTMLMediaElement.
+  void RequestEnterPictureInPicture() final;
+  void RequestExitPictureInPicture() final;
+
   void DidMoveToNewDocument(Document& old_document) override;
 
   void UpdatePictureInPictureAvailability();

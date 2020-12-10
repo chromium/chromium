@@ -90,14 +90,18 @@ void MediaSessionController::OnSetVolumeMultiplier(int player_id,
 
 void MediaSessionController::OnEnterPictureInPicture(int player_id) {
   DCHECK_EQ(player_id_, player_id);
-  id_.render_frame_host->Send(new MediaPlayerDelegateMsg_EnterPictureInPicture(
-      id_.render_frame_host->GetRoutingID(), id_.delegate_id));
+
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestEnterPictureInPicture();
 }
 
 void MediaSessionController::OnExitPictureInPicture(int player_id) {
   DCHECK_EQ(player_id_, player_id);
-  id_.render_frame_host->Send(new MediaPlayerDelegateMsg_ExitPictureInPicture(
-      id_.render_frame_host->GetRoutingID(), id_.delegate_id));
+
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestExitPictureInPicture();
 }
 
 void MediaSessionController::OnSetAudioSinkId(

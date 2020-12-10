@@ -103,6 +103,10 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
     run_loop_->Quit();
   }
 
+  void RequestEnterPictureInPicture() override {}
+
+  void RequestExitPictureInPicture() override {}
+
   // Getters used from MediaSessionControllerTest.
   bool received_play() const { return received_play_; }
 

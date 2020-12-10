@@ -358,6 +358,17 @@ void HTMLVideoElement::OnLoadFinished() {
   UpdatePictureInPictureAvailability();
 }
 
+void HTMLVideoElement::RequestEnterPictureInPicture() {
+  PictureInPictureController::From(GetDocument())
+      .EnterPictureInPicture(this, nullptr /* promise */,
+                             nullptr /* options */);
+}
+
+void HTMLVideoElement::RequestExitPictureInPicture() {
+  PictureInPictureController::From(GetDocument())
+      .ExitPictureInPicture(this, nullptr);
+}
+
 void HTMLVideoElement::PaintCurrentFrame(
     cc::PaintCanvas* canvas,
     const IntRect& dest_rect,
@@ -670,17 +681,6 @@ DisplayType HTMLVideoElement::GetDisplayType() const {
 
 bool HTMLVideoElement::IsInAutoPIP() const {
   return is_auto_picture_in_picture_;
-}
-
-void HTMLVideoElement::RequestEnterPictureInPicture() {
-  PictureInPictureController::From(GetDocument())
-      .EnterPictureInPicture(this, nullptr /* promise */,
-                             nullptr /* options */);
-}
-
-void HTMLVideoElement::RequestExitPictureInPicture() {
-  PictureInPictureController::From(GetDocument())
-      .ExitPictureInPicture(this, nullptr);
 }
 
 void HTMLVideoElement::OnPictureInPictureStateChange() {

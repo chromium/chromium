@@ -102,8 +102,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   void OnMediaDelegateSuspendAllMediaPlayers();
   void OnMediaDelegateVolumeMultiplierUpdate(int player_id, double multiplier);
   void OnMediaDelegateBecamePersistentVideo(int player_id, bool value);
-  void OnMediaDelegateEnterPictureInPicture(int player_id);
-  void OnMediaDelegateExitPictureInPicture(int player_id);
   void OnMediaDelegateSetAudioSink(int player_id, std::string sink_id);
   void OnMediaDelegatePowerExperimentState(int player_id, bool state);
 

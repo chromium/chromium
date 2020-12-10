@@ -42,8 +42,6 @@ class MockWebMediaPlayerDelegateObserver
   MOCK_METHOD0(OnFrameClosed, void());
   MOCK_METHOD0(OnFrameShown, void());
   MOCK_METHOD0(OnIdleTimeout, void());
-  MOCK_METHOD0(OnEnterPictureInPicture, void());
-  MOCK_METHOD0(OnExitPictureInPicture, void());
   MOCK_METHOD1(OnVolumeMultiplierUpdate, void(double));
   MOCK_METHOD1(OnBecamePersistentVideo, void(bool));
   MOCK_METHOD0(OnPictureInPictureModeEnded, void());

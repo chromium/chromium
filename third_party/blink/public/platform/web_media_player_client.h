@@ -166,12 +166,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Request the player to pause playback.
   virtual void PausePlayback() = 0;
 
-  // Request the player to enter picture-in-picture.
-  virtual void RequestEnterPictureInPicture() = 0;
-
-  // Request the player to exit picture-in-picture.
-  virtual void RequestExitPictureInPicture() = 0;
-
   // Notify the client that one of the state used by Picture-in-Picture has
   // changed. The client will then have to poll the states from the associated
   // WebMediaPlayer.

@@ -49,12 +49,6 @@ IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_BecamePersistentVideo,
                     int /* delegate_id, distinguishes instances */,
                     double /* is_persistent */)
 
-IPC_MESSAGE_ROUTED1(MediaPlayerDelegateMsg_EnterPictureInPicture,
-                    int /* delegate_id, distinguishes instances */)
-
-IPC_MESSAGE_ROUTED1(MediaPlayerDelegateMsg_ExitPictureInPicture,
-                    int /* delegate_id, distinguishes instances */)
-
 IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_SetAudioSinkId,
                     int /* delegate_id, distinguishes instances */,
                     std::string /* sink_id */)

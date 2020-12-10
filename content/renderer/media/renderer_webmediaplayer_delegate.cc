@@ -280,10 +280,6 @@ bool RendererWebMediaPlayerDelegate::OnMessageReceived(
                         OnMediaDelegateVolumeMultiplierUpdate)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_BecamePersistentVideo,
                         OnMediaDelegateBecamePersistentVideo)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_EnterPictureInPicture,
-                        OnMediaDelegateEnterPictureInPicture)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_ExitPictureInPicture,
-                        OnMediaDelegateExitPictureInPicture)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SetAudioSinkId,
                         OnMediaDelegateSetAudioSink)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_NotifyPowerExperimentState,
@@ -340,20 +336,6 @@ void RendererWebMediaPlayerDelegate::OnMediaDelegateBecamePersistentVideo(
   Observer* observer = id_map_.Lookup(player_id);
   if (observer)
     observer->OnBecamePersistentVideo(value);
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateEnterPictureInPicture(
-    int player_id) {
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnEnterPictureInPicture();
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateExitPictureInPicture(
-    int player_id) {
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnExitPictureInPicture();
 }
 
 void RendererWebMediaPlayerDelegate::OnMediaDelegateSetAudioSink(

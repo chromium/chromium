@@ -616,8 +616,6 @@ class WebMediaPlayerMSTest
   void MediaRemotingStopped(int error_code) override {}
   void ResumePlayback() override {}
   void PausePlayback() override {}
-  void RequestEnterPictureInPicture() override {}
-  void RequestExitPictureInPicture() override {}
   Features GetFeatures() override { return Features(); }
 
   // Implementation of cc::VideoFrameProvider::Client

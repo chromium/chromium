@@ -19,6 +19,12 @@ interface MediaPlayer {
 
   // Requests the media player to move backward the media playback position.
   RequestSeekBackward(mojo_base.mojom.TimeDelta seek_time);
+
+  // Requests the media player to enter the Picture-in-Picture mode.
+  RequestEnterPictureInPicture();
+
+  // Requests the media player to exit the Picture-in-Picture mode.
+  RequestExitPictureInPicture();
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

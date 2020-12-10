@@ -2578,14 +2578,6 @@ void WebMediaPlayerImpl::OnIdleTimeout() {
   UpdatePlayState();
 }
 
-void WebMediaPlayerImpl::OnEnterPictureInPicture() {
-  client_->RequestEnterPictureInPicture();
-}
-
-void WebMediaPlayerImpl::OnExitPictureInPicture() {
-  client_->RequestExitPictureInPicture();
-}
-
 void WebMediaPlayerImpl::OnSetAudioSink(const std::string& sink_id) {
   SetSinkId(WebString::FromASCII(sink_id),
             base::DoNothing::Once<base::Optional<blink::WebSetSinkIdError>>());
