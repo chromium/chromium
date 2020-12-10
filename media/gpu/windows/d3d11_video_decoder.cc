@@ -602,22 +602,31 @@ void D3D11VideoDecoder::DoDecode() {
         return;
       CreatePictureBuffers();
     } else if (result == media::AcceleratedVideoDecoder::kConfigChange) {
-      if (profile_ != accelerated_video_decoder_->GetProfile()) {
-        profile_ = accelerated_video_decoder_->GetProfile();
-        config_.set_profile(profile_);
-      }
       // Before the first frame, we get a config change that we should ignore.
       // We only want to take action if this is a mid-stream config change.  We
       // could wait until now to allocate the first D3D11VideoDecoder, but we
       // don't, so that init can fail rather than decoding if there's a problem
-      // creating it.  If there's a config change at the start of the stream,
-      // then this might not work.
-      if (!picture_buffers_.size())
+      // creating it.  We could also unconditionally re-allocate the decoder,
+      // but we keep it if it's ready to go.
+      const auto new_profile = accelerated_video_decoder_->GetProfile();
+      const auto new_coded_size = accelerated_video_decoder_->GetPicSize();
+      if (new_profile == config_.profile() &&
+          new_coded_size == config_.coded_size()) {
         continue;
+      }
 
       // Update the config.
-      const auto new_coded_size = accelerated_video_decoder_->GetPicSize();
+      MEDIA_LOG(INFO, media_log_)
+          << "D3D11VideoDecoder config change: profile: "
+          << static_cast<int>(new_profile) << " coded_size: ("
+          << new_coded_size.width() << ", " << new_coded_size.height() << ")";
+      profile_ = new_profile;
+      config_.set_profile(profile_);
       config_.set_coded_size(new_coded_size);
+
+      // Replace the decoder, and clear any picture buffers we have.  It's okay
+      // if we don't have any picture buffer yet; this might be before the
+      // accelerated decoder asked for any.
       auto video_decoder_or_error = CreateD3D11Decoder();
       if (video_decoder_or_error.has_error()) {
         NotifyError(video_decoder_or_error.error());
