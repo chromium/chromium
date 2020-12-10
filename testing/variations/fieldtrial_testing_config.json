@@ -8084,6 +8084,25 @@
             ]
         }
     ],
+    "WebRTC-Audio-NetEqDelayManagerConfig": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "linux",
+                "ios",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "quantile:0.95,forget_factor:0.983,resample_interval_ms:500"
+                }
+            ]
+        }
+    ],
     "WebRTC-Audio-SendSideBwe": [
         {
             "platforms": [
