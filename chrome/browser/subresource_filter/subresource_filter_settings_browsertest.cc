@@ -238,8 +238,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
   // TODO(csharrison): Add support for more than one URL.
   ConfigureAsPhishingURL(a_url);
 
-  ChromeSubresourceFilterClient* client =
-      ChromeSubresourceFilterClient::FromWebContents(web_contents());
   auto test_clock = std::make_unique<base::SimpleTestClock>();
   base::SimpleTestClock* raw_clock = test_clock.get();
   settings_manager()->set_clock_for_testing(std::move(test_clock));
@@ -249,8 +247,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
   // First load should trigger the UI.
   ui_test_utils::NavigateToURL(browser(), a_url);
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
-  EXPECT_TRUE(client->did_show_ui_for_navigation());
 
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUIShown, 1);
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
       subresource_filter::SubresourceFilterAction::kUISuppressed, 0);
@@ -259,8 +259,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
   ui_test_utils::NavigateToURL(browser(), a_url);
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
-  EXPECT_EQ(client->did_show_ui_for_navigation(), false);
-
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUIShown, 1);
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
       subresource_filter::SubresourceFilterAction::kUISuppressed, 1);
@@ -270,7 +271,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
   // Load to another domain should trigger the UI.
   ui_test_utils::NavigateToURL(browser(), b_url);
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
-  EXPECT_TRUE(client->did_show_ui_for_navigation());
+
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUIShown, 2);
 
   ConfigureAsPhishingURL(a_url);
 
@@ -280,8 +284,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
           kDelayBeforeShowingInfobarAgain);
   ui_test_utils::NavigateToURL(browser(), a_url);
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
-  EXPECT_TRUE(client->did_show_ui_for_navigation());
 
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUIShown, 3);
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
       subresource_filter::SubresourceFilterAction::kUISuppressed, 1);

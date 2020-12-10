@@ -27,7 +27,7 @@ class SubresourceFilterClient {
   virtual ~SubresourceFilterClient() = default;
 
   // Informs the embedder to show some UI indicating that resources are being
-  // blocked.
+  // blocked. This method will be called at most once per main-frame navigation.
   virtual void ShowNotification() = 0;
 
   // Called when the activation decision is otherwise completely computed by the

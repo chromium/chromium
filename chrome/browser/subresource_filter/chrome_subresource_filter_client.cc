@@ -75,16 +75,6 @@ ChromeSubresourceFilterClient* ChromeSubresourceFilterClient::FromWebContents(
       throttle_manager->client());
 }
 
-void ChromeSubresourceFilterClient::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInMainFrame() &&
-      !navigation_handle->IsSameDocument()) {
-    // TODO(csharrison): This should probably be reset at commit time, not at
-    // navigation start.
-    did_show_ui_for_navigation_ = false;
-  }
-}
-
 void ChromeSubresourceFilterClient::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame() &&
@@ -105,9 +95,6 @@ void ChromeSubresourceFilterClient::OnReloadRequested() {
 }
 
 void ChromeSubresourceFilterClient::ShowNotification() {
-  if (did_show_ui_for_navigation_)
-    return;
-
   const GURL& top_level_url = web_contents()->GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
           top_level_url)) {
@@ -243,6 +230,5 @@ void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
 
   subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
       subresource_filter::SubresourceFilterAction::kUIShown);
-  did_show_ui_for_navigation_ = true;
   profile_context_->settings_manager()->OnDidShowUI(url);
 }
