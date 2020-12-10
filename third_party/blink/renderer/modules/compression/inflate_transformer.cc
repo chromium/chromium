@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -93,10 +94,14 @@ ScriptPromise InflateTransformer::Flush(
     TransformStreamDefaultController* controller,
     ExceptionState& exception_state) {
   DCHECK(!was_flush_called_);
+  was_flush_called_ = true;
   Inflate(nullptr, 0u, IsFinished(true), controller, exception_state);
   inflateEnd(&stream_);
-  was_flush_called_ = true;
   out_buffer_.clear();
+
+  if (exception_state.HadException()) {
+    return ScriptPromise();
+  }
 
   if (!reached_end_) {
     exception_state.ThrowTypeError("Compressed input was truncated.");
@@ -121,12 +126,22 @@ void InflateTransformer::Inflate(const uint8_t* start,
   // Zlib treats this pointer as const, so this cast is safe.
   stream_.next_in = const_cast<uint8_t*>(start);
 
+  // enqueue() may execute JavaScript which may invalidate the input buffer. So
+  // accumulate all the output before calling enqueue().
+  HeapVector<Member<DOMUint8Array>, 1u> buffers;
+
   do {
     stream_.avail_out = out_buffer_.size();
     stream_.next_out = out_buffer_.data();
     const int err = inflate(&stream_, finished ? Z_FINISH : Z_NO_FLUSH);
     if (err != Z_OK && err != Z_STREAM_END && err != Z_BUF_ERROR) {
       DCHECK_NE(err, Z_STREAM_ERROR);
+
+      EnqueueBuffers(controller, std::move(buffers), exception_state);
+      if (exception_state.HadException()) {
+        return;
+      }
+
       if (err == Z_DATA_ERROR) {
         exception_state.ThrowTypeError(
             String("The compressed data was not valid: ") + stream_.msg + ".");
@@ -138,25 +153,44 @@ void InflateTransformer::Inflate(const uint8_t* start,
 
     wtf_size_t bytes = out_buffer_.size() - stream_.avail_out;
     if (bytes) {
-      controller->enqueue(
-          script_state_,
-          ScriptValue::From(script_state_,
-                            DOMUint8Array::Create(out_buffer_.data(), bytes)),
-          exception_state);
-      if (exception_state.HadException()) {
-        return;
-      }
+      buffers.push_back(DOMUint8Array::Create(out_buffer_.data(), bytes));
     }
 
     if (err == Z_STREAM_END) {
       reached_end_ = true;
-      if (stream_.next_in < start + length) {
+      const bool junk_found = stream_.avail_in > 0;
+
+      EnqueueBuffers(controller, std::move(buffers), exception_state);
+      if (exception_state.HadException()) {
+        return;
+      }
+
+      if (junk_found) {
         exception_state.ThrowTypeError(
             "Junk found after end of compressed data.");
       }
       return;
     }
   } while (stream_.avail_out == 0);
+
+  DCHECK_EQ(stream_.avail_in, 0u);
+
+  EnqueueBuffers(controller, std::move(buffers), exception_state);
+}
+
+void InflateTransformer::EnqueueBuffers(
+    TransformStreamDefaultController* controller,
+    HeapVector<Member<DOMUint8Array>, 1u> buffers,
+    ExceptionState& exception_state) {
+  // JavaScript may be executed inside this loop, however it is safe because
+  // |buffers| is a local variable that JavaScript cannot modify.
+  for (DOMUint8Array* buffer : buffers) {
+    controller->enqueue(script_state_, ScriptValue::From(script_state_, buffer),
+                        exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+  }
 }
 
 void InflateTransformer::Trace(Visitor* visitor) const {
