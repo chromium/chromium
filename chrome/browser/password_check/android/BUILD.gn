@@ -45,6 +45,7 @@ android_library("public_java") {
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_preference_preference_java",
     "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
+    "//third_party/android_deps:androidx_vectordrawable_vectordrawable_java",
     "//third_party/android_deps:material_design_java",
   ]
   sources = [
@@ -165,6 +166,7 @@ android_resources("java_resources") {
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java_resources",
     "//components/strings:components_strings_grd",
   ]
 }
