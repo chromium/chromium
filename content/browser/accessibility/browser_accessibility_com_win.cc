@@ -510,12 +510,17 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
     LONG num_hyperlinks = -1;
     get_nHyperlinks(&num_hyperlinks);
     std::ostringstream error;
-    error << "index=" << index << " nHyperLinks=" << num_hyperlinks;
+    error << "index=" << index
+          << " nHyperLinks#1=" << hypertext_.hyperlinks.size()
+          << " nHyperLinks#2=" << hypertext_.hyperlink_offset_to_index.size()
+          << " needs_update=" << hypertext_.needs_update
+          << " hyperlink_id=" << id << "\nparent=" << GetData().ToString();
     static auto* hyperlink_err = base::debug::AllocateCrashKeyString(
-        "ax_hyperlink_err", base::debug::CrashKeySize::Size64);
-    NOTREACHED() << "Hyperlink error: " << error.str();
-    base::debug::SetCrashKeyString(hyperlink_err, error.str());
+        "ax_hyperlink_err", base::debug::CrashKeySize::Size256);
+    base::debug::SetCrashKeyString(hyperlink_err, error.str().substr(230));
     base::debug::DumpWithoutCrashing();
+    NOTREACHED() << "Hyperlink error: " << error.str();
+    return E_FAIL;
   }
   auto* link = static_cast<BrowserAccessibilityComWin*>(node);
   if (!link)
