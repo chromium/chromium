@@ -119,7 +119,7 @@ FrameSequenceMetrics::FrameSequenceMetrics(FrameSequenceTrackerType type,
 FrameSequenceMetrics::~FrameSequenceMetrics() = default;
 
 void FrameSequenceMetrics::ReportLeftoverData() {
-  if (HasDataLeftForReporting())
+  if (HasDataLeftForReporting() || type_ == FrameSequenceTrackerType::kCustom)
     ReportMetrics();
 }
 

@@ -98,16 +98,8 @@ TEST_F(TotalAnimationThroughputReporterTest, SingleAnimation) {
   EXPECT_TRUE(reporter.reported());
 }
 
-// TODO(crbug.com/1156889): ThroughputTracker doesn't call callback
-// if there is no data. Fix it and re-eanble it on non ash-chromeo environment.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_StopAnimation StopAnimation
-#else
-#define MAYBE_StopAnimation DISABLED_StopAnimation
-#endif
-
 // Tests the stopping last animation will trigger the animation.
-TEST_F(TotalAnimationThroughputReporterTest, MAYBE_StopAnimation) {
+TEST_F(TotalAnimationThroughputReporterTest, StopAnimation) {
   Layer layer;
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);

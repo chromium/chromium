@@ -35,7 +35,8 @@ void CollectDataAndForwardReport(
 // Calculates smoothness from |throughput| and sends to |callback|.
 void ForwardSmoothness(SmoothnessCallback callback,
                        const cc::FrameSequenceMetrics::CustomReportData& data) {
-  callback.Run(CalculateSmoothness(data));
+  if (data.frames_expected)
+    callback.Run(CalculateSmoothness(data));
 }
 
 }  // namespace
@@ -67,10 +68,12 @@ std::vector<cc::FrameSequenceMetrics::CustomReportData> StopDataCollection() {
 
 int CalculateSmoothness(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
+  DCHECK(data.frames_expected);
   return std::floor(100.0f * data.frames_produced / data.frames_expected);
 }
 
 int CalculateJank(const cc::FrameSequenceMetrics::CustomReportData& data) {
+  DCHECK(data.frames_expected);
   return std::floor(100.0f * data.jank_count / data.frames_expected);
 }
 
