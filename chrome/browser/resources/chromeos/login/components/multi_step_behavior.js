@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <include src="../../../../../../ui/login/display_manager.js">
+
 /**
  * @fileoverview
  * 'MultiStepBehavior' is a behavior that simplifies defining and handling
@@ -106,6 +108,16 @@ var MultiStepBehavior = {
    */
   get defaultControl() {
     return this.stepElements_[this.defaultUIStep()][0];
+  },
+
+  /*
+   * Method that applys a function to all elements of a step (default to
+   * current step).
+   */
+  applyToStepElements(func, step = this.uiStep) {
+    for (let element of this.stepElements_[step] || []) {
+      func(element);
+    }
   },
 
   setUIStep(step) {
