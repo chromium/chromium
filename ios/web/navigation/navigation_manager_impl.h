@@ -403,13 +403,6 @@ class NavigationManagerImpl : public NavigationManager {
   // restore callbacks.
   void FinalizeSessionRestore();
 
-  // Subclass specific implementation to update session state.
-  void FinishGoToIndex(int index,
-                       NavigationInitiationType type,
-                       bool has_user_gesture);
-  void FinishReload();
-  void FinishLoadURLWithParams(NavigationInitiationType initiation_type);
-
   bool IsPlaceholderUrl(const GURL& url) const;
 
   // The primary delegate for this manager.

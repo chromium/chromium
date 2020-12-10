@@ -587,7 +587,30 @@ void NavigationManagerImpl::GoToIndex(int index,
   delegate_->ClearTransientContent();
   delegate_->ClearDialogs();
 
-  FinishGoToIndex(index, initiation_type, has_user_gesture);
+  if (!web_view_cache_.IsAttachedToWebView()) {
+    // GoToIndex from detached mode is equivalent to restoring history with
+    // |last_committed_item_index| updated to |index|.
+    Restore(index, web_view_cache_.ReleaseCachedItems());
+    DCHECK(web_view_cache_.IsAttachedToWebView());
+    return;
+  }
+
+  DiscardNonCommittedItems();
+  NavigationItem* item = GetItemAtIndex(index);
+  item->SetTransitionType(ui::PageTransitionFromInt(
+      item->GetTransitionType() | ui::PAGE_TRANSITION_FORWARD_BACK));
+  WKBackForwardListItem* wk_item = web_view_cache_.GetWKItemAtIndex(index);
+  if (wk_item) {
+    going_to_back_forward_list_item_ = true;
+    delegate_->GoToBackForwardListItem(wk_item, item, initiation_type,
+                                       has_user_gesture);
+    going_to_back_forward_list_item_ = false;
+  } else {
+    DCHECK(index == 0 && empty_window_open_item_)
+        << " wk_item should not be nullptr. index: " << index
+        << " has_empty_window_open_item: "
+        << (empty_window_open_item_ != nullptr);
+  }
 }
 
 void NavigationManagerImpl::GoToIndex(int index) {
@@ -748,7 +771,26 @@ void NavigationManagerImpl::LoadURLWithParams(
     added_item->SetShouldSkipRepostFormConfirmation(true);
   }
 
-  FinishLoadURLWithParams(initiation_type);
+  if (!web_view_cache_.IsAttachedToWebView()) {
+    DCHECK_EQ(pending_item_index_, -1);
+    if (pending_item_ && web_view_cache_.GetBackForwardListItemCount() > 0) {
+      // Loading a pending item from detached state is equivalent to replacing
+      // all forward history after the cached current item with the new pending
+      // item.
+      std::vector<std::unique_ptr<NavigationItem>> cached_items =
+          web_view_cache_.ReleaseCachedItems();
+      int next_item_index = web_view_cache_.GetCurrentItemIndex() + 1;
+      DCHECK_GT(next_item_index, 0);
+      cached_items.resize(next_item_index + 1);
+      cached_items[next_item_index].reset(pending_item_.release());
+      Restore(next_item_index, std::move(cached_items));
+      DCHECK(web_view_cache_.IsAttachedToWebView());
+      return;
+    }
+    web_view_cache_.ResetToAttached();
+  }
+
+  delegate_->LoadCurrentItem(initiation_type);
 }
 
 void NavigationManagerImpl::LoadIfNecessary() {
@@ -868,7 +910,15 @@ void NavigationManagerImpl::Reload(ReloadType reload_type,
     reload_item->SetURL(reload_item->GetOriginalRequestURL());
   }
 
-  FinishReload();
+  if (!web_view_cache_.IsAttachedToWebView()) {
+    // Reload from detached mode is equivalent to restoring history unchanged.
+    Restore(web_view_cache_.GetCurrentItemIndex(),
+            web_view_cache_.ReleaseCachedItems());
+    DCHECK(web_view_cache_.IsAttachedToWebView());
+    return;
+  }
+
+  delegate_->Reload();
 }
 
 void NavigationManagerImpl::ReloadWithUserAgentType(
@@ -1320,70 +1370,6 @@ void NavigationManagerImpl::FinalizeSessionRestore() {
   }
   restore_session_completion_callbacks_.clear();
   LoadIfNecessary();
-}
-
-void NavigationManagerImpl::FinishGoToIndex(int index,
-                                            NavigationInitiationType type,
-                                            bool has_user_gesture) {
-  if (!web_view_cache_.IsAttachedToWebView()) {
-    // GoToIndex from detached mode is equivalent to restoring history with
-    // |last_committed_item_index| updated to |index|.
-    Restore(index, web_view_cache_.ReleaseCachedItems());
-    DCHECK(web_view_cache_.IsAttachedToWebView());
-    return;
-  }
-
-  DiscardNonCommittedItems();
-  NavigationItem* item = GetItemAtIndex(index);
-  item->SetTransitionType(ui::PageTransitionFromInt(
-      item->GetTransitionType() | ui::PAGE_TRANSITION_FORWARD_BACK));
-  WKBackForwardListItem* wk_item = web_view_cache_.GetWKItemAtIndex(index);
-  if (wk_item) {
-    going_to_back_forward_list_item_ = true;
-    delegate_->GoToBackForwardListItem(wk_item, item, type, has_user_gesture);
-    going_to_back_forward_list_item_ = false;
-  } else {
-    DCHECK(index == 0 && empty_window_open_item_)
-        << " wk_item should not be nullptr. index: " << index
-        << " has_empty_window_open_item: "
-        << (empty_window_open_item_ != nullptr);
-  }
-}
-
-void NavigationManagerImpl::FinishReload() {
-  if (!web_view_cache_.IsAttachedToWebView()) {
-    // Reload from detached mode is equivalent to restoring history unchanged.
-    Restore(web_view_cache_.GetCurrentItemIndex(),
-            web_view_cache_.ReleaseCachedItems());
-    DCHECK(web_view_cache_.IsAttachedToWebView());
-    return;
-  }
-
-  delegate_->Reload();
-}
-
-void NavigationManagerImpl::FinishLoadURLWithParams(
-    NavigationInitiationType initiation_type) {
-  if (!web_view_cache_.IsAttachedToWebView()) {
-    DCHECK_EQ(pending_item_index_, -1);
-    if (pending_item_ && web_view_cache_.GetBackForwardListItemCount() > 0) {
-      // Loading a pending item from detached state is equivalent to replacing
-      // all forward history after the cached current item with the new pending
-      // item.
-      std::vector<std::unique_ptr<NavigationItem>> cached_items =
-          web_view_cache_.ReleaseCachedItems();
-      int next_item_index = web_view_cache_.GetCurrentItemIndex() + 1;
-      DCHECK_GT(next_item_index, 0);
-      cached_items.resize(next_item_index + 1);
-      cached_items[next_item_index].reset(pending_item_.release());
-      Restore(next_item_index, std::move(cached_items));
-      DCHECK(web_view_cache_.IsAttachedToWebView());
-      return;
-    }
-    web_view_cache_.ResetToAttached();
-  }
-
-  delegate_->LoadCurrentItem(initiation_type);
 }
 
 bool NavigationManagerImpl::IsPlaceholderUrl(const GURL& url) const {
