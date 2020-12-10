@@ -93,6 +93,20 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   auto* body = MakeGarbageCollected<HTMLBodyElement>(*this);
   html->ParserAppendChild(body);
 
+  // Create a line gutter div that can be used to make sure the gutter extends
+  // down the height of the whole document.
+  auto* div = MakeGarbageCollected<HTMLDivElement>(*this);
+  div->setAttribute(html_names::kClassAttr, "line-gutter-backdrop");
+  body->ParserAppendChild(div);
+
+  auto* table = MakeGarbageCollected<HTMLTableElement>(*this);
+  body->ParserAppendChild(table);
+  tbody_ = MakeGarbageCollected<HTMLTableSectionElement>(html_names::kTbodyTag,
+                                                         *this);
+  table->ParserAppendChild(tbody_);
+  current_ = tbody_;
+  line_number_ = 0;
+
   // Create a checkbox to control line wrapping.
   auto* line_wrap_div = MakeGarbageCollected<HTMLDivElement>(*this);
   line_wrap_div->setAttribute(html_names::kClassAttr, "line-wrap-control");
@@ -107,21 +121,14 @@ void HTMLViewSourceDocument::CreateContainingTable() {
       Text::Create(*this, WTF::AtomicString(Locale::DefaultLocale().QueryString(
                               IDS_VIEW_SOURCE_LINE_WRAP))));
   line_wrap_div->ParserAppendChild(label);
-  body->ParserAppendChild(line_wrap_div);
-
-  // Create a line gutter div that can be used to make sure the gutter extends
-  // down the height of the whole document.
-  auto* div = MakeGarbageCollected<HTMLDivElement>(*this);
-  div->setAttribute(html_names::kClassAttr, "line-gutter-backdrop");
-  body->ParserAppendChild(div);
-
-  auto* table = MakeGarbageCollected<HTMLTableElement>(*this);
-  body->ParserAppendChild(table);
-  tbody_ = MakeGarbageCollected<HTMLTableSectionElement>(html_names::kTbodyTag,
-                                                         *this);
-  table->ParserAppendChild(tbody_);
-  current_ = tbody_;
-  line_number_ = 0;
+  auto* tr = MakeGarbageCollected<HTMLTableRowElement>(*this);
+  auto* td =
+      MakeGarbageCollected<HTMLTableCellElement>(html_names::kTdTag, *this);
+  td->setAttribute(html_names::kColspanAttr, "2");
+  td->setAttribute(html_names::kClassAttr, "line-wrap-cell");
+  td->ParserAppendChild(line_wrap_div);
+  tr->ParserAppendChild(td);
+  tbody_->ParserAppendChild(tr);
 
   auto* listener =
       MakeGarbageCollected<ViewSourceEventListener>(table, checkbox);

@@ -54,6 +54,10 @@ table {
     align-items: center;
 }
 
+.line-wrap-cell {
+  white-space: normal;
+}
+
 td {
     padding: 0 !important;
     vertical-align: baseline
