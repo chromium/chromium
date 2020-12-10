@@ -20,13 +20,9 @@ class TrackImageButton : public views::ImageButton {
   explicit TrackImageButton(PressedCallback callback,
                             const gfx::VectorIcon& icon,
                             base::string16 label);
-  ~TrackImageButton() override = default;
 
-  // Get button size when visible.
-  gfx::Size GetLastVisibleSize() const;
-
-  // Toggle visibility.
-  void ToggleVisibility(bool is_visible);
+  // Overridden from views::View.
+  void SetVisible(bool is_visible) override;
 
  protected:
   // Overridden from views::View.

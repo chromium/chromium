@@ -554,15 +554,11 @@ void OverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
   GetControlsScrimLayer()->SetVisible(is_visible);
   GetCloseControlsLayer()->SetVisible(is_visible);
   GetBackToTabControlsLayer()->SetVisible(is_visible);
-  previous_track_controls_view_->ToggleVisibility(is_visible &&
-                                                  show_previous_track_button_);
+  previous_track_controls_view_->SetVisible(is_visible &&
+                                            show_previous_track_button_);
   play_pause_controls_view_->SetVisible(is_visible && show_play_pause_button_);
-  next_track_controls_view_->ToggleVisibility(is_visible &&
-                                              show_next_track_button_);
-
-  // We need to do more than usual visibility change because otherwise control
-  // is accessible via accessibility tools.
-  skip_ad_controls_view_->ToggleVisibility(is_visible && show_skip_ad_button_);
+  next_track_controls_view_->SetVisible(is_visible && show_next_track_button_);
+  skip_ad_controls_view_->SetVisible(is_visible && show_skip_ad_button_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   GetResizeHandleLayer()->SetVisible(is_visible);

@@ -37,19 +37,16 @@ TrackImageButton::TrackImageButton(PressedCallback callback,
   SetInstallFocusRingOnFocus(true);
 }
 
-gfx::Size TrackImageButton::GetLastVisibleSize() const {
-  return size().IsEmpty() ? last_visible_size_ : size();
+void TrackImageButton::SetVisible(bool visible) {
+  // We need to do more than the usual visibility change because otherwise the
+  // overlay window cannot be dragged when grabbing within the button area.
+  ImageButton::SetVisible(visible);
+  SetSize(visible ? last_visible_size_ : gfx::Size());
 }
 
 void TrackImageButton::OnBoundsChanged(const gfx::Rect&) {
   if (!size().IsEmpty())
     last_visible_size_ = size();
-}
-
-void TrackImageButton::ToggleVisibility(bool is_visible) {
-  SetVisible(is_visible);
-  SetEnabled(is_visible);
-  SetSize(is_visible ? GetLastVisibleSize() : gfx::Size());
 }
 
 }  // namespace views

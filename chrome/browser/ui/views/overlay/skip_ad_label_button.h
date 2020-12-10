@@ -14,13 +14,12 @@ namespace views {
 class SkipAdLabelButton : public views::LabelButton {
  public:
   explicit SkipAdLabelButton(PressedCallback callback);
-  ~SkipAdLabelButton() override = default;
 
   // Sets the position of itself with an offset from the given window size.
   void SetPosition(const gfx::Size& size);
 
-  // Toggle visibility.
-  void ToggleVisibility(bool is_visible);
+  // Overridden from views::View.
+  void SetVisible(bool is_visible) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SkipAdLabelButton);
