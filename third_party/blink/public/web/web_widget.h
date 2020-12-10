@@ -92,9 +92,6 @@ class WebWidget {
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
       const cc::LayerTreeSettings* settings) = 0;
 
-  // This method closes and deletes the WebWidget.
-  virtual void Close() {}
-
   // Set the compositor as visible. If |visible| is true, then the compositor
   // will request a new layer frame sink and begin producing frames from the
   // compositor.

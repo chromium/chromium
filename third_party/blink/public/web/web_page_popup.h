@@ -53,6 +53,9 @@ class WebPagePopup : public WebWidget {
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  // This method closes and deletes the WebPagePopup.
+  virtual void Close() {}
+
   // The popup's accessibility tree is connected to the main document's
   // accessibility tree. Access to the popup document is needed to ensure the
   // popup's layout is clean before serializing the combined tree.

@@ -49,7 +49,6 @@
 #include "content/renderer/content_security_policy_util.h"
 #include "content/renderer/frame_blame_context.h"
 #include "content/renderer/media/media_factory.h"
-#include "content/renderer/render_widget.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_platform_file.h"
 #include "media/base/routing_token_callback.h"
@@ -155,7 +154,6 @@ class RendererPpapiHost;
 class RenderAccessibilityManager;
 class RenderFrameObserver;
 class RenderViewImpl;
-class RenderWidget;
 struct CustomContextMenuContext;
 struct FrameReplicationState;
 
@@ -278,10 +276,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // to using RenderFrame instead of RenderView.
   RenderViewImpl* render_view() { return render_view_; }
 
-  // Returns the RenderWidget associated with this frame.
-  RenderWidget* GetLocalRootRenderWidget();
-  // Returns the blink::WebFrameWidget attached to the RenderWidget that is
-  // associated with this frame.
+  // Returns the blink::WebFrameWidget attached to the local root of this
+  // frame.
   blink::WebFrameWidget* GetLocalRootWebFrameWidget();
 
   // This method must be called after the WebLocalFrame backing this RenderFrame
@@ -887,11 +883,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // returns false and aborts the swap.
   bool SwapInInternal();
 
-  // Returns the RenderWidget associated with the main frame.
-  // TODO(ajwong): This method should go away when cross-frame property setting
-  // events moves into RenderWidget.
-  RenderWidget* GetMainFrameRenderWidget();
-
   // Checks whether accessibility support for this frame is currently enabled.
   bool IsAccessibilityEnabled() const;
 
@@ -1221,16 +1212,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // - A RenderFrameProxy.
   // At commit time, the two objects will be swapped and the old one cleared.
   int previous_routing_id_;
-
-  // Non-null when the RenderFrame is a local root for compositing, input,
-  // layout, etc. A local frame is also a local root iff it does not have a
-  // parent that is a local frame.
-  RenderWidget* render_widget_ = nullptr;
-
-  // If this is a main frame, the RenderView owns the RenderWidget and this
-  // member is null. If this is a child frame, then this object owns the
-  // RenderWidget and this member is not null.
-  std::unique_ptr<RenderWidget> owned_render_widget_;
 
   // Keeps track of which future subframes the browser process has history items
   // for during a history navigation, as well as whether those items are for

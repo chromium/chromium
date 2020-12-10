@@ -684,7 +684,6 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
       frame_ = frame;
     }
     void FrameDetached() override {
-      frame_->FrameWidget()->Close();
       frame_->Close();
       frame_ = nullptr;
     }
@@ -1032,7 +1031,6 @@ blink::WebLocalFrame* PrepareFrameAndViewForPrint::CreateChildFrame(
 void PrepareFrameAndViewForPrint::FrameDetached() {
   blink::WebLocalFrame* frame = frame_.GetFrame();
   DCHECK(frame);
-  frame->FrameWidget()->Close();
   frame->Close();
   navigation_control_ = nullptr;
   frame_.Reset(nullptr);

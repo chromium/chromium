@@ -50,6 +50,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
+#include "cc/trees/ukm_manager.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_navigation_policy.h"
@@ -1578,9 +1579,6 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   if (params->has_committed_real_load)
     render_frame->frame_->SetCommittedFirstRealLoad();
 
-  std::unique_ptr<RenderWidget> render_widget = RenderWidget::CreateForFrame(
-      compositor_deps);
-
   // Non-owning pointer that is self-referencing and destroyed by calling
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
   // WebFrameWidget, which is now attached here.
@@ -1592,8 +1590,12 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       /*is_for_nested_main_frame=*/params->type !=
           mojom::ViewWidgetType::kTopLevel,
       /*hidden=*/true, render_view->widgets_never_composited());
-  render_widget->InitForMainFrame(web_frame_widget,
-                                  params->visual_properties.screen_info);
+  web_frame_widget->InitializeCompositing(
+      compositor_deps->GetWebMainThreadScheduler(),
+      compositor_deps->GetTaskGraphRunner(),
+      params->visual_properties.screen_info,
+      compositor_deps->CreateUkmRecorderFactory(),
+      /*settings=*/nullptr);
 
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call
@@ -1608,8 +1610,6 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   // TODO(crbug.com/419087): This could become part of WebFrameWidget Init.
   web_frame_widget->ApplyVisualProperties(params->visual_properties);
 
-  render_frame->render_widget_ = render_widget.get();
-  render_frame->owned_render_widget_ = std::move(render_widget);
   render_frame->in_frame_tree_ = true;
   render_frame->Initialize(nullptr);
 
@@ -1742,9 +1742,6 @@ void RenderFrameImpl::CreateFrame(
     // TODO(crbug.com/419087): Can we merge this code with
     // RenderFrameImpl::CreateMainFrame()?
 
-    std::unique_ptr<RenderWidget> render_widget =
-        RenderWidget::CreateForFrame(compositor_deps);
-
     // Non-owning pointer that is self-referencing and destroyed by calling
     // Close(). The RenderViewImpl has a RenderWidget already, but not a
     // WebFrameWidget, which is now attached here.
@@ -1756,9 +1753,13 @@ void RenderFrameImpl::CreateFrame(
                          widget_params->routing_id),
         /*is_for_nested_main_frame=*/false,
         /*hidden=*/true, render_view->widgets_never_composited());
+    web_frame_widget->InitializeCompositing(
+        compositor_deps->GetWebMainThreadScheduler(),
+        compositor_deps->GetTaskGraphRunner(),
+        widget_params->visual_properties.screen_info,
+        compositor_deps->CreateUkmRecorderFactory(),
+        /*settings=*/nullptr);
 
-    render_widget->InitForMainFrame(
-        web_frame_widget, widget_params->visual_properties.screen_info);
     // The WebFrameWidget should start with valid VisualProperties, including a
     // non-zero size. While WebFrameWidget would not normally receive IPCs and
     // thus would not get VisualProperty updates while the frame is provisional,
@@ -1770,9 +1771,6 @@ void RenderFrameImpl::CreateFrame(
     // Note that we do *not* call WebView's DidAttachLocalMainFrame() here yet
     // because this frame is provisional and not attached to the Page yet. We
     // will tell WebViewImpl about it once it is swapped in.
-
-    render_frame->render_widget_ = render_widget.get();
-    render_frame->owned_render_widget_ = std::move(render_widget);
   } else if (widget_params) {
     DCHECK(widget_params->routing_id != MSG_ROUTING_NONE);
     // This frame is a child local root, so we require a separate RenderWidget
@@ -1787,12 +1785,6 @@ void RenderFrameImpl::CreateFrame(
     // and the main frame, thus its coordinate space etc is not known relative
     // to the main frame.
 
-    // Makes a new RenderWidget for the child local root. It provides the
-    // local root with a new compositing, painting, and input coordinate
-    // space/context.
-    std::unique_ptr<RenderWidget> render_widget =
-        RenderWidget::CreateForFrame(compositor_deps);
-
     // Non-owning pointer that is self-referencing and destroyed by calling
     // Close(). We use the new RenderWidget as the client for this
     // WebFrameWidget, *not* the RenderWidget of the MainFrame, which is
@@ -1805,11 +1797,13 @@ void RenderFrameImpl::CreateFrame(
                          widget_params->routing_id),
         /*is_for_nested_main_frame=*/false,
         /*hidden=*/true, render_view->widgets_never_composited());
-    // Adds a reference on RenderWidget, making it self-referencing. So it
-    // will not be destroyed by scoped_refptr unless Close() has been called
-    // and run.
-    render_widget->InitForChildLocalRoot(
-        web_frame_widget, widget_params->visual_properties.screen_info);
+    web_frame_widget->InitializeCompositing(
+        compositor_deps->GetWebMainThreadScheduler(),
+        compositor_deps->GetTaskGraphRunner(),
+        widget_params->visual_properties.screen_info,
+        compositor_deps->CreateUkmRecorderFactory(),
+        /*settings=*/nullptr);
+
     // The WebFrameWidget should start with valid VisualProperties, including a
     // non-zero size. While WebFrameWidget would not normally receive IPCs and
     // thus would not get VisualProperty updates while the frame is provisional,
@@ -1817,9 +1811,6 @@ void RenderFrameImpl::CreateFrame(
     // renderer, and that update comes as part of the CreateFrame message.
     // TODO(crbug.com/419087): This could become part of WebFrameWidget Init.
     web_frame_widget->ApplyVisualProperties(widget_params->visual_properties);
-
-    render_frame->render_widget_ = render_widget.get();
-    render_frame->owned_render_widget_ = std::move(render_widget);
   }
 
   if (has_committed_real_load)
@@ -2104,19 +2095,8 @@ void RenderFrameImpl::GetInterface(
   }
 }
 
-RenderWidget* RenderFrameImpl::GetLocalRootRenderWidget() {
-  return GetLocalRoot()->render_widget_;
-}
-
 blink::WebFrameWidget* RenderFrameImpl::GetLocalRootWebFrameWidget() {
   return frame_->LocalRoot()->FrameWidget();
-}
-
-RenderWidget* RenderFrameImpl::GetMainFrameRenderWidget() {
-  RenderFrameImpl* local_main_frame = render_view()->GetMainRenderFrame();
-  if (!local_main_frame)
-    return nullptr;
-  return local_main_frame->render_widget_;
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -3977,12 +3957,6 @@ void RenderFrameImpl::WillDetach() {
 }
 
 void RenderFrameImpl::FrameDetached() {
-  // Close/delete the RenderWidget if this frame was a local root.
-  if (render_widget_) {
-    DCHECK(owned_render_widget_);
-    render_widget_->CloseForFrame(std::move(owned_render_widget_));
-  }
-
   // We need to clean up subframes by removing them from the map and deleting
   // the RenderFrameImpl.  In contrast, the main frame is owned by its
   // containing RenderViewHost (so that they have the same lifetime), so only
@@ -4872,10 +4846,7 @@ bool RenderFrameImpl::IsHidden() {
 }
 
 bool RenderFrameImpl::IsLocalRoot() const {
-  bool is_local_root = static_cast<bool>(render_widget_);
-  DCHECK_EQ(is_local_root,
-            !(frame_->Parent() && frame_->Parent()->IsWebLocalFrame()));
-  return is_local_root;
+  return !(frame_->Parent() && frame_->Parent()->IsWebLocalFrame());
 }
 
 const RenderFrameImpl* RenderFrameImpl::GetLocalRoot() const {

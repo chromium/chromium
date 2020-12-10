@@ -655,9 +655,6 @@ void TestWebFrameClient::Bind(WebLocalFrame* frame,
 }
 
 void TestWebFrameClient::FrameDetached() {
-  if (frame_->FrameWidget())
-    frame_->FrameWidget()->Close();
-
   frame_->Close();
   self_owned_.reset();
 }

@@ -123,6 +123,9 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   virtual void Trace(Visitor*) const;
 
+  // Shutdown the widget.
+  void Close();
+
   // Returns the WebFrame that this widget is attached to. It will be a local
   // root since only local roots have a widget attached.
   WebLocalFrameImpl* LocalRootImpl() const { return local_root_; }
@@ -335,7 +338,6 @@ class CORE_EXPORT WebFrameWidgetImpl
       const ScreenInfo& screen_info,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
       const cc::LayerTreeSettings* settings) override;
-  void Close() override;
   void SetCompositorVisible(bool visible) override;
   gfx::Size Size() override;
   void Resize(const gfx::Size& size_with_dsf) override;

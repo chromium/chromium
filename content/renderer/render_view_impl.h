@@ -32,7 +32,6 @@
 #include "content/public/common/referrer.h"
 #include "content/public/renderer/render_view.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_widget.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"

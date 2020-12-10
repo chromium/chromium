@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "content/renderer/compositor/compositor_dependencies.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_widget.h"
 #include "content/web_test/renderer/test_runner.h"
 #include "content/web_test/renderer/web_test_spell_checker.h"
 #include "content/web_test/renderer/web_view_test_proxy.h"

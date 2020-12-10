@@ -371,7 +371,6 @@ void WebViewPlugin::WebViewHelper::DidClearWindowObject() {
 }
 
 void WebViewPlugin::WebViewHelper::FrameDetached() {
-  frame_->FrameWidget()->Close();
   frame_->Close();
   frame_ = nullptr;
 }

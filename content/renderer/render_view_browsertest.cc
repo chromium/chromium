@@ -287,10 +287,6 @@ class RenderViewImplTest : public RenderViewTest {
 
   RenderViewImpl* view() { return static_cast<RenderViewImpl*>(view_); }
 
-  RenderWidget* main_widget() {
-    return view()->GetMainRenderFrame()->GetLocalRootRenderWidget();
-  }
-
   blink::WebFrameWidget* main_frame_widget() {
     return view()->GetMainRenderFrame()->GetLocalRootWebFrameWidget();
   }

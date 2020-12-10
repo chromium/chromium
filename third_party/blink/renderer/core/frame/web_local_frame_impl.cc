@@ -706,6 +706,9 @@ WebRemoteFrame* WebLocalFrameImpl::ToWebRemoteFrame() {
 void WebLocalFrameImpl::Close() {
   WebLocalFrame::Close();
 
+  if (frame_widget_)
+    frame_widget_->Close();
+
   client_ = nullptr;
 
   if (dev_tools_agent_)
