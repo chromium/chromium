@@ -417,8 +417,7 @@ bool IsOnDeviceHeadSuggestEnabledForNonIncognito();
 bool IsOnDeviceHeadSuggestEnabledForAnyMode();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
-int OnDeviceHeadSuggestMaxScoreForNonUrlInput(bool is_incognito,
-                                              const int default_score);
+int OnDeviceHeadSuggestMaxScoreForNonUrlInput(bool is_incognito);
 int OnDeviceSearchProviderDefaultLoaderTimeoutMs(bool is_incognito);
 int OnDeviceHeadSuggestDelaySuggestRequestMs(bool is_incognito);
 // Function only works in non-incognito when server suggestions are available.

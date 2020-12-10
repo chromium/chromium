@@ -36,12 +36,13 @@ const auto enabled_by_default_desktop_ios =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
-const auto enabled_by_default_android_ios =
-#if defined(OS_ANDROID) || defined(OS_IOS)
-    base::FEATURE_ENABLED_BY_DEFAULT;
-#else
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#endif
+// Comment out this macro since it is currently not being used in this file.
+// const auto enabled_by_default_android_ios =
+// #if defined(OS_ANDROID) || defined(OS_IOS)
+//     base::FEATURE_ENABLED_BY_DEFAULT;
+// #else
+//     base::FEATURE_DISABLED_BY_DEFAULT;
+// #endif
 
 // Allows Omnibox to dynamically adjust number of offered suggestions to fill in
 // the space between Omnibox an the soft keyboard. The number of suggestions
@@ -253,7 +254,8 @@ const base::Feature kReactiveZeroSuggestionsOnNTPRealbox{
 const base::Feature kOnDeviceHeadProviderIncognito{
     "OmniboxOnDeviceHeadProviderIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kOnDeviceHeadProviderNonIncognito{
-    "OmniboxOnDeviceHeadProviderNonIncognito", enabled_by_default_android_ios};
+    "OmniboxOnDeviceHeadProviderNonIncognito",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, changes the way Google-provided search suggestions are scored by
 // the backend. Note that this Feature is only used for triggering a server-

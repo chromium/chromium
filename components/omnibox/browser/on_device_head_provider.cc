@@ -30,7 +30,7 @@
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 
 namespace {
-const int kBaseRelevance = 99;
+const int kBaseRelevanceForUrlInput = 99;
 const size_t kMaxRequestId = std::numeric_limits<size_t>::max() - 1;
 
 bool IsDefaultSearchProviderGoogle(
@@ -262,9 +262,9 @@ void OnDeviceHeadProvider::SearchDone(
 
     int relevance =
         params->input.type() == metrics::OmniboxInputType::URL
-            ? kBaseRelevance
+            ? kBaseRelevanceForUrlInput
             : OmniboxFieldTrial::OnDeviceHeadSuggestMaxScoreForNonUrlInput(
-                  client()->IsOffTheRecord(), kBaseRelevance);
+                  client()->IsOffTheRecord());
 
     for (const auto& item : params->suggestions) {
       matches_.push_back(BaseSearchProvider::CreateOnDeviceSearchSuggestion(
