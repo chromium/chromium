@@ -10,13 +10,16 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
+#include "chrome/browser/visibility_timer_tab_helper.h"
 #include "chrome/browser/webshare/chromeos/prepare_directory_task.h"
 #include "chrome/browser/webshare/chromeos/store_files_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
@@ -94,6 +97,23 @@ void SharesheetClient::Share(
   Profile* const profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   DCHECK(profile);
+
+  // File sharing is denied in incognito, as files are written to disk.
+  // To prevent sites from using that to detect whether incognito mode is
+  // active, we deny after a random time delay, to simulate a user cancelling
+  // the share.
+  if (profile->IsOffTheRecord() && !files.empty()) {
+    // Random number of seconds in the range [1.0, 2.0).
+    double delay_seconds = 1.0 + 1.0 * base::RandDouble();
+    VisibilityTimerTabHelper::CreateForWebContents(web_contents());
+    VisibilityTimerTabHelper::FromWebContents(web_contents())
+        ->PostTaskAfterVisibleDelay(
+            FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           blink::mojom::ShareError::CANCELED),
+            base::TimeDelta::FromSecondsD(delay_seconds));
+    return;
+  }
 
   current_share_ = CurrentShare();
   current_share_->files = std::move(files);
