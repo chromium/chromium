@@ -672,7 +672,8 @@ void EmbeddedTestServer::HandleRequest(HttpConnection* connection,
     response = std::move(not_found_response);
   }
 
-  response->SendResponse(
+  HttpResponse* const response_ptr = response.get();
+  response_ptr->SendResponse(
       base::BindRepeating(&HttpConnection::SendResponseBytes,
                           connection->GetWeakPtr()),
       base::BindOnce(&EmbeddedTestServer::OnResponseCompleted,
