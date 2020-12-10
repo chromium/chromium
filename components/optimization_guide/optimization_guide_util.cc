@@ -22,6 +22,8 @@ std::string GetStringNameForOptimizationTarget(
       return "Unknown";
     case optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:
       return "PainfulPageLoad";
+    case optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION:
+      return "LanguageDetection";
   }
   NOTREACHED();
   return std::string();

@@ -216,6 +216,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
   OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
+  // Target for supplying the language detection model via the model downloader.
+  OPTIMIZATION_TARGET_LANGUAGE_DETECTION = 2;
 }
 
 // The features that only the client can compute during prediction and also
