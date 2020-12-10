@@ -15,6 +15,7 @@
 #include "chromeos/components/phonehub/fake_connection_scheduler.h"
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/event.h"
@@ -52,6 +53,9 @@ class PhoneHubTrayTest : public AshTestBase {
     GetFeatureStatusProvider()->SetStatus(
         chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
     phone_hub_tray_->SetPhoneHubManager(&phone_hub_manager_);
+
+    phone_hub_manager_.mutable_phone_model()->SetPhoneStatusModel(
+        chromeos::phonehub::CreateFakePhoneStatusModel());
   }
 
   chromeos::phonehub::FakeFeatureStatusProvider* GetFeatureStatusProvider() {

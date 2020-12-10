@@ -6,7 +6,9 @@
 
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/test/ash_test_base.h"
+#include "base/optional.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
 
@@ -41,6 +43,13 @@ class PhoneHubUiControllerTest : public AshTestBase,
 
   chromeos::phonehub::FakeOnboardingUiTracker* GetOnboardingUiTracker() {
     return phone_hub_manager_.fake_onboarding_ui_tracker();
+  }
+
+  void SetPhoneStatusModel(
+      const base::Optional<chromeos::phonehub::PhoneStatusModel>&
+          phone_status_model) {
+    phone_hub_manager_.mutable_phone_model()->SetPhoneStatusModel(
+        phone_status_model);
   }
 
  protected:
@@ -136,6 +145,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnected) {
+  SetPhoneStatusModel(chromeos::phonehub::CreateFakePhoneStatusModel());
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnected,
             controller_.ui_state());
@@ -148,6 +158,24 @@ TEST_F(PhoneHubUiControllerTest, UnavailableScreenLocked) {
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kLockOrSuspended);
   EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_.ui_state());
   EXPECT_FALSE(controller_.CreateContentView(/*bubble_view=*/nullptr).get());
+}
+
+TEST_F(PhoneHubUiControllerTest, ConnectedViewDelayed) {
+  // Since there is no phone model, expect that we stay at the connecting screen
+  // even though the feature status is kEnabledAndConnected.
+  SetPhoneStatusModel(base::nullopt);
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
+  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
+            controller_.ui_state());
+  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
+  EXPECT_EQ(kPhoneConnectingView, content_view->GetID());
+
+  // Update the phone status model and expect the connected view to show up.
+  SetPhoneStatusModel(chromeos::phonehub::CreateFakePhoneStatusModel());
+  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnected,
+            controller_.ui_state());
+  auto content_view2 = controller_.CreateContentView(/*delegate=*/nullptr);
+  EXPECT_EQ(kPhoneConnectedView, content_view2->GetID());
 }
 
 }  // namespace ash

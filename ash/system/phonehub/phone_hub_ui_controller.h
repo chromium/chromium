@@ -13,6 +13,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/components/phonehub/feature_status_provider.h"
 #include "chromeos/components/phonehub/onboarding_ui_tracker.h"
+#include "chromeos/components/phonehub/phone_model.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -30,7 +31,8 @@ namespace ash {
 // corresponding main content view to be displayed in the tray bubble.
 class ASH_EXPORT PhoneHubUiController
     : public chromeos::phonehub::FeatureStatusProvider::Observer,
-      public chromeos::phonehub::OnboardingUiTracker::Observer {
+      public chromeos::phonehub::OnboardingUiTracker::Observer,
+      public chromeos::phonehub::PhoneModel::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -85,6 +87,9 @@ class ASH_EXPORT PhoneHubUiController
 
   // chromeos::phonehub::OnboardingUiTracker::Observer:
   void OnShouldShowOnboardingUiChanged() override;
+
+  // chromeos::phonehub::PhoneModel::Observer:
+  void OnModelChanged() override;
 
   // Updates the current UI state and notifies observers.
   void UpdateUiState(PhoneHubUiController::UiState new_state);
