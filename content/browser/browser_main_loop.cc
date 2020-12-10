@@ -119,7 +119,6 @@
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_system.h"
 #include "media/audio/audio_thread_impl.h"
-#include "media/base/media.h"
 #include "media/base/user_input_monitor.h"
 #include "media/media_buildflags.h"
 #include "media/midi/midi_service.h"
@@ -721,10 +720,6 @@ void BrowserMainLoop::PostMainMessageLoopStart() {
         std::make_unique<ScreenlockMonitorDeviceSource>();
     screenlock_monitor_ = std::make_unique<ScreenlockMonitor>(
         std::move(screenlock_monitor_source));
-  }
-  {
-    TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:MediaFeatures");
-    media::InitializeMediaLibrary();
   }
   {
     TRACE_EVENT0("startup",
