@@ -100,7 +100,8 @@ class TestDialURLFetcher : public DialURLFetcher {
   void Start(const GURL& url,
              const std::string& method,
              const base::Optional<std::string>& post_data,
-             int max_retries) override;
+             int max_retries,
+             bool set_origin_header) override;
   MOCK_METHOD4(DoStart,
                void(const GURL&,
                     const std::string&,
