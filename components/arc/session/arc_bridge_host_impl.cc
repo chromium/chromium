@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
+#include "components/arc/mojom/adbd.mojom.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/app_permissions.mojom.h"
 #include "components/arc/mojom/appfuse.mojom.h"
@@ -88,6 +89,12 @@ void ArcBridgeHostImpl::OnAccessibilityHelperInstanceReady(
         accessibility_helper_remote) {
   OnInstanceReady(arc_bridge_service_->accessibility_helper(),
                   std::move(accessibility_helper_remote));
+}
+
+void ArcBridgeHostImpl::OnAdbdMonitorInstanceReady(
+    mojo::PendingRemote<mojom::AdbdMonitorInstance> adbd_monitor_remote) {
+  OnInstanceReady(arc_bridge_service_->adbd_monitor(),
+                  std::move(adbd_monitor_remote));
 }
 
 void ArcBridgeHostImpl::OnAppInstanceReady(

@@ -5,6 +5,7 @@
 module arc.mojom;
 
 import "components/arc/mojom/accessibility_helper.mojom";
+import "components/arc/mojom/adbd.mojom";
 import "components/arc/mojom/app.mojom";
 import "components/arc/mojom/app_permissions.mojom";
 import "components/arc/mojom/appfuse.mojom";
@@ -58,9 +59,9 @@ import "components/arc/mojom/volume_mounter.mojom";
 import "components/arc/mojom/wake_lock.mojom";
 import "components/arc/mojom/wallpaper.mojom";
 
-// Next MinVersion: 53
+// Next MinVersion: 54
 // Deprecated method IDs: 101, 105, 121
-// Next method ID: 158
+// Next method ID: 159
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -69,6 +70,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the AccessibilityHelperInstance interface is ready.
   [MinVersion=21] OnAccessibilityHelperInstanceReady@127(
       pending_remote<AccessibilityHelperInstance> instance_remote);
+
+  // Notifies Chrome that the AdbdMonitorInstance interface is ready.
+  [MinVersion=53] OnAdbdMonitorInstanceReady@158(
+      pending_remote<AdbdMonitorInstance> instance_remote);
 
   // Notifies Chrome that the AppInstance interface is ready.
   OnAppInstanceReady@100(pending_remote<AppInstance> instance_remote);
@@ -228,7 +233,7 @@ interface ArcBridgeHost {
       pending_remote<SensorInstance> instance_ptr);
 
   // Notifies Chrome that the SharesheetInstance interface is ready.
-  [MinVersion=52] OnSharesheetInstanceReady@158(
+  [MinVersion=52] OnSharesheetInstanceReady@157(
                       pending_remote<SharesheetInstance> instance_remote);
 
   // Notifies Chrome that the SmartCardManagerInstance interface is ready.

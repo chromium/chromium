@@ -766,10 +766,21 @@ void ArcSessionManager::SetProfile(Profile* profile) {
 
 void ArcSessionManager::SetUserInfo() {
   DCHECK(profile_);
-  DCHECK(arc_salt_on_disk_);
 
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile_));
   const cryptohome::Identification cryptohome_id(account);
+  const std::string user_id_hash =
+      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_);
+
+  std::string serialno = GetSerialNumber();
+  arc_session_runner_->SetUserInfo(cryptohome_id, user_id_hash, serialno);
+}
+
+std::string ArcSessionManager::GetSerialNumber() const {
+  DCHECK(profile_);
+  DCHECK(arc_salt_on_disk_);
+
+  const AccountId account(multi_user_util::GetAccountIdFromProfile(profile_));
   const std::string user_id_hash =
       chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_);
 
@@ -781,8 +792,7 @@ void ArcSessionManager::SetUserInfo() {
     serialno = GetOrCreateSerialNumber(g_browser_process->local_state(),
                                        chromeos_user, *arc_salt_on_disk_);
   }
-
-  arc_session_runner_->SetUserInfo(cryptohome_id, user_id_hash, serialno);
+  return serialno;
 }
 
 void ArcSessionManager::Initialize() {
@@ -1070,11 +1080,9 @@ bool ArcSessionManager::RequestEnableImpl() {
   if (!arc_ui_availability_reporter_) {
     arc_ui_availability_reporter_ = std::make_unique<ArcUiAvailabilityReporter>(
         profile_,
-        opt_in_start
-            ? ArcUiAvailabilityReporter::Mode::kOobeProvisioning
-            : signed_in
-                  ? ArcUiAvailabilityReporter::Mode::kAlreadyProvisioned
-                  : ArcUiAvailabilityReporter::Mode::kInSessionProvisioning);
+        opt_in_start ? ArcUiAvailabilityReporter::Mode::kOobeProvisioning
+        : signed_in  ? ArcUiAvailabilityReporter::Mode::kAlreadyProvisioned
+                     : ArcUiAvailabilityReporter::Mode::kInSessionProvisioning);
   }
 
   if (!pai_starter_ && IsPlayStoreAvailable())

@@ -17,6 +17,8 @@ namespace mojom {
 // the instance classes here for faster build.
 class AccessibilityHelperHost;
 class AccessibilityHelperInstance;
+class AdbdMonitorHost;
+class AdbdMonitorInstance;
 class AppHost;
 class AppInstance;
 class AppPermissionsInstance;
@@ -105,7 +107,6 @@ class WakeLockHost;
 class WakeLockInstance;
 class WallpaperHost;
 class WallpaperInstance;
-
 }  // namespace mojom
 
 // Holds Mojo channels which proxy to ARC side implementation. The actual
@@ -140,6 +141,10 @@ class ArcBridgeService {
                    mojom::AccessibilityHelperHost>*
   accessibility_helper() {
     return &accessibility_helper_;
+  }
+  ConnectionHolder<mojom::AdbdMonitorInstance, mojom::AdbdMonitorHost>*
+  adbd_monitor() {
+    return &adbd_monitor_;
   }
   ConnectionHolder<mojom::AppInstance, mojom::AppHost>* app() { return &app_; }
   ConnectionHolder<mojom::AppPermissionsInstance>* app_permissions() {
@@ -306,6 +311,8 @@ class ArcBridgeService {
   ConnectionHolder<mojom::AccessibilityHelperInstance,
                    mojom::AccessibilityHelperHost>
       accessibility_helper_;
+  ConnectionHolder<mojom::AdbdMonitorInstance, mojom::AdbdMonitorHost>
+      adbd_monitor_;
   ConnectionHolder<mojom::AppInstance, mojom::AppHost> app_;
   ConnectionHolder<mojom::AppPermissionsInstance> app_permissions_;
   ConnectionHolder<mojom::AppfuseInstance, mojom::AppfuseHost> appfuse_;
@@ -370,7 +377,6 @@ class ArcBridgeService {
       volume_mounter_;
   ConnectionHolder<mojom::WakeLockInstance, mojom::WakeLockHost> wake_lock_;
   ConnectionHolder<mojom::WallpaperInstance, mojom::WallpaperHost> wallpaper_;
-
   DISALLOW_COPY_AND_ASSIGN(ArcBridgeService);
 };
 

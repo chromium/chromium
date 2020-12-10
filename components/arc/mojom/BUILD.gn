@@ -12,6 +12,7 @@ if (is_chromeos) {
   mojom("mojom") {
     sources = [
       "accessibility_helper.mojom",
+      "adbd.mojom",
       "app.mojom",
       "app_permissions.mojom",
       "appfuse.mojom",

@@ -305,6 +305,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // If ARCVM is not running, return base::nullopt.
   const base::Optional<vm_tools::concierge::VmInfo>& GetVmInfo() const;
 
+  // Getter for |serialno|.
+  std::string GetSerialNumber() const;
+
  private:
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;

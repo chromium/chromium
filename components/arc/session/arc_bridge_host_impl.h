@@ -41,6 +41,9 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   void OnAccessibilityHelperInstanceReady(
       mojo::PendingRemote<mojom::AccessibilityHelperInstance>
           accessibility_helper_remote) override;
+  void OnAdbdMonitorInstanceReady(
+      mojo::PendingRemote<mojom::AdbdMonitorInstance> adbd_monitor_remote)
+      override;
   void OnAppInstanceReady(
       mojo::PendingRemote<mojom::AppInstance> app_ptr) override;
   void OnAppPermissionsInstanceReady(
