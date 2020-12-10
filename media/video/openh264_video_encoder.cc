@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 
 namespace media {
 
@@ -152,13 +153,45 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                   "No frame provided for encoding."));
     return;
   }
-  if (!frame->IsMappable() || frame->format() != PIXEL_FORMAT_I420) {
+  const bool supported_format = (frame->format() == PIXEL_FORMAT_NV12) ||
+                                (frame->format() == PIXEL_FORMAT_I420);
+  if ((!frame->IsMappable() && !frame->HasGpuMemoryBuffer()) ||
+      !supported_format) {
     status =
         Status(StatusCode::kEncoderFailedEncode, "Unexpected frame format.")
             .WithData("IsMappable", frame->IsMappable())
             .WithData("format", frame->format());
     std::move(done_cb).Run(std::move(status));
     return;
+  }
+
+  if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasGpuMemoryBuffer()) {
+    frame = ConvertToMemoryMappedFrame(frame);
+    if (!frame) {
+      std::move(done_cb).Run(
+          Status(StatusCode::kEncoderFailedEncode,
+                 "Convert GMB frame to MemoryMappedFrame failed."));
+      return;
+    }
+  }
+
+  if (frame->format() == PIXEL_FORMAT_NV12) {
+    // OpenH264 can resize frame automatically, but since we're converting
+    // pixel fromat anyway we can do resize as well.
+    auto i420_frame = frame_pool_.CreateFrame(
+        PIXEL_FORMAT_I420, options_.frame_size, gfx::Rect(options_.frame_size),
+        options_.frame_size, frame->timestamp());
+    if (i420_frame) {
+      status = ConvertAndScaleFrame(*frame, *i420_frame, conversion_buffer_);
+    } else {
+      status = Status(StatusCode::kEncoderFailedEncode,
+                      "Can't allocate an I420 frame.");
+    }
+    if (!status.is_ok()) {
+      std::move(done_cb).Run(std::move(status));
+      return;
+    }
+    frame = std::move(i420_frame);
   }
 
   SSourcePicture picture = {};

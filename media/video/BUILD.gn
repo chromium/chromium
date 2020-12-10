@@ -126,6 +126,7 @@ source_set("unit_tests") {
     "h264_poc_unittest.cc",
     "half_float_maker_unittest.cc",
     "supported_video_decoder_config_unittest.cc",
+    "video_encode_accelerator_adapter_test.cc",
   ]
   if (enable_platform_hevc) {
     sources += [ "h265_parser_unittest.cc" ]
@@ -142,6 +143,7 @@ source_set("unit_tests") {
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/libyuv:libyuv",
     "//ui/gfx",
   ]
 }

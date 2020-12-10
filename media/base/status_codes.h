@@ -29,6 +29,7 @@ enum class StatusCode : StatusCodeType {
 
   // General errors: 0x00
   kAborted = 0x00000001,
+  kInvalidArgument = 0x00000002,
 
   // Decoder Errors: 0x01
   kDecoderInitializeNeverCompleted = 0x00000101,
@@ -155,6 +156,9 @@ enum class StatusCode : StatusCodeType {
   // Android only. Used as a signal to fallback MediaPlayerRenderer, and thus
   // not exactly an 'error' per say.
   kPipelineErrorDemuxerErrorDetectedHLS = 0x00000916,
+
+  // Frame operation errors: 0x0A
+  kUnsupportedFrameFormatError = 0x00000A01,
 
   // DecodeStatus temporary codes.  These names were chosen to match the
   // DecodeStatus enum, so that un-converted code can DecodeStatus::OK/etc.

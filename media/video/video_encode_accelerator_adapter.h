@@ -27,7 +27,7 @@ class H264AnnexBToAvcBitstreamConverter;
 
 // This class is a somewhat complex adapter from VideoEncodeAccelerator
 // to VideoEncoder, it takes cares of such things as
-// - managing and copying GPU-shared memory buffers
+// - managing and copying GPU/shared memory buffers
 // - managing hops between task runners, for VEA and callbacks
 // - keeping track of the state machine. Forbiding encodes during flush etc.
 class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
@@ -38,6 +38,10 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
       GpuVideoAcceleratorFactories* gpu_factories,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
   ~VideoEncodeAcceleratorAdapter() override;
+
+  enum class InputBufferKind { Any, GpuMemBuf, CpuMemBuf };
+  // A way to force a certain way of submitting frames to VEA.
+  void SetInputBufferPreferenceForTesting(InputBufferKind type);
 
   // VideoEncoder implementation.
   void Initialize(VideoCodecProfile profile,
@@ -101,6 +105,12 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
 
   template <class T>
   T WrapCallback(T cb);
+  StatusOr<scoped_refptr<VideoFrame>> PrepareGpuFrame(
+      const gfx::Size& size,
+      scoped_refptr<VideoFrame> src_frame);
+  StatusOr<scoped_refptr<VideoFrame>> PrepareCpuFrame(
+      const gfx::Size& size,
+      scoped_refptr<VideoFrame> src_frame);
 
   scoped_refptr<SharedMemoryPool> output_pool_;
   scoped_refptr<SharedMemoryPool> input_pool_;
@@ -138,9 +148,9 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   // These are encodes that have not been sent to the accelerator.
   std::vector<std::unique_ptr<PendingEncode>> pending_encodes_;
 
-  bool using_native_input_;
   VideoPixelFormat format_;
-  VideoFrame::StorageType storage_type_;
+  InputBufferKind input_buffer_preference_ = InputBufferKind::Any;
+  std::vector<uint8_t> resize_buf_;
 
   VideoCodecProfile profile_;
   Options options_;

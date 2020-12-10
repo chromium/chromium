@@ -6,10 +6,12 @@
 #define MEDIA_VIDEO_VPX_VIDEO_ENCODER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_frame_pool.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -41,12 +43,13 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
       std::unique_ptr<vpx_codec_ctx_t, void (*)(vpx_codec_ctx_t*)>;
 
   vpx_codec_unique_ptr codec_;
-  bool is_vp9_ = false;
   vpx_codec_enc_cfg_t codec_config_ = {};
   vpx_image_t vpx_image_ = {};
   gfx::Size originally_configured_size_;
   base::TimeDelta last_frame_timestamp_;
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
+  VideoFramePool frame_pool_;
+  std::vector<uint8_t> resize_buf_;
   Options options_;
   OutputCB output_cb_;
 };

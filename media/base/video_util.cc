@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "media/base/status_codes.h"
 #include "media/base/video_frame.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -428,12 +429,9 @@ void CopyRGBToVideoFrame(const uint8_t* source,
 scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> video_frame) {
   DCHECK(video_frame);
-  DCHECK_EQ(video_frame->storage_type(),
-            VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
+  DCHECK(video_frame->HasGpuMemoryBuffer());
 
   auto* gmb = video_frame->GetGpuMemoryBuffer();
-  DCHECK(gmb);
-
   if (!gmb->Map())
     return nullptr;
 
@@ -525,6 +523,168 @@ bool I420CopyWithPadding(const VideoFrame& src_frame, VideoFrame* dst_frame) {
                             src_frame.visible_rect().size()));
 
   return true;
+}
+
+Status ConvertAndScaleFrame(const VideoFrame& src_frame,
+                            VideoFrame& dst_frame,
+                            std::vector<uint8_t>& tmp_buf) {
+  constexpr auto kDefaultFiltering = libyuv::kFilterBox;
+  if (!src_frame.IsMappable() || !dst_frame.IsMappable())
+    return Status(StatusCode::kUnsupportedFrameFormatError);
+
+  // Both frames are I420, only scaling is required.
+  if (dst_frame.format() == PIXEL_FORMAT_I420 &&
+      src_frame.format() == PIXEL_FORMAT_I420) {
+    int error = libyuv::I420Scale(
+        src_frame.visible_data(VideoFrame::kYPlane),
+        src_frame.stride(VideoFrame::kYPlane),
+        src_frame.visible_data(VideoFrame::kUPlane),
+        src_frame.stride(VideoFrame::kUPlane),
+        src_frame.visible_data(VideoFrame::kVPlane),
+        src_frame.stride(VideoFrame::kVPlane), src_frame.visible_rect().width(),
+        src_frame.visible_rect().height(),
+        dst_frame.visible_data(VideoFrame::kYPlane),
+        dst_frame.stride(VideoFrame::kYPlane),
+        dst_frame.visible_data(VideoFrame::kUPlane),
+        dst_frame.stride(VideoFrame::kUPlane),
+        dst_frame.visible_data(VideoFrame::kVPlane),
+        dst_frame.stride(VideoFrame::kVPlane), dst_frame.visible_rect().width(),
+        dst_frame.visible_rect().height(), kDefaultFiltering);
+    return error ? Status(StatusCode::kInvalidArgument) : Status();
+  }
+
+  // Both frames are NV12, only scaling is required.
+  if (dst_frame.format() == PIXEL_FORMAT_NV12 &&
+      src_frame.format() == PIXEL_FORMAT_NV12) {
+    int error = libyuv::NV12Scale(
+        src_frame.visible_data(VideoFrame::kYPlane),
+        src_frame.stride(VideoFrame::kYPlane),
+        src_frame.visible_data(VideoFrame::kUVPlane),
+        src_frame.stride(VideoFrame::kUVPlane),
+        src_frame.visible_rect().width(), src_frame.visible_rect().height(),
+        dst_frame.visible_data(VideoFrame::kYPlane),
+        dst_frame.stride(VideoFrame::kYPlane),
+        dst_frame.visible_data(VideoFrame::kUVPlane),
+        dst_frame.stride(VideoFrame::kUVPlane),
+        dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
+        kDefaultFiltering);
+    return error ? Status(StatusCode::kInvalidArgument) : Status();
+  }
+
+  if (dst_frame.format() == PIXEL_FORMAT_I420 &&
+      src_frame.format() == PIXEL_FORMAT_NV12) {
+    if (src_frame.visible_rect() == dst_frame.visible_rect()) {
+      // Both frames have the same size, only NV12-to-I420 conversion is
+      // required.
+      int error = libyuv::NV12ToI420(
+          src_frame.visible_data(VideoFrame::kYPlane),
+          src_frame.stride(VideoFrame::kYPlane),
+          src_frame.visible_data(VideoFrame::kUVPlane),
+          src_frame.stride(VideoFrame::kUVPlane),
+          dst_frame.visible_data(VideoFrame::kYPlane),
+          dst_frame.stride(VideoFrame::kYPlane),
+          dst_frame.visible_data(VideoFrame::kUPlane),
+          dst_frame.stride(VideoFrame::kUPlane),
+          dst_frame.visible_data(VideoFrame::kVPlane),
+          dst_frame.stride(VideoFrame::kVPlane),
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
+      return error ? Status(StatusCode::kInvalidArgument) : Status();
+    } else {
+      // Both resize and NV12-to-I420 conversion are required.
+      // First, split UV planes into two, basically producing a I420 frame.
+      const int tmp_uv_width = (src_frame.visible_rect().width() + 1) / 2;
+      const int tmp_uv_height = (src_frame.visible_rect().height() + 1) / 2;
+      size_t tmp_buffer_size = tmp_uv_width * tmp_uv_height * 2;
+      if (tmp_buf.size() < tmp_buffer_size)
+        tmp_buf.resize(tmp_buffer_size);
+
+      uint8_t* tmp_u = tmp_buf.data();
+      uint8_t* tmp_v = tmp_u + tmp_uv_width * tmp_uv_height;
+      DCHECK_EQ(tmp_buf.data() + tmp_buffer_size,
+                tmp_v + (tmp_uv_width * tmp_uv_height));
+      libyuv::SplitUVPlane(src_frame.visible_data(VideoFrame::kUVPlane),
+                           src_frame.stride(VideoFrame::kUVPlane), tmp_u,
+                           tmp_uv_width, tmp_v, tmp_uv_width, tmp_uv_width,
+                           tmp_uv_height);
+
+      // Second, scale resulting I420 frame into the destination.
+      int error = libyuv::I420Scale(
+          src_frame.visible_data(VideoFrame::kYPlane),
+          src_frame.stride(VideoFrame::kYPlane),
+          tmp_u,  // Temporary U-plane for src UV-plane.
+          tmp_uv_width,
+          tmp_v,  // Temporary V-plane for src UV-plane.
+          tmp_uv_width, src_frame.visible_rect().width(),
+          src_frame.visible_rect().height(),
+          dst_frame.visible_data(VideoFrame::kYPlane),
+          dst_frame.stride(VideoFrame::kYPlane),
+          dst_frame.visible_data(VideoFrame::kUPlane),
+          dst_frame.stride(VideoFrame::kUPlane),
+          dst_frame.visible_data(VideoFrame::kVPlane),
+          dst_frame.stride(VideoFrame::kVPlane),
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
+          kDefaultFiltering);
+      return error ? Status(StatusCode::kInvalidArgument) : Status();
+    }
+  }
+
+  if (dst_frame.format() == PIXEL_FORMAT_NV12 &&
+      src_frame.format() == PIXEL_FORMAT_I420) {
+    if (src_frame.visible_rect() == dst_frame.visible_rect()) {
+      // Both frames have the same size, only I420-to-NV12 conversion is
+      // required.
+      int error = libyuv::I420ToNV12(
+          src_frame.visible_data(VideoFrame::kYPlane),
+          src_frame.stride(VideoFrame::kYPlane),
+          src_frame.visible_data(VideoFrame::kUPlane),
+          src_frame.stride(VideoFrame::kUPlane),
+          src_frame.visible_data(VideoFrame::kVPlane),
+          src_frame.stride(VideoFrame::kVPlane),
+          dst_frame.visible_data(VideoFrame::kYPlane),
+          dst_frame.stride(VideoFrame::kYPlane),
+          dst_frame.visible_data(VideoFrame::kUVPlane),
+          dst_frame.stride(VideoFrame::kUVPlane),
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
+      return error ? Status(StatusCode::kInvalidArgument) : Status();
+    } else {
+      // Both resize and I420-to-NV12 conversion are required.
+      // First, merge U and V planes into one, basically producing a NV12 frame.
+      const int tmp_uv_width = (src_frame.visible_rect().width() + 1) / 2;
+      const int tmp_uv_height = (src_frame.visible_rect().height() + 1) / 2;
+      size_t tmp_buffer_size = tmp_uv_width * tmp_uv_height * 2;
+      if (tmp_buf.size() < tmp_buffer_size)
+        tmp_buf.resize(tmp_buffer_size);
+
+      uint8_t* tmp_uv = tmp_buf.data();
+      size_t stride_uv = tmp_uv_width * 2;
+      libyuv::MergeUVPlane(src_frame.visible_data(VideoFrame::kUPlane),
+                           src_frame.stride(VideoFrame::kUPlane),
+                           src_frame.visible_data(VideoFrame::kVPlane),
+                           src_frame.stride(VideoFrame::kVPlane),
+                           tmp_uv,     // Temporary for merged UV-plane
+                           stride_uv,  // Temporary stride
+                           tmp_uv_width, tmp_uv_height);
+
+      // Second, scale resulting NV12 frame into the destination.
+      int error = libyuv::NV12Scale(
+          src_frame.visible_data(VideoFrame::kYPlane),
+          src_frame.stride(VideoFrame::kYPlane),
+          tmp_uv,     // Temporary for merged UV-plane
+          stride_uv,  // Temporary stride
+          src_frame.visible_rect().width(), src_frame.visible_rect().height(),
+          dst_frame.visible_data(VideoFrame::kYPlane),
+          dst_frame.stride(VideoFrame::kYPlane),
+          dst_frame.visible_data(VideoFrame::kUVPlane),
+          dst_frame.stride(VideoFrame::kUVPlane),
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
+          kDefaultFiltering);
+      return error ? Status(StatusCode::kInvalidArgument) : Status();
+    }
+  }
+
+  return Status(StatusCode::kUnsupportedFrameFormatError)
+      .WithData("src", src_frame.AsHumanReadableString())
+      .WithData("dst", dst_frame.AsHumanReadableString());
 }
 
 }  // namespace media

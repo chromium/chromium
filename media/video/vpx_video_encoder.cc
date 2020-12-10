@@ -82,16 +82,18 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
   return Status();
 }
 
-Status MaybeRewrapImageWithFormat(vpx_image_t* vpx_image,
+Status ReallocateVpxImageIfNeeded(vpx_image_t* vpx_image,
                                   const vpx_img_fmt fmt,
                                   int width,
                                   int height) {
-  if (vpx_image->fmt != fmt) {
+  if (vpx_image->fmt != fmt || int{vpx_image->w} != width ||
+      int{vpx_image->h} != height) {
     vpx_img_free(vpx_image);
-    if (vpx_image != vpx_img_wrap(vpx_image, fmt, width, height, 1, nullptr)) {
+    if (vpx_image != vpx_img_alloc(vpx_image, fmt, width, height, 1)) {
       return Status(StatusCode::kEncoderFailedEncode,
                     "Invalid format or frame size.");
     }
+    vpx_image->bit_depth = (fmt & VPX_IMG_FMT_HIGHBITDEPTH) ? 16 : 8;
   }
   // else no-op since the image don't need to change format.
   return Status();
@@ -120,15 +122,15 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     std::move(done_cb).Run(StatusCode::kEncoderInitializeTwice);
     return;
   }
-
   profile_ = profile;
+  bool is_vp9 = false;
 
   vpx_codec_iface_t* iface = nullptr;
   if (profile == VP8PROFILE_ANY) {
     iface = vpx_codec_vp8_cx();
   } else if (profile == VP9PROFILE_PROFILE0 || profile == VP9PROFILE_PROFILE2) {
     // TODO(https://crbug.com/1116617): Consider support for profiles 1 and 3.
-    is_vp9_ = true;
+    is_vp9 = true;
     iface = vpx_codec_vp9_cx();
   } else {
     auto status = Status(StatusCode::kEncoderUnsupportedProfile)
@@ -205,9 +207,9 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
 
-  if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt,
-                                  options.frame_size.width(),
-                                  options.frame_size.height(), 1, nullptr)) {
+  if (&vpx_image_ != vpx_img_alloc(&vpx_image_, img_fmt,
+                                   options.frame_size.width(),
+                                   options.frame_size.height(), 1)) {
     status = Status(StatusCode::kEncoderInitializationError,
                     "Invalid format or frame size.");
     std::move(done_cb).Run(status);
@@ -215,7 +217,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
   }
   vpx_image_.bit_depth = bits_for_storage;
 
-  if (is_vp9_) {
+  if (is_vp9) {
     // Set the number of column tiles in encoding an input frame, with number of
     // tile columns (in Log2 unit) as the parameter.
     // The minimum width of a tile column is 256 pixels, the maximum is 4096.
@@ -249,7 +251,10 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                   "No frame provided for encoding."));
     return;
   }
-  if (!frame->IsMappable() && !frame->HasGpuMemoryBuffer()) {
+  bool supported_format = (frame->format() == PIXEL_FORMAT_NV12) ||
+                          (frame->format() == PIXEL_FORMAT_I420);
+  if ((!frame->IsMappable() && !frame->HasGpuMemoryBuffer()) ||
+      !supported_format) {
     status =
         Status(StatusCode::kEncoderFailedEncode, "Unexpected frame format.")
             .WithData("IsMappable", frame->IsMappable())
@@ -258,21 +263,36 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  if (frame->format() == PIXEL_FORMAT_NV12 &&
-      frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
+  if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasGpuMemoryBuffer()) {
     frame = ConvertToMemoryMappedFrame(frame);
-  if (!frame) {
-    std::move(done_cb).Run(
-        Status(StatusCode::kEncoderFailedEncode,
-               "Convert GMB frame to MemoryMappedFrame failed."));
-    return;
+    if (!frame) {
+      std::move(done_cb).Run(
+          Status(StatusCode::kEncoderFailedEncode,
+                 "Convert GMB frame to MemoryMappedFrame failed."));
+      return;
+    }
+  }
+
+  if (frame->visible_rect().size() != options_.frame_size) {
+    auto resized_frame = frame_pool_.CreateFrame(
+        frame->format(), options_.frame_size, gfx::Rect(options_.frame_size),
+        options_.frame_size, frame->timestamp());
+    if (resized_frame) {
+      status = ConvertAndScaleFrame(*frame, *resized_frame, resize_buf_);
+    } else {
+      status = Status(StatusCode::kEncoderFailedEncode,
+                      "Can't allocate a resized frame.");
+    }
+    if (!status.is_ok()) {
+      std::move(done_cb).Run(std::move(status));
+      return;
+    }
+    frame = std::move(resized_frame);
   }
 
   switch (profile_) {
-    case VP9PROFILE_PROFILE1:
-      NOTREACHED();
-      break;
     case VP9PROFILE_PROFILE2:
+      // Profile 2 uses 10bit color,
       libyuv::I420ToI010(
           frame->visible_data(VideoFrame::kYPlane),
           frame->stride(VideoFrame::kYPlane),
@@ -285,9 +305,10 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
           reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_U]),
           vpx_image_.stride[VPX_PLANE_U] / 2,
           reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_V]),
-          vpx_image_.stride[VPX_PLANE_V] / 2, frame->coded_size().width(),
-          frame->coded_size().height());
+          vpx_image_.stride[VPX_PLANE_V] / 2, frame->visible_rect().width(),
+          frame->visible_rect().height());
       break;
+    case VP9PROFILE_PROFILE1:
     case VP9PROFILE_PROFILE3:
       NOTREACHED();
       break;
@@ -295,7 +316,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       vpx_img_fmt_t fmt = frame->format() == PIXEL_FORMAT_NV12
                               ? VPX_IMG_FMT_NV12
                               : VPX_IMG_FMT_I420;
-      Status status = MaybeRewrapImageWithFormat(
+      Status status = ReallocateVpxImageIfNeeded(
           &vpx_image_, fmt, codec_config_.g_w, codec_config_.g_h);
       if (!status.is_ok()) {
         std::move(done_cb).Run(status);
@@ -306,8 +327,9 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
             const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
         vpx_image_.planes[VPX_PLANE_U] =
             const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUVPlane));
-        // For NV12,the V plane address is set to U plane address + 1, see
-        // vpx_image.c: img->planes[VPX_PLANE_V] = img->planes[VPX_PLANE_U] + 1.
+        // In NV12 Y and U samples are combined in one plane (bytes go YUYUYU),
+        // but libvpx treats them as two planes with the same stride but shifted
+        // by one byte.
         vpx_image_.planes[VPX_PLANE_V] = vpx_image_.planes[VPX_PLANE_U] + 1;
         vpx_image_.stride[VPX_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
         vpx_image_.stride[VPX_PLANE_U] = frame->stride(VideoFrame::kUVPlane);
@@ -402,20 +424,12 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
     return;
   }
 
-  if (options_.frame_size != options.frame_size) {
-    // Need to re-allocate |vpx_image_| because the size has changed.
-    auto img_fmt = vpx_image_.fmt;
-    auto bit_depth = vpx_image_.bit_depth;
-    vpx_img_free(&vpx_image_);
-    if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt,
-                                    options.frame_size.width(),
-                                    options.frame_size.height(), 1, nullptr)) {
-      status = Status(StatusCode::kEncoderInitializationError,
-                      "Invalid format or frame size.");
-      std::move(done_cb).Run(status);
-      return;
-    }
-    vpx_image_.bit_depth = bit_depth;
+  status = ReallocateVpxImageIfNeeded(&vpx_image_, vpx_image_.fmt,
+                                      options.frame_size.width(),
+                                      options.frame_size.height());
+  if (!status.is_ok()) {
+    std::move(done_cb).Run(status);
+    return;
   }
 
   auto vpx_error = vpx_codec_enc_config_set(codec_.get(), &new_config);

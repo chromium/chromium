@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/libyuv/include/libyuv.h"
 
 namespace blink {
 
@@ -116,37 +115,6 @@ std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
 #else
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_OPENH264)
-}
-
-scoped_refptr<media::VideoFrame> ConvertToI420Frame(
-    scoped_refptr<media::VideoFrame> frame) {
-  DCHECK_EQ(frame->storage_type(),
-            media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-
-  // TODO: Support more pixel formats
-  if (frame->format() != media::VideoPixelFormat::PIXEL_FORMAT_NV12)
-    return nullptr;
-
-  auto* gmb = frame->GetGpuMemoryBuffer();
-  if (!gmb->Map())
-    return nullptr;
-  scoped_refptr<media::VideoFrame> i420_frame = media::VideoFrame::CreateFrame(
-      media::VideoPixelFormat::PIXEL_FORMAT_I420, frame->coded_size(),
-      frame->visible_rect(), frame->natural_size(), frame->timestamp());
-  auto ret = libyuv::NV12ToI420(
-      static_cast<const uint8_t*>(gmb->memory(0)), gmb->stride(0),
-      static_cast<const uint8_t*>(gmb->memory(1)), gmb->stride(1),
-      i420_frame->data(media::VideoFrame::kYPlane),
-      i420_frame->stride(media::VideoFrame::kYPlane),
-      i420_frame->data(media::VideoFrame::kUPlane),
-      i420_frame->stride(media::VideoFrame::kUPlane),
-      i420_frame->data(media::VideoFrame::kVPlane),
-      i420_frame->stride(media::VideoFrame::kVPlane),
-      frame->coded_size().width(), frame->coded_size().height());
-  gmb->Unmap();
-  if (ret)
-    return nullptr;
-  return i420_frame;
 }
 
 }  // namespace
@@ -347,7 +315,6 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
     case AccelerationPreference::kRequire: {
       auto result =
           CreateAcceleratedVideoEncoder(config.profile, config.options);
-      support_nv12_ = !!result;
       if (result)
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
       return result;
@@ -355,7 +322,6 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
     case AccelerationPreference::kAllow:
       if (auto result =
               CreateAcceleratedVideoEncoder(config.profile, config.options)) {
-        support_nv12_ = true;
         UpdateEncoderLog("AcceleratedVideoEncoder", true);
         return result;
       }
@@ -365,13 +331,10 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
       switch (config.codec) {
         case media::kCodecVP8:
         case media::kCodecVP9:
-          support_nv12_ = true;
           result = CreateVpxVideoEncoder();
           UpdateEncoderLog("VpxVideoEncoder", false);
           break;
         case media::kCodecH264:
-          // TODO: support NV12 format in OpenH264 encoder.
-          support_nv12_ = false;
           result = CreateOpenH264VideoEncoder();
           UpdateEncoderLog("OpenH264VideoEncoder", false);
           break;
@@ -443,6 +406,7 @@ void VideoEncoder::encode(VideoFrame* frame,
   if (ThrowIfCodecStateUnconfigured(state_, "encode", exception_state))
     return;
 
+  DCHECK(active_config_);
   auto* context = GetExecutionContext();
   if (!context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -456,18 +420,6 @@ void VideoEncoder::encode(VideoFrame* frame,
   if (!internal_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Cannot encode destroyed frame.");
-    return;
-  }
-
-  DCHECK(active_config_);
-  if (internal_frame->frame()->coded_size() !=
-      active_config_->options.frame_size) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "Frame size doesn't match initial encoder parameters.");
-
-    // Free the temporary clone.
-    internal_frame->destroy();
     return;
   }
 
@@ -611,15 +563,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
   };
 
   scoped_refptr<media::VideoFrame> frame = request->frame->frame();
-  if (frame->HasGpuMemoryBuffer() && !support_nv12_) {
-    frame = ConvertToI420Frame(frame);
-    if (!frame) {
-      HandleError(logger_->MakeException(
-          "Unexpected frame format.", media::StatusCode::kEncoderFailedEncode));
-      return;
-    }
-  }
-
   bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&
                   request->encodeOpts->keyFrameNonNull();
   --requested_encodes_;

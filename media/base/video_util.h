@@ -7,8 +7,11 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
+#include "media/base/status.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -170,6 +173,13 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
 MEDIA_EXPORT bool I420CopyWithPadding(const VideoFrame& src_frame,
                                       VideoFrame* dst_frame) WARN_UNUSED_RESULT;
 
+// Copy pixel data from |src_frame| to |dst_frame| applying scaling and pixel
+// format conversion as needed. Both frames need to be mappabale and have either
+// I420 or NV12 pixel format.
+MEDIA_EXPORT Status ConvertAndScaleFrame(const VideoFrame& src_frame,
+                                         VideoFrame& dst_frame,
+                                         std::vector<uint8_t>& tmp_buf)
+    WARN_UNUSED_RESULT;
 }  // namespace media
 
 #endif  // MEDIA_BASE_VIDEO_UTIL_H_

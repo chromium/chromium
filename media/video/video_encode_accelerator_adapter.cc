@@ -7,6 +7,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
@@ -16,11 +17,11 @@
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/libyuv/include/libyuv.h"
 
 namespace media {
 
@@ -145,6 +146,11 @@ void VideoEncodeAcceleratorAdapter::DestroyAsync(
     runner->DeleteSoon(FROM_HERE, std::move(self));
 }
 
+void VideoEncodeAcceleratorAdapter::SetInputBufferPreferenceForTesting(
+    InputBufferKind pref) {
+  input_buffer_preference_ = pref;
+}
+
 void VideoEncodeAcceleratorAdapter::Initialize(VideoCodecProfile profile,
                                                const Options& options,
                                                OutputCB output_cb,
@@ -217,8 +223,33 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
   // We use the first frame to setup the VEA config so that we can ensure that
   // zero copy hardware encoding from the camera can be used.
   const auto& first_frame = pending_encodes_.front()->frame;
-  auto vea_config = SetUpVeaConfig(profile_, options_, first_frame->format(),
-                                   first_frame->storage_type());
+  auto format = first_frame->format();
+
+  if (format != PIXEL_FORMAT_I420 && format != PIXEL_FORMAT_NV12) {
+    auto status =
+        Status(StatusCode::kEncoderFailedEncode, "Unexpected frame format.")
+            .WithData("frame", first_frame->AsHumanReadableString());
+    InitCompleted(std::move(status));
+    return;
+  }
+
+  auto vea_config =
+      SetUpVeaConfig(profile_, options_, format, first_frame->storage_type());
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // Linux/ChromeOS require a special configuration to use dmabuf storage.
+  // We need to keep sending frames the same way the first frame was sent.
+  // Other platforms will happily mix GpuMemoryBuffer storage with regular
+  // storage, so we don't care about mismatches on other platforms.
+  if (input_buffer_preference_ == InputBufferKind::Any) {
+    if (vea_config.storage_type ==
+        VideoEncodeAccelerator::Config::StorageType::kDmabuf) {
+      input_buffer_preference_ = InputBufferKind::GpuMemBuf;
+    } else {
+      input_buffer_preference_ = InputBufferKind::CpuMemBuf;
+    }
+  }
+#endif
 
   if (!accelerator_->Initialize(vea_config, this)) {
     auto status = Status(StatusCode::kEncoderInitializationError,
@@ -228,9 +259,7 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
   }
 
   state_ = State::kInitializing;
-  format_ = first_frame->format();
-  storage_type_ = first_frame->storage_type();
-  using_native_input_ = first_frame->HasGpuMemoryBuffer();
+  format_ = format;
 }
 
 void VideoEncodeAcceleratorAdapter::Encode(scoped_refptr<VideoFrame> frame,
@@ -269,82 +298,25 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
     return;
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // Linux/ChromeOS require a special configuration to use dmabuf storage.
-  const bool is_same_storage_type = storage_type_ == frame->storage_type();
-#else
-  // Other platforms will happily mix GpuMemoryBuffer storage with regular
-  // storage, so we don't care about mismatches on other platforms.
-  const bool is_same_storage_type = true;
-#endif
+  bool resize_needed = (frame->visible_rect().size() != options_.frame_size);
+  bool use_gpu_buffer = frame->HasGpuMemoryBuffer() && !resize_needed;
+  if (input_buffer_preference_ == InputBufferKind::GpuMemBuf)
+    use_gpu_buffer = true;
+  if (input_buffer_preference_ == InputBufferKind::CpuMemBuf)
+    use_gpu_buffer = false;
 
-  if (format_ != frame->format() || !is_same_storage_type) {
-    auto status = Status(StatusCode::kEncoderFailedEncode,
-                         "Unexpected frame format change.")
-                      .WithData("current_format", format_)
-                      .WithData("current_storage_type", storage_type_)
-                      .WithData("new_frame", frame->AsHumanReadableString());
-    std::move(done_cb).Run(status);
+  StatusOr<scoped_refptr<VideoFrame>> result(nullptr);
+  if (use_gpu_buffer)
+    result = PrepareGpuFrame(options_.frame_size, frame);
+  else
+    result = PrepareCpuFrame(options_.frame_size, frame);
+
+  if (result.has_error()) {
+    std::move(done_cb).Run(std::move(result.error()).AddHere());
     return;
   }
 
-  if (!frame->HasGpuMemoryBuffer() && !frame->IsMappable() &&
-      frame->format() != PIXEL_FORMAT_I420) {
-    auto status =
-        Status(StatusCode::kEncoderFailedEncode, "Unexpected frame format.")
-            .WithData("frame", frame->AsHumanReadableString());
-    std::move(done_cb).Run(std::move(status));
-    return;
-  }
-
-  if (!frame->HasGpuMemoryBuffer()) {
-    DCHECK_EQ(format_, PIXEL_FORMAT_I420);
-
-    int32_t buffer_id;
-    if (!input_pool_->MaybeAllocateBuffer(&buffer_id)) {
-      auto status = Status(StatusCode::kEncoderFailedEncode,
-                           "Can't allocate a shared input buffer");
-      std::move(done_cb).Run(std::move(status));
-      return;
-    }
-
-    base::UnsafeSharedMemoryRegion* region = input_pool_->GetRegion(buffer_id);
-    base::WritableSharedMemoryMapping* mapping =
-        input_pool_->GetMapping(buffer_id);
-
-    auto shared_frame = VideoFrame::WrapExternalData(
-        format_, frame->coded_size(), frame->visible_rect(),
-        frame->natural_size(), mapping->GetMemoryAsSpan<uint8_t>().data(),
-        mapping->size(), frame->timestamp());
-
-    if (!shared_frame) {
-      auto status = Status(StatusCode::kEncoderFailedEncode,
-                           "Can't allocate a shared frame");
-      std::move(done_cb).Run(std::move(status));
-      return;
-    }
-
-    shared_frame->BackWithSharedMemory(region);
-    shared_frame->AddDestructionObserver(BindToCurrentLoop(base::BindOnce(
-        &SharedMemoryPool::ReleaseBuffer, input_pool_, buffer_id)));
-    libyuv::I420Copy(frame->visible_data(VideoFrame::kYPlane),
-                     frame->stride(VideoFrame::kYPlane),
-                     frame->visible_data(VideoFrame::kUPlane),
-                     frame->stride(VideoFrame::kUPlane),
-                     frame->visible_data(VideoFrame::kVPlane),
-                     frame->stride(VideoFrame::kVPlane),
-                     shared_frame->visible_data(VideoFrame::kYPlane),
-                     shared_frame->stride(VideoFrame::kYPlane),
-                     shared_frame->visible_data(VideoFrame::kUPlane),
-                     shared_frame->stride(VideoFrame::kUPlane),
-                     shared_frame->visible_data(VideoFrame::kVPlane),
-                     shared_frame->stride(VideoFrame::kVPlane),
-                     frame->visible_rect().width(),
-                     frame->visible_rect().height());
-    frame = std::move(shared_frame);
-  } else {
-    DCHECK_EQ(format_, PIXEL_FORMAT_NV12);
-  }
+  frame = result.value();
 
   auto active_encode = std::make_unique<PendingOp>();
   active_encode->done_callback = std::move(done_cb);
@@ -451,12 +423,10 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   output_pool_ = base::MakeRefCounted<SharedMemoryPool>(gpu_factories_,
                                                         output_buffer_size);
-  if (!using_native_input_) {
-    size_t input_buffer_size =
-        VideoFrame::AllocationSize(PIXEL_FORMAT_I420, input_coded_size);
-    input_pool_ = base::MakeRefCounted<SharedMemoryPool>(gpu_factories_,
-                                                         input_buffer_size);
-  }
+  size_t input_buffer_size =
+      VideoFrame::AllocationSize(PIXEL_FORMAT_I420, input_coded_size);
+  input_pool_ =
+      base::MakeRefCounted<SharedMemoryPool>(gpu_factories_, input_buffer_size);
 
   int32_t buffer_id;
   if (!output_pool_->MaybeAllocateBuffer(&buffer_id)) {
@@ -588,7 +558,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(Status status) {
     for (auto& encode : pending_encodes_) {
       auto status = Status(StatusCode::kEncoderFailedEncode,
                            "VideoEncodeAccelerator encountered an error");
-      std::move(encode->done_callback).Run(Status());
+      std::move(encode->done_callback).Run(status);
     }
 
     if (pending_flush_)
@@ -638,6 +608,91 @@ T VideoEncodeAcceleratorAdapter::WrapCallback(T cb) {
   if (cb.is_null())
     return cb;
   return BindToLoop(callback_task_runner_.get(), std::move(cb));
+}
+
+// Copy a frame into a shared mem buffer and resize it as the same time.
+// Input frames can I420 or NV12, they'll be converted to I420 if needed.
+StatusOr<scoped_refptr<VideoFrame>>
+VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
+    const gfx::Size& size,
+    scoped_refptr<VideoFrame> src_frame) {
+  int32_t buffer_id;
+  if (!input_pool_->MaybeAllocateBuffer(&buffer_id))
+    return Status(StatusCode::kEncoderFailedEncode);
+
+  base::UnsafeSharedMemoryRegion* region = input_pool_->GetRegion(buffer_id);
+  base::WritableSharedMemoryMapping* mapping =
+      input_pool_->GetMapping(buffer_id);
+
+  auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
+                              ? ConvertToMemoryMappedFrame(src_frame)
+                              : src_frame;
+  auto shared_frame = VideoFrame::WrapExternalData(
+      PIXEL_FORMAT_I420, options_.frame_size, gfx::Rect(size), size,
+      mapping->GetMemoryAsSpan<uint8_t>().data(), mapping->size(),
+      src_frame->timestamp());
+
+  if (!shared_frame || !mapped_src_frame)
+    return Status(StatusCode::kEncoderFailedEncode);
+
+  shared_frame->BackWithSharedMemory(region);
+  shared_frame->AddDestructionObserver(BindToCurrentLoop(base::BindOnce(
+      &SharedMemoryPool::ReleaseBuffer, input_pool_, buffer_id)));
+  auto status =
+      ConvertAndScaleFrame(*mapped_src_frame, *shared_frame, resize_buf_);
+  if (!status.is_ok())
+    return std::move(status).AddHere();
+
+  return shared_frame;
+}
+
+// Copy a frame into a GPU buffer and resize it as the same time.
+// Input frames can I420 or NV12, they'll be converted to NV12 if needed.
+StatusOr<scoped_refptr<VideoFrame>>
+VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
+    const gfx::Size& size,
+    scoped_refptr<VideoFrame> src_frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
+  DCHECK(src_frame);
+  if (src_frame->HasGpuMemoryBuffer() &&
+      src_frame->visible_rect().size() == size) {
+    // Nothing to do here, the input frame is already what we need
+    return src_frame;
+  }
+
+  auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
+      size, gfx::BufferFormat::YUV_420_BIPLANAR,
+      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+
+  if (!gmb)
+    return Status(StatusCode::kEncoderFailedEncode);
+  gmb->SetColorSpace(src_frame->ColorSpace());
+
+  gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
+  auto gpu_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
+      gfx::Rect(size), size, std::move(gmb), empty_mailboxes,
+      base::NullCallback(), src_frame->timestamp());
+  gpu_frame->set_color_space(src_frame->ColorSpace());
+  gpu_frame->metadata()->MergeMetadataFrom(src_frame->metadata());
+
+  // Don't be scared. ConvertToMemoryMappedFrame() doesn't copy pixel data
+  // it just maps GPU buffer owned by |gpu_frame| and presents it as mapped
+  // view in CPU memory. It allows us to use ConvertAndScaleFrame() without
+  // having to tinker with libyuv and GpuMemoryBuffer memory views.
+  // |mapped_gpu_frame| doesn't own anything, but unmaps the buffer when freed.
+  auto mapped_gpu_frame = ConvertToMemoryMappedFrame(gpu_frame);
+  auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
+                              ? ConvertToMemoryMappedFrame(src_frame)
+                              : src_frame;
+  if (!mapped_gpu_frame || !mapped_src_frame)
+    return Status(StatusCode::kEncoderFailedEncode);
+
+  auto status =
+      ConvertAndScaleFrame(*mapped_src_frame, *mapped_gpu_frame, resize_buf_);
+  if (!status.is_ok())
+    return std::move(status).AddHere();
+
+  return gpu_frame;
 }
 
 }  // namespace media

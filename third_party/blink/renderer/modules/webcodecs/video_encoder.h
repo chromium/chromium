@@ -143,8 +143,6 @@ class MODULES_EXPORT VideoEncoder final
   std::unique_ptr<CodecLogger> logger_;
 
   std::unique_ptr<media::VideoEncoder> media_encoder_;
-  // This flag maybe removed when all encoders can handle NV12 frame.
-  bool support_nv12_ = false;
 
   V8CodecState state_;
 

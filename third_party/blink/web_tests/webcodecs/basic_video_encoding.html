@@ -94,7 +94,7 @@
       encoder.configure(encoder_config);
 
       for (let i = 0; i < frames_to_encode; i++) {
-        var frame = await createFrame(w, h, i);
+        let frame = await createFrame(w, h, i);
         let keyframe = (i % 5 == 0);
         encoder.encode(frame, { keyFrame: keyframe });
         await delay(1);
@@ -112,13 +112,13 @@
       let w = 640;
       let h = 360;
       let next_ts = 0
-      let frames_to_encode = 16;
+      let frames_to_encode = 25;
       let frames_processed = 0;
       let errors = 0;
 
       let process_video_chunk = function (chunk, config) {
         assert_greater_than_equal(chunk.timestamp, next_ts++);
-        var data = new Uint8Array(chunk.data);
+        let data = new Uint8Array(chunk.data);
         let type = (chunk.timestamp % 5 == 0) ? "key" : "delta";
         assert_equals(chunk.type, type);
         assert_greater_than_equal(data.length, 0);
@@ -144,12 +144,13 @@
         width: w,
         height: h,
         bitrate: 5000000,
-        framerate: 30,
+        framerate: 24,
       };
       let encoder = new VideoEncoder(init);
       encoder.configure(params);
       for (let i = 0; i < frames_to_encode; i++) {
-        var frame = await createFrame(w, h, i);
+        let size_mismatch = (i % 16);
+        let frame = await createFrame(w + size_mismatch, h + size_mismatch, i);
         let keyframe = (i % 5 == 0);
         encoder.encode(frame, { keyFrame: keyframe });
         await delay(1);

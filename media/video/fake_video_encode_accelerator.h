@@ -19,7 +19,7 @@
 
 namespace base {
 
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 
 }  // namespace base
 
@@ -30,7 +30,7 @@ static const size_t kMinimumOutputBufferSize = 123456;
 class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
  public:
   explicit FakeVideoEncodeAccelerator(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~FakeVideoEncodeAccelerator() override;
 
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
@@ -50,22 +50,37 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
       const {
     return stored_bitrate_allocations_;
   }
-  void SendDummyFrameForTesting(bool key_frame);
   void SetWillInitializationSucceed(bool will_initialization_succeed);
 
   size_t minimum_output_buffer_size() const { return kMinimumOutputBufferSize; }
+
+  struct FrameToEncode {
+    FrameToEncode();
+    FrameToEncode(const FrameToEncode&);
+    ~FrameToEncode();
+    scoped_refptr<VideoFrame> frame;
+    bool force_keyframe;
+  };
+
+  using EncodingCallback = base::RepeatingCallback<BitstreamBufferMetadata(
+      BitstreamBuffer&,
+      bool keyframe,
+      scoped_refptr<VideoFrame> frame)>;
+
+  void SetEncodingCallback(EncodingCallback callback) {
+    encoding_callback_ = std::move(callback);
+  }
 
  private:
   void DoRequireBitstreamBuffers(unsigned int input_count,
                                  const gfx::Size& input_coded_size,
                                  size_t output_buffer_size) const;
   void EncodeTask();
-  void DoBitstreamBufferReady(int32_t bitstream_buffer_id,
-                              size_t payload_size,
-                              bool key_frame) const;
+  void DoBitstreamBufferReady(BitstreamBuffer buffer,
+                              FrameToEncode frame_to_encode) const;
 
   // Our original (constructor) calling message loop used for all tasks.
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::vector<uint32_t> stored_bitrates_;
   std::vector<VideoBitrateAllocation> stored_bitrate_allocations_;
   bool will_initialization_succeed_;
@@ -76,12 +91,14 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   // is used to force a fake key frame for the first encoded frame.
   bool next_frame_is_first_frame_;
 
-  // A queue containing the necessary data for incoming frames. The boolean
-  // represent whether the queued frame should force a key frame.
-  base::queue<bool> queued_frames_;
+  // A queue containing the necessary data for incoming frames.
+  base::queue<FrameToEncode> queued_frames_;
 
   // A list of buffers available for putting fake encoded frames in.
   std::list<BitstreamBuffer> available_buffers_;
+
+  // Callback that, if set, does actual frame to buffer conversion.
+  EncodingCallback encoding_callback_;
 
   base::WeakPtrFactory<FakeVideoEncodeAccelerator> weak_this_factory_{this};
 
