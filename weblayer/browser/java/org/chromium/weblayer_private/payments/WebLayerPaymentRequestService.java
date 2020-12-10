@@ -146,4 +146,10 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     public List<PaymentApp> getPaymentApps() {
         return mAvailableApps;
     }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public boolean hasAnyCompleteApp() {
+        return !mAvailableApps.isEmpty() && mAvailableApps.get(0).isComplete();
+    }
 }

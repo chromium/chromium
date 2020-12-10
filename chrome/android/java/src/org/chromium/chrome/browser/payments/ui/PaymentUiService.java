@@ -371,6 +371,17 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /**
+     * Whether the payment apps includes at least one that is "complete" which is defined
+     * by {@link PaymentApp#isComplete()}. This method can be called only after
+     * {@link #setPaymentApps}.
+     * @return The result.
+     */
+    public boolean hasAnyCompleteAppSuggestion() {
+        List<PaymentApp> apps = getPaymentApps();
+        return !apps.isEmpty() && apps.get(0).isComplete();
+    }
+
+    /**
      * Returns the selected payment app, if any.
      * @return The selected payment app or null if none selected.
      */
@@ -394,13 +405,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         // The list of payment apps is ready to display.
         mPaymentMethodsSection = new SectionInformation(
                 PaymentRequestUI.DataType.PAYMENT_METHODS, selection, new ArrayList<>(apps));
-
-        // Record the number suggested payment methods and whether at least one of them was
-        // complete.
-        // TODO(crbug.com/1152498): move this into PaymentRequestService because the WebLayer
-        // payment request needs to record this as well.
-        mJourneyLogger.setNumberOfSuggestionsShown(
-                Section.PAYMENT_METHOD, apps.size(), !apps.isEmpty() && apps.get(0).isComplete());
 
         updateAppModifiedTotals();
 

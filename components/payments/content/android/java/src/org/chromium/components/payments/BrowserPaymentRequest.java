@@ -233,4 +233,10 @@ public interface BrowserPaymentRequest {
 
     /** @return All of the available payment apps. */
     List<PaymentApp> getPaymentApps();
+
+    /**
+     * @return Whether the payment apps includes at least one that is "complete" which is defined
+     *         by {@link PaymentApp#isComplete()}.
+     */
+    boolean hasAnyCompleteApp();
 }

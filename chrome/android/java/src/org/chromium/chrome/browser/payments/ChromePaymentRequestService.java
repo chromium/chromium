@@ -149,6 +149,12 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
+    public boolean hasAnyCompleteApp() {
+        return mPaymentUiService.hasAnyCompleteAppSuggestion();
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
     public void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
             WebContents webContents, PaymentMethodData[] rawMethodData) {
         mIsGooglePayBridgeActivated = googlePayBridgeEligible

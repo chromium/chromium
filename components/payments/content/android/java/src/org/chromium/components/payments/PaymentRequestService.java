@@ -771,6 +771,11 @@ public class PaymentRequestService
 
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
+        // Record the number suggested payment methods and whether at least one of them was
+        // complete.
+        mJourneyLogger.setNumberOfSuggestionsShown(Section.PAYMENT_METHOD,
+                mBrowserPaymentRequest.getPaymentApps().size(),
+                mBrowserPaymentRequest.hasAnyCompleteApp());
         if (mIsShowCalled) {
             PaymentNotShownError notShownError = onShowCalledAndAppsQueried();
             if (notShownError != null) {
