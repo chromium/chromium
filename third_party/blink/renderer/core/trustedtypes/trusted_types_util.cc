@@ -185,7 +185,8 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
   // constructor failures, to warn the developer of the outstanding issues
   // with TT and Function  constructors. This should be removed once the
   // underlying issue has been fixed.
-  if (prefix == "Function" && !allow) {
+  if (prefix == "Function" && !allow &&
+      !RuntimeEnabledFeatures::TrustedTypesUseCodeLikeEnabled()) {
     DCHECK(kind == kTrustedScriptAssignment ||
            kind == kTrustedScriptAssignmentAndDefaultPolicyFailed ||
            kind == kTrustedScriptAssignmentAndNoDefaultPolicyExisted);
