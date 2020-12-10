@@ -26,10 +26,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_THREAD_H_
 
 #include <stdint.h>
+
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_observer.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
@@ -126,7 +128,10 @@ class PLATFORM_EXPORT Thread {
   }
 
   bool IsCurrentThread() const;
-  virtual PlatformThreadId ThreadId() const { return 0; }
+  virtual PlatformThreadId ThreadId() const { return base::kInvalidThreadId; }
+  virtual base::PlatformThreadHandle ThreadHandle() const {
+    return base::PlatformThreadHandle();
+  }
 
   // TaskObserver is an object that receives task notifications from the
   // MessageLoop.

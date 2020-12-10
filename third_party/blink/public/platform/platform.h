@@ -389,7 +389,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // increase the nice value, so we need to ask the browser process). This
   // function is only called from the main thread (where InitializeCompositor-
   // Thread() is called).
-  virtual void SetDisplayThreadPriority(base::PlatformThreadId) {}
+  virtual void SetDisplayThreadPriority(base::PlatformThreadHandle) {}
 
   // Returns a blame context for attributing top-level work which does not
   // belong to a particular frame scope.

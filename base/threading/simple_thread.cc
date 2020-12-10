@@ -60,6 +60,11 @@ PlatformThreadId SimpleThread::tid() {
   return tid_;
 }
 
+PlatformThreadHandle SimpleThread::handle() const {
+  DCHECK(!thread_.is_null());
+  return thread_;
+}
+
 bool SimpleThread::HasBeenStarted() {
   return event_.IsSignaled();
 }

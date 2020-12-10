@@ -42,6 +42,7 @@ class PLATFORM_EXPORT WorkerThread : public Thread {
   void Init() override;
   ThreadScheduler* Scheduler() override;
   PlatformThreadId ThreadId() const override;
+  base::PlatformThreadHandle ThreadHandle() const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override;
 
   scheduler::NonMainThreadSchedulerImpl* GetNonMainThreadScheduler() {

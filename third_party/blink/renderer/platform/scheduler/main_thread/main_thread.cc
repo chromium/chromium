@@ -14,12 +14,17 @@ namespace scheduler {
 MainThread::MainThread(MainThreadSchedulerImpl* scheduler)
     : task_runner_(scheduler->DefaultTaskRunner()),
       scheduler_(scheduler),
-      thread_id_(base::PlatformThread::CurrentId()) {}
+      thread_id_(base::PlatformThread::CurrentId()),
+      thread_handle_(base::PlatformThread::CurrentHandle()) {}
 
 MainThread::~MainThread() = default;
 
 blink::PlatformThreadId MainThread::ThreadId() const {
   return thread_id_;
+}
+
+base::PlatformThreadHandle MainThread::ThreadHandle() const {
+  return thread_handle_;
 }
 
 blink::ThreadScheduler* MainThread::Scheduler() {

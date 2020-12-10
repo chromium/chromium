@@ -234,11 +234,12 @@ RendererBlinkPlatformImpl::WrapSharedURLLoaderFactory(
 }
 
 void RendererBlinkPlatformImpl::SetDisplayThreadPriority(
-    base::PlatformThreadId thread_id) {
+    base::PlatformThreadHandle thread_handle) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (RenderThreadImpl* render_thread = RenderThreadImpl::current()) {
+    // On Linux and ChromeOS, the thread handle is equivalent to the thread id.
     render_thread->render_message_filter()->SetThreadPriority(
-        thread_id, base::ThreadPriority::DISPLAY);
+        thread_handle.platform_handle(), base::ThreadPriority::DISPLAY);
   }
 #endif
 }
