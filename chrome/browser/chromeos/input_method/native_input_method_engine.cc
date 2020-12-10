@@ -15,10 +15,8 @@
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -220,10 +218,6 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
     remote_manager_.reset();
-  }
-  if (base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
-    ui::SetShowEmojiKeyboardCallback(
-        base::BindRepeating(&EmojiPickerDialog::Show));
   }
   ime_base_observer_->OnActivate(engine_id);
 }
