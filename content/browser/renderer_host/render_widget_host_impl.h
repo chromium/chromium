@@ -1208,6 +1208,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // The observers watching us.
   base::ObserverList<RenderWidgetHostObserver> observers_;
 
+  // TODO(https://crbug.com/1153966): Remove this after closing this bug.
+  int observers_size_for_debug_ = 0;
+
   // This is true if the renderer is currently unresponsive.
   bool is_unresponsive_ = false;
 

@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
@@ -1735,10 +1736,12 @@ void RenderWidgetHostImpl::RemoveInputEventObserver(
 
 void RenderWidgetHostImpl::AddObserver(RenderWidgetHostObserver* observer) {
   observers_.AddObserver(observer);
+  observers_size_for_debug_++;
 }
 
 void RenderWidgetHostImpl::RemoveObserver(RenderWidgetHostObserver* observer) {
   observers_.RemoveObserver(observer);
+  observers_size_for_debug_--;
 }
 
 void RenderWidgetHostImpl::GetScreenInfo(blink::ScreenInfo* result) {
@@ -2187,11 +2190,29 @@ void RenderWidgetHostImpl::SetAutoResize(bool enable,
 }
 
 void RenderWidgetHostImpl::Destroy(bool also_delete) {
-  DCHECK(!destroyed_);
+  // TODO(https://crbug.com/1153966): Turns this back into a DCHECK once the bug
+  // is fixed.
+  CHECK(!destroyed_);
   destroyed_ = true;
 
-  for (auto& observer : observers_)
+  // TODO(https://crbug.com/1153966): This is instrumentation about a bug
+  // happening while iterating on the |observers_|. Remove this when the bug
+  // will be fixed.
+  base::WeakPtr<RenderWidgetHostImpl> weak_ptr = GetWeakPtr();
+  int observer_list_iteration_before_call = 0;
+  int observer_list_iteration_after_call = 0;
+  int observer_list_size = observers_size_for_debug_;
+  base::debug::Alias(&observer_list_iteration_before_call);
+  base::debug::Alias(&observer_list_iteration_after_call);
+  base::debug::Alias(&observer_list_size);
+
+  for (auto& observer : observers_) {
+    observer_list_iteration_before_call++;
     observer.RenderWidgetHostDestroyed(this);
+    observer_list_iteration_after_call++;
+    CHECK(weak_ptr);
+  }
+
   NotificationService::current()->Notify(
       NOTIFICATION_RENDER_WIDGET_HOST_DESTROYED, Source<RenderWidgetHost>(this),
       NotificationService::NoDetails());
