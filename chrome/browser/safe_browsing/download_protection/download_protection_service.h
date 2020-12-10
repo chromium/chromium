@@ -92,6 +92,10 @@ class DownloadProtectionService {
       download::DownloadItem* item,
       CheckDownloadRepeatingCallback callback);
 
+  // Returns whether the download URL should be checked for safety based on user
+  // prefs.
+  virtual bool ShouldCheckDownloadUrl(download::DownloadItem* item);
+
   // Checks whether any of the URLs in the redirect chain of the
   // download match the SafeBrowsing bad binary URL list.  The result is
   // delivered asynchronously via the given callback.  This method must be
@@ -99,11 +103,6 @@ class DownloadProtectionService {
   // thread.  Pre-condition: !info.download_url_chain.empty().
   virtual void CheckDownloadUrl(download::DownloadItem* item,
                                 CheckDownloadCallback callback);
-
-  // Checks the user permissions, then calls |CheckDownloadUrl|. Returns whether
-  // we began checking the URL.
-  virtual bool MaybeCheckDownloadUrl(download::DownloadItem* item,
-                                     CheckDownloadCallback callback);
 
   // Returns true iff the download specified by |info| should be scanned by
   // CheckClientDownload() for malicious content.

@@ -199,10 +199,18 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
   return false;
 }
 
+bool DownloadProtectionService::ShouldCheckDownloadUrl(
+    download::DownloadItem* item) {
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item));
+  return profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
+}
+
 void DownloadProtectionService::CheckDownloadUrl(
     download::DownloadItem* item,
     CheckDownloadCallback callback) {
   DCHECK(!item->GetUrlChain().empty());
+  DCHECK(ShouldCheckDownloadUrl(item));
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
   // |web_contents| can be null in tests.
@@ -224,19 +232,6 @@ void DownloadProtectionService::CheckDownloadUrl(
   // The client will release itself once it is done.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&DownloadUrlSBClient::StartCheck, client));
-}
-
-bool DownloadProtectionService::MaybeCheckDownloadUrl(
-    download::DownloadItem* item,
-    CheckDownloadCallback callback) {
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item));
-  if (profile && IsSafeBrowsingEnabled(*profile->GetPrefs())) {
-    CheckDownloadUrl(item, std::move(callback));
-    return true;
-  }
-
-  return false;
 }
 
 bool DownloadProtectionService::IsSupportedDownload(

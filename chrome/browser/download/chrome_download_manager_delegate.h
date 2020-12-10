@@ -171,16 +171,15 @@ class ChromeDownloadManagerDelegate
   virtual void ShowFilePickerForDownload(
       download::DownloadItem* download,
       const base::FilePath& suggested_path,
-      const DownloadTargetDeterminerDelegate::ConfirmationCallback& callback);
+      DownloadTargetDeterminerDelegate::ConfirmationCallback callback);
 
   // DownloadTargetDeterminerDelegate. Protected for testing.
-  void GetMixedContentStatus(
-      download::DownloadItem* download,
-      const base::FilePath& virtual_path,
-      const GetMixedContentStatusCallback& callback) override;
+  void GetMixedContentStatus(download::DownloadItem* download,
+                             const base::FilePath& virtual_path,
+                             GetMixedContentStatusCallback callback) override;
   void NotifyExtensions(download::DownloadItem* download,
                         const base::FilePath& suggested_virtual_path,
-                        const NotifyExtensionsCallback& callback) override;
+                        NotifyExtensionsCallback callback) override;
   void ReserveVirtualPath(
       download::DownloadItem* download,
       const base::FilePath& virtual_path,
@@ -191,15 +190,15 @@ class ChromeDownloadManagerDelegate
   void RequestConfirmation(download::DownloadItem* download,
                            const base::FilePath& suggested_virtual_path,
                            DownloadConfirmationReason reason,
-                           const ConfirmationCallback& callback) override;
+                           ConfirmationCallback callback) override;
   void DetermineLocalPath(download::DownloadItem* download,
                           const base::FilePath& virtual_path,
-                          const LocalPathCallback& callback) override;
+                          LocalPathCallback callback) override;
   void CheckDownloadUrl(download::DownloadItem* download,
                         const base::FilePath& suggested_virtual_path,
-                        const CheckDownloadUrlCallback& callback) override;
+                        CheckDownloadUrlCallback callback) override;
   void GetFileMimeType(const base::FilePath& path,
-                       const GetFileMimeTypeCallback& callback) override;
+                       GetFileMimeTypeCallback callback) override;
 
 #if defined(OS_ANDROID)
   virtual void OnDownloadCanceled(download::DownloadItem* download,
@@ -208,7 +207,7 @@ class ChromeDownloadManagerDelegate
 
   // Called when the file picker returns the confirmation result.
   void OnConfirmationCallbackComplete(
-      const DownloadTargetDeterminerDelegate::ConfirmationCallback& callback,
+      DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       DownloadConfirmationResult result,
       const base::FilePath& virtual_path);
 
@@ -227,7 +226,7 @@ class ChromeDownloadManagerDelegate
   void ShowFilePicker(
       const std::string& guid,
       const base::FilePath& suggested_path,
-      const DownloadTargetDeterminerDelegate::ConfirmationCallback& callback);
+      DownloadTargetDeterminerDelegate::ConfirmationCallback callback);
 
   // content::NotificationObserver implementation.
   void Observe(int type,
@@ -278,7 +277,7 @@ class ChromeDownloadManagerDelegate
   // TARGET_CONFLICT and the new file name should be displayed to the user.
   void GenerateUniqueFileNameDone(
       gfx::NativeWindow native_window,
-      const DownloadTargetDeterminerDelegate::ConfirmationCallback& callback,
+      DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       download::PathValidationResult result,
       const base::FilePath& target_path);
 #endif

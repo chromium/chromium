@@ -27,21 +27,21 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener {
   //    selection, then this parameter will be the empty path. On Chrome OS,
   //    this path may contain virtual mount points if the user chose a virtual
   //    path (e.g. Google Drive).
-  typedef base::Callback<void(DownloadConfirmationResult,
-                              const base::FilePath& virtual_path)>
-      ConfirmationCallback;
+  using ConfirmationCallback =
+      base::OnceCallback<void(DownloadConfirmationResult,
+                              const base::FilePath& virtual_path)>;
 
   // Display a file picker dialog for |item|. The |suggested_path| will be used
   // as the initial path displayed to the user. |callback| will always be
   // invoked even if |item| is destroyed prior to the file picker completing.
   static void ShowFilePicker(download::DownloadItem* item,
                              const base::FilePath& suggested_path,
-                             const ConfirmationCallback& callback);
+                             ConfirmationCallback callback);
 
  private:
   DownloadFilePicker(download::DownloadItem* item,
                      const base::FilePath& suggested_path,
-                     const ConfirmationCallback& callback);
+                     ConfirmationCallback callback);
   ~DownloadFilePicker() override;
 
   // Runs |file_selected_callback_| with |virtual_path| and then deletes this

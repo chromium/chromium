@@ -20,8 +20,9 @@ using content::WebContents;
 
 DownloadFilePicker::DownloadFilePicker(DownloadItem* item,
                                        const base::FilePath& suggested_path,
-                                       const ConfirmationCallback& callback)
-    : suggested_path_(suggested_path), file_selected_callback_(callback) {
+                                       ConfirmationCallback callback)
+    : suggested_path_(suggested_path),
+      file_selected_callback_(std::move(callback)) {
   const DownloadPrefs* prefs = DownloadPrefs::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
   DCHECK(prefs);
@@ -77,10 +78,10 @@ DownloadFilePicker::~DownloadFilePicker() {
 }
 
 void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
-  file_selected_callback_.Run(path.empty()
-                                  ? DownloadConfirmationResult::CANCELED
-                                  : DownloadConfirmationResult::CONFIRMED,
-                              path);
+  std::move(file_selected_callback_)
+      .Run(path.empty() ? DownloadConfirmationResult::CANCELED
+                        : DownloadConfirmationResult::CONFIRMED,
+           path);
   delete this;
 }
 
@@ -99,7 +100,7 @@ void DownloadFilePicker::FileSelectionCanceled(void* params) {
 // static
 void DownloadFilePicker::ShowFilePicker(DownloadItem* item,
                                         const base::FilePath& suggested_path,
-                                        const ConfirmationCallback& callback) {
-  new DownloadFilePicker(item, suggested_path, callback);
+                                        ConfirmationCallback callback) {
+  new DownloadFilePicker(item, suggested_path, std::move(callback));
   // DownloadFilePicker deletes itself.
 }

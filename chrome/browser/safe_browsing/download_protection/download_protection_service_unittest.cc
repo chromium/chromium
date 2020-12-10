@@ -2248,6 +2248,11 @@ TEST_F(DownloadProtectionServiceTest, TestCheckDownloadUrl) {
   EXPECT_CALL(item, GetReferrerUrl()).WillRepeatedly(ReturnRef(referrer));
   EXPECT_CALL(item, GetHash()).WillRepeatedly(ReturnRef(hash));
 
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::DownloadItemUtils::AttachInfo(&item, profile(), web_contents.get());
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
   {
     // CheckDownloadURL returns immediately which means the client object
     // callback will never be called.  Nevertheless the callback provided

@@ -26,8 +26,8 @@ class DownloadTargetDeterminerDelegate {
  public:
   // Callback to be invoked after GetMixedContentStatus() completes. The
   // |should_block| bool represents whether the download should be aborted.
-  using GetMixedContentStatusCallback =
-      base::Callback<void(download::DownloadItem::MixedContentStatus status)>;
+  using GetMixedContentStatusCallback = base::OnceCallback<void(
+      download::DownloadItem::MixedContentStatus status)>;
 
   // Callback to be invoked after NotifyExtensions() completes. The
   // |new_virtual_path| should be set to a new path if an extension wishes to
@@ -35,7 +35,7 @@ class DownloadTargetDeterminerDelegate {
   // to take if a file exists at |new_virtual_path|. If |new_virtual_path| is
   // empty, then the download target will be unchanged and |conflict_action| is
   // ignored.
-  typedef base::Callback<void(
+  typedef base::OnceCallback<void(
       const base::FilePath& new_virtual_path,
       download::DownloadPathReservationTracker::FilenameConflictAction
           conflict_action)>
@@ -50,42 +50,41 @@ class DownloadTargetDeterminerDelegate {
   //    selection, then this parameter will be the empty path. On Chrome OS,
   //    this path may contain virtual mount points if the user chose a virtual
   //    path (e.g. Google Drive).
-  typedef base::Callback<void(
+  using ConfirmationCallback = base::OnceCallback<void(
       DownloadConfirmationResult,
       const base::FilePath& virtual_path,
-      base::Optional<download::DownloadSchedule> download_schedule)>
-      ConfirmationCallback;
+      base::Optional<download::DownloadSchedule> download_schedule)>;
 
   // Callback to be invoked when DetermineLocalPath() completes. The argument
   // should be the determined local path. It should be non-empty on success. If
   // |virtual_path| is already a local path, then |virtual_path| should be
   // returned as-is.
-  typedef base::Callback<void(const base::FilePath&)> LocalPathCallback;
+  using LocalPathCallback = base::OnceCallback<void(const base::FilePath&)>;
 
   // Callback to be invoked after CheckDownloadUrl() completes. The parameter to
   // the callback should indicate the danger type of the download based on the
   // results of the URL check.
-  typedef base::Callback<void(download::DownloadDangerType danger_type)>
-      CheckDownloadUrlCallback;
+  using CheckDownloadUrlCallback =
+      base::OnceCallback<void(download::DownloadDangerType danger_type)>;
 
   // Callback to be invoked after GetFileMimeType() completes. The parameter
   // should be the MIME type of the requested file. If no MIME type can be
   // determined, it should be set to the empty string.
-  typedef base::Callback<void(const std::string&)> GetFileMimeTypeCallback;
+  typedef base::OnceCallback<void(const std::string&)> GetFileMimeTypeCallback;
 
   // Returns whether the download should be warned/blocked based on its mixed
   // content status, and if so, what kind of warning/blocking should be used.
   virtual void GetMixedContentStatus(
       download::DownloadItem* download,
       const base::FilePath& virtual_path,
-      const GetMixedContentStatusCallback& callback) = 0;
+      GetMixedContentStatusCallback callback) = 0;
 
   // Notifies extensions of the impending filename determination. |virtual_path|
   // is the current suggested virtual path. The |callback| should be invoked to
   // indicate whether any extensions wish to override the path.
   virtual void NotifyExtensions(download::DownloadItem* download,
                                 const base::FilePath& virtual_path,
-                                const NotifyExtensionsCallback& callback) = 0;
+                                NotifyExtensionsCallback callback) = 0;
 
   // Reserve |virtual_path|. This is expected to check the following:
   // - Whether |virtual_path| can be written to by the user. If not, the
@@ -113,7 +112,7 @@ class DownloadTargetDeterminerDelegate {
   virtual void RequestConfirmation(download::DownloadItem* download,
                                    const base::FilePath& virtual_path,
                                    DownloadConfirmationReason reason,
-                                   const ConfirmationCallback& callback) = 0;
+                                   ConfirmationCallback callback) = 0;
 
   // If |virtual_path| is not a local path, should return a possibly temporary
   // local path to use for storing the downloaded file. If |virtual_path| is
@@ -121,17 +120,17 @@ class DownloadTargetDeterminerDelegate {
   // invoked to return the path.
   virtual void DetermineLocalPath(download::DownloadItem* download,
                                   const base::FilePath& virtual_path,
-                                  const LocalPathCallback& callback) = 0;
+                                  LocalPathCallback callback) = 0;
 
   // Check whether the download URL is malicious and invoke |callback| with a
   // suggested danger type for the download.
   virtual void CheckDownloadUrl(download::DownloadItem* download,
                                 const base::FilePath& virtual_path,
-                                const CheckDownloadUrlCallback& callback) = 0;
+                                CheckDownloadUrlCallback callback) = 0;
 
   // Get the MIME type for the given file.
   virtual void GetFileMimeType(const base::FilePath& path,
-                               const GetFileMimeTypeCallback& callback) = 0;
+                               GetFileMimeTypeCallback callback) = 0;
 
  protected:
   virtual ~DownloadTargetDeterminerDelegate();

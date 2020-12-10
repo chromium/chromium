@@ -23,17 +23,18 @@
 namespace {
 
 void CreateNewFileDone(
-    const DownloadTargetDeterminerDelegate::ConfirmationCallback& callback,
+    DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
     download::PathValidationResult result,
     const base::FilePath& target_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (result == download::PathValidationResult::SUCCESS) {
-    callback.Run(DownloadConfirmationResult::CONFIRMED, target_path,
-                 base::nullopt /*download_schedule*/);
+    std::move(callback).Run(DownloadConfirmationResult::CONFIRMED, target_path,
+                            base::nullopt /*download_schedule*/);
 
   } else {
-    callback.Run(DownloadConfirmationResult::FAILED, base::FilePath(),
-                 base::nullopt /*download_schedule*/);
+    std::move(callback).Run(DownloadConfirmationResult::FAILED,
+                            base::FilePath(),
+                            base::nullopt /*download_schedule*/);
   }
 }
 
@@ -52,10 +53,10 @@ void ChromeDuplicateDownloadInfoBarDelegate::Create(
     InfoBarService* infobar_service,
     download::DownloadItem* download_item,
     const base::FilePath& file_path,
-    const DownloadTargetDeterminerDelegate::ConfirmationCallback& callback) {
+    DownloadTargetDeterminerDelegate::ConfirmationCallback callback) {
   infobar_service->AddInfoBar(DuplicateDownloadInfoBar::CreateInfoBar(
       base::WrapUnique(new ChromeDuplicateDownloadInfoBarDelegate(
-          download_item, file_path, callback))));
+          download_item, file_path, std::move(callback)))));
 }
 
 void ChromeDuplicateDownloadInfoBarDelegate::OnDownloadDestroyed(
@@ -67,14 +68,14 @@ void ChromeDuplicateDownloadInfoBarDelegate::OnDownloadDestroyed(
 ChromeDuplicateDownloadInfoBarDelegate::ChromeDuplicateDownloadInfoBarDelegate(
     download::DownloadItem* download_item,
     const base::FilePath& file_path,
-    const DownloadTargetDeterminerDelegate::ConfirmationCallback&
+    DownloadTargetDeterminerDelegate::ConfirmationCallback
         file_selected_callback)
     : download_item_(download_item),
       file_path_(file_path),
       is_off_the_record_(
           content::DownloadItemUtils::GetBrowserContext(download_item)
               ->IsOffTheRecord()),
-      file_selected_callback_(file_selected_callback) {
+      file_selected_callback_(std::move(file_selected_callback)) {
   download_item_->AddObserver(this);
 }
 
@@ -97,7 +98,7 @@ bool ChromeDuplicateDownloadInfoBarDelegate::Accept() {
       download_item_, file_path_, download_dir,
       base::FilePath(), /* fallback_directory */
       true, download::DownloadPathReservationTracker::UNIQUIFY,
-      base::BindOnce(&CreateNewFileDone, file_selected_callback_));
+      base::BindOnce(&CreateNewFileDone, std::move(file_selected_callback_)));
   return true;
 }
 
@@ -105,9 +106,9 @@ bool ChromeDuplicateDownloadInfoBarDelegate::Cancel() {
   if (!download_item_)
     return true;
 
-  file_selected_callback_.Run(DownloadConfirmationResult::CANCELED,
-                              base::FilePath(),
-                              base::nullopt /*download_schedule*/);
+  std::move(file_selected_callback_)
+      .Run(DownloadConfirmationResult::CANCELED, base::FilePath(),
+           base::nullopt /*download_schedule*/);
   return true;
 }
 

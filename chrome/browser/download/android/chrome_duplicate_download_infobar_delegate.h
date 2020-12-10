@@ -24,12 +24,11 @@ class ChromeDuplicateDownloadInfoBarDelegate
  public:
   ~ChromeDuplicateDownloadInfoBarDelegate() override;
 
-  static void Create(
-      InfoBarService* infobar_service,
-      download::DownloadItem* download_item,
-      const base::FilePath& file_path,
-      const DownloadTargetDeterminerDelegate::ConfirmationCallback&
-          file_selected_callback);
+  static void Create(InfoBarService* infobar_service,
+                     download::DownloadItem* download_item,
+                     const base::FilePath& file_path,
+                     DownloadTargetDeterminerDelegate::ConfirmationCallback
+                         file_selected_callback);
 
   // download::DownloadItem::Observer
   void OnDownloadDestroyed(download::DownloadItem* download_item) override;
@@ -38,7 +37,7 @@ class ChromeDuplicateDownloadInfoBarDelegate
   ChromeDuplicateDownloadInfoBarDelegate(
       download::DownloadItem* download_item,
       const base::FilePath& file_path,
-      const DownloadTargetDeterminerDelegate::ConfirmationCallback& callback);
+      DownloadTargetDeterminerDelegate::ConfirmationCallback callback);
 
   // DownloadOverwriteInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
