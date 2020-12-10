@@ -305,12 +305,9 @@ void AdbTargetsUIHandler::DeviceListChanged(
 
 // DevToolsTargetsUIHandler ---------------------------------------------------
 
-DevToolsTargetsUIHandler::DevToolsTargetsUIHandler(
-    const std::string& source_id,
-    const Callback& callback)
-    : source_id_(source_id),
-      callback_(callback) {
-}
+DevToolsTargetsUIHandler::DevToolsTargetsUIHandler(const std::string& source_id,
+                                                   Callback callback)
+    : source_id_(source_id), callback_(std::move(callback)) {}
 
 DevToolsTargetsUIHandler::~DevToolsTargetsUIHandler() {
 }
@@ -318,7 +315,7 @@ DevToolsTargetsUIHandler::~DevToolsTargetsUIHandler() {
 // static
 std::unique_ptr<DevToolsTargetsUIHandler>
 DevToolsTargetsUIHandler::CreateForLocal(
-    const DevToolsTargetsUIHandler::Callback& callback,
+    DevToolsTargetsUIHandler::Callback callback,
     Profile* profile) {
   return std::unique_ptr<DevToolsTargetsUIHandler>(
       new LocalTargetsUIHandler(callback, profile));
@@ -327,7 +324,7 @@ DevToolsTargetsUIHandler::CreateForLocal(
 // static
 std::unique_ptr<DevToolsTargetsUIHandler>
 DevToolsTargetsUIHandler::CreateForAdb(
-    const DevToolsTargetsUIHandler::Callback& callback,
+    DevToolsTargetsUIHandler::Callback callback,
     Profile* profile) {
   return std::unique_ptr<DevToolsTargetsUIHandler>(
       new AdbTargetsUIHandler(callback, profile));

@@ -512,7 +512,7 @@ void InspectUI::StartListeningNotifications() {
   Profile* profile = Profile::FromWebUI(web_ui());
 
   DevToolsTargetsUIHandler::Callback callback =
-      base::Bind(&InspectUI::PopulateTargets, base::Unretained(this));
+      base::BindRepeating(&InspectUI::PopulateTargets, base::Unretained(this));
 
   PopulateAdditionalTargets(GetUiDevToolsTargets());
 
