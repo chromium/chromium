@@ -402,7 +402,7 @@ const base::Feature kHelpAppFirstRun{"HelpAppFirstRun",
 
 // Enable the search service integration in the Help app.
 const base::Feature kHelpAppSearchServiceIntegration{
-    "HelpAppSearchServiceIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
+    "HelpAppSearchServiceIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable IME decoder via Mojo connection on Chrome OS.
 const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
