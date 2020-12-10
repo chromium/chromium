@@ -96,6 +96,31 @@ bool IsFileSystemSupported() {
   return file_system_api_supported.Get();
 }
 
+uint64_t SupportedFeaturesBitmaskImpl() {
+  if (!DeviceHasEnoughMemoryForBackForwardCache())
+    return 0;
+
+  static constexpr base::FeatureParam<std::string> supported_features(
+      &features::kBackForwardCache, "supported_features", "");
+  std::vector<std::string> tokens =
+      base::SplitString(supported_features.Get(), ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  uint64_t mask = 0;
+  for (const std::string& token : tokens) {
+    auto feature = blink::scheduler::StringToFeature(token);
+    DCHECK(feature.has_value()) << "invalid feature string: " << token;
+    if (feature.has_value()) {
+      mask |= blink::scheduler::FeatureToBit(feature.value());
+    }
+  }
+  return mask;
+}
+
+uint64_t SupportedFeaturesBitmask() {
+  static uint64_t mask = SupportedFeaturesBitmaskImpl();
+  return mask;
+}
+
 bool IgnoresOutstandingNetworkRequestForTesting() {
   if (!DeviceHasEnoughMemoryForBackForwardCache())
     return false;
@@ -186,6 +211,8 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
     // Remove all non-sticky features from |result|.
     result &= blink::scheduler::StickyFeaturesBitmask();
   }
+
+  result &= ~SupportedFeaturesBitmask();
 
   return result;
 }
