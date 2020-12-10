@@ -2180,6 +2180,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "enable-sharesheet-content-previews",
+    "owners": [ "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-show-autofill-signatures",
     "owners": [ "kolos" ],
     // Used for debugging and QA by the autofill team for the indefinite future.

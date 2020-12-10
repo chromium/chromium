@@ -6544,6 +6544,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-sharesheet", flag_descriptions::kSharesheetName,
      flag_descriptions::kSharesheetDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSharesheet)},
+
+    {"enable-sharesheet-content-previews",
+     flag_descriptions::kSharesheetContentPreviewsName,
+     flag_descriptions::kSharesheetContentPreviewsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kSharesheetContentPreviews)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"schemeful-same-site", flag_descriptions::kSchemefulSameSiteName,

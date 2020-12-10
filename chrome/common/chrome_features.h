@@ -542,6 +542,9 @@ extern const base::Feature kSecurityKeyAttestationPrompt;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSharesheet;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSharesheetContentPreviews;
 #endif
 
 #if defined(OS_MAC)

@@ -2664,6 +2664,9 @@ extern const char kSelectToSpeakNavigationControlDescription[];
 extern const char kSeparatePointingStickSettingsName[];
 extern const char kSeparatePointingStickSettingsDescription[];
 
+extern const char kSharesheetContentPreviewsName[];
+extern const char kSharesheetContentPreviewsDescription[];
+
 extern const char kSharesheetName[];
 extern const char kSharesheetDescription[];
 

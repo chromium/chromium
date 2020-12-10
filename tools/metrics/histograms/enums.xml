@@ -45582,6 +45582,7 @@ from previous Chrome versions.
   <int value="1393500952" label="EnableVirtualKeyboardUkm:disabled"/>
   <int value="1393722373" label="SaveEditedPDFForm:disabled"/>
   <int value="1394896630" label="PrinterStatusDialog:enabled"/>
+  <int value="1394925480" label="SharesheetContentPreviews:enabled"/>
   <int value="1397069250" label="NetworkService:disabled"/>
   <int value="1398049903" label="WebUIDarkMode:disabled"/>
   <int value="1398148960" label="LanguageSettingsUpdate:disabled"/>
@@ -46108,6 +46109,7 @@ from previous Chrome versions.
   <int value="1914347357" label="AutofillEnableVirtualCard:disabled"/>
   <int value="1915028326" label="BuiltInModuleKvStorage:disabled"/>
   <int value="1915178511" label="disable-blink-features"/>
+  <int value="1915956064" label="SharesheetContentPreviews:disabled"/>
   <int value="1916637435" label="TranslateSubFrames:enabled"/>
   <int value="1918984253"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:disabled"/>

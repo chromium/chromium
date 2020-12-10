@@ -800,6 +800,8 @@ const base::Feature kSecurityKeyAttestationPrompt{
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kSharesheet{"Sharesheet", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kSharesheetContentPreviews{
+    "SharesheetContentPreviews", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_MAC)

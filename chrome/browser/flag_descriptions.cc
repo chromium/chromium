@@ -4558,6 +4558,10 @@ const char kSeparatePointingStickSettingsDescription[] =
     "Enables a separate group of settings (speed, button swap, and "
     "acceleration) for pointing sticks (such as TrackPoints).";
 
+const char kSharesheetContentPreviewsName[] = "Sharesheet Content Previews";
+const char kSharesheetContentPreviewsDescription[] =
+    "Chrome OS content previews for sharesheet.";
+
 const char kSharesheetName[] = "Sharesheet";
 const char kSharesheetDescription[] = "Chrome OS sharesheet.";
 
