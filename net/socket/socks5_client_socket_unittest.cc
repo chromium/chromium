@@ -214,7 +214,7 @@ TEST_F(SOCKS5ClientSocketTest, ConnectAndDisconnectTwice) {
   }
 }
 
-// Test that we fail trying to connect to a hosname longer than 255 bytes.
+// Test that we fail trying to connect to a hostname longer than 255 bytes.
 TEST_F(SOCKS5ClientSocketTest, LargeHostNameFails) {
   // Create a string of length 256, where each character is 'x'.
   std::string large_host_name;

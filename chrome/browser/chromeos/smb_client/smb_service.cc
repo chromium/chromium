@@ -484,7 +484,7 @@ void SmbService::MountInternal(
                                     mount_id, std::move(callback)));
   } else {
     // If using kerberos, the hostname should not be resolved since kerberos
-    // service tickets are keyed on hosname.
+    // service tickets are keyed on hostname.
     const SmbUrl url = info.use_kerberos()
                            ? info.share_url()
                            : share_finder_->GetResolvedUrl(info.share_url());
@@ -678,7 +678,7 @@ void SmbService::Remount(const ProvidedFileSystemInfo& file_system_info) {
   }
 
   // If using kerberos, the hostname should not be resolved since kerberos
-  // service tickets are keyed on hosname.
+  // service tickets are keyed on hostname.
   const SmbUrl resolved_url = is_kerberos_chromad
                                   ? parsed_url
                                   : share_finder_->GetResolvedUrl(parsed_url);
