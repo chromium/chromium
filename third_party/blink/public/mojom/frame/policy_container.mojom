@@ -7,7 +7,7 @@ module blink.mojom;
 import "services/network/public/mojom/referrer_policy.mojom";
 
 struct PolicyContainerDocumentPolicies {
-  network.mojom.ReferrerPolicy referrer_policy;
+  network.mojom.ReferrerPolicy referrer_policy = network.mojom.ReferrerPolicy.kDefault;
 };
 
 // This interface is implemented in the browser process. It defines methods to

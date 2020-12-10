@@ -37,6 +37,7 @@
 #include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -55,6 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -170,6 +172,7 @@
 #include "third_party/blink/renderer/core/testing/fake_remote_frame_host.h"
 #include "third_party/blink/renderer/core/testing/fake_remote_main_frame_host.h"
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
@@ -13670,6 +13673,9 @@ class TestLocalFrameHostForAnchorWithDownloadAttr : public FakeLocalFrameHost {
 };
 
 TEST_F(WebFrameTest, DownloadReferrerPolicy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPolicyContainer);
+
   TestLocalFrameHostForAnchorWithDownloadAttr frame_host;
   frame_test_helpers::TestWebFrameClient web_frame_client;
   frame_host.Init(web_frame_client.GetRemoteNavigationAssociatedInterfaces());
@@ -13678,52 +13684,106 @@ TEST_F(WebFrameTest, DownloadReferrerPolicy) {
 
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   KURL test_url = ToKURL("http://www.test.com/foo/index.html");
-  // 1.<meta name='referrer' content='no-referrer'>
-  frame_test_helpers::LoadHTMLString(
-      frame, GetHTMLStringForReferrerPolicy("no-referrer", std::string()),
-      test_url);
-  EXPECT_TRUE(frame_host.referrer_.IsEmpty());
-  EXPECT_EQ(frame_host.referrer_policy_,
-            network::mojom::ReferrerPolicy::kNever);
 
-  // 2.<meta name='referrer' content='origin'>
-  frame_test_helpers::LoadHTMLString(
-      frame, GetHTMLStringForReferrerPolicy("origin", std::string()), test_url);
-  EXPECT_EQ(frame_host.referrer_, ToKURL("http://www.test.com/"));
-  EXPECT_EQ(frame_host.referrer_policy_,
-            network::mojom::ReferrerPolicy::kOrigin);
+  {
+    // 1.<meta name='referrer' content='no-referrer'>
+    MockPolicyContainerHost policy_container_host;
+    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
+        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+        mojom::blink::PolicyContainerDocumentPolicies::New()));
+    EXPECT_CALL(policy_container_host,
+                SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever));
+    frame_test_helpers::LoadHTMLString(
+        frame, GetHTMLStringForReferrerPolicy("no-referrer", std::string()),
+        test_url);
+    EXPECT_TRUE(frame_host.referrer_.IsEmpty());
+    EXPECT_EQ(frame_host.referrer_policy_,
+              network::mojom::ReferrerPolicy::kNever);
+    policy_container_host.FlushForTesting();
+  }
 
-  // 3.Without any declared referrer-policy attribute
-  frame_test_helpers::LoadHTMLString(
-      frame, GetHTMLStringForReferrerPolicy(std::string(), std::string()),
-      test_url);
-  EXPECT_EQ(frame_host.referrer_, test_url);
-  EXPECT_EQ(frame_host.referrer_policy_,
-            ReferrerUtils::MojoReferrerPolicyResolveDefault(
-                network::mojom::ReferrerPolicy::kDefault));
+  {
+    // 2.<meta name='referrer' content='origin'>
+    MockPolicyContainerHost policy_container_host;
+    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
+        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+        mojom::blink::PolicyContainerDocumentPolicies::New()));
+    EXPECT_CALL(policy_container_host,
+                SetReferrerPolicy(network::mojom::ReferrerPolicy::kOrigin));
+    frame_test_helpers::LoadHTMLString(
+        frame, GetHTMLStringForReferrerPolicy("origin", std::string()),
+        test_url);
+    EXPECT_EQ(frame_host.referrer_, ToKURL("http://www.test.com/"));
+    EXPECT_EQ(frame_host.referrer_policy_,
+              network::mojom::ReferrerPolicy::kOrigin);
+    policy_container_host.FlushForTesting();
+  }
 
-  // 4.referrerpolicy='origin'
-  frame_test_helpers::LoadHTMLString(
-      frame, GetHTMLStringForReferrerPolicy(std::string(), "origin"), test_url);
-  EXPECT_EQ(frame_host.referrer_, ToKURL("http://www.test.com/"));
-  EXPECT_EQ(frame_host.referrer_policy_,
-            network::mojom::ReferrerPolicy::kOrigin);
+  {
+    // 3.Without any declared referrer-policy attribute
+    MockPolicyContainerHost policy_container_host;
+    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
+        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+        mojom::blink::PolicyContainerDocumentPolicies::New()));
+    EXPECT_CALL(policy_container_host, SetReferrerPolicy(_)).Times(0);
+    frame_test_helpers::LoadHTMLString(
+        frame, GetHTMLStringForReferrerPolicy(std::string(), std::string()),
+        test_url);
+    EXPECT_EQ(frame_host.referrer_, test_url);
+    EXPECT_EQ(frame_host.referrer_policy_,
+              ReferrerUtils::MojoReferrerPolicyResolveDefault(
+                  network::mojom::ReferrerPolicy::kDefault));
+    policy_container_host.FlushForTesting();
+  }
 
-  // 5.referrerpolicy='same-origin'
-  frame_test_helpers::LoadHTMLString(
-      frame, GetHTMLStringForReferrerPolicy(std::string(), "same-origin"),
-      test_url);
-  EXPECT_EQ(frame_host.referrer_, test_url);
-  EXPECT_EQ(frame_host.referrer_policy_,
-            network::mojom::ReferrerPolicy::kSameOrigin);
+  {
+    // 4.referrerpolicy='origin'
+    MockPolicyContainerHost policy_container_host;
+    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
+        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+        mojom::blink::PolicyContainerDocumentPolicies::New()));
+    EXPECT_CALL(policy_container_host, SetReferrerPolicy(_)).Times(0);
+    frame_test_helpers::LoadHTMLString(
+        frame, GetHTMLStringForReferrerPolicy(std::string(), "origin"),
+        test_url);
+    EXPECT_EQ(frame_host.referrer_, ToKURL("http://www.test.com/"));
+    EXPECT_EQ(frame_host.referrer_policy_,
+              network::mojom::ReferrerPolicy::kOrigin);
+    policy_container_host.FlushForTesting();
+  }
 
-  // 6.referrerpolicy='no-referrer'
-  frame_test_helpers::LoadHTMLString(
-      frame, GetHTMLStringForReferrerPolicy(std::string(), "no-referrer"),
-      test_url);
-  EXPECT_TRUE(frame_host.referrer_.IsEmpty());
-  EXPECT_EQ(frame_host.referrer_policy_,
-            network::mojom::ReferrerPolicy::kNever);
+  {
+    // 5.referrerpolicy='same-origin'
+    MockPolicyContainerHost policy_container_host;
+    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
+        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+        mojom::blink::PolicyContainerDocumentPolicies::New()));
+    EXPECT_CALL(policy_container_host, SetReferrerPolicy(_)).Times(0);
+    frame_test_helpers::LoadHTMLString(
+        frame, GetHTMLStringForReferrerPolicy(std::string(), "same-origin"),
+        test_url);
+    EXPECT_EQ(frame_host.referrer_, test_url);
+    EXPECT_EQ(frame_host.referrer_policy_,
+              network::mojom::ReferrerPolicy::kSameOrigin);
+    policy_container_host.FlushForTesting();
+  }
+
+  {
+    // 6.referrerpolicy='no-referrer'
+    MockPolicyContainerHost policy_container_host;
+    frame->GetFrame()->SetPolicyContainer(std::make_unique<PolicyContainer>(
+        policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+        mojom::blink::PolicyContainerDocumentPolicies::New()));
+    EXPECT_CALL(policy_container_host, SetReferrerPolicy(_)).Times(0);
+    frame_test_helpers::LoadHTMLString(
+        frame, GetHTMLStringForReferrerPolicy(std::string(), "no-referrer"),
+        test_url);
+    EXPECT_TRUE(frame_host.referrer_.IsEmpty());
+    EXPECT_EQ(frame_host.referrer_policy_,
+              network::mojom::ReferrerPolicy::kNever);
+    policy_container_host.FlushForTesting();
+  }
+
   web_view_helper.Reset();
 }
 

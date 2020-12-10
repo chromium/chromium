@@ -245,12 +245,21 @@ TEST_F(HTMLMetaElementTest, ColorSchemeForcedDarkeningAndMQ) {
 }
 
 TEST_F(HTMLMetaElementTest, ReferrerPolicyWithoutContent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPolicyContainer);
+
+  MockPolicyContainerHost policy_container_host;
+  GetFrame().SetPolicyContainer(std::make_unique<PolicyContainer>(
+      policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
+      mojom::blink::PolicyContainerDocumentPolicies::New()));
+  EXPECT_CALL(policy_container_host,
+              SetReferrerPolicy(network::mojom::ReferrerPolicy::kStrictOrigin));
+
   GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="referrer" content="strict-origin">
     <meta name="referrer" >
   )HTML");
-  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOrigin,
-            GetDocument().GetReferrerPolicy());
+  policy_container_host.FlushForTesting();
 }
 
 TEST_F(HTMLMetaElementTest, ReferrerPolicyUpdatesPolicyContainer) {
