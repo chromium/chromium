@@ -211,79 +211,106 @@ TEST_F(
               constants.Dir.BACKWARD /* direction */));
     });
 
+
+TEST_F('SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStart', function() {
+  // The text of the test node group is "Hello. New. World."
+  const nodeGroup = getTestNodeGroupWithOneNode();
+
+  assertEquals(
+      true,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 0 /* startCharIndex */));
+  assertEquals(
+      false,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 3 /* startCharIndex */));
+  assertEquals(
+      true,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 7 /* startCharIndex */));
+  assertEquals(
+      false,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 11 /* startCharIndex */));
+  assertEquals(
+      true,
+      SentenceUtils.isSentenceStart(
+          nodeGroup /* nodeGroup */, 12 /* startCharIndex */));
+});
+
+TEST_F(
+    'SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStartMultiNodes',
+    function() {
+      // The text of the test node group is "Hello. New. Beautiful. World." The
+      // char indexes of four sentence starts are 0, 7, 12, 23.
+      const nodeGroup = getTestNodeGroupWithMultiNodes();
+
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 0 /* startCharIndex */));
+      assertEquals(
+          false,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 3 /* startCharIndex */));
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 7 /* startCharIndex */));
+      assertEquals(
+          false,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 11 /* startCharIndex */));
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 12 /* startCharIndex */));
+      assertEquals(
+          false,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 15 /* startCharIndex */));
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 23 /* startCharIndex */));
+    });
 function getTestNodeGroupWithOneNode() {
-  const inlineText = {sentenceStarts: [0, 7, 12], name: 'Hello. New. World.'};
-  const staticText = {children: [inlineText], name: 'Hello. New. World.'};
-  const node = {node: staticText, startChar: 0, hasInlineText: true};
+  const staticText = {sentenceStarts: [0, 7, 12], name: 'Hello. New. World.'};
+  const node = {node: staticText, startChar: 0};
   return {nodes: [node], text: 'Hello. New. World.'};
 }
 
 function getTestNodeGroupWithMultiNodes() {
-  const staticText1 = {name: 'Hello. New. ', role: 'staticText'};
-  const inlineText1 = {
-    sentenceStarts: [0, 7],
+  const staticText1 = {
     name: 'Hello. New. ',
-    indexInParent: 0,
-    parent: staticText1
+    role: 'staticText',
+    sentenceStarts: [0, 7]
   };
-  staticText1.children = [inlineText1];
-  const node1 = {node: staticText1, startChar: 0, hasInlineText: true};
+  const node1 = {node: staticText1, startChar: 0};
 
-  const staticText2 = {name: 'Beautiful. World.', role: 'staticText'};
-  const inlineText2 = {
-    sentenceStarts: [0],
-    name: 'Beautiful. ',
-    indexInParent: 0,
-    parent: staticText2
+  const staticText2 = {
+    name: 'Beautiful. World.',
+    role: 'staticText',
+    sentenceStarts: [0, 11]
   };
-  const inlineText3 = {
-    sentenceStarts: [0],
-    name: 'World.',
-    indexInParent: 1,
-    parent: staticText2
-  };
-  staticText2.children = [inlineText2, inlineText3];
-  const node2 = {node: staticText2, startChar: 12, hasInlineText: true};
+  const node2 = {node: staticText2, startChar: 12};
 
   return {nodes: [node1, node2], text: 'Hello. New. Beautiful. World.'};
 }
 
 function getTestNodeGroupWithSentenceSpanningAcrossMultiNodes() {
-  const staticText1 = {name: 'Hello', role: 'staticText'};
-  const inlineText1 = {
-    sentenceStarts: [0],
-    name: 'Hello',
-    indexInParent: 0,
-    parent: staticText1
-  };
-  staticText1.children = [inlineText1];
-  const node1 = {node: staticText1, startChar: 0, hasInlineText: true};
+  const staticText1 = {name: 'Hello', role: 'staticText', sentenceStarts: [0]};
+  const node1 = {node: staticText1, startChar: 0};
 
-  const staticText2 = {name: ' world. New', role: 'staticText'};
-  const inlineText2 = {
-    sentenceStarts: [],
-    name: ' world.',
-    indexInParent: 0,
-    parent: staticText2
+  const staticText2 = {
+    name: ' world. New',
+    role: 'staticText',
+    sentenceStarts: [8]
   };
-  const inlineText3 = {
-    sentenceStarts: [1],
-    name: ' New',
-    indexInParent: 1,
-    parent: staticText2
-  };
-  staticText2.children = [inlineText2, inlineText3];
-  const node2 = {node: staticText2, startChar: 5, hasInlineText: true};
+  const node2 = {node: staticText2, startChar: 5};
 
-  const staticText3 = {name: ' world.', role: 'staticText'};
-  const inlineText4 = {
-    sentenceStarts: [],
-    name: ' world.',
-    indexInParent: 0,
-    parent: staticText3
-  };
-  staticText3.children = [inlineText4];
-  const node3 = {node: staticText3, startChar: 16, hasInlineText: true};
+  const staticText3 = {name: ' world.', role: 'staticText', sentenceStarts: []};
+  const node3 = {node: staticText3, startChar: 16};
 
   return {nodes: [node1, node2, node3], text: 'Hello world. New world.'};
 }

@@ -632,14 +632,28 @@ class SelectToSpeak {
   }
 
   /**
-   * Resume the TTS. Currently, we just ask the TTS engine to pick up where it
-   * quited last time in |this.startCurrentNodeGroup_|.
+   * Resume the TTS from the beginning of the current sentence.
    * @private
    */
   resume_() {
-    if (this.isPaused_()) {
-      this.startCurrentNodeGroup_();
+    // If TTS is not paused, return early.
+    if (!this.isPaused_()) {
+      return;
     }
+    if (!SentenceUtils.isSentenceStart(
+            this.currentNodeGroup_, this.navigationState_.currentCharIndex)) {
+      // If the current position is not a sentence start, move to the start of
+      // the current sentence.
+      const currentSentenceStart = SentenceUtils.getSentenceStart(
+          this.currentNodeGroup_, this.navigationState_.currentCharIndex,
+          constants.Dir.BACKWARD);
+      // Only navigate to the current sentence start if it exists, otherwise
+      // move to the beginning of the current nodeGroup.
+      // TODO(leileilei): check if the 0 char index would cause issues.
+      this.navigationState_.currentCharIndex =
+          currentSentenceStart === null ? 0 : currentSentenceStart;
+    }
+    this.startCurrentNodeGroup_();
   }
 
   /**

@@ -146,36 +146,109 @@ TEST_F(
       });
     });
 
-TEST_F('SelectToSpeakNavigationControlTest', 'PauseAndResume', function() {
-  const bodyHtml = `
-      <p id="p1">Paragraph 1</p>'
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'PauseResumeWithinTheSentence',
+    function() {
+      const bodyHtml = `
+      <p id="p1">First sentence. Second sentence. Third sentence.</p>'
     `;
-  this.runWithLoadedTree(
-      this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
-        this.triggerReadSelectedText();
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            this.triggerReadSelectedText();
 
-        // Speaks the first word.
-        this.mockTts.speakUntilCharIndex(10);
-        assertTrue(this.mockTts.currentlySpeaking());
-        assertEquals(this.mockTts.pendingUtterances().length, 1);
-        this.assertEqualsCollapseWhitespace(
-            this.mockTts.pendingUtterances()[0], 'Paragraph 1');
+            // Speaks until the second word of the second sentence.
+            this.mockTts.speakUntilCharIndex(23);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0],
+                'First sentence. Second sentence. Third sentence.');
 
-        // Hitting pause will stop the current TTS.
-        selectToSpeak.onSelectToSpeakPanelAction_(
-            chrome.accessibilityPrivate.SelectToSpeakPanelAction.PAUSE);
-        assertFalse(this.mockTts.currentlySpeaking());
-        assertEquals(this.mockTts.pendingUtterances().length, 0);
+            // Hitting pause will stop the current TTS.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.PAUSE);
+            assertFalse(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 0);
 
-        // Hitting resume will start from the next position.
-        selectToSpeak.onSelectToSpeakPanelAction_(
-            chrome.accessibilityPrivate.SelectToSpeakPanelAction.RESUME);
-        assertTrue(this.mockTts.currentlySpeaking());
-        assertEquals(this.mockTts.pendingUtterances().length, 1);
-        this.assertEqualsCollapseWhitespace(
-            this.mockTts.pendingUtterances()[0], '1');
-      });
-});
+            // Hitting resume will start from the beginning of the second
+            // sentence.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.RESUME);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0],
+                'Second sentence. Third sentence.');
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'PauseResumeAtTheBeginningOfSentence',
+    function() {
+      const bodyHtml = `
+      <p id="p1">First sentence. Second sentence. Third sentence.</p>'
+    `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Speaks until the third sentence.
+            this.mockTts.speakUntilCharIndex(33);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0],
+                'First sentence. Second sentence. Third sentence.');
+
+            // Hitting pause will stop the current TTS.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.PAUSE);
+            assertFalse(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 0);
+
+            // Hitting resume will start from the beginning of the third
+            // sentence.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.RESUME);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'Third sentence.');
+          });
+    });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest',
+    'PauseResumeAtTheBeginningOfParagraph', function() {
+      const bodyHtml = `
+      <p id="p1">first sentence.</p>'
+    `;
+      this.runWithLoadedTree(
+          this.generateHtmlWithSelectedElement('p1', bodyHtml), () => {
+            this.triggerReadSelectedText();
+
+            // Speaks until the second word.
+            this.mockTts.speakUntilCharIndex(6);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'first sentence.');
+
+            // Hitting pause will stop the current TTS.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.PAUSE);
+            assertFalse(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 0);
+
+            // Hitting resume will start from the beginning of the paragraph.
+            selectToSpeak.onSelectToSpeakPanelAction_(
+                chrome.accessibilityPrivate.SelectToSpeakPanelAction.RESUME);
+            assertTrue(this.mockTts.currentlySpeaking());
+            assertEquals(this.mockTts.pendingUtterances().length, 1);
+            this.assertEqualsCollapseWhitespace(
+                this.mockTts.pendingUtterances()[0], 'first sentence.');
+          });
+    });
 
 TEST_F('SelectToSpeakNavigationControlTest', 'NextSentence', function() {
   const bodyHtml = `
