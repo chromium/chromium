@@ -7,7 +7,6 @@
     <select id="colorModeSelect" class="md-select"
         value="{{selectedColorMode::change}}" disabled="[[disabled]]"
         aria-labelledby="colorModeLabel">
-      <!-- TODO(jschettler): Determine how the color modes should be sorted. -->
       <template is="dom-repeat" items="[[colorModes]]" as="colorMode">
         <option value="[[colorMode]]"
             selected$="[[isDefaultColorMode_(colorMode)]]">

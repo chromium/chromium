@@ -232,7 +232,6 @@ Polymer({
 
   /** @override */
   detached() {
-    // TODO(jschettler): Cancel any ongoing scan jobs.
     if (this.scanJobObserverReceiver_) {
       this.scanJobObserverReceiver_.$.close();
     }

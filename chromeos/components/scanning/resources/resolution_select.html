@@ -7,7 +7,6 @@
     <select id="resolutionSelect" class="md-select"
         value="{{selectedResolution::change}}" disabled="[[disabled]]"
         aria-labelledby="resolutionLabel">
-      <!-- TODO(jschettler): Sort the resolutions. -->
       <template is="dom-repeat" items="[[resolutions]]" as="resolution">
         <option value="[[resolution]]"
             selected$="[[isDefaultResolution_(resolution)]]">

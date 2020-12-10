@@ -7,7 +7,6 @@
     <select id="pageSizeSelect" class="md-select"
         value="{{selectedPageSize::change}}" disabled="[[disabled]]"
         aria-labelledby="pageSizeLabel">
-      <!-- TODO(jschettler): Sort the page sizes. -->
       <template is="dom-repeat" items="[[pageSizes]]" as="pageSize">
         <option value="[[pageSize]]"
             selected$="[[isDefaultPageSize_(pageSize)]]">
