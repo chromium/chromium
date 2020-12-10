@@ -36,4 +36,13 @@ void FakeCfmHotlineClient::RemoveObserver(cfm::CfmObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+bool FakeCfmHotlineClient::FakeEmitSignal(const std::string& interface_name) {
+  for (auto& observer : observer_list_) {
+    if (observer.ServiceRequestReceived(interface_name)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace chromeos

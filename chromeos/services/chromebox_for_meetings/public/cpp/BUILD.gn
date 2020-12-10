@@ -30,6 +30,8 @@ source_set("test_support") {
   sources = [
     "fake_service_connection.cc",
     "fake_service_connection.h",
+    "fake_service_context.cc",
+    "fake_service_context.h",
   ]
   deps = [
     ":cpp",

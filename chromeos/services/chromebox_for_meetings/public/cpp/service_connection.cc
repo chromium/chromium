@@ -44,7 +44,6 @@ class ServiceConnectionImpl : public ServiceConnection,
   // Response callback for CfmHotlineClient::BootstrapMojoConnection.
   void OnBootstrapMojoConnectionResponse(
       mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
-      mojo::PlatformChannel channel,
       mojo::ScopedMessagePipeHandle context_remote_pipe,
       bool success);
 
@@ -121,12 +120,11 @@ void ServiceConnectionImpl::CfMContextServiceStarted(
       channel.TakeRemoteEndpoint().TakePlatformHandle().TakeFD(),
       base::BindOnce(&ServiceConnectionImpl::OnBootstrapMojoConnectionResponse,
                      weak_factory_.GetWeakPtr(), std::move(receiver),
-                     std::move(channel), std::move(pipe)));
+                     std::move(pipe)));
 }
 
 void ServiceConnectionImpl::OnBootstrapMojoConnectionResponse(
     mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
-    mojo::PlatformChannel channel,
     mojo::ScopedMessagePipeHandle context_remote_pipe,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

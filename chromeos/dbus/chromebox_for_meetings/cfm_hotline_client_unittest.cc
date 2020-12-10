@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -24,6 +25,7 @@
 #include "dbus/object_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/cfm/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
@@ -31,6 +33,19 @@ using ::testing::Invoke;
 using ::testing::Return;
 
 namespace chromeos {
+
+class FakeCfmObserver : public cfm::CfmObserver {
+ public:
+  FakeCfmObserver() { CfmHotlineClient::Get()->AddObserver(this); }
+  ~FakeCfmObserver() override { CfmHotlineClient::Get()->RemoveObserver(this); }
+
+  bool ServiceRequestReceived(const std::string& service_id) override {
+    request_service_id_ = std::move(service_id);
+    return true;
+  }
+
+  std::string request_service_id_;
+};
 
 class CfmHotlineClientTest : public testing::Test {
  public:
@@ -56,6 +71,11 @@ class CfmHotlineClientTest : public testing::Test {
                 GetObjectProxy(::cfm::broker::kServiceName,
                                dbus::ObjectPath(::cfm::broker::kServicePath)))
         .WillOnce(Return(mock_proxy_.get()));
+
+    EXPECT_CALL(
+        *mock_proxy_.get(),
+        DoConnectToSignal(::cfm::broker::kServiceInterfaceName, _, _, _))
+        .WillRepeatedly(Invoke(this, &CfmHotlineClientTest::ConnectToSignal));
 
     CfmHotlineClient::Initialize(mock_bus_.get());
     client_ = CfmHotlineClient::Get();
@@ -85,7 +105,35 @@ class CfmHotlineClientTest : public testing::Test {
         FROM_HERE, base::BindOnce(std::move(*callback), response));
   }
 
+  void EmitServiceRequestedSignal(const std::string& interface_name) {
+    dbus::Signal signal(::cfm::broker::kServiceInterfaceName,
+                        ::cfm::broker::kMojoServiceRequestedSignal);
+    dbus::MessageWriter writer(&signal);
+    writer.AppendString(interface_name);
+
+    // simulate signal
+    const std::string signal_name = signal.GetMember();
+    const auto it = signal_callbacks_.find(signal_name);
+    ASSERT_TRUE(it != signal_callbacks_.end())
+        << "Client didn't register for signal " << signal_name;
+    it->second.Run(&signal);
+  }
+
  protected:
+  // Handles calls to |proxy_|'s ConnectToSignal() method.
+  void ConnectToSignal(
+      const std::string& interface_name,
+      const std::string& signal_name,
+      dbus::ObjectProxy::SignalCallback signal_callback,
+      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+    EXPECT_EQ(interface_name, ::cfm::broker::kServiceInterfaceName);
+    signal_callbacks_[signal_name] = signal_callback;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(*on_connected_callback), interface_name,
+                       signal_name, true /* success */));
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   CfmHotlineClient* client_;
   scoped_refptr<dbus::MockBus> mock_bus_;
@@ -96,6 +144,9 @@ class CfmHotlineClientTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::deque<std::unique_ptr<dbus::Response>> used_responses_;
+  // Maps from biod signal name to the corresponding callback provided by
+  // |client_|.
+  std::map<std::string, dbus::ObjectProxy::SignalCallback> signal_callbacks_;
 };
 
 TEST_F(CfmHotlineClientTest, BootstrapMojoSuccessTest) {
@@ -127,6 +178,17 @@ TEST_F(CfmHotlineClientTest, BootstrapMojoFailureTest) {
       base::ScopedFD(test_file_.TakePlatformFile()), callback.Get());
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CfmHotlineClientTest, EmitMojoServiceRequestedSignal) {
+  base::RunLoop run_loop;
+  const std::string interface_name = "Foo";
+
+  FakeCfmObserver observer;
+  EmitServiceRequestedSignal(interface_name);
+
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(observer.request_service_id_, interface_name);
 }
 
 }  // namespace chromeos

@@ -40,25 +40,26 @@ class CfmServiceConnectionTest : public testing::Test {
   void SetUp() override {
     CfmHotlineClient::InitializeFake();
     ServiceConnection::UseFakeServiceConnectionForTesting(
-        &fake_service_connection);
+        &fake_service_connection_);
   }
 
   void TearDown() override { CfmHotlineClient::Shutdown(); }
 
-  void SetCallback(FakeServiceConnectionImpl::FakeBootstrapCallback callback) {
-    fake_service_connection.SetCallback(std::move(callback));
+  void SetBootstrapCallback(
+      FakeServiceConnectionImpl::FakeBootstrapCallback callback) {
+    fake_service_connection_.SetCallback(std::move(callback));
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  FakeServiceConnectionImpl fake_service_connection;
+  FakeServiceConnectionImpl fake_service_connection_;
 };
 
-TEST_F(CfmServiceConnectionTest, BindServiceContext) {
+TEST_F(CfmServiceConnectionTest, FakeBindServiceContext) {
   base::RunLoop run_loop;
 
   bool test_success = false;
-  SetCallback(base::BindLambdaForTesting(
+  SetBootstrapCallback(base::BindLambdaForTesting(
       [&](mojo::PendingReceiver<mojom::CfmServiceContext>, bool success) {
         test_success = success;
         run_loop.QuitClosure().Run();

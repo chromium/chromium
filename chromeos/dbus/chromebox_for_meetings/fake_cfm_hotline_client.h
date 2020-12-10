@@ -14,7 +14,8 @@
 namespace chromeos {
 
 // Fake implementation of CfmHotlineClient. This is currently a no-op fake.
-class FakeCfmHotlineClient : public CfmHotlineClient {
+class COMPONENT_EXPORT(CFM_HOTLINE_CLIENT) FakeCfmHotlineClient
+    : public CfmHotlineClient {
  public:
   FakeCfmHotlineClient();
   FakeCfmHotlineClient(const FakeCfmHotlineClient&) = delete;
@@ -29,6 +30,9 @@ class FakeCfmHotlineClient : public CfmHotlineClient {
       BootstrapMojoConnectionCallback result_callback) override;
   void AddObserver(cfm::CfmObserver* observer) override;
   void RemoveObserver(cfm::CfmObserver* observer) override;
+
+  // Fake a ::cfm::broker::kMojoServiceRequestedSignal signal event
+  bool FakeEmitSignal(const std::string& interface_name);
 
  private:
   // A list of observers that are listening on state changes, etc.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_FAKE_SERVICE_CONTEXT_H_
-#define CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_FAKE_SERVICE_CONTEXT_H_
+#ifndef CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
+#define CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
 
 #include "base/bind.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -53,4 +53,4 @@ class FakeCfmServiceContext : public mojom::CfmServiceContext {
 }  // namespace cfm
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_CHROMEBOX_FOR_MEETINGS_FAKE_SERVICE_CONTEXT_H_
+#endif  // CHROMEOS_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONTEXT_H_
