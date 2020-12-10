@@ -124,6 +124,38 @@ void RecordReinitializationLatency(base::TimeDelta latency) {
                           latency);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FallbackReason {
+  kSpatialLayers = 0,
+  kConsecutivePendingBufferOverflow = 1,
+  kReinitializationFailed = 2,
+  kPreviousErrorOnDecode = 3,
+  kPreviousErrorOnRegisterCallback = 4,
+  kMaxValue = kPreviousErrorOnRegisterCallback,
+};
+
+void RecordFallbackReason(media::VideoCodec codec,
+                          FallbackReason fallback_reason) {
+  switch (codec) {
+    case media::VideoCodec::kCodecH264:
+      base::UmaHistogramEnumeration("Media.RTCVideoDecoderFallbackReason.H264",
+                                    fallback_reason);
+      break;
+    case media::VideoCodec::kCodecVP8:
+      base::UmaHistogramEnumeration("Media.RTCVideoDecoderFallbackReason.Vp8",
+                                    fallback_reason);
+      break;
+    case media::VideoCodec::kCodecVP9:
+      base::UmaHistogramEnumeration("Media.RTCVideoDecoderFallbackReason.Vp9",
+                                    fallback_reason);
+      break;
+    default:
+      base::UmaHistogramEnumeration("Media.RTCVideoDecoderFallbackReason.Other",
+                                    fallback_reason);
+  }
+}
+
 }  // namespace
 
 // static
@@ -267,9 +299,11 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
       input_image.SpatialIndex().value_or(0) > 0) {
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_ASH)
     if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
+      RecordFallbackReason(config_.codec(), FallbackReason::kSpatialLayers);
       return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
     }
 #else
+    RecordFallbackReason(config_.codec(), FallbackReason::kSpatialLayers);
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_ASH)
   }
@@ -322,8 +356,11 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
   if (ShouldReinitializeForSettingHDRColorSpace(input_image)) {
     config_.set_color_space_info(
         blink::WebRtcToMediaVideoColorSpace(*input_image.ColorSpace()));
-    if (!ReinitializeSync(config_))
+    if (!ReinitializeSync(config_)) {
+      RecordFallbackReason(config_.codec(),
+                           FallbackReason::kReinitializationFailed);
       return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+    }
     if (input_image._frameType != webrtc::VideoFrameType::kVideoFrameKey)
       return WEBRTC_VIDEO_CODEC_ERROR;
   }
@@ -331,8 +368,11 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
   // Queue for decoding.
   {
     base::AutoLock auto_lock(lock_);
-    if (has_error_)
+    if (has_error_) {
+      RecordFallbackReason(config_.codec(),
+                           FallbackReason::kPreviousErrorOnDecode);
       return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+    }
 
     if (pending_buffers_.size() >= kMaxPendingBuffers) {
       // We are severely behind. Drop pending buffers and request a keyframe to
@@ -344,6 +384,8 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
       key_frame_required_ = true;
       if (++consecutive_error_count_ > kMaxConsecutiveErrors) {
         decode_timestamps_.clear();
+        RecordFallbackReason(config_.codec(),
+                             FallbackReason::kConsecutivePendingBufferOverflow);
         return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
       }
       return WEBRTC_VIDEO_CODEC_ERROR;
@@ -366,6 +408,10 @@ int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
 
   base::AutoLock auto_lock(lock_);
   decode_complete_callback_ = callback;
+  if (has_error_) {
+    RecordFallbackReason(config_.codec(),
+                         FallbackReason::kPreviousErrorOnRegisterCallback);
+  }
   return has_error_ ? WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE
                     : WEBRTC_VIDEO_CODEC_OK;
 }

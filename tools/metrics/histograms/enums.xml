@@ -64567,6 +64567,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="NoDataWithFin"/>
 </enum>
 
+<enum name="RTCVideoDecoderFallbackReason">
+  <int value="0" label="SpatialLayers"/>
+  <int value="1" label="ConsecutivePendingBufferOverflow"/>
+  <int value="2" label="ReinitializationFailed"/>
+  <int value="3" label="PreviousErrorOnDecode"/>
+  <int value="4" label="PreviousErrorOnRegisterCallback"/>
+</enum>
+
 <enum name="RulesetVerificationStatus">
   <int value="0" label="Not verified"/>
   <int value="1" label="Intact"/>
