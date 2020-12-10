@@ -815,9 +815,9 @@
     "expiry_milestone": 92
   },
   {
-    "name": "default-browser-fullscreen-promo",
+    "name": "default-browser-fullscreen-promo-experiment",
     "owners": [ "thegreenfrog", "bling-team@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 91
   },
   {
     "name": "default-browser-setting",

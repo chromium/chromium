@@ -52,9 +52,6 @@ const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
 const base::Feature kEnableFullPageScreenshot{
     "EnableFullPageScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDefaultBrowserFullscreenPromo{
-    "DefaultBrowserFullscreenPromo", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kDefaultBrowserSettings{"DefaultBrowserSettings",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -68,3 +65,7 @@ const base::Feature kIncognitoAuthentication{
 
 const base::Feature kLocationPermissionsPrompt{
     "LocationPermissionsPrompt", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDefaultBrowserFullscreenPromoExperiment{
+    "DefaultBrowserFullscreenPromoExperiment",
+    base::FEATURE_DISABLED_BY_DEFAULT};

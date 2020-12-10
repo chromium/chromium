@@ -57,11 +57,6 @@ extern const base::Feature kSharedHighlightingIOS;
 // Feature flag that enables taking fullpage screenshots of a webpage.
 extern const base::Feature kEnableFullPageScreenshot;
 
-// Feature flag that enables showing a fullscreen modal promo informing users
-// about the default browser feature that also provides a button to send the
-// users in the Settings.app to update the default browser.
-extern const base::Feature kDefaultBrowserFullscreenPromo;
-
 // Feature flag that enables the button in the settings to send the users in the
 // Settings.app to update the default browser.
 extern const base::Feature kDefaultBrowserSettings;
@@ -75,5 +70,8 @@ extern const base::Feature kIncognitoAuthentication;
 
 // Feature flag that experiments with new location permissions user experiences.
 extern const base::Feature kLocationPermissionsPrompt;
+
+// Feature flag that experiments with the default browser fullscreen promo UI.
+extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

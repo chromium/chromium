@@ -536,10 +536,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMobileIdentityConsistencyName,
      flag_descriptions::kMobileIdentityConsistencyDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(signin::kMobileIdentityConsistency)},
-    {"default-browser-fullscreen-promo",
-     flag_descriptions::kDefaultBrowserFullscreenPromoName,
-     flag_descriptions::kDefaultBrowserFullscreenPromoDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserFullscreenPromo)},
     {"default-browser-setting", flag_descriptions::kDefaultBrowserSettingsName,
      flag_descriptions::kDefaultBrowserSettingsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDefaultBrowserSettings)},
@@ -589,6 +585,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"record-snapshot-size", flag_descriptions::kRecordSnapshotSizeName,
      flag_descriptions::kRecordSnapshotSizeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kRecordSnapshotSize)},
+    {"default-browser-fullscreen-promo-experiment",
+     flag_descriptions::kDefaultBrowserFullscreenPromoExperimentName,
+     flag_descriptions::kDefaultBrowserFullscreenPromoExperimentDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDefaultBrowserFullscreenPromoExperiment)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
