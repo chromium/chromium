@@ -578,17 +578,16 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
       // a navigation on the main frame we setup the appropriate structures.
       if (web_frame_->GetFrame()->IsMainFrame() &&
           web_frame_->ViewImpl()->does_composite()) {
-        cc::LayerTreeHost* layer_tree_host =
-            web_frame_->FrameWidgetImpl()->LayerTreeHost();
+        WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
 
         // Update the URL and the document source id used to key UKM metrics in
         // the compositor. Note that the metrics for all frames are keyed to the
         // main frame's URL.
-        layer_tree_host->SetSourceURL(
+        frame_widget->SetSourceURLForCompositor(
             web_frame_->GetDocument().GetUkmSourceId(),
             KURL(web_frame_->Client()->LastCommittedUrlForUKM()));
 
-        auto shmem = layer_tree_host->CreateSharedMemoryForSmoothnessUkm();
+        auto shmem = frame_widget->CreateSharedMemoryForSmoothnessUkm();
         if (shmem.IsValid()) {
           web_frame_->Client()->SetUpSharedMemoryForSmoothness(
               std::move(shmem));

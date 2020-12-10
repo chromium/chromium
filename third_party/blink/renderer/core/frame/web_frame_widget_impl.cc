@@ -3926,6 +3926,20 @@ WebPlugin* WebFrameWidgetImpl::GetFocusedPluginContainer() {
   return nullptr;
 }
 
+bool WebFrameWidgetImpl::HasPendingPageScaleAnimation() {
+  return LayerTreeHost()->HasPendingPageScaleAnimation();
+}
+
+void WebFrameWidgetImpl::SetSourceURLForCompositor(ukm::SourceId source_id,
+                                                   const KURL& url) {
+  LayerTreeHost()->SetSourceURL(source_id, url);
+}
+
+base::ReadOnlySharedMemoryRegion
+WebFrameWidgetImpl::CreateSharedMemoryForSmoothnessUkm() {
+  return LayerTreeHost()->CreateSharedMemoryForSmoothnessUkm();
+}
+
 bool WebFrameWidgetImpl::CanComposeInline() {
   if (auto* plugin = GetFocusedPluginContainer())
     return plugin->CanComposeInline();

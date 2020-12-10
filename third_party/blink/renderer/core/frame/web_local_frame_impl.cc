@@ -2787,8 +2787,7 @@ void WebLocalFrameImpl::ScrollFocusedEditableElementIntoRect(
 
   rect_for_scrolled_focused_editable_node_ = rect;
   has_scrolled_focused_editable_node_into_rect_ = true;
-  if (!local_root_frame_widget->LayerTreeHost()
-           ->HasPendingPageScaleAnimation() &&
+  if (!local_root_frame_widget->HasPendingPageScaleAnimation() &&
       autofill_client_) {
     autofill_client_->DidCompleteFocusChangeInFrame();
   }

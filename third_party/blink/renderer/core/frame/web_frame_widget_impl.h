@@ -311,9 +311,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetDeviceScaleFactorForTesting(float factor) override;
   void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
-  // TODO(dtapuska): Move this into private scope to match the interface
-  // definition.
-  cc::LayerTreeHost* LayerTreeHost() override;
 
   // Called when a drag-n-drop operation should begin.
   virtual void StartDragging(const WebDragData&,
@@ -570,6 +567,15 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Return the focused WebPlugin if there is one.
   WebPlugin* GetFocusedPluginContainer();
 
+  // Return if there is a pending scale animation.
+  bool HasPendingPageScaleAnimation();
+
+  // Set the source URL for the compositor.
+  void SetSourceURLForCompositor(ukm::SourceId source_id, const KURL& url);
+
+  // Ask compositor to create the shared memory for smoothness ukm region.
+  base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();
+
  protected:
   // WidgetBaseClient overrides:
   void ScheduleAnimation() override;
@@ -581,6 +587,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Whether compositing to LCD text should be auto determined. This can be
   // overridden by tests to disable this.
   virtual bool ShouldAutoDetermineCompositingToLCDTextSetting();
+
+  // WebFrameWidget overrides.
+  cc::LayerTreeHost* LayerTreeHost() override;
 
   bool doing_drag_and_drop_ = false;
 
@@ -865,8 +874,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool is_pinch_gesture_active_in_mainframe_ = false;
 
   // If set, the (plugin) element which has mouse capture.
-  // TODO(dtapuska): Move to private once all input handling is moved to
-  // base class.
   Member<HTMLPlugInElement> mouse_capture_element_;
 
   // The size of the widget in viewport coordinates. This is slightly different

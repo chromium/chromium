@@ -128,7 +128,7 @@ TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
 #if defined(OS_ANDROID)
 TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
   cc::LayerTreeHost* layer_tree_host =
-      WebView().MainFrameViewWidget()->LayerTreeHost();
+      WebView().MainFrameViewWidget()->LayerTreeHostForTesting();
   // We should not have any force send metadata requests at start.
   EXPECT_FALSE(layer_tree_host->TakeForceSendMetadataRequest());
   // ShowVirtualKeyboard will trigger a text input state update.
