@@ -59,9 +59,7 @@ std::vector<uint8_t> ExtractSuffix(base::span<const uint8_t> span, size_t pos) {
 
 base::span<const uint8_t> ExtractSuffixSpan(base::span<const uint8_t> span,
                                             size_t pos) {
-  if (pos > span.size())
-    return std::vector<uint8_t>();
-  return span.subspan(pos);
+  return span.subspan(std::min(pos, span.size()));
 }
 
 std::vector<base::span<const uint8_t>> SplitSpan(base::span<const uint8_t> span,

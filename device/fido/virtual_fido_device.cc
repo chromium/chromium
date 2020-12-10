@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -468,10 +468,9 @@ void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
       reader.Materialize().value_or(std::vector<LargeBlobData>());
 
   if (credential->large_blob_key) {
-    large_blob_array.erase(base::ranges::remove_if(
-        large_blob_array, [&credential](const LargeBlobData& blob) {
-          return blob.Decrypt(*credential->large_blob_key).has_value();
-        }));
+    base::EraseIf(large_blob_array, [&credential](const LargeBlobData& blob) {
+      return blob.Decrypt(*credential->large_blob_key).has_value();
+    });
   } else {
     credential->large_blob_key.emplace();
     base::RandBytes(credential->large_blob_key->data(),
