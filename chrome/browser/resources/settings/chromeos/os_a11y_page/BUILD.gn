@@ -12,6 +12,7 @@ js_type_check("closure_compile") {
     ":manage_a11y_page_browser_proxy",
     ":os_a11y_page",
     ":os_a11y_page_browser_proxy",
+    ":switch_access_action_assignment_dialog",
     ":switch_access_constants",
     ":switch_access_subpage",
     ":switch_access_subpage_browser_proxy",
@@ -56,6 +57,17 @@ js_library("manage_a11y_page") {
     "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]
+}
+
+js_library("switch_access_action_assignment_dialog") {
+  deps = [
+    ":switch_access_constants",
+    "//chrome/browser/resources/settings/prefs:prefs_behavior",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
 }
 
 js_library("switch_access_constants") {
@@ -110,15 +122,16 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":externs.m",
+
     #    ":manage_a11y_page.m",
     ":manage_a11y_page_browser_proxy.m",
 
     #    ":os_a11y_page.m",
     ":os_a11y_page_browser_proxy.m",
 
+    #":switch_access_action_assignment_dialog.m",
     #    ":switch_access_subpage.m",
     ":switch_access_subpage_browser_proxy.m",
-
     ":tts_subpage.m",
     ":tts_subpage_browser_proxy.m",
   ]

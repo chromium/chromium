@@ -100,23 +100,14 @@ Polymer({
       computed: 'computePromptText_(assignmentState_, assignments_)',
     },
 
-    /** @private {?SwitchAccessCommand} */
-    alreadyAssignedAction_: {
-      type: String,
-      value: null,
-    },
+    /** @private {!SwitchAccessCommand} */
+    alreadyAssignedAction_: String,
 
-    /** @private {?string} */
-    currentKey_: {
-      type: String,
-      value: null,
-    },
+    /** @private {!string} */
+    currentKey_: String,
 
-    /** @private {?string} */
-    unexpectedKey_: {
-      type: String,
-      value: null,
-    },
+    /** @private {!string} */
+    unexpectedKey_: String,
 
     /** @private {?number} */
     currentKeyCode_: {
@@ -298,6 +289,8 @@ Polymer({
         return this.i18n('assignNextSwitchLabel');
       case SwitchAccessCommand.PREVIOUS:
         return this.i18n('assignPreviousSwitchLabel');
+      default:
+        return '';
     }
   },
 
@@ -346,6 +339,8 @@ Polymer({
       case AssignmentState.WARN_UNRECOGNIZED_KEY:
         return this.i18n(
             'switchAccessActionAssignmentDialogWarnUnrecognizedKeyPrompt');
+      default:
+        return '';
     }
   },
 });
