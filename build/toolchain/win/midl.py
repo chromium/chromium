@@ -336,12 +336,25 @@ def main(arch, gendir, outdir, dynamic_guids, tlb, h, dlldata, iid, proxy,
     # third_party\win_build_output\midl. We create an empty directory for now.
     os.makedirs(source)
 
-  common_files = [h, dlldata, iid, proxy]
+  common_files = [h, iid]
   if tlb != 'none':
     # Not all projects use tlb files.
     common_files += [tlb]
   else:
     tlb = None
+
+  if dlldata != 'none':
+    # Not all projects use dlldta files.
+    common_files += [dlldata]
+  else:
+    dlldata = None
+
+  # Not all projects use proxy files
+  if proxy != 'none':
+    # Not all projects use proxy files.
+    common_files += [proxy]
+  else:
+    proxy = None
 
   for source_file in common_files:
     file_path = os.path.join(source, source_file)
@@ -418,9 +431,10 @@ def main(arch, gendir, outdir, dynamic_guids, tlb, h, dlldata, iid, proxy,
   preprocessor_options += ''.join(
       [' ' + flag for flag in flags if flag.startswith('/D')])
   args = ['midl', '/nologo'] + list(flags) + (['/tlb', tlb] if tlb else []) + [
-      '/h', h, '/dlldata', dlldata, '/iid', iid, '/proxy', proxy, '/cpp_cmd',
-      clang, '/cpp_opt', preprocessor_options, idl
-  ]
+      '/h', h
+  ] + (['/dlldata', dlldata] if dlldata else []) + ['/iid', iid] + (
+      ['/proxy', proxy] if proxy else
+      []) + ['/cpp_cmd', clang, '/cpp_opt', preprocessor_options, idl]
 
   returncode, midl_output_dir = run_midl(args, env_dict)
   if returncode != 0:

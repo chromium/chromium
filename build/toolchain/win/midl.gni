@@ -39,6 +39,12 @@ import("//build/config/win/visual_studio_version.gni")
 #   writes_tlb (optional)
 #       Whether a .tlb file should be added to outputs. Defaults to false.
 #
+#   writes_proxy(optional)
+#       Whether a _p.c file should be added to outputs. Defaults to true.
+#
+#   writes_dlldata(optional)
+#       Whether a .dlldata.c file should be added to outputs. Defaults to true.
+#
 #   deps (optional)
 #
 #   defines (optional)
@@ -84,14 +90,37 @@ template("midl") {
     writes_tlb = false
   }
 
-  dlldata_file = "{{source_name_part}}.dlldata.c"
-  interface_identifier_file = "{{source_name_part}}_i.c"
-  proxy_file = "{{source_name_part}}_p.c"
+  if (defined(invoker.writes_proxy)) {
+    writes_proxy = invoker.writes_proxy
+  } else {
+    writes_proxy = true
+  }
+
+  if (defined(invoker.writes_dlldata)) {
+    writes_dlldata = invoker.writes_dlldata
+  } else {
+    writes_dlldata = true
+  }
+
   if (writes_tlb) {
     type_library_file = "{{source_name_part}}.tlb"
   } else {
     type_library_file = "none"
   }
+
+  if (writes_dlldata) {
+    dlldata_file = "{{source_name_part}}.dlldata.c"
+  } else {
+    dlldata_file = "none"
+  }
+
+  if (writes_proxy) {
+    proxy_file = "{{source_name_part}}_p.c"
+  } else {
+    proxy_file = "none"
+  }
+
+  interface_identifier_file = "{{source_name_part}}_i.c"
 
   # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
   python2_action_foreach(action_name) {
@@ -102,15 +131,20 @@ template("midl") {
 
     outputs = [
       "$out_dir/$header_file",
-      "$out_dir/$dlldata_file",
       "$out_dir/$interface_identifier_file",
-      "$out_dir/$proxy_file",
     ]
 
-    # The .tlb is only added to outputs if the invoker so desires, as it is not
-    # always generated depending on the content of the input idl file.
+    # These files are only added to outputs if the invoker so desires, as it
+    # they are not always generated depending on the content of the input idl
+    # file.
     if (writes_tlb) {
       outputs += [ "$out_dir/$type_library_file" ]
+    }
+    if (writes_dlldata) {
+      outputs += [ "$out_dir/$dlldata_file" ]
+    }
+    if (writes_proxy) {
+      outputs += [ "$out_dir/$proxy_file" ]
     }
 
     if (current_cpu == "x86") {
