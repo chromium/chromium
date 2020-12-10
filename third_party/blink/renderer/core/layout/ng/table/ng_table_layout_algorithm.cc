@@ -303,6 +303,8 @@ class ColumnGeometriesBuilder {
                   return a.start_column < b.start_column;
                 }
                 if (a.node.IsTableColgroup()) {
+                  if (b.node.IsTableColgroup())
+                    return a.start_column < b.start_column;
                   if (a.start_column <= b.start_column &&
                       (a.start_column + a.span) > b.start_column) {
                     return true;

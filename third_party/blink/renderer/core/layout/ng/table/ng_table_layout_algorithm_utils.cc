@@ -32,7 +32,8 @@ void ApplyCellConstraintsToColumnConstraints(
     bool is_fixed_layout,
     NGTableTypes::ColspanCells* colspan_cell_constraints,
     NGTableTypes::Columns* column_constraints) {
-  column_constraints->data.resize(cell_constraints.size());
+  if (column_constraints->data.size() < cell_constraints.size())
+    column_constraints->data.resize(cell_constraints.size());
   // Distribute cell constraints to column constraints.
   for (wtf_size_t i = 0; i < cell_constraints.size(); ++i) {
     column_constraints->data[i].Encompass(cell_constraints[i]);
