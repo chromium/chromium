@@ -2,7 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// clang-format off
+// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {FileType} from './file_type.m.js';
+// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// clang-format on
+
 // Namespace
+// eslint-disable-next-line no-var
 var importer = importer || {};
 
 importer.TaskQueue = importer.TaskQueue || {};
@@ -172,7 +186,7 @@ importer.isBeneathMediaDir = (entry, volumeManager) => {
  * @return {boolean}
  */
 importer.isEligibleVolume = volumeInfo => {
-  return !!volumeInfo &&
+  return !!volumeInfo && !!volumeInfo.volumeType &&
       importer.ELIGIBLE_VOLUME_TYPES_.indexOf(volumeInfo.volumeType) !== -1;
 };
 
@@ -969,3 +983,6 @@ importer.ChromeLocalStorage = class {
 
 /** @private @const {!importer.ChromeLocalStorage} */
 importer.ChromeLocalStorage.INSTANCE_ = new importer.ChromeLocalStorage();
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {importer};

@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {MockChromeStorageAPI, MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
+import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+import {VolumeInfo} from '../../../externs/volume_info.m.js';
+import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+
+import {MockDirectoryEntry, MockFileEntry} from './mock_entry.m.js';
+import {importer} from './test_importer_common.m.js';
+
 /** @type {!MockVolumeManager} */
 let volumeManager;
 
@@ -27,7 +38,7 @@ let sdFileEntry;
 let driveFileEntry;
 
 // Set up the test components.
-function setUp() {
+export function setUp() {
   window.loadTimeData.getString = id => id;
   new MockCommandLinePrivate();
   new MockChromeStorageAPI();
@@ -48,7 +59,7 @@ function setUp() {
   driveFileEntry = createFileEntry(driveVolume, '/someotherfile.jpg');
 }
 
-function testIsEligibleType() {
+export function testIsEligibleType() {
   assertTrue(importer.isEligibleType(cameraFileEntry));
   assertTrue(importer.isEligibleType(rawFileEntry));
 
@@ -56,26 +67,26 @@ function testIsEligibleType() {
   assertTrue(importer.isEligibleType(driveFileEntry));
 }
 
-function testIsEligibleVolume() {
+export function testIsEligibleVolume() {
   assertTrue(importer.isEligibleVolume(cameraVolume));
   assertTrue(importer.isEligibleVolume(sdVolume));
   assertFalse(importer.isEligibleVolume(driveVolume));
 }
 
-function testIsEligibleEntry() {
+export function testIsEligibleEntry() {
   assertTrue(importer.isEligibleEntry(volumeManager, cameraFileEntry));
   assertTrue(importer.isEligibleEntry(volumeManager, sdFileEntry));
   assertTrue(importer.isEligibleEntry(volumeManager, rawFileEntry));
   assertFalse(importer.isEligibleEntry(volumeManager, driveFileEntry));
 }
 
-function testIsMediaDirectory() {
+export function testIsMediaDirectory() {
   ['/DCIM', '/DCIM/', '/dcim', '/dcim/', '/MP_ROOT/'].forEach(assertIsMediaDir);
   ['/blabbity/DCIM', '/blabbity/dcim', '/blabbity-blab'].forEach(
       assertIsNotMediaDir);
 }
 
-function testResolver_Resolve(callback) {
+export function testResolver_Resolve(callback) {
   const resolver = new importer.Resolver();
   assertFalse(resolver.settled);
   resolver.resolve(1);
@@ -87,7 +98,7 @@ function testResolver_Resolve(callback) {
   reportPromise(resolver.promise, callback);
 }
 
-function testResolver_Reject(callback) {
+export function testResolver_Reject(callback) {
   const resolver = new importer.Resolver();
   assertFalse(resolver.settled);
   resolver.reject('ouch');
@@ -98,7 +109,7 @@ function testResolver_Reject(callback) {
   });
 }
 
-function testGetMachineId_Persisted(callback) {
+export function testGetMachineId_Persisted(callback) {
   const promise = importer.getMachineId().then(firstMachineId => {
     assertTrue(100000 <= firstMachineId <= 9999999);
     importer.getMachineId().then(secondMachineId => {
@@ -108,13 +119,13 @@ function testGetMachineId_Persisted(callback) {
   reportPromise(promise, callback);
 }
 
-function testPhotosApp_DefaultDisabled(callback) {
+export function testPhotosApp_DefaultDisabled(callback) {
   const promise = importer.isPhotosAppImportEnabled().then(assertFalse);
 
   reportPromise(promise, callback);
 }
 
-function testPhotosApp_ImportEnabled(callback) {
+export function testPhotosApp_ImportEnabled(callback) {
   const promise = importer.handlePhotosAppMessage(true).then(() => {
     return importer.isPhotosAppImportEnabled().then(assertTrue);
   });
@@ -122,7 +133,7 @@ function testPhotosApp_ImportEnabled(callback) {
   reportPromise(promise, callback);
 }
 
-function testPhotosApp_ImportDisabled(callback) {
+export function testPhotosApp_ImportDisabled(callback) {
   const promise = importer.handlePhotosAppMessage(false).then(() => {
     return importer.isPhotosAppImportEnabled().then(assertFalse);
   });
@@ -130,7 +141,7 @@ function testPhotosApp_ImportDisabled(callback) {
   reportPromise(promise, callback);
 }
 
-function testHistoryFilename(callback) {
+export function testHistoryFilename(callback) {
   const promise = importer.getHistoryFilename().then(firstName => {
     assertTrue(!!firstName && firstName.length > 10);
     importer.getHistoryFilename().then(secondName => {
@@ -141,7 +152,7 @@ function testHistoryFilename(callback) {
   reportPromise(promise, callback);
 }
 
-function testLocalStorageWrapper(callback) {
+export function testLocalStorageWrapper(callback) {
   const storage = new importer.ChromeLocalStorage();
   const promise =
       Promise
@@ -161,7 +172,7 @@ function testLocalStorageWrapper(callback) {
   reportPromise(promise, callback);
 }
 
-function testRotateLogs(callback) {
+export function testRotateLogs(callback) {
   let fileName;
   const fileFactory = namePromise => {
     return namePromise.then(name => {
@@ -195,7 +206,7 @@ function testRotateLogs(callback) {
   reportPromise(promise, callback);
 }
 
-function testRotateLogs_RemembersInitialActiveLog(callback) {
+export function testRotateLogs_RemembersInitialActiveLog(callback) {
   const nextLogId = 1;
 
   // Should not be called.
@@ -213,7 +224,7 @@ function testRotateLogs_RemembersInitialActiveLog(callback) {
   reportPromise(promise, callback);
 }
 
-function testDeflateAppUrl() {
+export function testDeflateAppUrl() {
   const url = 'filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj' +
       '/external/removable/USB%20Drive/DCIM/derekkind2.jpg';
   const deflated = importer.deflateAppUrl(url);
@@ -234,7 +245,7 @@ function testDeflateAppUrl() {
       'Deflated then inflated URLs must match original URL.');
 }
 
-function testHasMediaDirectory(callback) {
+export function testHasMediaDirectory(callback) {
   const dir = createDirectoryEntry(sdVolume, '/DCIM');
   const promise = importer.hasMediaDirectory(sdVolume.fileSystem.root)
                       .then(assertTrue.bind(null));

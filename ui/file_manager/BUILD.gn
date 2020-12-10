@@ -60,7 +60,6 @@ group("unit_test_data") {
     "base/js:js_test_gen_html",
     "file_manager/background/js:js_test_gen_html",
     "file_manager/background/js:js_test_gen_html_modules",
-    "file_manager/common/js:js_test_gen_html",
     "file_manager/common/js:js_test_gen_html_modules",
     "file_manager/foreground/elements:js_test_gen_html_modules",
     "file_manager/foreground/js:js_test_gen_html",
@@ -225,8 +224,8 @@ generate_grd("build_grd") {
   ]
 
   deps = [
-    "file_manager:build_static_grdp",
     "audio_player:build_static_grdp",
+    "file_manager:build_static_grdp",
     "//ui/file_manager/audio_player/js:build",
     "//ui/file_manager/audio_player/js:build_background",
     "//ui/file_manager/audio_player/js:build_worker",

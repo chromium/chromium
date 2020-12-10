@@ -17,7 +17,7 @@ group("closure_compile") {
     ":closure_compile_jsmodules",
     ":closure_compile_module",
     ":js_test_gen_html_modules_type_check_auto",
-    ":js_test_gen_html_type_check_auto",
+    ":test_support_modules_type_check",
     ":test_support_type_check",
   ]
 }
@@ -47,6 +47,7 @@ js_type_check("closure_compile_jsmodules") {
     ":file_operation_common.m",
     ":file_type.m",
     ":files_app_entry_types.m",
+    ":importer_common.m",
     ":lru_cache.m",
     ":metrics.m",
     ":metrics_base.m",
@@ -62,6 +63,19 @@ js_type_check("test_support_type_check") {
     ":test_importer_common",
     ":unittest_util",
   ]
+}
+
+js_type_check("test_support_modules_type_check") {
+  uses_js_modules = true
+  testonly = true
+  deps = [
+    ":test_importer_common.m",
+    ":unittest_util.m",
+  ]
+
+  closure_flags =
+      strict_error_checking_closure_args +
+      [ "browser_resolver_prefix_replacements=\"chrome://test/=./\"" ]
 }
 
 js_library("async_util") {
@@ -160,6 +174,21 @@ js_library("importer_common") {
   ]
 }
 
+js_library("importer_common.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/common/js/importer_common.m.js",
+  ]
+  deps = [
+    ":file_type.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/externs:volume_info.m",
+    "//ui/file_manager/externs:volume_manager.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("test_importer_common") {
   testonly = true
   deps = [
@@ -172,13 +201,26 @@ js_library("test_importer_common") {
   visibility = [ "//ui/file_manager/file_manager/*" ]
 }
 
-js_unittest("importer_common_unittest") {
+js_library("test_importer_common.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/test_importer_common.m.js" ]
   deps = [
-    ":mock_entry",
-    ":test_importer_common",
-    ":util",
-    "//ui/file_manager/base/js:mock_chrome",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    ":importer_common.m",
+    ":unittest_util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("importer_common_unittest.m") {
+  deps = [
+    ":mock_entry.m",
+    ":test_importer_common.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:mock_chrome.m",
+    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:volume_info.m",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager.m",
   ]
 }
 
@@ -287,6 +329,15 @@ js_library("unittest_util") {
   externs_list = [ "$externs_path/command_line_private.js" ]
 }
 
+js_library("unittest_util.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/common/js/unittest_util.m.js",
+  ]
+  deps = [ "//chrome/test/data/webui:chai_assert" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("util") {
   deps = [
     ":files_app_entry_types",
@@ -353,6 +404,7 @@ js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":file_type_unittest.m",
     ":files_app_entry_types_unittest.m",
+    ":importer_common_unittest.m",
     ":lru_cache_unittest.m",
     ":util_unittest.m",
   ]
@@ -364,10 +416,6 @@ js_test_gen_html("js_test_gen_html_modules") {
         "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
         "hide_warnings_for=third_party/",
       ]
-}
-
-js_test_gen_html("js_test_gen_html") {
-  deps = [ ":importer_common_unittest" ]
 }
 
 js_modulizer("modulize") {
@@ -382,6 +430,9 @@ js_modulizer("modulize") {
     "mock_entry.js",
     "util.js",
     "trash.js",
+    "importer_common.js",
+    "test_importer_common.js",
+    "unittest_util.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImportControllerTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImporterCommonTest) {
-  RunTestURL("common/js/importer_common_unittest_gen.html");
+  RunTestURL("common/js/importer_common_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImportHistoryTest) {

@@ -2,8 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Shared cloud importer namespace
-var importer = importer || {};
+/**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// Shared cloud importer namespace.
+// #import {importer} from './importer_common.m.js';
+// #import {TestCallRecorder} from './unittest_util.m.js';
+
 
 /**
  * Sets up a logger for use in unit tests.  The test logger doesn't attempt to
@@ -68,3 +75,6 @@ importer.TestLogger = class {
     };
   }
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {importer};
