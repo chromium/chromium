@@ -370,6 +370,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
 }
 
 - (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
+                    triggeredOnField:(FieldRendererId)uniqueFieldID
                    completionHandler:
                        (nullable void (^)(BOOL))completionHandler {
   // Necessary copy so the values can be used inside a block.
@@ -378,9 +379,13 @@ constexpr char kCommandPrefix[] = "passwordForm";
   base::string16 usernameValue = fillData.username_value;
   base::string16 passwordValue = fillData.password_value;
 
+  // Do not fill the username if filling was triggered on a password field and
+  // the username field has user typed input.
+  BOOL fillUsername = uniqueFieldID == usernameID ||
+                      !_fieldDataManager->DidUserType(usernameID);
   __weak PasswordFormHelper* weakSelf = self;
   [self.jsPasswordManager
-       fillPasswordForm:SerializeFillData(fillData)
+       fillPasswordForm:SerializeFillData(fillData, fillUsername)
                 inFrame:GetMainFrame(_webState)
            withUsername:UTF16ToUTF8(usernameValue)
                password:UTF16ToUTF8(passwordValue)

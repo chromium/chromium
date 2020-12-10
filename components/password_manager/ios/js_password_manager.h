@@ -18,8 +18,11 @@ namespace password_manager {
 struct FillData;
 
 // Serializes |fillData| so it can be used by the JS side of PasswordController.
+// Includes both username and password data if |fillUsername|, and only password
+// data otherwise.
 std::unique_ptr<base::Value> SerializeFillData(
-    const password_manager::FillData& fillData);
+    const password_manager::FillData& fillData,
+    BOOL fillUsername);
 
 // Serializes |formData| so it can be used by the JS side of PasswordController.
 std::unique_ptr<base::Value> SerializePasswordFormFillData(

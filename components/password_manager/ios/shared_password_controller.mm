@@ -410,6 +410,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       }
 
       [self.formHelper fillPasswordFormWithFillData:*fillData
+                                   triggeredOnField:uniqueFieldID
                                   completionHandler:^(BOOL success) {
                                     completion();
                                   }];

@@ -94,10 +94,12 @@ class WebState;
             generatedPassword:(NSString*)generatedPassword
             completionHandler:(nullable void (^)(BOOL))completionHandler;
 
-// Autofills credentials into the page. Credentials and input fields are
-// specified by |fillData|. Invokes |completionHandler| when finished with YES
-// if successful and NO otherwise.
+// Autofills credentials into the page on credential suggestion selection.
+// Credentials and input fields are specified by |fillData|. |uniqueFieldID|
+// specifies the unput on which the suggestion was accepted. Invokes
+// |completionHandler| when finished with YES if successful and NO otherwise.
 - (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
+                    triggeredOnField:(autofill::FieldRendererId)uniqueFieldID
                    completionHandler:(nullable void (^)(BOOL))completionHandler;
 
 // Finds the password form with unique ID |formIdentifier| and calls

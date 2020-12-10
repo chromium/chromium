@@ -225,12 +225,15 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData) {
   // Run password forms search to set up unique IDs.
   EXPECT_TRUE(ExecuteJavaScript(@"__gCrWeb.passwords.findPasswordForms();"));
   const std::string base_url = BaseUrl();
+  FieldRendererId username_field_id(1);
+  FieldRendererId password_field_id(2);
   FillData fill_data;
-  SetFillData(base_url, 0, 1, "john.doe@gmail.com", 2, "super!secret",
-              &fill_data);
+  SetFillData(base_url, 0, username_field_id.value(), "john.doe@gmail.com",
+              password_field_id.value(), "super!secret", &fill_data);
 
   __block int call_counter = 0;
   [helper_ fillPasswordFormWithFillData:fill_data
+                       triggeredOnField:username_field_id
                       completionHandler:^(BOOL complete) {
                         ++call_counter;
                         EXPECT_TRUE(complete);
@@ -332,11 +335,14 @@ TEST_F(PasswordFormHelperTest, RefillFormFilledOnUserTrigger) {
 
   // Fill the form on user trigger.
   const std::string base_url = BaseUrl();
+  FieldRendererId username_field_id(1);
+  FieldRendererId password_field_id(2);
   FillData fill_data;
-  SetFillData(base_url, 0, 1, "john.doe@gmail.com", 2, "super!secret",
-              &fill_data);
+  SetFillData(base_url, 0, username_field_id.value(), "john.doe@gmail.com",
+              password_field_id.value(), "super!secret", &fill_data);
   __block int call_counter = 0;
   [helper_ fillPasswordFormWithFillData:fill_data
+                       triggeredOnField:username_field_id
                       completionHandler:^(BOOL complete) {
                         ++call_counter;
                         EXPECT_TRUE(complete);
@@ -347,7 +353,8 @@ TEST_F(PasswordFormHelperTest, RefillFormFilledOnUserTrigger) {
 
   // Try to autofill the form.
   PasswordFormFillData form_data;
-  SetPasswordFormFillData(BaseUrl(), "", 0, "", 1, "someacc@store.com", "", 2,
+  SetPasswordFormFillData(BaseUrl(), "", 0, "", username_field_id.value(),
+                          "someacc@store.com", "", password_field_id.value(),
                           "store!pw", "", "", NO, &form_data);
 
   __block bool called = NO;
@@ -410,6 +417,44 @@ TEST_F(PasswordFormHelperTest, RefillFormWithUserTypedInput) {
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return success;
   }));
+}
+
+// Tests that a form with username typed by user is not refilled when
+// the user selects filling suggestion on password field.
+TEST_F(PasswordFormHelperTest, FillPasswordIntoFormWithUserTypedUsername) {
+  LoadHtml(@"<form><input id='u1' type='text' name='un1'>"
+            "<input id='p1' type='password' name='pw1'></form>");
+  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
+  // Run password forms search to set up unique IDs.
+  EXPECT_TRUE(ExecuteJavaScript(@"__gCrWeb.passwords.findPasswordForms();"));
+
+  FieldRendererId username_field_id(1);
+  FieldRendererId password_field_id(2);
+
+  ExecuteJavaScript(
+      @"document.getElementById('u1').value = 'typed@typed.com';");
+  [helper_ updateFieldDataOnUserInput:username_field_id
+                           inputValue:@"typed@typed.com"];
+
+  // Try to autofill the form.
+  FillData fill_data;
+  SetFillData(BaseUrl(), 0, username_field_id.value(), "someacc@store.com",
+              password_field_id.value(), "store!pw", &fill_data);
+
+  __block bool called = NO;
+  __block bool success = NO;
+  [helper_ fillPasswordFormWithFillData:fill_data
+                       triggeredOnField:password_field_id
+                      completionHandler:^(BOOL res) {
+                        called = YES;
+                        success = res;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return called;
+  }));
+  EXPECT_EQ(success, YES);
+  id result = ExecuteJavaScript(kInputFieldValueVerificationScript);
+  EXPECT_NSEQ(@"u1=typed@typed.com;p1=store!pw;", result);
 }
 
 }  // namespace
