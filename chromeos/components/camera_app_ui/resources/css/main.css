@@ -1499,9 +1499,17 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   visibility: visible;
 }
 
+/* TODO(b/172879638): Tune the position and layout after we finalized the
+ * responsive window design. */
 .barcode-chip-container {
+  --chip-height: 32px;
+  left: 50%;
   opacity: 0;
+  position: absolute;
+  top: 15%;
+  transform: translate(-50%, -50%);
   visibility: hidden;
+  z-index: 50;
 }
 
 /* TODO(b/172879638): Tune the animation according to the final motion spec. */
@@ -1523,8 +1531,6 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   }
 }
 
-/* TODO(b/172879638): Tune the position and layout after we finalized the
- * responsive window design. */
 .barcode-chip-url {
   align-items: center;
   background: rgb(32, 33, 36);
@@ -1533,13 +1539,8 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   box-sizing: border-box;
   display: flex;
   font: 400 15px Roboto;
-  height: 32px;
-  left: 50%;
+  height: var(--chip-height);
   padding: 8px;
-  position: absolute;
-  top: 15%;
-  transform: translate(-50%, -50%);
-  z-index: 50;
 }
 
 .barcode-chip-url::before {
@@ -1559,4 +1560,21 @@ body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.barcode-copy-button:hover {
+  /* TODO(b/172879638): Tweak color according to the final UX spec */
+  background: url(/images/barcode_copy.svg) center no-repeat, rgb(50, 51, 54);
+}
+
+.barcode-copy-button {
+  background: url(/images/barcode_copy.svg) center no-repeat, rgb(32, 33, 36);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  height: var(--chip-height);
+  inset-inline-start: calc(100% + 8px);
+  position: absolute;
+  top: 0;
+  width: var(--chip-height);
+  z-index: 50;
 }

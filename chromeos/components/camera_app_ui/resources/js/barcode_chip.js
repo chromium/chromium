@@ -29,15 +29,26 @@ function isSafeUrl(s) {
  * @param {string} url
  */
 function showUrl(url) {
-  const el = dom.get('.barcode-chip-container', HTMLDivElement);
-  const anchor = dom.getFrom(el, 'a', HTMLAnchorElement);
+  const container = dom.get('.barcode-chip-container', HTMLDivElement);
+
+  const anchor = dom.getFrom(container, 'a', HTMLAnchorElement);
   Object.assign(anchor, {
     href: url,
     textContent: url,
   });
+
+  // TODO(b/172879638): Extract a common implementation for both URL and Text
+  // barcodes.
+  const copyButton =
+      dom.getFrom(container, '.barcode-copy-button', HTMLButtonElement);
+  copyButton.onclick = async () => {
+    await navigator.clipboard.writeText(url);
+    // TODO(b/172879638): Show "Link copied" in a snackbar.
+    toast.showDebugMessage('Link copied');
+  };
+
   // TODO(b/172879638): Handle a11y.
-  util.animateOnce(el);
-  // TODO(b/172879638): Show copy button.
+  util.animateOnce(container);
 }
 
 /**

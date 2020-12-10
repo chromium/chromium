@@ -4,6 +4,7 @@
 
 in_app_assets = [
   "barcode_url.svg",
+  "barcode_copy.svg",
   "camera_button_fps_30.svg",
   "camera_button_fps_60.svg",
   "camera_button_grid_off.svg",
