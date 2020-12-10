@@ -26,6 +26,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
+#include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 #include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/pref_names.h"
 
@@ -129,6 +130,11 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(
       std::make_unique<bookmarks::ManagedBookmarksPolicyHandler>(
           chrome_schema));
+
+  if (ShouldInstallBrowserSigninPolicyHandler()) {
+    handlers->AddHandler(
+        std::make_unique<policy::BrowserSigninPolicyHandler>(chrome_schema));
+  }
 
   if (ShouldInstallURLBlocklistPolicyHandlers()) {
     handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(

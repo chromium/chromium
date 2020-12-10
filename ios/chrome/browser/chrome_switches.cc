@@ -39,6 +39,9 @@ const char kEnableSpotlightActions[] = "enable-spotlight-actions";
 const char kEnableThirdPartyKeyboardWorkaround[] =
     "enable-third-party-keyboard-workaround";
 
+// Installs the BrowserSignin policy handler.
+const char kInstallBrowserSigninHandler[] = "install-browser-signin-handler";
+
 // Installs the URLBlocklist and URLAllowlist handlers.
 const char kInstallURLBlocklistHandlers[] = "install-url-blocklist-handlers";
 

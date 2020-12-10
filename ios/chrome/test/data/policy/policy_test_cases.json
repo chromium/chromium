@@ -46,6 +46,18 @@
     ]
   },
 
+  "BrowserSignin.SigninDisabled": {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "BrowserSignin": 0 },
+        "prefs": { "signin.allowed": {} }
+      }
+    ]
+  },
+
   "CloudManagementEnrollmentToken": {},
 
   "CloudReportingEnabled": {

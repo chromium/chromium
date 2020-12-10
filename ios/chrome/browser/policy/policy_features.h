@@ -39,6 +39,10 @@ bool IsIncognitoModeAvailable();
 // policy data and make it user visible.
 bool ShouldInstallEnterprisePolicyHandlers();
 
+// Returns true if the BrowserSignin policy handler should be installed to
+// parse policy data and make it user visible.
+bool ShouldInstallBrowserSigninPolicyHandler();
+
 // Returns true if the ManagedBookmarks policy handler should be installed to
 // parse policy data and make it user visible.
 bool ShouldInstallManagedBookmarksPolicyHandler();

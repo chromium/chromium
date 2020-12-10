@@ -13903,6 +13903,7 @@
         },
       ],
       'supported_on': ['chrome.*:70-', 'android:70-'],
+      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False
