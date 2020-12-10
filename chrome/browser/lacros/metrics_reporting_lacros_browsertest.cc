@@ -69,8 +69,16 @@ IN_PROC_BROWSER_TEST_F(MetricsReportingLacrosBrowserTest, Basics) {
   ASSERT_TRUE(observer2.metrics_enabled_.has_value());
   EXPECT_EQ(ash_metrics_enabled, observer2.metrics_enabled_.value());
 
-  // TODO(https://crbug.com/1148604): Test SetMetricsReportingConsent() once
-  // that function is implemented.
+  // Exercise SetMetricsReportingEnabled() and ensure its callback is called.
+  base::RunLoop run_loop3;
+  metrics_reporting->SetMetricsReportingEnabled(!ash_metrics_enabled,
+                                                run_loop3.QuitClosure());
+  run_loop3.Run();
+
+  base::RunLoop run_loop4;
+  metrics_reporting->SetMetricsReportingEnabled(ash_metrics_enabled,
+                                                run_loop4.QuitClosure());
+  run_loop4.Run();
 }
 
 }  // namespace

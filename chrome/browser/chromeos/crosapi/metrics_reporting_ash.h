@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CROSAPI_METRICS_REPORTING_ASH_H_
 #define CHROME_BROWSER_CHROMEOS_CROSAPI_METRICS_REPORTING_ASH_H_
 
+#include <memory>
+
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,9 +21,17 @@ namespace crosapi {
 // This class must only be used from the main thread.
 class MetricsReportingAsh : public mojom::MetricsReporting {
  public:
-  // |local_state| is injected for testing. In production it is the global
-  // local state PrefService, owned by g_browser_process.
+  // Allows stubbing out the metrics reporting subsystem.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void SetMetricsReportingEnabled(bool enabled) = 0;
+  };
+  // Constructor for production. Uses the real metrics reporting subsystem.
   explicit MetricsReportingAsh(PrefService* local_state);
+  // Constructor for testing.
+  MetricsReportingAsh(std::unique_ptr<Delegate> delegate,
+                      PrefService* local_state);
   MetricsReportingAsh(const MetricsReportingAsh&) = delete;
   MetricsReportingAsh& operator=(const MetricsReportingAsh&) = delete;
   ~MetricsReportingAsh() override;
@@ -41,6 +51,8 @@ class MetricsReportingAsh : public mojom::MetricsReporting {
 
   // Returns whether metrics reporting is enabled.
   bool IsMetricsReportingEnabled() const;
+
+  std::unique_ptr<Delegate> delegate_;
 
   // In production, owned by g_browser_process, which outlives this object.
   PrefService* const local_state_;

@@ -8,14 +8,41 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace crosapi {
+namespace {
+
+// Delegate for production, which uses the real reporting subsystem.
+class DelegateImpl : public MetricsReportingAsh::Delegate {
+ public:
+  DelegateImpl() = default;
+  DelegateImpl(const DelegateImpl&) = delete;
+  DelegateImpl& operator=(const DelegateImpl&) = delete;
+  ~DelegateImpl() override = default;
+
+  // MetricsReportingAsh::Delegate:
+  void SetMetricsReportingEnabled(bool enabled) override {
+    // Use primary profile because Lacros does not support multi-signin.
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    // Chrome OS uses this wrapper around the underlying metrics pref.
+    chromeos::StatsReportingController::Get()->SetEnabled(profile, enabled);
+  }
+};
+
+}  // namespace
 
 MetricsReportingAsh::MetricsReportingAsh(PrefService* local_state)
-    : local_state_(local_state) {
+    : MetricsReportingAsh(std::make_unique<DelegateImpl>(), local_state) {}
+
+MetricsReportingAsh::MetricsReportingAsh(std::unique_ptr<Delegate> delegate,
+                                         PrefService* local_state)
+    : delegate_(std::move(delegate)), local_state_(local_state) {
+  DCHECK(delegate_);
   DCHECK(local_state_);
   pref_change_registrar_.Init(local_state_);
   // base::Unretained() is safe because PrefChangeRegistrar removes all
@@ -45,8 +72,7 @@ void MetricsReportingAsh::AddObserver(
 void MetricsReportingAsh::SetMetricsReportingEnabled(
     bool enabled,
     SetMetricsReportingEnabledCallback callback) {
-  // TODO(https://crbug.com/1148604): Implement this.
-  NOTIMPLEMENTED();
+  delegate_->SetMetricsReportingEnabled(enabled);
   std::move(callback).Run();
 }
 

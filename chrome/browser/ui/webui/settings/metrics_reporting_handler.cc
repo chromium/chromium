@@ -19,6 +19,11 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"  // nogncheck
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace settings {
 
 MetricsReportingHandler::MetricsReportingHandler() {}
@@ -90,6 +95,30 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
   bool enabled;
   CHECK(args->GetBoolean(0, &enabled));
   ChangeMetricsReportingState(enabled);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // To match the pre-Lacros settings UX, the metrics reporting toggle in Lacros
+  // browser settings controls both browser metrics reporting and OS metrics
+  // reporting. See https://crbug.com/1148604.
+  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
+  // Service may be null in tests.
+  if (!lacros_chrome_service)
+    return;
+  // The metrics reporting API was added in Chrome OS 89.
+  if (!lacros_chrome_service->IsMetricsReportingAvailable()) {
+    LOG(WARNING) << "MetricsReporting API not available";
+    return;
+  }
+  // Bind the remote here instead of the constructor because this function
+  // is rarely called, so we usually don't need the remote.
+  if (!metrics_reporting_remote_.is_bound()) {
+    lacros_chrome_service->BindMetricsReporting(
+        metrics_reporting_remote_.BindNewPipeAndPassReceiver());
+  }
+  // Set metrics reporting state in ash-chrome.
+  metrics_reporting_remote_->SetMetricsReportingEnabled(enabled,
+                                                        base::DoNothing());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void MetricsReportingHandler::OnPolicyChanged(const base::Value* previous,

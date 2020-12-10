@@ -2772,6 +2772,8 @@ static_library("ui") {
       "window_sizer/window_sizer_chromeos.h",
     ]
     deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
     ]
