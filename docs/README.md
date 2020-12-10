@@ -123,6 +123,7 @@ used when committed.
     and handle thread safety in Chrome.
 *   [Callback<> and Bind()](callback.md) - All about Callbacks, Closures, and
     Bind().
+*   [Chromium Views UI](ui/index.md) - Working with the desktop UI framework.
 *   [Views Platform Styling](ui/views/platform_style.md) - How views are styled
     to fit in different native platforms
 *   [Tab Helpers](tab_helpers.md) - Using WebContents/WebContentsObserver to add
@@ -254,7 +255,7 @@ used when committed.
 *   [Windows Split DLLs](windows_split_dll.md) - Splitting `chrome.dll` into
     multiple dlls to work around toolchain limitations on Windows.
 *   [Windows Native Window Occlusion Tracking](windows_native_window_occlusion_tracking.md)
-*   [Windows PWA Integration](windows_pwa_integration.md) - Integration with 
+*   [Windows PWA Integration](windows_pwa_integration.md) - Integration with
     Progressive Web Apps on Windows
 *   [Windows Shortcut and Taskbar Handling](windows_shortcut_and_taskbar_handling.md)
 *   [Windows Virtual Desktop Integration](windows_virtual_desktop_handling.md)
