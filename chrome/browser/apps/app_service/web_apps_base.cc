@@ -154,6 +154,9 @@ apps::mojom::AppPtr WebAppsBase::ConvertImpl(const web_app::WebApp* web_app,
   app->last_launch_time = web_app->last_launch_time();
   app->install_time = web_app->install_time();
 
+  // Web App's publisher_id the start url.
+  app->publisher_id = web_app->start_url().spec();
+
   // app->version is left empty here.
   PopulatePermissions(web_app, &app->permissions);
 

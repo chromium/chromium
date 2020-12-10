@@ -262,4 +262,26 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
   run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, ExposeAppServicePublisherId) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
+
+  // Install file handling web app.
+  const web_app::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
+  const web_app::WebAppRegistrar* registrar =
+      web_app::WebAppProvider::Get(browser()->profile())
+          ->registrar()
+          .AsWebAppRegistrar();
+  const web_app::WebApp* web_app = registrar->GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+
+  // Check the publisher_id is the app's start url.
+  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&](const apps::AppUpdate& update) {
+        EXPECT_EQ(web_app->start_url().spec(), update.PublisherId());
+      });
+}
+
 }  // namespace apps

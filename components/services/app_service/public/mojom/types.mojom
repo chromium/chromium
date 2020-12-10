@@ -20,9 +20,9 @@ struct App {
   string? name;
   string? short_name;
 
-  // The publisher-specific ID for this app, e.g. for Android apps, this field
-  // contains the Android package name. May be empty if AppId() should be
-  // considered as the canonical publisher ID.
+  // An optional, publisher-specific ID for this app, e.g. for Android apps,
+  // this field contains the Android package name, and for web apps, it
+  // contains the start URL.
   string? publisher_id;
 
   string? description;
