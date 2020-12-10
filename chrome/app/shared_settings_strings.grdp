@@ -160,7 +160,7 @@
     Device visibility
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_VISIBILITY" desc="Label for the button that opens the dialog which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
-    View device visibility
+    Change visibility
   </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_TITLE" desc="Title for the dialog which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
     Device visibility

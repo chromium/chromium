@@ -14,7 +14,7 @@
 
   <!-- Contact visibility component -->
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_DOWNLOAD_FAILED" desc="Message shown when downloading contacts failed when trying to load contacts to show the user a list of who they will be able to share with.">
-      Unable to download contact list. Please check your network connection, or &lt;a href="#" id="tryAgainLink"&gt;try again&lt;/a&gt;.
+      Unable to download contact list. Please check your network connection, or <ph name="LINK_BEGIN">&lt;a&gt;</ph>try again<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_DOWNLOADING" desc="Message shown when contacts are being downloaded to show the user a list of who they will be able to share with.">
     Downloading contact list...

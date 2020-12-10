@@ -423,19 +423,66 @@ Polymer({
   },
 
   /**
-   * Because the "failed" state contains an i18n string with a link in it, we
-   * need to add an event listener. We do that here because the link doesn't
-   * exist when the dialog loads, only once the template is added to the DOM.
+   * Builds the html for the download retry message, applying the appropriate
+   * aria labels, and adding an event listener to the link. This function is
+   * largely copied from getAriaLabelledHelpText_ in <nearby-discovery-page>,
+   * and should be generalized in the future. We do this here because the div
+   * doesn't exist when the dialog loads, only once the template is added to the
+   * DOM.
+   * TODO(crbug.com/1154718): Extract this logic into a general method.
    *
    * @private
    */
   domChangeDownloadFailed_() {
-    const tryAgainLink = this.$$('#tryAgainLink');
-    if (!tryAgainLink) {
+    const contactsFailedMessage = this.$$('#contactsFailedMessage');
+    if (!contactsFailedMessage) {
+      return;
+    }
+    const localizedString =
+        this.i18nAdvanced('nearbyShareContactVisibilityDownloadFailed');
+    contactsFailedMessage.innerHTML = localizedString;
+
+    const ariaLabelledByIds = [];
+    contactsFailedMessage.childNodes.forEach((node, index) => {
+      // Text nodes should be aria-hidden and associated with an element id
+      // that the anchor element can be aria-labelledby.
+      if (node.nodeType == Node.TEXT_NODE) {
+        const spanNode = document.createElement('span');
+        spanNode.textContent = node.textContent;
+        spanNode.id = `contactsFailedMessage${index}`;
+        ariaLabelledByIds.push(spanNode.id);
+        spanNode.setAttribute('aria-hidden', true);
+        node.replaceWith(spanNode);
+        return;
+      }
+      // The single element node with anchor tags should also be aria-labelledby
+      // itself in-order with respect to the entire string.
+      if (node.nodeType == Node.ELEMENT_NODE && node.nodeName == 'A') {
+        node.id = `tryAgainLink`;
+        ariaLabelledByIds.push(node.id);
+        return;
+      }
+
+      // Only text and <a> nodes are allowed.
+      assertNotReached(
+          'nearbyShareContactVisibilityDownloadFailed has invalid node types');
+    });
+
+    const anchorTags = contactsFailedMessage.getElementsByTagName('a');
+    // In the event the localizedString contains only text nodes, populate the
+    // contents with the localizedString.
+    if (anchorTags.length == 0) {
+      contactsFailedMessage.innerHTML = localizedString;
       return;
     }
 
-    tryAgainLink.addEventListener('click', event => {
+    assert(
+        anchorTags.length == 1, 'string should contain exactly one anchor tag');
+    const anchorTag = anchorTags[0];
+    anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
+    anchorTag.href = '#';
+
+    anchorTag.addEventListener('click', event => {
       event.preventDefault();
       this.downloadContacts_();
     });

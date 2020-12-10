@@ -167,11 +167,6 @@ TEST_F('NearbyProgressTest', 'All', () => mocha.run());
  */
 var NearbyContactVisibilityTest = class extends NearbySharedBrowserTest {
   /** @override */
-  get browsePreload() {
-    return super.browsePreload + 'shared/nearby_contact_visibility.html';
-  }
-
-  /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       'nearby_contact_visibility_test.js',
