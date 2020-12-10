@@ -22,8 +22,6 @@ MessageWrapper::MessageWrapper(base::OnceClosure action_callback,
 }
 
 MessageWrapper::~MessageWrapper() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_MessageWrapper_clearNativePtr(env, java_message_wrapper_);
   CHECK(message_dismissed_);
 }
 
@@ -93,7 +91,10 @@ void MessageWrapper::HandleActionClick(JNIEnv* env) {
 }
 
 void MessageWrapper::HandleDismissCallback(JNIEnv* env) {
+  // Make sure message dismissed callback is called exactly once.
+  CHECK(!message_dismissed_);
   message_dismissed_ = true;
+  Java_MessageWrapper_clearNativePtr(env, java_message_wrapper_);
   if (!dismiss_callback_.is_null())
     std::move(dismiss_callback_).Run();
   // Dismiss callback typically deletes the instance of MessageWrapper,

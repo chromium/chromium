@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/save_password_message_delegate.h"
 
+#include "base/android/jni_android.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -105,11 +106,12 @@ void SavePasswordMessageDelegateTest::CreateMessage(
 }
 
 void SavePasswordMessageDelegateTest::TriggerActionClick() {
-  GetMessageWrapper()->HandleActionClick(nullptr);
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 }
 
 void SavePasswordMessageDelegateTest::TriggerMessageDismissedCallback() {
-  GetMessageWrapper()->HandleDismissCallback(nullptr);
+  GetMessageWrapper()->HandleDismissCallback(
+      base::android::AttachCurrentThread());
   EXPECT_EQ(nullptr, GetMessageWrapper());
   metrics_recorder_.reset();
 }

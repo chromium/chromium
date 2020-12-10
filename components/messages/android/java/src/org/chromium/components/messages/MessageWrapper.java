@@ -94,6 +94,9 @@ public final class MessageWrapper {
     }
 
     private void handleMessageDismissed() {
+        // mNativeMessageWrapper can be null if the message was dismissed from native API.
+        // In this case dismiss callback should have already been called.
+        if (mNativeMessageWrapper == 0) return;
         MessageWrapperJni.get().handleDismissCallback(mNativeMessageWrapper);
     }
 
