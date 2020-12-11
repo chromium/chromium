@@ -62,7 +62,8 @@ void FakeTpmManagerClient::GetDictionaryAttackInfo(
 void FakeTpmManagerClient::TakeOwnership(
     const ::tpm_manager::TakeOwnershipRequest& request,
     TakeOwnershipCallback callback) {
-  NOTIMPLEMENTED();
+  ++take_ownership_count_;
+  PostProtoResponse(std::move(callback), ::tpm_manager::TakeOwnershipReply());
 }
 
 void FakeTpmManagerClient::ClearStoredOwnerPassword(
@@ -103,6 +104,10 @@ FakeTpmManagerClient::mutable_version_info_reply() {
 ::tpm_manager::GetDictionaryAttackInfoReply*
 FakeTpmManagerClient::mutable_dictionary_attack_info_reply() {
   return &dictionary_attack_info_reply_;
+}
+
+int FakeTpmManagerClient::take_ownership_count() const {
+  return take_ownership_count_;
 }
 
 int FakeTpmManagerClient::clear_stored_owner_password_count() const {

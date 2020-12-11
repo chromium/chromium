@@ -60,6 +60,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
     // called.
     virtual ::tpm_manager::GetDictionaryAttackInfoReply*
     mutable_dictionary_attack_info_reply() = 0;
+    // Gets the count of `TakeOwnership()` being called.
+    virtual int take_ownership_count() const = 0;
     // Gets the count of `ClearStoredOwnerPassword()` being called.
     virtual int clear_stored_owner_password_count() const = 0;
     // Emits ownership taken signal.

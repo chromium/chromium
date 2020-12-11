@@ -34,6 +34,8 @@ component("tpm") {
   sources = [
     "install_attributes.cc",
     "install_attributes.h",
+    "prepare_tpm.cc",
+    "prepare_tpm.h",
     "tpm_token_info_getter.cc",
     "tpm_token_info_getter.h",
     "tpm_token_loader.cc",
@@ -65,13 +67,15 @@ source_set("unit_tests") {
     "//chromeos/dbus/constants",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/dbus/tpm_manager:tpm_manager",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//components/policy/proto",
     "//google_apis",
     "//testing/gtest",
   ]
   sources = [
     "install_attributes_unittest.cc",
+    "prepare_tpm_unittest.cc",
     "tpm_token_info_getter_unittest.cc",
   ]
 }

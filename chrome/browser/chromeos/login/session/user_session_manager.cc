@@ -115,12 +115,15 @@
 #include "chromeos/dbus/cryptohome/tpm_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/tpm/prepare_tpm.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -382,6 +385,10 @@ policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_chromeos()
       ->GetMinimumVersionPolicyHandler();
+}
+
+void OnPrepareTpmDeviceFinished() {
+  BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-End", false);
 }
 
 }  // namespace
@@ -1518,51 +1525,20 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
     return;
   }
 
-  PrepareTpmDeviceAndFinalizeProfile(profile);
+  BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-Start", false);
+  PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
+  FinalizePrepareProfile(profile);
 }
 
 void UserSessionManager::CompleteProfileCreateAfterAuthTransfer(
     Profile* profile) {
   RestoreAuthSessionImpl(profile, has_auth_cookies_);
-  PrepareTpmDeviceAndFinalizeProfile(profile);
-}
-
-void UserSessionManager::PrepareTpmDeviceAndFinalizeProfile(Profile* profile) {
   BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-Start", false);
-
-  if (!tpm_util::TpmIsEnabled() || tpm_util::TpmIsBeingOwned()) {
-    FinalizePrepareProfile(profile);
-    return;
-  }
-
-  // Make sure TPM ownership gets established and the owner password cleared
-  // (if no longer needed) whenever a user logs in. This is so the TPM is in
-  // locked down state after initial setup, which ensures that some decisions
-  // (e.g. NVRAM spaces) are unchangeable until next hardware reset (powerwash,
-  // recovery, etc.).
-  //
-  // Ownership is normally taken when showing the EULA screen, but in case
-  // this gets interrupted TPM ownership might not be established yet. The code
-  // here runs on every login and ensures that the TPM gets into the desired
-  // state eventually.
-  auto callback =
-      base::BindOnce(&UserSessionManager::OnCryptohomeOperationCompleted,
-                     AsWeakPtr(), profile);
-  CryptohomeClient* client = CryptohomeClient::Get();
-  if (tpm_util::TpmIsOwned())
-    client->TpmClearStoredPassword(std::move(callback));
-  else
-    client->TpmCanAttemptOwnership(std::move(callback));
-}
-
-void UserSessionManager::OnCryptohomeOperationCompleted(Profile* profile,
-                                                        bool result) {
-  DCHECK(result);
+  PrepareTpm(base::BindOnce(OnPrepareTpmDeviceFinished));
   FinalizePrepareProfile(profile);
 }
 
 void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
-  BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-End", false);
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (user_manager->IsLoggedInAsUserWithGaiaAccount()) {

@@ -32,6 +32,7 @@
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/u2f_notification.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/arc/net/always_on_vpn_manager.h"
@@ -418,13 +419,6 @@ class UserSessionManager
   // Callback to resume profile creation after transferring auth data from
   // the authentication profile.
   void CompleteProfileCreateAfterAuthTransfer(Profile* profile);
-
-  // Asynchronously prepares TPM devices and calls FinalizePrepareProfile on UI
-  // thread.
-  void PrepareTpmDeviceAndFinalizeProfile(Profile* profile);
-
-  // Called on UI thread once Cryptohome operation completes.
-  void OnCryptohomeOperationCompleted(Profile* profile, bool result);
 
   // Finalized profile preparation.
   void FinalizePrepareProfile(Profile* profile);
