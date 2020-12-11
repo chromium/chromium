@@ -30,9 +30,6 @@ Host *
   ConnectTimeout 5
   """
 
-FVM_TYPE_QCOW = 'qcow'
-FVM_TYPE_SPARSE = 'sparse'
-
 # Specifies boot files intended for use by an emulator.
 TARGET_TYPE_QEMU = 'qemu'
 
