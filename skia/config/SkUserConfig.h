@@ -214,6 +214,11 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_DISABLE_REDUCE_OPLIST_SPLITTING
 #endif
 
+// Enabling the fix for crbug.com/1156804 will require web test rebaselining.
+#ifndef SK_IGNORE_GPU_CLAMP_BLUR_FIX
+#define SK_IGNORE_GPU_CLAMP_BLUR_FIX
+#endif
+
 // Max. verb count for paths rendered by the edge-AA tessellating path renderer.
 #define GR_AA_TESSELLATOR_MAX_VERB_COUNT 100
 
