@@ -99,9 +99,9 @@ static void JNI_NotificationSuspender_StoreNotificationResources(
     GURL origin(std::move(origin_strings[i]));
     if (!origin.is_valid() || !origin.SchemeIsHTTPOrHTTPS())
       continue;
-    resources_by_context[GetContext(profile, origin)].emplace_back(
-        NotificationResourceData{std::move(id_strings[i]), std::move(origin),
-                                 std::move(resources[i])});
+    PlatformNotificationContext* context = GetContext(profile, origin);
+    resources_by_context[context].emplace_back(NotificationResourceData{
+        std::move(id_strings[i]), std::move(origin), std::move(resources[i])});
   }
 
   // Store resources in each context.
