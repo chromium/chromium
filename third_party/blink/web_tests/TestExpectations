@@ -2412,8 +2412,6 @@ crbug.com/1105958 external/wpt/payment-request/payment-is-showing.https.html [ T
 ### external/wpt/css/CSS2/tables/
 crbug.com/958381 external/wpt/css/CSS2/tables/border-collapse-dynamic-row-002.xht [ Failure ]
 crbug.com/958381 external/wpt/css/CSS2/tables/border-collapse-dynamic-rowgroup-002.xht [ Failure ]
-crbug.com/958381 external/wpt/css/CSS2/tables/border-collapse-offset-001.xht [ Failure ]
-crbug.com/958381 external/wpt/css/CSS2/tables/border-collapse-offset-002.xht [ Failure ]
 crbug.com/958381 external/wpt/css/CSS2/tables/caption-side-applies-to-007.xht [ Failure ]
 crbug.com/958381 external/wpt/css/CSS2/tables/column-visibility-004.xht [ Failure ]
 crbug.com/958381 external/wpt/css/CSS2/tables/fixed-table-layout-017.xht [ Failure ]
