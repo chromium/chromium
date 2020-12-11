@@ -67,6 +67,8 @@ class ProfileSyncServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
 
   // A factory function for overriding the way the SyncClient is created.
   // This is a raw pointer so it can be statically initialized.

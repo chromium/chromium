@@ -122,6 +122,15 @@ ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(Profile* profile) {
   return static_cast<syncer::ProfileSyncService*>(GetForProfile(profile));
 }
 
+content::BrowserContext* ProfileSyncServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  if (context->IsOffTheRecord())
+    return nullptr;
+  if (Profile::FromBrowserContext(context)->IsEphemeralGuestProfile())
+    return nullptr;
+  return context;
+}
+
 ProfileSyncServiceFactory::ProfileSyncServiceFactory()
     : BrowserContextKeyedServiceFactory(
         "ProfileSyncService",
@@ -286,6 +295,7 @@ bool ProfileSyncServiceFactory::HasSyncService(Profile* profile) {
 // static
 bool ProfileSyncServiceFactory::IsSyncAllowed(Profile* profile) {
   DCHECK(profile);
+
   if (HasSyncService(profile)) {
     syncer::SyncService* sync_service = GetForProfile(profile);
     return !sync_service->HasDisableReason(
