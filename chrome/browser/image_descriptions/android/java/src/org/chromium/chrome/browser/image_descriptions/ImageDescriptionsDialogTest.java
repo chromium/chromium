@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -73,9 +72,6 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
     private UserPrefs.Natives mUserPrefsJniMock;
 
     @Mock
-    private Profile.Natives mProfileJniMock;
-
-    @Mock
     private Profile mProfile;
 
     @Mock
@@ -98,9 +94,6 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-
-        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
-        when(mProfileJniMock.fromWebContents(any())).thenReturn(mProfile);
 
         mAppModalPresenter = new AppModalPresenter(getActivity());
         mModalDialogManager =

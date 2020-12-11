@@ -37,6 +37,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/image_descriptions/jni_headers/ImageDescriptionsController_jni.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #endif
 
 using LanguageInfo = language::UrlLanguageHistogram::LanguageInfo;
@@ -125,10 +126,21 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
 }  // namespace
 
 #if !defined(OS_ANDROID)
+AccessibilityLabelsService::AccessibilityLabelsService(Profile* profile)
+    : profile_(profile) {}
 AccessibilityLabelsService::~AccessibilityLabelsService() = default;
 #else
+// On Android we must add/remove a NetworkChangeObserver during construction/
+// destruction to provide the "Only on Wi-Fi" functionality.
+// We also add/remove an AXModeObserver to track users enabling a screenreader.
+AccessibilityLabelsService::AccessibilityLabelsService(Profile* profile)
+    : profile_(profile) {
+  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  ui::AXPlatformNode::AddAXModeObserver(this);
+}
 AccessibilityLabelsService::~AccessibilityLabelsService() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  ui::AXPlatformNode::RemoveAXModeObserver(this);
 }
 #endif
 
@@ -159,12 +171,6 @@ void AccessibilityLabelsService::InitOffTheRecordPrefs(
       prefs::kAccessibilityImageLabelsEnabled, false);
   off_the_record_profile->GetPrefs()->SetBoolean(
       prefs::kAccessibilityImageLabelsOptInAccepted, false);
-#if defined(OS_ANDROID)
-  off_the_record_profile->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityImageLabelsEnabledAndroid, false);
-  off_the_record_profile->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityImageLabelsOnlyOnWifi, true);
-#endif
 }
 
 void AccessibilityLabelsService::Init() {
@@ -189,13 +195,6 @@ void AccessibilityLabelsService::Init() {
       ->AddUIThreadHistogramCallback(base::BindOnce(
           &AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms,
           weak_factory_.GetWeakPtr()));
-}
-
-AccessibilityLabelsService::AccessibilityLabelsService(Profile* profile)
-    : profile_(profile) {
-#if defined(OS_ANDROID)
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-#endif
 }
 
 ui::AXMode AccessibilityLabelsService::GetAXMode() {
@@ -300,6 +299,13 @@ void AccessibilityLabelsService::OnNetworkChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
   // When the network status changes, we want to (potentially) update the
   // AXMode of all web contents for the current profile.
+  content::BrowserAccessibilityState::GetInstance()
+      ->SetImageLabelsModeForProfile(GetAndroidEnabledStatus(), profile_);
+}
+
+void AccessibilityLabelsService::OnAXModeAdded(ui::AXMode mode) {
+  // When the AXMode changes (e.g. user turned on a screenreader), we want to
+  // (potentially) update the AXMode of all web contents for current profile.
   content::BrowserAccessibilityState::GetInstance()
       ->SetImageLabelsModeForProfile(GetAndroidEnabledStatus(), profile_);
 }

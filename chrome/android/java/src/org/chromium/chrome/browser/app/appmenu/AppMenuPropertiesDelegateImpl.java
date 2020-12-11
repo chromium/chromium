@@ -482,7 +482,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             menu.findItem(R.id.get_image_descriptions_id).setVisible(true);
 
             int titleId = R.string.menu_stop_image_descriptions;
-            Profile profile = Profile.fromWebContents(currentTab.getWebContents());
+            Profile profile = Profile.getLastUsedRegularProfile();
             // If image descriptions are not enabled, then we want the menu item to be "Get".
             if (!ImageDescriptionsController.getInstance().imageDescriptionsEnabled(profile)) {
                 titleId = R.string.menu_get_image_descriptions;

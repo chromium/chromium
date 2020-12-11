@@ -52,7 +52,7 @@ public class ImageDescriptionsDialog
         mModalDialogManager = modalDialogManager;
         mControllerDelegate = delegate;
         mWebContents = webContents;
-        mProfile = Profile.fromWebContents(mWebContents);
+        mProfile = Profile.getLastUsedRegularProfile();
         mContext = context;
 
         // Set initial state.
