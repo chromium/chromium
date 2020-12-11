@@ -4182,6 +4182,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "restore-gaia-cookies-on-user-action",
+    "owners": ["fernandex", "chrome-signin-team" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "restrict-gamepad-access",
     "owners": [ "//device/gamepad/OWNERS", "jameshollyer@chromium.org" ],
     "expiry_milestone": 89

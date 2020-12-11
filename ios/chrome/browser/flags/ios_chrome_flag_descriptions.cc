@@ -351,6 +351,12 @@ const char kRestoreGaiaCookiesIfDeletedDescription[] =
     "When enabled, will restore GAIA cookies for signed-in Chrome users if "
     "they are deleted.";
 
+const char kRestoreGaiaCookiesOnUserActionName[] =
+    "Restore GAIA cookies on user action";
+const char kRestoreGaiaCookiesOnUserActionDescription[] =
+    "When enabled, will restore GAIA cookies for signed-in Chrome users if "
+    "the user explicitly requests a Google service.";
+
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "
