@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/accessibility_highlight_layer.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -49,8 +50,11 @@ void AccessibilityHighlightLayer::Set(const std::vector<gfx::Rect>& rects,
   display::Display display =
       display::Screen::GetScreen()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
-  ::wm::ConvertRectFromScreen(root_window, &bounds);
-  CreateOrUpdateLayer(root_window, "AccessibilityHighlight", bounds);
+  aura::Window* container = Shell::GetContainer(
+      root_window, kShellWindowId_AccessibilityPanelContainer);
+  ::wm::ConvertRectFromScreen(container, &bounds);
+  CreateOrUpdateLayer(container, "AccessibilityHighlight", bounds,
+                      /*stack_at_top=*/false);
 }
 
 bool AccessibilityHighlightLayer::CanAnimate() const {

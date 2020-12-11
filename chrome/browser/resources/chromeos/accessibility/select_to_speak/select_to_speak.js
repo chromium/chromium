@@ -8,6 +8,8 @@ var RoleType = chrome.automation.RoleType;
 const AccessibilityFeature = chrome.accessibilityPrivate.AccessibilityFeature;
 const SelectToSpeakPanelAction =
     chrome.accessibilityPrivate.SelectToSpeakPanelAction;
+const FocusRingStackingOrder =
+    chrome.accessibilityPrivate.FocusRingStackingOrder;
 
 // This must be the same as in ash/system/accessibility/select_to_speak_tray.cc:
 // ash::kSelectToSpeakTrayClassName.
@@ -763,9 +765,15 @@ class SelectToSpeak {
     if (drawBackground && this.prefsManager_.backgroundShadingEnabled()) {
       color = DEFAULT_BACKGROUND_SHADING_COLOR;
     }
+    // If we're also showing a navigation panel, ensure the focus ring appears
+    // below the panel UI.
+    const stackingOrder = this.shouldShowNavigationControls_() ?
+        FocusRingStackingOrder.BELOW_ACCESSIBILITY_BUBBLES :
+        FocusRingStackingOrder.ABOVE_ACCESSIBILITY_BUBBLES;
     chrome.accessibilityPrivate.setFocusRings([{
       rects,
       type: chrome.accessibilityPrivate.FocusType.GLOW,
+      stackingOrder,
       color: this.prefsManager_.focusRingColor(),
       backgroundColor: color,
     }]);

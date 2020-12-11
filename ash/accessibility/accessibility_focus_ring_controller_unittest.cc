@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_cursor_ring_layer.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,7 +111,9 @@ TEST_F(AccessibilityFocusRingControllerTest, FocusRingWorksOnMultipleDisplays) {
       controller->GetFocusRingGroupForTesting("catsRCute")
           ->focus_layers_for_testing();
   EXPECT_EQ(1u, layers.size());
-  EXPECT_EQ(root_windows[0], layers[0]->root_window());
+  aura::Window* window0_container = Shell::GetContainer(
+      root_windows[0], kShellWindowId_AccessibilityBubbleContainer);
+  EXPECT_EQ(window0_container, layers[0]->root_window());
   // The focus ring has some padding, so just check the center point is where
   // we would expect it.
   EXPECT_EQ(layers[0]->layer()->GetTargetBounds().CenterPoint(),
@@ -127,7 +130,9 @@ TEST_F(AccessibilityFocusRingControllerTest, FocusRingWorksOnMultipleDisplays) {
       moved_layers = controller->GetFocusRingGroupForTesting("catsRCute")
                          ->focus_layers_for_testing();
   EXPECT_EQ(1u, moved_layers.size());
-  EXPECT_EQ(root_windows[1], moved_layers[0]->root_window());
+  aura::Window* window1_container = Shell::GetContainer(
+      root_windows[1], kShellWindowId_AccessibilityBubbleContainer);
+  EXPECT_EQ(window1_container, moved_layers[0]->root_window());
   EXPECT_EQ(moved_layers[0]->layer()->GetTargetBounds().CenterPoint(),
             gfx::Rect(100, 50, 10, 10).CenterPoint());
 }
