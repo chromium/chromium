@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_bounded_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_canvas_input_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_depth_information.h"
+#include "third_party/blink/renderer/modules/xr/xr_depth_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_dom_overlay_state.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
@@ -326,6 +327,10 @@ XRSession::XRSession(
       plane_manager_(
           MakeGarbageCollected<XRPlaneManager>(base::PassKey<XRSession>{},
                                                this)),
+      depth_manager_(
+          MakeGarbageCollected<XRDepthManager>(base::PassKey<XRSession>{},
+                                               this)),
+
       input_sources_(MakeGarbageCollected<XRInputSourceArray>()),
       client_receiver_(this, xr->GetExecutionContext()),
       input_receiver_(this, xr->GetExecutionContext()),
@@ -1122,12 +1127,6 @@ void XRSession::ProcessAnchorsData(
       << " anchors that have not been updated";
 }
 
-void XRSession::ProcessPlaneInformation(
-    const device::mojom::blink::XRPlaneDetectionData* detected_planes_data,
-    double timestamp) {
-  plane_manager_->ProcessPlaneInformation(detected_planes_data, timestamp);
-}
-
 XRPlaneSet* XRSession::GetDetectedPlanes() const {
   return plane_manager_->GetDetectedPlanes();
 }
@@ -1217,39 +1216,9 @@ void XRSession::ProcessHitTestData(
   }
 }
 
-void XRSession::ProcessDepthData(
-    device::mojom::blink::XRDepthDataPtr depth_data) {
-  DVLOG(3) << __func__ << ": depth_data valid? " << !!depth_data;
-
-  if (depth_data) {
-    switch (depth_data->which()) {
-      case device::mojom::blink::XRDepthData::Tag::DATA_STILL_VALID:
-        // Stale depth buffer is still the most recent information we have.
-        // Current API shape is not well-suited to return data pertaining to
-        // older frames, so just discard what we have.
-        depth_data_ = nullptr;
-        break;
-      case device::mojom::blink::XRDepthData::Tag::UPDATED_DEPTH_DATA:
-        // Just store the current depth data as a member - we will need to
-        // construct instances of XRDepthInformation once the app requests them
-        // anyway.
-        depth_data_ = std::move(depth_data->get_updated_depth_data());
-        break;
-    }
-  } else {
-    // Device did not return new pixel data.
-    depth_data_ = nullptr;
-  }
-}
-
-XRDepthInformation* XRSession::GetDepthInformation() const {
-  DVLOG(2) << __func__;
-
-  if (!depth_data_) {
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<XRDepthInformation>(*depth_data_);
+XRDepthInformation* XRSession::GetDepthInformation(
+    const XRFrame* xr_frame) const {
+  return depth_manager_->GetDepthInformation(xr_frame);
 }
 
 ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,
@@ -1756,10 +1725,11 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     const device::mojom::blink::XRFrameDataPtr& frame_data) {
   // Update objects that might change on per-frame basis.
   if (frame_data) {
-    ProcessPlaneInformation(frame_data->detected_planes_data.get(), timestamp);
+    plane_manager_->ProcessPlaneInformation(
+        frame_data->detected_planes_data.get(), timestamp);
     ProcessAnchorsData(frame_data->anchors_data.get(), timestamp);
     ProcessHitTestData(frame_data->hit_test_subscription_results.get());
-    ProcessDepthData(std::move(frame_data->depth_data));
+    depth_manager_->ProcessDepthInformation(std::move(frame_data->depth_data));
     ProcessTrackedImagesData(frame_data->tracked_images.get());
 
     const device::mojom::blink::XRLightEstimationData* light_data =
@@ -1768,10 +1738,10 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
       world_light_probe_->ProcessLightEstimationData(light_data, timestamp);
     }
   } else {
-    ProcessPlaneInformation(nullptr, timestamp);
+    plane_manager_->ProcessPlaneInformation(nullptr, timestamp);
     ProcessAnchorsData(nullptr, timestamp);
     ProcessHitTestData(nullptr);
-    ProcessDepthData(nullptr);
+    depth_manager_->ProcessDepthInformation(nullptr);
     ProcessTrackedImagesData(nullptr);
 
     if (world_light_probe_) {
@@ -1852,8 +1822,7 @@ void XRSession::OnFrame(
       return;
     }
 
-    XRFrame* presentation_frame = CreatePresentationFrame();
-    presentation_frame->SetAnimationFrame(true);
+    XRFrame* presentation_frame = CreatePresentationFrame(true);
 
     // Make sure that any frame-bounded changed to the views array take effect.
     if (update_views_next_frame_) {
@@ -1941,10 +1910,11 @@ base::Optional<TransformationMatrix> XRSession::GetMojoFrom(
   }
 }
 
-XRFrame* XRSession::CreatePresentationFrame() {
-  DVLOG(2) << __func__;
+XRFrame* XRSession::CreatePresentationFrame(bool is_animation_frame) {
+  DVLOG(2) << __func__ << ": is_animation_frame=" << is_animation_frame;
 
-  XRFrame* presentation_frame = MakeGarbageCollected<XRFrame>(this);
+  XRFrame* presentation_frame =
+      MakeGarbageCollected<XRFrame>(this, is_animation_frame);
   return presentation_frame;
 }
 
@@ -2309,6 +2279,7 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(request_hit_test_source_promises_);
   visitor->Trace(reference_spaces_);
   visitor->Trace(plane_manager_);
+  visitor->Trace(depth_manager_);
   visitor->Trace(anchor_ids_to_anchors_);
   visitor->Trace(anchor_ids_to_pending_anchor_promises_);
   visitor->Trace(prev_base_layer_);

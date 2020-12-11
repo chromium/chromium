@@ -41,7 +41,7 @@ class XRFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRFrame(XRSession* session);
+  explicit XRFrame(XRSession* session, bool is_animation_frame = false);
 
   XRSession* session() const { return session_; }
 
@@ -60,9 +60,7 @@ class XRFrame final : public ScriptWrappable {
 
   bool IsActive() const;
 
-  void SetAnimationFrame(bool is_animation_frame) {
-    is_animation_frame_ = is_animation_frame;
-  }
+  bool IsAnimationFrame() const { return is_animation_frame_; }
 
   HeapVector<Member<XRHitTestResult>> getHitTestResults(
       XRHitTestSource* hit_test_source,
@@ -106,7 +104,7 @@ class XRFrame final : public ScriptWrappable {
   // Only frames created by XRSession.requestAnimationFrame callbacks are
   // animation frames. getViewerPose should only be called from JS on active
   // animation frames.
-  bool is_animation_frame_ = false;
+  bool is_animation_frame_;
 };
 
 }  // namespace blink

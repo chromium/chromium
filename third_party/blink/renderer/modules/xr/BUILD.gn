@@ -21,6 +21,8 @@ blink_modules_sources("xr") {
     "xr_cube_map.h",
     "xr_depth_information.cc",
     "xr_depth_information.h",
+    "xr_depth_manager.cc",
+    "xr_depth_manager.h",
     "xr_dom_overlay_state.cc",
     "xr_dom_overlay_state.h",
     "xr_frame.cc",

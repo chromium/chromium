@@ -9,6 +9,7 @@
 #include "base/numerics/checked_math.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -16,40 +17,56 @@
 namespace {
 constexpr char kOutOfBoundsAccess[] =
     "Attempted to access data that is out-of-bounds.";
+constexpr char kFrameInactive[] =
+    "XRDepthInformation members are only accessible when their XRFrame's "
+    "`active` boolean is `true`.";
+constexpr char kFrameNotAnimated[] =
+    "XRDepthInformation members are only accessible when their XRFrame's "
+    "`animationFrame` boolean is `true`.";
 }
 
 namespace blink {
 
 XRDepthInformation::XRDepthInformation(
-    const device::mojom::blink::XRDepthDataUpdated& depth_data)
-    : width_(depth_data.size.width()),
-      height_(depth_data.size.height()),
-      norm_texture_from_norm_view_(depth_data.norm_texture_from_norm_view) {
-  DVLOG(3) << __func__ << ": width_=" << width_ << ", height_=" << height_
+    const XRFrame* xr_frame,
+    const gfx::Size& size,
+    const gfx::Transform& norm_texture_from_norm_view,
+    DOMUint16Array* data)
+    : xr_frame_(xr_frame),
+      size_(size),
+      data_(data),
+      norm_texture_from_norm_view_(norm_texture_from_norm_view) {
+  DVLOG(3) << __func__ << ": size_=" << size_.ToString()
            << ", norm_texture_from_norm_view_="
            << norm_texture_from_norm_view_.ToString();
 
-  CHECK_EQ(base::CheckMul(2, width_, height_).ValueOrDie(),
-           depth_data.pixel_data.size());
-
-  base::span<const uint16_t> pixel_data = base::make_span(
-      reinterpret_cast<const uint16_t*>(depth_data.pixel_data.data()),
-      depth_data.pixel_data.size() / 2);
-
-  // Copy the underlying pixel data into DOMUint16Array:
-  data_ = DOMUint16Array::Create(pixel_data.data(), pixel_data.size());
+  CHECK_EQ(base::CheckMul(2, size_.width(), size_.height()).ValueOrDie(),
+           data_->byteLength());
 }
 
-DOMUint16Array* XRDepthInformation::data() const {
+DOMUint16Array* XRDepthInformation::data(
+    ExceptionState& exception_state) const {
+  if (!ValidateFrame(exception_state)) {
+    return nullptr;
+  }
+
   return data_;
 }
 
-uint32_t XRDepthInformation::width() const {
-  return width_;
+uint32_t XRDepthInformation::width(ExceptionState& exception_state) const {
+  if (!ValidateFrame(exception_state)) {
+    return 0;
+  }
+
+  return size_.width();
 }
 
-uint32_t XRDepthInformation::height() const {
-  return height_;
+uint32_t XRDepthInformation::height(ExceptionState& exception_state) const {
+  if (!ValidateFrame(exception_state)) {
+    return 0;
+  }
+
+  return size_.height();
 }
 
 float XRDepthInformation::getDepth(uint32_t column,
@@ -57,19 +74,24 @@ float XRDepthInformation::getDepth(uint32_t column,
                                    ExceptionState& exception_state) const {
   DVLOG(3) << __func__ << ": column=" << column << ", row=" << row;
 
-  if (column >= width_) {
+  if (!ValidateFrame(exception_state)) {
+    return 0.0;
+  }
+
+  if (column >= static_cast<size_t>(size_.width())) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       kOutOfBoundsAccess);
     return 0.0;
   }
 
-  if (row >= height_) {
+  if (row >= static_cast<size_t>(size_.height())) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       kOutOfBoundsAccess);
     return 0.0;
   }
 
-  auto checked_index = base::CheckAdd(column, base::CheckMul(row, width_));
+  auto checked_index =
+      base::CheckAdd(column, base::CheckMul(row, size_.width()));
   size_t index = checked_index.ValueOrDie();
 
   // Data is stored in millimeters, convert to meters when accessing:
@@ -80,12 +102,34 @@ float XRDepthInformation::getDepth(uint32_t column,
   return result;
 }
 
-XRRigidTransform* XRDepthInformation::normTextureFromNormView() const {
+XRRigidTransform* XRDepthInformation::normTextureFromNormView(
+    ExceptionState& exception_state) const {
+  if (!ValidateFrame(exception_state)) {
+    return nullptr;
+  }
+
   return MakeGarbageCollected<XRRigidTransform>(
       TransformationMatrix(norm_texture_from_norm_view_.matrix()));
 }
 
+bool XRDepthInformation::ValidateFrame(ExceptionState& exception_state) const {
+  if (!xr_frame_->IsActive()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kFrameInactive);
+    return false;
+  }
+
+  if (!xr_frame_->IsAnimationFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kFrameNotAnimated);
+    return false;
+  }
+
+  return true;
+}
+
 void XRDepthInformation::Trace(Visitor* visitor) const {
+  visitor->Trace(xr_frame_);
   visitor->Trace(data_);
   ScriptWrappable::Trace(visitor);
 }

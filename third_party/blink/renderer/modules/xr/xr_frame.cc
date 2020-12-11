@@ -46,11 +46,14 @@ const char kCannotObtainNativeOrigin[] =
 
 }  // namespace
 
-XRFrame::XRFrame(XRSession* session) : session_(session) {}
+XRFrame::XRFrame(XRSession* session, bool is_animation_frame)
+    : session_(session), is_animation_frame_(is_animation_frame) {}
 
 XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
                                      ExceptionState& exception_state) {
-  DVLOG(3) << __func__;
+  DVLOG(3) << __func__ << ": is_active_=" << is_active_
+           << ", is_animation_frame_=" << is_animation_frame_;
+
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);
@@ -162,13 +165,19 @@ XRDepthInformation* XRFrame::getDepthInformation(
     return nullptr;
   }
 
+  if (!is_animation_frame_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kNonAnimationFrame);
+    return nullptr;
+  }
+
   if (this != view->frame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInvalidView);
     return nullptr;
   }
 
-  return session_->GetDepthInformation();
+  return session_->GetDepthInformation(this);
 }
 
 // Return an XRPose that has a transform of basespace_from_space, while

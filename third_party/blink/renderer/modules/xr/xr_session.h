@@ -43,6 +43,7 @@ class XRAnchor;
 class XRAnchorSet;
 class XRCanvasInputProvider;
 class XRDepthInformation;
+class XRDepthManager;
 class XRDOMOverlayState;
 class XRHitTestOptionsInit;
 class XRHitTestSource;
@@ -336,15 +337,14 @@ class XRSession final
   base::Optional<TransformationMatrix> GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType space_type) const;
 
-  XRDepthInformation* GetDepthInformation() const;
+  XRDepthInformation* GetDepthInformation(const XRFrame* xr_frame) const;
 
   XRPlaneSet* GetDetectedPlanes() const;
 
   // Creates presentation frame based on current state of the session.
-  // State currently used in XRFrame creation is mojo_from_viewer_ and
-  // world_information_. The created XRFrame also stores a reference to this
-  // XRSession.
-  XRFrame* CreatePresentationFrame();
+  // The created XRFrame will store a reference to this XRSession and use it to
+  // get the latest information out of it.
+  XRFrame* CreatePresentationFrame(bool is_animation_frame = false);
 
   // Updates the internal XRSession state that is relevant to creating
   // presentation frames.
@@ -433,17 +433,11 @@ class XRSession final
       const device::mojom::blink::XRAnchorsData* tracked_anchors_data,
       double timestamp);
 
-  void ProcessPlaneInformation(
-      const device::mojom::blink::XRPlaneDetectionData* detected_planes_data,
-      double timestamp);
-
   void CleanUpUnusedHitTestSources();
 
   void ProcessHitTestData(
       const device::mojom::blink::XRHitTestSubscriptionResultsData*
           hit_test_data);
-
-  void ProcessDepthData(device::mojom::blink::XRDepthDataPtr depth_data);
 
   void ProcessTrackedImagesData(
       const device::mojom::blink::XRTrackedImagesData*);
@@ -541,6 +535,7 @@ class XRSession final
   HashSet<uint64_t> hit_test_source_for_transient_input_ids_;
 
   Member<XRPlaneManager> plane_manager_;
+  Member<XRDepthManager> depth_manager_;
 
   uint32_t view_parameters_id_ = 0;
   HeapVector<Member<XRViewData>> views_;
@@ -576,9 +571,6 @@ class XRSession final
   Member<XRFrameRequestCallbackCollection> callback_collection_;
   // Viewer pose in mojo space.
   std::unique_ptr<TransformationMatrix> mojo_from_viewer_;
-
-  // Current depth data buffer.
-  device::mojom::blink::XRDepthDataUpdatedPtr depth_data_;
 
   bool pending_frame_ = false;
   bool resolving_frame_ = false;

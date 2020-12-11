@@ -9,27 +9,32 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform.h"
 
 namespace blink {
 
 class ExceptionState;
+class XRFrame;
 class XRRigidTransform;
 
 class XRDepthInformation final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRDepthInformation(
-      const device::mojom::blink::XRDepthDataUpdated& depth_data);
+  explicit XRDepthInformation(const XRFrame* xr_frame,
+                              const gfx::Size& size,
+                              const gfx::Transform& norm_texture_from_norm_view,
+                              DOMUint16Array* data);
 
-  DOMUint16Array* data() const;
+  DOMUint16Array* data(ExceptionState& exception_state) const;
 
-  uint32_t width() const;
+  uint32_t width(ExceptionState& exception_state) const;
 
-  uint32_t height() const;
+  uint32_t height(ExceptionState& exception_state) const;
 
-  XRRigidTransform* normTextureFromNormView() const;
+  XRRigidTransform* normTextureFromNormView(
+      ExceptionState& exception_state) const;
 
   float getDepth(uint32_t column,
                  uint32_t row,
@@ -38,11 +43,18 @@ class XRDepthInformation final : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  uint32_t width_;
-  uint32_t height_;
+  const Member<const XRFrame> xr_frame_;
 
-  Member<DOMUint16Array> data_;
-  gfx::Transform norm_texture_from_norm_view_;
+  const gfx::Size size_;
+
+  const Member<DOMUint16Array> data_;
+  const gfx::Transform norm_texture_from_norm_view_;
+
+  // Helper to validate whether a frame is in a correct state. Should be invoked
+  // before every member access. If the validation returns `false`, it means the
+  // validation failed & an exception is going to be thrown and the rest of the
+  // member access code should not run.
+  bool ValidateFrame(ExceptionState& exception_state) const;
 };
 
 }  // namespace blink
