@@ -46,11 +46,6 @@ void IDBAny::ContextWillBeDestroyed() {
     idb_cursor_->ContextWillBeDestroyed();
 }
 
-DOMStringList* IDBAny::DomStringList() const {
-  DCHECK_EQ(type_, kDOMStringListType);
-  return dom_string_list_.Get();
-}
-
 IDBCursor* IDBAny::IdbCursor() const {
   DCHECK_EQ(type_, kIDBCursorType);
   SECURITY_DCHECK(idb_cursor_->IsKeyCursor());
@@ -89,9 +84,6 @@ int64_t IDBAny::Integer() const {
   return integer_;
 }
 
-IDBAny::IDBAny(DOMStringList* value)
-    : type_(kDOMStringListType), dom_string_list_(value) {}
-
 IDBAny::IDBAny(IDBCursor* value)
     : type_(IsA<IDBCursorWithValue>(value) ? kIDBCursorWithValueType
                                            : kIDBCursorType),
@@ -112,7 +104,6 @@ IDBAny::IDBAny(std::unique_ptr<IDBKey> key)
 IDBAny::IDBAny(int64_t value) : type_(kIntegerType), integer_(value) {}
 
 void IDBAny::Trace(Visitor* visitor) const {
-  visitor->Trace(dom_string_list_);
   visitor->Trace(idb_cursor_);
   visitor->Trace(idb_database_);
 }
