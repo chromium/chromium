@@ -157,9 +157,6 @@ class ServiceWorkerMetrics {
 
     // The browser received the worker started IPC.
     base::TimeTicks local_end;
-
-    // Counts the time overhead of UI/IO thread hops during startup.
-    base::TimeDelta thread_hop_time;
   };
 
   // Converts an event type to a string. Used for tracing.
