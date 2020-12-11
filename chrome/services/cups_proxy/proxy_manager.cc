@@ -158,8 +158,8 @@ void ProxyManagerImpl::ProxyRequest(
       time - timestamp_.ReadBuffer(0) < base::TimeDelta::FromSeconds(1);
   timestamp_.SaveToBuffer(time);
   if (block_request) {
-    DVLOG(1) << "CupsPrintService Error: Rate limit (" << kRateLimit
-             << ") exceeded";
+    LOG(WARNING) << "CupsPrintService: Rate limit (" << kRateLimit
+                 << ") exceeded";
     std::move(cb).Run({}, {}, 429);  // HTTP_STATUS_TOO_MANY_REQUESTS
     return;
   }
