@@ -51,6 +51,11 @@
 
   :host([shopping]) .image-container {
     background-color: white;
+    border-radius: 4px;
+    /* Using box-shadow mimics proper rendering,
+     * so the color of the image-background may not be seen
+     * after rounding edges. */
+    box-shadow: 0 0 0 0.2px white;
     box-sizing: border-box;
     opacity: 97%;
     padding: 10px;
