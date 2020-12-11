@@ -133,6 +133,7 @@ test("cr_fuchsia_base_unittests") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//components/version_info",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",

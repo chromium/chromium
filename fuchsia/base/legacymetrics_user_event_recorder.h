@@ -17,6 +17,9 @@ namespace cr_fuchsia {
 // fuchsia.legacymetrics equivalent.
 class LegacyMetricsUserActionRecorder {
  public:
+  // Maximum number of Events to store locally before dropping new ones.
+  static constexpr size_t kMaxEventCount = 5000;
+
   LegacyMetricsUserActionRecorder();
   ~LegacyMetricsUserActionRecorder();
 
