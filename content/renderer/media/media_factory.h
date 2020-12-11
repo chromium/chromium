@@ -64,9 +64,6 @@ struct RenderFrameMediaPlaybackOptions;
 // Assist to RenderFrameImpl in creating various media clients.
 class MediaFactory {
  public:
-  // Helper function returning whether VideoSurfaceLayer should be enabled.
-  static blink::WebMediaPlayer::SurfaceLayerMode GetVideoSurfaceLayerMode();
-
   // Helper function returning whether VideoSurfaceLayer should be enabled for
   // MediaStreams.
   static bool VideoSurfaceLayerEnabledForMS();
@@ -82,14 +79,6 @@ class MediaFactory {
   // factory duties. This should be called by RenderFrameImpl as soon as its own
   // interface provider is bound.
   void SetupMojo();
-
-  // Creates the VideoFrameSubmitter and its task_runner based on the current
-  // SurfaceLayerMode;
-  std::unique_ptr<blink::WebVideoFrameSubmitter> CreateSubmitter(
-      scoped_refptr<base::SingleThreadTaskRunner>*
-          video_frame_compositor_task_runner,
-      const cc::LayerTreeSettings& settings,
-      media::MediaLog* media_log);
 
   // Creates a new WebMediaPlayer for the given |source| (either a stream or
   // URL). All pointers other than |initial_cdm| are required to be non-null.
