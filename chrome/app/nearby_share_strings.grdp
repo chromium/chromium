@@ -110,6 +110,9 @@
   <message name="IDS_NEARBY_SHARE_FEATURE_NAME" desc="This is the name of the Nearby Share feature which provides a way for nearby devices to share files, text, and urls">
     Nearby Share
   </message>
+  <message name="IDS_NEARBY_ACTIONS_ACCEPT" desc="Action button text to accept a transfer in the Nearby Share UI.">
+    Accept
+  </message>
   <message name="IDS_NEARBY_ACTIONS_CANCEL" desc="Action button text to cancel the current step in the Nearby Share UI.">
     Cancel
   </message>
@@ -197,6 +200,9 @@
   <!-- Receive Confirmation Page Strings -->
   <message name="IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE" desc="The title of the recieve confirmation page which askign the user to confirm receving a share from a specific device.">
     Receive from this device?
+  </message>
+  <message name="IDS_NEARBY_RECEIVE_CONFIRM_PAGE_CONNECTION_ID" desc="String that describes the secure connection ID which the receiving will happen in.">
+    Secure connection ID: <ph name="CONNECTION_ID">$1<ex>A392</ex></ph>
   </message>
 
   <!-- File Preview Strings -->

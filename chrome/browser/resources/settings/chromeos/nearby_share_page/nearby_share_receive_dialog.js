@@ -66,9 +66,9 @@ Polymer({
   },
 
   listeners: {
-    'change-page': 'onChangePage_',
+    'accept': 'onAccept_',
     'cancel': 'onCancel_',
-    'confirm': 'onConfirm_',
+    'change-page': 'onChangePage_',
     'onboarding-complete': 'onOnboardingComplete_',
     'reject': 'onReject_',
   },
@@ -288,7 +288,7 @@ Polymer({
   },
 
   /** @private */
-  onConfirm_() {
+  onAccept_() {
     assert(this.shareTarget);
     this.receiveManager_.accept(this.shareTarget.id).then((success) => {
       if (success) {

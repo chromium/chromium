@@ -15,6 +15,7 @@
 void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"nearbyShareAccountRowLabel", IDS_NEARBY_ACCOUNT_ROW_LABEL},
+      {"nearbyShareActionsAccept", IDS_NEARBY_ACTIONS_ACCEPT},
       {"nearbyShareActionsCancel", IDS_NEARBY_ACTIONS_CANCEL},
       {"nearbyShareActionsClose", IDS_NEARBY_ACTIONS_CLOSE},
       {"nearbyShareActionsConfirm", IDS_NEARBY_ACTIONS_CONFIRM},
@@ -104,6 +105,8 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareHighVisibilityHelpText",
        IDS_NEARBY_HIGH_VISIBILITY_HELP_TEXT},
       {"nearbyShareReceiveConfirmPageTitle",
-       IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE}};
+       IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE},
+      {"nearbyShareReceiveConfirmPageConnectionId",
+       IDS_NEARBY_RECEIVE_CONFIRM_PAGE_CONNECTION_ID}};
   webui::AddLocalizedStringsBulk(data_source, kLocalizedStrings);
 }

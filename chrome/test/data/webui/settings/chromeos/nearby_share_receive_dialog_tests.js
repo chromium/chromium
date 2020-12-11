@@ -94,8 +94,8 @@ suite('NearbyShare', function() {
 
       assertEquals(
           target.name, confirmPage.$$('#shareTargetName').textContent.trim());
-      assertEquals(
-          '1234', confirmPage.$$('#connectionToken').textContent.trim());
+      assertTrue(
+          confirmPage.$$('#connectionToken').textContent.includes('1234'));
 
       confirmPage.$$('nearby-page-template').$$('#actionButton').click();
       const shareTargetId = await fakeReceiveManager.whenCalled('accept');
@@ -114,8 +114,8 @@ suite('NearbyShare', function() {
 
       assertEquals(
           target.name, confirmPage.$$('#shareTargetName').textContent.trim());
-      assertEquals(
-          '1234', confirmPage.$$('#connectionToken').textContent.trim());
+      assertTrue(
+          confirmPage.$$('#connectionToken').textContent.includes('1234'));
 
       confirmPage.$$('nearby-page-template').$$('#cancelButton').click();
       const shareTargetId = await fakeReceiveManager.whenCalled('reject');

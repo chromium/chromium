@@ -85,4 +85,15 @@ Polymer({
         this.errorDescription = null;
     }
   },
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getConnectionTokenString_() {
+    return this.connectionToken ?
+        this.i18n(
+            'nearbyShareReceiveConfirmPageConnectionId', this.connectionToken) :
+        '';
+  },
 });

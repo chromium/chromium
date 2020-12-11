@@ -63,8 +63,8 @@
       }
     </style>
     <nearby-page-template title="$i18n{nearbyShareReceiveConfirmPageTitle}"
-        action-button-label="$i18n{confirm}"
-        action-button-event-name="confirm"
+        action-button-label="$i18n{nearbyShareActionsAccept}"
+        action-button-event-name="accept"
         cancel-button-label="$i18n{cancel}"
         cancel-button-event-name="reject"
         close-only="[[errorTitle_]]">
@@ -73,7 +73,9 @@
           <div id="processRowContent">
             <!-- TODO(vecore): Replace with real ui. -->
             <div id="shareTargetName">[[shareTarget.name]]</div>
-            <div id="connectionToken">[[connectionToken]]</div>
+            <div id="connectionToken">
+              [[getConnectionTokenString_(connectionToken)]]
+            </div>
           </div>
         </div>
 
