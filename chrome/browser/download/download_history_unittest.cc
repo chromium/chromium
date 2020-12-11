@@ -926,7 +926,7 @@ TEST_F(DownloadHistoryTest,
       download::features::kDeleteOverwrittenDownloads, params);
   // Load a download from history, create the item, OnDownloadCreated,
   // OnDownloadUpdated, OnDownloadRemoved.
-  history::DownloadRow row0, row1;
+  history::DownloadRow row0, row1, row2;
   InitDownloadRow(FILE_PATH_LITERAL("/foo/bar.pdf"),
                   "http://example.com/bar.pdf",
                   "http://example.com/referrer.html",
@@ -935,16 +935,23 @@ TEST_F(DownloadHistoryTest,
                 "http://example2.com/bar.pdf",
                 "http://example.com/referrer1.html",
                 download::DownloadItem::COMPLETE, &row1);
+  InitBasicItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                "http://example2.com/bar.pdf",
+                "http://example.com/referrer1.html",
+                download::DownloadItem::IN_PROGRESS, &row2);
   {
     std::vector<CreateDownloadHistoryEntry> rows = {
         CreateDownloadHistoryEntry(row0, LoadDownloadRowResult::kSkipCreation),
-        CreateDownloadHistoryEntry(row1)};
+        CreateDownloadHistoryEntry(row1), CreateDownloadHistoryEntry(row2)};
     CreateDownloadHistory(std::move(rows));
 
     ExpectNoDownloadCreated();
   }
 
   EXPECT_TRUE(DownloadHistory::IsPersisted(&item(0)));
+  EXPECT_TRUE(DownloadHistory::IsPersisted(&item(1)));
+  EXPECT_EQ(item(0).GetState(), download::DownloadItem::COMPLETE);
+  EXPECT_EQ(item(1).GetState(), download::DownloadItem::IN_PROGRESS);
 }
 
 // Tests that overwritten download is not removed from history DB before the

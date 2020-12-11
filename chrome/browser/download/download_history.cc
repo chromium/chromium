@@ -257,7 +257,7 @@ bool ShouldSkipLoadingDownload(const history::DownloadRow& row,
     return false;
   }
 
-  if (row.state != DownloadState::COMPLETE && row.target_path.empty())
+  if (row.state != DownloadState::COMPLETE || row.target_path.empty())
     return false;
   const std::string file_path = row.target_path.AsUTF8Unsafe();
   if (file_path.empty())
