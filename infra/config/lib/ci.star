@@ -506,6 +506,9 @@ def android_builder(
         builder_group = "chromium.android",
         goma_backend = builders.goma.backend.RBE_PROD,
         goma_jobs = goma_jobs,
+        experiments = {
+            "chromium.resultdb.result_sink.junit_tests": 30,
+        },
         **kwargs
     )
 
