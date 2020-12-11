@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SOURCE_BUFFER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SOURCE_BUFFER_H_
 
+#include "media/base/stream_parser.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_time_range.h"
 
@@ -68,14 +69,18 @@ class WebSourceBuffer {
   virtual bool EvictCodedFrames(double current_playback_time,
                                 size_t new_data_size) = 0;
 
-  // Appends data and runs the segment parser loop algorithm.
-  // The algorithm may update |*timestamp_offset| if |timestamp_offset| is not
-  // null.
+  // Appends data and runs the segment parser loop algorithm (or more simply
+  // appends and processes caller-provided media::StreamParserBuffers in the
+  // AppendChunks version). The algorithm and associated frame processing may
+  // update |*timestamp_offset| if |timestamp_offset| is not null.
   // Returns true on success, otherwise the append error algorithm needs to
   // run with the decode error parameter set to true.
   virtual bool Append(const unsigned char* data,
                       unsigned length,
                       double* timestamp_offset) = 0;
+  virtual bool AppendChunks(
+      std::unique_ptr<media::StreamParser::BufferQueue> buffer_queue,
+      double* timestamp_offset) = 0;
 
   virtual void ResetParserState() = 0;
   virtual void Remove(double start, double end) = 0;

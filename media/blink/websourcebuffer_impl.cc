@@ -146,6 +146,15 @@ bool WebSourceBufferImpl::Append(const unsigned char* data,
   return success;
 }
 
+bool WebSourceBufferImpl::AppendChunks(
+    std::unique_ptr<media::StreamParser::BufferQueue> buffer_queue,
+    double* timestamp_offset) {
+  // TODO(crbug.com/1144908): Continue MSE-for-WebCodecs encoded chunk buffering
+  // implementation from here through ChunkDemuxer/SourceBufferState/etc.
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void WebSourceBufferImpl::ResetParserState() {
   demuxer_->ResetParserState(id_,
                              append_window_start_, append_window_end_,
