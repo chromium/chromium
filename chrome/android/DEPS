@@ -5,7 +5,6 @@ include_rules = [
   # should add an allow rule to a DEPS file in the relevant directory.
   "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
 
-  "+chrome/browser/android/externalauth",
   "+chrome/browser/browser_controls/android",
   "+chrome/browser/device",
   "+chrome/browser/enterprise",
