@@ -75,14 +75,14 @@ public class EphemeralTabMediator {
     /**
      * Loads a new URL into the tab and makes it visible.
      */
-    void requestShowContent(String url, String title) {
+    void requestShowContent(GURL url, String title) {
         loadUrl(url);
         mSheetContent.updateTitle(title);
         mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 
-    private void loadUrl(String url) {
-        mWebContents.getNavigationController().loadUrl(new LoadUrlParams(url));
+    private void loadUrl(GURL url) {
+        mWebContents.getNavigationController().loadUrl(new LoadUrlParams(url.getSpec()));
     }
 
     private void createWebContentsObserver() {
@@ -159,14 +159,14 @@ public class EphemeralTabMediator {
             }
 
             @Override
-            public void openNewTab(String url, String extraHeaders, ResourceRequestBody postData,
+            public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
                     int disposition, boolean isRendererInitiated) {
                 // We never open a separate tab when navigating in a preview tab.
                 loadUrl(url);
             }
 
             @Override
-            public boolean shouldCreateWebContents(String targetUrl) {
+            public boolean shouldCreateWebContents(GURL targetUrl) {
                 loadUrl(targetUrl);
                 return false;
             }

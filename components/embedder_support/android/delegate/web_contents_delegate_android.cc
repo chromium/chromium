@@ -88,14 +88,14 @@ WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
       disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
       disposition == WindowOpenDisposition::OFF_THE_RECORD) {
     JNIEnv* env = AttachCurrentThread();
-    ScopedJavaLocalRef<jstring> java_url =
-        ConvertUTF8ToJavaString(env, url.spec());
+    ScopedJavaLocalRef<jobject> java_gurl =
+        url::GURLAndroid::FromNativeGURL(env, url);
     ScopedJavaLocalRef<jstring> extra_headers =
         ConvertUTF8ToJavaString(env, params.extra_headers);
     ScopedJavaLocalRef<jobject> post_data =
         content::ConvertResourceRequestBodyToJavaObject(env, params.post_data);
     Java_WebContentsDelegateAndroid_openNewTab(
-        env, obj, java_url, extra_headers, post_data,
+        env, obj, java_gurl, extra_headers, post_data,
         static_cast<int>(disposition), params.is_renderer_initiated);
     return NULL;
   }
@@ -174,10 +174,10 @@ bool WebContentsDelegateAndroid::IsWebContentsCreationOverridden(
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null())
     return false;
-  ScopedJavaLocalRef<jstring> java_url =
-      ConvertUTF8ToJavaString(env, target_url.spec());
+  ScopedJavaLocalRef<jobject> java_gurl =
+      url::GURLAndroid::FromNativeGURL(env, target_url);
   return !Java_WebContentsDelegateAndroid_shouldCreateWebContents(env, obj,
-                                                                  java_url);
+                                                                  java_gurl);
 }
 
 void WebContentsDelegateAndroid::WebContentsCreated(
@@ -308,9 +308,10 @@ bool WebContentsDelegateAndroid::ShouldBlockMediaRequest(const GURL& url) {
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null())
     return false;
-  ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env, url.spec());
+  ScopedJavaLocalRef<jobject> j_gurl =
+      url::GURLAndroid::FromNativeGURL(env, url);
   return Java_WebContentsDelegateAndroid_shouldBlockMediaRequest(env, obj,
-                                                                 j_url);
+                                                                 j_gurl);
 }
 
 void WebContentsDelegateAndroid::EnterFullscreenModeForTab(

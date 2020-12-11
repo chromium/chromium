@@ -201,7 +201,9 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
         mPeeked = false;
         mViewed = false;
         mFullyOpened = false;
-        mMediator.requestShowContent(url, title);
+        // TODO(yfriedman): Remove GURL construction by migrating ContextMenuParams to GURL.
+        // crbug/783819
+        mMediator.requestShowContent(new GURL(url), title);
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         if (tracker.isInitialized()) tracker.notifyEvent(EventConstants.EPHEMERAL_TAB_USED);

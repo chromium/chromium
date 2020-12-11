@@ -110,7 +110,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     // WebContentsDelegateAndroid
 
     @Override
-    public void openNewTab(String url, String extraHeaders, ResourceRequestBody postData,
+    public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
             int disposition, boolean isRendererInitiated) {
         mDelegate.openNewTab(url, extraHeaders, postData, disposition, isRendererInitiated);
     }
@@ -204,7 +204,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
-    public boolean shouldCreateWebContents(String targetUrl) {
+    public boolean shouldCreateWebContents(GURL targetUrl) {
         return mDelegate.shouldCreateWebContents(targetUrl);
     }
 
@@ -222,7 +222,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
-    public boolean shouldBlockMediaRequest(String url) {
+    public boolean shouldBlockMediaRequest(GURL url) {
         return mDelegate.shouldBlockMediaRequest(url);
     }
 

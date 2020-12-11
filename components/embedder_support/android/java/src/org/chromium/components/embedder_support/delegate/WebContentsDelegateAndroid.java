@@ -28,12 +28,13 @@ public class WebContentsDelegateAndroid {
     public static final int LOG_LEVEL_ERROR = 3;
 
     /**
+     * @param url
      * @param disposition         The new tab disposition, defined in
      *                            //ui/base/mojo/window_open_disposition.mojom.
      * @param isRendererInitiated Whether or not the renderer initiated this action.
      */
     @CalledByNative
-    public void openNewTab(String url, String extraHeaders, ResourceRequestBody postData,
+    public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
             int disposition, boolean isRendererInitiated) {}
 
     @CalledByNative
@@ -69,7 +70,7 @@ public class WebContentsDelegateAndroid {
             WebContents newWebContents) {}
 
     @CalledByNative
-    public boolean shouldCreateWebContents(String targetUrl) {
+    public boolean shouldCreateWebContents(GURL targetUrl) {
         return true;
     }
 
@@ -129,7 +130,7 @@ public class WebContentsDelegateAndroid {
      * @return true to prevent the resource from being loaded.
      */
     @CalledByNative
-    public boolean shouldBlockMediaRequest(String url) {
+    public boolean shouldBlockMediaRequest(GURL url) {
         return false;
     }
 

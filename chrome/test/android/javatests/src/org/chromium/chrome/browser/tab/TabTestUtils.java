@@ -11,6 +11,7 @@ import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.url.GURL;
 
 /**
  * Exposes helper functions to be used in tests to instrument tab interaction.
@@ -146,7 +147,7 @@ public class TabTestUtils {
      *                            //ui/base/mojo/window_open_disposition.mojom.
      * @param isRendererInitiated Whether or not the renderer initiated this action.
      */
-    public static void openNewTab(Tab tab, String url, String extraHeaders,
+    public static void openNewTab(Tab tab, GURL url, String extraHeaders,
             ResourceRequestBody postData, int disposition, boolean isRendererInitiated) {
         getTabWebContentsDelegate(tab).openNewTab(
                 url, extraHeaders, postData, disposition, isRendererInitiated);

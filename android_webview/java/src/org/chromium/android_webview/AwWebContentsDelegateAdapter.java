@@ -17,7 +17,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.FrameLayout;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ThreadUtils;
@@ -159,7 +158,7 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     }
 
     @Override
-    public void openNewTab(String url, String extraHeaders, ResourceRequestBody postData,
+    public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
             int disposition, boolean isRendererInitiated) {
         // This is only called in chrome layers.
         assert false;
@@ -314,9 +313,10 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     }
 
     @Override
-    public boolean shouldBlockMediaRequest(String url) {
+    public boolean shouldBlockMediaRequest(GURL url) {
         return mAwSettings != null
-                ? mAwSettings.getBlockNetworkLoads() && URLUtil.isNetworkUrl(url) : true;
+                ? mAwSettings.getBlockNetworkLoads() && URLUtil.isNetworkUrl(url.getSpec())
+                : true;
     }
 
     private static class GetDisplayNameTask extends AsyncTask<String[]> {

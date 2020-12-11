@@ -33,7 +33,6 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.url.GURL;
 
@@ -218,14 +217,7 @@ public class OverlayPanelContent {
             }
 
             @Override
-            public void openNewTab(String url, String extraHeaders, ResourceRequestBody postData,
-                    int disposition, boolean isRendererInitiated) {
-                mContentDelegate.onOpenNewTabRequested(url);
-            }
-
-            @Override
-            public boolean shouldCreateWebContents(String targetUrl) {
-                mContentDelegate.onOpenNewTabRequested(targetUrl);
+            public boolean shouldCreateWebContents(GURL targetUrl) {
                 return false;
             }
 

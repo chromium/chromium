@@ -35,12 +35,6 @@ public class OverlayContentDelegate {
      */
     public void onTitleUpdated(String title) {}
 
-    /*
-     * Called when the URL is requested to be opened in a new, separate tab.
-     * @param url The URL associated with this request.
-     */
-    public void onOpenNewTabRequested(String url) {}
-
     /**
      * Called when content started loading in the panel.
      */

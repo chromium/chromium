@@ -65,6 +65,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 
@@ -289,7 +290,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public void openNewTab(String url, String extraHeaders, ResourceRequestBody postData,
+        public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
                 int disposition, boolean isRendererInitiated) {
             // If attempting to open an incognito tab, always send the user to tabbed mode.
             if (disposition == WindowOpenDisposition.OFF_THE_RECORD) {
@@ -297,7 +298,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                     throw new IllegalStateException(
                             "Invalid attempt to open an incognito tab from the renderer");
                 }
-                LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+                LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
                 loadUrlParams.setVerbatimHeaders(extraHeaders);
                 loadUrlParams.setPostData(postData);
                 loadUrlParams.setIsRendererInitiated(isRendererInitiated);
