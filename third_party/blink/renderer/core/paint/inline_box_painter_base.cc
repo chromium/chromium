@@ -13,6 +13,28 @@
 
 namespace blink {
 
+PhysicalRect InlineBoxPainterBase::ClipRectForNinePieceImageStrip(
+    const ComputedStyle& style,
+    PhysicalBoxSides sides_to_include,
+    const NinePieceImage& image,
+    const PhysicalRect& paint_rect) {
+  PhysicalRect clip_rect(paint_rect);
+  LayoutRectOutsets outsets = style.ImageOutsets(image);
+  if (sides_to_include.left) {
+    clip_rect.SetX(paint_rect.X() - outsets.Left());
+    clip_rect.SetWidth(paint_rect.Width() + outsets.Left());
+  }
+  if (sides_to_include.right)
+    clip_rect.SetWidth(clip_rect.Width() + outsets.Right());
+  if (sides_to_include.top) {
+    clip_rect.SetY(paint_rect.Y() - outsets.Top());
+    clip_rect.SetHeight(paint_rect.Height() + outsets.Top());
+  }
+  if (sides_to_include.bottom)
+    clip_rect.SetHeight(clip_rect.Height() + outsets.Bottom());
+  return clip_rect;
+}
+
 void InlineBoxPainterBase::PaintBoxDecorationBackground(
     BoxPainterBase& box_painter,
     const PaintInfo& paint_info,

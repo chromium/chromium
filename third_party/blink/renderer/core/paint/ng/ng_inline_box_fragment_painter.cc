@@ -281,28 +281,6 @@ PhysicalRect NGInlineBoxFragmentPainterBase::PaintRectForImageStrip(
                       paint_rect.Width(), total_width);
 }
 
-static PhysicalRect NGClipRectForNinePieceImageStrip(
-    const ComputedStyle& style,
-    PhysicalBoxSides sides_to_include,
-    const NinePieceImage& image,
-    const PhysicalRect& paint_rect) {
-  PhysicalRect clip_rect(paint_rect);
-  LayoutRectOutsets outsets = style.ImageOutsets(image);
-  if (sides_to_include.left) {
-    clip_rect.SetX(paint_rect.X() - outsets.Left());
-    clip_rect.SetWidth(paint_rect.Width() + outsets.Left());
-  }
-  if (sides_to_include.right)
-    clip_rect.SetWidth(clip_rect.Width() + outsets.Right());
-  if (sides_to_include.top) {
-    clip_rect.SetY(paint_rect.Y() - outsets.Top());
-    clip_rect.SetHeight(paint_rect.Height() + outsets.Top());
-  }
-  if (sides_to_include.bottom)
-    clip_rect.SetHeight(clip_rect.Height() + outsets.Bottom());
-  return clip_rect;
-}
-
 InlineBoxPainterBase::BorderPaintingType
 NGInlineBoxFragmentPainterBase::GetBorderPaintType(
     const PhysicalRect& adjusted_frame_rect,
@@ -328,7 +306,7 @@ NGInlineBoxFragmentPainterBase::GetBorderPaintType(
   }
 
   // We have a border image that spans multiple lines.
-  adjusted_clip_rect = PixelSnappedIntRect(NGClipRectForNinePieceImageStrip(
+  adjusted_clip_rect = PixelSnappedIntRect(ClipRectForNinePieceImageStrip(
       style, SidesToInclude(), border_image, adjusted_frame_rect));
   return kPaintBordersWithClip;
 }

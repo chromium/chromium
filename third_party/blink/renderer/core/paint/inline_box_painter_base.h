@@ -18,6 +18,7 @@ class Color;
 class ComputedStyle;
 class FillLayer;
 class IntRect;
+class NinePieceImage;
 struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
@@ -69,6 +70,11 @@ class InlineBoxPainterBase {
                                    const ComputedStyle&,
                                    const PhysicalRect& paint_rect) = 0;
 
+  static PhysicalRect ClipRectForNinePieceImageStrip(
+      const ComputedStyle& style,
+      PhysicalBoxSides sides_to_include,
+      const NinePieceImage& image,
+      const PhysicalRect& paint_rect);
   virtual PhysicalRect PaintRectForImageStrip(
       const PhysicalRect&,
       TextDirection direction) const = 0;
