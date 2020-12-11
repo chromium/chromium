@@ -28,6 +28,15 @@ enum class WindowPinType;
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kBlockedForAssistantSnapshotKey;
 
+// Whether holding esc should exit fullscreen. Used by Borealis and Plugin VM.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kEscHoldToExitFullscreen;
+
+// Whether screen should minimize when using esc hold to exit fullscreen.
+// Borealis apps set this since they do not handle window size changes.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kEscHoldExitFullscreenToMinimized;
+
 // A property key to store the active color on the window frame.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<SkColor>* const kFrameActiveColorKey;

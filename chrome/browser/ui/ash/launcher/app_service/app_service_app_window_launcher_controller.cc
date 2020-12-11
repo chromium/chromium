@@ -36,9 +36,11 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_util.h"
 #include "components/exo/shell_surface_base.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -505,30 +507,35 @@ void AppServiceAppWindowLauncherController::RegisterWindow(
   // so we don't need to call AddWindowToShelf again.
   if (arc_tracker_ && arc::GetWindowTaskId(window) != arc::kNoTaskId) {
     arc_tracker_->AttachControllerToWindow(window);
-  } else {
-    // The window for ARC Play Store is a special window, which is created by
-    // both Extensions and ARC. If Extensions's window is generated after
-    // ARC window, calls OnItemDelegateDiscarded to remove the ARC apps
-    // window.
-    if (shelf_id.app_id == arc::kPlayStoreAppId) {
-      AppWindowLauncherItemController* item_controller =
-          owner()->shelf_model()->GetAppWindowLauncherItemController(shelf_id);
-      if (item_controller && shelf_id.app_id == arc::kPlayStoreAppId &&
-          arc_tracker_) {
-        OnItemDelegateDiscarded(item_controller);
-      }
-    }
-
-    AddWindowToShelf(window, shelf_id);
-
-    if (plugin_vm::IsPluginVmAppWindow(window)) {
-      // Set an icon for the Plugin VM app window.
-      static_cast<exo::ShellSurfaceBase*>(
-          views::Widget::GetWidgetForNativeWindow(window)->widget_delegate())
-          ->SetIcon(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_LOGO_PLUGIN_VM_DEFAULT_192));
-    }
+    return;
   }
+
+  // The window for ARC Play Store is a special window, which is created by
+  // both Extensions and ARC. If Extensions's window is generated after
+  // ARC window, calls OnItemDelegateDiscarded to remove the ARC apps
+  // window.
+  if (shelf_id.app_id == arc::kPlayStoreAppId) {
+    AppWindowLauncherItemController* item_controller =
+        owner()->shelf_model()->GetAppWindowLauncherItemController(shelf_id);
+    if (item_controller && shelf_id.app_id == arc::kPlayStoreAppId &&
+        arc_tracker_) {
+      OnItemDelegateDiscarded(item_controller);
+    }
+  } else if (plugin_vm::IsPluginVmAppWindow(window)) {
+    // Set an icon for the Plugin VM app window, and set fullscreen properties.
+    static_cast<exo::ShellSurfaceBase*>(
+        views::Widget::GetWidgetForNativeWindow(window)->widget_delegate())
+        ->SetIcon(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_LOGO_PLUGIN_VM_DEFAULT_192));
+    exo::SetShellUseImmersiveForFullscreen(window, false);
+    window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
+  } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
+    // Set fullscreen properties for Borealis.
+    window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
+    window->SetProperty(chromeos::kEscHoldExitFullscreenToMinimized, true);
+  }
+
+  AddWindowToShelf(window, shelf_id);
 }
 
 void AppServiceAppWindowLauncherController::UnregisterAppWindow(
