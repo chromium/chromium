@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <numeric>
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -96,6 +97,15 @@ void OmniboxPedal::SynonymGroup::AddSynonym(OmniboxPedal::Tokens&& synonym) {
   synonyms_.push_back(std::move(synonym));
 }
 
+size_t OmniboxPedal::SynonymGroup::EstimateMemoryUsage() const {
+  size_t total = sizeof(*this);
+  total += std::accumulate(synonyms_.begin(), synonyms_.end(), 0,
+                           [](size_t sum, auto& tokens) {
+                             return sum + tokens.capacity() * sizeof(tokens[0]);
+                           });
+  return total;
+}
+
 // =============================================================================
 
 OmniboxPedal::OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
@@ -138,6 +148,23 @@ bool OmniboxPedal::IsTriggerMatch(const Tokens& match_sequence) const {
 
 void OmniboxPedal::AddSynonymGroup(SynonymGroup&& group) {
   synonym_groups_.push_back(std::move(group));
+}
+
+size_t OmniboxPedal::EstimateMemoryUsage() const {
+  size_t total = sizeof(*this);
+  total += url_.EstimateMemoryUsage();
+  total += std::accumulate(
+      synonym_groups_.begin(), synonym_groups_.end(), 0,
+      [](size_t sum, auto& s) { return sum + s.EstimateMemoryUsage(); });
+  total += (synonym_groups_.capacity() - synonym_groups_.size()) *
+           sizeof(synonym_groups_[0]);
+  total += strings_.hint.size() * sizeof(strings_.hint[0]);
+  total += strings_.hint_short.size() * sizeof(strings_.hint_short[0]);
+  total += strings_.suggestion_contents.size() *
+           sizeof(strings_.suggestion_contents[0]);
+  total += strings_.accessibility_hint.size() *
+           sizeof(strings_.accessibility_hint[0]);
+  return total;
 }
 
 bool OmniboxPedal::IsConceptMatch(const Tokens& match_sequence) const {

@@ -47,6 +47,9 @@ class OmniboxPedalProvider {
     field_trial_triggered_ = triggered;
   }
 
+  // Estimates memory usage for this and all contained Pedals.
+  size_t EstimateMemoryUsage() const;
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            ProviderFiltersPedalUpdateChrome);

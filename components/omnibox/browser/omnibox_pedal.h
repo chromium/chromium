@@ -79,6 +79,9 @@ class OmniboxPedal {
     // Increase acceptable input size range according to this group's content.
     void UpdateTokenSequenceSizeRange(size_t* out_min, size_t* out_max) const;
 
+    // Estimates RAM usage in bytes for this synonym group.
+    size_t EstimateMemoryUsage() const;
+
    protected:
     // If this is true, a synonym of the group must be present for triggering.
     // If false, then presence is simply allowed and does not inhibit triggering
@@ -155,6 +158,9 @@ class OmniboxPedal {
 
   // Move a synonym group into this Pedal's collection.
   void AddSynonymGroup(SynonymGroup&& group);
+
+  // Estimates RAM usage in bytes for this Pedal.
+  size_t EstimateMemoryUsage() const;
 
   OmniboxPedalId id() { return id_; }
 

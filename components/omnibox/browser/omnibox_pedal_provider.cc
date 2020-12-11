@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/omnibox_pedal_provider.h"
 
+#include <numeric>
+
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
 #include "base/json/json_reader.h"
@@ -62,6 +64,21 @@ void OmniboxPedalProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 void OmniboxPedalProvider::ResetSession() {
   field_trial_triggered_in_session_ = false;
   field_trial_triggered_ = false;
+}
+
+size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
+  size_t total = sizeof(*this);
+  total += std::accumulate(dictionary_.begin(), dictionary_.end(), 0,
+                           [](size_t sum, auto& s) {
+                             return sum + s.first.size() * sizeof(s.first[0]);
+                           });
+  total += dictionary_.size() * (sizeof(int) + sizeof(base::string16));
+  total += ignore_group_.EstimateMemoryUsage();
+  total += std::accumulate(pedals_.begin(), pedals_.end(), 0,
+                           [](size_t sum, auto& s) {
+                             return sum + s.second->EstimateMemoryUsage();
+                           });
+  return total;
 }
 
 OmniboxPedal* OmniboxPedalProvider::FindPedalMatch(

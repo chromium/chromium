@@ -26,3 +26,16 @@ TEST_F(OmniboxPedalProviderTest, QueriesTriggerPedals) {
   EXPECT_NE(provider.FindPedalMatch(input, base::ASCIIToUTF16("clear history")),
             nullptr);
 }
+
+TEST_F(OmniboxPedalProviderTest, MemoryUsageIsModerate) {
+  MockAutocompleteProviderClient client;
+  OmniboxPedalProvider provider(client);
+  // Note: This allowance is a soft limit that may be tweaked depending on
+  // how usefulness is weighed against memory cost. The goal of the test is
+  // just to prove a reasonable bound.
+  size_t memory_allowance =
+      static_cast<size_t>(OmniboxPedalId::TOTAL_COUNT) * 2048;
+  size_t memory_usage = provider.EstimateMemoryUsage();
+  LOG(INFO) << "Pedals memory usage: " << memory_usage;
+  EXPECT_LT(memory_usage, memory_allowance);
+}
