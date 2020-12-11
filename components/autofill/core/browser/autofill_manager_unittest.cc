@@ -79,6 +79,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
+#include "url/url_canon.h"
 
 using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
@@ -182,13 +183,8 @@ void ExpectFilledForm(int page_id,
 
   EXPECT_EQ(expected_page_id, page_id);
   EXPECT_EQ(ASCIIToUTF16("MyForm"), filled_form.name);
-  if (has_credit_card_fields) {
-    EXPECT_EQ(GURL("https://myform.com/form.html"), filled_form.url);
-    EXPECT_EQ(GURL("https://myform.com/submit.html"), filled_form.action);
-  } else {
-    EXPECT_EQ(GURL("http://myform.com/form.html"), filled_form.url);
-    EXPECT_EQ(GURL("http://myform.com/submit.html"), filled_form.action);
-  }
+  EXPECT_EQ(GURL("https://myform.com/form.html"), filled_form.url);
+  EXPECT_EQ(GURL("https://myform.com/submit.html"), filled_form.action);
 
   size_t form_size = 0;
   if (has_address_fields)
@@ -517,6 +513,14 @@ class AutofillManagerTest : public testing::Test {
       form->url = GURL("https://myform.com/form.html");
       form->action = GURL("https://myform.com/submit.html");
     } else {
+      // If we are testing a form that submits over HTTP, we also need to set
+      // the main frame to HTTP, otherwise mixed form warnings will trigger and
+      // autofill will be disabled.
+      GURL::Replacements replacements;
+      replacements.SetScheme(url::kHttpScheme,
+                             url::Component(0, strlen(url::kHttpScheme)));
+      autofill_client_.set_form_origin(
+          autofill_client_.form_origin().ReplaceComponents(replacements));
       form->url = GURL("http://myform.com/form.html");
       form->action = GURL("http://myform.com/submit.html");
     }
@@ -1225,8 +1229,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Set up our form data.
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   FormFieldData field;
   test::CreateTestFormField("Username", "username", "", "text", &field);
@@ -1789,16 +1793,19 @@ TEST_P(AutofillManagerStructuredProfileTest,
   GetAutofillSuggestions(form, field);
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
-                   Suggestion(l10n_util::GetStringUTF8(
-                                  IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
-                              "", "", -1));
+  CheckSuggestions(
+      kDefaultPageID,
+      Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
+                 "", -26));
 
-  // Clear the test credit cards and try again -- we shouldn't return a warning.
+  // Clear the test credit cards and try again -- we should still show the
+  // mixed form warning.
   personal_data_.ClearCreditCards();
   GetAutofillSuggestions(form, field);
-  // Autocomplete suggestions are queried, but not Autofill.
-  EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
+  CheckSuggestions(
+      kDefaultPageID,
+      Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
+                 "", -26));
 }
 
 // Test that we return credit card suggestions for secure pages that have an
@@ -2331,8 +2338,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Set up our form data.
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   struct {
     const char* const label;
@@ -2383,8 +2390,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Set up our form data.
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   struct {
     const char* const label;
@@ -3872,9 +3879,9 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   FormData form_with_us_number_max_length;
   form_with_us_number_max_length.name = ASCIIToUTF16("MyMaxlengthPhoneForm");
   form_with_us_number_max_length.url =
-      GURL("http://myform.com/phone_form.html");
+      GURL("https://myform.com/phone_form.html");
   form_with_us_number_max_length.action =
-      GURL("http://myform.com/phone_submit.html");
+      GURL("https://myform.com/phone_submit.html");
   FormData form_with_autocompletetype = form_with_us_number_max_length;
   form_with_autocompletetype.name = ASCIIToUTF16("MyAutocompletetypePhoneForm");
 
@@ -4002,7 +4009,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // componentized number fields.
   FormData form_with_multiple_componentized_phone_fields;
   form_with_multiple_componentized_phone_fields.url =
-      GURL("http://www.foo.com/");
+      GURL("https://www.foo.com/");
 
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
@@ -4069,7 +4076,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_whole_number_fields;
-  form_with_multiple_whole_number_fields.url = GURL("http://www.foo.com/");
+  form_with_multiple_whole_number_fields.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
@@ -4125,7 +4132,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // componentized number fields.
   FormData form_with_multiple_componentized_phone_fields;
   form_with_multiple_componentized_phone_fields.url =
-      GURL("http://www.foo.com/");
+      GURL("https://www.foo.com/");
 
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
@@ -4197,7 +4204,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_misclassified_extension;
-  form_with_misclassified_extension.url = GURL("http://www.foo.com/");
+  form_with_misclassified_extension.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
@@ -4259,7 +4266,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_no_complete_number;
-  form_with_no_complete_number.url = GURL("http://www.foo.com/");
+  form_with_no_complete_number.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
@@ -4319,7 +4326,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_whole_number_fields;
-  form_with_multiple_whole_number_fields.url = GURL("http://www.foo.com/");
+  form_with_multiple_whole_number_fields.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
@@ -4375,7 +4382,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_whole_number_fields;
-  form_with_multiple_whole_number_fields.url = GURL("http://www.foo.com/");
+  form_with_multiple_whole_number_fields.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
@@ -4426,8 +4433,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
        FormWithHiddenOrPresentationalSelects) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   FormFieldData field;
 
@@ -4502,7 +4509,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::string guid(work_profile->guid());
 
   FormData form_with_multiple_sections;
-  form_with_multiple_sections.url = GURL("http://www.foo.com/");
+  form_with_multiple_sections.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
@@ -4647,7 +4654,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FormChangesAddField) {
 TEST_P(AutofillManagerStructuredProfileTest, FormChangesVisibilityOfFields) {
   // Set up our form data.
   FormData form;
-  form.url = GURL("http://www.foo.com/");
+  form.url = GURL("https://www.foo.com/");
 
   FormFieldData field;
 
@@ -4799,7 +4806,7 @@ TEST_P(AutofillManagerStructuredProfileTest, ValuePatternsMetric) {
                               &field);
     field.is_focusable = true;  // The metric skips hidden fields.
     form.name = ASCIIToUTF16("my-form");
-    form.url = GURL("http://myform.com/form.html");
+    form.url = GURL("https://myform.com/form.html");
     form.action = GURL("https://myform.com/submit.html");
     form.fields.push_back(field);
     std::vector<FormData> forms(1, form);
@@ -4921,6 +4928,13 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest,
        AutocompleteSuggestions_CreditCardNameFieldShouldAutocomplete) {
   TestAutofillClient client;
+  // Since we are testing a form that submits over HTTP, we also need to set
+  // the main frame to HTTP in the client, otherwise mixed form warnings will
+  // trigger and autofill will be disabled.
+  GURL::Replacements replacements;
+  replacements.SetScheme(url::kHttpScheme,
+                         url::Component(0, strlen(url::kHttpScheme)));
+  client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
   autofill_manager_.reset(
       new TestAutofillManager(autofill_driver_.get(), &client, &personal_data_,
                               autocomplete_history_manager_.get()));
@@ -4952,6 +4966,13 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest,
        AutocompleteSuggestions_CreditCardNumberShouldNotAutocomplete) {
   TestAutofillClient client;
+  // Since we are testing a form that submits over HTTP, we also need to set
+  // the main frame to HTTP in the client, otherwise mixed form warnings will
+  // trigger and autofill will be disabled.
+  GURL::Replacements replacements;
+  replacements.SetScheme(url::kHttpScheme,
+                         url::Component(0, strlen(url::kHttpScheme)));
+  client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
   autofill_manager_.reset(
       new TestAutofillManager(autofill_driver_.get(), &client, &personal_data_,
                               autocomplete_history_manager_.get()));
@@ -5056,8 +5077,8 @@ TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   FormData form;
   form.unique_renderer_id.value() = 1;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
   test::CreateTestFormField(/*label=*/"City", /*name=*/"city",
                             /*value=*/"", /*type=*/"text", /*field=*/&field);
@@ -5080,8 +5101,8 @@ TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   FormData form2;
   form2.unique_renderer_id.value() = 2;
   form2.name = ASCIIToUTF16("MyForm2");
-  form2.url = GURL("http://myform.com/form.html");
-  form2.action = GURL("http://myform.com/submit.html");
+  form2.url = GURL("https://myform.com/form.html");
+  form2.action = GURL("https://myform.com/submit.html");
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form2.fields.push_back(field);
   test::CreateTestFormField("Middle Name", "middlename", "", "text", &field);
@@ -5661,8 +5682,8 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   FormFieldData field;
   test::CreateTestFormField("", "1", "", "text", &field);
@@ -5703,8 +5724,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DeterminePossibleFieldTypesForUpload_IsTriggered) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   std::vector<ServerFieldTypeSet> expected_types;
   std::vector<base::string16> expected_values;
@@ -5806,8 +5827,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   for (const std::vector<TestFieldData>& test_fields : test_cases) {
     FormData form;
     form.name = ASCIIToUTF16("MyForm");
-    form.url = GURL("http://myform.com/form.html");
-    form.action = GURL("http://myform.com/submit.html");
+    form.url = GURL("https://myform.com/form.html");
+    form.action = GURL("https://myform.com/submit.html");
 
     // Create the form fields specified in the test case.
     FormFieldData field;
@@ -5995,8 +6016,8 @@ TEST_P(AutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
   for (const std::vector<TestFieldData>& test_fields : test_cases) {
     FormData form;
     form.name = ASCIIToUTF16("MyForm");
-    form.url = GURL("http://myform.com/form.html");
-    form.action = GURL("http://myform.com/submit.html");
+    form.url = GURL("https://myform.com/form.html");
+    form.action = GURL("https://myform.com/submit.html");
 
     // Create the form fields specified in the test case.
     FormFieldData field;
@@ -6424,8 +6445,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Set up our form data (it's already filled out with user data).
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   std::vector<ServerFieldTypeSet> expected_types;
   ServerFieldTypeSet types;
@@ -6480,8 +6501,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Set up our form data (it's already filled out with user data).
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   std::vector<ServerFieldTypeSet> expected_types;
   ServerFieldTypeSet types;
@@ -6533,8 +6554,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Set up our form data (empty).
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   std::vector<ServerFieldTypeSet> expected_types;
 
@@ -6691,8 +6712,8 @@ TEST_P(AutofillManagerStructuredProfileTest, DontSaveCvcInAutocompleteHistory) {
 
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   struct {
     const char* label;
@@ -7266,8 +7287,8 @@ TEST_P(AutofillManagerStructuredProfileTest, ShouldUploadForm) {
   // scenarios.
   FormData form;
   form.name = ASCIIToUTF16("TestForm");
-  form.url = GURL("http://example.com/form.html");
-  form.action = GURL("http://example.com/submit.html");
+  form.url = GURL("https://example.com/form.html");
+  form.action = GURL("https://example.com/submit.html");
 
   // Empty Form.
   EXPECT_FALSE(autofill_manager_->ShouldUploadForm(FormStructure(form)));
@@ -7437,8 +7458,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Create a form with unknown heuristic fields.
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   FormFieldData field;
   test::CreateTestFormField("Field 1", "field1", "", "text", &field);
@@ -7497,8 +7518,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
        FormWithLongOptionValuesIsAcceptable) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
 
   FormFieldData field;
   test::CreateTestFormField("First name", "firstname", "", "text", &field);
@@ -7684,8 +7705,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -7729,8 +7750,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -7774,8 +7795,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -7818,8 +7839,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -7862,8 +7883,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -7906,8 +7927,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -7950,8 +7971,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -8003,8 +8024,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -8054,8 +8075,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -8107,8 +8128,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -8158,8 +8179,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
@@ -8212,8 +8233,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.button_titles = {
       std::make_pair(ASCIIToUTF16("Submit"),
                      mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("http://myform.com/form.html");
-  form.action = GURL("http://myform.com/submit.html");
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;

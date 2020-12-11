@@ -7,6 +7,6 @@
 namespace security_interstitials {
 
 const base::Feature kInsecureFormSubmissionInterstitial{
-    "InsecureFormSubmissionInterstitial", base::FEATURE_DISABLED_BY_DEFAULT};
+    "InsecureFormSubmissionInterstitial", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace security_interstitials
