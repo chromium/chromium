@@ -261,7 +261,7 @@ std::unique_ptr<WebContents> FederatedAuthRequestImpl::CreateIdpWebContents() {
   // Store the callback on the provider web contents so that it can be
   // used later.
   IdTokenRequestCallbackData::Set(
-      idp_web_contents_.get(),
+      idp_web_contents.get(),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenProvided,
                      weak_ptr_factory_.GetWeakPtr()));
   return idp_web_contents;
