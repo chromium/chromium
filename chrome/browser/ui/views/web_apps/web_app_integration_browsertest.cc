@@ -107,14 +107,21 @@ class WebAppIntegrationBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
 
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
+    app_id_ = app_id;
 
     return app_id;
+  }
+
+  Browser* LaunchInternal() {
+    return LaunchWebAppBrowserAndWait(ProfileManager::GetActiveUserProfile(),
+                                      app_id_);
   }
 
  protected:
   PageActionIconView* pwa_install_view() { return pwa_install_view_; }
 
  private:
+  AppId app_id_;
   net::EmbeddedTestServer https_server_;
   PageActionIconView* pwa_install_view_ = nullptr;
 };
@@ -141,6 +148,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
   EXPECT_FALSE(pwa_install_view()->GetVisible());
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
             kEnabled);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, LaunchInternal) {
+  NavigateToSite(browser(), GetInstallableAppURL());
+  ExecutePwaInstallIcon();
+  Browser* app_browser = LaunchInternal();
+  DCHECK(app_browser);
 }
 
 }  // namespace web_app
