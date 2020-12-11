@@ -30,11 +30,6 @@ class ImageElementBase;
 class ImageDecoder;
 class OffscreenCanvas;
 
-enum ImageBitmapPixelFormat {
-  kImageBitmapPixelFormat_Default,
-  kImageBitmapPixelFormat_Uint8,
-};
-
 class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
                                       public CanvasImageSource,
                                       public ImageBitmapSource {
@@ -126,9 +121,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
     unsigned resize_width = 0;
     unsigned resize_height = 0;
     IntRect crop_rect;
-    ImageBitmapPixelFormat pixel_format = kImageBitmapPixelFormat_Default;
     SkFilterQuality resize_quality = kLow_SkFilterQuality;
-    CanvasColorParams color_params;
   };
 
  private:

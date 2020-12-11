@@ -44,7 +44,6 @@ namespace blink {
 constexpr const char* kImageOrientationFlipY = "flipY";
 constexpr const char* kImageBitmapOptionNone = "none";
 constexpr const char* kImageBitmapOptionDefault = "default";
-constexpr const char* kImageBitmapPixelFormatUint8Name = "uint8";
 constexpr const char* kImageBitmapOptionPremultiply = "premultiply";
 constexpr const char* kImageBitmapOptionResizeQualityHigh = "high";
 constexpr const char* kImageBitmapOptionResizeQualityMedium = "medium";
@@ -80,9 +79,6 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
     DCHECK(options->imageOrientation() == kImageBitmapOptionNone);
   }
 
-  if (options->imagePixelFormat() == kImageBitmapPixelFormatUint8Name)
-    parsed_options.pixel_format = kImageBitmapPixelFormat_Uint8;
-
   if (options->premultiplyAlpha() == kImageBitmapOptionNone) {
     parsed_options.premultiply_alpha = false;
   } else {
@@ -93,7 +89,6 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
 
   parsed_options.has_color_space_conversion =
       (options->colorSpaceConversion() != kImageBitmapOptionNone);
-  parsed_options.color_params.SetCanvasColorSpace(CanvasColorSpace::kSRGB);
   if (options->colorSpaceConversion() != kImageBitmapOptionNone &&
       options->colorSpaceConversion() != kImageBitmapOptionDefault) {
     NOTREACHED()
@@ -148,11 +143,11 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
 // The function dstBufferSizeHasOverflow() is being called at the beginning of
 // each ImageBitmap() constructor, which makes sure that doing
 // width * height * bytesPerPixel will never overflow unsigned.
+// This function assumes that the pixel format is N32.
 bool DstBufferSizeHasOverflow(const ImageBitmap::ParsedOptions& options) {
   base::CheckedNumeric<unsigned> total_bytes = options.crop_rect.Width();
   total_bytes *= options.crop_rect.Height();
-  total_bytes *=
-      SkColorTypeBytesPerPixel(options.color_params.GetSkColorType());
+  total_bytes *= SkColorTypeBytesPerPixel(kN32_SkColorType);
   if (!total_bytes.IsValid())
     return true;
 
@@ -160,8 +155,7 @@ bool DstBufferSizeHasOverflow(const ImageBitmap::ParsedOptions& options) {
     return false;
   total_bytes = options.resize_width;
   total_bytes *= options.resize_height;
-  total_bytes *=
-      SkColorTypeBytesPerPixel(options.color_params.GetSkColorType());
+  total_bytes *= SkColorTypeBytesPerPixel(kN32_SkColorType);
   if (!total_bytes.IsValid())
     return true;
 
@@ -440,7 +434,7 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
 scoped_refptr<StaticBitmapImage> ApplyColorSpaceConversion(
     scoped_refptr<StaticBitmapImage>&& image,
     ImageBitmap::ParsedOptions& options) {
-  sk_sp<SkColorSpace> color_space = options.color_params.GetSkColorSpace();
+  sk_sp<SkColorSpace> color_space = SkColorSpace::MakeSRGB();
   SkColorType color_type =
       image->IsTextureBacked() ? kRGBA_8888_SkColorType : kN32_SkColorType;
   SkImageInfo src_image_info =
@@ -456,8 +450,7 @@ scoped_refptr<StaticBitmapImage> MakeBlankImage(
     const ImageBitmap::ParsedOptions& parsed_options) {
   SkImageInfo info = SkImageInfo::Make(
       parsed_options.crop_rect.Width(), parsed_options.crop_rect.Height(),
-      parsed_options.color_params.GetSkColorType(), kPremul_SkAlphaType,
-      parsed_options.color_params.GetSkColorSpace());
+      kN32_SkColorType, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
   if (parsed_options.should_scale_input) {
     info =
         info.makeWH(parsed_options.resize_width, parsed_options.resize_height);
@@ -466,27 +459,6 @@ scoped_refptr<StaticBitmapImage> MakeBlankImage(
   if (!surface)
     return nullptr;
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
-}
-
-scoped_refptr<StaticBitmapImage> GetImageWithPixelFormat(
-    scoped_refptr<StaticBitmapImage>&& image,
-    ImageBitmapPixelFormat pixel_format) {
-  if (pixel_format == kImageBitmapPixelFormat_Default)
-    return std::move(image);
-  // If the the image is not half float backed, default and uint8 image bitmap
-  // pixel formats result in the same uint8 backed image bitmap.
-  SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
-  if (image_info.colorType() != kRGBA_F16_SkColorType)
-    return std::move(image);
-
-  auto skia_image = image->PaintImageForCurrentFrame().GetSwSkImage();
-  SkImageInfo target_info = image_info.makeColorType(kN32_SkColorType);
-  SkBitmap target_bitmap;
-  target_bitmap.allocPixels(target_info);
-  bool read_successful = skia_image->readPixels(target_bitmap.pixmap(), 0, 0);
-  DCHECK(read_successful);
-  return UnacceleratedStaticBitmapImage::Create(
-      SkImage::MakeFromBitmap(target_bitmap));
 }
 
 static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
@@ -558,10 +530,6 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
                                             : kUnpremultiplyAlpha);
   if (!result)
     return nullptr;
-
-  // convert pixel format if needed
-  result =
-      GetImageWithPixelFormat(std::move(result), parsed_options.pixel_format);
 
   // resize if up-scaling
   if (up_scaling) {
@@ -771,11 +739,10 @@ ImageBitmap::ImageBitmap(ImageData* data,
 
   // Copy / color convert the pixels
   SkImageInfo info = SkImageInfo::Make(
-      src_rect.Width(), src_rect.Height(),
-      parsed_options.color_params.GetSkColorType(),
+      src_rect.Width(), src_rect.Height(), kN32_SkColorType,
       parsed_options.premultiply_alpha ? kPremul_SkAlphaType
                                        : kUnpremul_SkAlphaType,
-      parsed_options.color_params.GetSkColorSpace());
+      SkColorSpace::MakeSRGB());
   size_t image_pixels_size = info.computeMinByteSize();
   if (SkImageInfo::ByteSizeOverflowed(image_pixels_size))
     return;

@@ -400,8 +400,6 @@ generated_enumeration_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_form_state_restore_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_fullscreen_navigation_ui.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_fullscreen_navigation_ui.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_pixel_format.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_pixel_format.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_image_color_space.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_image_color_space.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_image_data_storage_format.cc",
