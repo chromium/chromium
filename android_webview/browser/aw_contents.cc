@@ -35,9 +35,9 @@
 #include "android_webview/browser/permission/simple_permission_request.h"
 #include "android_webview/browser/state_serializer.h"
 #include "android_webview/browser_jni_headers/AwContents_jni.h"
-#include "android_webview/common/aw_hit_test_data.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/devtools_instrumentation.h"
+#include "android_webview/common/mojom/frame.mojom.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -899,7 +899,8 @@ void AwContents::UpdateLastHitTestData(JNIEnv* env,
   if (!render_view_host_ext_->HasNewHitTestData())
     return;
 
-  const AwHitTestData& data = render_view_host_ext_->GetLastHitTestData();
+  const android_webview::mojom::HitTestData& data =
+      render_view_host_ext_->GetLastHitTestData();
   render_view_host_ext_->MarkHitTestDataRead();
 
   // Make sure to null the Java object if data is empty/invalid.
@@ -920,8 +921,9 @@ void AwContents::UpdateLastHitTestData(JNIEnv* env,
   if (data.img_src.is_valid())
     img_src = ConvertUTF8ToJavaString(env, data.img_src.spec());
 
-  Java_AwContents_updateHitTestData(env, obj, data.type, extra_data_for_type,
-                                    href, anchor_text, img_src);
+  Java_AwContents_updateHitTestData(env, obj, static_cast<jint>(data.type),
+                                    extra_data_for_type, href, anchor_text,
+                                    img_src);
 }
 
 void AwContents::OnSizeChanged(JNIEnv* env,

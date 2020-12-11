@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -64,6 +65,8 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   void BindLocalMainFrame(
       mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver);
 
+  const mojo::AssociatedRemote<mojom::FrameHost>& GetFrameHost();
+
   blink::WebView* GetWebView();
   blink::WebFrameWidget* GetWebFrameWidget();
 
@@ -72,6 +75,8 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   blink::AssociatedInterfaceRegistry registry_;
   mojo::AssociatedReceiver<mojom::LocalMainFrame> local_main_frame_receiver_{
       this};
+
+  mojo::AssociatedRemote<mojom::FrameHost> frame_host_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(AwRenderFrameExt);
 };

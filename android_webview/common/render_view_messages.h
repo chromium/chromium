@@ -4,7 +4,6 @@
 
 // no-include-guard-because-multiply-included
 
-#include "android_webview/common/aw_hit_test_data.h"
 #include "content/public/common/common_param_traits.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_macros.h"
@@ -14,14 +13,6 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
-
-IPC_STRUCT_TRAITS_BEGIN(android_webview::AwHitTestData)
-  IPC_STRUCT_TRAITS_MEMBER(type)
-  IPC_STRUCT_TRAITS_MEMBER(extra_data_for_type)
-  IPC_STRUCT_TRAITS_MEMBER(href)
-  IPC_STRUCT_TRAITS_MEMBER(anchor_text)
-  IPC_STRUCT_TRAITS_MEMBER(img_src)
-IPC_STRUCT_TRAITS_END()
 
 #define IPC_MESSAGE_START AndroidWebViewMsgStart
 
@@ -53,10 +44,6 @@ IPC_MESSAGE_ROUTED3(AwViewMsg_SmoothScroll,
 //-----------------------------------------------------------------------------
 // RenderView messages
 // These are messages sent from the renderer to the browser process.
-
-// Response to AwViewMsg_DoHitTest.
-IPC_MESSAGE_ROUTED1(AwViewHostMsg_UpdateHitTestData,
-                    android_webview::AwHitTestData)
 
 // Sent whenever the contents size (as seen by RenderView) is changed.
 IPC_MESSAGE_ROUTED1(AwViewHostMsg_OnContentsSizeChanged,

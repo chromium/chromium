@@ -7,12 +7,13 @@
 
 #include "content/public/browser/web_contents_observer.h"
 
-#include "android_webview/common/aw_hit_test_data.h"
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "content/public/browser/web_contents_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,7 +34,8 @@ class AwRenderViewHostExtClient {
 
 // Provides RenderViewHost wrapper functionality for sending WebView-specific
 // IPC messages to the renderer and from there to WebKit.
-class AwRenderViewHostExt : public content::WebContentsObserver {
+class AwRenderViewHostExt : public content::WebContentsObserver,
+                            mojom::FrameHost {
  public:
 
   // To send receive messages to a RenderView we take the WebContents instance,
@@ -58,7 +60,7 @@ class AwRenderViewHostExt : public content::WebContentsObserver {
 
   // Return |last_hit_test_data_|. Note that this is unavoidably racy;
   // the corresponding public WebView API is as well.
-  const AwHitTestData& GetLastHitTestData() const;
+  const mojom::HitTestData& GetLastHitTestData() const;
 
   // Sets the zoom factor for text only. Used in layout modes other than
   // Text Autosizing.
@@ -84,8 +86,11 @@ class AwRenderViewHostExt : public content::WebContentsObserver {
   void OnPageScaleFactorChanged(float page_scale_factor) override;
   bool OnMessageReceived(const IPC::Message& message,
                          content::RenderFrameHost* render_frame_host) override;
-  void OnUpdateHitTestData(content::RenderFrameHost* render_frame_host,
-                           const AwHitTestData& hit_test_data);
+
+  // mojom::FrameHost overrides:
+  void UpdateHitTestData(
+      android_webview::mojom::HitTestDataPtr hit_test_data) override;
+
   void OnContentsSizeChanged(content::RenderFrameHost* render_frame_host,
                              const gfx::Size& contents_size);
 
@@ -98,12 +103,14 @@ class AwRenderViewHostExt : public content::WebContentsObserver {
   // Authoritative copy of hit test data on the browser side. This is updated
   // as a result of DoHitTest called explicitly or when the FocusedNodeChanged
   // is called in AwRenderViewExt.
-  AwHitTestData last_hit_test_data_;
+  android_webview::mojom::HitTestDataPtr last_hit_test_data_;
 
   bool has_new_hit_test_data_;
 
   // Some WebView users might want to show their own error pages / logic.
   bool will_suppress_error_page_ = false;
+
+  content::WebContentsFrameReceiverSet<mojom::FrameHost> frame_host_receivers_;
 
   // Associated channel to the webview LocalMainFrame extensions.
   mojo::AssociatedRemote<mojom::LocalMainFrame> local_main_frame_remote_;

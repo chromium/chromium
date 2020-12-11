@@ -7,7 +7,7 @@
 #include <map>
 #include <memory>
 
-#include "android_webview/common/aw_hit_test_data.h"
+#include "android_webview/common/mojom/frame.mojom.h"
 #include "android_webview/common/render_view_messages.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -18,6 +18,7 @@
 #include "components/content_capture/renderer/content_capture_sender.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -92,18 +93,19 @@ bool RemovePrefixAndAssignIfMatches(const base::StringPiece& prefix,
   return false;
 }
 
-void DistinguishAndAssignSrcLinkType(const GURL& url, AwHitTestData* data) {
+void DistinguishAndAssignSrcLinkType(const GURL& url,
+                                     mojom::HitTestData* data) {
   if (RemovePrefixAndAssignIfMatches(kAddressPrefix, url,
                                      &data->extra_data_for_type)) {
-    data->type = AwHitTestData::GEO_TYPE;
+    data->type = mojom::HitTestDataType::kGeo;
   } else if (RemovePrefixAndAssignIfMatches(kPhoneNumberPrefix, url,
                                             &data->extra_data_for_type)) {
-    data->type = AwHitTestData::PHONE_TYPE;
+    data->type = mojom::HitTestDataType::kPhone;
   } else if (RemovePrefixAndAssignIfMatches(kEmailPrefix, url,
                                             &data->extra_data_for_type)) {
-    data->type = AwHitTestData::EMAIL_TYPE;
+    data->type = mojom::HitTestDataType::kEmail;
   } else {
-    data->type = AwHitTestData::SRC_LINK_TYPE;
+    data->type = mojom::HitTestDataType::kSrcLink;
     data->extra_data_for_type = url.possibly_invalid_spec();
     if (!data->extra_data_for_type.empty())
       data->href = base::UTF8ToUTF16(data->extra_data_for_type);
@@ -113,7 +115,7 @@ void DistinguishAndAssignSrcLinkType(const GURL& url, AwHitTestData* data) {
 void PopulateHitTestData(const GURL& absolute_link_url,
                          const GURL& absolute_image_url,
                          bool is_editable,
-                         AwHitTestData* data) {
+                         mojom::HitTestData* data) {
   // Note: Using GURL::is_empty instead of GURL:is_valid due to the
   // WebViewClassic allowing any kind of protocol which GURL::is_valid
   // disallows. Similar reasons for using GURL::possibly_invalid_spec instead of
@@ -129,15 +131,15 @@ void PopulateHitTestData(const GURL& absolute_link_url,
   if (has_link_url && !has_image_url && !is_javascript_scheme) {
     DistinguishAndAssignSrcLinkType(absolute_link_url, data);
   } else if (has_link_url && has_image_url && !is_javascript_scheme) {
-    data->type = AwHitTestData::SRC_IMAGE_LINK_TYPE;
+    data->type = mojom::HitTestDataType::kSrcImageLink;
     data->extra_data_for_type = data->img_src.possibly_invalid_spec();
     if (absolute_link_url.is_valid())
       data->href = base::UTF8ToUTF16(absolute_link_url.possibly_invalid_spec());
   } else if (!has_link_url && has_image_url) {
-    data->type = AwHitTestData::IMAGE_TYPE;
+    data->type = mojom::HitTestDataType::kImage;
     data->extra_data_for_type = data->img_src.possibly_invalid_spec();
   } else if (is_editable) {
-    data->type = AwHitTestData::EDIT_TEXT_TYPE;
+    data->type = mojom::HitTestDataType::kEditText;
     DCHECK_EQ(0u, data->extra_data_for_type.length());
   }
 }
@@ -200,6 +202,16 @@ AwRenderFrameExt* AwRenderFrameExt::FromRenderFrame(
   return render_frame_ext;
 }
 
+const mojo::AssociatedRemote<mojom::FrameHost>&
+AwRenderFrameExt::GetFrameHost() {
+  if (!frame_host_remote_) {
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        &frame_host_remote_);
+  }
+
+  return frame_host_remote_;
+}
+
 bool AwRenderFrameExt::OnAssociatedInterfaceRequestForFrame(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle* handle) {
@@ -242,20 +254,21 @@ void AwRenderFrameExt::FocusedElementChanged(const blink::WebElement& element) {
   if (element.IsNull() || !render_frame() || !render_frame()->GetRenderView())
     return;
 
-  AwHitTestData data;
+  auto data = mojom::HitTestData::New();
 
-  data.href = GetHref(element);
-  data.anchor_text = element.TextContent().Utf16();
+  data->href = GetHref(element);
+  data->anchor_text = element.TextContent().Utf16();
 
   GURL absolute_link_url;
   if (element.IsLink())
-    absolute_link_url = GetAbsoluteUrl(element, data.href);
+    absolute_link_url = GetAbsoluteUrl(element, data->href);
 
   GURL absolute_image_url = GetChildImageUrlFromElement(element);
 
   PopulateHitTestData(absolute_link_url, absolute_image_url,
-                      element.IsEditable(), &data);
-  Send(new AwViewHostMsg_UpdateHitTestData(routing_id(), data));
+                      element.IsEditable(), data.get());
+
+  GetFrameHost()->UpdateHitTestData(std::move(data));
 }
 
 // Only main frame needs to *receive* the hit test request, because all we need
@@ -270,12 +283,12 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
   const blink::WebHitTestResult result = webview->HitTestResultForTap(
       gfx::Point(touch_center.x(), touch_center.y()),
       blink::WebSize(touch_area.width(), touch_area.height()));
-  AwHitTestData data;
+  auto data = mojom::HitTestData::New();
 
   GURL absolute_image_url = result.AbsoluteImageURL();
   if (!result.UrlElement().IsNull()) {
-    data.anchor_text = result.UrlElement().TextContent().Utf16();
-    data.href = GetHref(result.UrlElement());
+    data->anchor_text = result.UrlElement().TextContent().Utf16();
+    data->href = GetHref(result.UrlElement());
     // If we hit an image that failed to load, Blink won't give us its URL.
     // Fall back to walking the DOM in this case.
     if (absolute_image_url.is_empty())
@@ -283,8 +296,9 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
   }
 
   PopulateHitTestData(result.AbsoluteLinkURL(), absolute_image_url,
-                      result.IsContentEditable(), &data);
-  Send(new AwViewHostMsg_UpdateHitTestData(routing_id(), data));
+                      result.IsContentEditable(), data.get());
+
+  GetFrameHost()->UpdateHitTestData(std::move(data));
 }
 
 void AwRenderFrameExt::OnSetTextZoomFactor(float zoom_factor) {

@@ -14,8 +14,6 @@ source_set("common") {
     "aw_descriptors.h",
     "aw_features.cc",
     "aw_features.h",
-    "aw_hit_test_data.cc",
-    "aw_hit_test_data.h",
     "aw_media_drm_bridge_client.cc",
     "aw_media_drm_bridge_client.h",
     "aw_paths.cc",
@@ -73,5 +71,6 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
 }
