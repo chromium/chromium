@@ -53,6 +53,9 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
   nearby_share::mojom::Visibility GetVisibility() const;
   const std::vector<std::string> GetAllowedContacts() const;
 
+  // Returns true if the feature is disabled by policy.
+  bool IsDisabledByPolicy() const;
+
   // nearby_share::mojom::NearbyShareSettings
   void AddSettingsObserver(
       ::mojo::PendingRemote<nearby_share::mojom::NearbyShareSettingsObserver>

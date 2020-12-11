@@ -77,6 +77,11 @@ const std::vector<std::string> NearbyShareSettings::GetAllowedContacts() const {
   return allowed_contacts;
 }
 
+bool NearbyShareSettings::IsDisabledByPolicy() const {
+  return !GetEnabled() && pref_service_->IsManagedPreference(
+                              prefs::kNearbySharingEnabledPrefName);
+}
+
 void NearbyShareSettings::AddSettingsObserver(
     ::mojo::PendingRemote<nearby_share::mojom::NearbyShareSettingsObserver>
         observer) {

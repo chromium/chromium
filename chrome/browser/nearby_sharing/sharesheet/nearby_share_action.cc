@@ -14,6 +14,8 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/sharesheet/nearby_share_web_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -125,6 +127,20 @@ void NearbyShareAction::OnClose() {
     // CloseShareSheet() more than once, which will cause a crash.
     controller_ = nullptr;
   }
+}
+
+bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
+                                         bool contains_hosted_document) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  if (!profile) {
+    return false;
+  }
+  NearbySharingService* nearby_share_service =
+      NearbySharingServiceFactory::GetForBrowserContext(profile);
+  if (!nearby_share_service) {
+    return false;
+  }
+  return !nearby_share_service->GetSettings()->IsDisabledByPolicy();
 }
 
 void NearbyShareAction::OnClosing(
