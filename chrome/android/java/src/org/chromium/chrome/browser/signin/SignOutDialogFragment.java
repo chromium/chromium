@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.signin.GAIAServiceType;
 
 /**
@@ -104,7 +105,8 @@ public class SignOutDialogFragment extends DialogFragment implements
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == AlertDialog.BUTTON_POSITIVE) {
-            SigninUtils.logEvent(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT, mGaiaServiceType);
+            SigninMetricsUtils.logProfileAccountManagementMenu(
+                    ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT, mGaiaServiceType);
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
             if (signinManager.getManagementDomain() == null) {
@@ -119,6 +121,7 @@ public class SignOutDialogFragment extends DialogFragment implements
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        SigninUtils.logEvent(ProfileAccountManagementMetrics.SIGNOUT_CANCEL, mGaiaServiceType);
+        SigninMetricsUtils.logProfileAccountManagementMenu(
+                ProfileAccountManagementMetrics.SIGNOUT_CANCEL, mGaiaServiceType);
     }
 }

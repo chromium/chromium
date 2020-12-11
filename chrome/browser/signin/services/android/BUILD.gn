@@ -8,6 +8,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDownloader.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
     "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
   ]
@@ -20,6 +21,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCache.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDownloader.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninManager.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManager.java",
     "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
     "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
@@ -31,11 +33,13 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/util/android:java",
+    "//components/signin/core/browser:signin_enums_java",
     "//components/signin/core/browser/android:java",
     "//components/signin/public/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
   ]
+  srcjar_deps = [ "//chrome/browser/profiles:profile_metrics_enum_java" ]
   resources_package = "org.chromium.chrome.browser.signin.services"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

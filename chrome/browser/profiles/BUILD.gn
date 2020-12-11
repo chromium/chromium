@@ -1,0 +1,11 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  java_cpp_enum("profile_metrics_enum_java") {
+    sources = [ "profile_metrics.h" ]
+  }
+}

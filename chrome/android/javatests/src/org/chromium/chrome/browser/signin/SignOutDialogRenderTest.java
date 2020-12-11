@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.signin.GAIAServiceType;
@@ -57,7 +59,7 @@ public class SignOutDialogRenderTest extends DummyUiActivityTestCase {
     public final JniMocker mocker = new JniMocker();
 
     @Mock
-    private SigninUtils.Natives mSigninUtilsNativeMock;
+    private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
 
     @Mock
     private SigninManager mSigninManagerMock;
@@ -68,7 +70,7 @@ public class SignOutDialogRenderTest extends DummyUiActivityTestCase {
     @Before
     public void setUp() {
         initMocks(this);
-        mocker.mock(SigninUtilsJni.TEST_HOOKS, mSigninUtilsNativeMock);
+        mocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
@@ -77,7 +79,7 @@ public class SignOutDialogRenderTest extends DummyUiActivityTestCase {
     @After
     public void tearDown() {
         // Since the Dialog dismiss calls native method, we need to close the dialog before the
-        // Native mock SigninUtils.Natives gets removed.
+        // Native mock SigninMetricsUtils.Natives gets removed.
         onView(isRoot()).perform(pressBack());
     }
 

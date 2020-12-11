@@ -36,6 +36,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.components.signin.GAIAServiceType;
 
 /** Tests for {@link SignOutDialogFragment}. */
@@ -54,7 +56,7 @@ public class SignOutDialogFragmentTest {
     public final JniMocker mocker = new JniMocker();
 
     @Mock
-    private SigninUtils.Natives mSigninUtilsNativeMock;
+    private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
 
     @Mock
     private SigninManager mSigninManagerMock;
@@ -72,7 +74,7 @@ public class SignOutDialogFragmentTest {
     @Before
     public void setUp() {
         initMocks(this);
-        mocker.mock(SigninUtilsJni.TEST_HOOKS, mSigninUtilsNativeMock);
+        mocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
@@ -102,8 +104,8 @@ public class SignOutDialogFragmentTest {
         when(mSigninManagerMock.getManagementDomain()).thenReturn(TEST_DOMAIN);
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         verify(mTargetFragment).onSignOutClicked(false);
     }
@@ -112,8 +114,8 @@ public class SignOutDialogFragmentTest {
     public void testPositiveButtonWhenAccountIsNotManagedAndRemoveLocalDataNotChecked() {
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         verify(mTargetFragment).onSignOutClicked(false);
     }
@@ -123,8 +125,8 @@ public class SignOutDialogFragmentTest {
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.findViewById(R.id.remove_local_data).performClick();
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
         verify(mTargetFragment).onSignOutClicked(true);
     }
@@ -135,8 +137,8 @@ public class SignOutDialogFragmentTest {
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();
         verify(mTargetFragment, never()).onSignOutClicked(anyBoolean());
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
@@ -145,8 +147,8 @@ public class SignOutDialogFragmentTest {
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();
         verify(mTargetFragment, never()).onSignOutClicked(anyBoolean());
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
@@ -155,8 +157,8 @@ public class SignOutDialogFragmentTest {
         AlertDialog alertDialog = showSignOutAlertDialog();
         alertDialog.dismiss();
         verify(mTargetFragment, never()).onSignOutClicked(anyBoolean());
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 

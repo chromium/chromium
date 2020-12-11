@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -141,19 +140,5 @@ public class SigninUtils {
             ManagedPreferencesUtils.showManagedByAdministratorToast(context);
         }
         return false;
-    }
-
-    /**
-     * Log a UMA event for a given metric and a signin type.
-     * @param metric One of ProfileAccountManagementMetrics constants.
-     * @param gaiaServiceType A signin::GAIAServiceType.
-     */
-    public static void logEvent(int metric, int gaiaServiceType) {
-        SigninUtilsJni.get().logEvent(metric, gaiaServiceType);
-    }
-
-    @NativeMethods
-    interface Natives {
-        void logEvent(int metric, int gaiaServiceType);
     }
 }

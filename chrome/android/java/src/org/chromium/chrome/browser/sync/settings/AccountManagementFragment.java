@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
@@ -107,7 +108,8 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
         mProfile = Profile.getLastUsedRegularProfile();
 
-        SigninUtils.logEvent(ProfileAccountManagementMetrics.VIEW, mGaiaServiceType);
+        SigninMetricsUtils.logProfileAccountManagementMenu(
+                ProfileAccountManagementMetrics.VIEW, mGaiaServiceType);
 
         mProfileDataCache = ProfileDataCache.createProfileDataCache(
                 getActivity(), mProfile.isChild() ? R.drawable.ic_account_child_20dp : 0);
@@ -208,7 +210,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
                 if (!isVisible() || !isResumed()) return false;
 
                 if (mSignedInAccountName != null && getSignOutAllowedPreferenceValue()) {
-                    SigninUtils.logEvent(
+                    SigninMetricsUtils.logProfileAccountManagementMenu(
                             ProfileAccountManagementMetrics.TOGGLE_SIGNOUT, mGaiaServiceType);
 
                     if (IdentityServicesProvider.get()
@@ -368,7 +370,8 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         addAccountPreference.setOnPreferenceClickListener(preference -> {
             if (!isVisible() || !isResumed()) return false;
 
-            SigninUtils.logEvent(ProfileAccountManagementMetrics.ADD_ACCOUNT, mGaiaServiceType);
+            SigninMetricsUtils.logProfileAccountManagementMenu(
+                    ProfileAccountManagementMetrics.ADD_ACCOUNT, mGaiaServiceType);
 
             AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
             accountManagerFacade.createAddAccountIntent((@Nullable Intent intent) -> {

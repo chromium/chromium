@@ -8,9 +8,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/android/chrome_jni_headers/SigninUtils_jni.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "ui/android/window_android.h"
 
 using base::android::JavaParamRef;
@@ -36,12 +33,4 @@ void SigninUtils::OpenAccountPickerBottomSheet(
   Java_SigninUtils_openAccountPickerBottomSheet(
       env, window->GetJavaObject(),
       base::android::ConvertUTF8ToJavaString(env, continue_url));
-}
-
-static void JNI_SigninUtils_LogEvent(JNIEnv* env,
-                                     jint metric,
-                                     jint gaiaServiceType) {
-  ProfileMetrics::LogProfileAndroidAccountManagementMenu(
-      static_cast<ProfileMetrics::ProfileAndroidAccountManagementMenu>(metric),
-      static_cast<signin::GAIAServiceType>(gaiaServiceType));
 }

@@ -2859,6 +2859,7 @@ static_library("browser") {
       "android/shortcut_helper.h",
       "android/signin/signin_manager_android.cc",
       "android/signin/signin_manager_android.h",
+      "android/signin/signin_metrics_utils.cc",
       "android/signin/signin_promo_util_android.cc",
       "android/signin/signin_promo_util_android.h",
       "android/signin/signin_utils.cc",

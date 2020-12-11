@@ -40,6 +40,8 @@ import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -81,7 +83,7 @@ public class SigninSignoutIntegrationTest {
     public final JniMocker mocker = new JniMocker();
 
     @Mock
-    private SigninUtils.Natives mSigninUtilsNativeMock;
+    private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
 
     @Mock
     private SigninManager.SignInStateObserver mSignInStateObserverMock;
@@ -93,7 +95,7 @@ public class SigninSignoutIntegrationTest {
     @Before
     public void setUp() {
         initMocks(this);
-        mocker.mock(SigninUtilsJni.TEST_HOOKS, mSigninUtilsNativeMock);
+        mocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSigninManager = IdentityServicesProvider.get().getSigninManager(
@@ -138,11 +140,11 @@ public class SigninSignoutIntegrationTest {
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         assertSignedOut();
         verify(mSignInStateObserverMock).onSignedOut();
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
@@ -155,11 +157,11 @@ public class SigninSignoutIntegrationTest {
         onView(isRoot()).perform(pressBack());
         verify(mSignInStateObserverMock, never()).onSignedOut();
         assertSignedIn();
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
@@ -172,11 +174,11 @@ public class SigninSignoutIntegrationTest {
         onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
         verify(mSignInStateObserverMock, never()).onSignedOut();
         assertSignedIn();
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.TOGGLE_SIGNOUT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        verify(mSigninUtilsNativeMock)
-                .logEvent(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
+        verify(mSigninMetricsUtilsNativeMock)
+                .logProfileAccountManagementMenu(ProfileAccountManagementMetrics.SIGNOUT_CANCEL,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
