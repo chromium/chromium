@@ -35,7 +35,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/platform/web_isolated_world_ids.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -53,6 +52,15 @@ namespace blink {
 class DOMDataStore;
 class ScriptWrappable;
 class SecurityOrigin;
+
+enum IsolatedWorldId {
+  // Embedder isolated worlds can use IDs in [1, 1<<29).
+  kEmbedderWorldIdLimit = (1 << 29),
+  kDocumentXMLTreeViewerWorldId,
+  kDevToolsFirstIsolatedWorldId,
+  kDevToolsLastIsolatedWorldId = kDevToolsFirstIsolatedWorldId + (1 << 29),
+  kIsolatedWorldIdLimit,
+};
 
 // This class represent a collection of DOM wrappers for a specific world. This
 // is identified by a world id that is a per-thread global identifier (see

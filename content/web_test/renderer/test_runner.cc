@@ -49,7 +49,6 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_isolated_world_ids.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
@@ -1065,9 +1064,8 @@ void TestRunnerBindings::SetIsolatedWorldInfo(
     return;
 
   if (world_id <= content::ISOLATED_WORLD_ID_GLOBAL ||
-      world_id >= blink::IsolatedWorldId::kEmbedderWorldIdLimit) {
+      blink::IsEqualOrExceedEmbedderWorldIdLimit(world_id))
     return;
-  }
 
   if (!security_origin->IsString() && !security_origin->IsNull())
     return;

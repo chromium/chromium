@@ -27,6 +27,12 @@ void SetIsolatedWorldInfo(int32_t world_id, const WebIsolatedWorldInfo& info) {
       world_id, info.content_security_policy, security_origin);
 }
 
+bool IsEqualOrExceedEmbedderWorldIdLimit(int world_id) {
+  if (world_id >= IsolatedWorldId::kEmbedderWorldIdLimit)
+    return true;
+  return false;
+}
+
 WebString GetIsolatedWorldStableId(v8::Local<v8::Context> context) {
   const DOMWrapperWorld& world = DOMWrapperWorld::World(context);
   DCHECK(!world.IsMainWorld());

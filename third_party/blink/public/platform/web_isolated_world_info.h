@@ -52,6 +52,9 @@ struct WebIsolatedWorldInfo {
 BLINK_EXPORT void SetIsolatedWorldInfo(int32_t world_id,
                                        const WebIsolatedWorldInfo& info);
 
+// Checks if |world_id| is equal or exceeds kEmbedderWorldIdLimit value.
+BLINK_EXPORT bool IsEqualOrExceedEmbedderWorldIdLimit(int32_t world_id);
+
 // Returns the stable ID that was set with SetIsolatedWorldInfo.
 BLINK_EXPORT WebString GetIsolatedWorldStableId(v8::Local<v8::Context>);
 
