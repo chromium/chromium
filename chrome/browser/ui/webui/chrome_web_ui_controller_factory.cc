@@ -320,6 +320,14 @@ WebUIController* NewWebUI(WebUI* web_ui, const GURL& url) {
   return new T(web_ui);
 }
 
+// Template for handlers defined in a component layer, that take an instance of
+// a delegate implemented in the chrome layer.
+template <class WEB_UI_CONTROLLER, class DELEGATE>
+WebUIController* NewComponentUI(WebUI* web_ui, const GURL& url) {
+  auto delegate = std::make_unique<DELEGATE>(web_ui);
+  return new WEB_UI_CONTROLLER(web_ui, std::move(delegate));
+}
+
 #if !defined(OS_ANDROID)
 template <>
 WebUIController* NewWebUI<PageNotAvailableForGuestUI>(WebUI* web_ui,
@@ -338,36 +346,6 @@ WebUIController* NewWebUI<AboutUI>(WebUI* web_ui, const GURL& url) {
 template <>
 WebUIController* NewWebUI<chromeos::OobeUI>(WebUI* web_ui, const GURL& url) {
   return new chromeos::OobeUI(web_ui, url);
-}
-
-template <>
-WebUIController* NewWebUI<chromeos::CameraAppUI>(WebUI* web_ui,
-                                                 const GURL& url) {
-  auto delegate = std::make_unique<ChromeCameraAppUIDelegate>(web_ui);
-  return new chromeos::CameraAppUI(web_ui, std::move(delegate));
-}
-
-#if !defined(OFFICIAL_BUILD)
-template <>
-WebUIController* NewWebUI<chromeos::file_manager::FileManagerUI>(
-    WebUI* web_ui,
-    const GURL& url) {
-  auto delegate = std::make_unique<ChromeFileManagerUIDelegate>(web_ui);
-  return new chromeos::file_manager::FileManagerUI(web_ui, std::move(delegate));
-}
-#endif  // !defined(OFFICIAL_BUILD)
-
-template <>
-WebUIController* NewWebUI<chromeos::HelpAppUI>(WebUI* web_ui, const GURL& url) {
-  auto delegate = std::make_unique<ChromeHelpAppUIDelegate>(web_ui);
-  return new chromeos::HelpAppUI(web_ui, std::move(delegate));
-}
-
-template <>
-WebUIController* NewWebUI<chromeos::MediaAppUI>(WebUI* web_ui,
-                                                const GURL& url) {
-  auto delegate = std::make_unique<ChromeMediaAppUIDelegate>(web_ui);
-  return new chromeos::MediaAppUI(web_ui, std::move(delegate));
 }
 
 void BindPrintManagement(
@@ -723,7 +701,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIDriveInternalsHost)
     return &NewWebUI<chromeos::DriveInternalsUI>;
   if (url.host_piece() == chromeos::kChromeUIHelpAppHost)
-    return &NewWebUI<chromeos::HelpAppUI>;
+    return &NewComponentUI<chromeos::HelpAppUI, ChromeHelpAppUIDelegate>;
   if (url.host_piece() == chrome::kChromeUIMachineLearningInternalsHost)
     return &NewWebUI<chromeos::machine_learning::MachineLearningInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
@@ -754,7 +732,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (base::FeatureList::IsEnabled(chromeos::features::kMediaApp)) {
     if (url.host_piece() == chromeos::kChromeUIMediaAppHost)
-      return &NewWebUI<chromeos::MediaAppUI>;
+      return &NewComponentUI<chromeos::MediaAppUI, ChromeMediaAppUIDelegate>;
   }
   if (url.host_piece() == chromeos::multidevice::kChromeUIProximityAuthHost &&
       profile->IsRegularProfile()) {
@@ -787,7 +765,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chromeos::kChromeUICameraAppHost &&
       web_app::SystemWebAppManager::IsAppEnabled(
           web_app::SystemAppType::CAMERA)) {
-    return &NewWebUI<chromeos::CameraAppUI>;
+    return &NewComponentUI<chromeos::CameraAppUI, ChromeCameraAppUIDelegate>;
   }
   if (url.host_piece() == chrome::kChromeUINearbyInternalsHost)
     return &NewWebUI<NearbyInternalsUI>;
@@ -815,8 +793,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<DeviceEmulatorUI>;
   }
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)
-  if (url.host_piece() == chromeos::file_manager::kChromeUIFileManagerHost)
-    return &NewWebUI<chromeos::file_manager::FileManagerUI>;
+  if (url.host_piece() == chromeos::file_manager::kChromeUIFileManagerHost) {
+    return &NewComponentUI<chromeos::file_manager::FileManagerUI,
+                           ChromeFileManagerUIDelegate>;
+  }
   if (url.host_piece() == chromeos::kChromeUISampleSystemWebAppHost)
     return &NewWebUI<chromeos::SampleSystemWebAppUI>;
   if (url.host_piece() == chromeos::kChromeUITelemetryExtensionHost) {
