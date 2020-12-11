@@ -2123,6 +2123,14 @@ void RenderFrameHostImpl::RenderProcessExited(
   // Reset state for the current RenderFrameHost once the FrameTreeNode has been
   // reset.
   RenderFrameDeleted();
+  // In https://crbug.com/1146573 we see render_frame_created_ being true again
+  // by the time we reach `must_be_replaced_ = true` below. This should tell us
+  // how that is happening.
+  ++dump_on_render_frame_created_for_bug_1146573_;
+  if (render_frame_created_) {
+    base::debug::DumpWithoutCrashing();
+    NOTREACHED();
+  }
   InvalidateMojoConnection();
   broker_receiver_.reset();
   SetLastCommittedUrl(GURL());
@@ -2130,6 +2138,7 @@ void RenderFrameHostImpl::RenderProcessExited(
 
   must_be_replaced_ = true;
   ValidateStateForBug1146573();
+  --dump_on_render_frame_created_for_bug_1146573_;
   has_committed_any_navigation_ = false;
 
 #if defined(OS_ANDROID)
@@ -2448,6 +2457,16 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // (e.g., via a WebContentsObserver during WebContents shutdown).  This seems
   // to have caused crashes in https://crbug.com/717650.
   CHECK(!delegate_->IsBeingDestroyed());
+
+  // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
+  if (dump_on_render_frame_created_for_bug_1146573_) {
+    SCOPED_CRASH_KEY_NUMBER(Bug1146573, DumpNestCount,
+                            dump_on_render_frame_created_for_bug_1146573_);
+    SCOPED_CRASH_KEY_BOOL(Bug1146573, RenderFrameCreated,
+                          render_frame_created_);
+    base::debug::DumpWithoutCrashing();
+    NOTREACHED();
+  }
 
   bool was_created = render_frame_created_;
   render_frame_created_ = true;

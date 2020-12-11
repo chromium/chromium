@@ -3283,6 +3283,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessor>
       prerender_processor_receivers_;
 
+  // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
+  // If >0, then we will DWOC if there is an attempt to mark the RenderFrame as
+  // created again.
+  int dump_on_render_frame_created_for_bug_1146573_ = 0;
+
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};
 
