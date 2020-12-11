@@ -320,31 +320,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
     CallVoidMethod(&method_call, std::move(callback));
   }
 
-  // CryptohomeClient overrides.
-  void TpmClearStoredPassword(VoidDBusMethodCallback callback) override {
-    dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
-                                 cryptohome::kCryptohomeTpmClearStoredPassword);
-    CallVoidMethod(&method_call, std::move(callback));
-  }
-
-  // CryptohomeClient override.
-  // TODO(hashimoto): Remove this method. crbug.com/141010
-  bool CallTpmClearStoredPasswordAndBlock() override {
-    dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
-                                 cryptohome::kCryptohomeTpmClearStoredPassword);
-
-    base::Time start_time = base::Time::Now();
-
-    std::unique_ptr<dbus::Response> response(
-        blocking_method_caller_->CallMethodAndBlock(&method_call));
-
-    UmaHistogramMediumTimes(
-        kCryptohomeClientUmaPrefix + method_call.GetMember(),
-        base::Time::Now() - start_time);
-
-    return response.get() != NULL;
-  }
-
   // CryptohomeClient override.
   void Pkcs11IsTpmTokenReady(DBusMethodCallback<bool> callback) override {
     dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,

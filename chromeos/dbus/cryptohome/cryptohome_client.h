@@ -243,14 +243,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // This method tells the service that it is OK to attempt ownership.
   virtual void TpmCanAttemptOwnership(VoidDBusMethodCallback callback) = 0;
 
-  // Calls TpmClearStoredPasswordMethod.
-  virtual void TpmClearStoredPassword(VoidDBusMethodCallback callback) = 0;
-
-  // Calls TpmClearStoredPassword method and returns true when the call
-  // succeeds.  This method blocks until the call returns.
-  // TODO(hashimoto): Remove this method. crbug.com/141010
-  virtual bool CallTpmClearStoredPasswordAndBlock() = 0;
-
   // Calls Pkcs11IsTpmTokenReady method.
   virtual void Pkcs11IsTpmTokenReady(DBusMethodCallback<bool> callback) = 0;
 

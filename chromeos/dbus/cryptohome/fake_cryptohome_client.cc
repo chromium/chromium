@@ -208,16 +208,6 @@ void FakeCryptohomeClient::TpmCanAttemptOwnership(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeCryptohomeClient::TpmClearStoredPassword(
-    VoidDBusMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
-bool FakeCryptohomeClient::CallTpmClearStoredPasswordAndBlock() {
-  return true;
-}
-
 void FakeCryptohomeClient::Pkcs11IsTpmTokenReady(
     DBusMethodCallback<bool> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
