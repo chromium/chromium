@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEWS_CONTAINER_H_
-#define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEWS_CONTAINER_H_
+#ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEWS_SECTION_H_
+#define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEWS_SECTION_H_
 
 #include <map>
 #include <memory>
@@ -29,21 +29,20 @@ namespace ash {
 class HoldingSpaceItemView;
 class HoldingSpaceItemViewDelegate;
 
-// TODO(dmblack): Rename to `HoldingSpaceItemViewsSection`.
 // A section of holding space item views in a `HoldingSpaceTrayChildBubble`.
-class HoldingSpaceItemViewsContainer : public views::View,
-                                       public HoldingSpaceControllerObserver,
-                                       public HoldingSpaceModelObserver {
+class HoldingSpaceItemViewsSection : public views::View,
+                                     public HoldingSpaceControllerObserver,
+                                     public HoldingSpaceModelObserver {
  public:
-  HoldingSpaceItemViewsContainer(
+  HoldingSpaceItemViewsSection(
       HoldingSpaceItemViewDelegate* delegate,
       std::vector<HoldingSpaceItem::Type> supported_types,
       const base::Optional<size_t>& max_count);
-  HoldingSpaceItemViewsContainer(const HoldingSpaceItemViewsContainer& other) =
+  HoldingSpaceItemViewsSection(const HoldingSpaceItemViewsSection& other) =
       delete;
-  HoldingSpaceItemViewsContainer& operator=(
-      const HoldingSpaceItemViewsContainer& other) = delete;
-  ~HoldingSpaceItemViewsContainer() override;
+  HoldingSpaceItemViewsSection& operator=(
+      const HoldingSpaceItemViewsSection& other) = delete;
+  ~HoldingSpaceItemViewsSection() override;
 
   // Initializes the section.
   void Init();
@@ -143,4 +142,4 @@ class HoldingSpaceItemViewsContainer : public views::View,
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEWS_CONTAINER_H_
+#endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEWS_SECTION_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_item_views_container.h"
+#include "ash/system/holding_space/holding_space_item_views_section.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
@@ -53,9 +53,9 @@ class HoldingSpaceScrollView : public views::ScrollView,
 
 }  // namespace
 
-// HoldingSpaceItemViewsContainer ----------------------------------------------
+// HoldingSpaceItemViewsSection ------------------------------------------------
 
-HoldingSpaceItemViewsContainer::HoldingSpaceItemViewsContainer(
+HoldingSpaceItemViewsSection::HoldingSpaceItemViewsSection(
     HoldingSpaceItemViewDelegate* delegate,
     std::vector<HoldingSpaceItem::Type> supported_types,
     const base::Optional<size_t>& max_count)
@@ -65,14 +65,14 @@ HoldingSpaceItemViewsContainer::HoldingSpaceItemViewsContainer(
   controller_observer_.Observe(HoldingSpaceController::Get());
 }
 
-HoldingSpaceItemViewsContainer::~HoldingSpaceItemViewsContainer() = default;
+HoldingSpaceItemViewsSection::~HoldingSpaceItemViewsSection() = default;
 
-void HoldingSpaceItemViewsContainer::Init() {
+void HoldingSpaceItemViewsSection::Init() {
   SetVisible(false);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kHoldingSpaceContainerChildSpacing));
+      kHoldingSpaceSectionChildSpacing));
 
   // Header.
   header_ = AddChildView(CreateHeader());
@@ -111,18 +111,17 @@ void HoldingSpaceItemViewsContainer::Init() {
     OnHoldingSpaceModelAttached(model);
 }
 
-void HoldingSpaceItemViewsContainer::Reset() {
+void HoldingSpaceItemViewsSection::Reset() {
   model_observer_.Reset();
   controller_observer_.Reset();
 }
 
-void HoldingSpaceItemViewsContainer::ChildPreferredSizeChanged(
+void HoldingSpaceItemViewsSection::ChildPreferredSizeChanged(
     views::View* child) {
   PreferredSizeChanged();
 }
 
-void HoldingSpaceItemViewsContainer::ChildVisibilityChanged(
-    views::View* child) {
+void HoldingSpaceItemViewsSection::ChildVisibilityChanged(views::View* child) {
   // This section should be visible iff it has visible children.
   bool visible = false;
   for (const views::View* c : children()) {
@@ -138,7 +137,7 @@ void HoldingSpaceItemViewsContainer::ChildVisibilityChanged(
   PreferredSizeChanged();
 }
 
-void HoldingSpaceItemViewsContainer::ViewHierarchyChanged(
+void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   if (details.parent != container_)
     return;
@@ -157,21 +156,21 @@ void HoldingSpaceItemViewsContainer::ViewHierarchyChanged(
     placeholder_->SetVisible(!details.is_add);
 }
 
-void HoldingSpaceItemViewsContainer::OnHoldingSpaceModelAttached(
+void HoldingSpaceItemViewsSection::OnHoldingSpaceModelAttached(
     HoldingSpaceModel* model) {
   model_observer_.Observe(model);
   for (const auto& item : model->items())
     OnHoldingSpaceItemAdded(item.get());
 }
 
-void HoldingSpaceItemViewsContainer::OnHoldingSpaceModelDetached(
+void HoldingSpaceItemViewsSection::OnHoldingSpaceModelDetached(
     HoldingSpaceModel* model) {
   model_observer_.Reset();
   if (!container_->children().empty())
     MaybeAnimateOut();
 }
 
-void HoldingSpaceItemViewsContainer::OnHoldingSpaceItemAdded(
+void HoldingSpaceItemViewsSection::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
   if (!item->IsFinalized())
     return;
@@ -179,24 +178,23 @@ void HoldingSpaceItemViewsContainer::OnHoldingSpaceItemAdded(
     MaybeAnimateOut();
 }
 
-void HoldingSpaceItemViewsContainer::OnHoldingSpaceItemRemoved(
+void HoldingSpaceItemViewsSection::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
   if (base::Contains(views_by_item_id_, item->id()))
     MaybeAnimateOut();
 }
 
-void HoldingSpaceItemViewsContainer::OnHoldingSpaceItemFinalized(
+void HoldingSpaceItemViewsSection::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
   if (base::Contains(supported_types_, item->type()))
     MaybeAnimateOut();
 }
 
-std::unique_ptr<views::View>
-HoldingSpaceItemViewsContainer::CreatePlaceholder() {
+std::unique_ptr<views::View> HoldingSpaceItemViewsSection::CreatePlaceholder() {
   return nullptr;
 }
 
-void HoldingSpaceItemViewsContainer::DestroyPlaceholder() {
+void HoldingSpaceItemViewsSection::DestroyPlaceholder() {
   if (!placeholder_)
     return;
 
@@ -209,7 +207,7 @@ void HoldingSpaceItemViewsContainer::DestroyPlaceholder() {
     header_->SetVisible(false);
 }
 
-void HoldingSpaceItemViewsContainer::MaybeAnimateIn() {
+void HoldingSpaceItemViewsSection::MaybeAnimateIn() {
   if (animation_state_ & AnimationState::kAnimatingIn)
     return;
 
@@ -218,14 +216,14 @@ void HoldingSpaceItemViewsContainer::MaybeAnimateIn() {
   // NOTE: `animate_in_observer` is deleted after `OnAnimateInCompleted()`.
   ui::CallbackLayerAnimationObserver* animate_in_observer =
       new ui::CallbackLayerAnimationObserver(base::BindRepeating(
-          &HoldingSpaceItemViewsContainer::OnAnimateInCompleted,
+          &HoldingSpaceItemViewsSection::OnAnimateInCompleted,
           base::Unretained(this)));
 
   AnimateIn(animate_in_observer);
   animate_in_observer->SetActive();
 }
 
-void HoldingSpaceItemViewsContainer::MaybeAnimateOut() {
+void HoldingSpaceItemViewsSection::MaybeAnimateOut() {
   if (animation_state_ & AnimationState::kAnimatingOut)
     return;
 
@@ -239,7 +237,7 @@ void HoldingSpaceItemViewsContainer::MaybeAnimateOut() {
   // NOTE: `animate_out_observer` is deleted after `OnAnimateOutCompleted()`.
   ui::CallbackLayerAnimationObserver* animate_out_observer =
       new ui::CallbackLayerAnimationObserver(base::BindRepeating(
-          &HoldingSpaceItemViewsContainer::OnAnimateOutCompleted,
+          &HoldingSpaceItemViewsSection::OnAnimateOutCompleted,
           base::Unretained(this)));
 
   AnimateOut(animate_out_observer);
@@ -248,7 +246,7 @@ void HoldingSpaceItemViewsContainer::MaybeAnimateOut() {
 
 // TODO(dmblack): Handle animate in of `placeholder_`.
 // TODO(dmblack): Handle grow/shrink of container.
-void HoldingSpaceItemViewsContainer::AnimateIn(
+void HoldingSpaceItemViewsSection::AnimateIn(
     ui::LayerAnimationObserver* observer) {
   if (views_by_item_id_.empty() && placeholder_) {
     DCHECK(!placeholder_->GetVisible());
@@ -261,7 +259,7 @@ void HoldingSpaceItemViewsContainer::AnimateIn(
 
 // TODO(dmblack): Handle animate out of `placeholder_`.
 // TODO(dmblack): Handle animate out of `header_` if this section is leaving.
-void HoldingSpaceItemViewsContainer::AnimateOut(
+void HoldingSpaceItemViewsSection::AnimateOut(
     ui::LayerAnimationObserver* observer) {
   if (placeholder_ && placeholder_->GetVisible()) {
     DCHECK(views_by_item_id_.empty());
@@ -272,7 +270,7 @@ void HoldingSpaceItemViewsContainer::AnimateOut(
     view_by_item_id.second->AnimateOut(observer);
 }
 
-bool HoldingSpaceItemViewsContainer::OnAnimateInCompleted(
+bool HoldingSpaceItemViewsSection::OnAnimateInCompleted(
     const ui::CallbackLayerAnimationObserver& observer) {
   DCHECK(animation_state_ & AnimationState::kAnimatingIn);
   animation_state_ &= ~AnimationState::kAnimatingIn;
@@ -290,7 +288,7 @@ bool HoldingSpaceItemViewsContainer::OnAnimateInCompleted(
   return kDeleteObserver;
 }
 
-bool HoldingSpaceItemViewsContainer::OnAnimateOutCompleted(
+bool HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
     const ui::CallbackLayerAnimationObserver& observer) {
   DCHECK(animation_state_ & AnimationState::kAnimatingOut);
   animation_state_ &= ~AnimationState::kAnimatingOut;

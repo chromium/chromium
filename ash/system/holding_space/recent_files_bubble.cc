@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/recent_files_container.h"
+#include "ash/system/holding_space/recent_files_bubble.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/system/holding_space/downloads_section.h"
@@ -10,21 +10,20 @@
 
 namespace ash {
 
-RecentFilesContainer::RecentFilesContainer(
-    HoldingSpaceItemViewDelegate* delegate)
+RecentFilesBubble::RecentFilesBubble(HoldingSpaceItemViewDelegate* delegate)
     : HoldingSpaceTrayChildBubble(delegate) {
-  SetID(kHoldingSpaceRecentFilesContainerId);
+  SetID(kHoldingSpaceRecentFilesBubbleId);
 }
 
-RecentFilesContainer::~RecentFilesContainer() = default;
+RecentFilesBubble::~RecentFilesBubble() = default;
 
-const char* RecentFilesContainer::GetClassName() const {
-  return "RecentFilesContainer";
+const char* RecentFilesBubble::GetClassName() const {
+  return "RecentFilesBubble";
 }
 
-std::vector<std::unique_ptr<HoldingSpaceItemViewsContainer>>
-RecentFilesContainer::CreateSections() {
-  std::vector<std::unique_ptr<HoldingSpaceItemViewsContainer>> sections;
+std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>>
+RecentFilesBubble::CreateSections() {
+  std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> sections;
   sections.push_back(std::make_unique<ScreenCapturesSection>(delegate()));
   sections.push_back(std::make_unique<DownloadsSection>(delegate()));
   return sections;

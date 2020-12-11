@@ -7,19 +7,19 @@
 
 #include <memory>
 
-#include "ash/system/holding_space/holding_space_item_views_container.h"
+#include "ash/system/holding_space/holding_space_item_views_section.h"
 
 namespace ash {
 
-// Section for pinned files in the `PinnedFilesContainer`.
-class PinnedFilesSection : public HoldingSpaceItemViewsContainer {
+// Section for pinned files in the `PinnedFilesBubble`.
+class PinnedFilesSection : public HoldingSpaceItemViewsSection {
  public:
   explicit PinnedFilesSection(HoldingSpaceItemViewDelegate* delegate);
   PinnedFilesSection(const PinnedFilesSection& other) = delete;
   PinnedFilesSection& operator=(const PinnedFilesSection& other) = delete;
   ~PinnedFilesSection() override;
 
-  // HoldingSpaceItemViewsContainer:
+  // HoldingSpaceItemViewsSection:
   const char* GetClassName() const override;
   std::unique_ptr<views::View> CreateHeader() override;
   std::unique_ptr<views::View> CreateContainer() override;

@@ -21,11 +21,11 @@ namespace ash {
 
 ScreenCapturesSection::ScreenCapturesSection(
     HoldingSpaceItemViewDelegate* delegate)
-    : HoldingSpaceItemViewsContainer(delegate,
-                                     /*supported_types=*/
-                                     {HoldingSpaceItem::Type::kScreenshot,
-                                      HoldingSpaceItem::Type::kScreenRecording},
-                                     /*max_count=*/kMaxScreenCaptures) {}
+    : HoldingSpaceItemViewsSection(delegate,
+                                   /*supported_types=*/
+                                   {HoldingSpaceItem::Type::kScreenshot,
+                                    HoldingSpaceItem::Type::kScreenRecording},
+                                   /*max_count=*/kMaxScreenCaptures) {}
 
 ScreenCapturesSection::~ScreenCapturesSection() = default;
 

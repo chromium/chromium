@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/holding_space/holding_space_item_views_container.h"
+#include "ash/system/holding_space/holding_space_item_views_section.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -20,8 +20,8 @@ HoldingSpaceTrayChildBubble::~HoldingSpaceTrayChildBubble() = default;
 
 void HoldingSpaceTrayChildBubble::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kHoldingSpaceContainerPadding,
-      kHoldingSpaceContainerChildSpacing));
+      views::BoxLayout::Orientation::kVertical, kHoldingSpaceChildBubblePadding,
+      kHoldingSpaceChildBubbleChildSpacing));
 
   // Layer.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
@@ -41,7 +41,7 @@ void HoldingSpaceTrayChildBubble::Init() {
 }
 
 void HoldingSpaceTrayChildBubble::Reset() {
-  for (HoldingSpaceItemViewsContainer* section : sections_)
+  for (HoldingSpaceItemViewsSection* section : sections_)
     section->Reset();
 }
 

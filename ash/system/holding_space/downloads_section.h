@@ -7,19 +7,19 @@
 
 #include <memory>
 
-#include "ash/system/holding_space/holding_space_item_views_container.h"
+#include "ash/system/holding_space/holding_space_item_views_section.h"
 
 namespace ash {
 
-// Section for downloads in the `RecentFilesContainer`.
-class DownloadsSection : public HoldingSpaceItemViewsContainer {
+// Section for downloads in the `RecentFilesBubble`.
+class DownloadsSection : public HoldingSpaceItemViewsSection {
  public:
   explicit DownloadsSection(HoldingSpaceItemViewDelegate* delegate);
   DownloadsSection(const DownloadsSection& other) = delete;
   DownloadsSection& operator=(const DownloadsSection& other) = delete;
   ~DownloadsSection() override;
 
-  // HoldingSpaceItemViewsContainer:
+  // HoldingSpaceItemViewsSection:
   const char* GetClassName() const override;
   std::unique_ptr<views::View> CreateHeader() override;
   std::unique_ptr<views::View> CreateContainer() override;

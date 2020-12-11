@@ -12,10 +12,10 @@
 namespace ash {
 
 // Appearance.
+constexpr int kHoldingSpaceBubbleContainerChildSpacing = 8;
 constexpr int kHoldingSpaceBubbleWidth = 360;
-constexpr gfx::Insets kHoldingSpaceContainerPadding(16);
-constexpr int kHoldingSpaceContainerChildSpacing = 16;
-constexpr int kHoldingSpaceContainerSpacing = 8;
+constexpr gfx::Insets kHoldingSpaceChildBubblePadding(16);
+constexpr int kHoldingSpaceChildBubbleChildSpacing = 16;
 constexpr gfx::Insets kHoldingSpaceChipPadding(8);
 constexpr int kHoldingSpaceChipChildSpacing = 8;
 constexpr int kHoldingSpaceChipHeight = 40;
@@ -37,6 +37,7 @@ constexpr gfx::Size kHoldingSpaceScreenCapturePlayIconSize(32, 32);
 constexpr int kHoldingSpaceScreenCaptureSpacing = 8;
 constexpr gfx::Size kHoldingSpaceScreenCaptureSize(104, 80);
 constexpr gfx::Insets kHoldingSpaceScreenCapturesContainerPadding(8, 0);
+constexpr int kHoldingSpaceSectionChildSpacing = 16;
 constexpr float kHoldingSpaceSelectedOverlayOpacity = 0.24f;
 constexpr int kHoldingSpaceTrayIconMaxVisiblePreviews = 3;
 constexpr int kHoldingSpaceTrayIconSize = 20;
@@ -53,8 +54,8 @@ enum HoldingSpaceCommandId {
 };
 
 // View IDs.
-constexpr int kHoldingSpacePinnedFilesContainerId = 1;
-constexpr int kHoldingSpaceRecentFilesContainerId = 2;
+constexpr int kHoldingSpacePinnedFilesBubbleId = 1;
+constexpr int kHoldingSpaceRecentFilesBubbleId = 2;
 constexpr int kHoldingSpaceScreenCapturePlayIconId = 3;
 constexpr int kHoldingSpaceTrayDefaultIconId = 4;
 constexpr int kHoldingSpaceTrayPreviewsIconId = 5;

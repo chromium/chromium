@@ -15,8 +15,8 @@
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
-#include "ash/system/holding_space/pinned_files_container.h"
-#include "ash/system/holding_space/recent_files_container.h"
+#include "ash/system/holding_space/pinned_files_bubble.h"
+#include "ash/system/holding_space/recent_files_bubble.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
@@ -59,7 +59,7 @@ class HoldingSpaceBubbleContainer : public views::View {
   HoldingSpaceBubbleContainer() {
     layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-        kHoldingSpaceContainerSpacing));
+        kHoldingSpaceBubbleContainerChildSpacing));
   }
 
   void SetFlexForChild(views::View* child, int flex) {
@@ -112,12 +112,12 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 
   // Add pinned files child bubble.
   child_bubbles_.push_back(bubble_container->AddChildView(
-      std::make_unique<PinnedFilesContainer>(&delegate_)));
+      std::make_unique<PinnedFilesBubble>(&delegate_)));
   bubble_container->SetFlexForChild(child_bubbles_.back(), 1);
 
   // Add recent files child bubble.
   child_bubbles_.push_back(bubble_container->AddChildView(
-      std::make_unique<RecentFilesContainer>(&delegate_)));
+      std::make_unique<RecentFilesBubble>(&delegate_)));
 
   // Initialize child bubbles.
   for (HoldingSpaceTrayChildBubble* child_bubble : child_bubbles_)

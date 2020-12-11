@@ -98,7 +98,7 @@ std::vector<views::View*> HoldingSpaceTestApi::GetDownloadChips() {
   if (holding_space_tray_->GetBubbleView()) {
     FindDescendentsOfClass<HoldingSpaceItemChipView>(
         holding_space_tray_->GetBubbleView()->GetViewByID(
-            kHoldingSpaceRecentFilesContainerId),
+            kHoldingSpaceRecentFilesBubbleId),
         &download_chips);
   }
   return download_chips;
@@ -109,7 +109,7 @@ std::vector<views::View*> HoldingSpaceTestApi::GetPinnedFileChips() {
   if (holding_space_tray_->GetBubbleView()) {
     FindDescendentsOfClass<HoldingSpaceItemChipView>(
         holding_space_tray_->GetBubbleView()->GetViewByID(
-            kHoldingSpacePinnedFilesContainerId),
+            kHoldingSpacePinnedFilesBubbleId),
         &pinned_file_chips);
   }
   return pinned_file_chips;
@@ -120,7 +120,7 @@ std::vector<views::View*> HoldingSpaceTestApi::GetScreenCaptureViews() {
   if (holding_space_tray_->GetBubbleView()) {
     FindDescendentsOfClass<HoldingSpaceItemScreenCaptureView>(
         holding_space_tray_->GetBubbleView()->GetViewByID(
-            kHoldingSpaceRecentFilesContainerId),
+            kHoldingSpaceRecentFilesBubbleId),
         &screen_capture_views);
   }
   return screen_capture_views;
@@ -138,22 +138,22 @@ views::View* HoldingSpaceTestApi::GetPreviewsTrayIcon() {
   return holding_space_tray_->GetViewByID(kHoldingSpaceTrayPreviewsIconId);
 }
 
-bool HoldingSpaceTestApi::PinnedFilesContainerShown() const {
+bool HoldingSpaceTestApi::PinnedFilesBubbleShown() const {
   if (!holding_space_tray_->GetBubbleView())
     return false;
 
-  views::View* container = holding_space_tray_->GetBubbleView()->GetViewByID(
-      kHoldingSpacePinnedFilesContainerId);
-  return container && container->GetVisible();
+  views::View* bubble = holding_space_tray_->GetBubbleView()->GetViewByID(
+      kHoldingSpacePinnedFilesBubbleId);
+  return bubble && bubble->GetVisible();
 }
 
-bool HoldingSpaceTestApi::RecentFilesContainerShown() const {
+bool HoldingSpaceTestApi::RecentFilesBubbleShown() const {
   if (!holding_space_tray_->GetBubbleView())
     return false;
 
-  views::View* container = holding_space_tray_->GetBubbleView()->GetViewByID(
-      kHoldingSpaceRecentFilesContainerId);
-  return container && container->GetVisible();
+  views::View* bubble = holding_space_tray_->GetBubbleView()->GetViewByID(
+      kHoldingSpaceRecentFilesBubbleId);
+  return bubble && bubble->GetVisible();
 }
 
 }  // namespace ash

@@ -159,17 +159,17 @@ TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   MarkTimeOfFirstAdd();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
 
-  // Show the bubble - both the pinned container and recent files container
+  // Show the bubble - both the pinned files and recent files child bubbles
   // should be shown.
   test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 
-  // Remove the download item and verify the pinned files container, and the
+  // Remove the download item and verify the pinned files bubble, and the
   // tray button are still shown.
   model()->RemoveItem(item->id());
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
   test_api()->Close();
   EXPECT_TRUE(test_api()->IsShowingInShelf());
@@ -182,8 +182,8 @@ TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   MarkTimeOfFirstPin();
   model()->RemoveItem(pinned_item->id());
 
-  // Verify that the pinned files container, and the tray button get hidden.
-  EXPECT_FALSE(test_api()->PinnedFilesContainerShown());
+  // Verify that the pinned files bubble, and the tray button get hidden.
+  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
   test_api()->Close();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 }
@@ -254,22 +254,22 @@ TEST_P(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
 }
 
 // Tests how download chips are updated during item addition, removal and
-// finalization
-TEST_P(HoldingSpaceTrayTest, DownloadsContainer) {
+// finalization.
+TEST_P(HoldingSpaceTrayTest, DownloadsSection) {
   StartSession();
 
   test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
 
-  // Add a download item and verify recent file container gets shown.
+  // Add a download item and verify recent file bubble gets shown.
   HoldingSpaceItem* item_1 =
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
 
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
@@ -301,7 +301,7 @@ TEST_P(HoldingSpaceTrayTest, DownloadsContainer) {
             HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
 
   // Finalize partially initialized item, and verify it gets added to the
-  // container, in the order of addition, replacing the oldest item.
+  // section, in the order of addition, replacing the oldest item.
   model()->FinalizeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -313,7 +313,7 @@ TEST_P(HoldingSpaceTrayTest, DownloadsContainer) {
   EXPECT_EQ(item_2->id(),
             HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
 
-  // Remove the newest item, and verify the container gets updated.
+  // Remove the newest item, and verify the section gets updated.
   model()->RemoveItem(item_3->id());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -325,10 +325,10 @@ TEST_P(HoldingSpaceTrayTest, DownloadsContainer) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
 
-  // Remove other items, and verify the recent files container gets hidden.
+  // Remove other items, and verify the recent files bubble gets hidden.
   model()->RemoveItem(item_2->id());
 
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
   download_chips = test_api()->GetDownloadChips();
   ASSERT_EQ(1u, download_chips.size());
   EXPECT_EQ(item_1->id(),
@@ -337,15 +337,15 @@ TEST_P(HoldingSpaceTrayTest, DownloadsContainer) {
   model()->RemoveItem(item_1->id());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
 
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
-  // Pinned container is showing "educational" info, and it should remain shown.
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+  // Pinned bubble is showing "educational" info, and it should remain shown.
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
 }
 
-// Verifies the downloads container is shown and orders items as expected when
-// the model contains a number of finalized items prior to showing UI.
-TEST_P(HoldingSpaceTrayTest, DownloadsContainerWithFinalizedItemsOnly) {
+// Verifies the downloads section is shown and orders items as expected when the
+// model contains a number of finalized items prior to showing UI.
+TEST_P(HoldingSpaceTrayTest, DownloadsSectionWithFinalizedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -358,7 +358,7 @@ TEST_P(HoldingSpaceTrayTest, DownloadsContainerWithFinalizedItemsOnly) {
   }
 
   test_api()->Show();
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 
   std::vector<views::View*> download_files = test_api()->GetDownloadChips();
   ASSERT_EQ(items.size(), download_files.size());
@@ -401,7 +401,7 @@ TEST_P(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
             HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
 
   // Finalize partially initialized item, and verify it's not added to the
-  // container.
+  // section.
   model()->FinalizeOrRemoveItem(item_1->id(), GURL("filesystem:fake_1"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -413,7 +413,7 @@ TEST_P(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
   EXPECT_EQ(item_2->id(),
             HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
 
-  // Remove the oldest item, and verify the container doesn't get updated.
+  // Remove the oldest item, and verify the section doesn't get updated.
   model()->RemoveItem(item_1->id());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -465,20 +465,20 @@ TEST_P(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingADownloadItem) {
             HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
 }
 
-// Tests how screen capture list is updated during item addition, removal and
-// finalization
-TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainer) {
+// Tests how screen captures section is updated during item addition, removal
+// and finalization.
+TEST_P(HoldingSpaceTrayTest, ScreenCapturesSection) {
   StartSession();
   test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
-  // Add a screenshot item and verify recent file container gets shown.
+  // Add a screenshot item and verify recent file bubble gets shown.
   HoldingSpaceItem* item_1 = AddItem(HoldingSpaceItem::Type::kScreenshot,
                                      base::FilePath("/tmp/fake_1"));
 
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
@@ -497,7 +497,7 @@ TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainer) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(screen_captures[0])->item()->id());
 
-  // Add more items to fill up the container.
+  // Add more items to fill up the section.
   HoldingSpaceItem* item_3 = AddItem(HoldingSpaceItem::Type::kScreenshot,
                                      base::FilePath("/tmp/fake_3"));
   HoldingSpaceItem* item_4 = AddItem(HoldingSpaceItem::Type::kScreenshot,
@@ -515,7 +515,7 @@ TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainer) {
             HoldingSpaceItemView::Cast(screen_captures[2])->item()->id());
 
   // Finalize partially initialized item, and verify it gets added to the
-  // container, in the order of addition, replacing the oldest item.
+  // section, in the order of addition, replacing the oldest item.
   model()->FinalizeOrRemoveItem(item_2->id(), GURL("filesystem:fake_2"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -529,7 +529,7 @@ TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainer) {
   EXPECT_EQ(item_2->id(),
             HoldingSpaceItemView::Cast(screen_captures[2])->item()->id());
 
-  // Remove the newest item, and verify the container gets updated.
+  // Remove the newest item, and verify the section gets updated.
   model()->RemoveItem(item_4->id());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -543,7 +543,7 @@ TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainer) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(screen_captures[2])->item()->id());
 
-  // Remove other items, and verify the recent files container gets hidden.
+  // Remove other items, and verify the recent files bubble gets hidden.
   model()->RemoveItem(item_2->id());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -559,15 +559,15 @@ TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainer) {
   model()->RemoveItem(item_1->id());
 
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
-  // Pinned container is showing "educational" info, and it should remain shown.
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+  // Pinned bubble is showing "educational" info, and it should remain shown.
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
 }
 
-// Verifies the screen captures container is shown and orders items as expected
+// Verifies the screen captures section is shown and orders items as expected
 // when the model contains a number of finalized items prior to showing UI.
-TEST_P(HoldingSpaceTrayTest, ScreenCapturesContainerWithFinalizedItemsOnly) {
+TEST_P(HoldingSpaceTrayTest, ScreenCapturesSectionWithFinalizedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -580,7 +580,7 @@ TEST_P(HoldingSpaceTrayTest, ScreenCapturesContainerWithFinalizedItemsOnly) {
   }
 
   test_api()->Show();
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 
   std::vector<views::View*> screenshots = test_api()->GetScreenCaptureViews();
   ASSERT_EQ(items.size(), screenshots.size());
@@ -608,13 +608,13 @@ TEST_P(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
   HoldingSpaceItem* item_1 = AddPartiallyInitializedItem(
       HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake_1"));
 
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
 
-  // Add enough screenshot items to fill up the container.
+  // Add enough screenshot items to fill up the section.
   HoldingSpaceItem* item_2 = AddItem(HoldingSpaceItem::Type::kScreenshot,
                                      base::FilePath("/tmp/fake_2"));
   HoldingSpaceItem* item_3 = AddItem(HoldingSpaceItem::Type::kScreenshot,
@@ -635,7 +635,7 @@ TEST_P(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
             HoldingSpaceItemView::Cast(screen_captures[2])->item()->id());
 
   // Finalize partially initialized item, and verify it's not added to the
-  // container.
+  // section.
   model()->FinalizeOrRemoveItem(item_1->id(), GURL("filesystem:fake_1"));
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -649,7 +649,7 @@ TEST_P(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
   EXPECT_EQ(item_2->id(),
             HoldingSpaceItemView::Cast(screen_captures[2])->item()->id());
 
-  // Remove the oldest item, and verify the container doesn't get updated.
+  // Remove the oldest item, and verify the section doesn't get updated.
   model()->RemoveItem(item_1->id());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -712,9 +712,9 @@ TEST_P(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingAScreenCapture) {
   test_api()->Close();
 }
 
-// Tests how the pinned item list is updated during item addition, removal and
-// finalization.
-TEST_P(HoldingSpaceTrayTest, PinnedFilesContainer) {
+// Tests how the pinned item section is updated during item addition, removal
+// and finalization.
+TEST_P(HoldingSpaceTrayTest, PinnedFilesSection) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -722,8 +722,8 @@ TEST_P(HoldingSpaceTrayTest, PinnedFilesContainer) {
                                      base::FilePath("/tmp/fake_1"));
 
   test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
@@ -744,7 +744,7 @@ TEST_P(HoldingSpaceTrayTest, PinnedFilesContainer) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(pinned_files[0])->item()->id());
 
-  // Add more items to the container.
+  // Add more items to the section.
   HoldingSpaceItem* item_3 = AddPartiallyInitializedItem(
       HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake_3"));
   HoldingSpaceItem* item_4 = AddItem(HoldingSpaceItem::Type::kPinnedFile,
@@ -787,7 +787,7 @@ TEST_P(HoldingSpaceTrayTest, PinnedFilesContainer) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(pinned_files[2])->item()->id());
 
-  // Remove the newest item, and verify the container gets updated.
+  // Remove the newest item, and verify the section gets updated.
   model()->RemoveItem(item_4->id());
 
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
@@ -799,7 +799,7 @@ TEST_P(HoldingSpaceTrayTest, PinnedFilesContainer) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(pinned_files[1])->item()->id());
 
-  // Remove other items, and verify the files container gets hidden.
+  // Remove other items, and verify the files section gets hidden.
   model()->RemoveItem(item_2->id());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
@@ -813,14 +813,14 @@ TEST_P(HoldingSpaceTrayTest, PinnedFilesContainer) {
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
 
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
-  EXPECT_FALSE(test_api()->PinnedFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
+  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
 }
 
-// Verifies the pinned items container is not shown if it only contains
-// partially initialized items.
+// Verifies the pinned files bubble is not shown if it only contains partially
+// initialized items.
 TEST_P(HoldingSpaceTrayTest,
-       PinnedFilesContainerWithPartiallyInitializedItemsOnly) {
+       PinnedFilesBubbleWithPartiallyInitializedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -831,17 +831,17 @@ TEST_P(HoldingSpaceTrayTest,
                               base::FilePath("/tmp/fake_1"));
 
   test_api()->Show();
-  EXPECT_FALSE(test_api()->PinnedFilesContainerShown());
+  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
 
   // Add another partially initialized item.
   HoldingSpaceItem* item_2 = AddPartiallyInitializedItem(
       HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake_2"));
-  EXPECT_FALSE(test_api()->PinnedFilesContainerShown());
+  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
 
   // Add a fully initialized item, and verify it gets shown.
   HoldingSpaceItem* item_3 = AddItem(HoldingSpaceItem::Type::kPinnedFile,
                                      base::FilePath("/tmp/fake_3"));
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
 
   std::vector<views::View*> pinned_files = test_api()->GetPinnedFileChips();
   ASSERT_EQ(1u, pinned_files.size());
@@ -859,9 +859,9 @@ TEST_P(HoldingSpaceTrayTest,
             HoldingSpaceItemView::Cast(pinned_files[0])->item()->id());
 }
 
-// Verifies the pinned items container is shown and orders items as expected
-// when the model contains a number of finalized items prior to showing UI.
-TEST_P(HoldingSpaceTrayTest, PinnedFilesContainerWithFinalizedItemsOnly) {
+// Verifies the pinned items section is shown and orders items as expected when
+// the model contains a number of finalized items prior to showing UI.
+TEST_P(HoldingSpaceTrayTest, PinnedFilesSectionWithFinalizedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -874,7 +874,7 @@ TEST_P(HoldingSpaceTrayTest, PinnedFilesContainerWithFinalizedItemsOnly) {
   }
 
   test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
 
   std::vector<views::View*> pinned_files = test_api()->GetPinnedFileChips();
   ASSERT_EQ(items.size(), pinned_files.size());
@@ -891,24 +891,24 @@ TEST_P(HoldingSpaceTrayTest, PinnedFilesContainerWithFinalizedItemsOnly) {
 }
 
 // Tests that as nearby shared files are added to the model, they show on the
-// downloads container.
-TEST_P(HoldingSpaceTrayTest, DownloadsContainerWithNearbySharedFiles) {
+// downloads section.
+TEST_P(HoldingSpaceTrayTest, DownloadsSectionWithNearbySharedFiles) {
   StartSession();
 
   test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   ASSERT_TRUE(test_api()->GetDownloadChips().empty());
 
-  // Add a nearby share item and verify recent file container gets shown.
+  // Add a nearby share item and verify recent files bubble gets shown.
   HoldingSpaceItem* item_1 = AddItem(HoldingSpaceItem::Type::kNearbyShare,
                                      base::FilePath("/tmp/fake_1"));
   ASSERT_TRUE(item_1->IsFinalized());
 
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
@@ -928,7 +928,7 @@ TEST_P(HoldingSpaceTrayTest, DownloadsContainerWithNearbySharedFiles) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(download_chips[1])->item()->id());
 
-  // Remove the first item, and verify the container gets updated.
+  // Remove the first item, and verify the section gets updated.
   model()->RemoveItem(item_1->id());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -947,7 +947,7 @@ TEST_P(HoldingSpaceTrayTest, PartialNearbyShareItemWithExistingDownloadItems) {
   StartSession();
   test_api()->Show();
 
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
   ASSERT_TRUE(test_api()->GetDownloadChips().empty());
 
   // Add partially initialized nearby share item - verify it doesn't get shown
@@ -955,21 +955,21 @@ TEST_P(HoldingSpaceTrayTest, PartialNearbyShareItemWithExistingDownloadItems) {
   HoldingSpaceItem* nearby_share_item =
       AddPartiallyInitializedItem(HoldingSpaceItem::Type::kNearbyShare,
                                   base::FilePath("/tmp/nearby_share"));
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
 
   // Add partially initialized screenshot item - verify it doesn't get shown in
   // the UI yet.
   HoldingSpaceItem* screenshot_item = AddPartiallyInitializedItem(
       HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/screenshot"));
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
   // Add two download items.
   HoldingSpaceItem* download_item_1 = AddItem(
       HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/download_1"));
   HoldingSpaceItem* download_item_2 = AddItem(
       HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/download_2"));
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
@@ -1027,14 +1027,14 @@ TEST_P(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
   StartSession();
   test_api()->Show();
 
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
   ASSERT_TRUE(test_api()->GetDownloadChips().empty());
 
   // Add partially initialized download item - verify it doesn't get shown
   // in the UI yet.
   HoldingSpaceItem* item_1 = AddPartiallyInitializedItem(
       HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
 
   // Add two nearby share items.
@@ -1042,7 +1042,7 @@ TEST_P(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
                                      base::FilePath("/tmp/fake_2"));
   HoldingSpaceItem* item_3 = AddItem(HoldingSpaceItem::Type::kNearbyShare,
                                      base::FilePath("/tmp/fake_3"));
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
@@ -1099,24 +1099,24 @@ TEST_P(HoldingSpaceTrayTest, ShouldMaybeShowContextMenuOnRightClick) {
 }
 
 // Tests that as screen recording files are added to the model, they show in the
-// screen capture container.
-TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainerWithScreenRecordingFiles) {
+// screen captures section.
+TEST_P(HoldingSpaceTrayTest, ScreenCapturesSectionWithScreenRecordingFiles) {
   StartSession();
 
   test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   ASSERT_TRUE(test_api()->GetScreenCaptureViews().empty());
 
-  // Add a screen recording item and verify recent file container gets shown.
+  // Add a screen recording item and verify recent files section gets shown.
   HoldingSpaceItem* item_1 = AddItem(HoldingSpaceItem::Type::kScreenRecording,
                                      base::FilePath("/tmp/fake_1"));
   ASSERT_TRUE(item_1->IsFinalized());
 
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
@@ -1137,7 +1137,7 @@ TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainerWithScreenRecordingFiles) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
 
-  // Remove the first item, and verify the container gets updated.
+  // Remove the first item, and verify the section gets updated.
   model()->RemoveItem(item_1->id());
 
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
@@ -1157,7 +1157,7 @@ TEST_P(HoldingSpaceTrayTest,
   StartSession();
   test_api()->Show();
 
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
   ASSERT_TRUE(test_api()->GetScreenCaptureViews().empty());
 
   // Add partially initialized screen recording item - verify it doesn't get
@@ -1165,17 +1165,17 @@ TEST_P(HoldingSpaceTrayTest,
   HoldingSpaceItem* screen_recording_item =
       AddPartiallyInitializedItem(HoldingSpaceItem::Type::kScreenRecording,
                                   base::FilePath("/tmp/screen_recording"));
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
 
-  // Add three screenshot items to fill up the container.
+  // Add three screenshot items to fill up the section.
   HoldingSpaceItem* screenshot_item_1 = AddItem(
       HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/screenshot_1"));
   HoldingSpaceItem* screenshot_item_2 = AddItem(
       HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/screenshot_2"));
   HoldingSpaceItem* screenshot_item_3 = AddItem(
       HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/screenshot_3"));
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
   std::vector<views::View*> screen_capture_chips =
@@ -1255,24 +1255,24 @@ TEST_P(HoldingSpaceTrayTest,
   StartSession();
   test_api()->Show();
 
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
   ASSERT_TRUE(test_api()->GetScreenCaptureViews().empty());
 
   // Add partially initialized screenshot item - verify it doesn't get shown
   // in the UI yet.
   HoldingSpaceItem* screenshot_item = AddPartiallyInitializedItem(
       HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake_1"));
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
 
-  // Add three screenshot recording items to fill up the container.
+  // Add three screenshot recording items to fill up the section.
   HoldingSpaceItem* screen_recording_item_1 = AddItem(
       HoldingSpaceItem::Type::kScreenRecording, base::FilePath("/tmp/fake_2"));
   HoldingSpaceItem* screen_recording_item_2 = AddItem(
       HoldingSpaceItem::Type::kScreenRecording, base::FilePath("/tmp/fake_3"));
   HoldingSpaceItem* screen_recording_item_3 = AddItem(
       HoldingSpaceItem::Type::kScreenRecording, base::FilePath("/tmp/fake_4"));
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
   std::vector<views::View*> screen_capture_chips =
@@ -1326,7 +1326,7 @@ TEST_P(HoldingSpaceTrayTest, PlayIconForScreenRecordings) {
       HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake_1"));
   HoldingSpaceItem* screen_recording_item = AddItem(
       HoldingSpaceItem::Type::kScreenRecording, base::FilePath("/tmp/fake_2"));
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
 
   std::vector<views::View*> screen_capture_chips =
       test_api()->GetScreenCaptureViews();

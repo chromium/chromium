@@ -13,7 +13,7 @@
 namespace ash {
 
 class HoldingSpaceItemViewDelegate;
-class HoldingSpaceItemViewsContainer;
+class HoldingSpaceItemViewsSection;
 
 // Child bubble of the `HoldingSpaceTrayBubble`.
 class HoldingSpaceTrayChildBubble : public views::View {
@@ -35,7 +35,7 @@ class HoldingSpaceTrayChildBubble : public views::View {
 
  protected:
   // Invoked to create the `sections_` for this child bubble.
-  virtual std::vector<std::unique_ptr<HoldingSpaceItemViewsContainer>>
+  virtual std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>>
   CreateSections() = 0;
 
   HoldingSpaceItemViewDelegate* delegate() { return delegate_; }
@@ -49,7 +49,7 @@ class HoldingSpaceTrayChildBubble : public views::View {
   HoldingSpaceItemViewDelegate* const delegate_;
 
   // Views owned by view hierarchy.
-  std::vector<HoldingSpaceItemViewsContainer*> sections_;
+  std::vector<HoldingSpaceItemViewsSection*> sections_;
 };
 
 }  // namespace ash

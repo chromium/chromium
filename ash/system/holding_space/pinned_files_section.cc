@@ -40,10 +40,10 @@ bool HasEverPinnedHoldingSpaceItem() {
 // PinnedFilesSection ----------------------------------------------------------
 
 PinnedFilesSection::PinnedFilesSection(HoldingSpaceItemViewDelegate* delegate)
-    : HoldingSpaceItemViewsContainer(delegate,
-                                     /*supported_types=*/
-                                     {HoldingSpaceItem::Type::kPinnedFile},
-                                     /*max_count=*/base::nullopt) {}
+    : HoldingSpaceItemViewsSection(delegate,
+                                   /*supported_types=*/
+                                   {HoldingSpaceItem::Type::kPinnedFile},
+                                   /*max_count=*/base::nullopt) {}
 
 PinnedFilesSection::~PinnedFilesSection() = default;
 

@@ -69,11 +69,11 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // which displays previews of most recent items added to holding space.
   views::View* GetPreviewsTrayIcon();
 
-  // Returns whether the pinned files container is shown.
-  bool PinnedFilesContainerShown() const;
+  // Returns whether the pinned files bubble is shown.
+  bool PinnedFilesBubbleShown() const;
 
-  // Returns whether the recent files container is shown.
-  bool RecentFilesContainerShown() const;
+  // Returns whether the recent files bubble is shown.
+  bool RecentFilesBubbleShown() const;
 
  private:
   HoldingSpaceTray* holding_space_tray_ = nullptr;

@@ -76,11 +76,11 @@ class Header : public views::Button {
 // DownloadsSection ------------------------------------------------------------
 
 DownloadsSection::DownloadsSection(HoldingSpaceItemViewDelegate* delegate)
-    : HoldingSpaceItemViewsContainer(delegate,
-                                     /*supported_types=*/
-                                     {HoldingSpaceItem::Type::kDownload,
-                                      HoldingSpaceItem::Type::kNearbyShare},
-                                     /*max_count=*/kMaxDownloads) {}
+    : HoldingSpaceItemViewsSection(delegate,
+                                   /*supported_types=*/
+                                   {HoldingSpaceItem::Type::kDownload,
+                                    HoldingSpaceItem::Type::kNearbyShare},
+                                   /*max_count=*/kMaxDownloads) {}
 
 DownloadsSection::~DownloadsSection() = default;
 
