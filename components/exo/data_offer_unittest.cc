@@ -371,8 +371,11 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.WriteText(base::UTF8ToUTF16("Test data"));
   }
-  data_offer.SetClipboardData(&data_exchange_delegate,
-                              *ui::Clipboard::GetForCurrentThread());
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
 
   EXPECT_EQ(3u, delegate.mime_types().size());
   EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
@@ -412,8 +415,11 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.WriteHTML(base::UTF8ToUTF16("Test data"), "");
   }
-  data_offer.SetClipboardData(&data_exchange_delegate,
-                              *ui::Clipboard::GetForCurrentThread());
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
 
   EXPECT_EQ(2u, delegate.mime_types().size());
   EXPECT_EQ(1u, delegate.mime_types().count("text/html;charset=utf-8"));
@@ -444,8 +450,11 @@ TEST_F(DataOfferTest, SetClipboardDataRTF) {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.WriteRTF("Test data");
   }
-  data_offer.SetClipboardData(&data_exchange_delegate,
-                              *ui::Clipboard::GetForCurrentThread());
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
 
   EXPECT_EQ(1u, delegate.mime_types().size());
   EXPECT_EQ(1u, delegate.mime_types().count("text/rtf"));
@@ -473,8 +482,11 @@ TEST_F(DataOfferTest, SetClipboardDataImage) {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.WriteImage(image);
   }
-  data_offer.SetClipboardData(&data_exchange_delegate,
-                              *ui::Clipboard::GetForCurrentThread());
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
 
   EXPECT_EQ(1u, delegate.mime_types().size());
   EXPECT_EQ(1u, delegate.mime_types().count("image/png"));

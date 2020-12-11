@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "components/exo/data_device_delegate.h"
+#include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
 #include "components/exo/seat.h"
@@ -198,9 +199,12 @@ Surface* DataDevice::GetEffectiveTargetForEvent(
 }
 
 void DataDevice::SetSelectionToCurrentClipboardData() {
+  DCHECK(focused_surface_);
   DataOffer* data_offer = delegate_->OnDataOffer();
-  data_offer->SetClipboardData(seat_->data_exchange_delegate(),
-                               *ui::Clipboard::GetForCurrentThread());
+  data_offer->SetClipboardData(
+      *ui::Clipboard::GetForCurrentThread(),
+      seat_->data_exchange_delegate()->GetDataTransferEndpointType(
+          focused_surface_->get()->window()));
   delegate_->OnSelection(*data_offer);
 }
 

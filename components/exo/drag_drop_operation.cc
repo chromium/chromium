@@ -184,8 +184,8 @@ DragDropOperation::DragDropOperation(
 
   drag_drop_controller_->AddObserver(this);
 
-  data_exchange_delegate->SetExchangeDataSource(origin_->get()->window(),
-                                                os_exchange_data_.get());
+  data_exchange_delegate->SetSourceOnOSExchangeData(origin_->get()->window(),
+                                                    os_exchange_data_.get());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   extended_drag_source_ = ExtendedDragSource::Get();

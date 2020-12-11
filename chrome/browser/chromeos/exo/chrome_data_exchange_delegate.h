@@ -18,8 +18,11 @@ class ChromeDataExchangeDelegate : public exo::DataExchangeDelegate {
   ~ChromeDataExchangeDelegate() override;
 
   // DataExchangeDelegate:
-  void SetExchangeDataSource(aura::Window* target,
-                             ui::OSExchangeData* os_exchange_data) override;
+  ui::EndpointType GetDataTransferEndpointType(
+      aura::Window* target) const override;
+  void SetSourceOnOSExchangeData(
+      aura::Window* target,
+      ui::OSExchangeData* os_exchange_data) const override;
   std::vector<ui::FileInfo> GetFilenames(
       aura::Window* source,
       const std::vector<uint8_t>& data) const override;

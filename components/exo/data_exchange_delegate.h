@@ -23,6 +23,7 @@ class RefCountedMemory;
 namespace ui {
 struct FileInfo;
 class OSExchangeData;
+enum class EndpointType;
 }  // namespace ui
 
 namespace exo {
@@ -33,9 +34,14 @@ class DataExchangeDelegate {
  public:
   virtual ~DataExchangeDelegate() {}
 
+  // Returns the type of DataTransferEndpoint according to the `target` window.
+  virtual ui::EndpointType GetDataTransferEndpointType(
+      aura::Window* target) const = 0;
+
   // Sets the source of `os_exchange_data` according to the `target` window.
-  virtual void SetExchangeDataSource(aura::Window* target,
-                                     ui::OSExchangeData* os_exchange_data) = 0;
+  virtual void SetSourceOnOSExchangeData(
+      aura::Window* target,
+      ui::OSExchangeData* os_exchange_data) const = 0;
 
   // Read filenames from |data| which was provided by source window |source|.
   // Translates paths from source to host format.

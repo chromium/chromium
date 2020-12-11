@@ -585,9 +585,6 @@ Additional details:
   <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
     Your administrator has blocked sharing from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to <ph name="VM_NAME">$2<ex>Linux</ex></ph>
   </message>
-  <message name="IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_TWO_VMS" desc="A toast informing the user that sharing clipboard data to VMs is blocked.">
-    Your administrator has blocked sharing from <ph name="ORIGIN_NAME">$1<ex>corp.google.com</ex></ph> to <ph name="VM_NAME_1">$2<ex>Linux</ex></ph> and <ph name="VM_NAME_2">$3<ex>Parallels</ex></ph>
-  </message>
   <message name="IDS_POLICY_DLP_ANDROID_APPS" desc="Name shown for ARC in data leak prevention toasts.">
     Android apps
   </message>

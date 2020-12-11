@@ -132,6 +132,7 @@ void Seat::AbortPendingDragOperation() {
 
 void Seat::SetSelection(DataSource* source) {
   Surface* focused_surface = GetFocusedSurface();
+  DCHECK(focused_surface);
   if (!source || !source->CanBeDataSourceForCopy(focused_surface))
     return;
 
@@ -142,7 +143,9 @@ void Seat::SetSelection(DataSource* source) {
   }
   selection_source_ = std::make_unique<ScopedDataSource>(source, this);
   scoped_refptr<RefCountedScopedClipboardWriter> writer =
-      base::MakeRefCounted<RefCountedScopedClipboardWriter>();
+      base::MakeRefCounted<RefCountedScopedClipboardWriter>(
+          data_exchange_delegate_->GetDataTransferEndpointType(
+              focused_surface->window()));
 
   base::RepeatingClosure data_read_callback = base::BarrierClosure(
       kMaxClipboardDataTypes,
@@ -167,10 +170,10 @@ class Seat::RefCountedScopedClipboardWriter
     : public ui::ScopedClipboardWriter,
       public base::RefCounted<RefCountedScopedClipboardWriter> {
  public:
-  explicit RefCountedScopedClipboardWriter()
-      : ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste,
-                              std::make_unique<ui::DataTransferEndpoint>(
-                                  ui::EndpointType::kGuestOs)) {}
+  explicit RefCountedScopedClipboardWriter(ui::EndpointType type)
+      : ScopedClipboardWriter(
+            ui::ClipboardBuffer::kCopyPaste,
+            std::make_unique<ui::DataTransferEndpoint>(type)) {}
 
  private:
   friend class base::RefCounted<RefCountedScopedClipboardWriter>;

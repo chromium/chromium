@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, RestrictedComponent) {
   src_urls.Append(kUrl1);
   base::Value dst_components(base::Value::Type::LIST);
   dst_components.Append(dlp::kArc);
-  dst_components.Append(dlp::kPluginVm);
+  dst_components.Append(dlp::kCrostini);
   base::Value restrictions(base::Value::Type::LIST);
   restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
       dlp::kClipboardRestriction, dlp::kBlockLevel));
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, RestrictedComponent) {
       ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
   EXPECT_EQ(base::string16(), result2);
 
-  ui::DataTransferEndpoint data_dst3(ui::EndpointType::kGuestOs);
+  ui::DataTransferEndpoint data_dst3(ui::EndpointType::kCrostini);
   base::string16 result3;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst3, &result3);

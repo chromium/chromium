@@ -31,15 +31,20 @@ DlpRulesManager::Level IsDstRestricted(const GURL& src, const GURL& dst) {
                                 DlpRulesManager::Restriction::kClipboard);
 }
 
-DlpRulesManager::Level IsGuestOsRestricted(const GURL& src) {
+DlpRulesManager::Level IsCrostiniRestricted(const GURL& src) {
   // Safe to not check for nullptr as DataTransferDlpController is owned by
   // DlpRulesManager.
-  return DlpRulesManagerFactory::GetForPrimaryProfile()
-      ->IsRestrictedAnyOfComponents(src,
-                                    std::vector<DlpRulesManager::Component>{
-                                        DlpRulesManager::Component::kPluginVm,
-                                        DlpRulesManager::Component::kCrostini},
-                                    DlpRulesManager::Restriction::kClipboard);
+  return DlpRulesManagerFactory::GetForPrimaryProfile()->IsRestrictedComponent(
+      src, DlpRulesManager::Component::kCrostini,
+      DlpRulesManager::Restriction::kClipboard);
+}
+
+DlpRulesManager::Level IsPluginVmRestricted(const GURL& src) {
+  // Safe to not check for nullptr as DataTransferDlpController is owned by
+  // DlpRulesManager.
+  return DlpRulesManagerFactory::GetForPrimaryProfile()->IsRestrictedComponent(
+      src, DlpRulesManager::Component::kPluginVm,
+      DlpRulesManager::Restriction::kClipboard);
 }
 
 DlpRulesManager::Level IsArcRestricted(const GURL& src) {
@@ -73,6 +78,8 @@ bool DataTransferDlpController::IsDataReadAllowed(
 
   switch (dst_type) {
     case ui::EndpointType::kDefault:
+    case ui::EndpointType::kUnknownVm:
+    case ui::EndpointType::kBorealis:
       // Passing empty URL will return restricted if there's a rule restricting
       // the src against any dst (*), otherwise it will return ALLOW.
       level = IsDstRestricted(src_url, GURL());
@@ -89,8 +96,12 @@ bool DataTransferDlpController::IsDataReadAllowed(
       break;
     }
 
-    case ui::EndpointType::kGuestOs:
-      level = IsGuestOsRestricted(src_url);
+    case ui::EndpointType::kCrostini:
+      level = IsCrostiniRestricted(src_url);
+      break;
+
+    case ui::EndpointType::kPluginVm:
+      level = IsPluginVmRestricted(src_url);
       break;
 
     case ui::EndpointType::kArc:

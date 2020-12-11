@@ -91,30 +91,30 @@ DataOffer::AsyncSendDataCallback AsyncEncodeAsRefCountedString(
 }
 
 void ReadTextFromClipboard(const std::string& charset,
+                           const ui::DataTransferEndpoint* data_dst,
                            DataOffer::SendDataCallback callback) {
   base::string16 text;
-  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
+      ui::ClipboardBuffer::kCopyPaste, data_dst, &text);
   std::move(callback).Run(EncodeAsRefCountedString(text, charset));
 }
 
 void ReadHTMLFromClipboard(const std::string& charset,
+                           const ui::DataTransferEndpoint* data_dst,
                            DataOffer::SendDataCallback callback) {
   base::string16 text;
   std::string url;
   uint32_t start, end;
-  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
   ui::Clipboard::GetForCurrentThread()->ReadHTML(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst, &text, &url, &start, &end);
+      ui::ClipboardBuffer::kCopyPaste, data_dst, &text, &url, &start, &end);
   std::move(callback).Run(EncodeAsRefCountedString(text, charset));
 }
 
-void ReadRTFFromClipboard(DataOffer::SendDataCallback callback) {
+void ReadRTFFromClipboard(const ui::DataTransferEndpoint* data_dst,
+                          DataOffer::SendDataCallback callback) {
   std::string text;
-  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
   ui::Clipboard::GetForCurrentThread()->ReadRTF(ui::ClipboardBuffer::kCopyPaste,
-                                                &data_dst, &text);
+                                                data_dst, &text);
   std::move(callback).Run(base::RefCountedString::TakeString(&text));
 }
 
@@ -145,10 +145,10 @@ void OnReceivePNGFromClipboard(DataOffer::SendDataCallback callback,
           std::move(callback)));
 }
 
-void ReadPNGFromClipboard(DataOffer::SendDataCallback callback) {
-  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
+void ReadPNGFromClipboard(const ui::DataTransferEndpoint* data_dst,
+                          DataOffer::SendDataCallback callback) {
   ui::Clipboard::GetForCurrentThread()->ReadImage(
-      ui::ClipboardBuffer::kCopyPaste, &data_dst,
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
       base::BindOnce(&OnReceivePNGFromClipboard, std::move(callback)));
 }
 
@@ -297,14 +297,14 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
   }
 }
 
-void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
-                                 const ui::Clipboard& data) {
+void DataOffer::SetClipboardData(const ui::Clipboard& data,
+                                 ui::EndpointType endpoint_type) {
   DCHECK_EQ(0u, data_callbacks_.size());
-  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
+  const ui::DataTransferEndpoint data_dst(endpoint_type);
   if (data.IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
-    auto utf8_callback =
-        base::BindRepeating(&ReadTextFromClipboard, std::string(kUTF8));
+    auto utf8_callback = base::BindRepeating(&ReadTextFromClipboard,
+                                             std::string(kUTF8), &data_dst);
     delegate_->OnOffer(std::string(ui::kMimeTypeTextUtf8));
     data_callbacks_.emplace(std::string(ui::kMimeTypeTextUtf8), utf8_callback);
     delegate_->OnOffer(std::string(ui::kMimeTypeLinuxUtf8String));
@@ -313,30 +313,30 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
     delegate_->OnOffer(std::string(kTextMimeTypeUtf16));
     data_callbacks_.emplace(
         std::string(kTextMimeTypeUtf16),
-        base::BindOnce(&ReadTextFromClipboard, std::string(kUTF16)));
+        base::BindOnce(&ReadTextFromClipboard, std::string(kUTF16), &data_dst));
   }
   if (data.IsFormatAvailable(ui::ClipboardFormatType::GetHtmlType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     delegate_->OnOffer(std::string(kTextHtmlMimeTypeUtf8));
     data_callbacks_.emplace(
         std::string(kTextHtmlMimeTypeUtf8),
-        base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF8)));
+        base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF8), &data_dst));
     delegate_->OnOffer(std::string(kTextHtmlMimeTypeUtf16));
     data_callbacks_.emplace(
         std::string(kTextHtmlMimeTypeUtf16),
-        base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF16)));
+        base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF16), &data_dst));
   }
   if (data.IsFormatAvailable(ui::ClipboardFormatType::GetRtfType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     delegate_->OnOffer(std::string(kTextRtfMimeType));
     data_callbacks_.emplace(std::string(kTextRtfMimeType),
-                            base::BindOnce(&ReadRTFFromClipboard));
+                            base::BindOnce(&ReadRTFFromClipboard, &data_dst));
   }
   if (data.IsFormatAvailable(ui::ClipboardFormatType::GetBitmapType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     delegate_->OnOffer(std::string(kImagePngMimeType));
     data_callbacks_.emplace(std::string(kImagePngMimeType),
-                            base::BindOnce(&ReadPNGFromClipboard));
+                            base::BindOnce(&ReadPNGFromClipboard, &data_dst));
   }
 }
 

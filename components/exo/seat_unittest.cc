@@ -86,8 +86,24 @@ void RunReadingTask() {
   base::RunLoop().RunUntilIdle();
 }
 
+class TestSeat : public Seat {
+ public:
+  TestSeat() : Seat(std::make_unique<TestDataExchangeDelegate>()) {}
+
+  TestSeat(const TestSeat&) = delete;
+  void operator=(const TestSeat&) = delete;
+
+  void set_focused_surface(Surface* surface) { surface_ = surface; }
+
+  // Seat:
+  Surface* GetFocusedSurface() override { return surface_; }
+
+ private:
+  Surface* surface_ = nullptr;
+};
+
 TEST_F(SeatTest, OnSurfaceFocused) {
-  Seat seat;
+  TestSeat seat;
   MockSeatObserver observer;
 
   seat.AddObserver(&observer);
@@ -100,7 +116,9 @@ TEST_F(SeatTest, OnSurfaceFocused) {
 }
 
 TEST_F(SeatTest, SetSelection) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
@@ -117,7 +135,9 @@ TEST_F(SeatTest, SetSelection) {
 }
 
 TEST_F(SeatTest, SetSelectionTextUTF8) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   // UTF8 encoded data
   const uint8_t data[] = {
@@ -151,7 +171,9 @@ TEST_F(SeatTest, SetSelectionTextUTF8) {
 }
 
 TEST_F(SeatTest, SetSelectionTextUTF8Legacy) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   // UTF8 encoded data
   const uint8_t data[] = {
@@ -177,7 +199,9 @@ TEST_F(SeatTest, SetSelectionTextUTF8Legacy) {
 }
 
 TEST_F(SeatTest, SetSelectionTextUTF16LE) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   // UTF16 little endian encoded data
   const uint8_t data[] = {
@@ -213,7 +237,9 @@ TEST_F(SeatTest, SetSelectionTextUTF16LE) {
 }
 
 TEST_F(SeatTest, SetSelectionTextUTF16BE) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   // UTF16 big endian encoded data
   const uint8_t data[] = {
@@ -249,7 +275,9 @@ TEST_F(SeatTest, SetSelectionTextUTF16BE) {
 }
 
 TEST_F(SeatTest, SetSelectionTextEmptyString) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   const uint8_t data[] = {};
 
@@ -276,7 +304,9 @@ TEST_F(SeatTest, SetSelectionTextEmptyString) {
 }
 
 TEST_F(SeatTest, SetSelectionRTF) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
@@ -293,11 +323,12 @@ TEST_F(SeatTest, SetSelectionRTF) {
 }
 
 TEST_F(SeatTest, SetSelection_TwiceSame) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
-
   seat.SetSelection(&source);
   RunReadingTask();
   seat.SetSelection(&source);
@@ -307,7 +338,9 @@ TEST_F(SeatTest, SetSelection_TwiceSame) {
 }
 
 TEST_F(SeatTest, SetSelection_TwiceDifferent) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   TestDataSourceDelegate delegate1;
   DataSource source1(&delegate1);
@@ -325,7 +358,9 @@ TEST_F(SeatTest, SetSelection_TwiceDifferent) {
 }
 
 TEST_F(SeatTest, SetSelection_ClipboardChangedDuringSetSelection) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
@@ -348,7 +383,9 @@ TEST_F(SeatTest, SetSelection_ClipboardChangedDuringSetSelection) {
 }
 
 TEST_F(SeatTest, SetSelection_ClipboardChangedAfterSetSelection) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
@@ -370,7 +407,9 @@ TEST_F(SeatTest, SetSelection_ClipboardChangedAfterSetSelection) {
 }
 
 TEST_F(SeatTest, SetSelection_SourceDestroyedDuringSetSelection) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
@@ -393,7 +432,9 @@ TEST_F(SeatTest, SetSelection_SourceDestroyedDuringSetSelection) {
 }
 
 TEST_F(SeatTest, SetSelection_SourceDestroyedAfterSetSelection) {
-  Seat seat;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
   TestDataSourceDelegate delegate1;
   {
@@ -421,9 +462,11 @@ TEST_F(SeatTest, SetSelection_SourceDestroyedAfterSetSelection) {
 }
 
 TEST_F(SeatTest, SetSelection_NullSource) {
-  Seat seat;
-  TestDataSourceDelegate delegate;
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
 
+  TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   source.Offer("text/plain;charset=utf-8");
   seat.SetSelection(&source);
@@ -447,7 +490,7 @@ TEST_F(SeatTest, SetSelection_NullSource) {
 }
 
 TEST_F(SeatTest, PressedKeys) {
-  Seat seat;
+  TestSeat seat;
   ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0);
   ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A, 0);
   ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B, 0);
@@ -485,7 +528,7 @@ TEST_F(SeatTest, PressedKeys) {
 }
 
 TEST_F(SeatTest, DragDropAbort) {
-  Seat seat(std::make_unique<TestDataExchangeDelegate>());
+  TestSeat seat;
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   Surface origin, icon;

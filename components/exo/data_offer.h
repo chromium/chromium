@@ -30,6 +30,7 @@ class RefCountedMemory;
 namespace ui {
 class Clipboard;
 class OSExchangeData;
+enum class EndpointType;
 }
 
 namespace exo {
@@ -81,8 +82,8 @@ class DataOffer final : public ui::PropertyHandler {
                    const ui::OSExchangeData& data);
 
   // Sets the clipboard data from |data| to the DataOffer object.
-  void SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
-                        const ui::Clipboard& data);
+  void SetClipboardData(const ui::Clipboard& data,
+                        ui::EndpointType endpoint_type);
 
   // Sets the drag and drop actions which is offered by data source to the
   // DataOffer object.

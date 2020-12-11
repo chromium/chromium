@@ -15,10 +15,6 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -255,36 +251,6 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
   widget->SetBounds(widget_bounds);
 }
 
-base::string16 GetGuestOsToastText(const base::string16& host_name) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile =
-      profile_manager ? profile_manager->GetActiveUserProfile() : nullptr;
-  DCHECK(profile);
-
-  const bool is_crostini_running = crostini::IsCrostiniRunning(profile);
-  const bool is_plugin_vm_running = plugin_vm::IsPluginVmRunning(profile);
-
-  if (is_crostini_running && is_plugin_vm_running) {
-    return l10n_util::GetStringFUTF16(
-        IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_TWO_VMS, host_name,
-        l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX),
-        l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME));
-  }
-  if (is_crostini_running) {
-    return l10n_util::GetStringFUTF16(
-        IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
-        l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX));
-  }
-  if (is_plugin_vm_running) {
-    return l10n_util::GetStringFUTF16(
-        IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
-        l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME));
-  }
-
-  NOTREACHED();
-  return base::string16();
-}
-
 }  // namespace
 
 void DlpClipboardNotificationHelper::NotifyBlockedPaste(
@@ -296,8 +262,16 @@ void DlpClipboardNotificationHelper::NotifyBlockedPaste(
       base::UTF8ToUTF16(data_src->origin()->host());
 
   if (data_dst) {
-    if (data_dst->type() == ui::EndpointType::kGuestOs) {
-      ShowClipboardBlockToast(GetGuestOsToastText(host_name));
+    if (data_dst->type() == ui::EndpointType::kCrostini) {
+      ShowClipboardBlockToast(l10n_util::GetStringFUTF16(
+          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
+          l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX)));
+      return;
+    }
+    if (data_dst->type() == ui::EndpointType::kPluginVm) {
+      ShowClipboardBlockToast(l10n_util::GetStringFUTF16(
+          IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
+          l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
       return;
     }
     if (data_dst->type() == ui::EndpointType::kArc) {

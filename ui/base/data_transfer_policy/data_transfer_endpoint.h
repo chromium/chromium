@@ -18,16 +18,16 @@ namespace ui {
 enum class EndpointType {
   kDefault = 0,  // This type shouldn't be used if any of the following types is
                  // a better match.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || (OS_LINUX) || (OS_FUCHSIA)
-  kGuestOs = 1,  // Guest OS: PluginVM, Crostini.
-#endif           // BUILDFLAG(IS_CHROMEOS_ASH) || (OS_LINUX) || (OS_FUCHSIA)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  kArc = 2,               // ARC.
-#endif                    // BUILDFLAG(IS_CHROMEOS_ASH)
-  kUrl = 3,               // Website URL e.g. www.example.com.
-  kClipboardHistory = 4,  // Clipboard History UI has privileged access to any
+  kUrl = 1,      // Website URL e.g. www.example.com.
+  kClipboardHistory = 2,  // Clipboard History UI has privileged access to any
                           // clipboard data.
-  kMaxValue = kClipboardHistory
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  kUnknownVm = 3,  // The VM type is not identified.
+  kArc = 4,        // ARC.
+  kBorealis = 5,   // Borealis OS.
+  kCrostini = 6,   // Crostini.
+  kPluginVm = 7    // Plugin VM App.
+#endif             // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 // DataTransferEndpoint represents:

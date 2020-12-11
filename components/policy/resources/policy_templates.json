@@ -23756,7 +23756,6 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       Notes:
       - PRIVACY_SCREEN restriction doesn't block the ability to turn on privacy screen, but enforces it when the restriction class is set to BLOCK.
       - Destinations cannot be empty in case one of the restrictions is CLIPBOARD, but they don't make any difference for the remaining restrictions.
-      - The CLIPBOARD restriction cannot differentiate between CROSTINI and PLUGIN_VM. If any of them is selected to block/allow data sharing, the rule applies for both.
       - Format the URL patterns according to this format ( https://www.chromium.org/administrators/url-blacklist-filter-format ).
 
       If the policy is left not set, no restrictions will be applied.''',

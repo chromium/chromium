@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
@@ -247,16 +248,32 @@ ChromeDataExchangeDelegate::ChromeDataExchangeDelegate() = default;
 
 ChromeDataExchangeDelegate::~ChromeDataExchangeDelegate() = default;
 
-void ChromeDataExchangeDelegate::SetExchangeDataSource(
-    aura::Window* target,
-    ui::OSExchangeData* os_exchange_data) {
-  DCHECK(os_exchange_data);
-  auto endpoint_type = ui::EndpointType::kGuestOs;
-  if (ash::window_util::IsArcWindow(target->GetToplevelWindow()))
-    endpoint_type = ui::EndpointType::kArc;
+ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
+    aura::Window* target) const {
+  auto* top_level_window = target->GetToplevelWindow();
 
-  os_exchange_data->SetSource(
-      std::make_unique<ui::DataTransferEndpoint>(endpoint_type));
+  if (ash::window_util::IsArcWindow(top_level_window))
+    return ui::EndpointType::kArc;
+
+  if (borealis::BorealisWindowManager::IsBorealisWindow(top_level_window))
+    return ui::EndpointType::kBorealis;
+
+  if (crostini::IsCrostiniWindow(top_level_window))
+    return ui::EndpointType::kCrostini;
+
+  if (plugin_vm::IsPluginVmAppWindow(top_level_window))
+    return ui::EndpointType::kPluginVm;
+
+  return ui::EndpointType::kUnknownVm;
+}
+
+void ChromeDataExchangeDelegate::SetSourceOnOSExchangeData(
+    aura::Window* target,
+    ui::OSExchangeData* os_exchange_data) const {
+  DCHECK(os_exchange_data);
+
+  os_exchange_data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      GetDataTransferEndpointType(target)));
 }
 
 std::vector<ui::FileInfo> ChromeDataExchangeDelegate::GetFilenames(

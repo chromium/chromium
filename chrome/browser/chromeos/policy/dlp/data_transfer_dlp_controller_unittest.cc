@@ -129,10 +129,10 @@ TEST_F(DataTransferDlpControllerTest, ArcDst) {
   EXPECT_EQ(false, dlp_controller_.IsDataReadAllowed(&data_src, &data_dst));
 }
 
-TEST_F(DataTransferDlpControllerTest, GuestOsDst) {
+TEST_F(DataTransferDlpControllerTest, CrostiniDst) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kGoogleUrl)));
-  ui::DataTransferEndpoint data_dst(ui::EndpointType::kGuestOs);
-  EXPECT_CALL(rules_manager_, IsRestrictedAnyOfComponents)
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kCrostini);
+  EXPECT_CALL(rules_manager_, IsRestrictedComponent)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
   EXPECT_CALL(dlp_controller_, DoNotifyBlockedPaste);
   EXPECT_EQ(false, dlp_controller_.IsDataReadAllowed(&data_src, &data_dst));

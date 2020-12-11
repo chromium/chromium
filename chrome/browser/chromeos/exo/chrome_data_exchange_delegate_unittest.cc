@@ -357,17 +357,37 @@ TEST_F(ChromeDataExchangeDelegateTest, HasUrlsInPickle) {
   EXPECT_EQ(true, data_exchange_delegate.HasUrlsInPickle(valid));
 }
 
+TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
+  ChromeDataExchangeDelegate data_exchange_delegate;
+
+  ui::OSExchangeData os_exchange_data;
+
+  EXPECT_EQ(ui::EndpointType::kArc,
+            data_exchange_delegate.GetDataTransferEndpointType(arc_window_));
+
+  EXPECT_EQ(
+      ui::EndpointType::kCrostini,
+      data_exchange_delegate.GetDataTransferEndpointType(crostini_window_));
+
+  EXPECT_EQ(
+      ui::EndpointType::kPluginVm,
+      data_exchange_delegate.GetDataTransferEndpointType(plugin_vm_window_));
+}
+
 TEST_F(ChromeDataExchangeDelegateTest, SetExchangeDataSource) {
   ChromeDataExchangeDelegate data_exchange_delegate;
 
   ui::OSExchangeData os_exchange_data;
 
-  data_exchange_delegate.SetExchangeDataSource(arc_window_, &os_exchange_data);
+  data_exchange_delegate.SetSourceOnOSExchangeData(arc_window_,
+                                                   &os_exchange_data);
+  EXPECT_TRUE(os_exchange_data.GetSource());
   EXPECT_EQ(ui::EndpointType::kArc, os_exchange_data.GetSource()->type());
 
-  data_exchange_delegate.SetExchangeDataSource(crostini_window_,
-                                               &os_exchange_data);
-  EXPECT_EQ(ui::EndpointType::kGuestOs, os_exchange_data.GetSource()->type());
+  data_exchange_delegate.SetSourceOnOSExchangeData(crostini_window_,
+                                                   &os_exchange_data);
+  EXPECT_TRUE(os_exchange_data.GetSource());
+  EXPECT_EQ(ui::EndpointType::kCrostini, os_exchange_data.GetSource()->type());
 }
 
 }  // namespace chromeos
