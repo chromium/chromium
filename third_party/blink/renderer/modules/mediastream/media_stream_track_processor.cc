@@ -19,8 +19,9 @@ namespace blink {
 
 MediaStreamTrackProcessor::MediaStreamTrackProcessor(
     ScriptState* script_state,
-    MediaStreamComponent* input_track)
-    : input_track_(input_track) {
+    MediaStreamComponent* input_track,
+    uint16_t buffer_size)
+    : input_track_(input_track), buffer_size_(buffer_size) {
   DCHECK(input_track_);
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kMediaStreamTrackProcessor);
@@ -37,10 +38,44 @@ void MediaStreamTrackProcessor::CreateVideoSourceStream(
     ScriptState* script_state) {
   DCHECK(!source_stream_);
   video_underlying_source_ =
-      MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSource>(script_state,
-                                                                  input_track_);
+      MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSource>(
+          script_state, input_track_, buffer_size_);
   source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, video_underlying_source_, /*high_water_mark=*/0);
+}
+
+MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
+    ScriptState* script_state,
+    MediaStreamTrack* track,
+    uint16_t buffer_size,
+    ExceptionState& exception_state) {
+  if (!track) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Input track cannot be null");
+    return nullptr;
+  }
+
+  if (track->readyState() == "ended") {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Input track cannot be ended");
+    return nullptr;
+  }
+
+  if (track->kind() != "video") {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Only video tracks are supported");
+    return nullptr;
+  }
+
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The context has been destroyed");
+
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<MediaStreamTrackProcessor>(
+      script_state, track->Component(), buffer_size);
 }
 
 MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
@@ -52,22 +87,13 @@ MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
                                       "Input track cannot be null");
     return nullptr;
   }
-
-  if (track->kind() != "video") {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Only video tracks are supported");
-    return nullptr;
-  }
-
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "The context has been destroyed");
-
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<MediaStreamTrackProcessor>(script_state,
-                                                         track->Component());
+  // Using 1 as default buffer size for video since by default we do not want
+  // to buffer, as buffering interferes with MediaStream sources that drop
+  // frames if they start to be buffered (e.g, camera sources).
+  // Using 10 as default for audio, which coincides with the buffer size for
+  // the Web Audio MediaStream sink.
+  uint16_t buffer_size = track->kind() == "video" ? 1u : 10u;
+  return Create(script_state, track, buffer_size, exception_state);
 }
 
 void MediaStreamTrackProcessor::Trace(Visitor* visitor) const {

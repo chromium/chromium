@@ -23,8 +23,14 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
  public:
   static MediaStreamTrackProcessor* Create(ScriptState*,
                                            MediaStreamTrack*,
+                                           uint16_t buffer_size,
                                            ExceptionState&);
-  MediaStreamTrackProcessor(ScriptState*, MediaStreamComponent*);
+  static MediaStreamTrackProcessor* Create(ScriptState*,
+                                           MediaStreamTrack*,
+                                           ExceptionState&);
+  MediaStreamTrackProcessor(ScriptState*,
+                            MediaStreamComponent*,
+                            uint16_t buffer_size);
   MediaStreamTrackProcessor(const MediaStreamTrackProcessor&) = delete;
   MediaStreamTrackProcessor& operator=(const MediaStreamTrackProcessor&) =
       delete;
@@ -42,6 +48,7 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
   Member<MediaStreamComponent> input_track_;
   Member<MediaStreamVideoTrackUnderlyingSource> video_underlying_source_;
   Member<ReadableStream> source_stream_;
+  uint16_t buffer_size_;
 };
 
 }  // namespace blink

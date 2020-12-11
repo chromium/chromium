@@ -237,6 +237,24 @@ TEST_F(MediaStreamTrackProcessorTest, NullInputTrack) {
             DOMExceptionCode::kOperationError);
 }
 
+TEST_F(MediaStreamTrackProcessorTest, EndedTrack) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  PushableMediaStreamVideoSource* pushable_video_source =
+      CreatePushableVideoSource();
+  MediaStreamTrack* track = CreateVideoMediaStreamTrack(
+      v8_scope.GetExecutionContext(), pushable_video_source);
+  track->stopTrack(v8_scope.GetExecutionContext());
+  MediaStreamTrackProcessor* track_processor =
+      MediaStreamTrackProcessor::Create(script_state, track, exception_state);
+
+  EXPECT_EQ(track_processor, nullptr);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(static_cast<DOMExceptionCode>(v8_scope.GetExceptionState().Code()),
+            DOMExceptionCode::kInvalidStateError);
+}
+
 // TODO(crbug.com/1142955): Add support for audio.
 TEST_F(MediaStreamTrackProcessorTest, Audio) {
   V8TestingScope v8_scope;
