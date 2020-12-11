@@ -4036,6 +4036,28 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, OriginToCommitSandboxFromFrame) {
   EXPECT_NE(origin_to_commit, origin_committed);
 }
 
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       NavigateToAboutBlankWhileFirstNavigationPending) {
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/empty.html");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/empty.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  ShellAddedObserver new_shell_observer;
+  ExecuteScriptAsync(
+      current_frame_host(),
+      JsReplace("window.open($1, '_blank').location = 'about:blank'", url_b));
+
+  WebContents* popup_contents = new_shell_observer.GetShell()->web_contents();
+  TestNavigationManager manager_1(popup_contents, url_b);
+  TestNavigationManager manager_2(popup_contents, GURL("about:blank"));
+
+  manager_1.WaitForNavigationFinished();
+  manager_2.WaitForNavigationFinished();
+
+  EXPECT_EQ(popup_contents->GetURL(), "about:blank");
+}
+
 class NetworkIsolationSplitCacheAppendIframeOrigin
     : public NavigationBaseBrowserTest {
  public:

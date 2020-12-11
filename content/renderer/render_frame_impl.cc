@@ -5489,7 +5489,8 @@ void RenderFrameImpl::BeginNavigation(
     // synchronously.
     bool is_first_real_empty_document_navigation =
         WebDocumentLoader::WillLoadUrlAsEmpty(url) &&
-        !frame_->HasCommittedFirstRealLoad();
+        !frame_->HasCommittedFirstRealLoad() &&
+        !browser_side_navigation_pending_;
 
     if (is_first_real_empty_document_navigation &&
         !is_history_navigation_in_new_child_frame) {
