@@ -29,7 +29,7 @@ std::unique_ptr<CmaBackend> CmaBackendFactoryImpl::CreateBackend(
       media_pipeline_backend_manager_->CreateBackend(params);
 
 #if BUILDFLAG(ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER)
-  backend = std::make_unique<CmaBackendProxy>(std::move(backend));
+  backend = std::make_unique<CmaBackendProxy>(params, std::move(backend));
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER)
 
   return backend;

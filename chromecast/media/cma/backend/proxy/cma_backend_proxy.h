@@ -17,11 +17,14 @@
 namespace chromecast {
 namespace media {
 
-// This class is used to proxy audio data to an external
-// CmaBackend::AudioDecoder over gRPC, while delegating video decoding to an
-// alternate CMA Backend.
+struct MediaPipelineDeviceParams;
+
+// This class is used to intercept audio data and control messages being sent to
+// the local CmaBackend and forward it to a remote instance prior to local
+// processing in the underlying CmaBackend.
+//
 // NOTE: By design, this class does NOT handle a/v sync drift between
-// |audio_decoder_| and |delegated_video_pipeline_|.
+// |audio_decoder_| and |delegated_pipeline_|.
 class CmaBackendProxy : public CmaBackend {
  public:
   using AudioDecoderFactoryCB =
@@ -29,11 +32,15 @@ class CmaBackendProxy : public CmaBackend {
 
   // Creates a new CmaBackendProxy such that all video processing is delegated
   // to |delegated_video_pipeline|.
-  explicit CmaBackendProxy(
-      std::unique_ptr<CmaBackend> delegated_video_pipeline);
+  CmaBackendProxy(const MediaPipelineDeviceParams& params,
+                  std::unique_ptr<CmaBackend> delegated_video_pipeline);
   ~CmaBackendProxy() override;
 
   // MediaPipelineBackend implementation:
+  //
+  // NOTE: Each of these calls must forward the call both to the gRPC Pipe (if
+  // the audio decoder exists) and to the local audio decoder (if either audio
+  // or video decoding is occuring).
   CmaBackend::AudioDecoder* CreateAudioDecoder() override;
   CmaBackend::VideoDecoder* CreateVideoDecoder() override;
   bool Initialize() override;
@@ -50,19 +57,23 @@ class CmaBackendProxy : public CmaBackend {
   friend class CmaBackendProxyTest;
 
   // Creates a new CmaBackendProxy such that all video processing is delegated
-  // to |delegated_video_pipeline| and all audio processing is delegated to a
+  // to |delegated_pipeline| and all audio processing is delegated to a
   // new MultizoneAudioDecoderProxy created by |audio_decoder_factory|.
-  CmaBackendProxy(std::unique_ptr<CmaBackend> delegated_video_pipeline,
-                  AudioDecoderFactoryCB audio_decoder_factory);
+  CmaBackendProxy(AudioDecoderFactoryCB audio_decoder_factory,
+                  std::unique_ptr<CmaBackend> delegated_pipeline);
+
+  // Helper to create the AudioDecoder instance, used with base::bind.
+  std::unique_ptr<MultizoneAudioDecoderProxy> CreateAudioDecoderProxy(
+      const MediaPipelineDeviceParams& params);
 
   // The audio decoder to which audio operations should be delegated.
   std::unique_ptr<MultizoneAudioDecoderProxy> audio_decoder_;
 
   // The CMA Backend to which all video decoding is delegated.
-  std::unique_ptr<CmaBackend> delegated_video_pipeline_;
+  std::unique_ptr<CmaBackend> delegated_pipeline_;
 
   // Determines whether a video decoder is being used. If not, calls should not
-  // be delegated to the |delegated_video_pipeline_|, as it may not behave as
+  // be delegated to the |delegated_pipeline_|, as it may not behave as
   // expected when neither the audio or video decoders are initialized.
   bool has_video_decoder_ = false;
 

@@ -27,12 +27,12 @@ class MultizoneAudioDecoderProxy : public CmaBackend::AudioDecoder {
 
   ~MultizoneAudioDecoderProxy() override = default;
 
-  virtual bool Initialize() = 0;
-  virtual bool Start(int64_t start_pts) = 0;
+  virtual void Initialize() = 0;
+  virtual void Start(int64_t start_pts) = 0;
   virtual void Stop() = 0;
-  virtual bool Pause() = 0;
-  virtual bool Resume() = 0;
-  virtual bool SetPlaybackRate(float rate) = 0;
+  virtual void Pause() = 0;
+  virtual void Resume() = 0;
+  virtual void SetPlaybackRate(float rate) = 0;
   virtual void LogicalPause() = 0;
   virtual void LogicalResume() = 0;
   virtual int64_t GetCurrentPts() const = 0;
