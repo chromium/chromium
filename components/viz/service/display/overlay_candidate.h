@@ -99,8 +99,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   bool is_clipped;
   // If the quad doesn't require blending.
   bool is_opaque;
-  // The quad's occluding damage rect is empty.
-  bool no_occluding_damage;
   // Texture resource to present in an overlay.
   unsigned resource_id;
   // Mailbox from resource_id. It is used by SkiaRenderer.
@@ -121,11 +119,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // which is 0. Signed to allow for "underlays".
   int plane_z_order = 0;
 
-  // True if the overlay does not have any visible quads on top of it. Set by
-  // the strategy so the OverlayProcessor can consider subtracting damage caused
-  // by underlay quads.
-  bool is_unoccluded;
-
   // To be modified by the implementer if this candidate can go into
   // an overlay.
   bool overlay_handled;
@@ -138,6 +131,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   int damage_area_estimate = 0;
 
   // Result of call to 'RequiresOverlay' function w/ associated quad.
+  static constexpr uint32_t kInvalidDamageIndex = UINT_MAX;
+  uint32_t overlay_damage_index = kInvalidDamageIndex;
+
+  // Cached result of call to 'RequiresOverlay' function.
   bool requires_overlay = false;
 
  private:

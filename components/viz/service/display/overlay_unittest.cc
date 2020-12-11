@@ -175,6 +175,17 @@ class UnderlayOverlayProcessor : public DefaultOverlayProcessor {
   }
 };
 
+class TransitionOverlayProcessor : public DefaultOverlayProcessor {
+ public:
+  TransitionOverlayProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
+    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
+    prioritization_config_.changing_threshold = false;
+    prioritization_config_.damage_rate_threshold = false;
+    prioritization_config_.power_gain_sort = false;
+  }
+};
+
 class TransparentUnderlayOverlayProcessor : public DefaultOverlayProcessor {
  public:
   TransparentUnderlayOverlayProcessor() : DefaultOverlayProcessor() {
@@ -582,6 +593,8 @@ using FullscreenOverlayTest = OverlayTest<FullscreenOverlayProcessor>;
 using SingleOverlayOnTopTest = OverlayTest<SingleOnTopOverlayProcessor>;
 using ChangeSingleOnTopTest = OverlayTest<ChangeThresholdOnTopOverlayProcessor>;
 using FullThresholdTest = OverlayTest<FullThresholdUnderlayOverlayProcessor>;
+using TransitionOverlayTypeTest = OverlayTest<TransitionOverlayProcessor>;
+
 using UnderlayTest = OverlayTest<UnderlayOverlayProcessor>;
 using TransparentUnderlayTest =
     OverlayTest<TransparentUnderlayOverlayProcessor>;
@@ -928,11 +941,21 @@ TEST_F(SingleOverlayOnTopTest, DamageRect) {
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
   damage_rect_ = kOverlayRect;
 
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  SharedQuadState* default_damaged_shared_quad_state =
+      pass->shared_quad_state_list.AllocateAndCopyFrom(
+          pass->shared_quad_state_list.back());
+
+  auto* sqs = pass->shared_quad_state_list.front();
+  surface_damage_rect_list.emplace_back(damage_rect_);
+  sqs->overlay_damage_index = 0;
+
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                             pass->shared_quad_state_list.back(), pass.get());
+                             default_damaged_shared_quad_state, pass.get());
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                             pass->shared_quad_state_list.back(), pass.get());
+                             pass->shared_quad_state_list.front(), pass.get());
 
   // Check for potential candidates.
   OverlayCandidateList candidate_list;
@@ -941,7 +964,6 @@ TEST_F(SingleOverlayOnTopTest, DamageRect) {
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
-  SurfaceDamageRectList surface_damage_rect_list;
 
   overlay_processor_->ProcessForOverlays(
       resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
@@ -1968,8 +1990,81 @@ TEST_F(UnderlayTest, AllowOnTop) {
   EXPECT_EQ(SK_ColorTRANSPARENT, quad->color);
 }
 
-// The first time an underlay is scheduled its damage must not be subtracted.
-TEST_F(UnderlayTest, InitialUnderlayDamageNotSubtracted) {
+// Pure overlays have a very specific optimization that does not produce damage
+// on promotion because it is not required. However the same rect overlay
+// transitions to an underlay the entire |display_rect| must damage the primary
+// plane.This allows for the transparent black window to be drawn allowing the
+// underlay to show through.
+TEST_F(TransitionOverlayTypeTest, DamageChangeOnTransistionOverlayType) {
+  static const int kOverlayFrameStart = 3;
+  static const int kOverlayFrameEnd = 5;
+  for (int i = 0; i < 8; ++i) {
+    auto pass = CreateRenderPass();
+    damage_rect_ = kOverlayTopLeftRect;
+
+    SharedQuadState* default_damaged_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+
+    SurfaceDamageRectList surface_damage_rect_list;
+    auto* sqs = pass->shared_quad_state_list.front();
+    sqs->overlay_damage_index = 0;
+    surface_damage_rect_list.emplace_back(damage_rect_);
+
+    // A partially occluding quad is used to force an underlay rather than pure
+    // overlay.
+    if (i >= kOverlayFrameStart && i < kOverlayFrameEnd) {
+      CreateSolidColorQuadAt(pass->shared_quad_state_list.back(), SK_ColorBLACK,
+                             pass.get(), kOverlayTopLeftRect);
+    }
+
+    CreateFullscreenCandidateQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.front(),
+        pass.get());
+
+    // Add something behind it.
+    CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                               default_damaged_shared_quad_state, pass.get());
+
+    OverlayCandidateList candidate_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
+        &content_bounds_);
+
+    EXPECT_EQ(candidate_list.size(), 1U);
+
+    if (i < kOverlayFrameStart) {
+      // A pure overlay does not produce damage on promotion and all associated
+      // damage with this quad is excluded.
+      EXPECT_GE(candidate_list[0].plane_z_order, 0);
+      EXPECT_TRUE(damage_rect_.IsEmpty());
+    } else if (i == kOverlayFrameStart) {
+      // An underlay must draw a transparent black window to the primary plane
+      // to show through.
+      EXPECT_LT(candidate_list[0].plane_z_order, 0);
+      EXPECT_EQ(damage_rect_, kOverlayRect);
+    } else if (i < kOverlayFrameEnd) {
+      EXPECT_LT(candidate_list[0].plane_z_order, 0);
+      // Empty damage is expect for an underlay for all frames after promotion.
+      EXPECT_TRUE(damage_rect_.IsEmpty());
+    } else if (i >= kOverlayFrameEnd) {
+      EXPECT_GE(candidate_list[0].plane_z_order, 0);
+      // Underlay to pure overlay transition should not produce any damage.
+      EXPECT_TRUE(damage_rect_.IsEmpty());
+    }
+  }
+}
+
+// The first time an underlay is scheduled its damage must not be excluded.
+TEST_F(UnderlayTest, InitialUnderlayDamageNotExcluded) {
   auto pass = CreateRenderPass();
   CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
@@ -1994,61 +2089,91 @@ TEST_F(UnderlayTest, InitialUnderlayDamageNotSubtracted) {
 }
 
 // An identical underlay for two frames in a row means the damage can be
-// subtracted the second time.
-TEST_F(UnderlayTest, DamageSubtractedForConsecutiveIdenticalUnderlays) {
-  for (int i = 0; i < 2; ++i) {
+// excluded the second time. On demotion the frame damage will be the display
+// rect of the underlay. After the demotion there will be no exclusion of
+// damage.
+TEST_F(UnderlayTest, DamageExcludedForConsecutiveIdenticalUnderlays) {
+  static const int kDemotionFrame = 3;
+  for (int i = 0; i < 5; ++i) {
     auto pass = CreateRenderPass();
-    CreateFullscreenCandidateQuad(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+    damage_rect_ = kOverlayTopLeftRect;
 
-    damage_rect_ = kOverlayRect;
+    SharedQuadState* default_damaged_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
 
+    SurfaceDamageRectList surface_damage_rect_list;
+    if (i < kDemotionFrame) {
+      auto* sqs = pass->shared_quad_state_list.front();
+      sqs->overlay_damage_index = 0;
+      surface_damage_rect_list.emplace_back(damage_rect_);
+
+      CreateFullscreenCandidateQuad(
+          resource_provider_.get(), child_resource_provider_.get(),
+          child_provider_.get(), pass->shared_quad_state_list.front(),
+          pass.get());
+    }
     // Add something behind it.
     CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                               pass->shared_quad_state_list.back(), pass.get());
+                               default_damaged_shared_quad_state, pass.get());
 
     OverlayCandidateList candidate_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list;
 
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
         &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
         &content_bounds_);
-  }
 
-  // The second time the same overlay rect is scheduled it will be subtracted
-  // from the damage rect.
-  EXPECT_TRUE(damage_rect_.IsEmpty());
+    if (i == 0) {
+      // A promoted underlay needs to damage the primary plane on the first
+      // frame of promotion.
+      EXPECT_EQ(kOverlayRect, damage_rect_);
+    } else if (i < kDemotionFrame) {
+      EXPECT_TRUE(damage_rect_.IsEmpty());
+    } else if (i == kDemotionFrame) {
+      // A demoted underlay needs to damage the primary plane on the frame of
+      // demotion.
+      EXPECT_EQ(kOverlayRect, damage_rect_);
+    } else if (i > kDemotionFrame) {
+      // No overlay candidates so the damage will be whatever root damage was
+      // input to the overlay processsor.
+      EXPECT_EQ(damage_rect_, kOverlayTopLeftRect);
+    }
+  }
 }
 
-// Underlay damage can only be subtracted if the previous frame's underlay
+// Underlay damage can only be excluded if the previous frame's underlay
 // was the same rect.
-TEST_F(UnderlayTest, DamageNotSubtractedForNonIdenticalConsecutiveUnderlays) {
-  gfx::Rect overlay_rects[] = {kOverlayBottomRightRect, kOverlayRect};
-  for (int i = 0; i < 2; ++i) {
-    AddExpectedRectToOverlayProcessor(gfx::RectF(overlay_rects[i]));
+TEST_F(UnderlayTest, DamageNotExcludedForNonIdenticalConsecutiveUnderlays) {
+  gfx::Rect kSmallTestRect = gfx::Rect(5, 5, 20, 20);
+  gfx::Rect overlay_rects[] = {kOverlayBottomRightRect, kSmallTestRect,
+                               kOverlayTopLeftRect, kOverlayRect};
+  gfx::Rect prev_rect;
+  for (auto&& curr_rect : overlay_rects) {
+    AddExpectedRectToOverlayProcessor(gfx::RectF(curr_rect));
 
     auto pass = CreateRenderPass();
+    SurfaceDamageRectList surface_damage_rect_list;
+    auto* sqs = pass->shared_quad_state_list.front();
+    sqs->overlay_damage_index = 0;
+    damage_rect_ = gfx::Rect(10, 10, 10, 10);
+    surface_damage_rect_list.emplace_back(damage_rect_);
 
     CreateCandidateQuadAt(resource_provider_.get(),
                           child_resource_provider_.get(), child_provider_.get(),
                           pass->shared_quad_state_list.back(), pass.get(),
-                          overlay_rects[i]);
-
-    damage_rect_ = overlay_rects[i];
+                          curr_rect);
 
     OverlayCandidateList candidate_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list;
 
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
@@ -2056,71 +2181,98 @@ TEST_F(UnderlayTest, DamageNotSubtractedForNonIdenticalConsecutiveUnderlays) {
         &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
         &content_bounds_);
 
-    EXPECT_EQ(overlay_rects[i], damage_rect_);
+    // This is a union as the demoted underlay display rect is added as damage
+    // as well as the newly promoted underlay display rect (updating the primary
+    // plane for underlays).
+    gfx::Rect temp_union = prev_rect;
+    temp_union.Union(curr_rect);
+    EXPECT_EQ(temp_union, damage_rect_);
+    prev_rect = curr_rect;
   }
 }
 
-// Underlay damage can only be subtracted if the previous frame's underlay
-// exists.
-TEST_F(UnderlayTest, DamageNotSubtractedForNonConsecutiveIdenticalUnderlays) {
-  bool has_fullscreen_candidate[] = {true, false, true};
+// Underlay damage can only be excluded if the previous frame's underlay exists.
+TEST_F(UnderlayTest, DamageNotExcludedForNonConsecutiveIdenticalUnderlays) {
+  bool has_fullscreen_candidate[] = {true, false, true, true, true, false};
 
   for (int i = 0; i < 3; ++i) {
     auto pass = CreateRenderPass();
+    damage_rect_ = kOverlayRect;
+
+    SharedQuadState* default_damaged_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+
+    SurfaceDamageRectList surface_damage_rect_list;
+    auto* sqs = pass->shared_quad_state_list.front();
+    sqs->overlay_damage_index = 0;
+    surface_damage_rect_list.emplace_back(damage_rect_);
 
     if (has_fullscreen_candidate[i]) {
       CreateFullscreenCandidateQuad(
           resource_provider_.get(), child_resource_provider_.get(),
-          child_provider_.get(), pass->shared_quad_state_list.back(),
+          child_provider_.get(), pass->shared_quad_state_list.front(),
           pass.get());
     }
 
-    damage_rect_ = kOverlayRect;
-
     // Add something behind it.
     CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                               pass->shared_quad_state_list.back(), pass.get());
+                               default_damaged_shared_quad_state, pass.get());
 
     OverlayCandidateList candidate_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list;
 
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
         &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
         &content_bounds_);
+    if (i == 0) {
+      EXPECT_FALSE(damage_rect_.IsEmpty());
+    } else {
+      EXPECT_EQ(damage_rect_.IsEmpty(),
+                has_fullscreen_candidate[i] && has_fullscreen_candidate[i - 1]);
+    }
   }
-
-  EXPECT_EQ(kOverlayRect, damage_rect_);
 }
 
-// An identical overlay that is occluded should not have damage subtracted until
-// it has been unoccluded for more than one frame.
-TEST_F(UnderlayTest, DamageSubtractedForOneFrameAfterBecomingUnoccluded) {
+TEST_F(UnderlayTest, DamageExcludedForCandidateAndThoseOccluded) {
   for (int i = 0; i < 3; ++i) {
     auto pass = CreateRenderPass();
-    if (i == 0) {
-      // Add an overlapping quad above the candidate for the first frame.
-      CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                                 pass->shared_quad_state_list.back(),
-                                 pass.get());
+    damage_rect_ = kOverlayRect;
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    if (i == 1) {
+      // Create damages in front which should not be excluded.
+      surface_damage_rect_list.emplace_back(kOverlayTopLeftRect);
+      auto* sqs = pass->shared_quad_state_list.front();
+      sqs->overlay_damage_index = 1;
+      surface_damage_rect_list.emplace_back(damage_rect_);
+    } else {
+      auto* sqs = pass->shared_quad_state_list.front();
+      sqs->overlay_damage_index = 0;
+      surface_damage_rect_list.emplace_back(damage_rect_);
     }
+
+    if (i > 1) {
+      // This damage is after our overlay will be excluded from our final
+      // damage.
+      surface_damage_rect_list.emplace_back(kOverlayTopLeftRect);
+    }
+
     CreateFullscreenCandidateQuad(
         resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    damage_rect_ = kOverlayRect;
+        child_provider_.get(), pass->shared_quad_state_list.front(),
+        pass.get());
 
     OverlayCandidateList candidate_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list;
 
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
@@ -2128,67 +2280,56 @@ TEST_F(UnderlayTest, DamageSubtractedForOneFrameAfterBecomingUnoccluded) {
         &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
         &content_bounds_);
 
-    // The damage rect should not be subtracted if the underlay is occluded
-    // (i==0) or it is unoccluded for the first time (i==1).
-    if (i < 2)
+    // The damage rect should not be excluded if the underlay has been promoted
+    // this frame.
+    if (i == 0) {
       EXPECT_FALSE(damage_rect_.IsEmpty());
+    } else if (i == 1) {
+      // Additional damage at i == 1 should also not be excluded as it comes in
+      // front of our underlay.
+      EXPECT_EQ(damage_rect_, kOverlayTopLeftRect);
+    }
   }
-  // The second time the same overlay rect is scheduled it should be subtracted
+  // The second time the same overlay rect is scheduled it should be excluded
   // from the damage rect.
   EXPECT_TRUE(damage_rect_.IsEmpty());
 }
 
-TEST_F(UnderlayTest, DamageNotSubtractedWhenQuadsAboveOverlap) {
-  for (int i = 0; i < 2; ++i) {
-    auto pass = CreateRenderPass();
-    // Add an overlapping quad above the candidate.
-    CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                               pass->shared_quad_state_list.back(), pass.get());
-    CreateFullscreenCandidateQuad(
-        resource_provider_.get(), child_resource_provider_.get(),
-        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-
-    damage_rect_ = kOverlayRect;
-
-    OverlayCandidateList candidate_list;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-    AggregatedRenderPassList pass_list;
-    pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list;
-
-    overlay_processor_->ProcessForOverlays(
-        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-        render_pass_filters, render_pass_backdrop_filters,
-        &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
-        &content_bounds_);
-  }
-
-  EXPECT_EQ(kOverlayRect, damage_rect_);
-}
-
-TEST_F(UnderlayTest, DamageSubtractedWhenQuadsAboveDontOverlap) {
+TEST_F(UnderlayTest, DamageExtractedWhenQuadsAboveDontOverlap) {
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayBottomRightRect));
 
   for (int i = 0; i < 2; ++i) {
     auto pass = CreateRenderPass();
+
+    SharedQuadState* default_damaged_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+
+    SurfaceDamageRectList surface_damage_rect_list;
+    default_damaged_shared_quad_state->overlay_damage_index = 0;
+    surface_damage_rect_list.emplace_back(kOverlayTopLeftRect);
+
+    auto* sqs = pass->shared_quad_state_list.front();
+    sqs->overlay_damage_index = 1;
+    surface_damage_rect_list.emplace_back(kOverlayBottomRightRect);
+
     // Add a non-overlapping quad above the candidate.
     CreateOpaqueQuadAt(resource_provider_.get(),
-                       pass->shared_quad_state_list.back(), pass.get(),
+                       default_damaged_shared_quad_state, pass.get(),
                        kOverlayTopLeftRect);
     CreateCandidateQuadAt(resource_provider_.get(),
                           child_resource_provider_.get(), child_provider_.get(),
-                          pass->shared_quad_state_list.back(), pass.get(),
+                          pass->shared_quad_state_list.front(), pass.get(),
                           kOverlayBottomRightRect);
 
     damage_rect_ = kOverlayBottomRightRect;
+    damage_rect_.Union(kOverlayTopLeftRect);
 
     OverlayCandidateList candidate_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list;
 
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
@@ -2197,7 +2338,7 @@ TEST_F(UnderlayTest, DamageSubtractedWhenQuadsAboveDontOverlap) {
         &content_bounds_);
   }
 
-  EXPECT_TRUE(damage_rect_.IsEmpty());
+  EXPECT_EQ(damage_rect_, kOverlayTopLeftRect);
 }
 
 TEST_F(UnderlayTest, PrimaryPlaneOverlayIsTransparentWithUnderlay) {
@@ -2434,11 +2575,20 @@ TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
 
   for (size_t i = 0; i < base::size(expected_damages); ++i) {
     auto pass = CreateRenderPass();
+    SurfaceDamageRectList surface_damage_rect_list;
+    SharedQuadState* default_damaged_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+    default_damaged_shared_quad_state->overlay_damage_index = 0;
+    surface_damage_rect_list.emplace_back(gfx::Rect());
 
     if (has_fullscreen_candidate[i]) {
+      auto* sqs = pass->shared_quad_state_list.front();
+      surface_damage_rect_list.emplace_back(damages[i]);
+      sqs->overlay_damage_index = 1;
       CreateFullscreenCandidateQuad(
           resource_provider_.get(), child_resource_provider_.get(),
-          child_provider_.get(), pass->shared_quad_state_list.back(),
+          child_provider_.get(), pass->shared_quad_state_list.front(),
           pass.get());
     }
 
@@ -2454,7 +2604,6 @@ TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
         render_pass_background_filters;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
-    SurfaceDamageRectList surface_damage_rect_list;
 
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
@@ -2475,6 +2624,7 @@ TEST_F(UnderlayTest, CandidateNoDamageWhenQuadSharedStateNoOccludingDamage) {
     SurfaceDamageRectList surface_damage_rect_list;
 
     gfx::Rect rect(2, 3);
+    gfx::Rect kSmallDamageRect(1, 1, 10, 10);
     SharedQuadState* default_damaged_shared_quad_state =
         pass->shared_quad_state_list.AllocateAndCopyFrom(
             pass->shared_quad_state_list.back());
@@ -2484,8 +2634,8 @@ TEST_F(UnderlayTest, CandidateNoDamageWhenQuadSharedStateNoOccludingDamage) {
       surface_damage_rect_list.emplace_back(0, 0, 20, 20);
     } else if (i == 3) {
       auto* sqs = pass->shared_quad_state_list.front();
-      // For the solid color quad gfx::Rect(1, 1, 10, 10).
-      surface_damage_rect_list.emplace_back(1, 1, 10, 10);
+      // For the solid color quad kSmallDamageRect.
+      surface_damage_rect_list.emplace_back(kSmallDamageRect);
       // For the overlay quad gfx::Rect(0, 0, 20, 20).
       surface_damage_rect_list.emplace_back(0, 0, 20, 20);
       sqs->overlay_damage_index = 1;
@@ -2513,12 +2663,15 @@ TEST_F(UnderlayTest, CandidateNoDamageWhenQuadSharedStateNoOccludingDamage) {
         &surface_damage_rect_list, nullptr, &candidate_list, &damage_rect_,
         &content_bounds_);
 
-    if (i == 0 || i == 1 || i == 3) {
-      EXPECT_FALSE(candidate_list[0].no_occluding_damage);
+    if (i == 0 || i == 1) {
+      EXPECT_EQ(candidate_list[0].overlay_damage_index,
+                OverlayCandidate::kInvalidDamageIndex);
       EXPECT_FALSE(damage_rect_.IsEmpty());
-
+    } else if (i == 3) {
+      EXPECT_EQ(candidate_list[0].overlay_damage_index, 1U);
+      EXPECT_EQ(damage_rect_, kSmallDamageRect);
     } else if (i == 2) {
-      EXPECT_TRUE(candidate_list[0].no_occluding_damage);
+      EXPECT_EQ(candidate_list[0].overlay_damage_index, 0U);
       EXPECT_TRUE(damage_rect_.IsEmpty());
     }
   }
@@ -2879,8 +3032,9 @@ class GLRendererWithOverlaysTest : public testing::Test {
   }
 
   void DrawFrame(AggregatedRenderPassList* pass_list,
-                 const gfx::Size& viewport_size) {
-    SurfaceDamageRectList surface_damage_rect_list;
+                 const gfx::Size& viewport_size,
+                 SurfaceDamageRectList surface_damage_rect_list =
+                     SurfaceDamageRectList()) {
     renderer_->DrawFrame(pass_list, 1.f, viewport_size,
                          gfx::DisplayColorSpaces(), &surface_damage_rect_list);
   }
@@ -3061,20 +3215,31 @@ TEST_F(GLRendererWithOverlaysTest, OccludedQuadNotDrawnWhenPartialSwapEnabled) {
 
   auto pass = CreateRenderPass();
 
+  SurfaceDamageRectList surface_damage_rect_list;
+  SharedQuadState* default_damaged_shared_quad_state =
+      pass->shared_quad_state_list.AllocateAndCopyFrom(
+          pass->shared_quad_state_list.back());
+  auto* sqs = pass->shared_quad_state_list.front();
+  surface_damage_rect_list.emplace_back(pass->output_rect);
+  sqs->overlay_damage_index = 0;
+
+  surface_damage_rect_list.emplace_back(pass->output_rect);
+  default_damaged_shared_quad_state->overlay_damage_index = 1;
+
   CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
-      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+      child_provider_.get(), pass->shared_quad_state_list.front(), pass.get());
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                             pass->shared_quad_state_list.back(), pass.get());
+                             default_damaged_shared_quad_state, pass.get());
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                             pass->shared_quad_state_list.back(), pass.get());
+                             default_damaged_shared_quad_state, pass.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
   EXPECT_CALL(*renderer_, DoDrawQuad(_, _)).Times(0);
   EXPECT_CALL(scheduler_, Schedule(_, _, _, _, _, _, _)).Times(2);
-  DrawFrame(&pass_list, kDisplaySize);
+  DrawFrame(&pass_list, kDisplaySize, surface_damage_rect_list);
   EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
   SwapBuffers();
   Mock::VerifyAndClearExpectations(renderer_.get());
@@ -3093,14 +3258,25 @@ TEST_F(GLRendererWithOverlaysTest, OccludedQuadNotDrawnWhenEmptySwapAllowed) {
 
   auto pass = CreateRenderPass();
 
-  CreateFullscreenCandidateQuad(
-      resource_provider_.get(), child_resource_provider_.get(),
-      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+  SurfaceDamageRectList surface_damage_rect_list;
+  SharedQuadState* default_damaged_shared_quad_state =
+      pass->shared_quad_state_list.AllocateAndCopyFrom(
+          pass->shared_quad_state_list.back());
+  auto* sqs = pass->shared_quad_state_list.front();
+  surface_damage_rect_list.emplace_back(pass->output_rect);
+  sqs->overlay_damage_index = 0;
+
+  surface_damage_rect_list.emplace_back(pass->output_rect);
+  default_damaged_shared_quad_state->overlay_damage_index = 1;
+
+  CreateFullscreenCandidateQuad(resource_provider_.get(),
+                                child_resource_provider_.get(),
+                                child_provider_.get(), sqs, pass.get());
 
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                             pass->shared_quad_state_list.back(), pass.get());
+                             default_damaged_shared_quad_state, pass.get());
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
-                             pass->shared_quad_state_list.back(), pass.get());
+                             default_damaged_shared_quad_state, pass.get());
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
@@ -3108,7 +3284,7 @@ TEST_F(GLRendererWithOverlaysTest, OccludedQuadNotDrawnWhenEmptySwapAllowed) {
   output_surface_->set_is_displayed_as_overlay_plane(true);
   EXPECT_CALL(*renderer_, DoDrawQuad(_, _)).Times(0);
   EXPECT_CALL(scheduler_, Schedule(_, _, _, _, _, _, _)).Times(2);
-  DrawFrame(&pass_list, kDisplaySize);
+  DrawFrame(&pass_list, kDisplaySize, surface_damage_rect_list);
   EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
   SwapBuffers();
   Mock::VerifyAndClearExpectations(renderer_.get());
@@ -3828,6 +4004,7 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
     if (kCandidateUseSurfaceIndex[i]) {
       ASSERT_EQ(kCandidateRects[i].size().GetArea(),
                 candidate.damage_area_estimate);
+      ASSERT_EQ(candidate.overlay_damage_index, i);
     } else {
       // In the special case where we have no surface damage index the candidate
       // area will not simply be the |damage_area_estimate|.

@@ -170,8 +170,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   Strategy* last_successful_strategy_ = nullptr;
 
   gfx::Rect overlay_damage_rect_;
-  gfx::Rect previous_frame_underlay_rect_;
-  bool previous_frame_underlay_was_unoccluded_ = false;
+  bool previous_is_underlay = false;
+  gfx::Rect previous_frame_overlay_rect_;
 
   struct OverlayPrioritizationConfig {
     // Threshold criteria required for a proposed candidate to be considered for
@@ -190,8 +190,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
  private:
   // Update |damage_rect| by removing damage caused by |candidates|.
   void UpdateDamageRect(OverlayCandidateList* candidates,
-                        const gfx::Rect& previous_frame_underlay_rect,
-                        bool previous_frame_underlay_was_unoccluded,
+                        SurfaceDamageRectList* surface_damage_rect_list,
                         const QuadList* quad_list,
                         gfx::Rect* damage_rect);
 

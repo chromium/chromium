@@ -77,12 +77,8 @@ bool OverlayStrategyUnderlay::Attempt(
     // If the candidate can be handled by an overlay, create a pass for it. We
     // need to switch out the video quad with a black transparent one.
     if (new_candidate_list.back().overlay_handled) {
-      new_candidate_list.back().is_unoccluded =
-          !OverlayCandidate::IsOccluded(candidate, quad_list.cbegin(), it);
-
       render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
       candidate_list->swap(new_candidate_list);
-
       return true;
     }
   }
@@ -146,7 +142,7 @@ bool OverlayStrategyUnderlay::AttemptPrioritized(
   // Before we attempt an overlay strategy, the candidate list should be empty.
   DCHECK(candidate_list->empty());
   auto* render_pass = render_pass_list->back().get();
-  QuadList& quad_list = render_pass->quad_list;
+
   // Add the overlay.
   OverlayCandidateList new_candidate_list = *candidate_list;
   new_candidate_list.push_back(proposed_candidate->candidate);
@@ -170,10 +166,6 @@ bool OverlayStrategyUnderlay::AttemptPrioritized(
   // If the candidate can be handled by an overlay, create a pass for it. We
   // need to switch out the video quad with a black transparent one.
   if (new_candidate_list.back().overlay_handled) {
-    new_candidate_list.back().is_unoccluded = !OverlayCandidate::IsOccluded(
-        proposed_candidate->candidate, quad_list.cbegin(),
-        proposed_candidate->quad_iter);
-
     render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(
         proposed_candidate->quad_iter);
     candidate_list->swap(new_candidate_list);

@@ -54,7 +54,7 @@ OverlayProcessorUsingStrategy::~OverlayProcessorUsingStrategy() = default;
 gfx::Rect OverlayProcessorUsingStrategy::GetPreviousFrameOverlaysBoundingRect()
     const {
   gfx::Rect result = overlay_damage_rect_;
-  result.Union(previous_frame_underlay_rect_);
+  result.Union(previous_frame_overlay_rect_);
   return result;
 }
 
@@ -89,51 +89,29 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   TRACE_EVENT0("viz", "OverlayProcessorUsingStrategy::ProcessForOverlays");
   DCHECK(candidates->empty());
   auto* render_pass = render_passes->back().get();
+  bool success = false;
 
   // If we have any copy requests, we can't remove any quads for overlays or
   // CALayers because the framebuffer would be missing the removed quads'
   // contents.
-  if (!render_pass->copy_requests.empty()) {
-    // Reset |previous_frame_underlay_rect_| in case UpdateDamageRect() not
-    // being invoked.  Also reset |previous_frame_underlay_was_unoccluded_|.
-    if (!previous_frame_underlay_rect_.IsEmpty())
-      damage_rect->Union(previous_frame_underlay_rect_);
-
-    previous_frame_underlay_rect_ = gfx::Rect();
-    previous_frame_underlay_was_unoccluded_ = false;
-    NotifyOverlayPromotion(resource_provider, *candidates,
-                           render_pass->quad_list);
-    return;
+  if (render_pass->copy_requests.empty()) {
+    if (features::IsOverlayPrioritizationEnabled()) {
+      success = AttemptWithStrategiesPrioritized(
+          output_color_matrix, render_pass_backdrop_filters, resource_provider,
+          render_passes, surface_damage_rect_list, output_surface_plane,
+          candidates, content_bounds, damage_rect);
+    } else {
+      success = AttemptWithStrategies(
+          output_color_matrix, render_pass_backdrop_filters, resource_provider,
+          render_passes, surface_damage_rect_list, output_surface_plane,
+          candidates, content_bounds);
+    }
   }
 
-  // Only if that fails, attempt hardware overlay strategies.
-  bool success = false;
+  DCHECK(candidates->empty() || success);
 
-  if (features::IsOverlayPrioritizationEnabled()) {
-    success = AttemptWithStrategiesPrioritized(
-        output_color_matrix, render_pass_backdrop_filters, resource_provider,
-        render_passes, surface_damage_rect_list, output_surface_plane,
-        candidates, content_bounds, damage_rect);
-  } else {
-    success = AttemptWithStrategies(
-        output_color_matrix, render_pass_backdrop_filters, resource_provider,
-        render_passes, surface_damage_rect_list, output_surface_plane,
-        candidates, content_bounds);
-  }
-
-  if (success) {
-    UpdateDamageRect(candidates, previous_frame_underlay_rect_,
-                     previous_frame_underlay_was_unoccluded_,
-                     &render_pass->quad_list, damage_rect);
-  } else {
-    if (!previous_frame_underlay_rect_.IsEmpty())
-      damage_rect->Union(previous_frame_underlay_rect_);
-
-    DCHECK(candidates->empty());
-
-    previous_frame_underlay_rect_ = gfx::Rect();
-    previous_frame_underlay_was_unoccluded_ = false;
-  }
+  UpdateDamageRect(candidates, surface_damage_rect_list,
+                   &render_pass->quad_list, damage_rect);
 
   NotifyOverlayPromotion(resource_provider, *candidates,
                          render_pass->quad_list);
@@ -142,84 +120,113 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
                  "Scheduled overlay planes", candidates->size());
 }
 
-// Subtract on-top opaque overlays from the damage rect, unless the overlays
-// use the backbuffer as their content (in which case, add their combined rect
-// back to the damage at the end).
-// Also subtract unoccluded underlays from the damage rect if we know that the
-// same underlay was scheduled on the previous frame. If the renderer decides
-// not to swap the framebuffer there will still be a transparent hole in the
-// previous frame.
+// This local function simply recomputes the root damage from
+// |surface_damage_rect_list| while excluding the damage contribution from a
+// specific overlay.
+// TODO(petermcneeley): Eventually this code should be commonized in the same
+// location as the definition of |SurfaceDamageRectList|
+namespace {
+gfx::Rect ComputeDamageExcludingIndex(
+    uint32_t overlay_damage_index,
+    SurfaceDamageRectList* surface_damage_rect_list,
+    const gfx::Rect& existing_damage,
+    const gfx::Rect& display_rect) {
+  gfx::Rect root_damage_rect;
+
+  if (overlay_damage_index == OverlayCandidate::kInvalidDamageIndex) {
+    return existing_damage;
+  }
+
+  gfx::Rect occluding_rect;
+  for (size_t i = 0; i < surface_damage_rect_list->size(); i++) {
+    if (overlay_damage_index != i) {
+      // Only add damage back in if it is not occluded by the overlay.
+      if (!occluding_rect.Contains((*surface_damage_rect_list)[i])) {
+        root_damage_rect.Union((*surface_damage_rect_list)[i]);
+      }
+    } else {
+      // |surface_damage_rect_list| is ordered such that from here on the
+      // |display_rect| for the overlay will act as an occluder for damage
+      // after.
+      occluding_rect = display_rect;
+    }
+  }
+  return root_damage_rect;
+}
+}  // namespace
+
+// Exclude overlay damage from the root damage when possible. In the steady
+// state the overlay damage is always removed but transitions can require us to
+// apply damage for the entire display size of the overlay. Underlays need to
+// provide transition damage on both promotion and demotion as in both cases
+// they need to change the primary plane (underlays need a primary plane black
+// transparent quad). Overlays only need to produce transition damage on
+// demotion as they do not use the primary plane during promoted phase.
 void OverlayProcessorUsingStrategy::UpdateDamageRect(
     OverlayCandidateList* candidates,
-    const gfx::Rect& previous_frame_underlay_rect,
-    bool previous_frame_underlay_was_unoccluded,
+    SurfaceDamageRectList* surface_damage_rect_list,
     const QuadList* quad_list,
     gfx::Rect* damage_rect) {
-  gfx::Rect this_frame_underlay_rect;
+  // TODO(petermcneeley): This code only supports one overlay candidate. To
+  // support multiple overlays one would need to track the difference set of
+  // overlays between frames.
+  DCHECK_LE(candidates->size(), 1U);
+
+  gfx::Rect this_frame_overlay_rect;
+  bool is_opaque_overlay = false;
+  bool is_underlay = false;
+  uint32_t exclude_overlay_index = OverlayCandidate::kInvalidDamageIndex;
+
   for (const OverlayCandidate& overlay : *candidates) {
+    this_frame_overlay_rect = GetOverlayDamageRectForOutputSurface(overlay);
     if (overlay.plane_z_order >= 0) {
-      const gfx::Rect overlay_display_rect =
-          GetOverlayDamageRectForOutputSurface(overlay);
       // If an overlay candidate comes from output surface, its z-order should
       // be 0.
-      overlay_damage_rect_.Union(overlay_display_rect);
-      if (overlay.is_opaque)
-        damage_rect->Subtract(overlay_display_rect);
+      overlay_damage_rect_.Union(this_frame_overlay_rect);
+      if (overlay.is_opaque) {
+        is_opaque_overlay = true;
+        exclude_overlay_index = overlay.overlay_damage_index;
+      }
     } else {
-      // Process underlay candidates:
-      // Track the underlay_rect from frame to frame. If it is the same and
-      // nothing is on top of it then that rect doesn't need to be damaged
-      // because the drawing is occurring on a different plane. If it is
-      // different then that indicates that a different underlay has been
-      // chosen and the previous underlay rect should be damaged because it
-      // has changed planes from the underlay plane to the main plane. It then
-      // checks that this is not a transition from occluded to unoccluded.
-      //
-      // We also insist that the underlay is unoccluded for at least one frame,
-      // else when content above the overlay transitions from not fully
-      // transparent to fully transparent, we still need to erase it from the
-      // framebuffer.  Otherwise, the last non-transparent frame will remain.
-      // https://crbug.com/875879
-      // However, if the underlay is unoccluded, we check if the damage is due
-      // to a solid-opaque-transparent quad. If so, then we subtract this
-      // damage.
-      this_frame_underlay_rect = GetOverlayDamageRectForOutputSurface(overlay);
-
-      bool same_underlay_rect =
-          this_frame_underlay_rect == previous_frame_underlay_rect;
-
-      bool transition_from_occluded_to_unoccluded =
-          overlay.is_unoccluded && !previous_frame_underlay_was_unoccluded;
-      bool always_unoccluded =
-          overlay.is_unoccluded && previous_frame_underlay_was_unoccluded;
-
-      // We need to make sure that when we change the overlay we damage the
-      // region where the underlay will be positioned. This is because a
-      // black transparent hole is made for the underlay to show through
-      // but its possible that the damage for this quad is less than the
-      // complete size of the underlay.  https://crbug.com/1130733
-      if (!same_underlay_rect) {
-        damage_rect->Union(this_frame_underlay_rect);
-      }
-
-      if (same_underlay_rect && !transition_from_occluded_to_unoccluded &&
-          (always_unoccluded || overlay.no_occluding_damage)) {
-        damage_rect->Subtract(this_frame_underlay_rect);
-      }
-      previous_frame_underlay_was_unoccluded_ = overlay.is_unoccluded;
+      // Underlay candidate is assumed to be opaque.
+      is_underlay = true;
+      exclude_overlay_index = overlay.overlay_damage_index;
     }
 
     if (overlay.plane_z_order) {
       RecordOverlayDamageRectHistograms((overlay.plane_z_order > 0),
-                                        !overlay.no_occluding_damage,
+                                        overlay.damage_area_estimate != 0,
                                         damage_rect->IsEmpty());
     }
   }
 
-  if (this_frame_underlay_rect != previous_frame_underlay_rect)
-    damage_rect->Union(previous_frame_underlay_rect);
+  // Removes all damage from this overlay and occluded surface damages.
+  *damage_rect = ComputeDamageExcludingIndex(
+      exclude_overlay_index, surface_damage_rect_list, *damage_rect,
+      this_frame_overlay_rect);
 
-  previous_frame_underlay_rect_ = this_frame_underlay_rect;
+  // Track the overlay_rect from frame to frame. If it is the same and nothing
+  // is on top of it then that rect doesn't need to be damaged because the
+  // drawing is occurring on a different plane. If it is different then that
+  // indicates that a different overlay has been chosen and the previous
+  // overlay rect should be damaged because it has changed planes from the
+  // overlay plane to the main plane. https://crbug.com/875879
+  if ((!previous_is_underlay && is_underlay) ||
+      this_frame_overlay_rect != previous_frame_overlay_rect_) {
+    damage_rect->Union(previous_frame_overlay_rect_);
+
+    // We need to make sure that when we transition to an underlay we damage the
+    // region where the underlay will be positioned. This is because a
+    // black transparent hole is made for the underlay to show through
+    // but its possible that the damage for this quad is less than the
+    // complete size of the underlay.  https://crbug.com/1130733
+    if (!is_opaque_overlay) {
+      damage_rect->Union(this_frame_overlay_rect);
+    }
+  }
+
+  previous_frame_overlay_rect_ = this_frame_overlay_rect;
+  previous_is_underlay = is_underlay;
 }
 
 void OverlayProcessorUsingStrategy::AdjustOutputSurfaceOverlay(

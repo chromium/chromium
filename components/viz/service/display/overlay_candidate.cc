@@ -26,6 +26,10 @@
 
 namespace viz {
 
+// There is a bug in |base::optional| which causes the 'value_or' function to
+// capture parameters (even constexpr parameters) as a reference.
+constexpr uint32_t OverlayCandidate::kInvalidDamageIndex;
+
 namespace {
 // Tolerance for considering axis vector elements to be zero.
 const SkScalar kEpsilon = std::numeric_limits<float>::epsilon();
@@ -82,30 +86,6 @@ gfx::OverlayTransform GetOverlayTransform(const gfx::Transform& quad_transform,
     return gfx::OVERLAY_TRANSFORM_INVALID;
 }
 
-bool HasOccludingDamage(const SharedQuadState* shared_quad_state,
-                        SurfaceDamageRectList* surface_damage_rect_list) {
-  if (!shared_quad_state->overlay_damage_index.has_value())
-    return true;
-
-  size_t overlay_damage_index = shared_quad_state->overlay_damage_index.value();
-  // Invalid index.
-  if (overlay_damage_index >= surface_damage_rect_list->size()) {
-    DCHECK(false);
-    return true;
-  }
-
-  // Damage rects in surface_damage_rect_list are arranged from top to bottom.
-  // (*surface_damage_rect_list)[0] is the one on the very top.
-  // (*surface_damage_rect_list)[overlay_damage_index] is the damage rect of
-  // this overlay surface.
-  for (size_t i = 0; i < overlay_damage_index; ++i) {
-    if (!(*surface_damage_rect_list)[i].IsEmpty())
-      return true;  // A damaged surface on top is found.
-  }
-
-  return false;  // No occluding damages
-}
-
 gfx::Rect GetDamageRect(const DrawQuad* quad,
                         SurfaceDamageRectList* surface_damage_rect_list) {
   const SharedQuadState* sqs = quad->shared_quad_state;
@@ -147,13 +127,11 @@ OverlayCandidate::OverlayCandidate()
       uv_rect(0.f, 0.f, 1.f, 1.f),
       is_clipped(false),
       is_opaque(false),
-      no_occluding_damage(false),
       resource_id(0),
 #if defined(OS_ANDROID)
       is_backed_by_surface_texture(false),
       is_promotable_hint(false),
 #endif
-      is_unoccluded(false),
       overlay_handled(false),
       gpu_fence_id(0) {
 }
@@ -178,6 +156,11 @@ bool OverlayCandidate::FromDrawQuad(
   // We don't support an opacity value different than one for an overlay plane.
   if (quad->shared_quad_state->opacity != 1.f)
     return false;
+
+  candidate->overlay_damage_index =
+      quad->shared_quad_state->overlay_damage_index.value_or(
+          kInvalidDamageIndex);
+
   // We can't support overlays with mask filter.
   if (!quad->shared_quad_state->mask_filter_info.IsEmpty())
     return false;
@@ -340,8 +323,6 @@ bool OverlayCandidate::FromDrawQuadResource(
   candidate->clip_rect = quad->shared_quad_state->clip_rect;
   candidate->is_clipped = quad->shared_quad_state->is_clipped;
   candidate->is_opaque = !quad->ShouldDrawWithBlending();
-  candidate->no_occluding_damage =
-      !HasOccludingDamage(quad->shared_quad_state, surface_damage_rect_list);
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
@@ -371,8 +352,6 @@ bool OverlayCandidate::FromVideoHoleQuad(
   candidate->display_rect = gfx::RectF(quad->rect);
   transform.TransformRect(&candidate->display_rect);
   candidate->transform = overlay_transform;
-  candidate->no_occluding_damage =
-      !HasOccludingDamage(quad->shared_quad_state, surface_damage_rect_list);
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
