@@ -459,8 +459,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Otherwise creates it and then returns.
   TextFinder& EnsureTextFinder();
 
-  void ClearFrameWidget();
-
   // TODO(dcheng): Remove this and make |FrameWidget()| always return something
   // useful.
   WebFrameWidgetImpl* LocalRootFrameWidget();

@@ -293,7 +293,6 @@ void WebFrameWidgetImpl::Close() {
   }
 
   mutator_dispatcher_ = nullptr;
-  local_root_->ClearFrameWidget();
   local_root_ = nullptr;
   widget_base_->Shutdown();
   widget_base_.reset();

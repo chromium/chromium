@@ -706,8 +706,10 @@ WebRemoteFrame* WebLocalFrameImpl::ToWebRemoteFrame() {
 void WebLocalFrameImpl::Close() {
   WebLocalFrame::Close();
 
-  if (frame_widget_)
+  if (frame_widget_) {
     frame_widget_->Close();
+    frame_widget_ = nullptr;
+  }
 
   client_ = nullptr;
 
@@ -2469,10 +2471,6 @@ void WebLocalFrameImpl::WillDetachParent() {
 
     GetTextFinder()->CancelPendingScopingEffort();
   }
-}
-
-void WebLocalFrameImpl::ClearFrameWidget() {
-  frame_widget_ = nullptr;
 }
 
 void WebLocalFrameImpl::CreateFrameWidgetInternal(
