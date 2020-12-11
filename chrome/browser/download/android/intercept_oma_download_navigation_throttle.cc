@@ -88,7 +88,7 @@ void InterceptOMADownloadNavigationThrottle::InterceptDownload() {
       web_contents ? web_contents->GetRenderViewHost()->GetRoutingID() : 0;
 
   DownloadControllerBase::Get()->CreateAndroidDownload(
-      base::Bind(&GetWebContents, process_id, routing_id),
+      base::BindRepeating(&GetWebContents, process_id, routing_id),
       DownloadInfo(navigation_handle()->GetURL(), original_url,
                    content_disposition, mime_type, GetUserAgent(),
                    // TODO(qinmin): Get the cookie from cookie store.

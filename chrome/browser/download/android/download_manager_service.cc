@@ -522,8 +522,8 @@ void DownloadManagerService::ResumeDownloadInternal(
   }
   DownloadControllerBase::Get()->AboutToResumeDownload(item);
   item->Resume(has_user_gesture);
-  if (!resume_callback_for_testing_.is_null())
-    resume_callback_for_testing_.Run(true);
+  if (resume_callback_for_testing_)
+    std::move(resume_callback_for_testing_).Run(true);
 }
 
 void DownloadManagerService::RetryDownloadInternal(
@@ -665,8 +665,8 @@ void DownloadManagerService::OnResumptionFailedInternal(
     Java_DownloadManagerService_onResumptionFailed(
         env, java_ref_, ConvertUTF8ToJavaString(env, download_guid));
   }
-  if (!resume_callback_for_testing_.is_null())
-    resume_callback_for_testing_.Run(false);
+  if (resume_callback_for_testing_)
+    std::move(resume_callback_for_testing_).Run(false);
 }
 
 download::DownloadItem* DownloadManagerService::GetDownload(

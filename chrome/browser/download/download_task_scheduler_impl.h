@@ -39,7 +39,7 @@ class DownloadTaskSchedulerImpl : public download::TaskScheduler {
   SimpleFactoryKey* key_;
 
   // Keeps track of scheduled tasks so that they can be cancelled.
-  std::map<download::DownloadTaskType, base::CancelableClosure>
+  std::map<download::DownloadTaskType, base::CancelableOnceClosure>
       scheduled_tasks_;
 
   base::WeakPtrFactory<DownloadTaskSchedulerImpl> weak_factory_{this};

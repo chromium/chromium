@@ -416,7 +416,7 @@ TEST_F(DownloadQueryTest, DownloadQueryTest_FilterUrl) {
 
 TEST_F(DownloadQueryTest, DownloadQueryTest_FilterCallback) {
   CreateMocks(2);
-  CHECK(query()->AddFilter(base::Bind(&IdNotEqual, 1)));
+  CHECK(query()->AddFilter(base::BindRepeating(&IdNotEqual, 1)));
   ExpectStandardFilterResults();
 }
 
@@ -763,9 +763,9 @@ TEST_F(DownloadQueryTest, DownloadQueryFilterPerformance) {
   static const int kNumFilters = 100;
   CreateMocks(kNumItems);
   for (size_t i = 0; i < (kNumFilters - 1); ++i) {
-    query()->AddFilter(base::Bind(&AlwaysReturn, true));
+    query()->AddFilter(base::BindRepeating(&AlwaysReturn, true));
   }
-  query()->AddFilter(base::Bind(&AlwaysReturn, false));
+  query()->AddFilter(base::BindRepeating(&AlwaysReturn, false));
   base::Time start = base::Time::Now();
   Search();
   base::Time end = base::Time::Now();

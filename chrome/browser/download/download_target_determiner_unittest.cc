@@ -108,7 +108,7 @@ class NullWebContentsDelegate : public content::WebContentsDelegate {
 // is bound as that parameter. Example:
 //   class FooClass {
 //    public:
-//     virtual void Foo(base::Callback<void(bool)> callback);
+//     virtual void Foo(base::OnceCallback<void(bool)> callback);
 //   };
 //   ...
 //   EXPECT_CALL(mock_fooclass_instance, Foo(callback))
@@ -491,11 +491,11 @@ void DownloadTargetDeterminerTest::RunTestCase(
 }
 
 void CompletionCallbackWrapper(
-    const base::Closure& closure,
+    base::OnceClosure closure,
     std::unique_ptr<DownloadTargetInfo>* target_info_receiver,
     std::unique_ptr<DownloadTargetInfo> target_info) {
   target_info_receiver->swap(target_info);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, closure);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(closure));
 }
 
 std::unique_ptr<DownloadTargetInfo>
@@ -2417,9 +2417,9 @@ TEST_F(DownloadTargetDeterminerTest, TransientDownloadResumption) {
 #if BUILDFLAG(ENABLE_PLUGINS)
 
 void DummyGetPluginsCallback(
-    const base::Closure& closure,
+    base::OnceClosure closure,
     const std::vector<content::WebPluginInfo>& plugins) {
-  closure.Run();
+  std::move(closure).Run();
 }
 
 void ForceRefreshOfPlugins() {

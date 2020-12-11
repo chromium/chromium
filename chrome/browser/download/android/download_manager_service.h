@@ -239,9 +239,9 @@ class DownloadManagerService
   // Called when all pending downloads are loaded.
   void OnPendingDownloadsLoaded();
 
-  typedef base::Callback<void(bool)> ResumeCallback;
-  void set_resume_callback_for_testing(const ResumeCallback& resume_cb) {
-    resume_callback_for_testing_ = resume_cb;
+  using ResumeCallback = base::OnceCallback<void(bool)>;
+  void set_resume_callback_for_testing(ResumeCallback resume_cb) {
+    resume_callback_for_testing_ = std::move(resume_cb);
   }
 
   // Helper method to reset the SimpleDownloadManagerCoordinator if needed.

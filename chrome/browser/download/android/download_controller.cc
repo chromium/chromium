@@ -428,7 +428,7 @@ void DownloadController::StartContextMenuDownload(
   int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
 
   const content::WebContents::Getter& wc_getter(
-      base::Bind(&GetWebContents, process_id, routing_id));
+      base::BindRepeating(&GetWebContents, process_id, routing_id));
 
   AcquireFileAccessPermission(
       wc_getter, base::BindOnce(&CreateContextMenuDownloadInternal, wc_getter,

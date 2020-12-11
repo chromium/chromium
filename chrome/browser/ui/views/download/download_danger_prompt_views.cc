@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/download_danger_prompt.h"
-
-#include "base/compiler_specific.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -45,7 +44,7 @@ class DownloadDangerPromptViews : public DownloadDangerPrompt,
   DownloadDangerPromptViews(download::DownloadItem* item,
                             Profile* profile,
                             bool show_context,
-                            const OnDone& done);
+                            OnDone done);
   ~DownloadDangerPromptViews() override;
 
   // DownloadDangerPrompt:
@@ -75,11 +74,11 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
     download::DownloadItem* item,
     Profile* profile,
     bool show_context,
-    const OnDone& done)
+    OnDone done)
     : download_(item),
       profile_(profile),
       show_context_(show_context),
-      done_(done) {
+      done_(std::move(done)) {
   // Note that this prompt is asking whether to cancel a dangerous download, so
   // the accept path is titled "Cancel".
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_CANCEL));
@@ -263,8 +262,7 @@ base::string16 DownloadDangerPromptViews::GetMessageBody() const {
 void DownloadDangerPromptViews::RunDone(Action action) {
   // Invoking the callback can cause the download item state to change or cause
   // the window to close, and |callback| refers to a member variable.
-  OnDone done = done_;
-  done_.Reset();
+  OnDone done = std::move(done_);
   if (download_) {
     // If this download is no longer dangerous, is already canceled or
     // completed, don't send any report.
@@ -284,8 +282,8 @@ void DownloadDangerPromptViews::RunDone(Action action) {
     download_->RemoveObserver(this);
     download_ = nullptr;
   }
-  if (!done.is_null())
-    done.Run(action);
+  if (done)
+    std::move(done).Run(action);
 }
 
 }  // namespace
@@ -295,11 +293,12 @@ DownloadDangerPrompt* DownloadDangerPrompt::Create(
     download::DownloadItem* item,
     content::WebContents* web_contents,
     bool show_context,
-    const OnDone& done) {
+    OnDone done) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DownloadDangerPromptViews* download_danger_prompt =
-      new DownloadDangerPromptViews(item, profile, show_context, done);
+      new DownloadDangerPromptViews(item, profile, show_context,
+                                    std::move(done));
   constrained_window::ShowWebModalDialogViews(download_danger_prompt,
                                               web_contents);
   return download_danger_prompt;

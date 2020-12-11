@@ -335,8 +335,8 @@ DownloadTargetDeterminer::DoSetMixedContentStatus() {
 
   delegate_->GetMixedContentStatus(
       download_, virtual_path_,
-      base::Bind(&DownloadTargetDeterminer::GetMixedContentStatusDone,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&DownloadTargetDeterminer::GetMixedContentStatusDone,
+                     weak_ptr_factory_.GetWeakPtr()));
   return QUIT_DOLOOP;
 }
 
@@ -369,9 +369,10 @@ DownloadTargetDeterminer::Result
       download_->GetState() != DownloadItem::IN_PROGRESS)
     return CONTINUE;
 
-  delegate_->NotifyExtensions(download_, virtual_path_,
-      base::Bind(&DownloadTargetDeterminer::NotifyExtensionsDone,
-                 weak_ptr_factory_.GetWeakPtr()));
+  delegate_->NotifyExtensions(
+      download_, virtual_path_,
+      base::BindOnce(&DownloadTargetDeterminer::NotifyExtensionsDone,
+                     weak_ptr_factory_.GetWeakPtr()));
   return QUIT_DOLOOP;
 }
 
@@ -572,10 +573,9 @@ DownloadTargetDeterminer::Result
   next_state_ = STATE_DETERMINE_MIME_TYPE;
 
   delegate_->DetermineLocalPath(
-      download_,
-      virtual_path_,
-      base::Bind(&DownloadTargetDeterminer::DetermineLocalPathDone,
-                 weak_ptr_factory_.GetWeakPtr()));
+      download_, virtual_path_,
+      base::BindOnce(&DownloadTargetDeterminer::DetermineLocalPathDone,
+                     weak_ptr_factory_.GetWeakPtr()));
   return QUIT_DOLOOP;
 }
 
@@ -610,8 +610,8 @@ DownloadTargetDeterminer::Result
   if (virtual_path_ == local_path_) {
     delegate_->GetFileMimeType(
         local_path_,
-        base::Bind(&DownloadTargetDeterminer::DetermineMimeTypeDone,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&DownloadTargetDeterminer::DetermineMimeTypeDone,
+                       weak_ptr_factory_.GetWeakPtr()));
     return QUIT_DOLOOP;
   }
   return CONTINUE;

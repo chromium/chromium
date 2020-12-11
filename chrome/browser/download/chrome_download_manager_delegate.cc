@@ -583,7 +583,7 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
       DVLOG(2) << __func__ << "() Start SB download check for download = "
                << item->DebugString(false);
       if (service->MaybeCheckClientDownload(
-              item, base::Bind(
+              item, base::BindRepeating(
                         &ChromeDownloadManagerDelegate::CheckClientDownloadDone,
                         weak_ptr_factory_.GetWeakPtr(), item->GetId()))) {
         return false;

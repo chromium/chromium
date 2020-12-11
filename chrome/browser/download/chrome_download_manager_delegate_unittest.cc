@@ -396,7 +396,7 @@ base::FilePath ChromeDownloadManagerDelegateTest::GetPathInDownloadDir(
 }
 
 void StoreDownloadTargetInfo(
-    const base::Closure& closure,
+    const base::RepeatingClosure& quit_runloop,
     DetermineDownloadTargetResult* result,
     const base::FilePath& target_path,
     DownloadItem::TargetDisposition target_disposition,
@@ -412,7 +412,7 @@ void StoreDownloadTargetInfo(
   result->intermediate_path = intermediate_path;
   result->interrupt_reason = interrupt_reason;
   result->download_schedule = std::move(download_schedule);
-  closure.Run();
+  quit_runloop.Run();
 }
 
 void ChromeDownloadManagerDelegateTest::DetermineDownloadTarget(
@@ -1658,8 +1658,8 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
       CreateActiveDownloadItem(0);
   EXPECT_CALL(*download_item, GetURL()).WillRepeatedly(ReturnRef(download_url));
   EXPECT_CALL(*delegate(), GetDownloadProtectionService()).Times(0);
-  EXPECT_TRUE(
-      delegate()->ShouldCompleteDownload(download_item.get(), base::Closure()));
+  EXPECT_TRUE(delegate()->ShouldCompleteDownload(download_item.get(),
+                                                 base::OnceClosure()));
 }
 #endif  // OS_WIN
 #endif  // FULL_SAFE_BROWSING

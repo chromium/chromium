@@ -138,7 +138,7 @@ class DownloadPersistedObserver : public DownloadHistory::Observer {
   void OnDownloadStored(DownloadItem* item,
                         const history::DownloadRow& info) override {
     persisted_ = persisted_ || filter_.Run(item, info);
-    if (persisted_ && !quit_waiting_callback_.is_null())
+    if (persisted_ && quit_waiting_callback_)
       std::move(quit_waiting_callback_).Run();
   }
 
@@ -174,7 +174,7 @@ class DownloadRemovedObserver : public DownloadPersistedObserver {
 
   void OnDownloadsRemoved(const DownloadHistory::IdSet& ids) override {
     removed_ = ids.find(download_id_) != ids.end();
-    if (removed_ && !quit_waiting_callback_.is_null())
+    if (removed_ && quit_waiting_callback_)
       std::move(quit_waiting_callback_).Run();
   }
 
@@ -252,7 +252,6 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
       base::RunLoop run_loop;
       quit_waiting_callback_ = run_loop.QuitClosure();
       run_loop.Run();
-      quit_waiting_callback_ = base::Closure();
     }
 
     *items_seen = items_seen_;
@@ -266,18 +265,18 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
     DCHECK_EQ(manager, manager_);
     items_seen_.push_back(item);
 
-    if (!quit_waiting_callback_.is_null())
-      quit_waiting_callback_.Run();
+    if (quit_waiting_callback_)
+      std::move(quit_waiting_callback_).Run();
   }
 
   void ManagerGoingDown(DownloadManager* manager) override {
     manager_->RemoveObserver(this);
     manager_ = nullptr;
-    if (!quit_waiting_callback_.is_null())
-      quit_waiting_callback_.Run();
+    if (quit_waiting_callback_)
+      std::move(quit_waiting_callback_).Run();
   }
 
-  base::Closure quit_waiting_callback_;
+  base::OnceClosure quit_waiting_callback_;
   DownloadManager* manager_;
   std::vector<DownloadItem*> items_seen_;
 

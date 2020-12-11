@@ -171,7 +171,7 @@ template <typename ValueType> DownloadQuery::FilterCallback BuildFilter(
 // Returns true if |accessor.Run(item)| matches |pattern|.
 bool FindRegex(
     RE2* pattern,
-    const base::Callback<std::string(const DownloadItem&)>& accessor,
+    const base::RepeatingCallback<std::string(const DownloadItem&)>& accessor,
     const DownloadItem& item) {
   return RE2::PartialMatch(accessor.Run(item), *pattern);
 }
@@ -184,16 +184,17 @@ DownloadQuery::FilterCallback BuildRegexFilter(
   if (!GetAs(regex_value, &regex_str)) return DownloadQuery::FilterCallback();
   std::unique_ptr<RE2> pattern(new RE2(regex_str));
   if (!pattern->ok()) return DownloadQuery::FilterCallback();
-  return base::Bind(&FindRegex, base::Owned(pattern.release()),
-                    base::Bind(accessor));
+  return base::BindRepeating(&FindRegex, base::Owned(pattern.release()),
+                             base::BindRepeating(accessor));
 }
 
 // Returns a ComparisonType to indicate whether a field in |left| is less than,
 // greater than or equal to the same field in |right|.
-template<typename ValueType>
+template <typename ValueType>
 ComparisonType Compare(
-    const base::Callback<ValueType(const DownloadItem&)>& accessor,
-    const DownloadItem& left, const DownloadItem& right) {
+    const base::RepeatingCallback<ValueType(const DownloadItem&)>& accessor,
+    const DownloadItem& left,
+    const DownloadItem& right) {
   ValueType left_value = accessor.Run(left);
   ValueType right_value = accessor.Run(right);
   if (left_value > right_value) return GT;
@@ -339,8 +340,8 @@ bool DownloadQuery::Matches(const DownloadItem& item) const {
 // Sorters, but there is one DownloadComparator per call to Search().
 
 struct DownloadQuery::Sorter {
-  typedef base::Callback<ComparisonType(
-      const DownloadItem&, const DownloadItem&)> SortType;
+  using SortType = base::RepeatingCallback<ComparisonType(const DownloadItem&,
+                                                          const DownloadItem&)>;
 
   template<typename ValueType>
   static Sorter Build(DownloadQuery::SortDirection adirection,
@@ -350,12 +351,9 @@ struct DownloadQuery::Sorter {
                                       base::BindRepeating(accessor)));
   }
 
-  Sorter(DownloadQuery::SortDirection adirection,
-            const SortType& asorter)
-    : direction(adirection),
-      sorter(asorter) {
-  }
-  ~Sorter() {}
+  Sorter(DownloadQuery::SortDirection adirection, const SortType& asorter)
+      : direction(adirection), sorter(asorter) {}
+  ~Sorter() = default;
 
   DownloadQuery::SortDirection direction;
   SortType sorter;

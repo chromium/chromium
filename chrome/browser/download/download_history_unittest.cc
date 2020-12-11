@@ -290,8 +290,6 @@ class DownloadHistoryTest : public testing::Test {
 
   void CallOnDownloadCreatedInOrder() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    // Gmock doesn't appear to support something like InvokeWithTheseArgs. Maybe
-    // gmock needs to learn about base::Callback.
     CallOnDownloadCreated(download_created_index_++);
   }
 

@@ -156,11 +156,10 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
 
   void CreatePrompt(bool from_download_api) {
     prompt_ = DownloadDangerPrompt::Create(
-        &download_,
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        &download_, browser()->tab_strip_model()->GetActiveWebContents(),
         from_download_api,
-        base::Bind(&DownloadDangerPromptTest::PromptCallback,
-                   base::Unretained(this)));
+        base::BindOnce(&DownloadDangerPromptTest::PromptCallback,
+                       base::Unretained(this)));
     content::RunAllPendingInMessageLoop();
   }
 
