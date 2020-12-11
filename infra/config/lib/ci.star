@@ -507,7 +507,7 @@ def android_builder(
         goma_backend = builders.goma.backend.RBE_PROD,
         goma_jobs = goma_jobs,
         experiments = {
-            "chromium.resultdb.result_sink.junit_tests": 30,
+            "chromium.resultdb.result_sink.junit_tests": 50,
         },
         **kwargs
     )
@@ -553,6 +553,9 @@ def clang_builder(*, name, builderless = True, cores = 32, properties = None, **
         # CFI builds will take even longer - around 11h.
         execution_timeout = 14 * time.hour,
         properties = properties,
+        experiments = {
+            "chromium.resultdb.result_sink.junit_tests": 50,
+        },
         **kwargs
     )
 
