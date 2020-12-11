@@ -228,8 +228,12 @@ std::vector<views::View*> HoldingSpaceBrowserTestBase::GetScreenCaptureViews() {
   return test_api_->GetScreenCaptureViews();
 }
 
-views::View* HoldingSpaceBrowserTestBase::GetTrayIcon() {
-  return test_api_->GetTrayIcon();
+views::View* HoldingSpaceBrowserTestBase::GetDefaultTrayIcon() {
+  return test_api_->GetDefaultTrayIcon();
+}
+
+views::View* HoldingSpaceBrowserTestBase::GetPreviewsTrayIcon() {
+  return test_api_->GetPreviewsTrayIcon();
 }
 
 void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {

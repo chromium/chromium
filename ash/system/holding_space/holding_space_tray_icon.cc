@@ -10,64 +10,41 @@
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_tray_icon_preview.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/stl_util.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
-namespace {
-
-// Helpers ---------------------------------------------------------------------
-
-// Returns whether previews are enabled.
-bool IsPreviewsEnabled() {
-  auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-  return features::IsTemporaryHoldingSpacePreviewsEnabled() && prefs &&
-         holding_space_prefs::IsPreviewsEnabled(prefs);
-}
-
-// Sets `view`'s visibility to the specified value. Note that this method will
-// only update visibility if necessary. This is to avoid propagating an event
-// up the view tree when visibility is not changed that could otherwise result
-// in layout invalidation.
-void SetVisibility(views::View* view, bool visible) {
-  if (view->GetVisible() != visible)
-    view->SetVisible(visible);
-}
-
-}  // namespace
-
 // HoldingSpaceTrayIcon --------------------------------------------------------
 
 HoldingSpaceTrayIcon::HoldingSpaceTrayIcon(Shelf* shelf) : shelf_(shelf) {
-  SetID(kHoldingSpaceTrayIconId);
+  SetID(kHoldingSpaceTrayPreviewsIconId);
   InitLayout();
-
-  if (features::IsTemporaryHoldingSpacePreviewsEnabled()) {
-    controller_observer_.Add(HoldingSpaceController::Get());
-    shell_observer_.Add(Shell::Get());
-    session_observer_.Add(Shell::Get()->session_controller());
-
-    // It's possible that this holding space tray icon was created after login,
-    // such as would occur if the user connects an external display. In such
-    // situations the holding space model will already have been attached.
-    if (HoldingSpaceController::Get()->model())
-      OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
-  }
 }
 
 HoldingSpaceTrayIcon::~HoldingSpaceTrayIcon() = default;
+
+void HoldingSpaceTrayIcon::Init() {
+  shell_observer_.Add(Shell::Get());
+
+  if (HoldingSpaceController::Get()->model())
+    OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
+}
+
+void HoldingSpaceTrayIcon::Reset() {
+  shell_observer_.RemoveAll();
+
+  previews_.clear();
+  removed_previews_.clear();
+}
 
 void HoldingSpaceTrayIcon::OnLocaleChanged() {
   TooltipTextChanged();
@@ -90,54 +67,28 @@ void HoldingSpaceTrayIcon::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
 
-  // No previews image.
-  // NOTE: Events are disallowed on the `no_previews_image_view_` subtree so
-  // that tooltips will be retrieved from `this` instead.
-  no_previews_image_view_ = AddChildView(std::make_unique<views::ImageView>());
-  no_previews_image_view_->SetCanProcessEventsWithinSubtree(false);
-  no_previews_image_view_->SetImage(gfx::CreateVectorIcon(
-      kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-
-  if (features::IsTemporaryHoldingSpacePreviewsEnabled()) {
-    // As holding space items are added to the model, child layers will be added
-    // to `this` view's layer to represent them.
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    return;
-  }
+  // As holding space items are added to the model, child layers will be added
+  // to `this` view's layer to represent them.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 }
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceModelAttached(
     HoldingSpaceModel* model) {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-
-  model_observer_.Add(model);
   for (const std::unique_ptr<HoldingSpaceItem>& item : model->items())
     OnHoldingSpaceItemAdded(item.get());
 }
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceModelDetached(
     HoldingSpaceModel* model) {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-
-  model_observer_.Remove(model);
   for (const std::unique_ptr<HoldingSpaceItem>& item : model->items())
     OnHoldingSpaceItemRemoved(item.get());
 }
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-
-  if (!previews_enabled_)
-    return;
-
   if (!item->IsFinalized())
     return;
-
-  SetVisibility(no_previews_image_view_, false);
 
   for (std::unique_ptr<HoldingSpaceTrayIconPreview>& preview : previews_)
     preview->AnimateShift();
@@ -151,11 +102,6 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemAdded(
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-
-  if (!previews_enabled_)
-    return;
-
   if (!item->IsFinalized())
     return;
 
@@ -185,17 +131,10 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemRemoved(
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-
-  if (!previews_enabled_)
-    return;
-
   if (previews_.empty()) {
     OnHoldingSpaceItemAdded(item);
     return;
   }
-
-  SetVisibility(no_previews_image_view_, false);
 
   size_t index = 0;
   for (const auto& candidate :
@@ -221,11 +160,6 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemFinalized(
 void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
     aura::Window* root_window,
     ShelfAlignment old_alignment) {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-
-  if (!previews_enabled_)
-    return;
-
   removed_previews_.clear();
 
   for (const auto& preview : previews_)
@@ -234,28 +168,7 @@ void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
   UpdatePreferredSize();
 }
 
-void HoldingSpaceTrayIcon::OnActiveUserPrefServiceChanged(PrefService* prefs) {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(prefs);
-
-  // NOTE: The callback being bound is scoped to `pref_change_registrar_` which
-  // is owned by `this` so it is safe to bind with an unretained raw pointer.
-  holding_space_prefs::AddPreviewsEnabledChangedCallback(
-      pref_change_registrar_.get(),
-      base::BindRepeating(&HoldingSpaceTrayIcon::UpdatePreviewsEnabled,
-                          base::Unretained(this)));
-
-  UpdatePreviewsEnabled();
-}
-
 void HoldingSpaceTrayIcon::UpdatePreferredSize() {
-  if (!previews_enabled_) {
-    SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
-    return;
-  }
-
   const int num_visible_previews =
       std::min(kHoldingSpaceTrayIconMaxVisiblePreviews,
                static_cast<int>(previews_.size()));
@@ -272,51 +185,9 @@ void HoldingSpaceTrayIcon::UpdatePreferredSize() {
     SetPreferredSize(preferred_size);
 }
 
-void HoldingSpaceTrayIcon::UpdatePreviewsEnabled() {
-  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-
-  const bool previews_enabled = IsPreviewsEnabled();
-  if (previews_enabled_ == previews_enabled)
-    return;
-
-  if (previews_enabled)
-    ShowPreviews();
-  else
-    HidePreviews();
-}
-
-void HoldingSpaceTrayIcon::ShowPreviews() {
-  if (previews_enabled_)
-    return;
-
-  previews_enabled_ = true;
-
-  if (HoldingSpaceController::Get()->model()) {
-    for (const auto& item : HoldingSpaceController::Get()->model()->items())
-      OnHoldingSpaceItemAdded(item.get());
-  }
-}
-
-void HoldingSpaceTrayIcon::HidePreviews() {
-  if (!previews_enabled_)
-    return;
-
-  previews_enabled_ = false;
-
-  previews_.clear();
-  removed_previews_.clear();
-
-  SetVisibility(no_previews_image_view_, true);
-
-  UpdatePreferredSize();
-}
-
 void HoldingSpaceTrayIcon::OnHoldingSpaceTrayIconPreviewAnimatedOut(
     HoldingSpaceTrayIconPreview* preview) {
   base::EraseIf(removed_previews_, base::MatchesUniquePtr(preview));
-
-  if (previews_.empty() && removed_previews_.empty())
-    SetVisibility(no_previews_image_view_, true);
 }
 
 BEGIN_METADATA(HoldingSpaceTrayIcon, views::View)

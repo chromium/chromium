@@ -394,40 +394,44 @@ class HoldingSpaceUiPreviewsBrowserTest : public HoldingSpaceUiBrowserTest {
 IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
   ASSERT_TRUE(IsShowingInShelf());
 
-  auto* tray_icon = GetTrayIcon();
-  ASSERT_TRUE(tray_icon);
-  ASSERT_TRUE(tray_icon->layer());
+  // Initially, the default icon should be shown.
+  auto* default_tray_icon = GetDefaultTrayIcon();
+  ASSERT_TRUE(default_tray_icon);
+  EXPECT_TRUE(default_tray_icon->GetVisible());
 
-  // Initially the tray icon should be empty.
-  EXPECT_EQ(0u, tray_icon->layer()->children().size());
-
-  // It should have a single visible child which is the image view shown when
-  // previews are disabled or unavailable.
-  ASSERT_EQ(1u, tray_icon->children().size());
-  const views::View* no_previews_image_view = tray_icon->children()[0];
-  EXPECT_TRUE(no_previews_image_view->GetVisible());
+  auto* previews_tray_icon = GetPreviewsTrayIcon();
+  ASSERT_TRUE(previews_tray_icon);
+  ASSERT_TRUE(previews_tray_icon->layer());
+  EXPECT_FALSE(previews_tray_icon->GetVisible());
 
   // After pinning a file, we should have a single preview in the tray icon.
   AddPinnedFile();
-  EXPECT_FALSE(no_previews_image_view->GetVisible());
-  EXPECT_EQ(1u, tray_icon->layer()->children().size());
-  EXPECT_EQ(gfx::Size(32, 32), tray_icon->size());
+
+  EXPECT_FALSE(default_tray_icon->GetVisible());
+  EXPECT_TRUE(previews_tray_icon->GetVisible());
+
+  EXPECT_EQ(1u, previews_tray_icon->layer()->children().size());
+  EXPECT_EQ(gfx::Size(32, 32), previews_tray_icon->size());
 
   // After downloading a file, we should have two previews in the tray icon.
   AddDownloadFile();
-  EXPECT_FALSE(no_previews_image_view->GetVisible());
-  EXPECT_EQ(2u, tray_icon->layer()->children().size());
-  EXPECT_EQ(gfx::Size(48, 32), tray_icon->size());
+
+  EXPECT_FALSE(default_tray_icon->GetVisible());
+  EXPECT_TRUE(previews_tray_icon->GetVisible());
+  EXPECT_EQ(2u, previews_tray_icon->layer()->children().size());
+  EXPECT_EQ(gfx::Size(48, 32), previews_tray_icon->size());
 
   // After taking a screenshot, we should have three previews in the tray icon.
   AddScreenshotFile();
-  EXPECT_FALSE(no_previews_image_view->GetVisible());
-  EXPECT_EQ(3u, tray_icon->layer()->children().size());
-  EXPECT_EQ(gfx::Size(64, 32), tray_icon->size());
+
+  EXPECT_FALSE(default_tray_icon->GetVisible());
+  EXPECT_TRUE(previews_tray_icon->GetVisible());
+  EXPECT_EQ(3u, previews_tray_icon->layer()->children().size());
+  EXPECT_EQ(gfx::Size(64, 32), previews_tray_icon->size());
 
   // Right click the tray icon, and expect a context menu to be shown which will
   // allow the user to hide previews.
-  RightClick(tray_icon);
+  RightClick(previews_tray_icon);
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 
   // Use the keyboard to select the context menu item to hide previews. Doing so
@@ -438,13 +442,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
 
   // The tray icon should now contain no previews, but have a single child which
   // contains the static image to show when previews are disabled.
-  EXPECT_TRUE(no_previews_image_view->GetVisible());
-  EXPECT_EQ(0u, tray_icon->layer()->children().size());
-  EXPECT_EQ(gfx::Size(32, 32), tray_icon->size());
+  EXPECT_TRUE(default_tray_icon->GetVisible());
+  EXPECT_FALSE(previews_tray_icon->GetVisible());
+
+  EXPECT_EQ(gfx::Size(32, 32), default_tray_icon->size());
 
   // Right click the tray icon, and expect a context menu to be shown which will
   // allow the user to show previews.
-  RightClick(tray_icon);
+  RightClick(default_tray_icon);
   ASSERT_TRUE(views::MenuController::GetActiveInstance());
 
   // Use the keyboard to select the context menu item to show previews. Doing so
@@ -454,9 +459,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
   EXPECT_FALSE(views::MenuController::GetActiveInstance());
 
   // The tray icon should once again show three previews.
-  EXPECT_FALSE(no_previews_image_view->GetVisible());
-  EXPECT_EQ(3u, tray_icon->layer()->children().size());
-  EXPECT_EQ(gfx::Size(64, 32), tray_icon->size());
+  EXPECT_FALSE(default_tray_icon->GetVisible());
+  EXPECT_TRUE(previews_tray_icon->GetVisible());
+
+  EXPECT_EQ(3u, previews_tray_icon->layer()->children().size());
+  EXPECT_EQ(gfx::Size(64, 32), previews_tray_icon->size());
 }
 
 // Base class for holding space UI browser tests that take screenshots.

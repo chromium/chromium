@@ -20,8 +20,12 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {
@@ -29,6 +33,13 @@ namespace ash {
 namespace {
 
 // Helpers ---------------------------------------------------------------------
+
+// Returns whether previews are enabled.
+bool IsPreviewsEnabled() {
+  auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+  return features::IsTemporaryHoldingSpacePreviewsEnabled() && prefs &&
+         holding_space_prefs::IsPreviewsEnabled(prefs);
+}
 
 // Returns whether the holding space model contains any finalized items.
 bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
@@ -39,21 +50,45 @@ bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
   return false;
 }
 
+std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
+  auto icon = std::make_unique<views::ImageView>();
+  icon->SetID(kHoldingSpaceTrayDefaultIconId);
+  icon->SetImage(gfx::CreateVectorIcon(
+      kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  icon->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
+  icon->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+  return icon;
+}
+
 }  // namespace
 
 // HoldingSpaceTray ------------------------------------------------------------
 
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
-  controller_observer_.Add(HoldingSpaceController::Get());
+  controller_observer_.Observe(HoldingSpaceController::Get());
   SetVisible(false);
 
-  // Context menu.
-  if (features::IsTemporaryHoldingSpacePreviewsEnabled())
-    set_context_menu_controller(this);
-
   // Icon.
-  icon_ = tray_container()->AddChildView(
-      std::make_unique<HoldingSpaceTrayIcon>(shelf));
+  default_tray_icon_ = tray_container()->AddChildView(CreateDefaultTrayIcon());
+
+  if (features::IsTemporaryHoldingSpacePreviewsEnabled()) {
+    previews_tray_icon_ = tray_container()->AddChildView(
+        std::make_unique<HoldingSpaceTrayIcon>(shelf));
+    previews_tray_icon_->SetVisible(false);
+    UpdatePreviewsVisibility();
+
+    // If previews feature is enabled, the preview icon is displayed
+    // conditionally, depending on user prefs state.
+    session_observer_.Observe(Shell::Get()->session_controller());
+    auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+    if (prefs)
+      ObservePrefService(prefs);
+
+    // Enable context menu, which supports an action to toggle item previews.
+    set_context_menu_controller(this);
+  }
 
   // It's possible that this holding space tray was created after login, such as
   // would occur if the user connects an external display. In such situations
@@ -73,7 +108,10 @@ base::string16 HoldingSpaceTray::GetAccessibleNameForTray() {
 }
 
 void HoldingSpaceTray::HandleLocaleChange() {
-  icon_->OnLocaleChanged();
+  default_tray_icon_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
+  if (previews_tray_icon_)
+    previews_tray_icon_->OnLocaleChanged();
 }
 
 void HoldingSpaceTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
@@ -114,7 +152,7 @@ void HoldingSpaceTray::CloseBubble() {
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kClose);
 
-  widget_observer_.RemoveAll();
+  widget_observer_.Reset();
 
   bubble_.reset();
   SetIsActive(false);
@@ -135,7 +173,7 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
   // being destroyed. If destruction is due to a call to `CloseBubble()` we will
   // have already cleaned up state but there are cases where the bubble widget
   // is destroyed independent of a call to `CloseBubble()`, e.g. ESC key press.
-  widget_observer_.Add(bubble_->GetBubbleWidget());
+  widget_observer_.Observe(bubble_->GetBubbleWidget());
 
   SetIsActive(true);
 }
@@ -189,26 +227,41 @@ void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {
 }
 
 void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
-  model_observer_.Add(model);
+  model_observer_.Observe(model);
   UpdateVisibility();
+  if (PreviewsShown())
+    previews_tray_icon_->OnHoldingSpaceModelAttached(model);
+  UpdatePreviewsVisibility();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceModelDetached(HoldingSpaceModel* model) {
-  model_observer_.Remove(model);
+  model_observer_.Reset();
   UpdateVisibility();
+  if (PreviewsShown())
+    previews_tray_icon_->OnHoldingSpaceModelDetached(model);
+  UpdatePreviewsVisibility();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) {
   UpdateVisibility();
+  if (PreviewsShown())
+    previews_tray_icon_->OnHoldingSpaceItemAdded(item);
+  UpdatePreviewsVisibility();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) {
   UpdateVisibility();
+  if (PreviewsShown())
+    previews_tray_icon_->OnHoldingSpaceItemRemoved(item);
+  UpdatePreviewsVisibility();
 }
 
 void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
   UpdateVisibility();
+  if (PreviewsShown())
+    previews_tray_icon_->OnHoldingSpaceItemFinalized(item);
+  UpdatePreviewsVisibility();
 }
 
 void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
@@ -289,6 +342,48 @@ void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
 
 void HoldingSpaceTray::OnWidgetDestroying(views::Widget* widget) {
   CloseBubble();
+}
+
+void HoldingSpaceTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
+  UpdatePreviewsVisibility();
+  ObservePrefService(prefs);
+}
+
+void HoldingSpaceTray::ObservePrefService(PrefService* prefs) {
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs);
+
+  // NOTE: The callback being bound is scoped to `pref_change_registrar_` which
+  // is owned by `this` so it is safe to bind with an unretained raw pointer.
+  holding_space_prefs::AddPreviewsEnabledChangedCallback(
+      pref_change_registrar_.get(),
+      base::BindRepeating(&HoldingSpaceTray::UpdatePreviewsVisibility,
+                          base::Unretained(this)));
+}
+
+void HoldingSpaceTray::UpdatePreviewsVisibility() {
+  const bool show_previews =
+      IsPreviewsEnabled() && HoldingSpaceController::Get()->model() &&
+      ModelContainsFinalizedItems(HoldingSpaceController::Get()->model());
+
+  if (PreviewsShown() == show_previews)
+    return;
+
+  default_tray_icon_->SetVisible(!show_previews);
+
+  if (previews_tray_icon_) {
+    previews_tray_icon_->SetVisible(show_previews);
+
+    if (show_previews) {
+      previews_tray_icon_->Init();
+    } else {
+      previews_tray_icon_->Reset();
+    }
+  }
+}
+
+bool HoldingSpaceTray::PreviewsShown() const {
+  return previews_tray_icon_ && previews_tray_icon_->GetVisible();
 }
 
 }  // namespace ash

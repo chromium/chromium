@@ -61,8 +61,13 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // Returns the holding space tray in the shelf.
   views::View* GetTray();
 
-  // Returns the holding space tray icon in the shelf.
-  views::View* GetTrayIcon();
+  // Returns the holding space tray icon view for the default, non content
+  // forward  icon.
+  views::View* GetDefaultTrayIcon();
+
+  // Returns the holding space tray icon view for the content forward icon,
+  // which displays previews of most recent items added to holding space.
+  views::View* GetPreviewsTrayIcon();
 
   // Returns whether the pinned files container is shown.
   bool PinnedFilesContainerShown() const;

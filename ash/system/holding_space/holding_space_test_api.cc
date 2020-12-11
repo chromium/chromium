@@ -130,8 +130,12 @@ views::View* HoldingSpaceTestApi::GetTray() {
   return holding_space_tray_;
 }
 
-views::View* HoldingSpaceTestApi::GetTrayIcon() {
-  return holding_space_tray_->GetViewByID(kHoldingSpaceTrayIconId);
+views::View* HoldingSpaceTestApi::GetDefaultTrayIcon() {
+  return holding_space_tray_->GetViewByID(kHoldingSpaceTrayDefaultIconId);
+}
+
+views::View* HoldingSpaceTestApi::GetPreviewsTrayIcon() {
+  return holding_space_tray_->GetViewByID(kHoldingSpaceTrayPreviewsIconId);
 }
 
 bool HoldingSpaceTestApi::PinnedFilesContainerShown() const {

@@ -92,8 +92,9 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetScreenCaptureViews();
 
-  // Returns the holding space tray icon in the shelf.
-  views::View* GetTrayIcon();
+  // Getter for the holding space tray icons in the shelf.
+  views::View* GetDefaultTrayIcon();
+  views::View* GetPreviewsTrayIcon();
 
   // Requests lock screen, waiting to return until session state is locked.
   void RequestAndAwaitLockScreen();
