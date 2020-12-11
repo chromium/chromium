@@ -385,6 +385,11 @@ if (is_win) {
   chrome_framework_version = chrome_version_full
 
   verify_dynamic_libraries = !is_component_build && !is_asan
+  if (host_os == "mac") {
+    objdump_path = mac_bin_path
+  } else {
+    objdump_path = rebase_path("$clang_base_path/bin/", root_build_dir)
+  }
 
   group("chrome") {
     deps = [ ":chrome_app" ]
@@ -481,7 +486,7 @@ if (is_win) {
         "--stamp",
         rebase_path(outputs[0], root_out_dir),
         "-B",
-        mac_bin_path,
+        objdump_path,
         "--image",
         rebase_path(inputs[0], root_out_dir),
         "--allow",
@@ -700,7 +705,7 @@ if (is_win) {
           "--stamp",
           rebase_path(outputs[0], root_out_dir),
           "-B",
-          mac_bin_path,
+          objdump_path,
           "--image",
           rebase_path(inputs[0], root_out_dir),
 

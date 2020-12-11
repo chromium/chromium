@@ -4352,6 +4352,14 @@ hooks = [
                '--package=lld_mac'],
   },
   {
+    # Should run after the clang hook.
+    'name': 'objdump/mac',
+    'pattern': '.',
+    'condition': 'checkout_mac and host_os != "mac"',
+    'action': ['python', 'src/tools/clang/scripts/update.py',
+               '--package=objdump'],
+  },
+  {
     # Update LASTCHANGE.
     'name': 'lastchange',
     'pattern': '.',
