@@ -76,7 +76,8 @@ class ASH_EXPORT ClipboardHistoryResourceManager
   void CancelUnfinishedRequests();
 
   // ClipboardHistory::Observer:
-  void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item) override;
+  void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item,
+                                   bool is_duplicate) override;
   void OnClipboardHistoryItemRemoved(const ClipboardHistoryItem& item) override;
   void OnClipboardHistoryCleared() override;
 

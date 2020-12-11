@@ -89,7 +89,8 @@ void ClipboardNudgeController::RegisterProfilePrefs(
 }
 
 void ClipboardNudgeController::OnClipboardHistoryItemAdded(
-    const ClipboardHistoryItem& item) {
+    const ClipboardHistoryItem& item,
+    bool is_duplicate) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   if (!ShouldShowNudge(prefs))

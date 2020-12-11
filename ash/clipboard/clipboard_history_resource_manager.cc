@@ -229,7 +229,12 @@ void ClipboardHistoryResourceManager::CancelUnfinishedRequests() {
 }
 
 void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
-    const ClipboardHistoryItem& item) {
+    const ClipboardHistoryItem& item,
+    bool is_duplicate) {
+  // If this item is a duplicate then there is no new item to render.
+  if (is_duplicate)
+    return;
+
   // For items that will be represented by their rendered HTML, we need to do
   // some prep work to pre-render and cache an image model.
   if (ClipboardHistoryUtil::CalculateDisplayFormat(item.data()) !=

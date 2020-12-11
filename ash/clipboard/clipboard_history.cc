@@ -110,9 +110,21 @@ void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {
   if (!ClipboardHistoryUtil::IsSupported(data))
     return;
 
-  history_list_.emplace_front(std::move(data));
+  auto iter =
+      std::find_if(history_list_.cbegin(), history_list_.cend(),
+                   [&data](const auto& item) { return item.data() == data; });
+  bool is_duplicate = iter != history_list_.cend();
+  if (is_duplicate) {
+    // If |data| already exists in |history_list_| then move it to the front
+    // instead of creating a new one because creating a new one will result in a
+    // new unique identifier.
+    history_list_.splice(history_list_.begin(), history_list_, iter);
+  } else {
+    history_list_.emplace_front(std::move(data));
+  }
+
   for (auto& observer : observers_)
-    observer.OnClipboardHistoryItemAdded(history_list_.front());
+    observer.OnClipboardHistoryItemAdded(history_list_.front(), is_duplicate);
 
   if (history_list_.size() > ClipboardHistoryUtil::kMaxClipboardItemsShared) {
     auto removed = std::move(history_list_.back());

@@ -50,7 +50,8 @@ class ASH_EXPORT ClipboardNudgeController
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // ui::ClipboardHistory::Observer:
-  void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item) override;
+  void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item,
+                                   bool is_duplicate = false) override;
 
   // ui::ClipboardObserver:
   void OnClipboardDataRead() override;

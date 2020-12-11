@@ -154,11 +154,12 @@ TEST_F(ClipboardHistoryTest, OneThingCopiedOneThingSaved) {
   WriteAndEnsureTextHistory(input_strings, expected_strings);
 }
 
-// Tests that if the same (non bitmap) thing is copied, both things are saved.
+// Tests that if the same (non bitmap) thing is copied, only one of the
+// duplicates is in the list.
 TEST_F(ClipboardHistoryTest, DuplicateBasic) {
   std::vector<base::string16> input_strings{base::UTF8ToUTF16("test"),
                                             base::UTF8ToUTF16("test")};
-  std::vector<base::string16> expected_strings = input_strings;
+  std::vector<base::string16> expected_strings{base::UTF8ToUTF16("test")};
 
   // Test that both things are saved.
   WriteAndEnsureTextHistory(input_strings, expected_strings);
@@ -190,18 +191,19 @@ TEST_F(ClipboardHistoryTest, HistoryIsReverseChronological) {
   WriteAndEnsureTextHistory(input_strings, expected_strings);
 }
 
-// Tests that when a duplicate is copied, the duplicate shows up in the proper
-// order and that the older version is still returned.
+// Tests that when a duplicate is copied, the existing duplicate item moves up
+// to the front of the clipboard history.
 TEST_F(ClipboardHistoryTest, DuplicatePrecedesPreviousRecord) {
   // Input holds a unique string sandwiched by a copy.
   std::vector<base::string16> input_strings{
       base::UTF8ToUTF16("test1"), base::UTF8ToUTF16("test2"),
       base::UTF8ToUTF16("test1"), base::UTF8ToUTF16("test3")};
   // The result should be a reversal of the copied elements. When a duplicate
-  // is copied, history will show all versions of the recent duplicate.
-  std::vector<base::string16> expected_strings{
-      base::UTF8ToUTF16("test3"), base::UTF8ToUTF16("test1"),
-      base::UTF8ToUTF16("test2"), base::UTF8ToUTF16("test1")};
+  // is copied, history will have that item moved to the front instead of adding
+  // a new item.
+  std::vector<base::string16> expected_strings{base::UTF8ToUTF16("test3"),
+                                               base::UTF8ToUTF16("test1"),
+                                               base::UTF8ToUTF16("test2")};
 
   WriteAndEnsureTextHistory(input_strings, expected_strings);
 }
@@ -292,7 +294,8 @@ TEST_F(ClipboardHistoryTest, BasicBitmap) {
   WriteAndEnsureBitmapHistory(input_bitmaps, expected_bitmaps);
 }
 
-// Tests that duplicate bitmaps show up in history in most-recent order.
+// Tests that duplicate bitmaps show up in history as one item placed in
+// most-recent order.
 TEST_F(ClipboardHistoryTest, DuplicateBitmap) {
   SkBitmap test_bitmap_1;
   test_bitmap_1.allocN32Pixels(3, 2);
@@ -303,7 +306,7 @@ TEST_F(ClipboardHistoryTest, DuplicateBitmap) {
 
   std::vector<SkBitmap> input_bitmaps{test_bitmap_1, test_bitmap_2,
                                       test_bitmap_1};
-  std::vector<SkBitmap> expected_bitmaps = input_bitmaps;
+  std::vector<SkBitmap> expected_bitmaps{test_bitmap_1, test_bitmap_2};
   WriteAndEnsureBitmapHistory(input_bitmaps, expected_bitmaps);
 }
 

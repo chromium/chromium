@@ -266,13 +266,19 @@ TEST_F(ClipboardHistoryResourceManagerTest, DuplicateHTML) {
   EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(0);
   EXPECT_CALL(*mock_image_factory(), Render).Times(1);
 
-  for (int i = 0; i < 2; ++i) {
-    {
-      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-      scw.WriteHTML(base::UTF8ToUTF16("<img test>"), "source_url");
-    }
-    FlushMessageLoop();
+  // Use identical markup but differing source url so that both items are added
+  // to the clipboard history.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteHTML(base::UTF8ToUTF16("<img test>"), "source_url_1");
   }
+  FlushMessageLoop();
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteHTML(base::UTF8ToUTF16("<img test>"), "source_url_2");
+  }
+  FlushMessageLoop();
+
   auto items = clipboard_history()->GetItems();
   EXPECT_EQ(2u, items.size());
   for (const auto& item : items)
