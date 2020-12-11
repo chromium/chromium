@@ -1,8 +1,11 @@
 /*
- * Copyright 2017 The Chromium Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
  */
+
 'use strict';
 
 /* global VideoMirrorHelper */ // defined in video-mirror-helper.js
@@ -53,6 +56,15 @@ class CameraSource { // eslint-disable-line no-unused-vars
     }
   }
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /**
@@ -124,6 +136,15 @@ class CanvasTransform { // eslint-disable-line no-unused-vars
   /** @override */
   destroy() {}
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /* global MediaStreamTrackProcessor, MediaStreamTrackGenerator */
@@ -388,6 +409,15 @@ function initUI() {
 }
 
 window.onload = initUI;
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /**
@@ -486,6 +516,15 @@ class PeerConnectionPipe { // eslint-disable-line no-unused-vars
     this.callee_.close();
   }
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /* global PeerConnectionPipe */ // defined in peer-connection-pipe.js
@@ -535,6 +574,15 @@ class PeerConnectionSink { // eslint-disable-line no-unused-vars
     if (this.pipe_) this.pipe_.destroy();
   }
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /* global PeerConnectionPipe */ // defined in peer-connection-pipe.js
@@ -614,6 +662,15 @@ class PeerConnectionSource { // eslint-disable-line no-unused-vars
     this.originalStreamSource_.destroy();
   }
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /* global createProcessedMediaStreamTrack */ // defined in main.js
@@ -818,6 +875,15 @@ class Pipeline { // eslint-disable-line no-unused-vars
     if (this.sink_) this.sink_.destroy();
   }
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /**
@@ -854,6 +920,15 @@ class DelayTransform { // eslint-disable-line no-unused-vars
   /** @override */
   destroy() {}
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /**
@@ -928,6 +1003,15 @@ class VideoMirrorHelper { // eslint-disable-line no-unused-vars
     }
   }
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /**
@@ -975,6 +1059,15 @@ class VideoSink { // eslint-disable-line no-unused-vars
     }
   }
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /**
@@ -1077,6 +1170,15 @@ class VideoSource { // eslint-disable-line no-unused-vars
     }
   }
 }
+
+/*
+ *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 'use strict';
 
 /**

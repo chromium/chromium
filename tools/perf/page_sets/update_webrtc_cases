@@ -42,16 +42,6 @@ ADDED_SCRIPT_TAGS = (
     '</body></html>'
 )
 
-COPYRIGHT_NOTICE = [
-    'Copyright 2017 The Chromium Authors. All rights reserved.\n',
-    'Use of this source code is governed by a BSD-style license that can be\n',
-    'found in the LICENSE file.\n',
-]
-
-COPYRIGHT_NOTICE_LENGTH = 8
-JS_COPYRIGHT_NOTICE = ' * '.join(['/*\n'] + COPYRIGHT_NOTICE) + ' */\n'
-HTML_COPYRIGHT_NOTICE = ' * '.join(['<!--\n'] + COPYRIGHT_NOTICE) + '-->\n'
-
 STRIPPED_TAGS_RE = ('( *<meta.*?>\n?| *<link.*?>\n?|'
                     ' *<script.*>.*?</script>\n?| *</body>.*?</html>)')
 
@@ -70,22 +60,21 @@ class TemporaryDirectory(object):
 
 
 def ConcatJSDir(origin, destination):
-  dest_contents = [JS_COPYRIGHT_NOTICE]
-
+  contents = ''
   for filename in sorted(os.listdir(origin)):
     if filename.endswith('.js'):
       with open(os.path.join(origin, filename)) as input_file:
-       src_contents = input_file.readlines()
-       dest_contents += src_contents[COPYRIGHT_NOTICE_LENGTH:]
-
+       if contents:
+         contents += '\n'
+       contents += input_file.read()
 
   # Replace references to chrome.webm with road_trip_640_480.mp4, which has
   # already been uploaded to cloud storage.
-  dest_contents = [re.sub('(../)+video/chrome.webm', 'road_trip_640_480.mp4', x)
-                   for x in dest_contents]
+  contents = re.sub('(../)+video/chrome.webm', 'road_trip_640_480.mp4',
+                    contents, flags=re.MULTILINE)
 
   with open(destination, 'w') as output_file:
-    output_file.writelines(dest_contents)
+    output_file.write(contents)
 
 
 def CopyHTMLFile(test_name, origin, destination):
@@ -97,12 +86,8 @@ def CopyHTMLFile(test_name, origin, destination):
                     flags=re.MULTILINE|re.DOTALL)
   contents += ADDED_SCRIPT_TAGS % test_name
 
-  contents = [line + '\n' for line in contents.split('\n')]
-  contents = (contents[:1] + [HTML_COPYRIGHT_NOTICE] +
-              contents[COPYRIGHT_NOTICE_LENGTH:])
-
   with open(destination, 'w') as output_file:
-    output_file.writelines(contents)
+    output_file.write(contents)
 
 
 def main():
@@ -113,7 +98,6 @@ def main():
           'This script downloads the test pages from the WebRTC GitHub '
           'repository and copies them to the DESTINATION directory after '
           'processing them as follows: \n'
-          '  * Adds a copyright notice on top of the HTML and JS files.\n'
           '  * Deletes the <meta> tags.\n'
           '  * Discards the CSS files and corresponding link tags.\n'
           '  * Renames the index.html to testname.html.\n'
