@@ -5019,10 +5019,42 @@ crbug.com/970285 [ Android ] virtual/forced-high-contrast-colors/* [ Pass ]
 crbug.com/1090660 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/svg-as-image.html [ Skip ]
 crbug.com/1090660 virtual/dark-color-scheme/external/wpt/css/css-color-adjust/rendering/dark-color-scheme/svg-as-image.html [ Pass ]
 
+# virtual/layout_ng_table
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/border-spacing-included-in-sizes-001.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/min-max-size-table-content-box.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/subpixel-collapsed-borders-003.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/subpixel-table-cell-height-001.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/subpixel-table-cell-width-001.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/subpixel-table-cell-width-002.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/subpixel-table-width-001.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/table-has-box-sizing-border-box-002.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/toggle-row-display-property-001.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-col-001.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-col-002.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-col-003.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-col-004-dynamic.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-col-005.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-colspan-001.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-colspan-002.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-row-004.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-rowcol-001.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-rowcol-002.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-001.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-003.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-005.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-005.html [ Pass ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/tentative/position-sticky-container.html [ Pass ]
+
+crbug.com/1157330 virtual/layout_ng_table/external/wpt/css/css-tables/height-distribution/computing-row-measure-0.html [ Failure ]
+crbug.com/1157626 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [  Failure ]
+
+# Works in main table patch, needs percentage sizing fix.
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children.html [ Failure ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/percent-width-ignored-001.tentative.html [ Failure ]
+crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/percent-width-ignored-003.tentative.html [ Failure ]
+
 # Sheriff 2019-08-14
 crbug.com/993671 [ Win ] http/tests/media/video-frame-size-change.html [ Pass Failure ]
-
-#Sheriff 2019-08-12
 
 #Sherrif 2019-08-16
 crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Pass Failure ]

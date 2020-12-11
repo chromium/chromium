@@ -287,6 +287,11 @@
     "args": ["--enable-blink-features=LayoutNGGrid"]
   },
   {
+    "prefix": "layout_ng_table",
+    "bases": [ "external/wpt/css/css-tables" ],
+    "args": ["--enable-blink-features=LayoutNGTable"]
+  },
+  {
     "prefix": "dark-mode-default",
     "bases": ["dark-mode/colors",
               "dark-mode/images"],

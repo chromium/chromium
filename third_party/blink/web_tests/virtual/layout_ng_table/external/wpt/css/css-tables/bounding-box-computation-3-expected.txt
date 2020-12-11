@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Control test: Table width is 120px
+PASS Control test: Table height is 120px
+FAIL First (empty) table-row-group is 0px wide assert_equals: expected 0 but got 100
+PASS First (empty) table-row-group is 0px tall
+PASS First (empty) table-row-group should be located at 10px left
+FAIL First (empty) table-row-group should be located at 10px top assert_equals: expected 10 but got 0
+PASS Second table-row-group is 100px wide
+PASS Second table-row-group is 100px tall
+PASS Second table-row-group should be located at 10px left
+PASS Second table-row-group should be located at 10px top
+Harness: the test ran to completion.
+
