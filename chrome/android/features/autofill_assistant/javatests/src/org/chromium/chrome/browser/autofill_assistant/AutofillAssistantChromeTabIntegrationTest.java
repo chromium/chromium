@@ -530,6 +530,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky - https://crbug.com/1157506")
     public void interactingWithLocationBarDoesNotShowHiddenScrim() {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add((ActionProto) ActionProto.newBuilder()
