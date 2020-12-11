@@ -74457,6 +74457,7 @@ Full version information for the fingerprint enum values:
   <int value="61" label="kErrorNotEnoughSpace"/>
   <int value="62" label="kErrorDeviceCorrupted"/>
   <int value="63" label="kErrorPackageExcludedFromUpdate"/>
+  <int value="64" label="kErrorDownloadCancelledPerPolicy"/>
 </enum>
 
 <enum name="UpdateEngineInstallDateProvisioningSource">
