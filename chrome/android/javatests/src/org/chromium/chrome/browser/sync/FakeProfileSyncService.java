@@ -20,7 +20,6 @@ import java.util.Set;
  */
 public class FakeProfileSyncService extends ProfileSyncService {
     private boolean mEngineInitialized;
-    private int mNumberOfSyncedDevices;
     private boolean mPassphraseRequiredForPreferredDataTypes;
     private boolean mTrustedVaultKeyRequired;
     private boolean mTrustedVaultKeyRequiredForPreferredDataTypes;
@@ -66,15 +65,6 @@ public class FakeProfileSyncService extends ProfileSyncService {
     @Override
     public boolean isUsingSecondaryPassphrase() {
         return true;
-    }
-
-    @Override
-    public int getNumberOfSyncedDevices() {
-        return mNumberOfSyncedDevices;
-    }
-
-    public void setNumberOfSyncedDevices(int numDevices) {
-        mNumberOfSyncedDevices = numDevices;
     }
 
     @Override

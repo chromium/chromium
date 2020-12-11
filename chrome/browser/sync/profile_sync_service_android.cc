@@ -20,7 +20,6 @@
 #include "chrome/android/chrome_jni_headers/ProfileSyncService_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,9 +30,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
-#include "components/sync_device_info/device_info.h"
-#include "components/sync_device_info/device_info_sync_service.h"
-#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -483,20 +479,6 @@ ProfileSyncServiceAndroid::GetCurrentSignedInAccountText(
   return base::android::ConvertUTF16ToJavaString(
       env, l10n_util::GetStringFUTF16(IDS_SYNC_ACCOUNT_INFO,
                                       base::ASCIIToUTF16(sync_username)));
-}
-
-jint ProfileSyncServiceAndroid::GetNumberOfSyncedDevices(
-    JNIEnv* env,
-    const JavaParamRef<jobject>&) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  syncer::DeviceInfoSyncService* device_sync_service =
-      DeviceInfoSyncServiceFactory::GetForProfile(profile_);
-  if (!device_sync_service) {
-    return 0;
-  }
-  const std::vector<std::unique_ptr<syncer::DeviceInfo>> all_devices =
-      device_sync_service->GetDeviceInfoTracker()->GetAllDeviceInfo();
-  return all_devices.size();
 }
 
 ScopedJavaLocalRef<jstring>
