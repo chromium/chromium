@@ -271,8 +271,17 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual bool HasTickmarks() const { return false; }
   virtual Vector<IntRect> GetTickmarks() const { return Vector<IntRect>(); }
 
+  // Note that this function just set the scrollbar itself needs repaint by
+  // blink during paint, but doesn't set the scrollbar parts (thumb or track)
+  // of an accelerated scrollbar needing repaint by the compositor.
+  // Use Scrollbar::SetNeedsPaintInvaldiation() instead.
   virtual void SetScrollbarNeedsPaintInvalidation(ScrollbarOrientation);
+
   virtual void SetScrollCornerNeedsPaintInvalidation();
+
+  // Set all scrollbars and their parts and the scroll corner needs full paint
+  // invalidation.
+  void SetScrollControlsNeedFullPaintInvalidation();
 
   // Convert points and rects between the scrollbar and its containing
   // EmbeddedContentView. The client needs to implement these in order to be

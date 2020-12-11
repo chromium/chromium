@@ -2858,7 +2858,12 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   void SetShouldDoFullPaintInvalidation(
       PaintInvalidationReason = PaintInvalidationReason::kFull);
   void SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-      PaintInvalidationReason = PaintInvalidationReason::kFull);
+      PaintInvalidationReason reason = PaintInvalidationReason::kFull) {
+    NOT_DESTROYED();
+    // Use SetBackgroundNeedsFullPaintInvalidation() instead. See comment above.
+    DCHECK_NE(reason, PaintInvalidationReason::kBackground);
+    SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(reason);
+  }
 
   void ClearPaintInvalidationFlags();
 
@@ -2913,6 +2918,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return bitfields_.ShouldDelayFullPaintInvalidation();
   }
   void SetShouldDelayFullPaintInvalidation();
+  void ClearShouldDelayFullPaintInvalidation();
 
   bool ShouldInvalidateSelection() const {
     NOT_DESTROYED();
@@ -3063,8 +3069,9 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     }
     void SetShouldDoFullPaintInvalidationWithoutGeometryChange(
         PaintInvalidationReason reason) {
-      layout_object_.SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-          reason);
+      layout_object_
+          .SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
+              reason);
     }
     void SetBackgroundNeedsFullPaintInvalidation() {
       layout_object_.SetBackgroundNeedsFullPaintInvalidation();
@@ -3229,7 +3236,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   void SetBackgroundNeedsFullPaintInvalidation() {
     NOT_DESTROYED();
-    SetShouldDoFullPaintInvalidationWithoutGeometryChange(
+    SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
         PaintInvalidationReason::kBackground);
     bitfields_.SetBackgroundNeedsFullPaintInvalidation(true);
   }
@@ -3634,6 +3641,9 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
       const LayoutBox* box_for_flipping) const;
 
   void MarkSelfPaintingLayerForVisualOverflowRecalc();
+
+  void SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
+      PaintInvalidationReason);
 
   // This is set by Set[Subtree]ShouldDoFullPaintInvalidation, and cleared
   // during PrePaint in this object's InvalidatePaint(). It's different from

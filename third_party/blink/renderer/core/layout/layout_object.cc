@@ -4369,8 +4369,9 @@ static PaintInvalidationReason DocumentLifecycleBasedPaintInvalidationReason(
   }
 }
 
-void LayoutObject::SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-    PaintInvalidationReason reason) {
+void LayoutObject::
+    SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
+        PaintInvalidationReason reason) {
   NOT_DESTROYED();
   // Only full invalidation reasons are allowed.
   DCHECK(IsFullPaintInvalidationReason(reason));
@@ -4453,6 +4454,13 @@ void LayoutObject::SetShouldDelayFullPaintInvalidation() {
     // invalidation.
     GetFrameView()->ScheduleVisualUpdateForPaintInvalidationIfNeeded();
   }
+}
+
+void LayoutObject::ClearShouldDelayFullPaintInvalidation() {
+  // This will clear ShouldDelayFullPaintInvalidation() flag and enable previous
+  // BackgroundNeedsFullPaintInvalidaiton() if it's set.
+  SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal(
+      FullPaintInvalidationReason());
 }
 
 void LayoutObject::ClearPaintInvalidationFlags() {

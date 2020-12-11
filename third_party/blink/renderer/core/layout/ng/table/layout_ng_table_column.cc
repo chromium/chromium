@@ -28,10 +28,8 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
           table->GridBordersChanged();
         }
         // Table paints column background. Tell table to repaint.
-        if (StyleRef().HasBackground() || old_style->HasBackground()) {
-          table->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-              PaintInvalidationReason::kBackground);
-        }
+        if (StyleRef().HasBackground() || old_style->HasBackground())
+          table->SetBackgroundNeedsFullPaintInvalidation();
       }
       if (diff.NeedsLayout()) {
         table->SetIntrinsicLogicalWidthsDirty();
@@ -53,20 +51,16 @@ void LayoutNGTableColumn::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutBox::InsertedIntoTree();
   DCHECK(Table());
-  if (StyleRef().HasBackground()) {
-    Table()->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-        PaintInvalidationReason::kBackground);
-  }
+  if (StyleRef().HasBackground())
+    Table()->SetBackgroundNeedsFullPaintInvalidation();
 }
 
 void LayoutNGTableColumn::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutBox::WillBeRemovedFromTree();
   DCHECK(Table());
-  if (StyleRef().HasBackground()) {
-    Table()->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-        PaintInvalidationReason::kBackground);
-  }
+  if (StyleRef().HasBackground())
+    Table()->SetBackgroundNeedsFullPaintInvalidation();
 }
 
 bool LayoutNGTableColumn::IsChildAllowed(LayoutObject* child,

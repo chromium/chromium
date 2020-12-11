@@ -238,8 +238,11 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
   }
 
   if (background_location_changed ||
-      layout_view.BackgroundNeedsFullPaintInvalidation())
+      layout_view.BackgroundNeedsFullPaintInvalidation() ||
+      (context_.subtree_flags &
+       PaintInvalidatorContext::kSubtreeFullInvalidation)) {
     return BackgroundInvalidationType::kFull;
+  }
 
   if (Element* root_element = box_.GetDocument().documentElement()) {
     if (const auto* root_object = root_element->GetLayoutObject()) {
@@ -287,7 +290,9 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
     bool& should_invalidate_all_layers) {
   // If background changed, we may paint the background on different graphics
   // layer, so we need to fully invalidate the background on all layers.
-  if (box_.BackgroundNeedsFullPaintInvalidation()) {
+  if (box_.BackgroundNeedsFullPaintInvalidation() ||
+      (context_.subtree_flags &
+       PaintInvalidatorContext::kSubtreeFullInvalidation)) {
     should_invalidate_all_layers = true;
     return BackgroundInvalidationType::kFull;
   }

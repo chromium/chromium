@@ -299,6 +299,24 @@ bool PaintInvalidator::InvalidatePaint(
   if (!object.ShouldCheckForPaintInvalidation() && !context.NeedsSubtreeWalk())
     return false;
 
+  if (object.SubtreeShouldDoFullPaintInvalidation()) {
+    context.subtree_flags |=
+        PaintInvalidatorContext::kSubtreeFullInvalidation |
+        PaintInvalidatorContext::kSubtreeFullInvalidationForStackedContents;
+  }
+
+  if (object.SubtreeShouldCheckForPaintInvalidation()) {
+    context.subtree_flags |=
+        PaintInvalidatorContext::kSubtreeInvalidationChecking;
+  }
+
+  if (UNLIKELY(object.ContainsInlineWithOutlineAndContinuation())) {
+    // Force subtree invalidation checking to ensure invalidation of focus rings
+    // when continuation's geometry changes.
+    context.subtree_flags |=
+        PaintInvalidatorContext::kSubtreeInvalidationChecking;
+  }
+
   if (pre_paint_info) {
     FragmentData& fragment_data = pre_paint_info->fragment_data;
     context.fragment_data = &fragment_data;
@@ -346,24 +364,6 @@ bool PaintInvalidator::InvalidatePaint(
        // Delay invalidation if the client has never been painted.
        reason == PaintInvalidationReason::kJustCreated))
     pending_delayed_paint_invalidations_.push_back(&object);
-
-  if (object.SubtreeShouldDoFullPaintInvalidation()) {
-    context.subtree_flags |=
-        PaintInvalidatorContext::kSubtreeFullInvalidation |
-        PaintInvalidatorContext::kSubtreeFullInvalidationForStackedContents;
-  }
-
-  if (object.SubtreeShouldCheckForPaintInvalidation()) {
-    context.subtree_flags |=
-        PaintInvalidatorContext::kSubtreeInvalidationChecking;
-  }
-
-  if (UNLIKELY(object.ContainsInlineWithOutlineAndContinuation())) {
-    // Force subtree invalidation checking to ensure invalidation of focus rings
-    // when continuation's geometry changes.
-    context.subtree_flags |=
-        PaintInvalidatorContext::kSubtreeInvalidationChecking;
-  }
 
   if (AXObjectCache* cache = object.GetDocument().ExistingAXObjectCache())
     cache->InvalidateBoundingBox(&object);

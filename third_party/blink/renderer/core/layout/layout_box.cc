@@ -2724,15 +2724,12 @@ void LayoutBox::EnsureIsReadyForPaintInvalidation() {
     SetShouldDelayFullPaintInvalidation();
   }
 
-  if (!ShouldDelayFullPaintInvalidation() || !IntersectsVisibleViewport())
-    return;
-
-  // Do regular full paint invalidation if the object with delayed paint
-  // invalidation is onscreen. This will clear
-  // ShouldDelayFullPaintInvalidation() flag and enable previous
-  // BackgroundNeedsFullPaintInvalidaiton() if it's set.
-  SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-      FullPaintInvalidationReason());
+  if (ShouldDelayFullPaintInvalidation() && IntersectsVisibleViewport()) {
+    // Do regular full paint invalidation if the object with delayed paint
+    // invalidation is on screen.
+    ClearShouldDelayFullPaintInvalidation();
+    DCHECK(ShouldDoFullPaintInvalidation());
+  }
 }
 
 void LayoutBox::InvalidatePaintRectangle(const PhysicalRect& dirty_rect) {
