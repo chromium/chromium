@@ -21,8 +21,6 @@
 namespace blink {
 
 enum class NGBaselineAlgorithmType;
-class NGPaintFragment;
-class NGPhysicalFragment;
 struct NGInlineNodeData;
 
 // This mixin holds code shared between LayoutNG subclasses of LayoutBlockFlow.
@@ -48,18 +46,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  const NGPaintFragment* PaintFragment() const final {
-    // TODO(layout-dev) crbug.com/963103
-    // Safer option here is to return nullptr only if
-    // Lifecycle > DocumentLifecycle::kAfterPerformLayout, but this breaks
-    // some layout tests.
-    if (Base::NeedsLayout())
-      return nullptr;
-    return paint_fragment_.get();
-  }
-  void SetPaintFragment(const NGBlockBreakToken*,
-                        scoped_refptr<const NGPhysicalFragment>) final;
-
   using LayoutNGMixin<Base>::CurrentFragment;
 
  protected:
@@ -79,7 +65,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   void UpdateNGBlockLayout();
 
   std::unique_ptr<NGInlineNodeData> ng_inline_node_data_;
-  scoped_refptr<NGPaintFragment> paint_fragment_;
 
   friend class NGBaseLayoutAlgorithmTest;
 

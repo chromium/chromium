@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
 namespace blink {
@@ -108,13 +107,6 @@ void LayoutNGBlockFlowMixin<Base>::AddOutlineRects(
     Vector<PhysicalRect>& rects,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
-  if (PaintFragment()) {
-    To<NGPhysicalBoxFragment>(PaintFragment()->PhysicalFragment())
-        .AddSelfOutlineRects(additional_offset, include_block_overflows,
-                             &rects);
-    return;
-  }
-
   // TODO(crbug.com/1145048): Currently |NGBoxPhysicalFragment| does not support
   // NG block fragmentation. Fallback to the legacy code path.
   if (Base::PhysicalFragmentCount() == 1) {
@@ -191,32 +183,6 @@ LayoutUnit LayoutNGBlockFlowMixin<Base>::InlineBlockBaseline(
 }
 
 template <typename Base>
-void LayoutNGBlockFlowMixin<Base>::SetPaintFragment(
-    const NGBlockBreakToken* break_token,
-    scoped_refptr<const NGPhysicalFragment> fragment) {
-  DCHECK(!break_token || break_token->InputNode().GetLayoutBox() == this);
-
-  if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()))
-    return;
-
-  scoped_refptr<NGPaintFragment>* current =
-      NGPaintFragment::Find(&paint_fragment_, break_token);
-  DCHECK(current);
-  if (fragment) {
-    *current = NGPaintFragment::Create(std::move(fragment), break_token,
-                                       std::move(*current));
-    // |NGPaintFragment::Create()| calls |SlowSetPaintingLayerNeedsRepaint()|.
-  } else if (*current) {
-    DCHECK_EQ(this, (*current)->GetLayoutObject());
-    // TODO(kojii): Pass break_token for LayoutObject that spans across block
-    // fragmentation boundaries.
-    (*current)->ClearAssociationWithLayoutObject();
-    *current = nullptr;
-    ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
-  }
-}
-
-template <typename Base>
 bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
@@ -233,28 +199,16 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
   if (!Base::MayIntersect(result, hit_test_location, accumulated_offset))
     return false;
 
-  if (const NGPaintFragment* paint_fragment = PaintFragment()) {
-    if (Base::IsInSelfHitTestingPhase(action) && Base::IsScrollContainer() &&
-        Base::HitTestOverflowControl(result, hit_test_location,
-                                     accumulated_offset))
-      return true;
-
-    return NGBoxFragmentPainter(*paint_fragment)
-        .NodeAtPoint(result, hit_test_location, accumulated_offset, action);
-  }
-
-  if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())) {
-    if (Base::PhysicalFragmentCount()) {
-      const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
-      DCHECK(fragment);
-      if (fragment->HasItems() ||
-          // Check descendants of this fragment because floats may be in the
-          // |NGFragmentItems| of the descendants.
-          (action == kHitTestFloat &&
-           fragment->HasFloatingDescendantsForPaint())) {
-        return NGBoxFragmentPainter(*fragment).NodeAtPoint(
-            result, hit_test_location, accumulated_offset, action);
-      }
+  if (Base::PhysicalFragmentCount()) {
+    const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
+    DCHECK(fragment);
+    if (fragment->HasItems() ||
+        // Check descendants of this fragment because floats may be in the
+        // |NGFragmentItems| of the descendants.
+        (action == kHitTestFloat &&
+         fragment->HasFloatingDescendantsForPaint())) {
+      return NGBoxFragmentPainter(*fragment).NodeAtPoint(
+          result, hit_test_location, accumulated_offset, action);
     }
   }
 
@@ -274,18 +228,8 @@ PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
 
   if (!Base::ChildrenInline())
     return LayoutBlock::PositionForPoint(point);
-
-  if (const NGPaintFragment* paint_fragment = PaintFragment()) {
-    // The given offset is relative to this |LayoutBlockFlow|. Convert to the
-    // contents offset.
-    PhysicalOffset point_in_contents = point;
-    Base::OffsetForContents(point_in_contents);
-    if (const PositionWithAffinity position =
-            paint_fragment->PositionForPoint(point_in_contents))
-      return AdjustForEditingBoundary(position);
-  } else if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
+  if (const NGPhysicalBoxFragment* fragment = CurrentFragment())
     return fragment->PositionForPoint(point);
-  }
 
   return Base::CreatePositionWithAffinity(0);
 }
@@ -299,8 +243,7 @@ void LayoutNGBlockFlowMixin<Base>::DirtyLinesFromChangedChild(
   // We need to dirty line box fragments only if the child is once laid out in
   // LayoutNG inline formatting context. New objects are handled in
   // NGInlineNode::MarkLineBoxesDirty().
-  if (child->IsInLayoutNGInlineFormattingContext() &&
-      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
+  if (child->IsInLayoutNGInlineFormattingContext())
     NGFragmentItems::DirtyLinesFromChangedChild(*child, *this);
 }
 
