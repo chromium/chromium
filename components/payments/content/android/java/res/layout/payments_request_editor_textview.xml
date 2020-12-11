@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/editor_dialog_section_small_spacing"
-    android:layout_marginBottom="@dimen/editor_dialog_section_small_spacing">
+    android:layout_marginBottom="@dimen/editor_dialog_textview_margin_bottom">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout"
@@ -24,6 +24,7 @@
             android:id="@+id/text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="@dimen/editor_dialog_textview_min_height"
             android:singleLine="true"
             android:imeOptions="flagNoExtractUi" />
     </com.google.android.material.textfield.TextInputLayout>

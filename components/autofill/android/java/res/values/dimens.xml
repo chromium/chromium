@@ -42,6 +42,8 @@
     <dimen name="pref_autofill_touch_target_padding">15dp</dimen>
 
     <!-- Editor dialog UI -->
+    <dimen name="editor_dialog_textview_min_height">48dp</dimen>
+    <dimen name="editor_dialog_textview_margin_bottom">5dp</dimen>
     <dimen name="editor_dialog_section_small_spacing">8dp</dimen>
     <dimen name="editor_dialog_section_large_spacing">16dp</dimen>
     <dimen name="editor_dialog_section_buttons_vertical_padding">10dp</dimen>
