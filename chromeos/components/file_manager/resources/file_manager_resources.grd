@@ -18,6 +18,8 @@
         <include name="IDR_FILE_MANAGER_SWA_BROWSER_PROXY_JS" file="browser_proxy.js" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_SCRIPT_LOADER_JS" file="script_loader.js" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_MAIN_HTML" file="${root_gen_dir}/chromeos/components/file_manager/resources/main.html" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_FILE_MANAGER_PRIVATE_FAKES_JS" file="../../../../ui/file_manager/file_manager/test/js/chrome_file_manager_private_test_impl.js" type="BINDATA" />
+        <include name="IDR_FILE_MANAGER_SWA_FILE_MANAGER_FAKES_JS" file="file_manager_fakes.js" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_MAIN_JS" file="main.js" type="BINDATA" />
         <include name="IDR_FILE_MANAGER_SWA_ICON_192" file="images/icon192.png" type="BINDATA" />
       </if>
