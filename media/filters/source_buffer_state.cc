@@ -214,14 +214,39 @@ bool SourceBufferState::Append(const uint8_t* data,
   append_window_end_during_append_ = append_window_end;
   timestamp_offset_during_append_ = timestamp_offset;
 
-  // TODO(wolenetz/acolwell): Curry and pass a NewBuffersCB here bound with
-  // append window and timestamp offset pointer. See http://crbug.com/351454.
+  // TODO(wolenetz): Curry and pass a NewBuffersCB here bound with append window
+  // and timestamp offset pointer. See http://crbug.com/351454.
   bool result = stream_parser_->Parse(data, length);
   if (!result) {
     MEDIA_LOG(ERROR, media_log_)
         << __func__ << ": stream parsing failed. Data size=" << length
         << " append_window_start=" << append_window_start.InSecondsF()
         << " append_window_end=" << append_window_end.InSecondsF();
+  }
+
+  timestamp_offset_during_append_ = nullptr;
+  append_in_progress_ = false;
+  return result;
+}
+
+bool SourceBufferState::AppendChunks(
+    std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
+    TimeDelta append_window_start,
+    TimeDelta append_window_end,
+    TimeDelta* timestamp_offset) {
+  append_in_progress_ = true;
+  DCHECK(timestamp_offset);
+  DCHECK(!timestamp_offset_during_append_);
+  append_window_start_during_append_ = append_window_start;
+  append_window_end_during_append_ = append_window_end;
+  timestamp_offset_during_append_ = timestamp_offset;
+
+  // TODO(wolenetz): Curry and pass a NewBuffersCB here bound with append window
+  // and timestamp offset pointer. See http://crbug.com/351454.
+  bool result = stream_parser_->ProcessChunks(std::move(buffer_queue));
+  if (!result) {
+    MEDIA_LOG(ERROR, media_log_)
+        << __func__ << ": Processing encoded chunks for buffering failed.";
   }
 
   timestamp_offset_during_append_ = nullptr;

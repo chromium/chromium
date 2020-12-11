@@ -62,11 +62,16 @@ class MEDIA_EXPORT SourceBufferState {
   // append. |append_window_start| and |append_window_end| correspond to the MSE
   // spec's similarly named source buffer attributes that are used in coded
   // frame processing.
+  // AppendChunks appends the provided BufferQueue.
   bool Append(const uint8_t* data,
               size_t length,
               TimeDelta append_window_start,
               TimeDelta append_window_end,
               TimeDelta* timestamp_offset);
+  bool AppendChunks(std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
+                    TimeDelta append_window_start,
+                    TimeDelta append_window_end,
+                    TimeDelta* timestamp_offset);
 
   // Aborts the current append sequence and resets the parser.
   void ResetParserState(TimeDelta append_window_start,

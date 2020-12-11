@@ -964,6 +964,66 @@ bool ChunkDemuxer::AppendData(const std::string& id,
   return true;
 }
 
+bool ChunkDemuxer::AppendChunks(
+    const std::string& id,
+    std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
+    base::TimeDelta append_window_start,
+    base::TimeDelta append_window_end,
+    base::TimeDelta* timestamp_offset) {
+  DCHECK(buffer_queue);
+  DVLOG(1) << __func__ << ": " << id
+           << ", buffer_queue size()=" << buffer_queue->size();
+
+  DCHECK(!id.empty());
+  DCHECK(timestamp_offset);
+
+  Ranges<TimeDelta> ranges;
+
+  {
+    base::AutoLock auto_lock(lock_);
+    DCHECK_NE(state_, ENDED);
+
+    // Capture if any of the SourceBuffers are waiting for data before we start
+    // buffering new chunks.
+    bool old_waiting_for_data = IsSeekWaitingForData_Locked();
+
+    if (buffer_queue->size() == 0u)
+      return true;
+
+    switch (state_) {
+      case INITIALIZING:
+      case INITIALIZED:
+        DCHECK(IsValidId(id));
+        if (!source_state_map_[id]->AppendChunks(
+                std::move(buffer_queue), append_window_start, append_window_end,
+                timestamp_offset)) {
+          ReportError_Locked(CHUNK_DEMUXER_ERROR_APPEND_FAILED);
+          return false;
+        }
+        break;
+
+      case PARSE_ERROR:
+      case WAITING_FOR_INIT:
+      case ENDED:
+      case SHUTDOWN:
+        DVLOG(1) << "AppendChunks(): called in unexpected state " << state_;
+        return false;
+    }
+
+    // Check to see if data was appended at the pending seek point. This
+    // indicates we have parsed enough data to complete the seek. Work is still
+    // in progress at this point, but it's okay since |seek_cb_| will post.
+    if (old_waiting_for_data && !IsSeekWaitingForData_Locked() && seek_cb_)
+      RunSeekCB_Locked(PIPELINE_OK);
+
+    ranges = GetBufferedRanges_Locked();
+  }
+
+  host_->OnBufferedTimeRangesChanged(ranges);
+  progress_cb_.Run();
+  return true;
+}
+
 void ChunkDemuxer::ResetParserState(const std::string& id,
                                     TimeDelta append_window_start,
                                     TimeDelta append_window_end,
@@ -1358,7 +1418,7 @@ ChunkDemuxerStream* ChunkDemuxer::CreateDemuxerStream(
     DemuxerStream::Type type) {
   // New ChunkDemuxerStreams can be created only during initialization segment
   // processing, which happens when a new chunk of data is appended and the
-  // lock_ must be held by ChunkDemuxer::AppendData.
+  // lock_ must be held by ChunkDemuxer::AppendData/Chunks.
   lock_.AssertAcquired();
 
   MediaTrack::Id media_track_id = GenerateMediaTrackId();

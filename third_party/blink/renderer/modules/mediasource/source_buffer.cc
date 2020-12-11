@@ -124,6 +124,10 @@ WTF::String WebTimeRangesToString(const WebTimeRanges& ranges) {
 // TrackDefaults makes a return to MSE spec, so that apps can provide
 // name/label/kind/etc metadata for tracks originating from appended WebCodecs
 // chunks.
+// TODO(crbug.com/1144908): Since these must be identical to those generated
+// in the underlying WebCodecsEncodedChunkStreamParser, consider moving these
+// to possibly stream_parser.h. Meanwhile, must be kept in sync with similar
+// constexpr in that parser manually.
 constexpr media::StreamParser::TrackId kWebCodecsAudioTrackId = 1;
 constexpr media::StreamParser::TrackId kWebCodecsVideoTrackId = 2;
 
