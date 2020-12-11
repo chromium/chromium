@@ -17,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/optional.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -220,6 +221,22 @@ StringToMemoryDumpLevelOfDetail(const std::string& str) {
   return {};
 }
 
+void AddPidsToProcessFilter(
+    const std::unordered_set<base::ProcessId>& included_process_ids,
+    perfetto::TraceConfig& trace_config) {
+  for (auto& data_source : *(trace_config.mutable_data_sources())) {
+    auto* source_config = data_source.mutable_config();
+    if (source_config->name() == tracing::mojom::kTraceEventDataSourceName) {
+      for (auto& enabled_pid : included_process_ids) {
+        *data_source.add_producer_name_filter() = base::StrCat(
+            {tracing::mojom::kPerfettoProducerNamePrefix,
+             base::NumberToString(static_cast<uint32_t>(enabled_pid))});
+      }
+      break;
+    }
+  }
+}
+
 // We currently don't support concurrent tracing sessions, but are planning to.
 // For the time being, we're using this flag as a workaround to prevent devtools
 // users from accidentally starting two concurrent sessions.
@@ -235,11 +252,12 @@ class TracingHandler::TracingSession {
   virtual ~TracingSession() = default;
 
   virtual void EnableTracing(
-      const base::trace_event::TraceConfig& chrome_config,
+      const perfetto::TraceConfig& perfetto_config,
       base::OnceClosure on_recording_enabled_callback) = 0;
-  virtual void AdoptStartupTracingSession() = 0;
+  virtual void AdoptStartupTracingSession(
+      const perfetto::TraceConfig& perfetto_config) = 0;
   virtual void ChangeTraceConfig(
-      const base::trace_event::TraceConfig& chrome_config) = 0;
+      const perfetto::TraceConfig& perfetto_config) = 0;
   virtual void DisableTracing(
       bool use_proto_format,
       const std::string& agent_label,
@@ -263,7 +281,7 @@ class TracingHandler::PerfettoTracingSession
   ~PerfettoTracingSession() override { DCHECK(!tracing_active_); }
 
   // TracingHandler::TracingSession implementation:
-  void EnableTracing(const base::trace_event::TraceConfig& chrome_config,
+  void EnableTracing(const perfetto::TraceConfig& perfetto_config,
                      base::OnceClosure on_recording_enabled_callback) override {
     DCHECK(!tracing_session_host_);
     DCHECK(!tracing_active_);
@@ -272,10 +290,14 @@ class TracingHandler::PerfettoTracingSession
     GetTracingService().BindConsumerHost(
         consumer_host_.BindNewPipeAndPassReceiver());
 
-    perfetto::TraceConfig perfetto_config =
-        CreatePerfettoConfiguration(chrome_config);
-
     on_recording_enabled_callback_ = std::move(on_recording_enabled_callback);
+#if DCHECK_IS_ON()
+    last_perfetto_config_ = perfetto_config;
+    for (auto& data_source : *(last_perfetto_config_.mutable_data_sources())) {
+      data_source.clear_producer_name_filter();
+    }
+#endif
+
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
         receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config));
@@ -288,21 +310,33 @@ class TracingHandler::PerfettoTracingSession
                        base::Unretained(this)));
   }
 
-  void AdoptStartupTracingSession() override {
+  void AdoptStartupTracingSession(
+      const perfetto::TraceConfig& perfetto_config) override {
     // Start a perfetto tracing session, which will claim startup tracing data.
     DCHECK(!TracingController::GetInstance()->IsTracing());
     waiting_for_startup_tracing_enabled_ = true;
     EnableTracing(
-        tracing::TraceStartupConfig::GetInstance()->GetTraceConfig(),
+        perfetto_config,
         base::BindOnce(&PerfettoTracingSession::OnStartupTracingEnabled,
                        base::Unretained(this)));
   }
 
   void ChangeTraceConfig(
-      const base::trace_event::TraceConfig& chrome_config) override {
+      const perfetto::TraceConfig& perfetto_config) override {
     if (!tracing_session_host_)
       return;
-    auto perfetto_config = CreatePerfettoConfiguration(chrome_config);
+
+#if DCHECK_IS_ON()
+    // Ensure that the process filter is the only thing that gets changed
+    // in a configuration during a tracing session.
+    perfetto::TraceConfig config_without_filters = perfetto_config;
+    for (auto& data_source : *(config_without_filters.mutable_data_sources())) {
+      data_source.clear_producer_name_filter();
+    }
+    DCHECK(config_without_filters == last_perfetto_config_);
+    last_perfetto_config_ = std::move(config_without_filters);
+#endif
+
     tracing_session_host_->ChangeTraceConfig(perfetto_config);
   }
 
@@ -410,29 +444,6 @@ class TracingHandler::PerfettoTracingSession
   }
 
  private:
-  perfetto::TraceConfig CreatePerfettoConfiguration(
-      const base::trace_event::TraceConfig& chrome_config) {
-#if DCHECK_IS_ON()
-    base::trace_event::TraceConfig processfilter_stripped_config(chrome_config);
-    processfilter_stripped_config.SetProcessFilterConfig(
-        base::trace_event::TraceConfig::ProcessFilterConfig());
-
-    // Ensure that the process filter is the only thing that gets changed
-    // in a configuration during a tracing session.
-    DCHECK((last_config_for_perfetto_.ToString() ==
-            base::trace_event::TraceConfig().ToString()) ||
-           (last_config_for_perfetto_.ToString() ==
-            processfilter_stripped_config.ToString()));
-    last_config_for_perfetto_ = std::move(processfilter_stripped_config);
-#endif
-
-    return tracing::GetDefaultPerfettoConfig(
-        chrome_config,
-        /*privacy_filtering_enabled=*/false,
-        /*convert_to_legacy_json=*/false,
-        perfetto::protos::gen::ChromeConfig::USER_INITIATED);
-  }
-
   void OnStartupTracingEnabled() {
     waiting_for_startup_tracing_enabled_ = false;
     if (pending_disable_tracing_task_)
@@ -521,7 +532,7 @@ class TracingHandler::PerfettoTracingSession
   bool data_loss_ = false;
 
 #if DCHECK_IS_ON()
-  base::trace_event::TraceConfig last_config_for_perfetto_;
+  perfetto::TraceConfig last_perfetto_config_;
 #endif
 };
 
@@ -556,7 +567,11 @@ TracingHandler::TracingHandler(FrameTreeNode* frame_tree_node,
   }
 
   session_ = std::make_unique<PerfettoTracingSession>();
-  session_->AdoptStartupTracingSession();
+  base::trace_event::TraceConfig browser_config =
+      tracing::TraceStartupConfig::GetInstance()->GetTraceConfig();
+  perfetto::TraceConfig perfetto_config =
+      CreatePerfettoConfiguration(browser_config);
+  session_->AdoptStartupTracingSession(perfetto_config);
   g_any_agent_tracing = true;
 }
 
@@ -716,6 +731,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
                            Maybe<std::string> transfer_format,
                            Maybe<std::string> transfer_compression,
                            Maybe<Tracing::TraceConfig> config,
+                           Maybe<Binary> perfetto_config,
                            std::unique_ptr<StartCallback> callback) {
   bool return_as_stream = transfer_mode.fromMaybe("") ==
                           Tracing::Start::TransferModeEnum::ReturnAsStream;
@@ -758,20 +774,32 @@ void TracingHandler::Start(Maybe<std::string> categories,
   buffer_usage_reporting_interval_ =
       buffer_usage_reporting_interval.fromMaybe(0);
 
-  trace_config_ = base::trace_event::TraceConfig();
-  if (config.isJust()) {
-    std::unique_ptr<base::Value> value = protocol::toBaseValue(
-        protocol::ValueTypeConverter<Tracing::TraceConfig>::ToValue(
-            *config.fromJust())
-            .get(),
-        1000);
-    if (value && value->is_dict()) {
-      trace_config_ = GetTraceConfigFromDevToolsConfig(
-          *static_cast<base::DictionaryValue*>(value.get()));
+  if (perfetto_config.isJust()) {
+    bool parsed = trace_config_.ParseFromArray(
+        perfetto_config.fromJust().data(), perfetto_config.fromJust().size());
+    if (!parsed) {
+      callback->sendFailure(Response::InvalidParams(
+          "Couldn't parse the supplied perfettoConfig."));
+      return;
     }
-  } else if (categories.isJust() || options.isJust()) {
-    trace_config_ = base::trace_event::TraceConfig(categories.fromMaybe(""),
-                                                   options.fromMaybe(""));
+  } else {
+    base::trace_event::TraceConfig browser_config =
+        base::trace_event::TraceConfig();
+    if (config.isJust()) {
+      std::unique_ptr<base::Value> value = protocol::toBaseValue(
+          protocol::ValueTypeConverter<Tracing::TraceConfig>::ToValue(
+              *config.fromJust())
+              .get(),
+          1000);
+      if (value && value->is_dict()) {
+        browser_config = GetTraceConfigFromDevToolsConfig(
+            *static_cast<base::DictionaryValue*>(value.get()));
+      }
+    } else if (categories.isJust() || options.isJust()) {
+      browser_config = base::trace_event::TraceConfig(categories.fromMaybe(""),
+                                                      options.fromMaybe(""));
+    }
+    trace_config_ = CreatePerfettoConfiguration(browser_config);
   }
 
   // GPU process id can only be retrieved on IO thread. Do some thread hopping.
@@ -807,6 +835,15 @@ void TracingHandler::StartTracingWithGpuPid(
   g_any_agent_tracing = true;
 }
 
+perfetto::TraceConfig TracingHandler::CreatePerfettoConfiguration(
+    const base::trace_event::TraceConfig& browser_config) {
+  return tracing::GetDefaultPerfettoConfig(
+      browser_config,
+      /*privacy_filtering_enabled=*/false,
+      /*convert_to_legacy_json=*/false,
+      perfetto::protos::gen::ChromeConfig::USER_INITIATED);
+}
+
 void TracingHandler::SetupProcessFilter(
     base::ProcessId gpu_pid,
     RenderFrameHost* new_render_frame_host) {
@@ -828,9 +865,8 @@ void TracingHandler::SetupProcessFilter(
     if (frame_host)
       AppendProcessId(frame_host, &included_process_ids);
   }
-  trace_config_.SetProcessFilterConfig(
-      base::trace_event::TraceConfig::ProcessFilterConfig(
-          included_process_ids));
+
+  AddPidsToProcessFilter(included_process_ids, trace_config_);
 }
 
 void TracingHandler::AppendProcessId(
@@ -851,9 +887,8 @@ void TracingHandler::OnProcessReady(RenderProcessHost* process_host) {
     return;
   std::unordered_set<base::ProcessId> included_process_ids(
       {process_host->GetProcess().Pid()});
-  trace_config_.SetProcessFilterConfig(
-      base::trace_event::TraceConfig::ProcessFilterConfig(
-          included_process_ids));
+
+  AddPidsToProcessFilter(included_process_ids, trace_config_);
   session_->ChangeTraceConfig(trace_config_);
 }
 

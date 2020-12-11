@@ -8078,6 +8078,10 @@ experimental domain Tracing
       # transfer mode (defaults to `none`)
       optional StreamCompression streamCompression
       optional TraceConfig traceConfig
+      # Base64-encoded serialized perfetto.protos.TraceConfig protobuf message
+      # When specified, the parameters `categories`, `options`, `traceConfig`
+      # are ignored.
+      optional binary perfettoConfig
 
   event bufferUsage
     parameters

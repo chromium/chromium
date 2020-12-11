@@ -22,6 +22,7 @@
 #include "content/browser/devtools/protocol/tracing.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tracing_controller.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 
 namespace base {
 class RepeatingTimer;
@@ -69,6 +70,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
              Maybe<std::string> transfer_format,
              Maybe<std::string> transfer_compression,
              Maybe<Tracing::TraceConfig> config,
+             Maybe<Binary> perfetto_config,
              std::unique_ptr<StartCallback> callback) override;
   Response End() override;
   void GetCategories(std::unique_ptr<GetCategoriesCallback> callback) override;
@@ -124,6 +126,8 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   CONTENT_EXPORT static base::trace_event::TraceConfig
       GetTraceConfigFromDevToolsConfig(
           const base::DictionaryValue& devtools_config);
+  perfetto::TraceConfig CreatePerfettoConfiguration(
+      const base::trace_event::TraceConfig& browser_config);
   void SetupProcessFilter(base::ProcessId gpu_pid, RenderFrameHost*);
   void StartTracingWithGpuPid(std::unique_ptr<StartCallback>,
                               base::ProcessId gpu_pid);
@@ -144,7 +148,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   TraceDataBufferState trace_data_buffer_state_;
   std::unique_ptr<DevToolsVideoConsumer> video_consumer_;
   int number_of_screenshots_from_video_consumer_ = 0;
-  base::trace_event::TraceConfig trace_config_;
+  perfetto::TraceConfig trace_config_;
   std::unique_ptr<TracingSession> session_;
   base::WeakPtrFactory<TracingHandler> weak_factory_{this};
 

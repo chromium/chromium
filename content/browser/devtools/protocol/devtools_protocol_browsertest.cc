@@ -41,6 +41,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -55,6 +56,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -2683,4 +2685,33 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DISABLED_MultiDownload) {
       file2, GetTestFilePath("download", "download-test.lib")));
 }
 #endif  // !defined(ANDROID)
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
+  std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
+  base::trace_event::TraceConfig chrome_config;
+  base::DictionaryValue* command_result;
+  perfetto::TraceConfig perfetto_config;
+  std::string perfetto_config_encoded;
+
+  chrome_config = base::trace_event::TraceConfig();
+  perfetto_config = tracing::GetDefaultPerfettoConfig(
+      chrome_config,
+      /*privacy_filtering_enabled=*/false,
+      /*convert_to_legacy_json=*/false,
+      perfetto::protos::gen::ChromeConfig::USER_INITIATED);
+  base::Base64Encode(perfetto_config.SerializeAsString(),
+                     &perfetto_config_encoded);
+  params->SetKey("perfettoConfig", base::Value(perfetto_config_encoded));
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+
+  command_result = SendCommand("Tracing.start", std::move(params), true);
+  ASSERT_NE(command_result, nullptr);
+
+  command_result = SendCommand("Tracing.end", nullptr, true);
+  ASSERT_NE(command_result, nullptr);
+
+  WaitForNotification("Tracing.tracingComplete", true);
+}
 }  // namespace content
