@@ -277,7 +277,8 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, PRE_Basic) {
   RunPreTest();
 }
 
-IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
+// Flaky: https://crbug.com/1157137.
+IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, DISABLED_Basic) {
   {
     base::RunLoop loop;
     GetNSSCertDatabaseForProfile(
