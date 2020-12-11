@@ -9,6 +9,7 @@ import android.app.Dialog;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Log;
 
 /**
  * Dialog subclass that ensures that dismiss() is called, even if the dialog is implicitly dismissed
@@ -18,6 +19,7 @@ import org.chromium.base.ApplicationStatus;
  */
 public class AlwaysDismissedDialog
         extends Dialog implements ApplicationStatus.ActivityStateListener {
+    private static final String TAG = "AlwaysDisDialog";
     public AlwaysDismissedDialog(Activity ownerActivity, int theme) {
         super(ownerActivity, theme);
         ApplicationStatus.registerStateListenerForActivity(this, ownerActivity);
@@ -33,6 +35,10 @@ public class AlwaysDismissedDialog
 
     @Override
     public void onActivityStateChange(Activity activity, int newState) {
-        if (newState == ActivityState.DESTROYED) dismiss();
+        if (newState == ActivityState.DESTROYED) {
+            Thread.dumpStack();
+            Log.i(TAG, "Activity " + activity + " is destroyed. Dismissing dialog " + this);
+            dismiss();
+        }
     }
 }

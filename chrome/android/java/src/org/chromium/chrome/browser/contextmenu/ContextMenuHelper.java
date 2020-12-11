@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtilsJni;
@@ -71,7 +72,6 @@ public class ContextMenuHelper {
     @CalledByNative
     private void destroy() {
         if (mCurrentContextMenu != null) {
-            Thread.dumpStack();
             Log.i(TAG, "Dismissing context menu " + mCurrentContextMenu);
             mDismissedFromHere = true;
             mCurrentContextMenu.dismiss();
@@ -87,7 +87,6 @@ public class ContextMenuHelper {
         if (mCurrentContextMenu != null) {
             // TODO(crbug.com/1154731): Clean the debugging statements once we figure out the cause
             // of the crash.
-            Thread.dumpStack();
             Log.i(TAG, "Dismissing context menu " + mCurrentContextMenu);
             mDismissedFromHere = true;
 
@@ -140,6 +139,11 @@ public class ContextMenuHelper {
                                                 ? ""
                                                 : "NOT")
                                 + " dismissed.");
+                Log.i(TAG, "Activity: " + mWindow.getActivity().get());
+                Log.i(TAG,
+                        "Activity state: "
+                                + ApplicationStatus.getStateForActivity(
+                                        mWindow.getActivity().get()));
 
                 Throwable throwable = new Throwable(
                         "This is not a crash. See https://crbug.com/1153706 for details."
@@ -175,6 +179,9 @@ public class ContextMenuHelper {
         mOnMenuClosed = () -> {
             Log.i(TAG, "mCurrentPopulator was " + mCurrentPopulator + " when the menu closed.");
             Log.i(TAG, "mCurrentContextMenu was " + mCurrentContextMenu + " when the menu closed.");
+            Log.i(TAG,
+                    "Activity: " + mWindow.getActivity().get() + ", activity state: "
+                            + ApplicationStatus.getStateForActivity(mWindow.getActivity().get()));
 
             recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss);
             mCurrentContextMenu = null;
@@ -213,6 +220,10 @@ public class ContextMenuHelper {
                 new RevampedContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
         mCurrentContextMenu = menuCoordinator;
         mChipDelegate = mCurrentPopulator.getChipDelegate();
+
+        Log.i(TAG, "Created mCurrentContextMenu: " + mCurrentContextMenu);
+        Log.i(TAG, "Activity was " + mWindow.getActivity().get() + " when the menu was created.");
+
         if (mChipDelegate != null) {
             menuCoordinator.displayMenuWithChip(mWindow, mWebContents, mCurrentContextMenuParams,
                     items, mCallback, mOnMenuShown, mOnMenuClosed, mChipDelegate);

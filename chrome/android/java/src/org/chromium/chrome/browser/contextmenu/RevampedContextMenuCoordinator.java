@@ -19,7 +19,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
@@ -56,6 +58,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         int CONTEXT_MENU_ITEM_WITH_ICON_BUTTON = 3;
     }
 
+    private static final String TAG = "CMenuCoordinator";
     private static final int INVALID_ITEM_ID = -1;
 
     private WebContents mWebContents;
@@ -225,6 +228,11 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         // Do not start any action when the activity is on the way to destruction.
         // See https://crbug.com/990987
         if (activity.isFinishing() || activity.isDestroyed()) return;
+
+        Log.i(TAG,
+                "#clickItem called for menu " + this + ", activity: " + activity
+                        + ", activity state: " + ApplicationStatus.getStateForActivity(activity));
+
         onItemClicked.onResult((int) id);
         dismissDialog();
     }
