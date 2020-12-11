@@ -225,6 +225,19 @@ async function openFileDialogSendEscapeKey(volume, name) {
 }
 
 /**
+ * Waits for the dialog window and waits it to fully load.
+ * @returns {!Promise<string>} dialog's id.
+ */
+async function waitForDialog() {
+  const dialog = await remoteCall.waitForWindow('dialog#');
+
+  // Wait for Files app to finish loading.
+  await remoteCall.waitFor('isFileManagerLoaded', dialog, true);
+
+  return dialog;
+}
+
+/**
  * Tests for display:none status of feedback panels in Files app.
  *
  * @param {string} type Type of dialog to open.
@@ -232,7 +245,7 @@ async function openFileDialogSendEscapeKey(volume, name) {
 async function checkFeedbackDisplayHidden(type) {
   // Open dialog of the specified 'type'.
   chrome.fileSystem.chooseEntry({type: type}, (entry) => {});
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -262,7 +275,7 @@ testcase.openFileDialogDownloads = () => {
 testcase.openFileDialogAriaMultipleSelect = async () => {
   // Open File dialog.
   chrome.fileSystem.chooseEntry({type: 'openFile'}, (entry) => {});
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -282,7 +295,7 @@ testcase.openFileDialogAriaMultipleSelect = async () => {
 testcase.saveFileDialogAriaSingleSelect = async () => {
   // Open Save as dialog.
   chrome.fileSystem.chooseEntry({type: 'saveFile'}, (entry) => {});
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -310,7 +323,7 @@ testcase.saveFileDialogDownloads = () => {
 testcase.saveFileDialogDownloadsNewFolderButton = async () => {
   // Open Save as dialog.
   chrome.fileSystem.chooseEntry({type: 'saveFile'}, (entry) => {});
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -472,7 +485,7 @@ testcase.openFileDialogEscapeDrive = () => {
  */
 testcase.openFileDialogUnload = async () => {
   chrome.fileSystem.chooseEntry({type: 'openFile'}, (entry) => {});
-  const dialog = await remoteCall.waitForWindow('dialog#');
+  const dialog = await waitForDialog();
   await unloadOpenFileDialog(dialog);
 };
 
@@ -487,7 +500,7 @@ testcase.openFileDialogDefaultFilter = async () => {
     acceptsAllTypes: true,
   };
   chrome.fileSystem.chooseEntry(params, (entry) => {});
-  const dialog = await remoteCall.waitForWindow('dialog#');
+  const dialog = await waitForDialog();
 
   // Check: 'JPEG image' should be selected.
   const selectedFilter =
@@ -506,7 +519,7 @@ testcase.saveFileDialogDefaultFilter = async () => {
     acceptsAllTypes: true,
   };
   chrome.fileSystem.chooseEntry(params, (entry) => {});
-  const dialog = await remoteCall.waitForWindow('dialog#');
+  const dialog = await waitForDialog();
 
   // Check: 'All files' should be selected.
   const selectedFilter =
@@ -514,7 +527,6 @@ testcase.saveFileDialogDefaultFilter = async () => {
   chrome.test.assertEq('0', selectedFilter.value);
   chrome.test.assertEq('All files', selectedFilter.text);
 };
-
 
 /**
  * Tests that the save file dialog's filetype filter can
@@ -527,7 +539,7 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
     acceptsAllTypes: true,
   };
   chrome.fileSystem.chooseEntry(params, (entry) => {});
-  const dialog = await remoteCall.waitForWindow('dialog#');
+  const dialog = await waitForDialog();
 
   // Check: 'All files' should be selected.
   let selectedFilter =
@@ -687,7 +699,7 @@ testcase.saveFileDialogSingleFilterNoAcceptAll = async () => {
     acceptsAllTypes: false,
   };
   chrome.fileSystem.chooseEntry(params, (entry) => {});
-  const dialog = await remoteCall.waitForWindow('dialog#');
+  const dialog = await waitForDialog();
 
   // Check: 'JPEG image' should be selected.
   const selectedFilter =
@@ -712,7 +724,7 @@ async function showSaveAndConfirmExpecting(extraParams, expectName) {
   const result = new Promise(resolve => {
     chrome.fileSystem.chooseEntry(Object.assign(params, extraParams), resolve);
   });
-  const dialog = await remoteCall.waitForWindow('dialog#');
+  const dialog = await waitForDialog();
 
   // Ensure the input field is ready.
   await remoteCall.waitForElement(dialog, '#filename-input-textbox');
@@ -773,7 +785,7 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
 
   // Open file picker dialog.
   chrome.fileSystem.chooseEntry({type: 'openFile'}, (entry) => {});
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -822,7 +834,7 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
 testcase.openFileDialogSelectAllDisabled = async () => {
   // Open file picker dialog.
   chrome.fileSystem.chooseEntry({type: 'openFile'}, (entry) => {});
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
@@ -851,7 +863,7 @@ testcase.openMultiFileDialogSelectAllEnabled = async () => {
   // Open file picker dialog with support for selecting multiple files.
   chrome.fileSystem.chooseEntry(
       {type: 'openFile', acceptsMultiple: true}, (entry) => {});
-  const appId = await remoteCall.waitForWindow('dialog#');
+  const appId = await waitForDialog();
 
   // Wait to finish initial load.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
