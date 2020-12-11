@@ -4568,26 +4568,6 @@
             ]
         }
     ],
-    "MixedFormWarnings": [
-        {
-            "platforms": [
-                "windows",
-                "android",
-                "chromeos",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPreventMixedFormsFilling",
-                        "InsecureFormSubmissionInterstitial"
-                    ]
-                }
-            ]
-        }
-    ],
     "MobileIdentityConsistency": [
         {
             "platforms": [
