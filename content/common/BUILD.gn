@@ -474,6 +474,10 @@ mojom("mojo_bindings") {
     enabled_features += [ "clang_profiling_inside_sandbox" ]
   }
 
+  if (enable_plugins) {
+    sources += [ "pepper_plugin.mojom" ]
+  }
+
   cpp_typemaps = [
     {
       types = [

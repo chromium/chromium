@@ -542,7 +542,9 @@ PepperPluginInstanceImpl::PepperPluginInstanceImpl(
   module_->InstanceCreated(this);
 
   if (render_frame_) {  // NULL in tests or if the frame has been destroyed.
-    render_frame_->PepperInstanceCreated(this);
+    render_frame_->PepperInstanceCreated(
+        this, pepper_receiver_.BindNewEndpointAndPassRemote(),
+        pepper_host_remote_.BindNewEndpointAndPassReceiver());
     view_data_.is_page_visible =
         !render_frame_->GetLocalRootWebFrameWidget()->IsHidden();
 
