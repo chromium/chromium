@@ -6,21 +6,47 @@ import {BrowserProxy} from './browser_proxy.js'
 import {ScriptLoader} from './script_loader.js'
 
 /**
+ * @const {boolean}
+ */
+window.isSWA = true;
+
+/**
  * Represents file manager application. Starting point for the application
  * interaction.
  */
 class FileManagerApp {
   constructor() {
-    console.info('File manager app created ...');
+    /**
+     * Creates a Mojo pipe to the C++ SWA container.
+     * @private @const {!BrowserProxy}
+     */
+    this.browserProxy_ = new BrowserProxy();
   }
 
+  /** @return {!BrowserProxy} */
+  get browserProxy() {
+    return this.browserProxy_;
+  }
+
+  /**
+   * Start-up: load the page scripts in order: fakes first (to provide chrome.*
+   * API that the files app foreground scripts expect for initial render), then
+   * the files app foreground scripts. Note main_scripts.js should have 'defer'
+   * true per crbug.com/496525.
+   */
   async run() {
-    await new ScriptLoader('legacy_main_scripts.js').load();
-    console.debug('Legacy code loaded');
+    await Promise.all([
+        new ScriptLoader('file_manager_private_fakes.js').load(),
+        new ScriptLoader('file_manager_fakes.js').load(),
+    ]);
+
+    await Promise.all([
+      new ScriptLoader('foreground/js/elements_importer.js').load(),
+      new ScriptLoader('foreground/js/main_scripts.js', {defer: true}).load(),
+    ]);
+    console.debug('Files app legacy UI loaded');
   }
 }
 
 const app = new FileManagerApp();
-document.addEventListener('DOMContentLoaded', () => {
-  app.run();
-});
+app.run();
