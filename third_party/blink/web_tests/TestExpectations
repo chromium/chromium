@@ -5881,6 +5881,3 @@ crbug.com/1156175 external/wpt/requestidlecallback/callback-iframe.html [ Pass T
 
 # Sheriff 2020-12-08
 crbug.com/1154178 external/wpt/webmessaging/broadcastchannel/basics.html [ Pass Failure ]
-
-# WebRTC: allow fix for bugs.webrtc.org/12194 to roll into chrome
-external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Pass Failure ]
