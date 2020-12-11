@@ -304,8 +304,9 @@ TEST_F('SelectToSpeakNavigationControlTest', 'PrevSentence', function() {
       });
 });
 
+// TODO(https://crbug.com/1157817): Fix Flaky Test.
 TEST_F(
-    'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePlaying',
+    'SelectToSpeakNavigationControlTest', 'DISABLED_ChangeSpeedWhilePlaying',
     function() {
       chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
       const bodyHtml = `
