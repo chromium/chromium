@@ -246,13 +246,14 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
       NotifyMountEvent(name, chromeos::disks::DiskMountManager::MOUNTING);
   }
 
-  void NotifyMountEvent(const std::string& name,
-                        chromeos::disks::DiskMountManager::MountEvent event) {
+  void NotifyMountEvent(
+      const std::string& name,
+      chromeos::disks::DiskMountManager::MountEvent event,
+      chromeos::MountError mount_error = chromeos::MOUNT_ERROR_NONE) {
     chromeos::disks::DiskMountManager::MountPointInfo info(
         "/dev/" + name, "/mount/" + name, chromeos::MOUNT_TYPE_DEVICE,
         chromeos::disks::MOUNT_CONDITION_NONE);
-    mock_disk_mount_manager_->NotifyMountEvent(
-        event, chromeos::MOUNT_ERROR_NONE, info);
+    mock_disk_mount_manager_->NotifyMountEvent(event, mount_error, info);
   }
 
  protected:
@@ -998,7 +999,9 @@ TEST_F(CrosUsbDetectorTest, AttachUnmountFilesystemSuccess) {
   base::RunLoop().RunUntilIdle();
 
   AddDisk("disk1", 3, 4, true);
-  AddDisk("disk2", 3, 4, false);
+  AddDisk("disk2", 3, 4, /*mounted=*/false);
+  NotifyMountEvent("disk2", chromeos::disks::DiskMountManager::MOUNTING,
+                   chromeos::MOUNT_ERROR_INTERNAL);
   AddDisk("disk3", 3, 5, true);
   AddDisk("disk4", 3, 4, true);
   AddDisk("disk5", 2, 4, true);
@@ -1095,11 +1098,18 @@ TEST_F(CrosUsbDetectorTest, ReassignPromptForStorageDevice) {
   auto device_info = GetSingleDeviceInfo();
   EXPECT_FALSE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
 
-  AddDisk("disk1", 1, 5, true);
+  AddDisk("disk_error", 1, 5, /*mounted=*/false);
+  NotifyMountEvent("disk_error", chromeos::disks::DiskMountManager::MOUNTING,
+                   chromeos::MOUNT_ERROR_INTERNAL);
+  device_info = GetSingleDeviceInfo();
+  EXPECT_FALSE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
+
+  AddDisk("disk_success", 1, 5, true);
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
 
-  NotifyMountEvent("disk1", chromeos::disks::DiskMountManager::UNMOUNTING);
+  NotifyMountEvent("disk_success",
+                   chromeos::disks::DiskMountManager::UNMOUNTING);
   device_info = GetSingleDeviceInfo();
   EXPECT_FALSE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
 }

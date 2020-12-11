@@ -505,7 +505,8 @@ void CrosUsbDetector::OnMountEvent(
     disks::DiskMountManager::MountEvent event,
     MountError error_code,
     const disks::DiskMountManager::MountPointInfo& mount_info) {
-  if (mount_info.mount_type != MOUNT_TYPE_DEVICE) {
+  if (mount_info.mount_type != MOUNT_TYPE_DEVICE ||
+      error_code != MOUNT_ERROR_NONE) {
     return;
   }
 
