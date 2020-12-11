@@ -50,6 +50,7 @@ public class ChromeCachedFlags {
         List<String> featuresToCache = Arrays.asList(
                 ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM,
                 ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE,
+                ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS,
                 ChromeFeatureList.CLOSE_TAB_SUGGESTIONS,
                 ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA,
                 ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED,

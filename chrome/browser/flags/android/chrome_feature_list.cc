@@ -124,6 +124,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kCCTIncognito,
     &kCCTPostMessageAPI,
     &kCCTRedirectPreconnect,
+    &kCCTRemoveRemoteViewIds,
     &kCCTReportParallelRequestStatus,
     &kCCTResourcePrefetch,
     &kDarkenWebsitesCheckboxInThemesSetting,
@@ -354,6 +355,9 @@ const base::Feature kCCTPostMessageAPI{"CCTPostMessageAPI",
 
 const base::Feature kCCTRedirectPreconnect{"CCTRedirectPreconnect",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kCCTRemoveRemoteViewIds{"CCTRemoveRemoteViewIds",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCCTReportParallelRequestStatus{
     "CCTReportParallelRequestStatus", base::FEATURE_DISABLED_BY_DEFAULT};
