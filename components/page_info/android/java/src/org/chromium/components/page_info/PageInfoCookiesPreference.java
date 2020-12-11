@@ -95,7 +95,7 @@ public class PageInfoCookiesPreference extends PreferenceFragmentCompat {
         if (mDeleteDisabled || !mDataUsed) return;
 
         mConfirmationDialog =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
                         .setTitle(R.string.page_info_cookies_clear)
                         .setMessage(R.string.page_info_cookies_clear_confirmation)
                         .setPositiveButton(R.string.page_info_cookies_clear_confirmation_button,

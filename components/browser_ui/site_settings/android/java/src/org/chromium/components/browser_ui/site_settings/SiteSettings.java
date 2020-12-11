@@ -96,7 +96,7 @@ public class SiteSettings
                     && SiteSettingsCategory
                                .createFromType(getSiteSettingsClient().getBrowserContextHandle(),
                                        prefCategory)
-                               .showPermissionBlockedMessage(getActivity())) {
+                               .showPermissionBlockedMessage(getContext())) {
                 // Show 'disabled' message when permission is not granted in Android.
                 p.setSummary(ContentSettingsResources.getCategorySummary(contentType, false));
             } else if (Type.COOKIES == prefCategory && checked
