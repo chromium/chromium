@@ -320,9 +320,7 @@ bool ArePublicSessionRestrictionsEnabled() {
 base::string16 GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info) {
   DCHECK(account_info.IsValid());
-  bool is_consumer = account_info.hosted_domain.empty() ||
-                     account_info.hosted_domain == kNoHostedDomainFound;
-  if (is_consumer)
+  if (!account_info.IsManaged())
     return base::UTF8ToUTF16(account_info.given_name);
   return l10n_util::GetStringUTF16(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);

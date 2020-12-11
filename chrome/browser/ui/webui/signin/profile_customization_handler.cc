@@ -108,9 +108,6 @@ base::Value ProfileCustomizationHandler::GetProfileInfoValue() {
   ProfileAttributesEntry* entry = GetProfileEntry();
   SkColor profile_color =
       entry->GetProfileThemeColors().profile_highlight_color;
-  std::string hosted_domain = entry->GetHostedDomain();
-  bool is_managed =
-      !hosted_domain.empty() && hosted_domain != kNoHostedDomainFound;
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("textColor",
@@ -124,7 +121,8 @@ base::Value ProfileCustomizationHandler::GetProfileInfoValue() {
       profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size), true,
                                    avatar_icon_size, avatar_icon_size);
   dict.SetStringKey("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
-  dict.SetBoolKey("isManaged", is_managed);
+  dict.SetBoolKey("isManaged",
+                  AccountInfo::IsManaged(entry->GetHostedDomain()));
   return dict;
 }
 

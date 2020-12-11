@@ -113,6 +113,16 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
 
   return modified;
 }
+
+// static
+bool AccountInfo::IsManaged(const std::string& hosted_domain) {
+  return !hosted_domain.empty() && hosted_domain != kNoHostedDomainFound;
+}
+
+bool AccountInfo::IsManaged() const {
+  return IsManaged(hosted_domain);
+}
+
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r) {
   return l.account_id == r.account_id && l.gaia == r.gaia &&
          gaia::AreEmailsSame(l.email, r.email) &&

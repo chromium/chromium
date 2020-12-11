@@ -58,10 +58,6 @@ enum class ProfilePickerAction {
   kMaxValue = kDeleteProfile,
 };
 
-bool IsManaged(const std::string& hosted_domain) {
-  return !hosted_domain.empty() && hosted_domain != kNoHostedDomainFound;
-}
-
 base::Optional<SkColor> GetChromeColorColorById(int color_id) {
   for (chrome_colors::ColorInfo color_info :
        chrome_colors::kGeneratedColorsInfo) {
@@ -565,8 +561,8 @@ base::Value ProfilePickerHandler::GetProfilesList() {
     // chrome.
     profile_entry->SetString("gaiaName", entry->GetGAIANameToDisplay());
     profile_entry->SetString("userName", entry->GetUserName());
-    profile_entry->SetBoolPath("isManaged",
-                               IsManaged(entry->GetHostedDomain()));
+    profile_entry->SetBoolPath(
+        "isManaged", AccountInfo::IsManaged(entry->GetHostedDomain()));
     gfx::Image icon =
         profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size),
                                      true, avatar_icon_size, avatar_icon_size);

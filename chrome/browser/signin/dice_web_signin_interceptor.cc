@@ -329,16 +329,14 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
     return false;
   }
 
-  if (intercepted_account_info.hosted_domain != kNoHostedDomainFound)
+  if (intercepted_account_info.IsManaged())
     return true;
 
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           primary_core_account_info);
-  if (!primary_account_info || !primary_account_info->IsValid())
-    return false;
 
-  return primary_account_info->hosted_domain != kNoHostedDomainFound;
+  return primary_account_info && primary_account_info->IsManaged();
 }
 
 bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(

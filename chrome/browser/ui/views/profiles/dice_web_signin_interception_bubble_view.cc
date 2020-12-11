@@ -35,12 +35,6 @@ namespace {
 constexpr int kInterceptionBubbleHeight = 342;
 constexpr int kInterceptionBubbleWidth = 290;
 
-// Returns true if the account is managed.
-bool IsManaged(const AccountInfo& account_info) {
-  return !account_info.hosted_domain.empty() &&
-         account_info.hosted_domain != kNoHostedDomainFound;
-}
-
 }  // namespace
 
 DiceWebSigninInterceptionBubbleView::ScopedBrowserListObserver::
@@ -111,11 +105,11 @@ void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
   // For Enterprise, slice per enterprise status for each account.
   if (bubble_parameters.interception_type ==
       DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise) {
-    if (IsManaged(bubble_parameters.intercepted_account)) {
+    if (bubble_parameters.intercepted_account.IsManaged()) {
       std::string histogram_name = histogram_base_name + ".NewIsEnterprise";
       base::UmaHistogramEnumeration(histogram_name, result);
     }
-    if (IsManaged(bubble_parameters.primary_account)) {
+    if (bubble_parameters.primary_account.IsManaged()) {
       std::string histogram_name = histogram_base_name + ".PrimaryIsEnterprise";
       base::UmaHistogramEnumeration(histogram_name, result);
     }

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "ui/gfx/image/image.h"
@@ -74,6 +75,14 @@ struct AccountInfo : public CoreAccountInfo {
   // Updates the empty fields of |this| with |other|. Returns whether at least
   // one field was updated.
   bool UpdateWith(const AccountInfo& other);
+
+  // Helper functions returning whether the account is managed (hosted_domain
+  // is different from kNoHostedDomainFound). Returns false for gmail.com
+  // accounts and other non-managed accounts like yahoo.com. Returns false if
+  // hosted_domain is still unknown (empty), this information will become
+  // available asynchronously.
+  static bool IsManaged(const std::string& hosted_domain);
+  bool IsManaged() const;
 };
 
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);

@@ -56,14 +56,6 @@ bool WaitingForExtendedInfo(signin::IdentityManager* identity_manager) {
   return !GetExtendedAccountInfo(identity_manager).has_value();
 }
 
-// Returns true if the account is managed.
-// TODO(crbug.com/1122496): Move this helper into AccountInfo to reduce code
-// duplication (replaces other instances of such a helper function as well).
-bool IsManaged(const AccountInfo& account_info) {
-  return !account_info.hosted_domain.empty() &&
-         account_info.hosted_domain != kNoHostedDomainFound;
-}
-
 }  // namespace
 
 const TimeDelta AccountInvestigator::kPeriodicReportingInterval =
@@ -254,7 +246,7 @@ void AccountInvestigator::DoPeriodicReport(
     base::Optional<AccountInfo> info =
         GetExtendedAccountInfo(identity_manager_);
     signin_metrics::LogSignedInCookiesCountsPerPrimaryAccountType(
-        signed_in_accounts.size(), is_syncing, IsManaged(*info));
+        signed_in_accounts.size(), is_syncing, info->IsManaged());
   }
 
   periodic_pending_ = false;

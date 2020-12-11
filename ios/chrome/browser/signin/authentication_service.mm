@@ -586,6 +586,5 @@ bool AuthenticationService::IsAuthenticatedIdentityManaged() const {
   if (!primary_account_info)
     return false;
 
-  const std::string& hosted_domain = primary_account_info->hosted_domain;
-  return hosted_domain != kNoHostedDomainFound && !hosted_domain.empty();
+  return primary_account_info->IsManaged();
 }
