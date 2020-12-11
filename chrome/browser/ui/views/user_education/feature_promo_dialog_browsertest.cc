@@ -8,15 +8,19 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -40,6 +44,10 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
     // TODO(crbug.com/1141984): fix cause of bubbles overflowing the
     // screen and remove this.
     set_should_verify_dialog_bounds(false);
+  }
+  void SetUp() override {
+    banners::TestAppBannerManagerDesktop::SetUp();
+    DialogBrowserTest::SetUp();
   }
 
   ~FeaturePromoDialogTest() override = default;
@@ -116,6 +124,28 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
 //
 // For running your test reference the docs in
 // //chrome/browser/ui/test/test_browser_dialog.h
+
+IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
+  set_baseline("2573384");
+  // Navigate to an installable site so PWA install icon shows up.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* app_banner_manager =
+      banners::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+  app_banner_manager->WaitForInstallableCheck();
+  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
+                  ->toolbar()
+                  ->location_bar()
+                  ->page_action_icon_controller()
+                  ->GetIconView(PageActionIconType::kPwaInstall)
+                  ->GetVisible());
+
+  ShowAndVerifyUi();
+}
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest,
                        InvokeUi_IPH_DesktopTabGroupsNewGroup) {
