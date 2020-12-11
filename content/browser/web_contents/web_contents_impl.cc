@@ -5167,8 +5167,8 @@ void WebContentsImpl::ReadyToCommitNavigation(
             : false);
   }
 
-  // LoadingStateChanged must be called last in case it triggers deletion of
-  // |this| due to recursive message pumps.
+  // SetNotWaitingForResponse must be called last in case it triggers deletion
+  // of |this| due to recursive message pumps.
   SetNotWaitingForResponse();
 }
 
