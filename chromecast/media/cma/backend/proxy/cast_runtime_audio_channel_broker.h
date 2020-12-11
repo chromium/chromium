@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.pb.h"
 
 namespace chromecast {
@@ -66,7 +67,7 @@ class CastRuntimeAudioChannelBroker {
 
     // Returns a PushBufferRequest to be sent across the |PushBuffer| RPC. May
     // only be called if |HasBufferedData()| is true.
-    virtual PushBufferRequest GetBufferedData() = 0;
+    virtual base::Optional<PushBufferRequest> GetBufferedData() = 0;
     virtual bool HasBufferedData() = 0;
 
     // Handlers for the responses of the messages defined in

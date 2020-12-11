@@ -12,6 +12,7 @@
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
 #include "chromecast/media/cma/backend/proxy/cma_proxy_handler.h"
+#include "chromecast/media/cma/backend/proxy/push_buffer_queue.h"
 
 namespace chromecast {
 
@@ -61,7 +62,7 @@ class ProxyCallTranslator : public CmaProxyHandler,
       std::unique_ptr<CastRuntimeAudioChannelBroker> decoder_channel);
 
   // CastRuntimeAudioChannelBroker::Handler overrides:
-  PushBufferRequest GetBufferedData() override;
+  base::Optional<PushBufferRequest> GetBufferedData() override;
   bool HasBufferedData() override;
   void HandleInitializeResponse(
       CastRuntimeAudioChannelBroker::StatusCode status) override;
@@ -79,8 +80,6 @@ class ProxyCallTranslator : public CmaProxyHandler,
       base::Optional<MediaTime> time,
       CastRuntimeAudioChannelBroker::StatusCode status) override;
 
-  bool ProcessPushBufferRequest(PushBufferRequest request);
-
   // Helper to share error handling code.
   bool HandleError(CastRuntimeAudioChannelBroker::StatusCode status);
 
@@ -89,6 +88,9 @@ class ProxyCallTranslator : public CmaProxyHandler,
   void OnErrorTask();
   void OnPipelineStateChangeTask(CmaProxyHandler::PipelineState state);
   void OnBytesDecodedTask(int64_t decoded_byte_count);
+
+  // Queue storing data from PushBuffer and SetConfig calls.
+  PushBufferQueue push_buffer_queue_;
 
   std::unique_ptr<CastRuntimeAudioChannelBroker> decoder_channel_;
   TaskRunner* const client_task_runner_;

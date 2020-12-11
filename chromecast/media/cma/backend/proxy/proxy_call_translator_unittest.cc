@@ -9,8 +9,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromecast/base/task_runner_impl.h"
+#include "chromecast/media/base/cast_decoder_buffer_impl.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
 #include "chromecast/media/cma/backend/proxy/cma_proxy_handler.h"
+#include "chromecast/public/media/decoder_config.h"
+#include "chromecast/public/media/stream_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -137,6 +140,78 @@ TEST_F(ProxyCallTranslatorTest, TestExternalSetVolume) {
   constexpr float multiplier = 42;
   EXPECT_CALL(*decoder_channel_, SetVolumeAsync(multiplier));
   translator_.SetVolume(multiplier);
+}
+
+TEST_F(ProxyCallTranslatorTest, TestExternalPushBuffer) {
+  scoped_refptr<CastDecoderBufferImpl> buffer(
+      new CastDecoderBufferImpl(3, StreamId::kPrimary));
+  buffer->writable_data()[0] = 1;
+  buffer->writable_data()[1] = 2;
+  buffer->writable_data()[2] = 3;
+  EXPECT_TRUE(translator_.PushBuffer(buffer));
+
+  EXPECT_TRUE(translator_.PushBuffer(CastDecoderBufferImpl::CreateEOSBuffer()));
+
+  ASSERT_TRUE(translator_as_handler_->HasBufferedData());
+  auto result = translator_as_handler_->GetBufferedData();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_FALSE(result.value().has_audio_config());
+  ASSERT_TRUE(result.value().has_buffer());
+  EXPECT_FALSE(result.value().buffer().end_of_stream());
+  EXPECT_EQ(result.value().buffer().data().size(), size_t{3});
+  EXPECT_EQ(result.value().buffer().data()[0], 1);
+  EXPECT_EQ(result.value().buffer().data()[1], 2);
+  EXPECT_EQ(result.value().buffer().data()[2], 3);
+
+  ASSERT_TRUE(translator_as_handler_->HasBufferedData());
+  result = translator_as_handler_->GetBufferedData();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_FALSE(result.value().has_audio_config());
+  ASSERT_TRUE(result.value().has_buffer());
+  EXPECT_TRUE(result.value().buffer().end_of_stream());
+  EXPECT_EQ(result.value().buffer().data().size(), size_t{0});
+}
+
+TEST_F(ProxyCallTranslatorTest, TestExternalSetConfig) {
+  AudioConfig config;
+  config.codec = AudioCodec::kCodecPCM;
+  config.channel_layout = ChannelLayout::SURROUND_5_1;
+  config.sample_format = SampleFormat::kSampleFormatPlanarS16;
+  config.bytes_per_channel = 42;
+  config.channel_number = 5;
+  config.samples_per_second = 5000;
+  config.extra_data = {1, 2, 3};
+  config.encryption_scheme = EncryptionScheme::kUnencrypted;
+
+  EXPECT_TRUE(translator_.SetConfig(config));
+
+  ASSERT_TRUE(translator_as_handler_->HasBufferedData());
+  auto result = translator_as_handler_->GetBufferedData();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_FALSE(result.value().has_buffer());
+  ASSERT_TRUE(result.value().has_audio_config());
+  EXPECT_EQ(result.value().audio_config().codec(),
+            cast::media::AudioConfiguration_AudioCodec_AUDIO_CODEC_PCM);
+  EXPECT_EQ(result.value().audio_config().channel_layout(),
+            cast::media::
+                AudioConfiguration_ChannelLayout_CHANNEL_LAYOUT_SURROUND_5_1);
+  EXPECT_EQ(
+      result.value().audio_config().sample_format(),
+      cast::media::AudioConfiguration_SampleFormat_SAMPLE_FORMAT_PLANAR_S16);
+  EXPECT_EQ(result.value().audio_config().bytes_per_channel(),
+            config.bytes_per_channel);
+  EXPECT_EQ(result.value().audio_config().channel_number(),
+            config.channel_number);
+  EXPECT_EQ(result.value().audio_config().samples_per_second(),
+            config.samples_per_second);
+  EXPECT_EQ(result.value().audio_config().extra_data().size(),
+            config.extra_data.size());
+  EXPECT_EQ(result.value().audio_config().extra_data()[0],
+            config.extra_data[0]);
+  EXPECT_EQ(result.value().audio_config().extra_data()[1],
+            config.extra_data[1]);
+  EXPECT_EQ(result.value().audio_config().extra_data()[2],
+            config.extra_data[2]);
 }
 
 TEST_F(ProxyCallTranslatorTest, TestInternalHandleInitializeFailure) {

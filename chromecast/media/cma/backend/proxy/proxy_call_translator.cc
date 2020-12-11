@@ -143,9 +143,12 @@ cast::media::CastAudioDecoderMode ToGrpcTypes(
 CastRuntimeAudioChannelBroker::Handler::PushBufferRequest ToGrpcTypes(
     scoped_refptr<DecoderBufferBase> buffer) {
   auto* decode_buffer = new cast::media::AudioDecoderBuffer;
-  decode_buffer->set_pts_micros(buffer->timestamp());
-  decode_buffer->set_data(buffer->data(), buffer->data_size());
+
   decode_buffer->set_end_of_stream(buffer->end_of_stream());
+  if (!buffer->end_of_stream()) {
+    decode_buffer->set_pts_micros(buffer->timestamp());
+    decode_buffer->set_data(buffer->data(), buffer->data_size());
+  }
 
   CastRuntimeAudioChannelBroker::Handler::PushBufferRequest request;
 
@@ -257,29 +260,20 @@ void ProxyCallTranslator::SetVolume(float multiplier) {
 }
 
 bool ProxyCallTranslator::SetConfig(const AudioConfig& config) {
-  return ProcessPushBufferRequest(ToGrpcTypes(config));
+  return push_buffer_queue_.PushBuffer(ToGrpcTypes(config));
 }
 
 bool ProxyCallTranslator::PushBuffer(scoped_refptr<DecoderBufferBase> buffer) {
-  return ProcessPushBufferRequest(ToGrpcTypes(std::move(buffer)));
+  return push_buffer_queue_.PushBuffer(ToGrpcTypes(std::move(buffer)));
 }
 
-bool ProxyCallTranslator::ProcessPushBufferRequest(PushBufferRequest request) {
-  // TODO(rwkeane)
-  NOTIMPLEMENTED();
-  return false;
-}
-
-ProxyCallTranslator::PushBufferRequest ProxyCallTranslator::GetBufferedData() {
-  // TODO(rwkeane)
-  NOTIMPLEMENTED();
-  return PushBufferRequest{};
+base::Optional<ProxyCallTranslator::PushBufferRequest>
+ProxyCallTranslator::GetBufferedData() {
+  return push_buffer_queue_.GetBufferedData();
 }
 
 bool ProxyCallTranslator::HasBufferedData() {
-  // TODO(rwkeane)
-  NOTIMPLEMENTED();
-  return false;
+  return push_buffer_queue_.HasBufferedData();
 }
 
 void ProxyCallTranslator::HandleInitializeResponse(
