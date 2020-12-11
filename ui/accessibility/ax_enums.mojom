@@ -252,7 +252,8 @@ enum Role {
   kNote,
   kPane,
   kParagraph,
-  kPdfActionableHighlight, // PDF specific highlight role.
+  kPdfActionableHighlight,
+  kPdfRoot,
   kPluginObject,
   kPopUpButton,
   kPortal,
@@ -301,7 +302,6 @@ enum Role {
   kTreeItem,
   kUnknown,
   kVideo,
-  kWebArea,
   kWebView,
   kWindow,
 };

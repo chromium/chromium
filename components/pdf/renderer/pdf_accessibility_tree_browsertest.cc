@@ -209,7 +209,7 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPDFPage) {
   pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
                                                   chars_, page_objects_);
 
-  EXPECT_EQ(ax::mojom::Role::kDocument,
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot,
             pdf_accessibility_tree.GetRoot()->data().role);
 }
 
@@ -260,7 +260,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeReload) {
 
     ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();
     ASSERT_TRUE(root_node);
-    EXPECT_EQ(ax::mojom::Role::kDocument, root_node->data().role);
+    EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->data().role);
 
     // There should only be one page node.
     ASSERT_EQ(1u, root_node->children().size());
@@ -335,7 +335,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeCreation) {
 
   ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();
   ASSERT_TRUE(root_node);
-  EXPECT_EQ(ax::mojom::Role::kDocument, root_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->data().role);
   ASSERT_EQ(1u, root_node->children().size());
 
   ui::AXNode* page_node = root_node->children()[0];
@@ -445,7 +445,7 @@ TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
 
   ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();
   ASSERT_TRUE(root_node);
-  EXPECT_EQ(ax::mojom::Role::kDocument, root_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->data().role);
   ASSERT_EQ(1u, root_node->children().size());
 
   ui::AXNode* page_node = root_node->children()[0];
@@ -532,7 +532,7 @@ TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
 
   ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();
   ASSERT_TRUE(root_node);
-  EXPECT_EQ(ax::mojom::Role::kDocument, root_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->data().role);
   ASSERT_EQ(1u, root_node->children().size());
 
   ui::AXNode* page_node = root_node->children()[0];
@@ -655,7 +655,7 @@ TEST_F(PdfAccessibilityTreeTest, TestTextFieldNodeCreation) {
 
   ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();
   ASSERT_TRUE(root_node);
-  EXPECT_EQ(ax::mojom::Role::kDocument, root_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->data().role);
   ASSERT_EQ(1u, root_node->children().size());
 
   ui::AXNode* page_node = root_node->children()[0];
@@ -814,7 +814,7 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
 
   ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();
   ASSERT_TRUE(root_node);
-  EXPECT_EQ(ax::mojom::Role::kDocument, root_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->data().role);
   ASSERT_EQ(1u, root_node->children().size());
 
   ui::AXNode* page_node = root_node->children()[0];
@@ -1007,7 +1007,7 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
 
   ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();
   ASSERT_TRUE(root_node);
-  EXPECT_EQ(ax::mojom::Role::kDocument, root_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->data().role);
   ASSERT_EQ(1u, root_node->children().size());
 
   ui::AXNode* page_node = root_node->children()[0];
@@ -1203,7 +1203,7 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
 
   ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();
   ASSERT_TRUE(root_node);
-  EXPECT_EQ(ax::mojom::Role::kDocument, root_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->data().role);
   ASSERT_EQ(1u, root_node->children().size());
 
   ui::AXNode* page_node = root_node->children()[0];
@@ -1407,7 +1407,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
 
   ui::AXNode* root_node = pdf_accessibility_tree.GetRoot();
   ASSERT_TRUE(root_node);
-  EXPECT_EQ(ax::mojom::Role::kDocument, root_node->data().role);
+  EXPECT_EQ(ax::mojom::Role::kPdfRoot, root_node->data().role);
   ASSERT_EQ(1u, root_node->children().size());
 
   ui::AXNode* page_node = root_node->children()[0];

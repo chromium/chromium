@@ -55,7 +55,7 @@ TEST(AXPlatformNodeBaseTest, GetHypertext) {
   update.nodes.resize(4);
 
   update.nodes[0].id = 1;
-  update.nodes[0].role = ax::mojom::Role::kWebArea;
+  update.nodes[0].role = ax::mojom::Role::kRootWebArea;
   update.nodes[0].child_ids = {2, 3, 4};
 
   MakeStaticText(&update.nodes[1], 2, "text1");
@@ -101,7 +101,7 @@ TEST(AXPlatformNodeBaseTest, GetHypertextIgnoredContainerSiblings) {
   update.nodes.resize(7);
 
   update.nodes[0].id = 1;
-  update.nodes[0].role = ax::mojom::Role::kWebArea;
+  update.nodes[0].role = ax::mojom::Role::kRootWebArea;
   update.nodes[0].child_ids = {2, 4, 6};
 
   update.nodes[1].id = 2;
@@ -417,7 +417,7 @@ TEST(AXPlatformNodeBaseTest, CompareTo) {
   AXPlatformNode::NotifyAddAXModeFlags(kAXModeComplete);
   AXNodeData node1;
   node1.id = 1;
-  node1.role = ax::mojom::Role::kWebArea;
+  node1.role = ax::mojom::Role::kRootWebArea;
   node1.child_ids = {2};
 
   AXNodeData node2;

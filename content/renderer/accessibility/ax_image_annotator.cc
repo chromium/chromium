@@ -27,6 +27,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -209,8 +210,7 @@ void AXImageAnnotator::MarkDirty(const blink::WebAXObject& image) const {
        parent = parent.ParentObject()) {
     if (!parent.AccessibilityIsIgnored()) {
       ++ancestor_count;
-      if (parent.Role() == ax::mojom::Role::kLink ||
-          parent.Role() == ax::mojom::Role::kRootWebArea) {
+      if (ui::IsLink(parent.Role()) || ui::IsPlatformDocument(parent.Role())) {
         render_accessibility_->MarkWebAXObjectDirty(parent,
                                                     false /* subtree */);
         return;

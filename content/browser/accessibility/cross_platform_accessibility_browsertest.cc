@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_EQ(1u, iframe->GetUnignoredChildCount());
 
   const ui::AXNode* sub_document = iframe->GetUnignoredChildAtIndex(0);
-  EXPECT_EQ(ax::mojom::Role::kWebArea, sub_document->data().role);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, sub_document->data().role);
   ASSERT_EQ(1u, sub_document->GetUnignoredChildCount());
 
   const ui::AXNode* sub_body = sub_document->GetUnignoredChildAtIndex(0);

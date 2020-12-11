@@ -144,7 +144,8 @@ bool HasOnlyTextAndImageChildren(const AXNode* node) {
 bool IsFocusable(const AXNode* node) {
   if (node->data().role == ax::mojom::Role::kIframe ||
       node->data().role == ax::mojom::Role::kIframePresentational ||
-      (node->data().role == ax::mojom::Role::kRootWebArea &&
+      ((node->data().role == ax::mojom::Role::kRootWebArea ||
+        node->data().role == ax::mojom::Role::kPdfRoot) &&
        node->GetUnignoredParent())) {
     return node->data().HasStringAttribute(ax::mojom::StringAttribute::kName);
   }
@@ -152,7 +153,7 @@ bool IsFocusable(const AXNode* node) {
 }
 
 base::string16 GetText(const AXNode* node, bool show_password) {
-  if (node->data().role == ax::mojom::Role::kWebArea ||
+  if (node->data().role == ax::mojom::Role::kPdfRoot ||
       node->data().role == ax::mojom::Role::kIframe ||
       node->data().role == ax::mojom::Role::kIframePresentational) {
     return base::string16();
@@ -206,8 +207,10 @@ base::string16 GetText(const AXNode* node, bool show_password) {
   if (text.empty())
     text = value;
 
-  if (node->data().role == ax::mojom::Role::kRootWebArea)
+  if (node->data().role == ax::mojom::Role::kRootWebArea ||
+      node->data().role == ax::mojom::Role::kPdfRoot) {
     return text;
+  }
 
   if (text.empty() &&
       (HasOnlyTextChildren(node) ||

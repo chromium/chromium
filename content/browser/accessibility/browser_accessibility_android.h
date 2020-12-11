@@ -189,7 +189,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
 
   bool HasOnlyTextChildren() const;
   bool HasOnlyTextAndImageChildren() const;
-  bool IsIframe() const;
   bool ShouldExposeValueAsName() const;
 
   int CountChildrenWithRole(ax::mojom::Role role) const;

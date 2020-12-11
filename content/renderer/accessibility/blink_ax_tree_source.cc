@@ -109,7 +109,7 @@ bool SearchForExactlyOneInnerImage(WebAXObject obj,
 
   // If it's the first image, set |inner_image|. If we already
   // found an image, fail.
-  if (obj.Role() == ax::mojom::Role::kImage) {
+  if (ui::IsImage(obj.Role())) {
     if (!inner_image->IsDetached())
       return false;
     *inner_image = obj;
@@ -906,11 +906,12 @@ void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
     dst->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, src.IsModal());
   }
 
-  if (dst->role == ax::mojom::Role::kRootWebArea)
+  if (ui::IsPlatformDocument(dst->role)) {
     TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kHtmlTag,
                                   "#document");
+  }
 
-  if (dst->role == ax::mojom::Role::kImage)
+  if (ui::IsImage(dst->role))
     AddImageAnnotations(src, dst);
 
   // If a link or web area isn't otherwise labeled and contains exactly one
@@ -1072,7 +1073,7 @@ void BlinkAXTreeSource::AddImageAnnotations(blink::WebAXObject& src,
   // If so, we can treat the name as empty and give it an annotation.
   std::string dst_name =
       dst->GetStringAttribute(ax::mojom::StringAttribute::kName);
-  if (dst->role == ax::mojom::Role::kRootWebArea) {
+  if (ui::IsPlatformDocument(dst->role)) {
     std::string filename = GURL(document().Url()).ExtractFileName();
     if (base::StartsWith(dst_name, filename, base::CompareCase::SENSITIVE))
       should_annotate_image_with_nonempty_name = true;

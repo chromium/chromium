@@ -279,6 +279,7 @@ chrome.automation.RoleType = {
   PANE: 'pane',
   PARAGRAPH: 'paragraph',
   PDF_ACTIONABLE_HIGHLIGHT: 'pdfActionableHighlight',
+  PDF_ROOT: 'pdfRoot',
   PLUGIN_OBJECT: 'pluginObject',
   POP_UP_BUTTON: 'popUpButton',
   PORTAL: 'portal',
@@ -327,7 +328,6 @@ chrome.automation.RoleType = {
   TREE_ITEM: 'treeItem',
   UNKNOWN: 'unknown',
   VIDEO: 'video',
-  WEB_AREA: 'webArea',
   WEB_VIEW: 'webView',
   WINDOW: 'window',
 };
@@ -1256,14 +1256,22 @@ chrome.automation.AutomationNode.prototype.wordStarts;
 chrome.automation.AutomationNode.prototype.wordEnds;
 
 /**
- * The start index of each sentence within the node's name.
+ * The start indexes of each sentence within the node's name.
  * @type {(!Array<number>|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-sentenceStarts
  */
 chrome.automation.AutomationNode.prototype.sentenceStarts;
 
 /**
- * The end index of each sentence within the node's name.
+ * The end indexes of each sentence within the node's name. For most nodes, the
+ * size of sentenceStarts array should be equal to the size of sentenceEnds
+ * array. Two exceptions are (1) node at the begining of a paragraph but the end
+ * of the node's sentences is in its following node. Such a node has one more
+ * start index. (2) Node at the end of a paragraph but the start of the node's
+ * sentences is in its previous node. Such a node has one more end index. For
+ * example, <p><b>Hello</b> world.</p> has two nodes. The first one has one
+ * start index (i.e., 0) but no end index. The second node has one end index
+ * (i.e., 7) but no start index.
  * @type {(!Array<number>|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-sentenceEnds
  */

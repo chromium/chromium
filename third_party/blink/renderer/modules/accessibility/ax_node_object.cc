@@ -477,8 +477,8 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
     return true;
 
   // All nodes must have an unignored parent within their tree under
-  // kRootWebArea, so force kRootWebArea to always be unignored.
-  if (role_ == ax::mojom::blink::Role::kRootWebArea)
+  // the root node of the web area, so force that node to always be unignored.
+  if (IsWebArea())
     return false;
 
   if (GetLayoutObject()) {

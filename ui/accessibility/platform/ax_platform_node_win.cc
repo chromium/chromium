@@ -5188,8 +5188,8 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_GROUPING;
 
     case ax::mojom::Role::kDocument:
+    case ax::mojom::Role::kPdfRoot:
     case ax::mojom::Role::kRootWebArea:
-    case ax::mojom::Role::kWebArea:
       return ROLE_SYSTEM_DOCUMENT;
 
     case ax::mojom::Role::kEmbeddedObject:
@@ -5534,10 +5534,8 @@ int AXPlatformNodeWin::MSAARole() {
 }
 
 bool AXPlatformNodeWin::IsWebAreaForPresentationalIframe() {
-  if (GetData().role != ax::mojom::Role::kWebArea &&
-      GetData().role != ax::mojom::Role::kRootWebArea) {
+  if (!IsPlatformDocument())
     return false;
-  }
 
   AXPlatformNodeBase* parent = FromNativeViewAccessible(GetParent());
   if (!parent)
@@ -6022,8 +6020,8 @@ base::string16 AXPlatformNodeWin::UIAAriaRole() {
       return L"group";
 
     case ax::mojom::Role::kDocument:
+    case ax::mojom::Role::kPdfRoot:
     case ax::mojom::Role::kRootWebArea:
-    case ax::mojom::Role::kWebArea:
       return L"document";
 
     case ax::mojom::Role::kEmbeddedObject:
@@ -6703,8 +6701,8 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_GroupControlTypeId;
 
     case ax::mojom::Role::kDocument:
+    case ax::mojom::Role::kPdfRoot:
     case ax::mojom::Role::kRootWebArea:
-    case ax::mojom::Role::kWebArea:
       return UIA_DocumentControlTypeId;
 
     case ax::mojom::Role::kEmbeddedObject:
@@ -7314,31 +7312,20 @@ bool AXPlatformNodeWin::IsPlatformCheckable() const {
 
 bool AXPlatformNodeWin::ShouldNodeHaveFocusableState(
     const AXNodeData& data) const {
-  switch (data.role) {
-    case ax::mojom::Role::kDocument:
-    case ax::mojom::Role::kGraphicsDocument:
-    case ax::mojom::Role::kWebArea:
-      return true;
-
-    case ax::mojom::Role::kRootWebArea: {
-      AXPlatformNodeBase* parent = FromNativeViewAccessible(GetParent());
-      return !parent || parent->GetData().role != ax::mojom::Role::kPortal;
-    }
-
-    case ax::mojom::Role::kIframe:
-      return false;
-
-    case ax::mojom::Role::kListBoxOption:
-    case ax::mojom::Role::kMenuListOption:
-      if (data.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
-        return true;
-      break;
-
-    default:
-      break;
+  if (IsIframe(data.role))
+    return false;
+  if (IsPlatformDocument()) {
+    const AXPlatformNodeBase* parent = FromNativeViewAccessible(GetParent());
+    return !parent || parent->GetData().role != ax::mojom::Role::kPortal;
   }
 
-  return data.HasState(ax::mojom::State::kFocusable);
+  switch (data.role) {
+    case ax::mojom::Role::kListBoxOption:
+    case ax::mojom::Role::kMenuListOption:
+      return data.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+    default:
+      return data.HasState(ax::mojom::State::kFocusable);
+  }
 }
 
 int AXPlatformNodeWin::MSAAState() const {

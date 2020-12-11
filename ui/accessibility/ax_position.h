@@ -4159,7 +4159,8 @@ class AXPosition {
   AXPositionInstance CreateRootWebAreaAncestorPosition() const {
     AXPositionInstance iterator = Clone();
     while (!iterator->IsNullPosition()) {
-      if (iterator->GetAnchorRole() == ax::mojom::Role::kRootWebArea &&
+      if ((iterator->GetAnchorRole() == ax::mojom::Role::kRootWebArea ||
+           iterator->GetAnchorRole() == ax::mojom::Role::kPdfRoot) &&
           iterator->CreateParentPosition()->IsNullPosition()) {
         break;
       }

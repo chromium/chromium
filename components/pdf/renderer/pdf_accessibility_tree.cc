@@ -1305,7 +1305,7 @@ void PdfAccessibilityTree::SetAccessibilityDocInfo(
   ClearAccessibilityNodes();
   doc_info_ = doc_info;
   doc_node_ =
-      CreateNode(ax::mojom::Role::kDocument, ax::mojom::Restriction::kReadOnly,
+      CreateNode(ax::mojom::Role::kPdfRoot, ax::mojom::Restriction::kReadOnly,
                  render_accessibility, &nodes_);
   doc_node_->AddStringAttribute(
       ax::mojom::StringAttribute::kName,

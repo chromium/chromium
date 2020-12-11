@@ -59,11 +59,6 @@ bool AccessibilityTreeContainsLoadedDocWithUrl(BrowserAccessibility* node,
            (node->GetData().relative_bounds.bounds.width() > 0 &&
             node->GetData().relative_bounds.bounds.height() > 0);
   }
-  if (node->GetRole() == ax::mojom::Role::kWebArea &&
-      node->GetStringAttribute(ax::mojom::StringAttribute::kUrl) == url) {
-    // Ensure the doc has finished loading.
-    return node->manager()->GetTreeData().loaded;
-  }
 
   for (unsigned i = 0; i < node->PlatformChildCount(); i++) {
     if (AccessibilityTreeContainsLoadedDocWithUrl(node->PlatformGetChild(i),

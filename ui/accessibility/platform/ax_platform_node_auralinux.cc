@@ -2884,6 +2884,8 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_PARAGRAPH;
     case ax::mojom::Role::kPdfActionableHighlight:
       return ATK_ROLE_PUSH_BUTTON;
+    case ax::mojom::Role::kPdfRoot:
+      return ATK_ROLE_DOCUMENT_FRAME;
     case ax::mojom::Role::kPluginObject:
       return ATK_ROLE_EMBEDDED;
     case ax::mojom::Role::kPopUpButton: {
@@ -3005,9 +3007,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_TREE_TABLE;
     case ax::mojom::Role::kVideo:
       return ATK_ROLE_VIDEO;
-    case ax::mojom::Role::kWebArea:
-    case ax::mojom::Role::kWebView:
-      return ATK_ROLE_DOCUMENT_WEB;
     case ax::mojom::Role::kWindow:
       // In ATK elements with ATK_ROLE_FRAME are windows with titles and
       // buttons, while those with ATK_ROLE_WINDOW are windows without those
@@ -3015,6 +3014,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_FRAME;
     case ax::mojom::Role::kClient:
     case ax::mojom::Role::kDesktop:
+    case ax::mojom::Role::kWebView:
       return ATK_ROLE_PANEL;
     case ax::mojom::Role::kFigcaption:
       return ATK_ROLE_CAPTION;

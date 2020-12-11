@@ -400,6 +400,7 @@ const InternalRoleEntry kInternalRoles[] = {
     {ax::mojom::blink::Role::kPane, "Pane"},
     {ax::mojom::blink::Role::kParagraph, "Paragraph"},
     {ax::mojom::blink::Role::kPdfActionableHighlight, "PdfActionableHighlight"},
+    {ax::mojom::blink::Role::kPdfRoot, "PdfRoot"},
     {ax::mojom::blink::Role::kPluginObject, "PluginObject"},
     {ax::mojom::blink::Role::kPopUpButton, "PopUpButton"},
     {ax::mojom::blink::Role::kPortal, "Portal"},
@@ -448,7 +449,6 @@ const InternalRoleEntry kInternalRoles[] = {
     {ax::mojom::blink::Role::kTooltip, "UserInterfaceTooltip"},
     {ax::mojom::blink::Role::kUnknown, "Unknown"},
     {ax::mojom::blink::Role::kVideo, "Video"},
-    {ax::mojom::blink::Role::kWebArea, "WebArea"},
     {ax::mojom::blink::Role::kWebView, "WebView"},
     {ax::mojom::blink::Role::kWindow, "Window"}};
 
@@ -3522,8 +3522,8 @@ AtomicString AXObject::Language() const {
   // handled browser side within AXNode::GetLanguage.
   //
   // TODO(chrishall): Consider moving this to AXNodeObject or AXLayoutObject as
-  // the kRootWebArea node is currently an AXLayoutObject.
-  if (RoleValue() == ax::mojom::blink::Role::kRootWebArea) {
+  // the web area node is currently an AXLayoutObject.
+  if (IsWebArea()) {
     const Document* document = GetDocument();
     if (document) {
       // Fall back to the first content language specified in the meta tag.
@@ -4480,7 +4480,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kTree:
     case ax::mojom::blink::Role::kTreeGrid:
     case ax::mojom::blink::Role::kVideo:
-    case ax::mojom::blink::Role::kWebArea:
     case ax::mojom::blink::Role::kWebView:
     case ax::mojom::blink::Role::kWindow:
       result = false;
@@ -4573,6 +4572,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
       return !recursive;
 
     case ax::mojom::blink::Role::kPdfActionableHighlight:
+    case ax::mojom::blink::Role::kPdfRoot:
       LOG(ERROR) << "PDF specific highlight role, Blink shouldn't generate "
                     "this role type";
       NOTREACHED();

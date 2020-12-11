@@ -164,8 +164,8 @@ bool BrowserAccessibilityAndroid::IsClickable() const {
     return ui::IsControl(GetRole());
   }
 
-  // Skip web areas and iframes, they're focusable but not clickable.
-  if (IsIframe() || (GetRole() == ax::mojom::Role::kRootWebArea))
+  // Skip web areas, PDFs and iframes, they're focusable but not clickable.
+  if (ui::IsIframe(GetRole()) || ui::IsPlatformDocument(GetRole()))
     return false;
 
   // Otherwise it's clickable if it's a control.
@@ -241,10 +241,11 @@ bool BrowserAccessibilityAndroid::IsFocusable() const {
   // inside a portal, only mark it as focusable if the element has an explicit
   // name. Otherwise mark it as not focusable to avoid the user landing on empty
   // container elements in the tree.
-  if (IsIframe() ||
-      (GetRole() == ax::mojom::Role::kRootWebArea && PlatformGetParent() &&
-       PlatformGetParent()->GetRole() != ax::mojom::Role::kPortal))
+  if (ui::IsIframe(GetRole()) ||
+      (ui::IsPlatformDocument(GetRole()) && PlatformGetParent() &&
+       PlatformGetParent()->GetRole() != ax::mojom::Role::kPortal)) {
     return HasStringAttribute(ax::mojom::StringAttribute::kName);
+  }
 
   return HasState(ax::mojom::State::kFocusable);
 }
@@ -319,11 +320,11 @@ bool BrowserAccessibilityAndroid::IsVisibleToUser() const {
 bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // The root is not interesting if it doesn't have a title, even
   // though it's focusable.
-  if (GetRole() == ax::mojom::Role::kRootWebArea && GetInnerText().empty())
+  if (ui::IsPlatformDocument(GetRole()) && GetInnerText().empty())
     return false;
 
   // The root inside a portal is not interesting.
-  if (GetRole() == ax::mojom::Role::kRootWebArea && PlatformGetParent() &&
+  if (ui::IsPlatformDocument(GetRole()) && PlatformGetParent() &&
       PlatformGetParent()->GetRole() == ax::mojom::Role::kPortal)
     return false;
 
@@ -454,10 +455,8 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
     return true;
 
   // Iframes are always allowed to contain children.
-  if (IsIframe() || GetRole() == ax::mojom::Role::kRootWebArea ||
-      GetRole() == ax::mojom::Role::kWebArea) {
+  if (ui::IsIframe(GetRole()) || ui::IsPlatformDocument(GetRole()))
     return false;
-  }
 
   // Button, date and time controls should drop their children.
   switch (GetRole()) {
@@ -499,9 +498,8 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
 }
 
 base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
-  if (IsIframe() || GetRole() == ax::mojom::Role::kWebArea) {
+  if (ui::IsIframe(GetRole()))
     return base::string16();
-  }
 
   // First, always return the |value| attribute if this is an
   // input field.
@@ -525,11 +523,9 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
   if (text.empty())
     text = value;
 
-  // If this is the root element, give up now, allow it to have no
-  // accessible text. For almost all other focusable nodes we try to
-  // get text from contents, but for the root element that's redundant
-  // and often way too verbose.
-  if (GetRole() == ax::mojom::Role::kRootWebArea)
+  // For almost all focusable nodes we try to get text from contents, but for
+  // the root node that's redundant and often way too verbose.
+  if (ui::IsPlatformDocument(GetRole()))
     return text;
 
   // Append image description strings to the text.
@@ -1374,6 +1370,9 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kPdfActionableHighlight:
       message_id = IDS_AX_ROLE_PDF_HIGHLIGHT;
       break;
+    case ax::mojom::Role::kPdfRoot:
+      // No role description.
+      break;
     case ax::mojom::Role::kPluginObject:
       message_id = IDS_AX_ROLE_EMBEDDED_OBJECT;
       break;
@@ -1519,9 +1518,6 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
       break;
     case ax::mojom::Role::kVideo:
       message_id = IDS_AX_MEDIA_VIDEO_ELEMENT;
-      break;
-    case ax::mojom::Role::kWebArea:
-      // No role description.
       break;
     case ax::mojom::Role::kWebView:
       // No role description.
@@ -1676,14 +1672,13 @@ bool BrowserAccessibilityAndroid::Scroll(int direction,
   // Figure out the bounding box of the visible portion of this scrollable
   // view so we know how much to scroll by.
   gfx::Rect bounds;
-  if (GetRole() == ax::mojom::Role::kRootWebArea && !PlatformGetParent()) {
-    // If this is the root web area, use the bounds of the view to determine
-    // how big one page is.
+  if (ui::IsPlatformDocument(GetRole()) && !PlatformGetParent()) {
+    // If this is the root node, use the bounds of the view to determine how big
+    // one page is.
     if (!manager()->delegate())
       return false;
     bounds = manager()->delegate()->AccessibilityGetViewBounds();
-  } else if (GetRole() == ax::mojom::Role::kRootWebArea &&
-             PlatformGetParent()) {
+  } else if (ui::IsPlatformDocument(GetRole()) && PlatformGetParent()) {
     // If this is a web area inside of an iframe, try to use the bounds of
     // the containing element.
     BrowserAccessibility* parent = PlatformGetParent();
@@ -2216,11 +2211,6 @@ bool BrowserAccessibilityAndroid::HasOnlyTextAndImageChildren() const {
     }
   }
   return true;
-}
-
-bool BrowserAccessibilityAndroid::IsIframe() const {
-  return (GetRole() == ax::mojom::Role::kIframe ||
-          GetRole() == ax::mojom::Role::kIframePresentational);
 }
 
 bool BrowserAccessibilityAndroid::ShouldExposeValueAsName() const {

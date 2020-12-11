@@ -374,7 +374,7 @@ std::unique_ptr<AXTree> AXPositionTest::CreateMultipageDocument(
     AXNodeData& page_3_data,
     AXNodeData& page_3_text_data) const {
   root_data.id = 1;
-  root_data.role = ax::mojom::Role::kDocument;
+  root_data.role = ax::mojom::Role::kPdfRoot;
 
   page_1_data.id = 2;
   page_1_data.role = ax::mojom::Role::kRegion;
@@ -8191,7 +8191,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
   // Create tree manager for child tree.
   AXNodeData child_root;
   child_root.id = 1;
-  child_root.role = ax::mojom::Role::kDocument;
+  child_root.role = ax::mojom::Role::kPdfRoot;
 
   AXTreeUpdate update;
   update.tree_data.tree_id = child_tree_id;

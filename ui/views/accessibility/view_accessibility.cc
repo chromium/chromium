@@ -27,11 +27,15 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
     // These roles all have special meaning and shouldn't ever be
     // set on a View.
     case ax::mojom::Role::kDesktop:
+    case ax::mojom::Role::kDocument:  // Used for ARIA role="document".
+    case ax::mojom::Role::kIframe:
+    case ax::mojom::Role::kIframePresentational:
     case ax::mojom::Role::kNone:
+    case ax::mojom::Role::kPdfRoot:
+    case ax::mojom::Role::kPortal:
     case ax::mojom::Role::kRootWebArea:
     case ax::mojom::Role::kSvgRoot:
     case ax::mojom::Role::kUnknown:
-    case ax::mojom::Role::kWebArea:
       return false;
 
     default:

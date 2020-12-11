@@ -270,8 +270,7 @@ bool AccessibilityControlPredicate(BrowserAccessibility* start,
       node->GetRole() != ax::mojom::Role::kIframe &&
       node->GetRole() != ax::mojom::Role::kIframePresentational &&
       !ui::IsLink(node->GetRole()) &&
-      node->GetRole() != ax::mojom::Role::kWebArea &&
-      node->GetRole() != ax::mojom::Role::kRootWebArea) {
+      !ui::IsPlatformDocument(node->GetRole())) {
     return true;
   }
   return false;
@@ -280,12 +279,8 @@ bool AccessibilityControlPredicate(BrowserAccessibility* start,
 bool AccessibilityFocusablePredicate(BrowserAccessibility* start,
                                      BrowserAccessibility* node) {
   bool focusable = node->HasState(ax::mojom::State::kFocusable);
-  if (node->GetRole() == ax::mojom::Role::kIframe ||
-      node->GetRole() == ax::mojom::Role::kIframePresentational ||
-      node->GetRole() == ax::mojom::Role::kWebArea ||
-      node->GetRole() == ax::mojom::Role::kRootWebArea) {
+  if (ui::IsIframe(node->GetRole()) || node->IsPlatformDocument())
     focusable = false;
-  }
   return focusable;
 }
 
@@ -356,8 +351,7 @@ bool AccessibilityFramePredicate(BrowserAccessibility* start,
     return false;
   if (!node->PlatformGetParent())
     return false;
-  return (node->GetRole() == ax::mojom::Role::kWebArea ||
-          node->GetRole() == ax::mojom::Role::kRootWebArea);
+  return ui::IsPlatformDocument(node->GetRole());
 }
 
 bool AccessibilityLandmarkPredicate(BrowserAccessibility* start,

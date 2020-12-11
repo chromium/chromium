@@ -78,7 +78,7 @@ bool IsNodeOffscreen(const AXTree& tree, int32_t id) {
 
 class TestAXTreeObserver : public AXTreeObserver {
  public:
-  TestAXTreeObserver(AXTree* tree)
+  explicit TestAXTreeObserver(AXTree* tree)
       : tree_(tree), tree_data_changed_(false), root_changed_(false) {
     tree_->AddObserver(this);
   }
@@ -2056,7 +2056,7 @@ TEST(AXTreeTest, UnignoredChildIteratorIncrementDecrementPastEnd) {
   tree_update.nodes.resize(2);
 
   tree_update.nodes[0].id = 1;
-  tree_update.nodes[0].role = ax::mojom::Role::kWebArea;
+  tree_update.nodes[0].role = ax::mojom::Role::kRootWebArea;
   tree_update.nodes[0].child_ids = {2};
 
   tree_update.nodes[1].id = 2;
@@ -2131,7 +2131,7 @@ TEST(AXTreeTest, UnignoredChildIteratorIgnoredContainerSiblings) {
   tree_update.nodes.resize(7);
 
   tree_update.nodes[0].id = 1;
-  tree_update.nodes[0].role = ax::mojom::Role::kWebArea;
+  tree_update.nodes[0].role = ax::mojom::Role::kRootWebArea;
   tree_update.nodes[0].child_ids = {2, 4, 6};
 
   tree_update.nodes[1].id = 2;

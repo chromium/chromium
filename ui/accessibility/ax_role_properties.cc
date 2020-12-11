@@ -388,8 +388,8 @@ bool IsPlatformDocument(const ax::mojom::Role role) {
   // the ARIA document role. These are not at the root of an HTML document. They
   // can appear anywhere within an HTML document, but never at its root.
   switch (role) {
+    case ax::mojom::Role::kPdfRoot:
     case ax::mojom::Role::kRootWebArea:
-    case ax::mojom::Role::kWebArea:
       return true;
     default:
       return false;
@@ -614,8 +614,8 @@ bool IsStructure(const ax::mojom::Role role) {
 
   switch (role) {
     case ax::mojom::Role::kApplication:
-    case ax::mojom::Role::kDocument:
     case ax::mojom::Role::kArticle:  // Subclass of kDocument.
+    case ax::mojom::Role::kDocument:
     case ax::mojom::Role::kPresentational:
     case ax::mojom::Role::kRowGroup:
     case ax::mojom::Role::kSplitter:
@@ -722,25 +722,22 @@ bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
     case ax::mojom::Role::kImageMap:
     case ax::mojom::Role::kList:
     case ax::mojom::Role::kListItem:
+    case ax::mojom::Role::kPdfRoot:
     case ax::mojom::Role::kProgressIndicator:
     case ax::mojom::Role::kRootWebArea:
     case ax::mojom::Role::kTerm:
     case ax::mojom::Role::kTimer:
     case ax::mojom::Role::kToolbar:
     case ax::mojom::Role::kTooltip:
-    case ax::mojom::Role::kWebArea:
       return true;
 
     case ax::mojom::Role::kGrid:
-      // TODO(aleventhal) this changed between ARIA 1.0 and 1.1,
-      // need to determine whether grids/treegrids should really be readonly
-      // or editable by default
-      break;
-
+      // TODO(aleventhal) this changed between ARIA 1.0 and 1.1.
+      // We need to determine whether grids/treegrids should really be readonly
+      // or editable by default.
     default:
-      break;
+      return false;
   }
-  return false;
 }
 
 bool SupportsExpandCollapse(const ax::mojom::Role role) {

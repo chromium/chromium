@@ -1432,7 +1432,7 @@ static std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
 
 static const char kExpectedPDFAXTreePattern[] =
     "embeddedObject\n"
-    "  document 'PDF document containing 3 pages'\n"
+    "  pdfRoot 'PDF document containing 3 pages'\n"
     "    region 'Page 1'\n"
     "      paragraph\n"
     "        staticText '1 First Section'\n"
@@ -1652,14 +1652,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
   WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
                                                 "1 First Section\r\n");
 
-  // Find PDF document node in the accessibility tree.
+  // Find pdfRoot node in the accessibility tree.
   content::FindAccessibilityNodeCriteria find_criteria;
   find_criteria.role = ax::mojom::Role::kEmbeddedObject;
   ui::AXPlatformNodeDelegate* pdf_root =
       content::FindAccessibilityNode(guest_contents, find_criteria);
   ASSERT_TRUE(pdf_root);
 
-  find_criteria.role = ax::mojom::Role::kDocument;
+  find_criteria.role = ax::mojom::Role::kPdfRoot;
   ui::AXPlatformNodeDelegate* pdf_doc_node =
       FindAccessibilityNodeInSubtree(pdf_root, find_criteria);
   ASSERT_TRUE(pdf_doc_node);

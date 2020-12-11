@@ -1394,7 +1394,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTableQueryInterfaceOnNonTable) {
 
   AXNodeData root;
   root.id = 1;
-  root.role = ax::mojom::Role::kWebArea;
+  root.role = ax::mojom::Role::kRootWebArea;
   Init(root);
 
   ComPtr<IAccessible> root_obj = GetRootIAccessible();
@@ -3048,7 +3048,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetNCharacters) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleTextGetOffsetAtPoint) {
   AXNodeData root;
   root.id = 1;
-  root.role = ax::mojom::Role::kWebArea;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.relative_bounds.bounds = gfx::RectF(0, 0, 300, 200);
   root.child_ids = {2, 3};
 

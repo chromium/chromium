@@ -279,7 +279,8 @@
     note,
     pane,
     paragraph,
-    pdfActionableHighlight, // PDF specific highlight role.
+    pdfActionableHighlight,
+    pdfRoot,
     pluginObject,
     popUpButton,
     portal,
@@ -328,7 +329,6 @@
     treeItem,
     unknown,
     video,
-    webArea,
     webView,
     window
   };

@@ -1,5 +1,5 @@
 embeddedObject
-++document name='PDF document containing 2 pages' restriction=readOnly
+++pdfRoot name='PDF document containing 2 pages' restriction=readOnly
 ++++region name='Page 1' restriction=readOnly isPageBreakingObject=true
 ++++++paragraph restriction=readOnly
 ++++++++staticText name='Page 1' restriction=readOnly

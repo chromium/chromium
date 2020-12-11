@@ -261,7 +261,7 @@ struct AX_BASE_EXPORT AXNodeData {
   bool IsReadOnlyOrDisabled() const;
 
   // Helper to determine if the data belongs to a node that supports
-  // range-based value.
+  // range-based values.
   bool IsRangeValueSupported() const;
 
   // Helper to determine if the data belongs to a node that supports

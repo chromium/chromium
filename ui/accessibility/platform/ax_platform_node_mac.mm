@@ -174,6 +174,7 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kNote, NSAccessibilityGroupRole},
       {ax::mojom::Role::kParagraph, NSAccessibilityGroupRole},
       {ax::mojom::Role::kPdfActionableHighlight, NSAccessibilityButtonRole},
+      {ax::mojom::Role::kPdfRoot, NSAccessibilityGroupRole},
       {ax::mojom::Role::kPluginObject, NSAccessibilityGroupRole},
       {ax::mojom::Role::kPopUpButton, NSAccessibilityPopUpButtonRole},
       {ax::mojom::Role::kPortal, NSAccessibilityButtonRole},
@@ -221,7 +222,6 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kTreeGrid, NSAccessibilityTableRole},
       {ax::mojom::Role::kTreeItem, NSAccessibilityRowRole},
       {ax::mojom::Role::kVideo, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kWebArea, @"AXWebArea"},
       // Use the group role as the BrowserNativeWidgetWindow already provides
       // a kWindow role, and having extra window roles, which are treated
       // specially by screen readers, can break their ability to find the

@@ -974,10 +974,8 @@ bool BrowserAccessibility::HasAction(ax::mojom::Action action_enum) const {
 }
 
 bool BrowserAccessibility::IsWebAreaForPresentationalIframe() const {
-  if (GetRole() != ax::mojom::Role::kWebArea &&
-      GetRole() != ax::mojom::Role::kRootWebArea) {
+  if (!IsPlatformDocument())
     return false;
-  }
 
   BrowserAccessibility* parent = PlatformGetParent();
   if (!parent)

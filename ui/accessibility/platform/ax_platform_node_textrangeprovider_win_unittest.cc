@@ -376,6 +376,7 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
 
     text_field.role = ax::mojom::Role::kTextField;
     text_field.AddState(ax::mojom::State::kEditable);
+    text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
     text_field.SetValue(ALL_TEXT);
     text_field.AddIntListAttribute(
         ax::mojom::IntListAttribute::kCachedLineStarts,
@@ -751,7 +752,7 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
   ui::AXTreeUpdate BuildAXTreeForMoveByPage() {
     ui::AXNodeData root_data;
     root_data.id = 1;
-    root_data.role = ax::mojom::Role::kDocument;
+    root_data.role = ax::mojom::Role::kPdfRoot;
 
     ui::AXNodeData page_1_data;
     page_1_data.id = 2;
@@ -1932,8 +1933,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
                   /*expected_count*/ -2);
 }
 
-TEST_F(AXPlatformNodeTextRangeProviderTest,
-       DISABLED_TestITextRangeProviderMovePage) {
+TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMovePage) {
   Init(BuildAXTreeForMoveByPage());
   AXNode* root_node = GetRootAsAXNode();
 
@@ -1948,7 +1948,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       L"some text on page 1\nsome text on page 2some more text on page 3",
       /*expected_count*/ 0);
 
-  // Backwards endpoint moves
+  // Backwards endpoint moves.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Page,
       /*count*/ -1,
@@ -1961,7 +1961,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                                    /*expected_text*/ L"",
                                    /*expected_count*/ -2);
 
-  // Forwards endpoint move
+  // Forwards endpoint move.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Page,
       /*count*/ 5,
@@ -1969,7 +1969,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       L"some text on page 1\nsome text on page 2some more text on page 3",
       /*expected_count*/ 3);
 
-  // Range moves
+  // Range moves.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Page,
                   /*count*/ 1,
                   /*expected_text*/ L"some text on page 2",
@@ -1986,7 +1986,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                   /*expected_count*/ -1);
 
   // ExpandToEnclosingUnit - first move by character so it's not on a
-  // page boundary before calling ExpandToEnclosingUnit
+  // page boundary before calling ExpandToEnclosingUnit.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
       /*count*/ -2,
@@ -3450,12 +3450,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_EQ(*GetEnd(text_range.Get()), *GetEnd(more_text_range.Get()));
 }
 
-TEST_F(AXPlatformNodeTextRangeProviderTest,
-       DISABLED_TestITextRangeProviderGetChildren) {
+TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderGetChildren) {
   // Set up ax tree with the following structure:
   //
   // ++1 kRootWebArea
-  // ++++2 kDocument ignored
+  // ++++2 kGenericContainer editable richlyEditable
   // ++++++3 kStaticText
   // ++++++++4 kInlineTextBox
   // ++++++++5 kInlineTextBox
@@ -3466,7 +3465,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // ++++++++10 kStaticText
 
   AXNodeData root_1;
-  AXNodeData document_2;
+  AXNodeData generic_container_2;
   AXNodeData static_text_3;
   AXNodeData inline_box_4;
   AXNodeData inline_box_5;
@@ -3477,7 +3476,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   AXNodeData static_text_10;
 
   root_1.id = 1;
-  document_2.id = 2;
+  generic_container_2.id = 2;
   static_text_3.id = 3;
   inline_box_4.id = 4;
   inline_box_5.id = 5;
@@ -3488,12 +3487,15 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   static_text_10.id = 10;
 
   root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {document_2.id};
+  root_1.child_ids = {generic_container_2.id};
 
-  document_2.role = ax::mojom::Role::kDocument;
-  document_2.AddState(ax::mojom::State::kIgnored);
-  document_2.child_ids = {static_text_3.id, static_text_6.id, static_text_7.id,
-                          button_8.id};
+  generic_container_2.role = ax::mojom::Role::kGenericContainer;
+  generic_container_2.AddState(ax::mojom::State::kEditable);
+  generic_container_2.AddState(ax::mojom::State::kRichlyEditable);
+  generic_container_2.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
+                                       true);
+  generic_container_2.child_ids = {static_text_3.id, static_text_6.id,
+                                   static_text_7.id, button_8.id};
 
   static_text_3.role = ax::mojom::Role::kStaticText;
   static_text_3.child_ids = {inline_box_4.id, inline_box_5.id};
@@ -3523,29 +3525,24 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = root_1.id;
-  update.nodes.push_back(root_1);
-  update.nodes.push_back(document_2);
-  update.nodes.push_back(static_text_3);
-  update.nodes.push_back(inline_box_4);
-  update.nodes.push_back(inline_box_5);
-  update.nodes.push_back(static_text_6);
-  update.nodes.push_back(static_text_7);
-  update.nodes.push_back(button_8);
-  update.nodes.push_back(image_9);
-  update.nodes.push_back(static_text_10);
+  update.nodes = {
+      root_1,       generic_container_2, static_text_3, inline_box_4,
+      inline_box_5, static_text_6,       static_text_7, button_8,
+      image_9,      static_text_10};
 
   Init(update);
 
   // Set up variables from the tree for testing.
-  AXNode* document_2_node = GetRootAsAXNode()->children()[0];
-  AXNode* static_text_3_node = document_2_node->children()[0];
+  AXNode* generic_container_2_node = GetRootAsAXNode()->children()[0];
+  AXNode* static_text_3_node = generic_container_2_node->children()[0];
   AXNode* inline_box_4_node = static_text_3_node->children()[0];
   AXNode* inline_box_5_node = static_text_3_node->children()[1];
-  AXNode* static_text_6_node = document_2_node->children()[1];
-  AXNode* button_8_node = document_2_node->children()[3];
+  AXNode* static_text_6_node = generic_container_2_node->children()[1];
+  AXNode* button_8_node = generic_container_2_node->children()[3];
 
-  ComPtr<IRawElementProviderSimple> document_2_raw =
-      QueryInterfaceFromNode<IRawElementProviderSimple>(document_2_node);
+  ComPtr<IRawElementProviderSimple> generic_container_2_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          generic_container_2_node);
   ComPtr<IRawElementProviderSimple> static_text_3_raw =
       QueryInterfaceFromNode<IRawElementProviderSimple>(static_text_3_node);
   ComPtr<IRawElementProviderSimple> inline_box_4_raw =
@@ -3629,8 +3626,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Test document_2 - children should not include ignored nodes and nodes under
   // a node that should hide its children.
   {
-    EXPECT_HRESULT_SUCCEEDED(
-        document_2_raw->GetPatternProvider(UIA_TextPatternId, &text_provider));
+    EXPECT_HRESULT_SUCCEEDED(generic_container_2_raw->GetPatternProvider(
+        UIA_TextPatternId, &text_provider));
 
     EXPECT_HRESULT_SUCCEEDED(
         text_provider->get_DocumentRange(&text_range_provider));
@@ -5163,7 +5160,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, ElementNotAvailable) {
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
-       DISABLED_TestITextRangeProviderIgnoredNodes) {
+       TestITextRangeProviderIgnoredNodes) {
   // Parent Tree
   // 1
   // |
@@ -5190,8 +5187,14 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   tree_update.nodes[1].id = 2;
   tree_update.nodes[1].child_ids = {3, 4, 5, 6, 7, 8};
+  // According to the existing Blink code, editable roots are never ignored.
+  // However, we can still create this tree structure only for test purposes.
   tree_update.nodes[1].AddState(ax::mojom::State::kIgnored);
-  tree_update.nodes[1].role = ax::mojom::Role::kDocument;
+  tree_update.nodes[1].AddState(ax::mojom::State::kEditable);
+  tree_update.nodes[1].AddState(ax::mojom::State::kRichlyEditable);
+  tree_update.nodes[1].AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
+                                        true);
+  tree_update.nodes[1].role = ax::mojom::Role::kGenericContainer;
 
   tree_update.nodes[2].id = 3;
   tree_update.nodes[2].role = ax::mojom::Role::kStaticText;
@@ -5636,6 +5639,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   image_3.role = ax::mojom::Role::kImage;
 
   text_field_4.role = ax::mojom::Role::kTextField;
+  text_field_4.AddState(ax::mojom::State::kEditable);
+  text_field_4.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
   text_field_4.child_ids = {generic_container_5.id};
   text_field_4.SetValue("3.14");
 
