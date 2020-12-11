@@ -29,6 +29,7 @@
       pref_autofill_field_horizontal_padding exists because TextInputLayouts have an internal
       padding set.
     -->
+    <dimen name="pref_autofill_dropdown_vertical_padding">13dp</dimen>
     <dimen name="pref_autofill_content_spacing">12dp</dimen>
     <dimen name="pref_autofill_field_horizontal_padding">4dp</dimen>
     <dimen name="pref_autofill_field_top_margin">8dp</dimen>

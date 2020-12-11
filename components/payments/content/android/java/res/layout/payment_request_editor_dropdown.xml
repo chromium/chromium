@@ -23,9 +23,11 @@
             android:id="@+id/spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
-            android:padding="0dp"
-            android:dropDownWidth="match_parent" />
+            android:dropDownWidth="match_parent"
+            android:paddingBottom="@dimen/pref_autofill_dropdown_vertical_padding"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:paddingTop="@dimen/pref_autofill_dropdown_vertical_padding" />
 
     <View android:id="@+id/spinner_underline" style="@style/PreferenceSpinnerUnderlineView" />
 

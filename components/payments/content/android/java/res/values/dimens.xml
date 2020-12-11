@@ -14,7 +14,6 @@
     <dimen name="payments_section_checking_spacing">6dp</dimen>
     <dimen name="payments_section_descriptive_item_spacing">40dp</dimen>
     <dimen name="payments_section_add_button_height">48dp</dimen>
-    <dimen name="payments_section_dropdown_top_padding">5dp</dimen>
     <dimen name="payments_ui_max_dialog_width">0dp</dimen>
     <dimen name="payments_ui_translation">100dp</dimen>
     <dimen name="payments_favicon_size">24dp</dimen>
