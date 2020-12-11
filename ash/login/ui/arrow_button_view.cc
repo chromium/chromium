@@ -26,6 +26,9 @@ namespace {
 // Arrow icon size.
 constexpr int kArrowIconSizeDp = 20;
 constexpr int kArrowIconBackroundRadius = 25;
+
+constexpr const int kBorderForFocusRingDp = 3;
+
 // How long does a single step of the loading animation take - i.e., the time it
 // takes for the arc to grow from a point to a full circle.
 constexpr base::TimeDelta kLoadingAnimationStepDuration =
@@ -54,8 +57,10 @@ void PaintLoadingArc(gfx::Canvas* canvas,
 }  // namespace
 
 ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
-    : LoginButton(std::move(callback)), size_(size) {
-  SetPreferredSize(gfx::Size(size, size));
+    : LoginButton(std::move(callback)) {
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderForFocusRingDp)));
+  SetPreferredSize(gfx::Size(size + 2 * kBorderForFocusRingDp,
+                             size + 2 * kBorderForFocusRingDp));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   // Layer rendering is needed for animation.
@@ -82,7 +87,7 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
   flags.setColor(background_color_);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), size_ / 2, flags);
+  canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2, flags);
 
   // Draw arrow icon.
   views::ImageButton::PaintButtonContents(canvas);

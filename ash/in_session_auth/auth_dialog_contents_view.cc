@@ -439,7 +439,7 @@ void AuthDialogContentsView::AddPinTextInputView() {
   pin_text_input_view_->SetDisplayPasswordButtonVisible(true);
   pin_text_input_view_->SetEnabled(true);
   pin_text_input_view_->SetEnabledOnEmptyPassword(false);
-  pin_text_input_view_->SetFocusEnabledForChildViews(true);
+  pin_text_input_view_->SetFocusEnabledForTextfield(true);
   pin_text_input_view_->SetVisible(true);
 
   pin_text_input_view_->SetPlaceholderText(

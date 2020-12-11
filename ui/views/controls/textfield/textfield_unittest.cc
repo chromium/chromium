@@ -4068,6 +4068,32 @@ TEST_F(TextfieldTest, ChangeTextDirectionAndLayoutAlignmentTest) {
             base::i18n::TextDirection::LEFT_TO_RIGHT);
   EXPECT_EQ(textfield_->GetHorizontalAlignment(),
             gfx::HorizontalAlignment::ALIGN_LEFT);
+
+  // If the text is center-aligned, only the text direction should change.
+  textfield_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  textfield_->ChangeTextDirectionAndLayoutAlignment(
+      base::i18n::TextDirection::RIGHT_TO_LEFT);
+  EXPECT_EQ(textfield_->GetTextDirection(),
+            base::i18n::TextDirection::RIGHT_TO_LEFT);
+  EXPECT_EQ(textfield_->GetHorizontalAlignment(),
+            gfx::HorizontalAlignment::ALIGN_CENTER);
+
+  // If the text is aligned to the text direction, its alignment should change
+  // iff the text direction changes. We test both scenarios.
+  auto dir = base::i18n::TextDirection::RIGHT_TO_LEFT;
+  auto opposite_dir = base::i18n::TextDirection::LEFT_TO_RIGHT;
+  EXPECT_EQ(textfield_->GetTextDirection(), dir);
+  textfield_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  textfield_->ChangeTextDirectionAndLayoutAlignment(opposite_dir);
+  EXPECT_EQ(textfield_->GetTextDirection(), opposite_dir);
+  EXPECT_NE(textfield_->GetHorizontalAlignment(), gfx::ALIGN_TO_HEAD);
+
+  dir = base::i18n::TextDirection::LEFT_TO_RIGHT;
+  EXPECT_EQ(textfield_->GetTextDirection(), dir);
+  textfield_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  textfield_->ChangeTextDirectionAndLayoutAlignment(dir);
+  EXPECT_EQ(textfield_->GetTextDirection(), dir);
+  EXPECT_EQ(textfield_->GetHorizontalAlignment(), gfx::ALIGN_TO_HEAD);
 }
 
 TEST_F(TextfieldTest, TextChangedCallbackTest) {

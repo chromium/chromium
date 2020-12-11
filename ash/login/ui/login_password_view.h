@@ -19,7 +19,6 @@
 
 namespace views {
 class ImageView;
-class Separator;
 class Textfield;
 class ToggleImageButton;
 }  // namespace views
@@ -109,7 +108,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // Enable or disable focus on the child elements (i.e.: password field, and
   // submit button if the display password button feature is disabled, or
   // display password button if the feature is enabled).
-  void SetFocusEnabledForChildViews(bool enable);
+  void SetFocusEnabledForTextfield(bool enable);
 
   // Sets whether the display password button is visible.
   void SetDisplayPasswordButtonVisible(bool visible);
@@ -165,19 +164,26 @@ class ASH_EXPORT LoginPasswordView : public views::View,
  private:
   class EasyUnlockIcon;
   class DisplayPasswordButton;
+  class LoginPasswordRow;
   class LoginTextfield;
   friend class TestApi;
 
-  // Increases/decreases the contrast of the separator and capslock icon.
-  void SetSeparatorAndCapsLockHighlighted(bool highlight);
+  // Increases/decreases the contrast of the capslock icon.
+  void SetCapsLockHighlighted(bool highlight);
+
+  // Highlight or remove highlight from password row.
+  void SetPasswordRowHighlighted(bool highlight);
+
+  // Remove hightlight from caps lock and password row, when textfield looses
+  // focus.
+  void RemoveHighlightFromCapsLockAndRow();
 
   // Needs to be true in order for SubmitPassword to be ran. Returns true if the
   // textfield is not empty or if |enabled_on_empty_password| is true.
   bool IsPasswordSubmittable();
 
   // When the display password button feature is disabled, UpdateUiState
-  // enables/disables the submit button and changes the color of the separator
-  // based on if the view is enabled.
+  // enables/disables the submit button.
   void UpdateUiState();
 
   OnPasswordSubmit on_submit_;
@@ -200,15 +206,12 @@ class ASH_EXPORT LoginPasswordView : public views::View,
 
   LoginPalette palette_;
 
-  views::View* password_row_ = nullptr;
-
+  LoginPasswordRow* password_row_ = nullptr;
   LoginTextfield* textfield_ = nullptr;
   ArrowButtonView* submit_button_ = nullptr;
   DisplayPasswordButton* display_password_button_ = nullptr;
   views::ImageView* capslock_icon_ = nullptr;
-  views::Separator* separator_ = nullptr;
   EasyUnlockIcon* easy_unlock_icon_ = nullptr;
-  views::View* easy_unlock_right_margin_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(LoginPasswordView);
 };

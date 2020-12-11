@@ -630,6 +630,7 @@ gfx::HorizontalAlignment Textfield::GetHorizontalAlignment() const {
 
 void Textfield::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
   GetRenderText()->SetHorizontalAlignment(alignment);
+
   OnPropertyChanged(&model_ + kTextfieldHorizontalAlignment,
                     kPropertyEffectsNone);
 }
@@ -1739,6 +1740,7 @@ void Textfield::OnInputMethodChanged() {}
 
 bool Textfield::ChangeTextDirectionAndLayoutAlignment(
     base::i18n::TextDirection direction) {
+  DCHECK_NE(direction, base::i18n::UNKNOWN_DIRECTION);
   // Restore text directionality mode when the indicated direction matches the
   // current forced mode; otherwise, force the mode indicated. This helps users
   // manage BiDi text layout without getting stuck in forced LTR or RTL modes.
@@ -1749,7 +1751,13 @@ bool Textfield::ChangeTextDirectionAndLayoutAlignment(
   const bool modes_match = new_mode == render_text->directionality_mode();
   render_text->SetDirectionalityMode(modes_match ? gfx::DIRECTIONALITY_FROM_TEXT
                                                  : new_mode);
-  SetHorizontalAlignment(default_rtl ? gfx::ALIGN_RIGHT : gfx::ALIGN_LEFT);
+  // Do not reset horizontal alignment to left/right if it has been set to
+  // center, or if it depends on the text direction and that direction has not
+  // been modified.
+  bool dir_from_text =
+      modes_match && GetHorizontalAlignment() == gfx::ALIGN_TO_HEAD;
+  if (!dir_from_text && GetHorizontalAlignment() != gfx::ALIGN_CENTER)
+    SetHorizontalAlignment(default_rtl ? gfx::ALIGN_RIGHT : gfx::ALIGN_LEFT);
   SchedulePaint();
   return true;
 }

@@ -4056,7 +4056,7 @@ TEST_P(SplitViewTabDraggingTest, DropWindowIntoOverviewOnDragPositionTest) {
   EXPECT_TRUE(WindowState::Get(browser_window1.get())->IsMaximized());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 
-  // Drop window into overview if it has beenn dragged further than the distance
+  // Drop window into overview if it has been dragged further than the distance
   // threshold.
   resizer = StartDrag(browser_window1.get(), browser_window1.get());
   drop_target_bounds = GetDropTargetBoundsDuringDrag(browser_window1.get());

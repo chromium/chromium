@@ -1228,7 +1228,7 @@ void LoginAuthUserView::SetAuthMethods(
 
   password_view_->SetEnabled(current_state.has_password);
   password_view_->SetEnabledOnEmptyPassword(HasAuthMethod(AUTH_TAP));
-  password_view_->SetFocusEnabledForChildViews(current_state.has_password);
+  password_view_->SetFocusEnabledForTextfield(current_state.has_password);
   password_view_->SetVisible(current_state.has_password);
   password_view_->layer()->SetOpacity(current_state.has_password ? 1 : 0);
 

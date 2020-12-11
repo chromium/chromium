@@ -56,7 +56,6 @@ class ArrowButtonView : public LoginButton {
     ArrowButtonView* const owner_;
   };
 
-  int size_;
   SkColor background_color_;
   LoadingAnimationDelegate loading_animation_delegate_{this};
   std::unique_ptr<gfx::MultiAnimation> loading_animation_;
