@@ -47,6 +47,8 @@ source_set("internal") {
     "tile_types.h",
     "tile_utils.cc",
     "tile_utils.h",
+    "trending_tile_handler.cc",
+    "trending_tile_handler.h",
   ]
 
   public_deps = [ "//components/image_fetcher/core" ]

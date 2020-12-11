@@ -30,6 +30,16 @@ void RunGetTilesCallback(const JavaRef<jobject>& j_callback,
       j_callback, TileConversionBridge::CreateJavaTiles(env, std::move(tiles)));
 }
 
+void RunGetTileCallback(const JavaRef<jobject>& j_callback,
+                        base::Optional<Tile> tile) {
+  JNIEnv* env = AttachCurrentThread();
+  RunObjectCallbackAndroid(
+      j_callback,
+      TileConversionBridge::CreateJavaTiles(
+          env, tile.has_value() ? std::move(tile->sub_tiles)
+                                : std::vector<std::unique_ptr<Tile>>()));
+}
+
 }  // namespace
 
 // static
@@ -63,9 +73,19 @@ TileProviderBridge::~TileProviderBridge() {
 
 void TileProviderBridge::GetQueryTiles(JNIEnv* env,
                                        const JavaParamRef<jobject>& jcaller,
+                                       const JavaParamRef<jstring>& j_tile_id,
                                        const JavaParamRef<jobject>& jcallback) {
-  tile_service_->GetQueryTiles(base::BindOnce(
-      &RunGetTilesCallback, ScopedJavaGlobalRef<jobject>(jcallback)));
+  // TODO(qinmin): refactor TileService to use a single call to handle both
+  // cases.
+  if (j_tile_id.is_null()) {
+    tile_service_->GetQueryTiles(base::BindOnce(
+        &RunGetTilesCallback, ScopedJavaGlobalRef<jobject>(jcallback)));
+  } else {
+    tile_service_->GetTile(
+        ConvertJavaStringToUTF8(env, j_tile_id),
+        base::BindOnce(&RunGetTileCallback,
+                       ScopedJavaGlobalRef<jobject>(jcallback)));
+  }
 }
 
 void TileProviderBridge::OnTileClicked(JNIEnv* env,

@@ -35,6 +35,9 @@ struct TileGroup {
   // Remove a tile from |tiles| given by its ID.
   void RemoveTiles(const std::vector<std::string>& tile_ids);
 
+  // Find a tile with the given ID;
+  Tile* FindTile(const std::string& tile_id);
+
   // Unique id for the group.
   std::string id;
 

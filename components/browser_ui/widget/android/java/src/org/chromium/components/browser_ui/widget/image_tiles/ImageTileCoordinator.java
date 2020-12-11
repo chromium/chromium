@@ -24,6 +24,11 @@ public interface ImageTileCoordinator {
      */
     void setTiles(List<ImageTile> tiles);
 
+    /**
+     * Refresh tile display. If tiles are scrolled, return them to their original position.
+     */
+    void refreshTiles();
+
     /** A helper interface to support retrieving {@link Bitmap}s asynchronously. */
     @FunctionalInterface
     interface TileVisualsProvider {

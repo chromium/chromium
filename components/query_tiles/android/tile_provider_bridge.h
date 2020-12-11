@@ -30,6 +30,7 @@ class TileProviderBridge : public base::SupportsUserData::Data {
   // Methods called from Java via JNI.
   void GetQueryTiles(JNIEnv* env,
                      const JavaParamRef<jobject>& jcaller,
+                     const JavaParamRef<jstring>& j_tile_id,
                      const JavaParamRef<jobject>& jcallback);
 
   // Called when a tile is clicked.
