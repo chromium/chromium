@@ -6,6 +6,8 @@
 
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/threading/thread_restrictions.h"
 
 namespace ash {
 
@@ -65,13 +67,17 @@ class FakeRecordingService : public recording::mojom::RecordingService {
 // -----------------------------------------------------------------------------
 // TestCaptureModeDelegate:
 
-TestCaptureModeDelegate::TestCaptureModeDelegate() = default;
+TestCaptureModeDelegate::TestCaptureModeDelegate() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  const bool result =
+      base::CreateNewTempDirectory(/*prefix=*/"", &fake_downloads_dir_);
+  DCHECK(result);
+}
 
 TestCaptureModeDelegate::~TestCaptureModeDelegate() = default;
 
 base::FilePath TestCaptureModeDelegate::GetActiveUserDownloadsDir() const {
-  // TODO(afakhry): Add proper code to enable testing.
-  return base::FilePath();
+  return fake_downloads_dir_;
 }
 
 void TestCaptureModeDelegate::ShowScreenCaptureItemInFolder(

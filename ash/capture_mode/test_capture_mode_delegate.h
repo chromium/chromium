@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
 
 namespace ash {
 
@@ -43,6 +44,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
 
  private:
   std::unique_ptr<FakeRecordingService> fake_service_;
+  base::FilePath fake_downloads_dir_;
 };
 
 }  // namespace ash
