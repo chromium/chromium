@@ -3421,8 +3421,6 @@ static_library("ui") {
       "views/accessibility/caption_bubble_model.h",
       "views/accessibility/caret_browsing_dialog_delegate.cc",
       "views/accessibility/caret_browsing_dialog_delegate.h",
-      "views/accessibility/invert_bubble_view.cc",
-      "views/accessibility/invert_bubble_view.h",
       "views/accessibility/non_accessible_image_view.cc",
       "views/accessibility/non_accessible_image_view.h",
       "views/apps/app_dialog/app_dialog_view.cc",

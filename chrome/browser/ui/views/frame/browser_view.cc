@@ -83,7 +83,6 @@
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_controller_views.h"
 #include "chrome/browser/ui/views/accessibility/caret_browsing_dialog_delegate.h"
-#include "chrome/browser/ui/views/accessibility/invert_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_handler_impl.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
@@ -857,8 +856,6 @@ void BrowserView::Show() {
   frame_->Show();
 
   browser()->OnWindowDidShow();
-
-  MaybeShowInvertBubbleView(this);
 
   // The fullscreen transition clears out focus, but there are some cases (for
   // example, new window in Mac fullscreen with toolbar showing) where we need
@@ -2957,8 +2954,6 @@ void BrowserView::OnThemeChanged() {
 
   if (status_bubble_)
     status_bubble_->OnThemeChanged();
-
-  MaybeShowInvertBubbleView(this);
 }
 
 bool BrowserView::GetDropFormats(

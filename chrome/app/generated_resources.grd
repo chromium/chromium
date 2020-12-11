@@ -9554,24 +9554,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
-      <!-- High-contrast mode. -->
-      <message name="IDS_HIGH_CONTRAST_TITLE"
-               desc="Text for the dialog asking if the user may be interested in a High-Contrast extension or a dark theme. Note to translators: this is the name of a feature in Windows, so please try to find the correct name of that feature in your region.">
-        Browse the web in high contrast mode
-      </message>
-      <message name="IDS_HIGH_CONTRAST_HEADER"
-               desc="Section header for list of extensions or themes to try in conjunction with the High Contrast mode">
-        Try:
-      </message>
-      <message name="IDS_HIGH_CONTRAST_EXT"
-               desc="The title of a link that will open the Chrome Web Store with a High Contrast extension the user can install.">
-        High Contrast Extension
-      </message>
-      <message name="IDS_DARK_THEME"
-               desc="The title of a link that will open the Chrome Web Store with a dark theme the user might want to install, if they prefer light text on a dark background.">
-        Dark Theme
-      </message>
-
       <!-- Live caption. -->
       <message name="IDS_LIVE_CAPTION_BUBBLE_TITLE" desc="Title of the Live Caption bubble">
         Live Caption
