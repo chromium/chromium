@@ -361,6 +361,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
       return false;
     }
 
+    VLOGF(1) << "buffer modifier: " << std::hex << layout->modifier();
     if (layout->modifier() &&
         layout->modifier() != gfx::NativePixmapHandle::kNoModifier) {
       base::Optional<struct v4l2_format> modifier_format =
