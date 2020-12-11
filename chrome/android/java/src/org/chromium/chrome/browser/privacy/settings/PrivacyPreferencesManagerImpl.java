@@ -45,91 +45,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         return sInstance;
     }
 
-    @Override
-    public void migrateNetworkPredictionPreferences() {
-        // See if PREF_NETWORK_PREDICTIONS is an old boolean value.
-        boolean predictionOptionIsBoolean = false;
-        try {
-            mPrefs.readString(ChromePreferenceKeys.PRIVACY_NETWORK_PREDICTIONS, "");
-        } catch (ClassCastException ex) {
-            predictionOptionIsBoolean = true;
-        }
-
-        // Nothing to do if the user or this migration code has already set the new
-        // preference.
-        if (!predictionOptionIsBoolean && obsoleteNetworkPredictionOptionsHasUserSetting()) {
-            return;
-        }
-
-        // Nothing to do if the old preferences are unset.
-        if (!predictionOptionIsBoolean
-                && !mPrefs.contains(ChromePreferenceKeys.PRIVACY_BANDWIDTH_OLD)
-                && !mPrefs.contains(ChromePreferenceKeys.PRIVACY_BANDWIDTH_NO_CELLULAR_OLD)) {
-            return;
-        }
-
-        // Migrate if the old preferences are at their default values.
-        // (Note that for PREF_BANDWIDTH*, if the setting is default, then there is no way to tell
-        // whether the user has set it.)
-        final String prefBandwidthDefault =
-                BandwidthType.title(BandwidthType.Type.PRERENDER_ON_WIFI);
-        final String prefBandwidth =
-                mPrefs.readString(ChromePreferenceKeys.PRIVACY_BANDWIDTH_OLD, prefBandwidthDefault);
-        boolean prefBandwidthNoCellularDefault = true;
-        boolean prefBandwidthNoCellular =
-                mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_BANDWIDTH_NO_CELLULAR_OLD,
-                        prefBandwidthNoCellularDefault);
-
-        if (!(prefBandwidthDefault.equals(prefBandwidth))
-                || (prefBandwidthNoCellular != prefBandwidthNoCellularDefault)) {
-            boolean newValue = true;
-            // Observe PREF_BANDWIDTH on mobile network capable devices.
-            if (isMobileNetworkCapable()) {
-                if (mPrefs.contains(ChromePreferenceKeys.PRIVACY_BANDWIDTH_OLD)) {
-                    @BandwidthType.Type
-                    int prefetchBandwidthTypePref =
-                            BandwidthType.getBandwidthFromTitle(prefBandwidth);
-                    if (BandwidthType.Type.NEVER_PRERENDER == prefetchBandwidthTypePref) {
-                        newValue = false;
-                    } else if (BandwidthType.Type.PRERENDER_ON_WIFI == prefetchBandwidthTypePref
-                            || BandwidthType.Type.ALWAYS_PRERENDER == prefetchBandwidthTypePref) {
-                        newValue = true;
-                    }
-                }
-            }
-            // Observe PREF_BANDWIDTH_NO_CELLULAR on devices without mobile network.
-            else {
-                if (mPrefs.contains(ChromePreferenceKeys.PRIVACY_BANDWIDTH_NO_CELLULAR_OLD)) {
-                    newValue = prefBandwidthNoCellular;
-                }
-            }
-            // Save new value in Chrome PrefService.
-            setNetworkPredictionEnabled(newValue);
-        }
-
-        // Delete old sharedPreferences.
-
-        // Delete PREF_BANDWIDTH and PREF_BANDWIDTH_NO_CELLULAR: just migrated these options.
-        if (mPrefs.contains(ChromePreferenceKeys.PRIVACY_BANDWIDTH_OLD)) {
-            mPrefs.removeKey(ChromePreferenceKeys.PRIVACY_BANDWIDTH_OLD);
-        }
-        if (mPrefs.contains(ChromePreferenceKeys.PRIVACY_BANDWIDTH_NO_CELLULAR_OLD)) {
-            mPrefs.removeKey(ChromePreferenceKeys.PRIVACY_BANDWIDTH_NO_CELLULAR_OLD);
-        }
-        // Also delete ALLOW_PRERENDER, which was updated based on PREF_BANDWIDTH[_NO_CELLULAR] and
-        // network connectivity type, therefore does not carry additional information.
-        if (mPrefs.contains(ChromePreferenceKeys.PRIVACY_ALLOW_PRERENDER_OLD)) {
-            mPrefs.removeKey(ChromePreferenceKeys.PRIVACY_ALLOW_PRERENDER_OLD);
-        }
-        // Delete bool PREF_NETWORK_PREDICTIONS so that string values can be stored. Note that this
-        // SharedPreference carries no information, because it used to be overwritten by
-        // kNetworkPredictionEnabled on startup, and now it is overwritten by
-        // kNetworkPredictionOptions on startup.
-        if (mPrefs.contains(ChromePreferenceKeys.PRIVACY_NETWORK_PREDICTIONS)) {
-            mPrefs.removeKey(ChromePreferenceKeys.PRIVACY_NETWORK_PREDICTIONS);
-        }
-    }
-
     protected boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -152,7 +67,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @Override
     public boolean shouldPrerender() {
         if (!DeviceClassManager.enablePrerendering()) return false;
-        migrateNetworkPredictionPreferences();
         return canPrefetchAndPrerender();
     }
 

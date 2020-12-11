@@ -133,7 +133,6 @@ public class GrandfatheredChromePreferenceKeys {
                 ChromePreferenceKeys.PRIVACY_BANDWIDTH_OLD,
                 ChromePreferenceKeys.PRIVACY_METRICS_IN_SAMPLE,
                 ChromePreferenceKeys.PRIVACY_METRICS_REPORTING,
-                ChromePreferenceKeys.PRIVACY_NETWORK_PREDICTIONS,
                 ChromePreferenceKeys.PROFILES_BOOT_TIMESTAMP,
                 ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START,
                 ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,

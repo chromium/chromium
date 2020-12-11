@@ -98,8 +98,6 @@ public class GoogleServicesSettings
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
-        mPrivacyPrefManager.migrateNetworkPredictionPreferences();
-
         getActivity().setTitle(R.string.prefs_google_services);
         setHasOptionsMenu(true);
 

@@ -11,13 +11,6 @@ import org.chromium.components.minidump_uploader.util.CrashReportingPermissionMa
  */
 public interface PrivacyPreferencesManager extends CrashReportingPermissionManager {
     /**
-     * Migrate and delete old preferences.  Note that migration has to happen in Android-specific
-     * code because we need to access ALLOW_PRERENDER sharedPreference.
-     * TODO(crbug.com/526773): remove this migration code.
-     */
-    void migrateNetworkPredictionPreferences();
-
-    /**
      * Checks whether prerender should be allowed and updates the preference if it is not set yet.
      * @return Whether prerendering should be allowed.
      */

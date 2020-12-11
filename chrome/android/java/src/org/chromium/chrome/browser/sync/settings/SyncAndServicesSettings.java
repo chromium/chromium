@@ -173,8 +173,6 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
         mIsFromSigninScreen =
                 IntentUtils.safeGetBoolean(getArguments(), IS_FROM_SIGNIN_SCREEN, false);
 
-        mPrivacyPrefManager.migrateNetworkPredictionPreferences();
-
         getActivity().setTitle(R.string.prefs_sync_and_services);
         setHasOptionsMenu(true);
         if (mIsFromSigninScreen) {

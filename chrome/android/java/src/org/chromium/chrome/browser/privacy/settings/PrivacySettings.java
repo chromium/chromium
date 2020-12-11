@@ -63,7 +63,6 @@ public class PrivacySettings
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         PrivacyPreferencesManagerImpl privacyPrefManager =
                 PrivacyPreferencesManagerImpl.getInstance();
-        privacyPrefManager.migrateNetworkPredictionPreferences();
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
         assert NEW_PRIVACY_PREFERENCE_ORDER.length
                 == getPreferenceScreen().getPreferenceCount()

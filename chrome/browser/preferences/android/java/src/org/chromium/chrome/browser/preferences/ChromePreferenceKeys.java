@@ -545,7 +545,6 @@ public final class ChromePreferenceKeys {
 
     public static final String PRIVACY_METRICS_REPORTING = "metrics_reporting";
     public static final String PRIVACY_METRICS_IN_SAMPLE = "in_metrics_sample";
-    public static final String PRIVACY_NETWORK_PREDICTIONS = "network_predictions";
     public static final String PRIVACY_BANDWIDTH_OLD = "prefetch_bandwidth";
     public static final String PRIVACY_BANDWIDTH_NO_CELLULAR_OLD = "prefetch_bandwidth_no_cellular";
     public static final String PRIVACY_ALLOW_PRERENDER_OLD = "allow_prefetch";
