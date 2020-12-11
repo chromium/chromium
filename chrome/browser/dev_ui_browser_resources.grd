@@ -61,7 +61,7 @@ This file specifies browser resources for developer-facing chrome:// pages
 
       <if expr="is_android or is_linux">
         <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />
-        <include name="IDR_SANDBOX_INTERNALS_JS" file="resources\sandbox_internals\sandbox_internals.js" type="BINDATA" />
+        <include name="IDR_SANDBOX_INTERNALS_JS" file="resources\sandbox_internals\sandbox_internals.js" preprocess="true" type="BINDATA" />
       </if>
       <if expr="is_win">
         <include name="IDR_SANDBOX_INTERNALS_HTML" file="resources\sandbox_internals\sandbox_internals.html" preprocess="true" type="BINDATA" />

@@ -2,19 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @typedef {{
- *   seccompStatus: number,
- *   pid: string,
- *   uid: string,
- *   secontext: string,
- *   procStatus: string,
- *   androidBuildId: string
- * }}
- */
-let AndroidSandboxStatus;
+import {$} from 'chrome://resources/js/util.m.js';
 
-(function() {
+// <if expr="is_linux">
+import './strings.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// </if>
+
 /**
  * CSS classes for different statuses.
  * @enum {string}
@@ -72,6 +66,7 @@ function setEvaluation(result) {
   $('evaluation').innerText = message;
 }
 
+// <if expr="is_android">
 /**
  * Main page handler for Android.
  */
@@ -135,7 +130,9 @@ function androidHandler() {
     setEvaluation(isIsolated && isTsync && isChromeSeccomp);
   });
 }
+// </if>
 
+// <if expr="is_linux">
 /**
  * Main page handler for desktop Linux.
  */
@@ -178,12 +175,13 @@ function linuxHandler() {
 
   setEvaluation(loadTimeData.getBoolean('sandboxGood'));
 }
+// </if>
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (cr.isAndroid) {
-    androidHandler();
-  } else {
-    linuxHandler();
-  }
+  // <if expr="is_android">
+  androidHandler();
+  // </if>
+  // <if expr="is_linux">
+  linuxHandler();
+  // </if>
 });
-})();

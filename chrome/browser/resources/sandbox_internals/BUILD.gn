@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  uses_js_modules = true
   if (is_win) {
     deps = [ ":sandbox_internals_win" ]
   }
@@ -17,9 +18,8 @@ js_library("sandbox_internals") {
   # Android & Linux both need _externs for type checks as they share a js file.
   deps = [
     ":sandbox_android_externs",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
@@ -28,7 +28,8 @@ js_library("sandbox_android_externs") {
 
 js_library("sandbox_internals_win") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }

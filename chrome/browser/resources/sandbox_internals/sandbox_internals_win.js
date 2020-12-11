@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 /**
  * @typedef {{
  *   processId: number,
@@ -44,12 +48,6 @@ let SandboxDiagnostics;
 /**
  * Represents a mitigation field from the PROCESS_CREATION_MITITAGION_POLICY*
  * series in Winbase.h.
- * @typedef {{
- *   mitigation: !string,
- *   value: !number,
- *   mask: !number,
- *   offset: !number
- * }}
  */
 class MitigationField {
   /**
@@ -60,15 +58,19 @@ class MitigationField {
    * @param {number} offset within PC section.
    */
   constructor(mitigation, value, mask, offset) {
+    /** @type {string} */
     this.mitigation = mitigation;
+    /** @type {number} */
     this.value = value;
+    /** @type {number} */
     this.mask = mask;
+    /** @type {number} */
     this.offset = offset;
   }
 
   /**
    * Each PC field overrides this as they know where their data is.
-   * @param {Uint8Array} platform mitigations data.
+   * @param {Uint8Array} bytes platform mitigations data.
    * @return {Uint8Array} chunk containing this field or null.
    */
   getFieldData(bytes) {
@@ -78,7 +80,7 @@ class MitigationField {
   /**
    * Are all the bits of this field set in the mitigations represented by
    * |bytes|.
-   * @param {Uint8Array} platform mitigations.
+   * @param {Uint8Array} bytes platform mitigations.
    * @return {boolean}
    */
   isFieldSet(bytes) {
@@ -100,7 +102,7 @@ class MitigationField {
  */
 class PC0Field extends MitigationField {
   /**
-   * @param {Uint8Array} platform mitigations data.
+   * @param {Uint8Array} bytes platform mitigations data.
    * @return {Uint8Array} chunk containing this field or null.
    */
   getFieldData(bytes) {
@@ -121,13 +123,12 @@ class PC0Field extends MitigationField {
 class PC1Field extends MitigationField {
   /** @override */
   getFieldData(bytes) {
-    if (bytes.length == 4) {
-      return null;
-    } else if (bytes.length == 8) {
+    if (bytes.length == 8) {
       return bytes;
     } else if (bytes.length == 16) {
       return bytes.slice(0, 8);
     }
+    return null;
   }
 }
 
@@ -137,13 +138,12 @@ class PC1Field extends MitigationField {
 class PC2Field extends MitigationField {
   /** @override */
   getFieldData(bytes) {
-    if (bytes.length == 4) {
-      return null;
-    } else if (bytes.length == 8) {
+    if (bytes.length == 8) {
       return null;
     } else if (bytes.length == 16) {
       return bytes.slice(8, 16);
     }
+    return null;
   }
 }
 
@@ -267,8 +267,8 @@ class DecodeMitigations {
   /**
    * Return a list of platform mitigation which are set in |mitigations|.
    * Mitigations will be in the same order as Winbase.h.
-   * @param {string} str Hex encoded process mitigation flags.
-   * @return {Array<string>} Matched mitigation values.
+   * @param {string} mitigations Hex encoded process mitigation flags.
+   * @return {!Array<string>} Matched mitigation values.
    */
   enabledMitigations(mitigations) {
     const bytes = this.parseHexString(mitigations);
@@ -341,6 +341,7 @@ function makeExpandableEntry(mainEntry, expandable) {
  * mitigations.
  * @param {string} platformMitigations
  * @return {Node}
+ * @suppress {globalThis}
  */
 function makeMitigationEntry(platformMitigations) {
   const expander = {
@@ -422,5 +423,5 @@ function onGetSandboxDiagnostics(results) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  cr.sendWithPromise('requestSandboxDiagnostics').then(onGetSandboxDiagnostics);
+  sendWithPromise('requestSandboxDiagnostics').then(onGetSandboxDiagnostics);
 });

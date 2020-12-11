@@ -40,17 +40,7 @@
       }
 </if>
     </style>
-    <script src="chrome://resources/js/cr.js"></script>
-<if expr="is_linux">
-    <script src="chrome://resources/js/load_time_data.js"></script>
-    <script src="chrome://sandbox/strings.js"></script>
-</if>
-    <script src="chrome://resources/js/assert.js"></script>
-<if expr="is_win">
-    <script src="chrome://resources/js/promise_resolver.js"></script>
-</if>
-    <script src="chrome://resources/js/util.js"></script>
-    <script src="sandbox_internals.js"></script>
+    <script type="module" src="sandbox_internals.js"></script>
   </head>
   <body>
     <h1>Sandbox Status</h1>
