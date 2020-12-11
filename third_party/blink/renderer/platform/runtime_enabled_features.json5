@@ -2121,12 +2121,12 @@
     {
       name: "WebAssemblySimd",
       origin_trial_feature_name: "WebAssemblySimd",
-      status: "experimental",
+      status: "test",
     },
     {
       name: "WebAssemblyThreads",
       origin_trial_feature_name: "WebAssemblyThreads",
-      status: "experimental",
+      status: "test",
     },
     // WebAuth is disabled on Android versions prior to N (7.0) due to lack of
     // supporting APIs, see runtime_features.cc.
