@@ -25,6 +25,7 @@ class ScanServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static ScanService* GetForBrowserContext(content::BrowserContext* context);
   static ScanServiceFactory* GetInstance();
+  static KeyedService* BuildInstanceFor(content::BrowserContext* context);
 
  private:
   friend struct base::DefaultSingletonTraits<ScanServiceFactory>;
@@ -37,6 +38,8 @@ class ScanServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
