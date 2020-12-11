@@ -163,6 +163,24 @@ crbug.com/798117 [ angle-vulkan win nvidia ] conformance/glsl/bugs/assign-to-swi
 crbug.com/798117 [ linux nvidia ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
 crbug.com/792210 [ nvidia ] conformance/glsl/bugs/in-parameter-passed-as-inout-argument-and-global.html [ Failure ]
 
+# Flaky timeouts on Intel Windows, Linux and Mac
+crbug.com/1085222 [ win10 intel-0x3e92 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ Failure ]
+crbug.com/1085222 [ win10 intel-0x3e92 ] deqp/functional/gles3/shaderoperator/unary_operator_01.html [ Failure ]
+crbug.com/1085222 [ win10 intel-0x3e92 ] deqp/functional/gles3/shaderoperator/unary_operator_02.html [ Failure ]
+crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ Failure ]
+crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/unary_operator_01.html [ Failure ]
+crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/unary_operator_02.html [ Failure ]
+crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shadermatrix/sub_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shadermatrix/mul_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shadermatrix/add_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/sub_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/mul_* [ RetryOnFailure ]
+crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/add_* [ RetryOnFailure ]
+crbug.com/1085222 [ catalina intel-0xa2e ] deqp/functional/gles3/shaderoperator/binary_operator_* [ RetryOnFailure ]
+crbug.com/1085222 [ catalina intel-0xa2e ] deqp/functional/gles3/shaderoperator/unary_operator_* [ RetryOnFailure ]
+
 ####################
 # Win failures     #
 ####################
@@ -353,24 +371,6 @@ crbug.com/835364 [ angle-opengl win passthrough ] conformance/renderbuffers/dept
 # Passthrough command decoder / Linux / OpenGL / NVIDIA
 crbug.com/766918 [ angle-opengl linux passthrough nvidia ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/965648 [ angle-opengl linux passthrough nvidia ] deqp/functional/gles3/shaderstruct.html [ RetryOnFailure ]
-
-# Flaky on Windows 10 1909 Intel HD 630/UHD 630 GPUs w/ 26.20.100.8141
-crbug.com/1085222 [ win10 intel-0x3e92 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ Skip ]
-crbug.com/1085222 [ win10 intel-0x3e92 ] deqp/functional/gles3/shaderoperator/unary_operator_01.html [ Skip ]
-crbug.com/1085222 [ win10 intel-0x3e92 ] deqp/functional/gles3/shaderoperator/unary_operator_02.html [ Skip ]
-crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ Skip ]
-crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/unary_operator_01.html [ Skip ]
-crbug.com/1085222 [ win10 intel-0x5912 ] deqp/functional/gles3/shaderoperator/unary_operator_02.html [ Skip ]
-
-# Flaky timeouts on Linux Intel HD 630/UHD 630 GPUs
-crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ RetryOnFailure ]
-crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shadermatrix/sub_* [ RetryOnFailure ]
-crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shadermatrix/mul_* [ RetryOnFailure ]
-crbug.com/1085222 [ linux intel-0x3e92 ] deqp/functional/gles3/shadermatrix/add_* [ RetryOnFailure ]
-crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ RetryOnFailure ]
-crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/sub_* [ RetryOnFailure ]
-crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/mul_* [ RetryOnFailure ]
-crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/add_* [ RetryOnFailure ]
 
 # Flaky direct composition failure on Windows 10 1909 Intel UHD 630 GPUs w/ 26.20.100.8141
 crbug.com/1087993 [ win10 intel-0x5912 angle-d3d11 ] conformance2/textures/image_data/tex-2d-rgb8ui-rgb_integer-unsigned_byte.html [ RetryOnFailure ]
