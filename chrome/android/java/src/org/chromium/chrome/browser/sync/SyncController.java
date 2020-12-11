@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
@@ -165,6 +166,14 @@ public class SyncController implements ProfileSyncService.SyncStateChangedListen
      * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
      */
     public boolean isSyncingUrlsWithKeystorePassphrase() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            return mProfileSyncService.isEngineInitialized()
+                    && mProfileSyncService.getActiveDataTypes().contains(ModelType.TYPED_URLS)
+                    && (mProfileSyncService.getPassphraseType()
+                                    == PassphraseType.KEYSTORE_PASSPHRASE
+                            || mProfileSyncService.getPassphraseType()
+                                    == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
+        }
         return mProfileSyncService.isEngineInitialized()
                 && mProfileSyncService.getPreferredDataTypes().contains(ModelType.TYPED_URLS)
                 && (mProfileSyncService.getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
