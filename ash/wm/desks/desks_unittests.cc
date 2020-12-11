@@ -3821,6 +3821,48 @@ TEST_F(DesksBentoTest, NameNudges) {
   }
 }
 
+TEST_F(DesksBentoTest, ScrollableDesks) {
+  UpdateDisplay("301x600");
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(root_window)->desks_bar_view();
+  auto* new_desk_button = desks_bar_view->new_desk_button();
+
+  // Set the scroll delta large enough to make sure the desks bar can be
+  // scrolled to the end each time.
+  const int x_scroll_delta = 200;
+  gfx::Rect display_bounds =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          root_window);
+  auto* event_generator = GetEventGenerator();
+  for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); i++) {
+    gfx::Rect new_desk_button_bounds = new_desk_button->GetBoundsInScreen();
+    event_generator->MoveMouseTo(new_desk_button_bounds.CenterPoint());
+    EXPECT_TRUE(display_bounds.Contains(new_desk_button_bounds));
+    event_generator->ClickLeftButton();
+    // Scroll right to make sure the new desk button is always inside the
+    // display.
+    event_generator->MoveMouseWheel(-x_scroll_delta, 0);
+  }
+
+  auto* controller = DesksController::Get();
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
+  EXPECT_FALSE(controller->CanCreateDesks());
+
+  EXPECT_TRUE(display_bounds.Contains(new_desk_button->GetBoundsInScreen()));
+  EXPECT_FALSE(display_bounds.Contains(
+      desks_bar_view->mini_views()[0]->GetBoundsInScreen()));
+  event_generator->MoveMouseWheel(x_scroll_delta, 0);
+  // Tests that scroll to the left will put the first desk inside the display.
+  EXPECT_TRUE(display_bounds.Contains(
+      desks_bar_view->mini_views()[0]->GetBoundsInScreen()));
+  EXPECT_FALSE(display_bounds.Contains(new_desk_button->GetBoundsInScreen()));
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

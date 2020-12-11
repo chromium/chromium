@@ -37,6 +37,7 @@ constexpr int kDeskPreviewHeightInCompactLayout = 48;
 // |kDeskPreviewMaxHeight| dips.
 constexpr int kRootHeightDivider = 12;
 constexpr int kDeskPreviewMaxHeight = 140;
+constexpr int kDeskPreviewMinHeight = 48;
 
 // The corner radius of the border in dips.
 constexpr int kBorderCornerRadius = 6;
@@ -261,7 +262,8 @@ int DeskPreviewView::GetHeight(aura::Window* root, bool compact) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());
   return std::min(kDeskPreviewMaxHeight,
-                  root->bounds().height() / kRootHeightDivider);
+                  std::max(kDeskPreviewMinHeight,
+                           root->bounds().height() / kRootHeightDivider));
 }
 
 void DeskPreviewView::SetBorderColor(SkColor color) {

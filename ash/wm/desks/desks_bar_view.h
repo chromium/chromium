@@ -84,7 +84,6 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // views::View:
   const char* GetClassName() const override;
-  void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
@@ -122,6 +121,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   // Updates the cached minimum width required to fit all contents.
   void UpdateMinimumWidthToFitContents();
 
+  // Adds |mini_view| as the DesksBarView's child or |scroll_view_content_|'s
+  // child if Bento is enabled.
+  DeskMiniView* AddMiniViewAsChild(std::unique_ptr<DeskMiniView> mini_view);
+
   // A view that shows a dark gary transparent background that can be animated
   // when the very first mini_views are created.
   views::View* background_view_;
@@ -148,6 +151,14 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // Caches the calculated minimum width to fit contents.
   int min_width_to_fit_contents_ = 0;
+
+  // Puts the contents in a ScrollView to support scrollable desks. Used only
+  // when Bento is enabled.
+  views::ScrollView* scroll_view_ = nullptr;
+
+  // Contents of |scroll_view_|, which includes |mini_views_| and
+  // |new_desk_button_| currently. Used only when Bento is enabled.
+  views::View* scroll_view_contents_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(DesksBarView);
 };

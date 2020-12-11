@@ -29,7 +29,9 @@
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -126,6 +128,150 @@ class DeskBarHoverObserver : public ui::EventObserver {
 };
 
 // -----------------------------------------------------------------------------
+// DesksBarLayout:
+
+// TODO(minch): Remove this layout manager once the kBento feature is fully
+// launched and becomes the default.
+// Layout manager for the classic desks bar.
+class DesksBarLayout : public views::LayoutManager {
+ public:
+  DesksBarLayout(views::View* background_view, NewDeskButton* new_desk_button)
+      : background_view_(background_view), new_desk_button_(new_desk_button) {}
+  DesksBarLayout(const DesksBarLayout&) = delete;
+  DesksBarLayout& operator=(const DesksBarLayout&) = delete;
+  ~DesksBarLayout() override = default;
+
+  // views::LayoutManager:
+  void Layout(views::View* host) override {
+    auto* desks_bar_view = static_cast<DesksBarView*>(host);
+    const bool compact = desks_bar_view->UsesCompactLayout();
+    const gfx::Rect bounds = desks_bar_view->bounds();
+    background_view_->SetBoundsRect(bounds);
+
+    new_desk_button_->SetLabelVisible(!compact);
+    gfx::Size new_desk_button_size = new_desk_button_->GetPreferredSize();
+    if (compact) {
+      new_desk_button_size.Enlarge(2 * kIconAndTextVerticalPadding,
+                                   2 * kIconAndTextVerticalPadding);
+    } else {
+      new_desk_button_size.Enlarge(2 * kIconAndTextHorizontalPadding,
+                                   2 * kIconAndTextVerticalPadding);
+    }
+
+    const gfx::Rect button_bounds{
+        bounds.right() - new_desk_button_size.width() - kButtonRightMargin,
+        (bounds.height() - new_desk_button_size.height()) / 2,
+        new_desk_button_size.width(), new_desk_button_size.height()};
+    new_desk_button_->SetBoundsRect(button_bounds);
+
+    const std::vector<DeskMiniView*>& mini_views = desks_bar_view->mini_views();
+    if (mini_views.empty())
+      return;
+
+    const gfx::Size mini_view_size = mini_views[0]->GetPreferredSize();
+    const int total_width =
+        mini_views.size() * (mini_view_size.width() + kMiniViewsSpacing) -
+        kMiniViewsSpacing;
+
+    int x = (bounds.width() - total_width) / 2;
+    const int y = compact ? kMiniViewsYCompact : kMiniViewsY;
+    for (auto* mini_view : mini_views) {
+      mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
+      x += (mini_view_size.width() + kMiniViewsSpacing);
+    }
+  }
+
+  // views::LayoutManager:
+  gfx::Size GetPreferredSize(const views::View* host) const override {
+    DCHECK(host);
+    return host->bounds().size();
+  }
+
+ private:
+  views::View* background_view_;    // Not owned.
+  NewDeskButton* new_desk_button_;  // Not owned.
+};
+
+// -----------------------------------------------------------------------------
+// BentoDesksBarLayout:
+
+// TODO(minch): Remove this layout manager and move the layout code back to
+// DesksBarView::Layout() once the kBento feature is launched and becomes
+// stable.
+// Layout manager for desks bar of Bento. The difference from DesksBarLayout is
+// that there is no compact layout in Bento. And contents can be layout outside
+// of the bar if the total contents' width exceeds the width of the desks bar.
+class BentoDesksBarLayout : public views::LayoutManager {
+ public:
+  BentoDesksBarLayout(DesksBarView* desks_bar_view,
+                      NewDeskButton* new_desk_button)
+      : desks_bar_view_(desks_bar_view), new_desk_button_(new_desk_button) {}
+  BentoDesksBarLayout(const BentoDesksBarLayout&) = delete;
+  BentoDesksBarLayout& operator=(const BentoDesksBarLayout&) = delete;
+  ~BentoDesksBarLayout() override = default;
+
+  // views::LayoutManager:
+  void Layout(views::View* host) override {
+    const gfx::Rect desks_bar_bounds = desks_bar_view_->bounds();
+    gfx::Size new_desk_button_size = new_desk_button_->GetPreferredSize();
+    new_desk_button_size.Enlarge(2 * kIconAndTextHorizontalPadding,
+                                 2 * kIconAndTextVerticalPadding);
+
+    const std::vector<DeskMiniView*>& mini_views =
+        desks_bar_view_->mini_views();
+    int content_width = new_desk_button_size.width() + 2 * kMiniViewsSpacing;
+    gfx::Size mini_view_size;
+    if (!mini_views.empty()) {
+      mini_view_size = mini_views[0]->GetPreferredSize();
+      content_width +=
+          mini_views.size() * (mini_view_size.width() + kMiniViewsSpacing);
+    }
+
+    width_ = std::max(desks_bar_bounds.width(), content_width);
+
+    // Update the size of the |host|, which is |scroll_view_contents_| here.
+    // This is done to make sure its size can be updated on mini views' adding
+    // or removing, then |scroll_view_| will know whether the contents need to
+    // be scolled or not.
+    host->SetSize(gfx::Size(width_, desks_bar_bounds.height()));
+
+    const gfx::Rect button_bounds(
+        width_ - new_desk_button_size.width() - kMiniViewsSpacing,
+        (desks_bar_bounds.height() - new_desk_button_size.height()) / 2,
+        new_desk_button_size.width(), new_desk_button_size.height());
+    new_desk_button_->SetBoundsRect(button_bounds);
+
+    if (mini_views.empty())
+      return;
+
+    const int width_for_mini_views =
+        width_ - kMiniViewsSpacing - new_desk_button_size.width();
+    const int mini_views_width =
+        mini_views.size() * (mini_view_size.width() + kMiniViewsSpacing) -
+        kMiniViewsSpacing;
+    int x = (width_for_mini_views - mini_views_width) / 2;
+    for (auto* mini_view : mini_views) {
+      mini_view->SetBoundsRect(
+          gfx::Rect(gfx::Point(x, kMiniViewsY), mini_view_size));
+      x += (mini_view_size.width() + kMiniViewsSpacing);
+    }
+  }
+
+  // views::LayoutManager:
+  gfx::Size GetPreferredSize(const views::View* host) const override {
+    return gfx::Size(width_, desks_bar_view_->bounds().height());
+  }
+
+ private:
+  DesksBarView* desks_bar_view_;    // Not owned.
+  NewDeskButton* new_desk_button_;  // Not owned.
+
+  // Width of the scroll view. It is the contents' preferred width if it exceeds
+  // the desks bar view's width or just the desks bar view's width if not.
+  int width_ = 0;
+};
+
+// -----------------------------------------------------------------------------
 // DesksBarView:
 
 DesksBarView::DesksBarView(OverviewGrid* overview_grid)
@@ -139,7 +285,26 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   background_view_->layer()->SetFillsBoundsOpaquely(false);
 
   AddChildView(background_view_);
-  AddChildView(new_desk_button_);
+
+  if (features::IsBentoEnabled()) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
+    scroll_view_->SetBackgroundColor(base::nullopt);
+    scroll_view_->SetDrawOverflowIndicator(false);
+    scroll_view_->SetHorizontalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+    scroll_view_->SetTreatAllScrollEventsAsHorizontal(true);
+
+    scroll_view_contents_ =
+        scroll_view_->SetContents(std::make_unique<views::View>());
+    scroll_view_contents_->AddChildView(new_desk_button_);
+    scroll_view_contents_->SetLayoutManager(
+        std::make_unique<BentoDesksBarLayout>(this, new_desk_button_));
+  } else {
+    AddChildView(new_desk_button_);
+    SetLayoutManager(
+        std::make_unique<DesksBarLayout>(background_view_, new_desk_button_));
+  }
 
   DesksController::Get()->AddObserver(this);
 }
@@ -152,8 +317,10 @@ DesksBarView::~DesksBarView() {
 int DesksBarView::GetBarHeightForWidth(aura::Window* root,
                                        const DesksBarView* desks_bar_view,
                                        int width) {
-  if (width <= kUseCompactLayoutWidthThreshold ||
-      (desks_bar_view && width <= desks_bar_view->min_width_to_fit_contents_)) {
+  if (!features::IsBentoEnabled() &&
+      (width <= kUseCompactLayoutWidthThreshold ||
+       (desks_bar_view &&
+        width <= desks_bar_view->min_width_to_fit_contents_))) {
     return kBarHeightInCompactLayout;
   }
 
@@ -244,42 +411,6 @@ const char* DesksBarView::GetClassName() const {
   return "DesksBarView";
 }
 
-void DesksBarView::Layout() {
-  background_view_->SetBoundsRect(bounds());
-
-  const bool compact = UsesCompactLayout();
-  new_desk_button_->SetLabelVisible(!compact);
-  gfx::Size new_desk_button_size = new_desk_button_->GetPreferredSize();
-  if (compact) {
-    new_desk_button_size.Enlarge(2 * kIconAndTextVerticalPadding,
-                                 2 * kIconAndTextVerticalPadding);
-  } else {
-    new_desk_button_size.Enlarge(2 * kIconAndTextHorizontalPadding,
-                                 2 * kIconAndTextVerticalPadding);
-  }
-
-  const gfx::Rect button_bounds{
-      bounds().right() - new_desk_button_size.width() - kButtonRightMargin,
-      (bounds().height() - new_desk_button_size.height()) / 2,
-      new_desk_button_size.width(), new_desk_button_size.height()};
-  new_desk_button_->SetBoundsRect(button_bounds);
-
-  if (mini_views_.empty())
-    return;
-
-  const gfx::Size mini_view_size = mini_views_[0]->GetPreferredSize();
-  const int total_width =
-      mini_views_.size() * (mini_view_size.width() + kMiniViewsSpacing) -
-      kMiniViewsSpacing;
-
-  int x = (width() - total_width) / 2;
-  const int y = compact ? kMiniViewsYCompact : kMiniViewsY;
-  for (auto* mini_view : mini_views_) {
-    mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
-    x += (mini_view_size.width() + kMiniViewsSpacing);
-  }
-}
-
 bool DesksBarView::OnMousePressed(const ui::MouseEvent& event) {
   DeskNameView::CommitChanges(GetWidget());
   return false;
@@ -308,6 +439,9 @@ void DesksBarView::OnThemeChanged() {
 }
 
 bool DesksBarView::UsesCompactLayout() const {
+  if (features::IsBentoEnabled())
+    return false;
+
   return width() <= kUseCompactLayoutWidthThreshold ||
          width() <= min_width_to_fit_contents_;
 }
@@ -395,7 +529,7 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view) {
   DCHECK(root_window);
   for (const auto& desk : desks) {
     if (!FindMiniViewForDesk(desk.get())) {
-      DeskMiniView* mini_view = AddChildView(
+      DeskMiniView* mini_view = AddMiniViewAsChild(
           std::make_unique<DeskMiniView>(this, root_window, desk.get()));
       mini_views_.push_back(mini_view);
       new_mini_views.push_back(mini_view);
@@ -459,6 +593,13 @@ void DesksBarView::UpdateMinimumWidthToFitContents() {
       kMiniViewsSpacing;
 
   min_width_to_fit_contents_ = total_mini_views_width + button_width * 2;
+}
+
+DeskMiniView* DesksBarView::AddMiniViewAsChild(
+    std::unique_ptr<DeskMiniView> mini_view) {
+  return features::IsBentoEnabled()
+             ? scroll_view_contents_->AddChildView(std::move(mini_view))
+             : AddChildView(std::move(mini_view));
 }
 
 }  // namespace ash
