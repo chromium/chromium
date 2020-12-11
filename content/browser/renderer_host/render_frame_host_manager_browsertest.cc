@@ -9107,6 +9107,62 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   AssertCanRemoveSubframeInUnload(/*same_site=*/false);
 }
 
+// This test demonstrates a similar issue to the previous two tests, but
+// triggers it in a slightly different way. The previous two tests navigate a
+// subframe and rely on some variant of RenderDocument being enabled to trigger
+// the crash. If the navigation commits in a new RenderFrameHostImpl, the
+// renderer does not correctly handle the case where running the unload handler
+// while swapping in the new frame detaches the navigated frame.
+//
+// However, this bug actually precedes RenderDocument, as detaching a document
+// for navigation at swap time must also detach the subtree. Given a frame tree
+// A1(B(A2)) and a navigation from B->A3, committing A3 will unload B. However,
+// unloading B will also detach A2, and A2's unload handler can detach B since
+// it can script A1 and remove the frame owner element synchronously.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, NestedUnload) {
+  // These tests require site isolation to trigger the (formerly problematic)
+  // delayed detach of the remote frame when swapping in the new local frame.
+  if (!AreAllSitesIsolatedForTesting())
+    return;
+
+  SetupCrossSiteRedirector(embedded_test_server());
+  StartEmbeddedServer();
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "a.com", "/nested-unload-0.html")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "        +--Site A -- proxies for B\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/",
+      FrameTreeVisualizer().DepictFrameTree(
+          web_contents->GetFrameTree()->root()));
+
+  // Navigate the subframe, triggering unload.
+  FrameTreeNode* subframe = web_contents->GetMainFrame()->child_at(0);
+  RenderFrameDeletedObserver observer(
+      subframe->render_manager()->current_frame_host());
+
+  GURL other_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  // The navigation will remove the frame that was navigating. Various Navigate
+  // helpers run into problems with this because there is no successful commit
+  // nor is there a DidStopLoading (because the destination frame should not
+  // load at all). So instead we start the Navigation and just wait for the
+  // deletion.
+  ASSERT_TRUE(ExecJs(subframe, JsReplace("location = $1", other_url)));
+  observer.WaitUntilDeleted();
+
+  // The subframe has been removed.
+  EXPECT_EQ(0UL, web_contents->GetMainFrame()->child_count());
+  // TODO(https://crbug.com/1111191): Remove this. Without this, the crash in
+  // the renderer in https://crbug.com/1148793 is usually not caught.
+  ASSERT_TRUE(ExecJs(shell(), ""));
+}
+
 // See RemoveSubframeInUnload_SameSite
 void RenderFrameHostManagerTest::AssertCanRemoveSubframeInUnload(
     bool same_site) {
