@@ -118,6 +118,32 @@ struct PageRenderData {
   uint64_t ng_layout_call_count = 0;
 };
 
+// Information related to layout shift normalization for different strategies.
+struct NormalizedCLSData {
+  NormalizedCLSData() = default;
+
+  // Maximum CLS of 300ms sliding windows.
+  double sliding_windows_duration300ms_max_cls = 0.0;
+
+  // Maximum CLS of 1000ms sliding windows.
+  double sliding_windows_duration1000ms_max_cls = 0.0;
+
+  // Maximum CLS of session windows. The gap between two consecutive shifts is
+  // not bigger than 1000ms and the maximum window size is 5000ms.
+  double session_windows_gap1000ms_max5000ms_max_cls = 0.0;
+
+  // Maximum CLS of session windows. The gap between two consecutive shifts is
+  // not bigger than 1000ms.
+  double session_windows_gap1000ms_maxMax_max_cls = 0.0;
+
+  // The average CLS of session windows. The gap between two consecutive shifts
+  // is not bigger than 5000ms.
+  double session_windows_gap5000ms_maxMax_average_cls = 0.0;
+
+  // If true, will not report the data in UKM.
+  bool data_tainted = false;
+};
+
 // Container for various information about a completed request within a page
 // load.
 struct ExtraRequestCompleteInfo {

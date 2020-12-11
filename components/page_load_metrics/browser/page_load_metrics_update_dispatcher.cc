@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
+#include "components/page_load_metrics/browser/layout_shift_normalization.h"
 
 #include <ostream>
 #include <utility>
@@ -734,6 +735,9 @@ void PageLoadMetricsUpdateDispatcher::UpdateMobileFriendliness(
 void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(
     const mojom::FrameRenderDataUpdate& render_data) {
   page_render_data_.layout_shift_score += render_data.layout_shift_delta;
+  layout_shift_normalization_.AddNewLayoutShifts(
+      render_data.new_layout_shifts, base::TimeTicks::Now(),
+      page_render_data_.layout_shift_score);
 
   // Stop accumulating page-wide layout_shift_score_before_input_or_scroll after
   // input or scroll in any frame. Note that we can't unconditionally accumulate

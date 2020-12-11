@@ -70,7 +70,7 @@ class FakePageTimingSender : public PageTimingSender {
 
     void UpdateExpectFrameRenderDataUpdate(
         const mojom::FrameRenderDataUpdate& render_data) {
-      expected_render_data_ = render_data;
+      expected_render_data_ = render_data.Clone();
     }
 
     void UpdateExpectedInputTiming(const base::TimeDelta input_delay);
@@ -119,7 +119,7 @@ class FakePageTimingSender : public PageTimingSender {
     std::set<blink::mojom::WebFeature> actual_features_;
     std::set<blink::mojom::CSSSampleId> expected_css_properties_;
     std::set<blink::mojom::CSSSampleId> actual_css_properties_;
-    mojom::FrameRenderDataUpdate expected_render_data_;
+    mojom::FrameRenderDataUpdatePtr expected_render_data_;
     mojom::FrameRenderDataUpdate actual_render_data_;
     mojom::FrameIntersectionUpdatePtr expected_frame_intersection_update_;
     mojom::FrameIntersectionUpdatePtr actual_frame_intersection_update_;

@@ -21,6 +21,11 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace page_load_metrics {
+
+const base::Feature kLayoutShiftNormalizationEmitShiftsForKeyMetrics{
+    "LayoutShiftNormalizationEmitShiftsForKeyMetrics",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 namespace {
 const int kInitialTimerDelayMillis = 50;
 const int64_t kInputDelayAdjustmentMillis = int64_t(50);
@@ -103,6 +108,11 @@ void PageTimingMetricsSender::DidObserveLayoutShift(
     bool after_input_or_scroll) {
   DCHECK(score > 0);
   render_data_.layout_shift_delta += score;
+  if (base::FeatureList::IsEnabled(
+          kLayoutShiftNormalizationEmitShiftsForKeyMetrics)) {
+    render_data_.new_layout_shifts.push_back(
+        mojom::LayoutShift::New(base::TimeTicks::Now(), score));
+  }
   if (!after_input_or_scroll)
     render_data_.layout_shift_delta_before_input_or_scroll += score;
   EnsureSendTimer();
@@ -324,6 +334,7 @@ void PageTimingMetricsSender::SendNow() {
   metadata_->intersection_update.reset();
   last_cpu_timing_->task_time = base::TimeDelta();
   modified_resources_.clear();
+  render_data_.new_layout_shifts.clear();
   render_data_.layout_shift_delta = 0;
   render_data_.layout_shift_delta_before_input_or_scroll = 0;
   render_data_.all_layout_block_count_delta = 0;

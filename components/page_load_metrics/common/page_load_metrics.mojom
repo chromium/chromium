@@ -265,6 +265,12 @@ struct ResourceDataUpdate {
   bool completed_before_fcp;
 };
 
+// Timestamp and layout shift score of a layout shift.
+struct LayoutShift {
+  mojo_base.mojom.TimeTicks layout_shift_time;
+  double layout_shift_score;
+};
+
 // Metrics about how a RenderFrame rendered since the last UpdateTiming call.
 struct FrameRenderDataUpdate {
   // How much visible elements in the frame shifted (https://bit.ly/3fQz29y) since
@@ -286,6 +292,9 @@ struct FrameRenderDataUpdate {
 
   // How many times LayoutNG-based LayoutObject::UpdateLayout() is called.
   uint32 ng_layout_call_count_delta;
+
+  // New layout shifts with timestamps.
+  array<LayoutShift> new_layout_shifts;
 };
 
 // Metrics about the time spent in tasks (cpu time) by a frame.

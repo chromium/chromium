@@ -154,7 +154,9 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedCssProperties()
 
 void FakePageTimingSender::PageTimingValidator::VerifyExpectedRenderData()
     const {
-  EXPECT_FLOAT_EQ(expected_render_data_.layout_shift_delta,
+  EXPECT_FLOAT_EQ(expected_render_data_.is_null()
+                      ? 0.0
+                      : expected_render_data_->layout_shift_delta,
                   actual_render_data_.layout_shift_delta);
 }
 

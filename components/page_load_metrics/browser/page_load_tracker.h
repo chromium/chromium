@@ -227,6 +227,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const mojom::FrameMetadata& GetMainFrameMetadata() const override;
   const mojom::FrameMetadata& GetSubframeMetadata() const override;
   const PageRenderData& GetPageRenderData() const override;
+  const NormalizedCLSData& GetNormalizedCLSData() const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
   const blink::MobileFriendliness& GetMobileFriendliness() const override;
   const PageRenderData& GetMainFrameRenderData() const override;
@@ -386,7 +387,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                              UserInitiatedInfo user_initiated_info,
                              base::TimeTicks timestamp,
                              bool is_certainly_browser_timestamp);
-
   // If |final_navigation| is null, then this is an "unparented" abort chain,
   // and represents a sequence of provisional aborts that never ends with a
   // committed load.

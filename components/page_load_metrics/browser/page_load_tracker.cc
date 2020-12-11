@@ -911,6 +911,10 @@ const PageRenderData& PageLoadTracker::GetPageRenderData() const {
   return metrics_update_dispatcher_.page_render_data();
 }
 
+const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData() const {
+  return metrics_update_dispatcher_.normalized_cls_data();
+}
+
 const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {
   return metrics_update_dispatcher_.page_input_timing();
 }

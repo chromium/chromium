@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
@@ -184,6 +185,9 @@ class PageLoadMetricsUpdateDispatcher {
     return *(subframe_metadata_.get());
   }
   const PageRenderData& page_render_data() const { return page_render_data_; }
+  const NormalizedCLSData& normalized_cls_data() const {
+    return layout_shift_normalization_.normalized_cls_data();
+  }
   const PageRenderData& main_frame_render_data() const {
     return main_frame_render_data_;
   }
@@ -281,6 +285,8 @@ class PageLoadMetricsUpdateDispatcher {
   // observers.
   std::map<FrameTreeNodeId, mojom::FrameIntersectionUpdate>
       frame_intersection_updates_;
+
+  LayoutShiftNormalization layout_shift_normalization_;
 
   // Navigation start offsets for the most recently committed document in each
   // frame.
