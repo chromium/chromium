@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL WebSockets: new WebSocket(url, null char) assert_throws_dom: function "function() {
+    new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                  'a' + String.fromCharCode(0) + 'b')
+  }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+Harness: the test ran to completion.
+

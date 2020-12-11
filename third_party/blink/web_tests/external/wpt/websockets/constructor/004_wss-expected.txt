@@ -1,0 +1,647 @@
+This is a testharness.js-based test.
+Found 161 tests; 0 PASS, 161 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL WebSockets: new WebSocket(url, invalid protocol) assert_throws_dom: function "function() {
+    new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message', "")
+  }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 1 assert_throws_dom: char code 1 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 2 assert_throws_dom: char code 2 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 3 assert_throws_dom: char code 3 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 4 assert_throws_dom: char code 4 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 5 assert_throws_dom: char code 5 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 6 assert_throws_dom: char code 6 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 7 assert_throws_dom: char code 7 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 8 assert_throws_dom: char code 8 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 9 assert_throws_dom: char code 9 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 10 assert_throws_dom: char code 10 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 11 assert_throws_dom: char code 11 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 12 assert_throws_dom: char code 12 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 13 assert_throws_dom: char code 13 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 14 assert_throws_dom: char code 14 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 15 assert_throws_dom: char code 15 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 16 assert_throws_dom: char code 16 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 17 assert_throws_dom: char code 17 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 18 assert_throws_dom: char code 18 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 19 assert_throws_dom: char code 19 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 20 assert_throws_dom: char code 20 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 21 assert_throws_dom: char code 21 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 22 assert_throws_dom: char code 22 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 23 assert_throws_dom: char code 23 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 24 assert_throws_dom: char code 24 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 25 assert_throws_dom: char code 25 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 26 assert_throws_dom: char code 26 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 27 assert_throws_dom: char code 27 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 28 assert_throws_dom: char code 28 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 29 assert_throws_dom: char code 29 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 30 assert_throws_dom: char code 30 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 31 assert_throws_dom: char code 31 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 32 assert_throws_dom: char code 127 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 33 assert_throws_dom: char code 128 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 34 assert_throws_dom: char code 129 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 35 assert_throws_dom: char code 130 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 36 assert_throws_dom: char code 131 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 37 assert_throws_dom: char code 132 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 38 assert_throws_dom: char code 133 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 39 assert_throws_dom: char code 134 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 40 assert_throws_dom: char code 135 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 41 assert_throws_dom: char code 136 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 42 assert_throws_dom: char code 137 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 43 assert_throws_dom: char code 138 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 44 assert_throws_dom: char code 139 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 45 assert_throws_dom: char code 140 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 46 assert_throws_dom: char code 141 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 47 assert_throws_dom: char code 142 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 48 assert_throws_dom: char code 143 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 49 assert_throws_dom: char code 144 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 50 assert_throws_dom: char code 145 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 51 assert_throws_dom: char code 146 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 52 assert_throws_dom: char code 147 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 53 assert_throws_dom: char code 148 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 54 assert_throws_dom: char code 149 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 55 assert_throws_dom: char code 150 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 56 assert_throws_dom: char code 151 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 57 assert_throws_dom: char code 152 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 58 assert_throws_dom: char code 153 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 59 assert_throws_dom: char code 154 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 60 assert_throws_dom: char code 155 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 61 assert_throws_dom: char code 156 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 62 assert_throws_dom: char code 157 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 63 assert_throws_dom: char code 158 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 64 assert_throws_dom: char code 159 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 65 assert_throws_dom: char code 160 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 66 assert_throws_dom: char code 161 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 67 assert_throws_dom: char code 162 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 68 assert_throws_dom: char code 163 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 69 assert_throws_dom: char code 164 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 70 assert_throws_dom: char code 165 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 71 assert_throws_dom: char code 166 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 72 assert_throws_dom: char code 167 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 73 assert_throws_dom: char code 168 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 74 assert_throws_dom: char code 169 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 75 assert_throws_dom: char code 170 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 76 assert_throws_dom: char code 171 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 77 assert_throws_dom: char code 172 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 78 assert_throws_dom: char code 173 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 79 assert_throws_dom: char code 174 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 80 assert_throws_dom: char code 175 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 81 assert_throws_dom: char code 176 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 82 assert_throws_dom: char code 177 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 83 assert_throws_dom: char code 178 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 84 assert_throws_dom: char code 179 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 85 assert_throws_dom: char code 180 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 86 assert_throws_dom: char code 181 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 87 assert_throws_dom: char code 182 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 88 assert_throws_dom: char code 183 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 89 assert_throws_dom: char code 184 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 90 assert_throws_dom: char code 185 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 91 assert_throws_dom: char code 186 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 92 assert_throws_dom: char code 187 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 93 assert_throws_dom: char code 188 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 94 assert_throws_dom: char code 189 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 95 assert_throws_dom: char code 190 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 96 assert_throws_dom: char code 191 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 97 assert_throws_dom: char code 192 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 98 assert_throws_dom: char code 193 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 99 assert_throws_dom: char code 194 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 100 assert_throws_dom: char code 195 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 101 assert_throws_dom: char code 196 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 102 assert_throws_dom: char code 197 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 103 assert_throws_dom: char code 198 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 104 assert_throws_dom: char code 199 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 105 assert_throws_dom: char code 200 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 106 assert_throws_dom: char code 201 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 107 assert_throws_dom: char code 202 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 108 assert_throws_dom: char code 203 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 109 assert_throws_dom: char code 204 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 110 assert_throws_dom: char code 205 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 111 assert_throws_dom: char code 206 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 112 assert_throws_dom: char code 207 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 113 assert_throws_dom: char code 208 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 114 assert_throws_dom: char code 209 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 115 assert_throws_dom: char code 210 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 116 assert_throws_dom: char code 211 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 117 assert_throws_dom: char code 212 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 118 assert_throws_dom: char code 213 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 119 assert_throws_dom: char code 214 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 120 assert_throws_dom: char code 215 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 121 assert_throws_dom: char code 216 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 122 assert_throws_dom: char code 217 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 123 assert_throws_dom: char code 218 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 124 assert_throws_dom: char code 219 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 125 assert_throws_dom: char code 220 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 126 assert_throws_dom: char code 221 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 127 assert_throws_dom: char code 222 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 128 assert_throws_dom: char code 223 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 129 assert_throws_dom: char code 224 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 130 assert_throws_dom: char code 225 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 131 assert_throws_dom: char code 226 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 132 assert_throws_dom: char code 227 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 133 assert_throws_dom: char code 228 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 134 assert_throws_dom: char code 229 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 135 assert_throws_dom: char code 230 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 136 assert_throws_dom: char code 231 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 137 assert_throws_dom: char code 232 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 138 assert_throws_dom: char code 233 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 139 assert_throws_dom: char code 234 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 140 assert_throws_dom: char code 235 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 141 assert_throws_dom: char code 236 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 142 assert_throws_dom: char code 237 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 143 assert_throws_dom: char code 238 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 144 assert_throws_dom: char code 239 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 145 assert_throws_dom: char code 240 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 146 assert_throws_dom: char code 241 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 147 assert_throws_dom: char code 242 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 148 assert_throws_dom: char code 243 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 149 assert_throws_dom: char code 244 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 150 assert_throws_dom: char code 245 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 151 assert_throws_dom: char code 246 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 152 assert_throws_dom: char code 247 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 153 assert_throws_dom: char code 248 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 154 assert_throws_dom: char code 249 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 155 assert_throws_dom: char code 250 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 156 assert_throws_dom: char code 251 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 157 assert_throws_dom: char code 252 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 158 assert_throws_dom: char code 253 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 159 assert_throws_dom: char code 254 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+FAIL WebSockets: new WebSocket(url, invalid protocol) 160 assert_throws_dom: char code 255 function "function() {
+      new WebSocket(SCHEME_DOMAIN_PORT + '/empty-message',
+                    "a"+String.fromCharCode(i)+"b")
+    }" threw object "ReferenceError: SCHEME_DOMAIN_PORT is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+Harness: the test ran to completion.
+

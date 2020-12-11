@@ -71,8 +71,9 @@ AHEM COPY: fonts/Ahem.ttf
 # None of these are actually Ahem
 AHEM COPY: fonts/ahem-extra/AHEM_*.TTF
 
-# https://github.com/web-platform-tests/wpt/issues/7437
+# https://github.com/web-platform-tests/wpt/issues/8615
 AHEM COPY: css/vendor-imports/mozilla/mozilla-central-reftests/*/Ahem.ttf
+CSS-COLLIDING-SUPPORT-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/*/ahem.css
 
 ## Test exclusions ##
 
@@ -426,7 +427,6 @@ TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/p
 TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-8-ref.html
 TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-9.html
 TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/css21/pagination/moz-css21-float-page-break-inside-avoid-9-ref.html
-TRAILING WHITESPACE: css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-mbp-horiz-001-rtl-reverse.xhtml
 
 SET TIMEOUT: css/compositing/mix-blend-mode/mix-blend-mode-parent-with-3D-transform-and-transition.html
 SET TIMEOUT: css/compositing/mix-blend-mode/mix-blend-mode-sibling-with-3D-transform-and-transition.html
@@ -498,7 +498,6 @@ CSS-COLLIDING-SUPPORT-NAME: css/css-page/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-transitions/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/backgrounds/support/pattern-rgr-grg-rgr.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-flexbox/support/solidblue.png
-CSS-COLLIDING-SUPPORT-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/support/solidblue.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-writing-modes/support/swatch-fuchsia.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/support/swatch-fuchsia.png
 
@@ -623,14 +622,22 @@ CSS-COLLIDING-REF-NAME: css/css-grid/subgrid/baseline-001-ref.html
 CSS-COLLIDING-REF-NAME: css/css-backgrounds/simple-bg-color-ref.html
 CSS-COLLIDING-REF-NAME: css/css-backgrounds/hidpi/simple-bg-color-ref.html
 
-CSS-COLLIDING-TEST-NAME: css/css-contain/inheritance.html
 CSS-COLLIDING-TEST-NAME: css/css-contain/content-visibility/inheritance.html
-CSS-COLLIDING-TEST-NAME: css/css-sizing/contain-intrinsic-size/parsing/contain-intrinsic-size-invalid.html
-CSS-COLLIDING-TEST-NAME: css/css-sizing/aspect-ratio/parsing/contain-intrinsic-size-invalid.html
-CSS-COLLIDING-TEST-NAME: css/css-sizing/contain-intrinsic-size/parsing/contain-intrinsic-size-computed.html
+CSS-COLLIDING-TEST-NAME: css/css-contain/inheritance.html
+CSS-COLLIDING-TEST-NAME: css/css-grid/grid-items/replaced-element-001.html
+CSS-COLLIDING-TEST-NAME: css/css-grid/grid-items/replaced-element-002.html
+CSS-COLLIDING-TEST-NAME: css/css-grid/grid-items/replaced-element-007.html
+CSS-COLLIDING-TEST-NAME: css/css-grid/grid-items/replaced-element-010.html
 CSS-COLLIDING-TEST-NAME: css/css-sizing/aspect-ratio/parsing/contain-intrinsic-size-computed.html
-CSS-COLLIDING-TEST-NAME: css/css-sizing/contain-intrinsic-size/parsing/contain-intrinsic-size-valid.html
+CSS-COLLIDING-TEST-NAME: css/css-sizing/aspect-ratio/parsing/contain-intrinsic-size-invalid.html
 CSS-COLLIDING-TEST-NAME: css/css-sizing/aspect-ratio/parsing/contain-intrinsic-size-valid.html
+CSS-COLLIDING-TEST-NAME: css/css-sizing/aspect-ratio/replaced-element-001.html
+CSS-COLLIDING-TEST-NAME: css/css-sizing/aspect-ratio/replaced-element-002.html
+CSS-COLLIDING-TEST-NAME: css/css-sizing/aspect-ratio/replaced-element-007.html
+CSS-COLLIDING-TEST-NAME: css/css-sizing/aspect-ratio/replaced-element-010.html
+CSS-COLLIDING-TEST-NAME: css/css-sizing/contain-intrinsic-size/parsing/contain-intrinsic-size-computed.html
+CSS-COLLIDING-TEST-NAME: css/css-sizing/contain-intrinsic-size/parsing/contain-intrinsic-size-invalid.html
+CSS-COLLIDING-TEST-NAME: css/css-sizing/contain-intrinsic-size/parsing/contain-intrinsic-size-valid.html
 
 # CSS tests that used to be at the top level and weren't subject to lints
 MISSING-LINK: css/css-fonts/matching/fixed-stretch-style-over-weight.html

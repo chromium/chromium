@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Application data is 125 byte which means any 'Extended payload length' field isn't used at all. SCHEME_DOMAIN_PORT is not defined
+FAIL Application data is 126 byte which starts to use the 16 bit 'Extended payload length' field. SCHEME_DOMAIN_PORT is not defined
+FAIL Application data is 0xFFFF byte which means the upper bound of the 16 bit 'Extended payload length' field. SCHEME_DOMAIN_PORT is not defined
+FAIL Application data is (0xFFFF + 1) byte which starts to use the 64 bit 'Extended payload length' field SCHEME_DOMAIN_PORT is not defined
+Harness: the test ran to completion.
+

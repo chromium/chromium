@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Setting event handlers to null onclose SCHEME_DOMAIN_PORT is not defined
+FAIL Setting event handlers to null onopen SCHEME_DOMAIN_PORT is not defined
+FAIL Setting event handlers to null onerror SCHEME_DOMAIN_PORT is not defined
+FAIL Setting event handlers to null onmessage SCHEME_DOMAIN_PORT is not defined
+Harness: the test ran to completion.
+

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: data after closing handshake SCHEME_DOMAIN_PORT is not defined
+Harness: the test ran to completion.
+

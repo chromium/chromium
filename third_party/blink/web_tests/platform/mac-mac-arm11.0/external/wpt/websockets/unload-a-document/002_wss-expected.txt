@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: navigating top-level browsing context with closed websocket assert_unreached: document was discarded Reached unreachable code
+Harness: the test ran to completion.
+

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: delete readyState assert_equals: delete ws.readyState expected 2 but got 3
+Harness: the test ran to completion.
+

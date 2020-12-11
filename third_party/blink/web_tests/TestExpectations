@@ -2510,6 +2510,14 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-paint-api/dynamic-import.html [ Failure ]
+crbug.com/626703 [ Win10 ] external/wpt/css/css-grid/grid-items/grid-auto-margin-and-replaced-item-001.html [ Failure ]
+crbug.com/626703 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/dynamic-import.html [ Failure ]
+crbug.com/626703 external/wpt/websockets/cookies/004.html [ Timeout ]
+crbug.com/626703 external/wpt/websockets/cookies/004.html?wss [ Timeout ]
+crbug.com/626703 external/wpt/infrastructure/server/http2-websocket.sub.h2.any.html [ Timeout ]
+crbug.com/626703 [ Win10 ] external/wpt/webcodecs/video-encoder.any.html [ Timeout ]
+crbug.com/626703 external/wpt/websockets/cookies/005.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection-no-sink.https.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection.https.html [ Timeout ]
 crbug.com/626703 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Timeout ]

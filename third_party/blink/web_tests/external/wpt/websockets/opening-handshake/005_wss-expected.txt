@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: response header and close frame in same packet SCHEME_DOMAIN_PORT is not defined
+Harness: the test ran to completion.
+

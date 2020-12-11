@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: close() in close event handler assert_equals: expected 2 but got 3
+Harness: the test ran to completion.
+
