@@ -289,7 +289,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   RootFrameViewport* GetRootFrameViewport() const;
 
-  LocalFrame* MainFrame() const;
+  LocalFrame* LocalMainFrame() const;
 
   Page& GetPage() const {
     DCHECK(page_);
