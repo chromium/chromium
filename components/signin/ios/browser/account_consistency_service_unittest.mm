@@ -30,8 +30,8 @@
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "ios/web/public/navigation/web_state_policy_decider.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/cookies/cookie_util.h"
@@ -95,10 +95,10 @@ class MockAccountReconcilor : public AccountReconcilor {
   MOCK_METHOD1(OnReceivedManageAccountsResponse, void(signin::GAIAServiceType));
 };
 
-// TestWebState that allows control over its policy decider.
-class TestWebState : public web::TestWebState {
+// FakeWebState that allows control over its policy decider.
+class FakeWebState : public web::FakeWebState {
  public:
-  TestWebState() : web::TestWebState(), decider_(nullptr) {}
+  FakeWebState() : web::FakeWebState(), decider_(nullptr) {}
   void AddPolicyDecider(web::WebStatePolicyDecider* decider) override {
     EXPECT_FALSE(decider_);
     decider_ = decider;
@@ -289,9 +289,9 @@ class AccountConsistencyServiceTest : public PlatformTest {
   // Creates test threads, necessary for ActiveStateManager that needs a UI
   // thread.
   web::WebTaskEnvironment task_environment_;
-  web::TestBrowserState browser_state_;
+  web::FakeBrowserState browser_state_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  TestWebState web_state_;
+  FakeWebState web_state_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
