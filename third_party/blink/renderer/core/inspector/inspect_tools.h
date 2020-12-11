@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECT_TOOLS_H_
 
 #include <vector>
+
 #include <v8-inspector.h>
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_agent.h"
+#include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
 
 namespace blink {
 
@@ -42,7 +44,10 @@ class SearchingForNodeTool : public InspectTool {
 
   Member<InspectorDOMAgent> dom_agent_;
   bool ua_shadow_;
-  bool is_locked_ancestor_ = false;
+
+  NodeContentVisibilityState content_visibility_state_ =
+      NodeContentVisibilityState::kNone;
+
   Member<Node> hovered_node_;
   Member<Node> event_target_node_;
   std::unique_ptr<InspectorHighlightConfig> highlight_config_;
@@ -97,7 +102,8 @@ class NodeHighlightTool : public InspectTool {
   void Trace(Visitor* visitor) const override;
   String GetOverlayName() override;
 
-  bool is_locked_ancestor_ = false;
+  NodeContentVisibilityState content_visibility_state_ =
+      NodeContentVisibilityState::kNone;
   Member<Node> node_;
   String selector_list_;
   std::unique_ptr<InspectorHighlightConfig> highlight_config_;

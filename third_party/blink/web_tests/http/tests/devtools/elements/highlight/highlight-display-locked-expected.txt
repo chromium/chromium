@@ -93,6 +93,7 @@ container{
     "accessibleName": "",
     "accessibleRole": "generic",
     "layoutObjectName": "LayoutNGBlockFlow",
+    "isLocked": true,
     "showAccessibilityInfo": true
   }
 }
@@ -189,7 +190,7 @@ child{
     "accessibleName": "",
     "accessibleRole": "generic",
     "layoutObjectName": "LayoutNGBlockFlow",
-    "isLockedAncestor": "true",
+    "isLockedAncestor": true,
     "showAccessibilityInfo": true
   }
 }

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
+#include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -98,6 +99,38 @@ Node* HoveredNodeForEvent(LocalFrame* frame,
       ignore_pointer_events_none);
 }
 
+bool IsSelfLocked(Node* node) {
+  auto* element = DynamicTo<Element>(node);
+  if (!element)
+    return false;
+
+  auto* context = element->GetDisplayLockContext();
+  if (!context)
+    return false;
+
+  return context->IsLocked();
+}
+
+NodeContentVisibilityState DetermineSelfContentVisibilityState(Node* node) {
+  return IsSelfLocked(node) ? NodeContentVisibilityState::kIsLocked
+                            : NodeContentVisibilityState::kNone;
+}
+
+std::pair<Node*, NodeContentVisibilityState> DetermineContentVisibilityState(
+    Node* node) {
+  DCHECK(node);
+  std::pair<Node*, NodeContentVisibilityState> result;
+  if (auto* locked_ancestor =
+          DisplayLockUtilities::HighestLockedExclusiveAncestor(*node)) {
+    result.first = locked_ancestor;
+    result.second = NodeContentVisibilityState::kIsLockedAncestor;
+  } else {
+    result.first = node;
+    result.second = DetermineSelfContentVisibilityState(node);
+  }
+  return result;
+}
+
 }  // namespace
 
 // SearchingForNodeTool --------------------------------------------------------
@@ -141,7 +174,8 @@ void SearchingForNodeTool::Draw(float scale) {
                              node->GetDocument().GetFrame();
   overlay_->EnsureAXContext(node);
   InspectorHighlight highlight(node, *highlight_config_, contrast_info_,
-                               append_element_info, false, is_locked_ancestor_);
+                               append_element_info, false,
+                               content_visibility_state_);
   if (event_target_node_) {
     highlight.AppendEventTargetQuads(event_target_node_.Get(),
                                      *highlight_config_);
@@ -189,15 +223,8 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
   if (!node)
     return true;
 
-  // If |node| is in a display locked subtree, highlight the highest locked
-  // element instead.
-  if (Node* locked_ancestor =
-          DisplayLockUtilities::HighestLockedExclusiveAncestor(*node)) {
-    node = locked_ancestor;
-    is_locked_ancestor_ = true;
-  } else {
-    is_locked_ancestor_ = false;
-  }
+  std::tie(node, content_visibility_state_) =
+      DetermineContentVisibilityState(node);
 
   if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node)) {
     if (!IsA<LocalFrame>(frame_owner->ContentFrame())) {
@@ -309,13 +336,8 @@ NodeHighlightTool::NodeHighlightTool(
     : InspectTool(overlay, frontend),
       selector_list_(selector_list),
       highlight_config_(std::move(highlight_config)) {
-  if (Node* locked_ancestor =
-          DisplayLockUtilities::HighestLockedExclusiveAncestor(*node)) {
-    is_locked_ancestor_ = true;
-    node_ = locked_ancestor;
-  } else {
-    node_ = node;
-  }
+  std::tie(node_, content_visibility_state_) =
+      DetermineContentVisibilityState(node);
   contrast_info_ = FetchContrast(node_);
 }
 
@@ -375,10 +397,12 @@ void NodeHighlightTool::DrawMatchingSelector() {
     // Skip elements in locked subtrees.
     if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*element))
       continue;
+    NodeContentVisibilityState content_visibility_state =
+        DetermineSelfContentVisibilityState(element);
     InspectorHighlight highlight(element, *highlight_config_, contrast_info_,
                                  false /* append_element_info */,
                                  false /* append_distance_info */,
-                                 false /* is_locked_ancestor */);
+                                 content_visibility_state);
     overlay_->EvaluateInOverlay("drawHighlight", highlight.AsProtocolValue());
   }
 }
@@ -395,7 +419,7 @@ NodeHighlightTool::GetNodeInspectorHighlightAsJson(
   overlay_->EnsureAXContext(node_.Get());
   InspectorHighlight highlight(node_.Get(), *highlight_config_, contrast_info_,
                                append_element_info, append_distance_info,
-                               is_locked_ancestor_);
+                               content_visibility_state_);
   return highlight.AsProtocolValue();
 }
 
@@ -479,12 +503,7 @@ SourceOrderTool::SourceOrderTool(
     std::unique_ptr<InspectorSourceOrderConfig> source_order_config)
     : InspectTool(overlay, frontend),
       source_order_config_(std::move(source_order_config)) {
-  if (Node* locked_ancestor =
-          DisplayLockUtilities::HighestLockedExclusiveAncestor(*node)) {
-    node_ = locked_ancestor;
-  } else {
-    node_ = node;
-  }
+  node_ = DetermineContentVisibilityState(node).first;
 }
 
 String SourceOrderTool::GetOverlayName() {
@@ -581,12 +600,7 @@ bool NearbyDistanceTool::HandleMouseMove(const WebMouseEvent& event) {
       return false;
     }
   }
-
-  // If |node| is in a display locked subtree, highlight the highest locked
-  // element instead.
-  if (Node* locked_ancestor =
-          DisplayLockUtilities::HighestLockedExclusiveAncestor(*node))
-    node = locked_ancestor;
+  node = DetermineContentVisibilityState(node).first;
 
   // Store values for the highlight.
   hovered_node_ = node;
@@ -602,10 +616,11 @@ void NearbyDistanceTool::Draw(float scale) {
   if (!node)
     return;
   overlay_->EnsureAXContext(node);
+  auto content_visibility_state = DetermineSelfContentVisibilityState(node);
   InspectorHighlight highlight(
       node, InspectorHighlight::DefaultConfig(),
       InspectorHighlightContrastInfo(), false /* append_element_info */,
-      true /* append_distance_info */, false /* is_locked_ancestor */);
+      true /* append_distance_info */, content_visibility_state);
   overlay_->EvaluateInOverlay("drawDistances", highlight.AsProtocolValue());
 }
 

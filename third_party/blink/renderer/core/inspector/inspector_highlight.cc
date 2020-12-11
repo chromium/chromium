@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/inspector/dom_traversal_utils.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
+#include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Overlay.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
@@ -1465,7 +1466,7 @@ InspectorHighlight::InspectorHighlight(
     const InspectorHighlightContrastInfo& node_contrast,
     bool append_element_info,
     bool append_distance_info,
-    bool is_locked_ancestor)
+    NodeContentVisibilityState content_visibility_state)
     : InspectorHighlightBase(node),
       show_rulers_(highlight_config.show_rulers),
       show_extension_lines_(highlight_config.show_extension_lines),
@@ -1484,12 +1485,22 @@ InspectorHighlight::InspectorHighlight(
                     highlight_config.contrast_algorithm);
   }
 
-  if (element_info_ && is_locked_ancestor)
-    element_info_->setString("isLockedAncestor", "true");
   if (element_info_) {
+    switch (content_visibility_state) {
+      case NodeContentVisibilityState::kNone:
+        break;
+      case NodeContentVisibilityState::kIsLocked:
+        element_info_->setBoolean("isLocked", true);
+        break;
+      case NodeContentVisibilityState::kIsLockedAncestor:
+        element_info_->setBoolean("isLockedAncestor", true);
+        break;
+    }
+
     element_info_->setBoolean("showAccessibilityInfo",
                               show_accessibility_info_);
   }
+
   if (append_distance_info)
     AppendDistanceInfo(node);
 }

@@ -93,6 +93,7 @@ container{
     "accessibleName": "",
     "accessibleRole": "",
     "layoutObjectName": "LayoutIFrame",
+    "isLocked": true,
     "showAccessibilityInfo": true
   }
 }
@@ -189,7 +190,7 @@ child{
     "accessibleName": "",
     "accessibleRole": "",
     "layoutObjectName": "LayoutIFrame",
-    "isLockedAncestor": "true",
+    "isLockedAncestor": true,
     "showAccessibilityInfo": true
   }
 }

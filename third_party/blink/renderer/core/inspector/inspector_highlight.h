@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
 #include "third_party/blink/renderer/core/inspector/protocol/DOM.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -185,7 +186,7 @@ class CORE_EXPORT InspectorHighlight : public InspectorHighlightBase {
                      const InspectorHighlightContrastInfo&,
                      bool append_element_info,
                      bool append_distance_info,
-                     bool is_locked_ancestor);
+                     NodeContentVisibilityState content_visibility_state);
   explicit InspectorHighlight(float scale);
   ~InspectorHighlight();
 

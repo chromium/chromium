@@ -99,6 +99,7 @@ blink_core_sources_inspector = [
   "main_thread_debugger.h",
   "network_resources_data.cc",
   "network_resources_data.h",
+  "node_content_visibility_state.h",
   "request_debug_header_scope.cc",
   "request_debug_header_scope.h",
   "resolve_node.cc",
