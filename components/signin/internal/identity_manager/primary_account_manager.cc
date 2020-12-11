@@ -270,7 +270,7 @@ void PrimaryAccountManager::RemoveObserver(Observer* observer) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void PrimaryAccountManager::SignOutAndRemoveAllAccounts(
+void PrimaryAccountManager::ClearPrimaryAccount(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric) {
   StartSignOut(signout_source_metric, signout_delete_metric,
@@ -279,7 +279,7 @@ void PrimaryAccountManager::SignOutAndRemoveAllAccounts(
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-void PrimaryAccountManager::SignOutAndKeepAllAccounts(
+void PrimaryAccountManager::RevokeSyncConsent(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric) {
   StartSignOut(signout_source_metric, signout_delete_metric,

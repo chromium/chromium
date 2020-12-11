@@ -56,12 +56,14 @@ void PrimaryAccountPolicyManagerImpl::InitializePolicy(
     //
     // On desktop, when PrimaryAccountManager is initializing, the profile was
     // not yet marked with sign out allowed. Therefore sign out is not allowed
-    // and all calls to SignOut methods are no-op.
+    // and all calls to RevokeSyncConsent() and ClearPrimaryAccount() methods
+    // are no-op.
     //
-    // TODO(msarda): SignOut methods do not guarantee that sign out can actually
-    // be done (this depends on whether sign out is allowed). Add a check here
-    // on desktop to make it clear that SignOut does not do anything.
-    primary_account_manager->SignOutAndKeepAllAccounts(
+    // TODO(msarda): RevokeSyncConsent() method do not guarantee that the sync
+    // consent can really be revoked (this depends on whether sign out is
+    // allowed). Add a check here on desktop to make it clear that
+    // RevokeSyncConsent() does not do anything.
+    primary_account_manager->RevokeSyncConsent(
         signin_metrics::SIGNIN_PREF_CHANGED_DURING_SIGNIN,
         signin_metrics::SignoutDelete::IGNORE_METRIC);
   }
@@ -74,7 +76,7 @@ void PrimaryAccountPolicyManagerImpl::OnGoogleServicesUsernamePatternChanged(
           primary_account_manager->GetAuthenticatedAccountInfo().email)) {
     // Signed in user is invalid according to the current policy so sign
     // the user out.
-    primary_account_manager->SignOutAndRemoveAllAccounts(
+    primary_account_manager->ClearPrimaryAccount(
         signin_metrics::GOOGLE_SERVICE_NAME_PATTERN_CHANGED,
         signin_metrics::SignoutDelete::IGNORE_METRIC);
   }
@@ -89,7 +91,7 @@ void PrimaryAccountPolicyManagerImpl::OnSigninAllowedPrefChanged(
   if (!IsSigninAllowed() &&
       primary_account_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     VLOG(0) << "IsSigninAllowed() set to false, signing out the user";
-    primary_account_manager->SignOutAndRemoveAllAccounts(
+    primary_account_manager->ClearPrimaryAccount(
         signin_metrics::SIGNOUT_PREF_CHANGED,
         signin_metrics::SignoutDelete::IGNORE_METRIC);
   }

@@ -118,18 +118,16 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // Signs a user out, removing the preference, erasing all keys
   // associated with the authenticated user, and canceling all auth in progress.
   // It removes all accounts from Chrome by revoking all refresh tokens.
-  void SignOutAndRemoveAllAccounts(
-      signin_metrics::ProfileSignout signout_source_metric,
-      signin_metrics::SignoutDelete signout_delete_metric);
+  void ClearPrimaryAccount(signin_metrics::ProfileSignout signout_source_metric,
+                           signin_metrics::SignoutDelete signout_delete_metric);
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Signs a user out, removing the preference, erasing all keys
   // associated with the authenticated user, and canceling all auth in progress.
   // Does not remove the accounts from the token service.
-  void SignOutAndKeepAllAccounts(
-      signin_metrics::ProfileSignout signout_source_metric,
-      signin_metrics::SignoutDelete signout_delete_metric);
+  void RevokeSyncConsent(signin_metrics::ProfileSignout signout_source_metric,
+                         signin_metrics::SignoutDelete signout_delete_metric);
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);

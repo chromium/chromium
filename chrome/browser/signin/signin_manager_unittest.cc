@@ -30,7 +30,11 @@ class IdentityManagerObserver : public IdentityManager::Observer {
 
 class SigninManagerTest : public testing::Test {
  public:
-  SigninManagerTest() = default;
+  SigninManagerTest()
+      : identity_test_env_(/*test_url_loader_factory=*/nullptr,
+                           /*pref_service=*/nullptr,
+                           signin::AccountConsistencyMethod::kDice,
+                           /*test_signin_client=*/nullptr) {}
 
   void SetUp() override {
     testing::Test::SetUp();

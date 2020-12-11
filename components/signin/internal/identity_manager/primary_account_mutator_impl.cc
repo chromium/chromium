@@ -119,8 +119,7 @@ void PrimaryAccountMutatorImpl::RevokeSyncConsent(
     return;
   }
 #endif
-  primary_account_manager_->SignOutAndKeepAllAccounts(source_metric,
-                                                      delete_metric);
+  primary_account_manager_->RevokeSyncConsent(source_metric, delete_metric);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -130,8 +129,7 @@ bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
   if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kNotRequired))
     return false;
 
-  primary_account_manager_->SignOutAndRemoveAllAccounts(source_metric,
-                                                        delete_metric);
+  primary_account_manager_->ClearPrimaryAccount(source_metric, delete_metric);
   return true;
 }
 #endif

@@ -18,6 +18,7 @@
 #include "components/signin/public/base/list_accounts_test_utils.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -194,10 +195,11 @@ void RevokeSyncConsent(IdentityManager* identity_manager) {
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync))
     return;
 
+  DCHECK(identity_manager->GetPrimaryAccountMutator());
   base::RunLoop run_loop;
   TestIdentityManagerObserver signout_observer(identity_manager);
   signout_observer.SetOnPrimaryAccountClearedCallback(run_loop.QuitClosure());
-  identity_manager->GetPrimaryAccountManager()->SignOutAndKeepAllAccounts(
+  identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
       signin_metrics::SIGNOUT_TEST,
       signin_metrics::SignoutDelete::IGNORE_METRIC);
   run_loop.Run();
@@ -213,12 +215,13 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired))
     return;
 
+  DCHECK(identity_manager->GetPrimaryAccountMutator());
   bool wait_for_primary_acount_cleared_notification =
       identity_manager->HasPrimaryAccount(ConsentLevel::kSync);
   base::RunLoop run_loop;
   TestIdentityManagerObserver signout_observer(identity_manager);
   signout_observer.SetOnPrimaryAccountClearedCallback(run_loop.QuitClosure());
-  identity_manager->GetPrimaryAccountManager()->SignOutAndRemoveAllAccounts(
+  identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
       signin_metrics::SignoutDelete::IGNORE_METRIC);
 

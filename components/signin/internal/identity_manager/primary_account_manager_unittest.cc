@@ -152,9 +152,8 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   CoreAccountId main_account_id =
       AddToAccountTracker("account_id", "user@gmail.com");
   manager_->SignIn("user@gmail.com");
-  manager_->SignOutAndRemoveAllAccounts(
-      signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+                                signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->GetAuthenticatedAccountInfo().email.empty());
   EXPECT_TRUE(manager_->GetAuthenticatedAccountId().empty());
@@ -180,9 +179,8 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_EQ(main_account_id, manager_->GetAuthenticatedAccountId());
 
-  manager_->SignOutAndRemoveAllAccounts(
-      signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+                                signin_metrics::SignoutDelete::IGNORE_METRIC);
 
   // Tokens are revoked.
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
@@ -198,14 +196,12 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   AddToAccountTracker("gaia_id", "user@gmail.com");
   manager_->SignIn("user@gmail.com");
   signin_client()->set_is_signout_allowed(false);
-  manager_->SignOutAndRemoveAllAccounts(
-      signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+                                signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(true);
-  manager_->SignOutAndRemoveAllAccounts(
-      signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+                                signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 }
 
@@ -221,9 +217,8 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(false);
-  manager_->SignOutAndRemoveAllAccounts(
-      signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
+                                signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
 }
 
@@ -456,15 +451,14 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   EXPECT_EQ(CoreAccountInfo(), manager_->GetAuthenticatedAccountInfo());
 }
 
-TEST_F(PrimaryAccountManagerTest, SignOutAndKeepAllAccounts) {
+TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   manager_->SignIn("user@gmail.com");
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
-  manager_->SignOutAndKeepAllAccounts(
-      signin_metrics::ProfileSignout::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::SIGNOUT_TEST,
+                              signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
   EXPECT_EQ(account_id,
@@ -472,15 +466,14 @@ TEST_F(PrimaryAccountManagerTest, SignOutAndKeepAllAccounts) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PrimaryAccountManagerTest, SignOutAndRemoveAllAccounts) {
+TEST_F(PrimaryAccountManagerTest, ClearPrimaryAccount) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   manager_->SignIn("user@gmail.com");
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
-  manager_->SignOutAndRemoveAllAccounts(
-      signin_metrics::ProfileSignout::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::SIGNOUT_TEST,
+                                signin_metrics::SignoutDelete::IGNORE_METRIC);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kNotRequired));
 }

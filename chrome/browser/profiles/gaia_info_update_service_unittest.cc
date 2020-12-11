@@ -58,17 +58,22 @@ AccountInfo GetValidAccountInfo(std::string email,
   return account_info;
 }
 
-#if !defined(ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kChromiumOrgDomain[] = "chromium.org";
-#endif  // !defined(ANDROID)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-class GAIAInfoUpdateServiceTest : public testing::Test {
+class GAIAInfoUpdateServiceTestBase : public testing::Test {
  protected:
-  GAIAInfoUpdateServiceTest()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-  ~GAIAInfoUpdateServiceTest() override = default;
+  explicit GAIAInfoUpdateServiceTestBase(
+      signin::AccountConsistencyMethod account_consistency)
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()),
+        identity_test_env_(/*test_url_loader_factory=*/nullptr,
+                           /*pref_service=*/nullptr,
+                           account_consistency,
+                           /*test_signin_client=*/nullptr) {}
+  ~GAIAInfoUpdateServiceTestBase() override = default;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -123,19 +128,28 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   std::unique_ptr<GAIAInfoUpdateService> service_;
 
  private:
+  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceTestBase);
+};
+
+class GAIAInfoUpdateServiceTest : public GAIAInfoUpdateServiceTestBase {
+ protected:
+  GAIAInfoUpdateServiceTest()
+      : GAIAInfoUpdateServiceTestBase(
+            signin::AccountConsistencyMethod::kDisabled) {}
+  ~GAIAInfoUpdateServiceTest() override = default;
+
+ private:
   DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceTest);
 };
+
 }  // namespace
 
-TEST_F(GAIAInfoUpdateServiceTest, ShouldUseGAIAProfileInfo) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This feature should never be enabled on ChromeOS.
+// This feature should never be enabled on ChromeOS.
+TEST_F(GAIAInfoUpdateServiceTest, ShouldUseGAIAProfileInfo) {
   EXPECT_FALSE(GAIAInfoUpdateService::ShouldUseGAIAProfileInfo(profile()));
-#endif
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   AccountInfo info =
       identity_test_env()->MakeAccountAvailable("pat@example.com");
@@ -175,8 +189,21 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
                   .empty());
 }
 
-#if !defined(ANDROID)
-TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOffKeepAllAccounts) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+namespace {
+class GAIAInfoUpdateServiceDiceTest : public GAIAInfoUpdateServiceTestBase {
+ protected:
+  GAIAInfoUpdateServiceDiceTest()
+      : GAIAInfoUpdateServiceTestBase(signin::AccountConsistencyMethod::kDice) {
+  }
+  ~GAIAInfoUpdateServiceDiceTest() override = default;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateServiceDiceTest);
+};
+}  // namespace
+
+TEST_F(GAIAInfoUpdateServiceDiceTest, RevokeSyncConsent) {
   AccountInfo info =
       identity_test_env()->MakeAccountAvailable("pat@example.com");
   base::RunLoop().RunUntilIdle();
@@ -193,7 +220,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOffKeepAllAccounts) {
   signin::SimulateAccountImageFetch(identity_test_env()->identity_manager(),
                                     info.account_id, "GAIA_IMAGE_URL_WITH_SIZE",
                                     gaia_picture);
-  // Turn off sync but stay logged in.
+  // Revoke sync consent (stay signed in with the primary account).
   identity_test_env()->RevokeSyncConsent();
   ASSERT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kNotRequired));
@@ -370,7 +397,7 @@ TEST_F(GAIAInfoUpdateServiceTest, MultiLoginAndLogOut) {
   tester.ExpectTotalCount("Profile.AllAccounts.Categories",
                           /*expected_count=*/2);
 }
-#endif  // !defined(ANDROID)
+#endif  // !BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   // Simulate a state where the profile entry has GAIA related information
@@ -397,4 +424,4 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   EXPECT_TRUE(entry->GetHostedDomain().empty());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
