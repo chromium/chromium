@@ -69,6 +69,9 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // individual test is completed.
   gpu::GpuMemoryBufferFactory* GetGpuMemoryBufferFactory() const;
 
+  // Returns whether kepler will be used in the test.
+  bool IsKeplerUsed() const;
+
  private:
   VideoEncoderTestEnvironment(std::unique_ptr<media::test::Video> video,
                               bool enable_bitstream_validator,

@@ -196,7 +196,11 @@ static_library("video_encoder_test_environment") {
     ":helpers",
     ":video_test_environment",
   ]
-  deps = [ "//media/gpu" ]
+  deps = [
+    "//base:base",
+    "//build:chromeos_buildflags",
+    "//media/gpu",
+  ]
 }
 
 if (use_vaapi || use_v4l2_codec) {

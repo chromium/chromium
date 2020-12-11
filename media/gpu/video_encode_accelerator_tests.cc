@@ -262,6 +262,21 @@ class VideoEncoderTest : public ::testing::Test {
 
   std::unique_ptr<RawDataHelper> raw_data_helper_;
 };
+
+base::Optional<std::string> SupportsDynamicFramerate() {
+  return g_env->IsKeplerUsed()
+             ? base::make_optional<std::string>(
+                   "The rate controller in the kepler firmware doesn't handle "
+                   "frame rate changes correctly.")
+             : base::nullopt;
+}
+
+base::Optional<std::string> SupportsNV12DmaBufInput() {
+  return g_env->IsKeplerUsed() ? base::make_optional<std::string>(
+                                     "Encoding with dmabuf input frames is not "
+                                     "supported in kepler.")
+                               : base::nullopt;
+}
 }  // namespace
 
 // TODO(dstaessens): Add more test scenarios:
@@ -392,6 +407,8 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
 }
 
 TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
+  if (auto skip_reason = SupportsDynamicFramerate())
+    GTEST_SKIP() << *skip_reason;
   auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
@@ -424,6 +441,8 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
 }
 
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
+  if (auto skip_reason = SupportsNV12DmaBufInput())
+    GTEST_SKIP() << *skip_reason;
   auto nv12_video = g_env->Video()->ConvertToNV12();
   ASSERT_TRUE(nv12_video);
 
@@ -447,6 +466,8 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
 // and there are two VideoEncodeAccelerator for 360p and 180p. VideoEncoder for
 // 180p is fed 360p and thus has to perform the scaling from 360p to 180p.
 TEST_F(VideoEncoderTest, DISABLED_FlushAtEndOfStream_NV12DmabufScaling) {
+  if (auto skip_reason = SupportsNV12DmaBufInput())
+    GTEST_SKIP() << *skip_reason;
   constexpr gfx::Size kMinOutputResolution(240, 180);
   const gfx::Size output_resolution =
       gfx::Size(g_env->Video()->Resolution().width() / 2,
@@ -485,6 +506,8 @@ TEST_F(VideoEncoderTest, DISABLED_FlushAtEndOfStream_NV12DmabufScaling) {
 // frames with visible_rect=0, 60, 640x360.
 TEST_F(VideoEncoderTest,
        DISABLED_FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
+  if (auto skip_reason = SupportsNV12DmaBufInput())
+    GTEST_SKIP() << *skip_reason;
   constexpr int kGrowHeight = 120;
   const gfx::Size original_resolution = g_env->Video()->Resolution();
   const gfx::Rect expanded_visible_rect(0, kGrowHeight / 2,
@@ -516,6 +539,8 @@ TEST_F(VideoEncoderTest,
 // Encode VideoFrames with cropping the rectangle (60, 0, size).
 TEST_F(VideoEncoderTest,
        DISABLED_FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
+  if (auto skip_reason = SupportsNV12DmaBufInput())
+    GTEST_SKIP() << *skip_reason;
   constexpr int kGrowWidth = 120;
   const gfx::Size original_resolution = g_env->Video()->Resolution();
   const gfx::Rect expanded_visible_rect(kGrowWidth / 2, 0,

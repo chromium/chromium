@@ -7,7 +7,10 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/strings/pattern.h"
+#include "base/system/sys_info.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
@@ -208,5 +211,23 @@ VideoEncoderTestEnvironment::GetGpuMemoryBufferFactory() const {
   return gpu_memory_buffer_factory_.get();
 }
 
+bool VideoEncoderTestEnvironment::IsKeplerUsed() const {
+#if BUILDFLAG(IS_ASH)
+  const VideoCodec codec = VideoCodecProfileToVideoCodec(Profile());
+  if (codec != VideoCodec::kCodecVP8)
+    return false;
+  const static std::string board = base::SysInfo::GetLsbReleaseBoard();
+  if (board == "unknown") {
+    LOG(WARNING) << "Failed to get chromeos board name";
+    return false;
+  }
+  const char* kKeplerBoards[] = {"buddy*", "guado*", "rikku*"};
+  for (const char* b : kKeplerBoards) {
+    if (base::MatchPattern(board, b))
+      return true;
+  }
+#endif  // BUILDFLAG(IS_ASH)
+  return false;
+}
 }  // namespace test
 }  // namespace media
