@@ -440,19 +440,15 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
     case 0:
       // Choose an appropriate size.  For an AudioContext, we need to
       // choose an appropriate size based on the callback buffer size.
-      // For OfflineAudioContext, there's no callback buffer size, so
-      // just use the minimum valid buffer size.
       if (context.HasRealtimeConstraint()) {
-        // TODO(crbug.com/854229): Due to the incompatible constructor between
-        // AudioDestinationNode and RealtimeAudioDestinationNode, casting
-        // directly from |destination()| is impossible. This is a temporary
-        // workaround until the refactoring is completed.
         RealtimeAudioDestinationHandler& destination_handler =
             static_cast<RealtimeAudioDestinationHandler&>(
                 context.destination()->GetAudioDestinationHandler());
         buffer_size =
             ChooseBufferSize(destination_handler.GetCallbackBufferSize());
       } else {
+        // For OfflineAudioContext, there's no callback buffer size, so
+        // just use the minimum valid buffer size.
         buffer_size = 256;
       }
       break;
