@@ -313,11 +313,11 @@ struct CheckedLshOp<T,
     }
 
     // Handle the legal corner-case of a full-width signed shift of zero.
-    const bool is_valid =
-        std::is_signed<T>::value && !x &&
-        as_unsigned(shift) == as_unsigned(std::numeric_limits<T>::digits);
-    // TODO(pkasting): Doesn't this need to set *result = 0?
-    return is_valid;
+    if (!std::is_signed<T>::value || x ||
+        as_unsigned(shift) != as_unsigned(std::numeric_limits<T>::digits))
+      return false;
+    *result = 0;
+    return true;
   }
 };
 
