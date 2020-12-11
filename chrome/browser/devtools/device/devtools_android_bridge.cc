@@ -308,9 +308,9 @@ void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
   if (device_count_listeners_.empty())
      return;
 
-  task_scheduler_.Run(
-      base::Bind(&DevToolsAndroidBridge::RequestDeviceCount,
-                 AsWeakPtr(), device_count_callback_.callback()));
+  task_scheduler_.Run(base::BindOnce(&DevToolsAndroidBridge::RequestDeviceCount,
+                                     AsWeakPtr(),
+                                     device_count_callback_.callback()));
 }
 
 static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(

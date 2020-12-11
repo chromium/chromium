@@ -499,10 +499,9 @@ class AndroidUsbDiscoveryTest : public InProcessBrowserTest {
     adb_bridge_ =
         DevToolsAndroidBridge::Factory::GetForProfile(browser()->profile());
     DCHECK(adb_bridge_);
-    adb_bridge_->set_task_scheduler_for_test(base::Bind(
+    adb_bridge_->set_task_scheduler_for_test(base::BindRepeating(
         &AndroidUsbDiscoveryTest::ScheduleDeviceCountRequest,
         base::Unretained(this)));
-
 
     AndroidDeviceManager::DeviceProviders providers;
     providers.push_back(
@@ -518,10 +517,10 @@ class AndroidUsbDiscoveryTest : public InProcessBrowserTest {
     adb_bridge_->set_usb_device_manager_for_test(std::move(manager));
   }
 
-  void ScheduleDeviceCountRequest(const base::Closure& request) {
+  void ScheduleDeviceCountRequest(base::OnceClosure request) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     scheduler_invoked_++;
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, request);
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(request));
   }
 
   virtual std::unique_ptr<FakeUsbDeviceManager> CreateFakeUsbManager() {
