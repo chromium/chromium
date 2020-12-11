@@ -2787,6 +2787,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_views_unittests.filter',
         ],
       },
+      'Linux Tester (Ozone X11)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_views_unittests.filter',
+        ],
+      },
     },
   },
   'viz_unittests': {
