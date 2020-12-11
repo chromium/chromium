@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/cert_db_initializer.h"
+#include "chrome/browser/lacros/cert_db_initializer_impl.h"
 
 #include "base/callback_forward.h"
 #include "base/check.h"
@@ -94,16 +94,16 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
 
 // =============================================================================
 
-CertDbInitializer::CertDbInitializer(
-    mojo::Remote<crosapi::mojom::CertDatabase>& cert_database_remote,
-    Profile* profile)
-    : cert_database_remote_(cert_database_remote), profile_(profile) {}
+CertDbInitializerImpl::CertDbInitializerImpl(Profile* profile)
+    : profile_(profile) {
+  DCHECK(chromeos::LacrosChromeServiceImpl::Get()->IsCertDbAvailable());
+}
 
-CertDbInitializer::~CertDbInitializer() {
+CertDbInitializerImpl::~CertDbInitializerImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void CertDbInitializer::Start(signin::IdentityManager* identity_manager) {
+void CertDbInitializerImpl::Start(signin::IdentityManager* identity_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(identity_manager);
   // TODO(crbug.com/1148300): This is temporary. Until ~2021
@@ -114,31 +114,35 @@ void CertDbInitializer::Start(signin::IdentityManager* identity_manager) {
   if (!identity_manager->AreRefreshTokensLoaded()) {
     identity_manager_observer_ =
         std::make_unique<IdentityManagerObserver>(identity_manager);
-    identity_manager_observer_->WaitForRefreshTokensLoaded(base::BindOnce(
-        &CertDbInitializer::OnRefreshTokensLoaded, weak_factory_.GetWeakPtr()));
+    identity_manager_observer_->WaitForRefreshTokensLoaded(
+        base::BindOnce(&CertDbInitializerImpl::OnRefreshTokensLoaded,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
   WaitForCertDbReady();
 }
 
-void CertDbInitializer::OnRefreshTokensLoaded() {
+void CertDbInitializerImpl::OnRefreshTokensLoaded() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   identity_manager_observer_.reset();
   WaitForCertDbReady();
 }
 
-void CertDbInitializer::WaitForCertDbReady() {
+void CertDbInitializerImpl::WaitForCertDbReady() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!profile_->IsMainProfile()) {
     return;
   }
 
-  cert_database_remote_->GetCertDatabaseInfo(base::BindOnce(
-      &CertDbInitializer::OnCertDbInfoReceived, weak_factory_.GetWeakPtr()));
+  chromeos::LacrosChromeServiceImpl::Get()
+      ->cert_database_remote()
+      ->GetCertDatabaseInfo(
+          base::BindOnce(&CertDbInitializerImpl::OnCertDbInfoReceived,
+                         weak_factory_.GetWeakPtr()));
 }
 
-void CertDbInitializer::OnCertDbInfoReceived(
+void CertDbInitializerImpl::OnCertDbInfoReceived(
     crosapi::mojom::GetCertDatabaseInfoResultPtr cert_db_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

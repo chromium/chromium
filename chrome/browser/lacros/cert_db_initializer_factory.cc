@@ -4,7 +4,7 @@
 
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 
-#include "chrome/browser/lacros/cert_db_initializer.h"
+#include "chrome/browser/lacros/cert_db_initializer_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
@@ -37,9 +37,7 @@ KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  CertDbInitializer* result = new CertDbInitializer(
-      chromeos::LacrosChromeServiceImpl::Get()->cert_database_remote(),
-      profile);
+  CertDbInitializerImpl* result = new CertDbInitializerImpl(profile);
   // TODO(crbug.com/1145946): Enable certificate database initialization when
   // the policy stack is ready (expected to happen before Feb 2021).
   if (/* DISABLES CODE */ (false)) {
