@@ -853,15 +853,29 @@ class MetaBuildWrapper(object):
     gn_args_path = self.PathJoin(self.ToAbsPath(build_dir), 'args.gn')
     if self.Exists(gn_args_path):
       args_contents = self.ReadFile(gn_args_path)
-    gn_args = []
-    for l in args_contents.splitlines():
-      l = l.split('#', 2)[0].strip()
-      if not l:
-        continue
-      (name, value) = l.split('=', 1)
-      gn_args.append('%s=%s' % (name.strip(), value.strip()))
 
-    return ' '.join(gn_args)
+    # Handle any .gni file imports, e.g. the ones used by CrOS. This should
+    # be automatically handled by gn_helpers.FromGNArgs (via its call to
+    # gn_helpers.GNValueParser.ReplaceImports), but that currently breaks
+    # mb_unittest since it mocks out file reads itself instead of using
+    # pyfakefs. This results in gn_helpers trying to read a non-existent file.
+    # The implementation of ReplaceImports here can be removed once the
+    # unittests use pyfakefs.
+    def ReplaceImports(input_contents):
+      output_contents = ''
+      for l in input_contents.splitlines(True):
+        if not l.strip().startswith('#') and 'import(' in l:
+          import_file = l.split('"', 2)[1]
+          import_file = self.ToAbsPath(import_file)
+          imported_contents = self.ReadFile(import_file)
+          output_contents += ReplaceImports(imported_contents) + '\n'
+        else:
+          output_contents += l
+      return output_contents
+
+    args_contents = ReplaceImports(args_contents)
+    args_dict = gn_helpers.FromGNArgs(args_contents)
+    return ' '.join(['%s=%s' % (k, v) for (k, v) in args_dict.items()])
 
   def Lookup(self):
     self.ReadConfigFile(self.args.config_file)

@@ -637,12 +637,19 @@ class UnitTest(unittest.TestCase):
                 'base_unittests'], files=files, ret=0)
 
     # test running isolate on an existing build_dir
-    files['/fake_src/out/Default/args.gn'] = 'is_debug = True\n'
+    files['/fake_src/out/Default/args.gn'] = 'is_debug = true\n'
     self.check(['isolate', '//out/Default', 'base_unittests'],
                files=files, ret=0)
 
     self.check(['isolate', '//out/Default', 'base_unittests'],
                files=files, ret=0)
+
+    # Existing build dir that uses a .gni import.
+    files['/fake_src/out/Default/args.gn'] = 'import("//import/args.gni")\n'
+    files['/fake_src/import/args.gni'] = 'is_debug = true\n'
+    self.check(['isolate', '//out/Default', 'base_unittests'],
+               files=files,
+               ret=0)
 
   def test_isolate_dir(self):
     files = {
