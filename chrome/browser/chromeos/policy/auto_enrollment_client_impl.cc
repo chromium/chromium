@@ -51,26 +51,6 @@ using EnrollmentCheckType =
 constexpr base::TimeDelta kPrivateSetMembershipTimeout =
     base::TimeDelta::FromSeconds(15);
 
-// Hash dance success time UMA histogram.
-constexpr char kUMAHashDanceSuccessTime[] =
-    "Enterprise.AutoEnrollmentHashDanceSuccessTime";
-
-// The following histogram names where added before private set membership
-// existed. They are only recorded for hash dance.
-
-constexpr char kUMAProtocolTime[] = "Enterprise.AutoEnrollmentProtocolTime";
-constexpr char kUMABucketDownloadTime[] =
-    "Enterprise.AutoEnrollmentBucketDownloadTime";
-constexpr char kUMAExtraTime[] = "Enterprise.AutoEnrollmentExtraTime";
-constexpr char kUMARequestStatus[] = "Enterprise.AutoEnrollmentRequestStatus";
-constexpr char kUMANetworkErrorCode[] =
-    "Enterprise.AutoEnrollmentRequestNetworkErrorCode";
-
-// Suffix for initial enrollment.
-constexpr char kUMASuffixInitialEnrollment[] = ".InitialEnrollment";
-// Suffix for Forced Re-Enrollment.
-constexpr char kUMASuffixFRE[] = ".ForcedReenrollment";
-
 // Returns the power of the next power-of-2 starting at |value|.
 int NextPowerOf2(int64_t value) {
   for (int i = 0; i <= AutoEnrollmentClient::kMaximumPower; ++i) {
@@ -852,7 +832,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForFRE(
       std::make_unique<StateDownloadMessageProcessorFRE>(
           server_backed_state_key),
       power_initial, power_limit,
-      /*power_outdated_server_detect=*/base::nullopt, kUMASuffixFRE,
+      /*power_outdated_server_detect=*/base::nullopt, kUMAHashDanceSuffixFRE,
       /*private_set_membership_helper=*/nullptr));
 }
 
@@ -876,7 +856,7 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
           device_serial_number, device_brand_code),
       power_initial, power_limit,
       base::make_optional(power_outdated_server_detect),
-      kUMASuffixInitialEnrollment,
+      kUMAHashDanceSuffixInitialEnrollment,
       chromeos::AutoEnrollmentController::IsPrivateSetMembershipEnabled()
           ? std::make_unique<PrivateSetMembershipHelper>(
                 device_management_service, url_loader_factory, local_state,
@@ -1180,11 +1160,12 @@ void AutoEnrollmentClientImpl::HandleRequestCompletion(
     DeviceManagementStatus status,
     int net_error,
     const em::DeviceManagementResponse& response) {
-  base::UmaHistogramSparse(kUMARequestStatus + uma_suffix_, status);
+  base::UmaHistogramSparse(kUMAHashDanceRequestStatus + uma_suffix_, status);
   if (status != DM_STATUS_SUCCESS) {
     LOG(ERROR) << "Auto enrollment error: " << status;
     if (status == DM_STATUS_REQUEST_FAILED)
-      base::UmaHistogramSparse(kUMANetworkErrorCode + uma_suffix_, -net_error);
+      base::UmaHistogramSparse(kUMAHashDanceNetworkErrorCode + uma_suffix_,
+                               -net_error);
     request_job_.reset();
 
     // Abort if CancelAndDeleteSoon has been called meanwhile.
@@ -1349,13 +1330,13 @@ void AutoEnrollmentClientImpl::UpdateBucketDownloadTimingHistograms() {
   base::TimeTicks now = base::TimeTicks::Now();
   if (!time_start_.is_null()) {
     base::TimeDelta delta = now - time_start_;
-    base::UmaHistogramCustomTimes(kUMAProtocolTime + uma_suffix_, delta, kMin,
-                                  kMax, kBuckets);
+    base::UmaHistogramCustomTimes(kUMAHashDanceProtocolTime + uma_suffix_,
+                                  delta, kMin, kMax, kBuckets);
   }
   if (!time_start_bucket_download_.is_null()) {
     base::TimeDelta delta = now - time_start_bucket_download_;
-    base::UmaHistogramCustomTimes(kUMABucketDownloadTime + uma_suffix_, delta,
-                                  kMin, kMax, kBuckets);
+    base::UmaHistogramCustomTimes(kUMAHashDanceBucketDownloadTime + uma_suffix_,
+                                  delta, kMin, kMax, kBuckets);
   }
   base::TimeDelta delta = kZero;
   if (!time_extra_start_.is_null())
@@ -1363,8 +1344,8 @@ void AutoEnrollmentClientImpl::UpdateBucketDownloadTimingHistograms() {
   // This samples |kZero| when there was no need for extra time, so that we can
   // measure the ratio of users that succeeded without needing a delay to the
   // total users going through OOBE.
-  base::UmaHistogramCustomTimes(kUMAExtraTime + uma_suffix_, delta, kMin, kMax,
-                                kBuckets);
+  base::UmaHistogramCustomTimes(kUMAHashDanceExtraTime + uma_suffix_, delta,
+                                kMin, kMax, kBuckets);
 }
 
 void AutoEnrollmentClientImpl::RecordHashDanceSuccessTimeHistogram() {
