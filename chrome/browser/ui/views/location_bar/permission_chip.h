@@ -10,7 +10,6 @@
 #include "components/permissions/permission_request.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
-#include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/widget/widget_observer.h"
@@ -29,7 +28,7 @@ class BubbleOwnerDelegate {
 
 // A chip view shown in the location bar to notify user about a permission
 // request. Shows a permission bubble on click.
-class PermissionChip : public views::AccessiblePaneView,
+class PermissionChip : public views::View,
                        public views::AnimationDelegateViews,
                        public views::WidgetObserver,
                        public BubbleOwnerDelegate {
@@ -77,7 +76,6 @@ class PermissionChip : public views::AccessiblePaneView,
   void UpdatePermissionIconAndTextColor();
   base::string16 GetPermissionMessage();
   const gfx::VectorIcon& GetPermissionIconId();
-  void AnnouncePermissionRequested();
 
   void AnimateCollapse();
   void AnimateExpand();
@@ -91,8 +89,6 @@ class PermissionChip : public views::AccessiblePaneView,
 
   // A timer used to collapse the chip after a delay.
   base::OneShotTimer timer_;
-
-  base::OneShotTimer announce_timer_;
 
   // The button that displays the icon and text.
   views::MdTextButton* chip_button_;
