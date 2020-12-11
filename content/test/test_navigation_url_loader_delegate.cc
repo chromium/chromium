@@ -43,6 +43,7 @@ void TestNavigationURLLoaderDelegate::ReleaseURLLoaderClientEndpoints() {
 
 void TestNavigationURLLoaderDelegate::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
+    const net::NetworkIsolationKey& network_isolation_key,
     network::mojom::URLResponseHeadPtr response_head) {
   redirect_info_ = redirect_info;
   redirect_response_ = std::move(response_head);
@@ -54,9 +55,10 @@ void TestNavigationURLLoaderDelegate::OnResponseStarted(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
-    const GlobalRequestID& request_id,
+    GlobalRequestID request_id,
     bool is_download,
     NavigationDownloadPolicy download_policy,
+    net::NetworkIsolationKey network_isolation_key,
     base::Optional<SubresourceLoaderParams> subresource_loader_params) {
   on_request_handled_counter_++;
   response_head_ = std::move(response_head);

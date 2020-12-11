@@ -116,7 +116,8 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
     network::mojom::URLResponseHead* response_head,
     const url::Origin& response_origin,
     const GURL& response_url,
-    const GURL& response_referrer_url) {
+    const GURL& response_referrer_url,
+    const net::NetworkIsolationKey& network_isolation_key) {
   SanitizeCoopHeaders(response_url, response_origin, response_head);
   network::mojom::ParsedHeaders* parsed_headers =
       response_head->parsed_headers.get();
@@ -146,7 +147,8 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
                                             ->GetProcess()
                                             ->GetStoragePartition();
   auto response_reporter = std::make_unique<CrossOriginOpenerPolicyReporter>(
-      storage_partition, response_url, response_referrer_url, response_coop);
+      storage_partition, response_url, response_referrer_url, response_coop,
+      network_isolation_key);
   CrossOriginOpenerPolicyReporter* previous_reporter =
       use_current_document_coop_reporter_
           ? frame_tree_node_->current_frame_host()->coop_reporter()

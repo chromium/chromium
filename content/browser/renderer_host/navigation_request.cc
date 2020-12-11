@@ -1764,6 +1764,7 @@ ukm::SourceId NavigationRequest::GetPreviousPageUkmSourceId() {
 
 void NavigationRequest::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
+    const net::NetworkIsolationKey& network_isolation_key,
     network::mojom::URLResponseHeadPtr response_head) {
   ScopedNavigationRequestCrashKeys crash_keys(this);
 
@@ -1857,7 +1858,8 @@ void NavigationRequest::OnRequestRedirected(
   const base::Optional<network::mojom::BlockedByResponseReason>
       coop_requires_blocking = coop_status_.EnforceCOOP(
           response_head_.get(), url::Origin::Create(common_params_->url),
-          common_params_->url, common_params_->referrer->url);
+          common_params_->url, common_params_->referrer->url,
+          network_isolation_key);
   if (coop_requires_blocking) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coop_requires_blocking),
@@ -2178,9 +2180,10 @@ void NavigationRequest::OnResponseStarted(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
-    const GlobalRequestID& request_id,
+    GlobalRequestID request_id,
     bool is_download,
     NavigationDownloadPolicy download_policy,
+    net::NetworkIsolationKey network_isolation_key,
     base::Optional<SubresourceLoaderParams> subresource_loader_params) {
   ScopedNavigationRequestCrashKeys crash_keys(this);
 
@@ -2307,7 +2310,8 @@ void NavigationRequest::OnResponseStarted(
   const base::Optional<network::mojom::BlockedByResponseReason>
       coop_requires_blocking = coop_status_.EnforceCOOP(
           response_head_.get(), url::Origin::Create(common_params_->url),
-          common_params_->url, common_params_->referrer->url);
+          common_params_->url, common_params_->referrer->url,
+          network_isolation_key);
   if (coop_requires_blocking) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coop_requires_blocking),

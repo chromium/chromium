@@ -11,6 +11,10 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+namespace net {
+class NetworkIsolationKey;
+}  // namespace net
+
 namespace content {
 class CrossOriginOpenerPolicyReporter;
 class FrameTreeNode;
@@ -32,7 +36,8 @@ class CrossOriginOpenerPolicyStatus {
       network::mojom::URLResponseHead* response_head,
       const url::Origin& response_origin,
       const GURL& response_url,
-      const GURL& response_referrer_url);
+      const GURL& response_referrer_url,
+      const net::NetworkIsolationKey& network_isolation_key);
 
   // Set to true whenever the Cross-Origin-Opener-Policy spec requires a
   // "BrowsingContext group" swap:

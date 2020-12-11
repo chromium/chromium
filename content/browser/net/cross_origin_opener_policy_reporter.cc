@@ -139,11 +139,13 @@ CrossOriginOpenerPolicyReporter::CrossOriginOpenerPolicyReporter(
     StoragePartition* storage_partition,
     const GURL& context_url,
     const GURL& context_referrer_url,
-    const network::CrossOriginOpenerPolicy& coop)
+    const network::CrossOriginOpenerPolicy& coop,
+    const net::NetworkIsolationKey& network_isolation_key)
     : storage_partition_(storage_partition),
       context_url_(context_url),
       context_referrer_url_(SanitizedURL(context_referrer_url)),
-      coop_(coop) {}
+      coop_(coop),
+      network_isolation_key_(network_isolation_key) {}
 
 CrossOriginOpenerPolicyReporter::~CrossOriginOpenerPolicyReporter() = default;
 
@@ -238,11 +240,9 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
       break;
   }
 
-  // TODO(https://crbug.com/993805): Pass in the appropriate
-  // NetworkIsolationKey.
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, net::NetworkIsolationKey::Todo(),
-      base::nullopt, std::move(body));
+      "coop", endpoint, context_url_, network_isolation_key_, base::nullopt,
+      std::move(body));
 }
 
 // static
@@ -391,10 +391,8 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
   body.SetString(
       kEffectivePolicy,
       ToString(is_report_only ? coop_.report_only_value : coop_.value));
-  // TODO(https://crbug.com/993805): Pass in the appropriate
-  // NetworkIsolationKey.
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, net::NetworkIsolationKey::Todo(),
+      "coop", endpoint, context_url_, network_isolation_key_,
       /*user_agent=*/base::nullopt, std::move(body));
 }
 

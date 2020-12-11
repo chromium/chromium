@@ -67,7 +67,9 @@ void TestNavigationURLLoader::CallOnRequestRedirected(
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK_EQ(loader_type_, NavigationURLLoader::LoaderType::kRegular);
   response_head->parsed_headers = network::mojom::ParsedHeaders::New();
-  delegate_->OnRequestRedirected(redirect_info, std::move(response_head));
+  delegate_->OnRequestRedirected(
+      redirect_info, request_info_->isolation_info.network_isolation_key(),
+      std::move(response_head));
 }
 
 void TestNavigationURLLoader::CallOnResponseStarted(
@@ -85,11 +87,12 @@ void TestNavigationURLLoader::CallOnResponseStarted(
           std::move(url_loader_remote),
           url_loader_client_remote.InitWithNewPipeAndPassReceiver());
 
-  delegate_->OnResponseStarted(std::move(url_loader_client_endpoints),
-                               std::move(response_head),
-                               mojo::ScopedDataPipeConsumerHandle(),
-                               GlobalRequestID::MakeBrowserInitiated(), false,
-                               NavigationDownloadPolicy(), base::nullopt);
+  delegate_->OnResponseStarted(
+      std::move(url_loader_client_endpoints), std::move(response_head),
+      mojo::ScopedDataPipeConsumerHandle(),
+      GlobalRequestID::MakeBrowserInitiated(), false,
+      NavigationDownloadPolicy(),
+      request_info_->isolation_info.network_isolation_key(), base::nullopt);
 }
 
 TestNavigationURLLoader::~TestNavigationURLLoader() {}

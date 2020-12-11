@@ -768,14 +768,16 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationURLLoaderDelegate implementation.
   void OnRequestRedirected(
       const net::RedirectInfo& redirect_info,
+      const net::NetworkIsolationKey& network_isolation_key,
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnResponseStarted(
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      const GlobalRequestID& request_id,
+      GlobalRequestID request_id,
       bool is_download,
       NavigationDownloadPolicy download_policy,
+      net::NetworkIsolationKey network_isolation_key,
       base::Optional<SubresourceLoaderParams> subresource_loader_params)
       override;
   void OnRequestFailed(

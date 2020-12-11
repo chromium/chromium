@@ -1253,16 +1253,20 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
   // NavigationResourceHandler::OnResponseStarted() does.
   delegate_->OnResponseStarted(
       std::move(url_loader_client_endpoints), std::move(response_head),
-      std::move(response_body),
-      GlobalRequestID(global_request_id.child_id, global_request_id.request_id),
-      is_download, download_policy_, std::move(subresource_loader_params_));
+      std::move(response_body), global_request_id, is_download,
+      download_policy_,
+      resource_request_->trusted_params->isolation_info.network_isolation_key(),
+      std::move(subresource_loader_params_));
 }
 
 void NavigationURLLoaderImpl::NotifyRequestRedirected(
     net::RedirectInfo redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  delegate_->OnRequestRedirected(redirect_info, std::move(response_head));
+  delegate_->OnRequestRedirected(
+      redirect_info,
+      resource_request_->trusted_params->isolation_info.network_isolation_key(),
+      std::move(response_head));
 }
 
 void NavigationURLLoaderImpl::NotifyRequestFailed(

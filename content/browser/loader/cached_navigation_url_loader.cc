@@ -40,7 +40,8 @@ void CachedNavigationURLLoader::OnResponseStarted() {
   delegate_->OnResponseStarted(
       /*url_loader_client_endpoints=*/nullptr, std::move(response_head),
       /*response_body=*/mojo::ScopedDataPipeConsumerHandle(), global_id,
-      /*is_download=*/false, NavigationDownloadPolicy(), base::nullopt);
+      /*is_download=*/false, NavigationDownloadPolicy(),
+      request_info_->isolation_info.network_isolation_key(), base::nullopt);
 }
 CachedNavigationURLLoader::~CachedNavigationURLLoader() {}
 

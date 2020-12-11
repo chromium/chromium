@@ -11,6 +11,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 #include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "url/gurl.h"
@@ -31,10 +32,12 @@ class RenderFrameHostImpl;
 // associated StoragePartition is destructed.
 class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
  public:
-  CrossOriginOpenerPolicyReporter(StoragePartition* storage_partition,
-                                  const GURL& context_url,
-                                  const GURL& context_referrer_url,
-                                  const network::CrossOriginOpenerPolicy& coop);
+  CrossOriginOpenerPolicyReporter(
+      StoragePartition* storage_partition,
+      const GURL& context_url,
+      const GURL& context_referrer_url,
+      const network::CrossOriginOpenerPolicy& coop,
+      const net::NetworkIsolationKey& network_isolation_key);
   ~CrossOriginOpenerPolicyReporter();
   CrossOriginOpenerPolicyReporter(const CrossOriginOpenerPolicyReporter&) =
       delete;
@@ -86,6 +89,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
   const GURL context_url_;
   const std::string context_referrer_url_;
   const network::CrossOriginOpenerPolicy coop_;
+  const net::NetworkIsolationKey network_isolation_key_;
 
   mojo::UniqueReceiverSet<network::mojom::CrossOriginOpenerPolicyReporter>
       receiver_set_;
