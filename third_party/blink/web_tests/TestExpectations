@@ -743,69 +743,61 @@ crbug.com/1003506 external/wpt/css/css-flexbox/percentage-heights-007.html [ Fai
 crbug.com/1081802 external/wpt/css/css-flexbox/overflow-area-001.html [ Failure ]
 crbug.com/1081802 external/wpt/css/css-flexbox/overflow-area-002.html [ Failure ]
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
-crbug.com/1111128 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-min-height-auto-002b.html [ Failure ]
-crbug.com/1128262 external/wpt/css/css-flexbox/table-as-item-specified-width.html [ Failure ]
+crbug.com/1111128 external/wpt/css/css-flexbox/flexbox-min-height-auto-002b.html [ Failure ]
+crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-container-crash.html [ Crash Pass ]
 
-# Both fixed by TableNG.
+# Fixed in TablesNG.
 crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-stretch-cross-size.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-flex-cross-size.html [ Failure ]
+crbug.com/1128262 external/wpt/css/css-flexbox/table-as-item-specified-width.html [ Failure ]
 
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-horiz-001a.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-horiz-001b.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-vert-001a.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-vert-001b.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-vert-002.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-horiz-002.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-justify-content-horiz-001a.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-justify-content-horiz-001b.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-justify-content-horiz-003.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-justify-content-horiz-005.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-justify-content-horiz-006.xhtml [ Failure ]
-crbug.com/1011718 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-self-vert-002.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-001a.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-001b.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-003.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-005.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-006.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-align-self-vert-002.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-align-self-vert-rtl-005.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-vert-006.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-wmvert-001.xhtml [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
 
 # We don't support requesting flex line breaks and it is not clear that we should.
 # See https://lists.w3.org/Archives/Public/www-style/2015May/0065.html
-crbug.com/473481 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-break-request-horiz-001a.html [ Failure ]
-crbug.com/473481 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-break-request-horiz-001b.html [ Failure ]
-crbug.com/473481 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-break-request-vert-001a.html [ Failure ]
-crbug.com/473481 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-break-request-vert-001b.html [ Failure ]
+crbug.com/473481 external/wpt/css/css-flexbox/flexbox-break-request-horiz-001a.html [ Failure ]
+crbug.com/473481 external/wpt/css/css-flexbox/flexbox-break-request-horiz-001b.html [ Failure ]
+crbug.com/473481 external/wpt/css/css-flexbox/flexbox-break-request-vert-001a.html [ Failure ]
+crbug.com/473481 external/wpt/css/css-flexbox/flexbox-break-request-vert-001b.html [ Failure ]
 
 # We don't currently support visibility: collapse in flexbox
-crbug.com/336604 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-collapsed-item-baseline-001.html [ Failure ]
-crbug.com/336604 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-collapsed-item-horiz-001.html [ Failure ]
-crbug.com/336604 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-collapsed-item-horiz-002.html [ Failure ]
-crbug.com/336604 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-collapsed-item-horiz-003.html [ Failure ]
+crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-baseline-001.html [ Failure ]
+crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-001.html [ Failure ]
+crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-002.html [ Failure ]
+crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-003.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse-line-wrapping.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html [ Failure ]
 
 # We paint in an incorrect order when layers are present. Blocked on composite-after-paint.
-crbug.com/370604 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-paint-ordering-002.xhtml [ Failure ]
+crbug.com/370604 external/wpt/css/css-flexbox/flexbox-paint-ordering-002.xhtml [ Failure ]
 
 # We haven't implemented last baseline alignment.
-crbug.com/886585 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-self-baseline-horiz-001a.xhtml [ Failure ]
-crbug.com/886585 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-self-baseline-horiz-001b.xhtml [ Failure ]
-crbug.com/886585 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-self-baseline-horiz-006.xhtml [ Failure ]
-crbug.com/886585 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-self-baseline-horiz-007.xhtml [ Failure ]
-crbug.com/886585 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-self-baseline-horiz-008.xhtml [ Failure ]
+crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-001a.xhtml [ Failure ]
+crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-001b.xhtml [ Failure ]
+crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-006.xhtml [ Failure ]
+crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-007.xhtml [ Failure ]
+crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-008.xhtml [ Failure ]
 
 # We haven't implemented flex-basis: content yet.
-crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-001a.html [ Failure ]
-crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-001b.html [ Failure ]
-crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-002a.html [ Failure ]
-crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-002b.html [ Failure ]
-crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-003a.html [ Failure ]
-crbug.com/470421 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-flex-basis-content-004a.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-001a.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-001b.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-002a.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-002b.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-003a.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-004a.html [ Failure ]
 crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-021.html [ Failure ]
 crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-022.html [ Failure ]
 
-# Untriaged flex failures
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-content-wmvert-001.xhtml [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-self-vert-rtl-005.xhtml [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-justify-content-vert-006.xhtml [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-justify-content-wmvert-001.xhtml [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
-crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-container-crash.html [ Crash Pass ]
 
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
