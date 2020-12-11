@@ -3518,6 +3518,7 @@ if (build_base_unittests) {
         "containers/buffer_iterator_unittest.nc",
         "containers/checked_iterators_unittest.nc",
         "containers/span_unittest.nc",
+        "debug/crash_logging_unittest.nc",
         "memory/checked_ptr_unittest.nc",
         "memory/ref_counted_unittest.nc",
         "memory/weak_ptr_unittest.nc",
