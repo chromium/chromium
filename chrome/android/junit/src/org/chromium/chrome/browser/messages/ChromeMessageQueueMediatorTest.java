@@ -106,7 +106,7 @@ public class ChromeMessageQueueMediatorTest {
         doNothing().when(mLayoutStateProvider).addObserver(observer.capture());
         initMediator();
         observer.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
-        observer.getValue().onFinishedHiding(LayoutType.BROWSING);
+        observer.getValue().onFinishedShowing(LayoutType.BROWSING);
         verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
     }
 

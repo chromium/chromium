@@ -57,15 +57,16 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     private LayoutStateObserver mLayoutStateObserver = new LayoutStateObserver() {
         private int mToken = TokenHolder.INVALID_TOKEN;
 
+        // Suspend the queue until browsing mode is visible.
         @Override
-        public void onStartedShowing(int layoutType, boolean showToolbar) {
+        public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
             if (mToken == TokenHolder.INVALID_TOKEN && layoutType != LayoutType.BROWSING) {
                 mToken = suspendQueue();
             }
         }
 
         @Override
-        public void onFinishedHiding(int layoutType) {
+        public void onFinishedShowing(@LayoutType int layoutType) {
             if (mToken != TokenHolder.INVALID_TOKEN && layoutType == LayoutType.BROWSING) {
                 resumeQueue(mToken);
                 mToken = TokenHolder.INVALID_TOKEN;
