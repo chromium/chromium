@@ -801,6 +801,7 @@ crbug.com/470421 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-022.
 
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
+crbug.com/1157854 external/wpt/css/css-lists/counter-set-002.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-005.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-004.html [ Failure ]
 
