@@ -2154,7 +2154,9 @@ class ComputedStyle : public ComputedStyleBase,
   void ClearCursorList();
 
   // Resize utility functions.
-  bool HasResize() const { return ResizeInternal() != EResize::kNone; }
+  bool HasResize() const {
+    return StyleType() == kPseudoIdNone && ResizeInternal() != EResize::kNone;
+  }
   EResize UnresolvedResize() const { return ResizeInternal(); }
 
   EResize Resize(const ComputedStyle& cb_style) const {
