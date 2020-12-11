@@ -27,7 +27,7 @@ import './source_select.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getScanService} from './mojo_interface_provider.js';
 import {AppState, ScannerArr} from './scanning_app_types.js';
@@ -508,6 +508,18 @@ Polymer({
         this.appState_ === AppState.CANCELING;
     this.cancelButtonDisabled_ = this.appState_ === AppState.CANCELING;
     this.showDoneSection_ = this.appState_ === AppState.DONE;
+
+    // Need to wait for elements to render after updating their disabled and
+    // hidden attributes before they can be focused.
+    afterNextRender(this, () => {
+      if (this.appState_ === AppState.READY) {
+        this.$$('#scannerSelect').$$('#scannerSelect').focus();
+      } else if (this.appState_ === AppState.SCANNING) {
+        this.$$('#cancelButton').focus();
+      } else if (this.appState_ === AppState.DONE) {
+        this.$$('#scanPreview').$$('#previewDiv').focus();
+      }
+    });
   },
 
   /**
