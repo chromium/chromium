@@ -179,6 +179,7 @@ void RequiredFieldsFallbackHandler::OnCheckRequiredFieldsDone(
   // If there are any fallbacks for the empty fields, set them, otherwise fail
   // immediately.
   bool has_fallbacks = false;
+  bool has_empty_value = false;
   for (const RequiredField& required_field : required_fields_) {
     if (!required_field.ShouldFallback(/* apply_fallback= */ true)) {
       continue;
@@ -194,9 +195,10 @@ void RequiredFieldsFallbackHandler::OnCheckRequiredFieldsDone(
       VLOG(3) << "Field has no fallback data: " << required_field.selector
               << " " << required_field.value_expression;
       FillStatusDetailsWithMissingFallbackData(required_field, &client_status_);
+      has_empty_value = true;
     }
   }
-  if (!has_fallbacks) {
+  if (!has_fallbacks || has_empty_value) {
     std::move(status_update_callback_)
         .Run(ClientStatus(AUTOFILL_INCOMPLETE), client_status_);
     return;
@@ -239,12 +241,7 @@ void RequiredFieldsFallbackHandler::SetFallbackFieldValuesSequentially(
 
   auto fallback_value = field_formatter::FormatString(
       required_field.value_expression, fallback_values_);
-  if (!fallback_value.has_value()) {
-    VLOG(3) << "No fallback for " << required_field.selector;
-    // If there is no fallback value, we skip this failed field.
-    SetFallbackFieldValuesSequentially(++required_fields_index);
-    return;
-  }
+  DCHECK(fallback_value.has_value());
 
   if (required_field.fallback_click_element.has_value()) {
     ClickType click_type = required_field.click_type;

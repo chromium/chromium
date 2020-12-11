@@ -316,6 +316,7 @@ source_set("unit_tests") {
     "actions/click_action_unittest.cc",
     "actions/collect_user_data_action_unittest.cc",
     "actions/configure_bottom_sheet_action_unittest.cc",
+    "actions/fallback_handler/required_field_unittest.cc",
     "actions/fallback_handler/required_fields_fallback_handler_unittest.cc",
     "actions/generate_password_for_form_field_action_unittest.cc",
     "actions/get_element_status_action_unittest.cc",
