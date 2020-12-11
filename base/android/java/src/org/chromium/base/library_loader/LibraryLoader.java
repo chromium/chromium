@@ -425,7 +425,7 @@ public class LibraryLoader {
     }
 
     private void loadWithChromiumLinker(ApplicationInfo appInfo, String library) {
-        Linker linker = Linker.getInstance(appInfo);
+        Linker linker = Linker.getInstance();
 
         if (isInZipFile()) {
             String sourceDir = appInfo.sourceDir;

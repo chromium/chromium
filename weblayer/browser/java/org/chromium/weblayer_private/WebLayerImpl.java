@@ -44,7 +44,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.library_loader.NativeLibraryPreloader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
@@ -221,13 +220,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
             notifyWebViewRunningInProcess(remoteContext.getClassLoader());
         }
 
-        // Load library in the background since it may be expensive.
-        // TODO(crbug.com/1146438): Look into enabling relro sharing in browser process. It seems to
-        // crash when WebView is loaded in the same process.
-        new Thread(() -> {
-            LibraryLoader.getInstance().loadNowOverrideApplicationContext(remoteContext);
-        }).start();
-
         Context appContext = minimalInitForContext(
                 ObjectWrapper.unwrap(appContextWrapper, Context.class), remoteContext);
         PackageInfo packageInfo = WebViewFactory.getLoadedPackageInfo();
@@ -259,6 +251,12 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 /*readCommandLine=*/true);
         TraceEvent.begin("WebLayer init");
 
+        // If a remote context is not provided, the client is an older version that loads the native
+        // library on the client side.
+        if (remoteContextWrapper != null) {
+            loadNativeLibrary(packageInfo.packageName);
+        }
+
         BuildInfo.setBrowserPackageInfo(packageInfo);
         BuildInfo.setFirebaseAppId(
                 FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));
@@ -280,6 +278,10 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         DeviceUtils.addDeviceSpecificUserAgentSwitch();
         ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
 
+        // TODO: Validate that doing this disk IO on the main thread is necessary.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            LibraryLoader.getInstance().ensureInitialized();
+        }
         GmsBridge.getInstance().setSafeBrowsingHandler();
         GmsBridge.getInstance().initializeBuiltInPaymentApps();
 
@@ -318,17 +320,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         });
 
         TraceEvent.end("WebLayer init");
-    }
-
-    public static void setLibraryPreloader(String packageName, ClassLoader classLoader) {
-        if (!LibraryLoader.getInstance().isLoadedByZygote()) {
-            LibraryLoader.getInstance().setNativeLibraryPreloader(new NativeLibraryPreloader() {
-                @Override
-                public int loadLibrary(ApplicationInfo info) {
-                    return loadNativeLibrary(packageName, classLoader);
-                }
-            });
-        }
     }
 
     @Override
@@ -760,20 +751,20 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         }
     }
 
-    private static int loadNativeLibrary(String packageName, ClassLoader cl) {
+    private void loadNativeLibrary(String packageName) {
         // Loading the library triggers disk access.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                return WebViewFactory.loadWebViewNativeLibraryFromPackage(packageName, cl);
+                WebViewFactory.loadWebViewNativeLibraryFromPackage(
+                        packageName, getClass().getClassLoader());
             } else {
                 try {
                     Method loadNativeLibrary =
                             WebViewFactory.class.getDeclaredMethod("loadNativeLibrary");
                     loadNativeLibrary.setAccessible(true);
-                    return (int) loadNativeLibrary.invoke(null);
+                    loadNativeLibrary.invoke(null);
                 } catch (ReflectiveOperationException e) {
                     Log.e(TAG, "Failed to load native library.", e);
-                    return 6; // LIBLOAD_FAILED_TO_LOAD_LIBRARY
                 }
             }
         }
