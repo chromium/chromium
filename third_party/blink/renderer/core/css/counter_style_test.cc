@@ -176,4 +176,34 @@ TEST_F(CounterStyleTest, CyclicFallback) {
   EXPECT_EQ("6", foo.GenerateRepresentation(6));
 }
 
+TEST_F(CounterStyleTest, CustomNegative) {
+  InsertStyleElement(R"CSS(
+    @counter-style financial-decimal {
+      system: extends decimal;
+      negative: '(' ')';
+    }
+
+    @counter-style extended {
+      system: extends financial-decimal;
+    }
+  )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Getting custom 'negative' directly from descriptor value.
+  const CounterStyle& financial_decimal = GetCounterStyle("financial-decimal");
+  EXPECT_EQ("(999)", financial_decimal.GenerateRepresentation(-999));
+  EXPECT_EQ("(1)", financial_decimal.GenerateRepresentation(-1));
+  EXPECT_EQ("0", financial_decimal.GenerateRepresentation(0));
+  EXPECT_EQ("1", financial_decimal.GenerateRepresentation(1));
+  EXPECT_EQ("99", financial_decimal.GenerateRepresentation(99));
+
+  // Getting custom 'negative' indirectly by extending a counter style.
+  const CounterStyle& extended = GetCounterStyle("extended");
+  EXPECT_EQ("(999)", extended.GenerateRepresentation(-999));
+  EXPECT_EQ("(1)", extended.GenerateRepresentation(-1));
+  EXPECT_EQ("0", extended.GenerateRepresentation(0));
+  EXPECT_EQ("1", extended.GenerateRepresentation(1));
+  EXPECT_EQ("99", extended.GenerateRepresentation(99));
+}
+
 }  // namespace blink

@@ -237,6 +237,15 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
     }
   }
 
+  if (const CSSValue* negative = rule.GetNegative()) {
+    if (const CSSValuePair* pair = DynamicTo<CSSValuePair>(negative)) {
+      negative_prefix_ = SymbolToString(pair->First());
+      negative_suffix_ = SymbolToString(pair->Second());
+    } else {
+      negative_prefix_ = SymbolToString(*negative);
+    }
+  }
+
   // TODO(crbug.com/687225): Implement and populate other fields.
 }
 
@@ -254,6 +263,11 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
   symbols_ = extended.symbols_;
   if (system_ == CounterStyleSystem::kAdditive)
     additive_weights_ = extended.additive_weights_;
+
+  if (!style_rule_->GetNegative()) {
+    negative_prefix_ = extended.negative_prefix_;
+    negative_suffix_ = extended.negative_suffix_;
+  }
 
   // TODO(crbug.com/687225): Implement and populate other fields.
 }
@@ -322,12 +336,14 @@ String CounterStyle::GenerateRepresentation(int value) const {
     return fallback_style_->GenerateRepresentation(value);
   }
 
-  // TODO(crbug.com/687225): Implement non-default 'pad' and 'negative' values.
+  // TODO(crbug.com/687225): Implement non-default 'pad' value.
 
   StringBuilder result;
   if (NeedsNegativeSign(value))
-    result.Append("-");
+    result.Append(negative_prefix_);
   result.Append(initial_representation);
+  if (NeedsNegativeSign(value))
+    result.Append(negative_suffix_);
   return result.ToString();
 }
 

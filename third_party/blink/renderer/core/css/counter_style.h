@@ -97,6 +97,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   // Additive weights, for the 'additive' system only.
   Vector<wtf_size_t> additive_weights_;
 
+  String negative_prefix_ = "-";
+  String negative_suffix_;
+
   friend class CounterStyleMapTest;
 };
 
