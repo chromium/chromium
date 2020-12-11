@@ -196,8 +196,7 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
   mock_process_coordination_unit_->VerifyExpectations();
 
   // Remote -> Local
-  WebLocalFrameImpl* local_frame =
-      frame_test_helpers::CreateProvisional(*new_remote_frame);
+  WebLocalFrameImpl* local_frame = helper.CreateProvisional(*new_remote_frame);
   {
     InSequence seq;
     EXPECT_CALL(
@@ -214,8 +213,7 @@ TEST_F(RendererResourceCoordinatorImplTest, IframeNotifications) {
   mock_process_coordination_unit_->VerifyExpectations();
 
   // Local -> Local
-  WebLocalFrameImpl* new_local_frame =
-      frame_test_helpers::CreateProvisional(*local_frame);
+  WebLocalFrameImpl* new_local_frame = helper.CreateProvisional(*local_frame);
   {
     InSequence seq;
     EXPECT_CALL(*mock_process_coordination_unit_,

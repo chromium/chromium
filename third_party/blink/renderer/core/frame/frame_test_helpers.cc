@@ -124,6 +124,17 @@ viz::FrameSinkId AllocateFrameSinkId() {
   return viz::FrameSinkId(++s_frame_sink_count, 1);
 }
 
+// Installs a create hook and uninstalls it when this object is
+// destroyed.
+class ScopedCreateWebFrameWidget {
+ public:
+  explicit ScopedCreateWebFrameWidget(CreateWebFrameWidgetCallback* hook) {
+    InstallCreateWebFrameWidgetHook(hook);
+  }
+
+  ~ScopedCreateWebFrameWidget() { InstallCreateWebFrameWidgetHook(nullptr); }
+};
+
 }  // namespace
 
 cc::LayerTreeSettings GetSynchronousSingleThreadLayerTreeSettings() {
@@ -253,59 +264,6 @@ WebLocalFrameImpl* CreateLocalChild(
   return frame;
 }
 
-WebLocalFrameImpl* CreateProvisional(WebFrame& old_frame,
-                                     TestWebFrameClient* client) {
-  std::unique_ptr<TestWebFrameClient> owned_client;
-  client = CreateDefaultClientIfNeeded(client, owned_client);
-  auto* frame = To<WebLocalFrameImpl>(WebLocalFrame::CreateProvisional(
-      client, nullptr, base::UnguessableToken::Create(), &old_frame,
-      FramePolicy(), WebFrame::ToCoreFrame(old_frame)->Tree().GetName()));
-  client->Bind(frame, std::move(owned_client));
-
-  mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget_remote;
-  mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
-      frame_widget_receiver =
-          frame_widget_remote.BindNewEndpointAndPassDedicatedReceiver();
-
-  mojo::AssociatedRemote<mojom::blink::FrameWidgetHost> frame_widget_host;
-  mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>
-      frame_widget_host_receiver =
-          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-
-  mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
-  mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
-      widget_remote.BindNewEndpointAndPassDedicatedReceiver();
-
-  mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host;
-  mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>
-      widget_host_receiver =
-          widget_host.BindNewEndpointAndPassDedicatedReceiver();
-
-  // Create a widget, if necessary.
-  if (!frame->Parent() || frame->Parent()->IsWebRemoteFrame()) {
-    auto* frame_widget =
-        static_cast<TestWebFrameWidget*>(frame->InitializeFrameWidget(
-            frame_widget_host.Unbind(), std::move(frame_widget_receiver),
-            widget_host.Unbind(), std::move(widget_receiver),
-            AllocateFrameSinkId()));
-    frame_widget->BindWidgetChannels(std::move(widget_remote),
-                                     std::move(widget_host_receiver));
-    // The WebWidget requires the compositor to be set before it is used.
-    cc::LayerTreeSettings layer_tree_settings =
-        GetSynchronousSingleThreadLayerTreeSettings();
-    frame_widget->InitializeCompositing(
-        frame_widget->main_thread_scheduler(),
-        frame_widget->task_graph_runner(), frame_widget->GetInitialScreenInfo(),
-        std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
-    frame_widget->SetCompositorVisible(true);
-
-    // Set an initial size for subframes.
-    if (frame->Parent())
-      frame_widget->Resize(gfx::Size());
-  }
-  return frame;
-}
-
 WebRemoteFrameImpl* CreateRemote(TestWebRemoteFrameClient* client) {
   std::unique_ptr<TestWebRemoteFrameClient> owned_client;
   client = CreateDefaultClientIfNeeded(client, owned_client);
@@ -315,61 +273,6 @@ WebRemoteFrameImpl* CreateRemote(TestWebRemoteFrameClient* client) {
       client->GetRemoteAssociatedInterfaces(),
       base::UnguessableToken::Create());
   client->Bind(frame, std::move(owned_client));
-  return frame;
-}
-
-WebLocalFrameImpl* CreateLocalChild(WebRemoteFrame& parent,
-                                    const WebString& name,
-                                    const WebFrameOwnerProperties& properties,
-                                    WebFrame* previous_sibling,
-                                    TestWebFrameClient* client) {
-  std::unique_ptr<TestWebFrameClient> owned_client;
-  client = CreateDefaultClientIfNeeded(client, owned_client);
-  auto* frame = To<WebLocalFrameImpl>(parent.CreateLocalChild(
-      mojom::blink::TreeScopeType::kDocument, name, FramePolicy(), client,
-      nullptr, previous_sibling, properties,
-      mojom::blink::FrameOwnerElementType::kIframe,
-      base::UnguessableToken::Create(), nullptr,
-      std::make_unique<WebPolicyContainer>(WebPolicyContainerDocumentPolicies(),
-                                           mojo::NullAssociatedRemote())));
-  client->Bind(frame, std::move(owned_client));
-
-  mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget_remote;
-  mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
-      frame_widget_receiver =
-          frame_widget_remote.BindNewEndpointAndPassDedicatedReceiver();
-
-  mojo::AssociatedRemote<mojom::blink::FrameWidgetHost> frame_widget_host;
-  mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>
-      frame_widget_host_receiver =
-          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-
-  mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
-  mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
-      widget_remote.BindNewEndpointAndPassDedicatedReceiver();
-
-  mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host;
-  mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>
-      widget_host_receiver =
-          widget_host.BindNewEndpointAndPassDedicatedReceiver();
-
-  auto* frame_widget =
-      static_cast<TestWebFrameWidget*>(frame->InitializeFrameWidget(
-          frame_widget_host.Unbind(), std::move(frame_widget_receiver),
-          widget_host.Unbind(), std::move(widget_receiver),
-          AllocateFrameSinkId()));
-  frame_widget->BindWidgetChannels(std::move(widget_remote),
-                                   std::move(widget_host_receiver));
-  cc::LayerTreeSettings layer_tree_settings =
-      GetSynchronousSingleThreadLayerTreeSettings();
-  frame_widget->InitializeCompositing(
-      frame_widget->main_thread_scheduler(), frame_widget->task_graph_runner(),
-      frame_widget->GetInitialScreenInfo(),
-      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
-  frame_widget->SetCompositorVisible(true);
-  // Set an initial size for subframes.
-  if (frame->Parent())
-    frame_widget->Resize(gfx::Size());
   return frame;
 }
 
@@ -429,14 +332,11 @@ WebViewHelper::WebViewHelper(
             is_for_child_local_root, is_for_nested_main_frame);
       },
       std::move(create_callback));
-
-  InstallCreateWebFrameWidgetHook(&create_widget_callback_wrapper_);
 }
 
 WebViewHelper::~WebViewHelper() {
   // Close the WebViewImpl before the WebViewClient is destroyed.
   Reset();
-  InstallCreateWebFrameWidgetHook(nullptr);
 }
 
 WebViewImpl* WebViewHelper::InitializeWithOpener(
@@ -460,37 +360,8 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
       opener);
   web_frame_client->Bind(frame, std::move(owned_web_frame_client));
 
-  mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget;
-  mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
-      frame_widget_receiver =
-          frame_widget.BindNewEndpointAndPassDedicatedReceiver();
-
-  mojo::AssociatedRemote<mojom::blink::FrameWidgetHost> frame_widget_host;
-  mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>
-      frame_widget_host_receiver =
-          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-
-  mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
-  mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
-      widget_remote.BindNewEndpointAndPassDedicatedReceiver();
-
-  mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host;
-  mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>
-      widget_host_receiver =
-          widget_host.BindNewEndpointAndPassDedicatedReceiver();
-
-  auto* widget = static_cast<TestWebFrameWidget*>(frame->InitializeFrameWidget(
-      frame_widget_host.Unbind(), std::move(frame_widget_receiver),
-      widget_host.Unbind(), std::move(widget_receiver), AllocateFrameSinkId()));
-  widget->BindWidgetChannels(std::move(widget_remote),
-                             std::move(widget_host_receiver));
-  cc::LayerTreeSettings layer_tree_settings =
-      GetSynchronousSingleThreadLayerTreeSettings();
-  widget->InitializeCompositing(
-      widget->main_thread_scheduler(), widget->task_graph_runner(),
-      widget->GetInitialScreenInfo(),
-      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
-  widget->SetCompositorVisible(true);
+  TestWebFrameWidget* frame_widget =
+      CreateFrameWidgetAndInitializeCompositing(frame);
 
   // We inform the WebView when it has a local main frame attached once the
   // WebFrame is fully set up and the WebFrameWidget is initialized (which is
@@ -499,7 +370,7 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
 
   // Set an initial size for subframes.
   if (frame->Parent())
-    frame->FrameWidget()->Resize(gfx::Size());
+    frame_widget->Resize(gfx::Size());
   return web_view_;
 }
 
@@ -559,6 +430,107 @@ WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
     security_origin = SecurityOrigin::CreateUniqueOpaque();
   frame->GetFrame()->SetReplicatedOrigin(std::move(security_origin), false);
   return web_view_;
+}
+
+void WebViewHelper::CheckFrameIsAssociatedWithWebView(WebFrame* frame) {
+  // Find the main frame and assert that it is the same.
+  while (frame->Parent()) {
+    frame = frame->Parent();
+  }
+  CHECK_EQ(web_view_->MainFrame(), frame);
+}
+
+WebLocalFrameImpl* WebViewHelper::CreateLocalChild(
+    WebRemoteFrame& parent,
+    const WebString& name,
+    const WebFrameOwnerProperties& properties,
+    WebFrame* previous_sibling,
+    TestWebFrameClient* client) {
+  CheckFrameIsAssociatedWithWebView(&parent);
+  std::unique_ptr<TestWebFrameClient> owned_client;
+  client = CreateDefaultClientIfNeeded(client, owned_client);
+  auto* frame = To<WebLocalFrameImpl>(parent.CreateLocalChild(
+      mojom::blink::TreeScopeType::kDocument, name, FramePolicy(), client,
+      nullptr, previous_sibling, properties,
+      mojom::blink::FrameOwnerElementType::kIframe,
+      base::UnguessableToken::Create(), nullptr,
+      std::make_unique<WebPolicyContainer>(WebPolicyContainerDocumentPolicies(),
+                                           mojo::NullAssociatedRemote())));
+  client->Bind(frame, std::move(owned_client));
+
+  TestWebFrameWidget* frame_widget =
+      CreateFrameWidgetAndInitializeCompositing(frame);
+  // Set an initial size for subframes.
+  frame_widget->Resize(gfx::Size());
+  return frame;
+}
+
+WebLocalFrameImpl* WebViewHelper::CreateProvisional(
+    WebFrame& old_frame,
+    TestWebFrameClient* client) {
+  CheckFrameIsAssociatedWithWebView(&old_frame);
+  std::unique_ptr<TestWebFrameClient> owned_client;
+  client = CreateDefaultClientIfNeeded(client, owned_client);
+  auto* frame = To<WebLocalFrameImpl>(WebLocalFrame::CreateProvisional(
+      client, nullptr, base::UnguessableToken::Create(), &old_frame,
+      FramePolicy(), WebFrame::ToCoreFrame(old_frame)->Tree().GetName()));
+  client->Bind(frame, std::move(owned_client));
+
+  // Create a widget, if necessary.
+  if (!frame->Parent() || frame->Parent()->IsWebRemoteFrame()) {
+    TestWebFrameWidget* frame_widget =
+        CreateFrameWidgetAndInitializeCompositing(frame);
+    // Set an initial size for subframes.
+    if (frame->Parent())
+      frame_widget->Resize(gfx::Size());
+  }
+  return frame;
+}
+
+TestWebFrameWidget* WebViewHelper::CreateFrameWidget(WebLocalFrame* frame) {
+  ScopedCreateWebFrameWidget create_hook(&create_widget_callback_wrapper_);
+  mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget_remote;
+  mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
+      frame_widget_receiver =
+          frame_widget_remote.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<mojom::blink::FrameWidgetHost> frame_widget_host;
+  mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>
+      frame_widget_host_receiver =
+          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
+  mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
+      widget_remote.BindNewEndpointAndPassDedicatedReceiver();
+
+  mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host;
+  mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>
+      widget_host_receiver =
+          widget_host.BindNewEndpointAndPassDedicatedReceiver();
+
+  auto* frame_widget =
+      static_cast<TestWebFrameWidget*>(frame->InitializeFrameWidget(
+          frame_widget_host.Unbind(), std::move(frame_widget_receiver),
+          widget_host.Unbind(), std::move(widget_receiver),
+          AllocateFrameSinkId()));
+  frame_widget->BindWidgetChannels(std::move(widget_remote),
+                                   std::move(widget_host_receiver),
+                                   std::move(frame_widget_host_receiver));
+  return frame_widget;
+}
+
+TestWebFrameWidget* WebViewHelper::CreateFrameWidgetAndInitializeCompositing(
+    WebLocalFrame* frame) {
+  TestWebFrameWidget* frame_widget = CreateFrameWidget(frame);
+  // The WebWidget requires the compositor to be set before it is used.
+  cc::LayerTreeSettings layer_tree_settings =
+      GetSynchronousSingleThreadLayerTreeSettings();
+  frame_widget->InitializeCompositing(
+      frame_widget->main_thread_scheduler(), frame_widget->task_graph_runner(),
+      frame_widget->GetInitialScreenInfo(),
+      std::make_unique<cc::TestUkmRecorderFactory>(), &layer_tree_settings);
+  frame_widget->SetCompositorVisible(true);
+  return frame_widget;
 }
 
 void WebViewHelper::LoadAhem() {
@@ -785,10 +757,17 @@ cc::FakeLayerTreeFrameSink* TestWebFrameWidget::LastCreatedFrameSink() {
   return last_created_frame_sink_;
 }
 
+std::unique_ptr<TestWebFrameWidgetHost> TestWebFrameWidget::CreateWidgetHost() {
+  return std::make_unique<TestWebFrameWidgetHost>();
+}
+
 void TestWebFrameWidget::BindWidgetChannels(
     mojo::AssociatedRemote<mojom::blink::Widget> widget_remote,
-    mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost> receiver) {
-  widget_host_.BindWidgetHost(std::move(receiver));
+    mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost> receiver,
+    mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>
+        frame_receiver) {
+  widget_host_ = CreateWidgetHost();
+  widget_host_->BindWidgetHost(std::move(receiver), std::move(frame_receiver));
   mojo::Remote<mojom::blink::WidgetInputHandler> input_handler;
   widget_remote->GetWidgetInputHandler(
       input_handler.BindNewPipeAndPassReceiver(),
@@ -846,10 +825,40 @@ void TestWebFrameWidgetHost::RegisterRenderFrameMetadataObserver(
     mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
         render_frame_metadata_observer) {}
 
+void TestWebFrameWidgetHost::AnimateDoubleTapZoomInMainFrame(
+    const gfx::Point& tap_point,
+    const gfx::Rect& rect_to_zoom) {}
+
+void TestWebFrameWidgetHost::ZoomToFindInPageRectInMainFrame(
+    const gfx::Rect& rect_to_zoom) {}
+
+void TestWebFrameWidgetHost::SetHasTouchEventConsumers(
+    mojom::blink::TouchEventConsumersPtr consumers) {}
+
+void TestWebFrameWidgetHost::IntrinsicSizingInfoChanged(
+    mojom::blink::IntrinsicSizingInfoPtr sizing_info) {}
+
+void TestWebFrameWidgetHost::AutoscrollStart(const gfx::PointF& position) {}
+
+void TestWebFrameWidgetHost::AutoscrollFling(const gfx::Vector2dF& position) {}
+
+void TestWebFrameWidgetHost::AutoscrollEnd() {}
+
+void TestWebFrameWidgetHost::DidFirstVisuallyNonEmptyPaint() {}
+
+void TestWebFrameWidgetHost::StartDragging(
+    const blink::WebDragData& drag_data,
+    blink::DragOperationsMask operations_allowed,
+    const SkBitmap& bitmap,
+    const gfx::Vector2d& bitmap_offset_in_dip,
+    mojom::blink::DragEventSourceInfoPtr event_info) {}
+
 void TestWebFrameWidgetHost::BindWidgetHost(
-    mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost> receiver) {
-  receiver_.reset();
+    mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost> receiver,
+    mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>
+        frame_receiver) {
   receiver_.Bind(std::move(receiver));
+  frame_receiver_.Bind(std::move(frame_receiver));
 }
 
 void TestWebViewClient::DestroyChildViews() {

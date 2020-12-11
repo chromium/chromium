@@ -160,24 +160,11 @@ WebLocalFrameImpl* CreateLocalChild(WebLocalFrame& parent,
                                     blink::mojom::blink::TreeScopeType,
                                     std::unique_ptr<TestWebFrameClient>);
 
-// Helper for creating a provisional local frame that can replace a local or
-// remote frame.
-WebLocalFrameImpl* CreateProvisional(WebFrame& old_frame,
-                                     TestWebFrameClient* = nullptr);
-
 // Helper for creating a remote frame. Generally used when creating a remote
 // frame to swap into the frame tree.
 // TODO(dcheng): Consider allowing security origin to be passed here once the
 // frame tree moves back to core.
 WebRemoteFrameImpl* CreateRemote(TestWebRemoteFrameClient* = nullptr);
-
-// Helper for creating a local child frame of a remote parent frame.
-WebLocalFrameImpl* CreateLocalChild(
-    WebRemoteFrame& parent,
-    const WebString& name = WebString(),
-    const WebFrameOwnerProperties& = WebFrameOwnerProperties(),
-    WebFrame* previous_sibling = nullptr,
-    TestWebFrameClient* = nullptr);
 
 // Helper for creating a remote child frame of a remote parent frame.
 WebRemoteFrameImpl* CreateRemoteChild(WebRemoteFrame& parent,
@@ -185,7 +172,8 @@ WebRemoteFrameImpl* CreateRemoteChild(WebRemoteFrame& parent,
                                       scoped_refptr<SecurityOrigin> = nullptr,
                                       TestWebRemoteFrameClient* = nullptr);
 
-class TestWebFrameWidgetHost : public mojom::blink::WidgetHost {
+class TestWebFrameWidgetHost : public mojom::blink::WidgetHost,
+                               public mojom::blink::FrameWidgetHost {
  public:
   size_t CursorSetCount() const { return cursor_set_count_; }
   size_t VirtualKeyboardRequestCount() const {
@@ -214,13 +202,33 @@ class TestWebFrameWidgetHost : public mojom::blink::WidgetHost {
       mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
           render_frame_metadata_observer) override;
 
+  // blink::mojom::FrameWidgetHost overrides.
+  void AnimateDoubleTapZoomInMainFrame(const gfx::Point& tap_point,
+                                       const gfx::Rect& rect_to_zoom) override;
+  void ZoomToFindInPageRectInMainFrame(const gfx::Rect& rect_to_zoom) override;
+  void SetHasTouchEventConsumers(
+      mojom::blink::TouchEventConsumersPtr consumers) override;
+  void IntrinsicSizingInfoChanged(
+      mojom::blink::IntrinsicSizingInfoPtr sizing_info) override;
+  void AutoscrollStart(const gfx::PointF& position) override;
+  void AutoscrollFling(const gfx::Vector2dF& position) override;
+  void AutoscrollEnd() override;
+  void DidFirstVisuallyNonEmptyPaint() override;
+  void StartDragging(const blink::WebDragData& drag_data,
+                     blink::DragOperationsMask operations_allowed,
+                     const SkBitmap& bitmap,
+                     const gfx::Vector2d& bitmap_offset_in_dip,
+                     mojom::blink::DragEventSourceInfoPtr event_info) override;
+
   void BindWidgetHost(
-      mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>);
+      mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>,
+      mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>);
 
  private:
   size_t cursor_set_count_ = 0;
   size_t virtual_keyboard_request_count_ = 0;
   mojo::AssociatedReceiver<mojom::blink::WidgetHost> receiver_{this};
+  mojo::AssociatedReceiver<mojom::blink::FrameWidgetHost> frame_receiver_{this};
 };
 
 class TestWebFrameWidget : public WebFrameWidgetImpl {
@@ -230,7 +238,7 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
       : WebFrameWidgetImpl(std::forward<Args>(args)...) {}
   ~TestWebFrameWidget() override = default;
 
-  TestWebFrameWidgetHost& WidgetHost() { return widget_host_; }
+  TestWebFrameWidgetHost& WidgetHost() { return *widget_host_; }
 
   bool HaveScrollEventHandlers() const;
   const Vector<std::unique_ptr<blink::WebCoalescedInputEvent>>&
@@ -251,10 +259,12 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   cc::FakeLayerTreeFrameSink* LastCreatedFrameSink();
 
   virtual ScreenInfo GetInitialScreenInfo();
+  virtual std::unique_ptr<TestWebFrameWidgetHost> CreateWidgetHost();
 
   void BindWidgetChannels(
       mojo::AssociatedRemote<mojom::blink::Widget>,
-      mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>);
+      mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>,
+      mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>);
 
   using WebFrameWidgetImpl::GetOriginalScreenInfo;
 
@@ -278,7 +288,7 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
       injected_scroll_events_;
   std::unique_ptr<TestWidgetInputHandlerHost> widget_input_handler_host_;
   viz::FrameSinkId frame_sink_id_;
-  TestWebFrameWidgetHost widget_host_;
+  std::unique_ptr<TestWebFrameWidgetHost> widget_host_;
 };
 
 class TestWebViewClient : public WebViewClient {
@@ -375,6 +385,26 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       scoped_refptr<SecurityOrigin> = nullptr,
       TestWebViewClient* = nullptr);
 
+  // Helper for creating a local child frame of a remote parent frame.
+  WebLocalFrameImpl* CreateLocalChild(
+      WebRemoteFrame& parent,
+      const WebString& name = WebString(),
+      const WebFrameOwnerProperties& = WebFrameOwnerProperties(),
+      WebFrame* previous_sibling = nullptr,
+      TestWebFrameClient* = nullptr);
+
+  // Helper for creating a provisional local frame that can replace a local or
+  // remote frame.
+  WebLocalFrameImpl* CreateProvisional(WebFrame& old_frame,
+                                       TestWebFrameClient* = nullptr);
+
+  // Creates a frame widget but does not initialize compositing.
+  TestWebFrameWidget* CreateFrameWidget(WebLocalFrame* frame);
+
+  // Creates a frame widget and initializes compositing.
+  TestWebFrameWidget* CreateFrameWidgetAndInitializeCompositing(
+      WebLocalFrame* frame);
+
   // Load the 'Ahem' font to this WebView.
   // The 'Ahem' font is the only font whose font metrics is consistent across
   // platforms, but it's not guaranteed to be available.
@@ -424,6 +454,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
  private:
   void InitializeWebView(TestWebViewClient*,
                          class WebView* opener);
+  void CheckFrameIsAssociatedWithWebView(WebFrame* frame);
 
   bool viewport_enabled_ = false;
 

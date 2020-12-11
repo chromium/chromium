@@ -591,6 +591,8 @@ static CreateWebFrameWidgetCallback* g_create_web_frame_widget = nullptr;
 
 void InstallCreateWebFrameWidgetHook(
     CreateWebFrameWidgetCallback* create_widget) {
+  // This DCHECK's aims to avoid unexpected replacement of the hook.
+  DCHECK(!g_create_web_frame_widget || !create_widget);
   g_create_web_frame_widget = create_widget;
 }
 

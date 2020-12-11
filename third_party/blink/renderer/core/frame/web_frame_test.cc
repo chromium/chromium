@@ -2078,7 +2078,7 @@ TEST_F(WebFrameTest, FrameOwnerPropertiesMargin) {
   WebFrameOwnerProperties properties;
   properties.margin_width = 11;
   properties.margin_height = 22;
-  WebLocalFrameImpl* local_frame = frame_test_helpers::CreateLocalChild(
+  WebLocalFrameImpl* local_frame = helper.CreateLocalChild(
       *helper.RemoteMainFrame(), "frameName", properties);
 
   RegisterMockedHttpURLLoad("frame_owner_properties.html");
@@ -2109,7 +2109,7 @@ TEST_F(WebFrameTest, FrameOwnerPropertiesScrolling) {
   WebFrameOwnerProperties properties;
   // Turn off scrolling in the subframe.
   properties.scrollbar_mode = mojom::blink::ScrollbarMode::kAlwaysOff;
-  WebLocalFrameImpl* local_frame = frame_test_helpers::CreateLocalChild(
+  WebLocalFrameImpl* local_frame = helper.CreateLocalChild(
       *helper.RemoteMainFrame(), "frameName", properties);
 
   RegisterMockedHttpURLLoad("frame_owner_properties.html");
@@ -7281,9 +7281,9 @@ TEST_F(WebFrameTest, MainFrameIntersectionChanged) {
   frame_test_helpers::WebViewHelper helper;
   helper.InitializeRemote();
 
-  WebLocalFrameImpl* local_frame = frame_test_helpers::CreateLocalChild(
-      *helper.RemoteMainFrame(), "frameName", WebFrameOwnerProperties(),
-      nullptr, &client);
+  WebLocalFrameImpl* local_frame =
+      helper.CreateLocalChild(*helper.RemoteMainFrame(), "frameName",
+                              WebFrameOwnerProperties(), nullptr, &client);
 
   WebFrameWidget* widget = local_frame->FrameWidget();
   ASSERT_TRUE(widget);
@@ -8739,7 +8739,7 @@ TEST_F(WebFrameTest, EmbedderTriggeredDetachWithRemoteMainFrame) {
   frame_test_helpers::WebViewHelper helper;
   helper.InitializeRemote();
   WebLocalFrame* child_frame =
-      frame_test_helpers::CreateLocalChild(*helper.RemoteMainFrame());
+      helper.CreateLocalChild(*helper.RemoteMainFrame());
 
   // Purposely keep the LocalFrame alive so it's the last thing to be destroyed.
   Persistent<Frame> child_core_frame = WebFrame::ToCoreFrame(*child_frame);
@@ -8823,8 +8823,10 @@ class WebFrameSwapTest : public WebFrameTest {
   WebLocalFrame* MainFrame() const { return web_view_helper_.LocalMainFrame(); }
   WebViewImpl* WebView() const { return web_view_helper_.GetWebView(); }
 
- private:
+ protected:
   frame_test_helpers::WebViewHelper web_view_helper_;
+
+ private:
   WebFrameSwapTestClient main_frame_client_;
 };
 
@@ -8833,7 +8835,7 @@ TEST_F(WebFrameSwapTest, SwapMainFrame) {
   MainFrame()->Swap(remote_frame);
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
   remote_frame->Swap(local_frame);
 
   // Finally, make sure an embedder triggered load in the local frame swapped
@@ -8854,7 +8856,7 @@ TEST_F(WebFrameSwapTest, ValidateSizeOnRemoteToLocalMainFrameSwap) {
   static_cast<WebViewImpl*>(remote_frame->View())->Resize(size);
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
   remote_frame->Swap(local_frame);
 
   // Verify that the size that was set with a remote main frame is correct
@@ -8877,7 +8879,7 @@ TEST_F(WebFrameSwapTest,
 
   // Create a provisional main frame frame but don't swap it in yet.
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
 
   WebViewImpl* web_view = static_cast<WebViewImpl*>(local_frame->View());
   EXPECT_TRUE(web_view->MainFrame() &&
@@ -8956,7 +8958,7 @@ TEST_F(WebFrameSwapTest, SwapFirstChild) {
                                      remote_frame);
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
   SwapAndVerifyFirstChildConsistency("remote->local", MainFrame(), local_frame);
 
   // FIXME: This almost certainly fires more load events on the iframe element
@@ -8983,7 +8985,7 @@ TEST_F(WebFrameSwapTest, DoNotPropagateDisplayNonePropertyOnSwap) {
   EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
   remote_frame->Swap(local_frame);
   EXPECT_FALSE(main_frame_client->DidPropagateDisplayNoneProperty());
   Reset();
@@ -9014,7 +9016,7 @@ TEST_F(WebFrameSwapTest, SwapMiddleChild) {
                                       remote_frame);
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
   SwapAndVerifyMiddleChildConsistency("remote->local", MainFrame(),
                                       local_frame);
 
@@ -9046,7 +9048,7 @@ TEST_F(WebFrameSwapTest, SwapLastChild) {
   SwapAndVerifyLastChildConsistency("local->remote", MainFrame(), remote_frame);
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
   SwapAndVerifyLastChildConsistency("remote->local", MainFrame(), local_frame);
 
   // FIXME: This almost certainly fires more load events on the iframe element
@@ -9065,7 +9067,7 @@ TEST_F(WebFrameSwapTest, DetachProvisionalFrame) {
                                       remote_frame);
 
   WebLocalFrameImpl* provisional_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
 
   // The provisional frame should have a local frame owner.
   FrameOwner* owner = provisional_frame->GetFrame()->Owner();
@@ -9104,8 +9106,8 @@ TEST_F(WebFrameSwapTest, EventsOnDisconnectedSubDocumentSkipped) {
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
-  WebLocalFrameImpl* local_child = frame_test_helpers::CreateLocalChild(
-      *remote_frame, "local-inside-remote");
+  WebLocalFrameImpl* local_child =
+      web_view_helper_.CreateLocalChild(*remote_frame, "local-inside-remote");
 
   LocalFrame* main_frame = WebView()->MainFrameImpl()->GetFrame();
   Document* child_document = local_child->GetFrame()->GetDocument();
@@ -9127,8 +9129,8 @@ TEST_F(WebFrameSwapTest, EventsOnDisconnectedElementSkipped) {
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
-  WebLocalFrameImpl* local_child = frame_test_helpers::CreateLocalChild(
-      *remote_frame, "local-inside-remote");
+  WebLocalFrameImpl* local_child =
+      web_view_helper_.CreateLocalChild(*remote_frame, "local-inside-remote");
 
   LocalFrame* main_frame = WebView()->MainFrameImpl()->GetFrame();
 
@@ -9161,7 +9163,7 @@ TEST_F(WebFrameSwapTest, SwapParentShouldDetachChildren) {
   frame_test_helpers::CreateRemoteChild(*remote_frame);
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
   SwapAndVerifySubframeConsistency("remote->local", target_frame, local_frame);
 
   // FIXME: This almost certainly fires more load events on the iframe element
@@ -9200,7 +9202,7 @@ TEST_F(WebFrameSwapTest, SwapPreservesGlobalContext) {
   // Now check that remote -> local works too, since it goes through a different
   // code path.
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
   remote_frame->Swap(local_frame);
   v8::Local<v8::Value> local_window = MainFrame()->ExecuteScriptAndReturnValue(
       WebScriptSource("document.querySelector('#frame2').contentWindow;"));
@@ -9261,7 +9263,7 @@ TEST_F(WebFrameSwapTest, SwapInitializesGlobal) {
   EXPECT_TRUE(window_top->StrictEquals(remote_window_top));
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+      web_view_helper_.CreateProvisional(*remote_frame);
   remote_frame->Swap(local_frame);
   v8::Local<v8::Value> local_window_top =
       MainFrame()->ExecuteScriptAndReturnValue(WebScriptSource("saved.top"));
@@ -9337,7 +9339,7 @@ TEST_F(WebFrameSwapTest, FramesOfRemoteParentAreIndexable) {
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
   WebLocalFrame* child_frame =
-      frame_test_helpers::CreateLocalChild(*remote_parent_frame);
+      web_view_helper_.CreateLocalChild(*remote_parent_frame);
   frame_test_helpers::LoadFrame(child_frame, base_url_ + "subframe-hello.html");
 
   v8::Local<v8::Value> window =
@@ -9365,7 +9367,7 @@ TEST_F(WebFrameSwapTest, FrameElementInFramesWithRemoteParent) {
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
 
   WebLocalFrame* child_frame =
-      frame_test_helpers::CreateLocalChild(*remote_parent_frame);
+      web_view_helper_.CreateLocalChild(*remote_parent_frame);
   frame_test_helpers::LoadFrame(child_frame, base_url_ + "subframe-hello.html");
 
   v8::Local<v8::Value> frame_element = child_frame->ExecuteScriptAndReturnValue(
@@ -9416,7 +9418,7 @@ TEST_F(WebFrameSwapTest, HistoryCommitTypeAfterNewRemoteToLocalSwap) {
 
   RemoteToLocalSwapWebFrameClient client(remote_frame);
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame, &client);
+      web_view_helper_.CreateProvisional(*remote_frame, &client);
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
   EXPECT_EQ(kWebHistoryInertCommit, client.HistoryCommitType());
 
@@ -9438,7 +9440,7 @@ TEST_F(WebFrameSwapTest, HistoryCommitTypeAfterExistingRemoteToLocalSwap) {
 
   RemoteToLocalSwapWebFrameClient client(remote_frame);
   WebLocalFrameImpl* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame, &client);
+      web_view_helper_.CreateProvisional(*remote_frame, &client);
   local_frame->SetCommittedFirstRealLoad();
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "subframe-hello.html");
   EXPECT_EQ(kWebStandardCommit, client.HistoryCommitType());
@@ -9613,7 +9615,7 @@ TEST_F(WebFrameTest, NavigateRemoteToLocalWithOpener) {
 
   // Do a remote-to-local swap in the popup.
   WebLocalFrame* popup_local_frame =
-      frame_test_helpers::CreateProvisional(*popup_remote_frame);
+      popup_helper.CreateProvisional(*popup_remote_frame);
   popup_remote_frame->Swap(popup_local_frame);
 
   // The initial document created during the remote-to-local swap should have
@@ -9631,8 +9633,7 @@ TEST_F(WebFrameTest, SwapWithOpenerCycle) {
       ->SetOpenerDoNotNotify(WebFrame::ToCoreFrame(*remote_frame));
 
   // Now swap in a local frame. It shouldn't crash.
-  WebLocalFrame* local_frame =
-      frame_test_helpers::CreateProvisional(*remote_frame);
+  WebLocalFrame* local_frame = helper.CreateProvisional(*remote_frame);
   remote_frame->Swap(local_frame);
 
   // And the opener cycle should still be preserved.
@@ -9670,7 +9671,7 @@ TEST_F(WebFrameTest, RemoteFrameInitialCommitType) {
   // If an iframe has a remote main frame, ensure the inital commit is correctly
   // identified as kWebHistoryInertCommit.
   CommitTypeWebFrameClient child_frame_client;
-  WebLocalFrame* child_frame = frame_test_helpers::CreateLocalChild(
+  WebLocalFrame* child_frame = helper.CreateLocalChild(
       *helper.RemoteMainFrame(), "frameName", WebFrameOwnerProperties(),
       nullptr, &child_frame_client);
   RegisterMockedHttpURLLoad("foo.html");
@@ -9861,14 +9862,12 @@ TEST_F(WebFrameTest, CreateLocalChildWithPreviousSibling) {
   helper.InitializeRemote();
   WebRemoteFrame* parent = helper.RemoteMainFrame();
 
-  WebLocalFrame* second_frame(
-      frame_test_helpers::CreateLocalChild(*parent, "name2"));
-  WebLocalFrame* fourth_frame(frame_test_helpers::CreateLocalChild(
+  WebLocalFrame* second_frame(helper.CreateLocalChild(*parent, "name2"));
+  WebLocalFrame* fourth_frame(helper.CreateLocalChild(
       *parent, "name4", WebFrameOwnerProperties(), second_frame));
-  WebLocalFrame* third_frame(frame_test_helpers::CreateLocalChild(
+  WebLocalFrame* third_frame(helper.CreateLocalChild(
       *parent, "name3", WebFrameOwnerProperties(), second_frame));
-  WebLocalFrame* first_frame(
-      frame_test_helpers::CreateLocalChild(*parent, "name1"));
+  WebLocalFrame* first_frame(helper.CreateLocalChild(*parent, "name1"));
 
   EXPECT_EQ(first_frame, parent->FirstChild());
   EXPECT_EQ(nullptr, first_frame->PreviousSibling());
@@ -9895,7 +9894,7 @@ TEST_F(WebFrameTest, SendBeaconFromChildWithRemoteMainFrame) {
   helper.InitializeRemote();
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateLocalChild(*helper.RemoteMainFrame());
+      helper.CreateLocalChild(*helper.RemoteMainFrame());
 
   // Finally, make sure an embedder triggered load in the local frame swapped
   // back in works.
@@ -9912,7 +9911,7 @@ TEST_F(WebFrameTest, SiteForCookiesFromChildWithRemoteMainFrame) {
                           SecurityOrigin::Create(ToKURL(not_base_url_)));
 
   WebLocalFrame* local_frame =
-      frame_test_helpers::CreateLocalChild(*helper.RemoteMainFrame());
+      helper.CreateLocalChild(*helper.RemoteMainFrame());
 
   RegisterMockedHttpURLLoad("foo.html");
   frame_test_helpers::LoadFrame(local_frame, base_url_ + "foo.html");
@@ -9929,11 +9928,11 @@ TEST_F(WebFrameTest, RemoteToLocalSwapOnMainFrameInitializesCoreFrame) {
   frame_test_helpers::WebViewHelper helper;
   helper.InitializeRemote();
 
-  frame_test_helpers::CreateLocalChild(*helper.RemoteMainFrame());
+  helper.CreateLocalChild(*helper.RemoteMainFrame());
 
   // Do a remote-to-local swap of the top frame.
   WebLocalFrame* local_root =
-      frame_test_helpers::CreateProvisional(*helper.RemoteMainFrame());
+      helper.CreateProvisional(*helper.RemoteMainFrame());
   helper.RemoteMainFrame()->Swap(local_root);
 
   // Load a page with a child frame in the new root to make sure this doesn't
@@ -9961,8 +9960,7 @@ TEST_F(WebFrameTest, PausedPageLoadWithRemoteMainFrame) {
 
   // Repeat this for a page with a local child frame, and ensure that the
   // child frame's loads are also suspended.
-  WebLocalFrameImpl* web_local_child =
-      frame_test_helpers::CreateLocalChild(*remote_root);
+  WebLocalFrameImpl* web_local_child = helper.CreateLocalChild(*remote_root);
   RegisterMockedHttpURLLoad("foo.html");
   frame_test_helpers::LoadFrame(web_local_child, base_url_ + "foo.html");
   LocalFrame* local_child = web_local_child->GetFrame();
@@ -10609,7 +10607,7 @@ TEST_F(WebFrameTest, MaxFrames) {
   Page* page = web_view_helper.GetWebView()->GetPage();
 
   WebLocalFrameImpl* frame =
-      frame_test_helpers::CreateLocalChild(*web_view_helper.RemoteMainFrame());
+      web_view_helper.CreateLocalChild(*web_view_helper.RemoteMainFrame());
   while (page->SubframeCount() < Page::MaxNumberOfFrames()) {
     frame_test_helpers::CreateRemoteChild(*web_view_helper.RemoteMainFrame());
   }
@@ -12683,7 +12681,7 @@ TEST_F(WebFrameTest, ShowVirtualKeyboardOnElementFocus) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeRemote();
 
-  WebLocalFrameImpl* local_frame = frame_test_helpers::CreateLocalChild(
+  WebLocalFrameImpl* local_frame = web_view_helper.CreateLocalChild(
       *web_view_helper.RemoteMainFrame(), "child", WebFrameOwnerProperties(),
       nullptr, nullptr);
 
@@ -12872,7 +12870,7 @@ TEST_F(WebFrameTest, LocalFrameWithRemoteParentIsTransparent) {
   helper.InitializeRemote();
 
   WebLocalFrameImpl* local_frame =
-      frame_test_helpers::CreateLocalChild(*helper.RemoteMainFrame());
+      helper.CreateLocalChild(*helper.RemoteMainFrame());
   frame_test_helpers::LoadFrame(local_frame, "data:text/html,some page");
 
   // Local frame with remote parent should have transparent baseBackgroundColor.
@@ -13426,9 +13424,9 @@ TEST_F(WebFrameTest, MediaQueriesInLocalFrameInsideRemote) {
   frame_test_helpers::WebViewHelper helper;
   helper.InitializeRemote();
 
-  WebLocalFrameImpl* local_frame = frame_test_helpers::CreateLocalChild(
-      *helper.RemoteMainFrame(), WebString(), WebFrameOwnerProperties(),
-      nullptr, nullptr);
+  WebLocalFrameImpl* local_frame =
+      helper.CreateLocalChild(*helper.RemoteMainFrame(), WebString(),
+                              WebFrameOwnerProperties(), nullptr, nullptr);
 
   frame_test_helpers::TestWebFrameWidget* local_frame_widget =
       static_cast<frame_test_helpers::TestWebFrameWidget*>(
@@ -13452,8 +13450,8 @@ TEST_F(WebFrameTest, MediaQueriesInLocalFrameInsideRemote) {
 TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
   frame_test_helpers::WebViewHelper helper;
   helper.InitializeRemote();
-  WebLocalFrameImpl* local_frame = frame_test_helpers::CreateLocalChild(
-      *helper.RemoteMainFrame(), "frameName");
+  WebLocalFrameImpl* local_frame =
+      helper.CreateLocalChild(*helper.RemoteMainFrame(), "frameName");
   frame_test_helpers::LoadHTMLString(local_frame, R"HTML(
       <!DOCTYPE html>
       <style>

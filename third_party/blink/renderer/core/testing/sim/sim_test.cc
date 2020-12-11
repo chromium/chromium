@@ -86,7 +86,7 @@ void SimTest::InitializeRemote() {
   page_->SetPage(WebView().GetPage());
   web_frame_client_ =
       std::make_unique<frame_test_helpers::TestWebFrameClient>();
-  local_frame_root_ = frame_test_helpers::CreateLocalChild(
+  local_frame_root_ = web_view_helper_->CreateLocalChild(
       *WebView().MainFrame()->ToWebRemoteFrame(), "local_frame_root",
       WebFrameOwnerProperties(), nullptr, web_frame_client_.get());
   compositor_->SetLayerTreeHost(
