@@ -1,47 +1,69 @@
 <style include="scanning-fonts">
+  #titleContainer {
+    align-items: center;
+    display: flex;
+    margin-bottom: 24px;
+    margin-inline-start: 32px;
+    margin-top: 0;
+  }
+
   .container {
     @apply --scanning-done-page-option-font;
+    align-items: center;
     color: var(--scanning-done-page-option-text-color);
     display: flex;
+    height: 36px;
+    margin-bottom: 8px;
+    margin-inline-end: 32px;
+    margin-inline-start: 32px;
+    margin-top: 0;
+    padding-inline-end: 16px;
+    width: 272px;
   }
 
   #checkMarkIcon {
+    height: 20px;
     margin-inline-end: 12px;
-    min-width: 24px;
-    padding-bottom: 2px;
+    width: 20px;
   }
 
   .done-button-container {
     display: flex;
     justify-content: flex-end;
+    margin-bottom: 0;
+    margin-inline-end: 32px;
+    margin-inline-start: 32px;
     margin-top: 32px;
-    width: 264px;
+    padding-inline-end: 16px;
+    width: 272px;
   }
 
   #title {
     @apply --scanning-done-section-title-font;
     color: var(--scanning-done-section-title-text-color);
-    display: inline-block;
-  }
-
-  .button,
-  .label {
     flex-direction: column;
-    min-height: 32px;
+    margin: 0;
+  }
+
+  .button {
+    flex-direction: column;
+    height: 20px;
+    margin: 0;
+    width: 20px;
   }
 
   .label {
-    flex-basis: 222px;
+    flex-basis: 252px;
     flex-grow: 0;
     flex-shrink: 0;
-    margin-top: 5px;
-    padding-top: 8px;
   }
 </style>
-<iron-icon id="checkMarkIcon" icon="scanning:check-mark"></iron-icon>
-<h1 id="title">
-  [[titleText_]]
-</h1>
+<div id="titleContainer">
+  <iron-icon id="checkMarkIcon" icon="scanning:check-mark"></iron-icon>
+  <h1 id="title">
+    [[titleText_]]
+  </h1>
+</div>
 <div class="container">
   <span id="showFileLocationLabel" class="label" aria-hidden="true">
     [[i18n('showFileLocationLabel')]]
