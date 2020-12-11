@@ -18,6 +18,7 @@
 
   #deviceList {
     display: block;
+    margin-top: 12px;
     overflow: auto;
     padding-inline-end:  var(--nearby-page-space-large-inline);
     padding-inline-start:  var(--nearby-page-space-large-inline);
@@ -58,10 +59,10 @@
   }
 
   #process-row {
-    align-items: center;
+    align-items: flex-start;
     display: flex;
-    flex-grow: 1;
     justify-content: space-between;
+    margin: auto 0;
     margin-block-start: 48px;
     overflow: hidden;
   }
@@ -73,6 +74,7 @@
   }
 
   #placeholder {
+    align-self: center;
     color: rgb(95, 99, 104);
     font-size: 13px;
     line-height: 20px;
@@ -103,11 +105,9 @@
             aria-label="$i18n{nearbyShareDiscoveryPageSubtitle}">
           <template>
             <nearby-device tabindex$="[[tabIndex]]" share-target="[[item]]"
-                is-selected="[[isShareTargetSelected_(
-                                 item, selectedShareTarget)]]"
+                is-selected="[[selected]]"
                 role="radio"
-                aria-checked$="[[isShareTargetSelectedStr_(
-                                 item, selectedShareTarget)]]">
+                aria-checked$="[[boolToString_(selected)]]">
             </nearby-device>
           </template>
         </iron-list>
