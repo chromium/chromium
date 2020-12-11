@@ -17,7 +17,7 @@ import "services/audio/public/mojom/stream_factory.mojom";
 //
 //                        <-component extension<-----------------
 //                        /                                      \
-// [Google|Playback]Stream                       TtsEventObserver
+// [Google|Playback]TtsStream                         TtsEventObserver
 //            |                                         |
 //            -----------              -----------------
 //                       \             /
@@ -81,8 +81,10 @@ interface GoogleTtsStream {
   // Selects a voice for streaming given a |voice_name|.
   SelectVoice(string voice_name) => (bool success);
 
-  // Speak text described by a serialized proto.speech.tts.Text proto.
-  Speak(array<uint8> text_jspb)
+  // Speak text described by a serialized proto.speech.tts.Text proto with the
+  // speaker given by speaker_name. The call will fail if no speaker is given
+  // and the voice model is a multi-speaker model.
+  Speak(array<uint8> text_jspb, string speaker_name)
       => (pending_receiver<TtsEventObserver> event_observer);
 
   // Stop speaking the currently speaking text, if any.

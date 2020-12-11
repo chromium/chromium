@@ -18,7 +18,9 @@ bool GoogleTtsInstallVoice(const char* voice_name,
                            const uint8_t* voice_bytes,
                            int size);
 
-bool GoogleTtsInitBuffered(const uint8_t* text_jspb, int text_jspb_len);
+bool GoogleTtsInitBuffered(const uint8_t* text_jspb,
+                           const char* speaker_name,
+                           int text_jspb_len);
 
 int GoogleTtsReadBuffered(float* audio_channel_buffer, size_t* frames_written);
 

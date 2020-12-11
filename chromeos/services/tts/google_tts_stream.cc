@@ -90,15 +90,16 @@ void GoogleTtsStream::SelectVoice(const std::string& voice_name,
                                   SelectVoiceCallback callback) {
   base::FilePath path_prefix =
       base::FilePath(kTempDataDirectory).Append(voice_name);
-  base::FilePath pipeline_path = path_prefix.Append("pipeline");
+  base::FilePath pipeline_path = path_prefix.Append("pipeline.pb");
   std::move(callback).Run(libchrometts_.GoogleTtsInit(
       pipeline_path.value().c_str(), path_prefix.value().c_str()));
 }
 
 void GoogleTtsStream::Speak(const std::vector<uint8_t>& text_jspb,
+                            const std::string& speaker_name,
                             SpeakCallback callback) {
-  bool status =
-      libchrometts_.GoogleTtsInitBuffered(&text_jspb[0], text_jspb.size());
+  bool status = libchrometts_.GoogleTtsInitBuffered(
+      &text_jspb[0], speaker_name.c_str(), text_jspb.size());
   if (!status) {
     stream_receiver_.reset();
     owner_->MaybeExit();

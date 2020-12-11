@@ -31,6 +31,7 @@ class GoogleTtsStream : public mojom::GoogleTtsStream {
   void SelectVoice(const std::string& voice_name,
                    SelectVoiceCallback callback) override;
   void Speak(const std::vector<uint8_t>& text_jspb,
+             const std::string& speaker_name,
              SpeakCallback callback) override;
   void Stop() override;
   void SetVolume(float volume) override;

@@ -17,7 +17,7 @@ namespace chromeos {
 namespace tts {
 
 namespace {
-constexpr int kDefaultSampleRate = 22050;
+constexpr int kDefaultSampleRate = 24000;
 constexpr int kDefaultBufferSize = 512;
 }  // namespace
 
