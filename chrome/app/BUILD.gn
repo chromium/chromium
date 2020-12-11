@@ -170,6 +170,7 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/chromeos",
       "//chromeos",
+      "//chromeos/dbus/constants",
       "//chromeos/memory:memory",
     ]
   }

@@ -66,6 +66,7 @@ void UserPolicyMixin::SetUpUserKeysFile(const std::string& user_key_bits) {
 
   base::ScopedAllowBlockingForTesting allow_io;
   chromeos::RegisterStubPathOverrides(user_data_dir);
+  chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
 
   base::FilePath user_keys_dir;
   CHECK(base::PathService::Get(chromeos::dbus_paths::DIR_USER_POLICY_KEYS,

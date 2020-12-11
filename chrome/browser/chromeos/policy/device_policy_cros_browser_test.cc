@@ -147,6 +147,7 @@ void DevicePolicyCrosTestHelper::OverridePaths() {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
   base::ScopedAllowBlockingForTesting allow_io;
   chromeos::RegisterStubPathOverrides(user_data_dir);
+  chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
 }
 
 const std::string DevicePolicyCrosTestHelper::device_policy_blob() {

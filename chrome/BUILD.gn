@@ -1239,6 +1239,7 @@ group("browser_dependencies") {
       "//chrome/browser/chromeos",
       "//chromeos",
       "//chromeos/constants",
+      "//chromeos/dbus/constants",
       "//chromeos/memory",
     ]
   }

@@ -121,6 +121,7 @@
 #include "chrome/browser/chromeos/startup_settings_cache.h"
 #include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/hugepage_text/hugepage_text.h"
 #include "chromeos/memory/kstaled.h"
 #include "chromeos/memory/memory.h"
@@ -752,6 +753,7 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
   chrome::RegisterPathProvider();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::RegisterPathProvider();
+  chromeos::dbus_paths::RegisterPathProvider();
 #endif
 #if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
   nacl::RegisterPathProvider();

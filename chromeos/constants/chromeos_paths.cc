@@ -9,7 +9,6 @@
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/dbus/constants/dbus_paths.h"
 
 namespace chromeos {
 
@@ -120,12 +119,10 @@ bool PathProvider(int key, base::FilePath* result) {
 }  // namespace
 
 void RegisterPathProvider() {
-  dbus_paths::RegisterPathProvider();
   base::PathService::RegisterProvider(PathProvider, PATH_START, PATH_END);
 }
 
 void RegisterStubPathOverrides(const base::FilePath& stubs_dir) {
-  dbus_paths::RegisterStubPathOverrides(stubs_dir);
   CHECK(!base::SysInfo::IsRunningOnChromeOS());
   // Override these paths on the desktop, so that enrollment and cloud policy
   // work and can be tested.

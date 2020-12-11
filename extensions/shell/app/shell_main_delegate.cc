@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_paths.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -141,6 +142,7 @@ bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::RegisterPathProvider();
+  chromeos::dbus_paths::RegisterPathProvider();
 #endif
 #if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
   nacl::RegisterPathProvider();

@@ -19,6 +19,7 @@
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/biod/biod_client.h"
 #include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -50,6 +51,7 @@ void OverrideStubPathsIfNeeded() {
   if (!base::SysInfo::IsRunningOnChromeOS() &&
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
     chromeos::RegisterStubPathOverrides(user_data_dir);
+    chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
   }
 }
 
