@@ -301,9 +301,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Download.IOSDownloadedFileStatusCode" units="units"
     expires_after="2020-12-08">
   <obsolete>
-    No longer recorded. Unclear when recording code was removed as git log -S
-    Download.IOSDownloadedFileStatusCode did not find anything useful. Marked as
-    obsolete on 12-2020.
+    Deprecated as of 08-2018. Recording code was removed in crrev.com/c/1170128.
   </obsolete>
   <owner>eugenebut@chromium.org</owner>
   <owner>stkhapugin@chromium.org</owner>
