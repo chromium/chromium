@@ -329,8 +329,8 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
 }
 
 ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* ptr) {
-  auto* entry = reinterpret_cast<PartitionFreelistEntry*>(ptr);
-  entry->SetNextForThreadCache(bucket.freelist_head);
+  auto* entry =
+      PartitionFreelistEntry::InitForThreadCache(ptr, bucket.freelist_head);
   bucket.freelist_head = entry;
   bucket.count++;
 }

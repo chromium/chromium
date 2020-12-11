@@ -19,8 +19,22 @@ struct EncodedPartitionFreelistEntry;
 
 class PartitionFreelistEntry {
  public:
-  PartitionFreelistEntry() = delete;
+  PartitionFreelistEntry() { SetNext(nullptr); }
   ~PartitionFreelistEntry() = delete;
+
+  // Creates a new entry, with |next| following it.
+  static ALWAYS_INLINE PartitionFreelistEntry* InitForThreadCache(
+      void* ptr,
+      PartitionFreelistEntry* next) {
+    auto* entry = reinterpret_cast<PartitionFreelistEntry*>(ptr);
+    entry->SetNextForThreadCache(next);
+    return entry;
+  }
+
+  // Placement new only.
+  void* operator new(size_t) = delete;
+  void operator delete(void* ptr) = delete;
+  void* operator new(size_t, void* buffer) { return buffer; }
 
   ALWAYS_INLINE static EncodedPartitionFreelistEntry* Encode(
       PartitionFreelistEntry* ptr) {
@@ -34,11 +48,6 @@ class PartitionFreelistEntry {
     PA_DCHECK(!ptr ||
               (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
                   (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask));
-    next_ = Encode(ptr);
-  }
-
-  // ThreadCache freelists can point to entries across superpage boundaries.
-  ALWAYS_INLINE void SetNextForThreadCache(PartitionFreelistEntry* ptr) {
     next_ = Encode(ptr);
   }
 
@@ -59,6 +68,11 @@ class PartitionFreelistEntry {
     uintptr_t masked = ByteSwapUintPtrT(reinterpret_cast<uintptr_t>(ptr));
 #endif
     return reinterpret_cast<void*>(masked);
+  }
+
+  // ThreadCache freelists can point to entries across superpage boundaries.
+  ALWAYS_INLINE void SetNextForThreadCache(PartitionFreelistEntry* ptr) {
+    next_ = Encode(ptr);
   }
 
   EncodedPartitionFreelistEntry* next_;

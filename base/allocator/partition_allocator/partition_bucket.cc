@@ -79,11 +79,8 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   PA_DCHECK(!page->slot_span_metadata.num_unprovisioned_slots);
   PA_DCHECK(!page->slot_span_metadata.empty_cache_index);
   page->slot_span_metadata.bucket = &metadata->bucket;
-  page->slot_span_metadata.SetFreelistHead(
-      reinterpret_cast<PartitionFreelistEntry*>(slot));
-
-  auto* next_entry = reinterpret_cast<PartitionFreelistEntry*>(slot);
-  next_entry->SetNext(nullptr);
+  auto* next_entry = new (slot) PartitionFreelistEntry();
+  page->slot_span_metadata.SetFreelistHead(next_entry);
 
   PA_DCHECK(!metadata->bucket.active_slot_spans_head);
   PA_DCHECK(!metadata->bucket.empty_slot_spans_head);
@@ -404,10 +401,9 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
 
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
-  PartitionFreelistEntry* entry =
-      reinterpret_cast<PartitionFreelistEntry*>(next_slot);
   char* next_slot_end = next_slot + size;
   while (next_slot_end <= commit_end) {
+    auto* entry = new (next_slot) PartitionFreelistEntry();
     if (!slot_span->freelist_head) {
       PA_DCHECK(!prev_entry);
       slot_span->SetFreelistHead(entry);
@@ -417,14 +413,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     next_slot = next_slot_end;
     next_slot_end = next_slot + size;
     prev_entry = entry;
-    entry = reinterpret_cast<PartitionFreelistEntry*>(next_slot);
     slot_span->num_unprovisioned_slots--;
-  }
-  // Null-terminate the list, if any slot made it to the list.
-  // One might think that this isn't needed as the page was just committed thus
-  // zeroed, but it isn't always the case on OS_APPLE.
-  if (prev_entry) {
-    prev_entry->SetNext(nullptr);
   }
 
   return return_slot;
