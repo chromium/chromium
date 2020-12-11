@@ -5867,3 +5867,6 @@ crbug.com/1156175 external/wpt/requestidlecallback/callback-iframe.html [ Pass T
 
 # Sheriff 2020-12-08
 crbug.com/1154178 external/wpt/webmessaging/broadcastchannel/basics.html [ Pass Failure ]
+
+# DevTools roll
+crbug.com/1024752 http/tests/devtools/sources/inline-styles-scripts-locations.js [ Skip ]
