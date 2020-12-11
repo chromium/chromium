@@ -2851,8 +2851,7 @@ message TpmVersionInfo {
   optional string vendor_specific = 6;
 }
 
-// Contains status of the TPM unit.  These fields come from GetTpmStatusReply
-// proto message from Chrome OS side (dbus/cryptohome/rpc.proto).
+// Contains status of the TPM unit.
 message TpmStatusInfo {
   optional bool enabled = 1;
   optional bool owned = 2;
