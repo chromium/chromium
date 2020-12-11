@@ -2122,7 +2122,7 @@ void RenderFrameHostImpl::RenderProcessExited(
 
   // Reset state for the current RenderFrameHost once the FrameTreeNode has been
   // reset.
-  SetRenderFrameCreated(false);
+  RenderFrameDeleted();
   InvalidateMojoConnection();
   broker_receiver_.reset();
   SetLastCommittedUrl(GURL());
@@ -2395,7 +2395,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   // this path is only used for out-of-process iframes.  Main frame RenderFrames
   // are created with their RenderView, and same-site iframes are created at the
   // time of OnCreateChildFrame.
-  SetRenderFrameCreated(true);
+  RenderFrameCreated();
 
   return true;
 }
@@ -2443,15 +2443,14 @@ void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
   SetLifecycleState(lifecycle_state);
 }
 
-void RenderFrameHostImpl::SetRenderFrameCreated(bool created) {
+void RenderFrameHostImpl::RenderFrameCreated() {
   // We should not create new RenderFrames while our delegate is being destroyed
   // (e.g., via a WebContentsObserver during WebContents shutdown).  This seems
   // to have caused crashes in https://crbug.com/717650.
-  if (created)
-    CHECK(!delegate_->IsBeingDestroyed());
+  CHECK(!delegate_->IsBeingDestroyed());
 
   bool was_created = render_frame_created_;
-  render_frame_created_ = created;
+  render_frame_created_ = true;
   ValidateStateForBug1146573();
 
   // Clear all the user data associated with this RenderFrameHost when its
@@ -2464,42 +2463,44 @@ void RenderFrameHostImpl::SetRenderFrameCreated(bool created) {
   // Clearing of user data should be called before RenderFrameCreated to ensure:
   // - a) new new state set in RenderFrameCreated doesn't get deleted.
   // - b) the old state is not leaked to a new RenderFrameHost.
-  if (!was_created && created && was_render_frame_ever_created_)
+  if (!was_created && was_render_frame_ever_created_)
     document_associated_data_.ClearAllUserData();
 
-  if (created)
-    was_render_frame_ever_created_ = true;
+  was_render_frame_ever_created_ = true;
 
   // If the current status is different than the new status, the delegate
   // needs to be notified.
-  if (created != was_created) {
-    if (created) {
-      SetUpMojoIfNeeded();
-      delegate_->RenderFrameCreated(this);
-    } else {
-      delegate_->RenderFrameDeleted(this);
-    }
+  if (!was_created) {
+    SetUpMojoIfNeeded();
+    delegate_->RenderFrameCreated(this);
   }
   // TODO(http://crbug.com/1014212): Change to DCHECK.
-  if (created)
-    CHECK(frame_);
+  CHECK(frame_);
 
-  if (created && GetLocalRenderWidgetHost()) {
+  if (GetLocalRenderWidgetHost()) {
     GetLocalRenderWidgetHost()->input_router()->SetFrameTreeNodeId(
         frame_tree_node_->frame_tree_node_id());
     GetLocalRenderWidgetHost()->InitForFrame();
   }
 
-  if (enabled_bindings_ && created)
+  if (enabled_bindings_)
     GetFrameBindingsControl()->AllowBindings(enabled_bindings_);
 
+  if (web_ui_ && enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
+    web_ui_->SetupMojoConnection();
+}
+
+void RenderFrameHostImpl::RenderFrameDeleted() {
+  bool was_created = render_frame_created_;
+  render_frame_created_ = false;
+
+  // If the current status is different than the new status, the delegate
+  // needs to be notified.
+  if (was_created) {
+    delegate_->RenderFrameDeleted(this);
+  }
   if (web_ui_) {
-    if (created) {
-      if (enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
-        web_ui_->SetupMojoConnection();
-    } else {
-      web_ui_->InvalidateMojoConnection();
-    }
+    web_ui_->InvalidateMojoConnection();
   }
 }
 
@@ -3474,7 +3475,7 @@ void RenderFrameHostImpl::OnUnloadACK() {
   if (frame_tree_node_->render_manager()->is_attaching_inner_delegate()) {
     // This RFH was unloaded while attaching an inner delegate. The RFH
     // will stay around but it will no longer be associated with a RenderFrame.
-    SetRenderFrameCreated(false);
+    RenderFrameDeleted();
     return;
   }
 

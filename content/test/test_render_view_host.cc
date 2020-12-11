@@ -288,7 +288,7 @@ bool TestRenderViewHost::CreateRenderView(
         frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
         frame_widget.Unbind());
 
-    main_frame->SetRenderFrameCreated(true);
+    main_frame->RenderFrameCreated();
   }
 
   return true;

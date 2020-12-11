@@ -939,7 +939,7 @@ WebContentsImpl::~WebContentsImpl() {
 
   GetController().GetBackForwardCache().Shutdown();
 
-  root->current_frame_host()->SetRenderFrameCreated(false);
+  root->current_frame_host()->RenderFrameDeleted();
   root->current_frame_host()->ResetNavigationRequests();
 
   // Do not update state as the WebContents is being destroyed.
@@ -947,7 +947,7 @@ WebContentsImpl::~WebContentsImpl() {
   if (root->speculative_frame_host()) {
     root->speculative_frame_host()->DeleteRenderFrame(
         FrameDeleteIntention::kSpeculativeMainFrameForShutdown);
-    root->speculative_frame_host()->SetRenderFrameCreated(false);
+    root->speculative_frame_host()->RenderFrameDeleted();
     root->speculative_frame_host()->ResetNavigationRequests();
   }
 
@@ -2773,7 +2773,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   if (params.renderer_initiated_creation) {
     GetRenderViewHost()->GetWidget()->set_renderer_initialized(true);
     GetRenderViewHost()->DispatchRenderViewCreated();
-    GetRenderManager()->current_frame_host()->SetRenderFrameCreated(true);
+    GetRenderManager()->current_frame_host()->RenderFrameCreated();
   }
 
   // Create the renderer process in advance if requested.

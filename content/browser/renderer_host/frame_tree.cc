@@ -251,7 +251,7 @@ FrameTreeNode* FrameTree::AddFrame(
   if (added_node->frame_owner_element_type() !=
       blink::mojom::FrameOwnerElementType::kPortal) {
     // Portals do not have a live RenderFrame in the renderer process.
-    added_node->current_frame_host()->SetRenderFrameCreated(true);
+    added_node->current_frame_host()->RenderFrameCreated();
   }
   return added_node;
 }

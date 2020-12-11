@@ -509,7 +509,7 @@ bool RenderViewHostImpl::CreateRenderView(
   // Since this method can create the main RenderFrame in the renderer process,
   // set the proper state on its corresponding RenderFrameHost.
   if (main_rfh)
-    main_rfh->SetRenderFrameCreated(true);
+    main_rfh->RenderFrameCreated();
   GetWidget()->delegate()->SendScreenRects();
   PostRenderViewReady();
 

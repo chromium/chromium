@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
 
   // 6) Re-initialize RenderFrame, now RDHUD should be cleared on new
   // RenderFrame creation after crash when
-  // RenderFrameHostImpl::SetRenderFrameCreated was called.
+  // RenderFrameHostImpl::RenderFrameDeleted was called.
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   root->render_manager()->InitializeMainRenderFrameForImmediateUse();
   EXPECT_TRUE(did_clear_user_data);
