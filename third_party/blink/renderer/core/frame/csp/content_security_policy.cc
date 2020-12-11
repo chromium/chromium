@@ -1312,6 +1312,29 @@ void ContentSecurityPolicy::ReportInvalidPluginTypes(
   LogToConsole(message);
 }
 
+void ContentSecurityPolicy::ReportInvalidRequireTrustedTypesFor(
+    const String& require_trusted_types_for) {
+  String message;
+  if (require_trusted_types_for.IsNull()) {
+    message =
+        "'require-trusted-types-for' Content Security Policy directive is "
+        "empty; The directive has no effect.\n";
+  } else {
+    const char* hint = "";
+    if (require_trusted_types_for == "script" ||
+        require_trusted_types_for == "scripts" ||
+        require_trusted_types_for == "'scripts'") {
+      hint = " Did you mean 'script'?";
+    }
+
+    message =
+        "Invalid expression in 'require-trusted-types-for' "
+        "Content Security Policy directive: " +
+        require_trusted_types_for + "." + hint + "\n";
+  }
+  LogToConsole(message, mojom::ConsoleMessageLevel::kWarning);
+}
+
 void ContentSecurityPolicy::ReportInvalidSandboxFlags(
     const String& invalid_flags) {
   LogToConsole(

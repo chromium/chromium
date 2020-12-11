@@ -4,6 +4,8 @@
 
 #include "require_trusted_types_for_directive.h"
 
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+
 namespace blink {
 
 RequireTrustedTypesForDirective::RequireTrustedTypesForDirective(
@@ -20,8 +22,12 @@ RequireTrustedTypesForDirective::RequireTrustedTypesForDirective(
     // https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-sink-group
     if (v == "'script'") {
       require_trusted_types_for_script_ = true;
-      break;
+    } else {
+      policy->ReportInvalidRequireTrustedTypesFor(v);
     }
+  }
+  if (!require_trusted_types_for_script_) {
+    policy->ReportInvalidRequireTrustedTypesFor(String());
   }
 }
 

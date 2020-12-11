@@ -21,8 +21,9 @@ TEST(RequireTrustedTypesForDirectiveTest, TestSinks) {
                     {"'script' 'script'", true}};
 
   for (const auto& test_case : test_cases) {
-    RequireTrustedTypesForDirective directive("require-trusted-types-for",
-                                              test_case.directive, nullptr);
+    RequireTrustedTypesForDirective directive(
+        "require-trusted-types-for", test_case.directive,
+        MakeGarbageCollected<ContentSecurityPolicy>());
     SCOPED_TRACE(testing::Message() << " require-trusted-types-for "
                                     << test_case.directive << ";");
     EXPECT_EQ(directive.require(), test_case.result);

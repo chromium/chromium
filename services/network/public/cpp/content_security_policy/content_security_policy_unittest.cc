@@ -697,26 +697,32 @@ TEST(ContentSecurityPolicy, ParsePluginTypes) {
 TEST(ContentSecurityPolicy, ParseRequireTrustedTypesFor) {
   struct {
     const char* input;
+    const unsigned long errors;
     network::mojom::CSPRequireTrustedTypesFor expected;
   } cases[]{
       {
           "",
+          1u,
           network::mojom::CSPRequireTrustedTypesFor::None,
       },
       {
           "'script'",
+          0u,
           network::mojom::CSPRequireTrustedTypesFor::Script,
       },
       {
           "'wasm' 'script'",
+          1u,
           network::mojom::CSPRequireTrustedTypesFor::Script,
       },
       {
           "'script' 'wasm' 'script'",
+          1u,
           network::mojom::CSPRequireTrustedTypesFor::Script,
       },
       {
           "'wasm'",
+          2u,
           network::mojom::CSPRequireTrustedTypesFor::None,
       },
   };
@@ -729,7 +735,7 @@ TEST(ContentSecurityPolicy, ParseRequireTrustedTypesFor) {
             ->raw_directives[mojom::CSPDirectiveName::RequireTrustedTypesFor],
         testCase.input);
     EXPECT_EQ(policies[0]->directives.size(), 0u);
-    EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
+    EXPECT_EQ(policies[0]->parsing_errors.size(), testCase.errors);
     EXPECT_EQ(policies[0]->require_trusted_types_for, testCase.expected);
   }
 }
