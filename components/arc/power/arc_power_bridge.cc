@@ -178,6 +178,7 @@ void ArcPowerBridge::OnConnectionClosed() {
 
 void ArcPowerBridge::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
+  is_suspending_ = true;
   mojom::PowerInstance* power_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->power(), Suspend);
   if (!power_instance)
@@ -191,7 +192,12 @@ void ArcPowerBridge::SuspendImminent(
 }
 
 void ArcPowerBridge::OnAndroidSuspendReady(base::UnguessableToken token) {
-  if (arc::IsArcVmEnabled()) {
+  // For the ARCVM case, we only want to suspend the VM if a suspend is still
+  // underway ie. if SuspendImminent was observed without a subsequent
+  // SuspendDone. Otherwise, skip suspending the VM but still call
+  // UnblockSuspend to fulfill the contract and to align with ARC container's
+  // behavior.
+  if (arc::IsArcVmEnabled() && is_suspending_) {
     vm_tools::concierge::SuspendVmRequest request;
     request.set_name(kArcVmName);
     request.set_owner_id(user_id_hash_);
@@ -215,6 +221,7 @@ void ArcPowerBridge::OnConciergeSuspendVmResponse(
 }
 
 void ArcPowerBridge::SuspendDone(base::TimeDelta sleep_duration) {
+  is_suspending_ = false;
   if (arc::IsArcVmEnabled()) {
     vm_tools::concierge::ResumeVmRequest request;
     request.set_name(kArcVmName);

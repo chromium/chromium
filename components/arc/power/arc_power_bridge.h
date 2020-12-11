@@ -141,6 +141,11 @@ class ArcPowerBridge : public KeyedService,
   // List of observers.
   base::ObserverList<Observer> observer_list_;
 
+  // Represents whether a device suspend is currently underway, ie. a
+  // SuspendImminent event has been observed, but a SuspendDone event has not
+  // yet been observed.
+  bool is_suspending_ = false;
+
   base::WeakPtrFactory<ArcPowerBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcPowerBridge);
