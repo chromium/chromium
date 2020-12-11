@@ -89,7 +89,8 @@ class ChromeLabsFooter : public views::View {
                      .SetCallback(base::BindRepeating(&chrome::AttemptRestart))
                      .SetText(base::ASCIIToUTF16("Relaunch"))
                      .Build());
-    SetBackground(views::CreateSolidBackground(gfx::kGoogleGrey200));
+    SetBackground(views::CreateThemedSolidBackground(
+        this, ui::NativeTheme::kColorId_BubbleFooterBackground));
     SetBorder(views::CreateEmptyBorder(
         views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
     SetProperty(
