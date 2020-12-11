@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
@@ -223,11 +224,11 @@ class CONTENT_EXPORT Navigator {
   // RenderFrameHost objects using this Navigator.
   // TODO(nasko): Move ownership of the NavigationController from
   // WebContentsImpl to this class.
-  NavigationControllerImpl* controller_;
+  CheckedPtr<NavigationControllerImpl> controller_;
 
   // Used to notify the object embedding this Navigator about navigation
   // events. Can be nullptr in tests.
-  NavigatorDelegate* delegate_;
+  CheckedPtr<NavigatorDelegate> delegate_;
 
   std::unique_ptr<Navigator::NavigationMetricsData> navigation_data_;
 

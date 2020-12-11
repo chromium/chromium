@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -57,7 +58,7 @@ class InputIPC : public media::AudioInputIPC,
 
   mojo::Remote<media::mojom::AudioInputStream> stream_;
   mojo::Receiver<AudioInputStreamClient> stream_client_receiver_{this};
-  media::AudioInputIPCDelegate* delegate_ = nullptr;
+  CheckedPtr<media::AudioInputIPCDelegate> delegate_ = nullptr;
 
   std::string device_id_;
   base::Optional<base::UnguessableToken> stream_id_;

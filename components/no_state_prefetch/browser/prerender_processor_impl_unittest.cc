@@ -4,6 +4,7 @@
 
 #include "components/no_state_prefetch/browser/prerender_processor_impl.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/no_state_prefetch/browser/prerender_link_manager.h"
@@ -65,7 +66,7 @@ class MockPrerenderProcessorImplDelegate final
   }
 
  private:
-  MockPrerenderLinkManager* link_manager_;
+  CheckedPtr<MockPrerenderLinkManager> link_manager_;
 };
 
 class PrerenderProcessorImplTest : public content::RenderViewHostTestHarness {};

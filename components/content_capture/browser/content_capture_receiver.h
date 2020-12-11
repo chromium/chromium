@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "components/content_capture/common/content_capture.mojom.h"
 #include "components/content_capture/common/content_capture_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -59,7 +60,7 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
   GetContentCaptureSender();
 
   mojo::AssociatedReceiver<mojom::ContentCaptureReceiver> receiver_{this};
-  content::RenderFrameHost* rfh_;
+  CheckedPtr<content::RenderFrameHost> rfh_;
   ContentCaptureData frame_content_capture_data_;
 
   // The content id of the associated frame, it is composed of RenderProcessHost

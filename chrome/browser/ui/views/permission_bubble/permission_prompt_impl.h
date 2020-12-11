@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_IMPL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
@@ -56,18 +57,18 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
 
   // The popup bubble. Not owned by this class; it will delete itself when a
   // decision is made.
-  PermissionPromptBubbleView* prompt_bubble_;
+  CheckedPtr<PermissionPromptBubbleView> prompt_bubble_;
 
   // The web contents whose location bar should show the quiet prompt.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   PermissionPromptStyle prompt_style_;
 
-  PermissionChip* permission_chip_ = nullptr;
+  CheckedPtr<PermissionChip> permission_chip_ = nullptr;
 
-  permissions::PermissionPrompt::Delegate* const delegate_;
+  const CheckedPtr<permissions::PermissionPrompt::Delegate> delegate_;
 
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionPromptImpl);
 };

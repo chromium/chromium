@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SSL_INSECURE_SENSITIVE_INPUT_DRIVER_H_
 #define CHROME_BROWSER_SSL_INSECURE_SENSITIVE_INPUT_DRIVER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/insecure_input/insecure_input_service.mojom.h"
@@ -32,7 +33,7 @@ class InsecureSensitiveInputDriver : public blink::mojom::InsecureInputService {
   void DidEditFieldInInsecureContext() override;
 
  private:
-  content::RenderFrameHost* render_frame_host_;
+  CheckedPtr<content::RenderFrameHost> render_frame_host_;
 
   mojo::ReceiverSet<blink::mojom::InsecureInputService>
       insecure_input_receivers_;

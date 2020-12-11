@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_store.h"
@@ -64,7 +65,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   }
 
   LoadType load_type_;
-  FeedStore* store_;  // Unowned.
+  CheckedPtr<FeedStore> store_;  // Unowned.
   bool ignore_staleness_ = false;
   base::OnceCallback<void(Result)> result_callback_;
 

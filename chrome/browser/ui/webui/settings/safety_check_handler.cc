@@ -401,10 +401,11 @@ void SafetyCheckHandler::CheckPasswords() {
   // on the same page. Normally this should not happen, but if it does, the
   // browser should not crash.
   observed_leak_check_.RemoveAll();
-  observed_leak_check_.Add(leak_service_);
+  observed_leak_check_.Add(leak_service_.get());
   // Start observing the InsecureCredentialsManager.
   observed_insecure_credentials_manager_.RemoveAll();
-  observed_insecure_credentials_manager_.Add(insecure_credentials_manager_);
+  observed_insecure_credentials_manager_.Add(
+      insecure_credentials_manager_.get());
   passwords_delegate_->StartPasswordCheck(base::BindOnce(
       &SafetyCheckHandler::OnStateChanged, weak_ptr_factory_.GetWeakPtr()));
 }

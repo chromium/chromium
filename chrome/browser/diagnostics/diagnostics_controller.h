@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 
 namespace base {
@@ -55,7 +56,7 @@ class DiagnosticsController {
   ~DiagnosticsController();
 
   std::unique_ptr<DiagnosticsModel> model_;
-  DiagnosticsWriter* writer_;
+  CheckedPtr<DiagnosticsWriter> writer_;
 
   DISALLOW_COPY_AND_ASSIGN(DiagnosticsController);
 };

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -213,11 +214,11 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // Pre-select the first app on the list.
   size_t selected_app_tag_ = 0;
 
-  views::ScrollView* scroll_view_ = nullptr;
+  CheckedPtr<views::ScrollView> scroll_view_ = nullptr;
 
   std::vector<AppInfo> app_info_;
 
-  views::Checkbox* remember_selection_checkbox_ = nullptr;
+  CheckedPtr<views::Checkbox> remember_selection_checkbox_ = nullptr;
 
   // Tells whether 'Stay in Chrome' button should be shown or hidden.
   const bool show_stay_in_chrome_;
@@ -226,7 +227,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   const bool show_remember_selection_;
 
   // The corresponding icon view shown in the omnibox.
-  PageActionIconView* icon_view_;
+  CheckedPtr<PageActionIconView> icon_view_;
 
   // The type of the icon shown in the omnibox.
   const PageActionIconType icon_type_;

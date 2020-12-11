@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_HANDLER_PROXY_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_HANDLER_PROXY_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_handler.h"
 
@@ -84,7 +85,7 @@ class AutofillHandlerProxy : public AutofillHandler {
 
  private:
   bool has_server_prediction_ = false;
-  AutofillProvider* provider_;
+  CheckedPtr<AutofillProvider> provider_;
   base::WeakPtrFactory<AutofillHandlerProxy> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutofillHandlerProxy);

@@ -29,6 +29,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -678,7 +679,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
       const base::RepeatingCallback<void(RenderProcessHost*)>& cb) {
     // Do an initial notification, as the subscriber will need to know what the
     // current spare host is.
-    cb.Run(spare_render_process_host_);
+    cb.Run(spare_render_process_host_.get());
     return spare_render_process_host_changed_callback_list_.Add(cb);
   }
 
@@ -718,7 +719,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
 
   // This is a bare pointer, because RenderProcessHost manages the lifetime of
   // all its instances; see GetAllHosts().
-  RenderProcessHost* spare_render_process_host_ = nullptr;
+  CheckedPtr<RenderProcessHost> spare_render_process_host_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SpareRenderProcessHostManager);
 };
@@ -758,7 +759,7 @@ class RenderProcessHostIsReadyObserver : public RenderProcessHostObserver {
     delete this;
   }
 
-  RenderProcessHost* render_process_host_;
+  CheckedPtr<RenderProcessHost> render_process_host_;
   base::OnceClosure task_;
   base::WeakPtrFactory<RenderProcessHostIsReadyObserver> weak_factory_{this};
 

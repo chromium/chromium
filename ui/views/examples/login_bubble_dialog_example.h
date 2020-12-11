@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_EXAMPLES_LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -39,8 +40,8 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
                         BubbleBorder::Arrow anchor_position,
                         OnSubmitCallback accept_callback);
 
-  Textfield* username_ = nullptr;
-  Textfield* password_ = nullptr;
+  CheckedPtr<Textfield> username_ = nullptr;
+  CheckedPtr<Textfield> password_ = nullptr;
 };
 
 // Instantiates the login dialog example.
@@ -56,11 +57,11 @@ class LoginBubbleDialogExample : public ExampleBase {
   void OnSubmit(base::string16 username, base::string16 password);
 
  private:
-  LabelButton* button_ = nullptr;
-  Label* username_label_ = nullptr;
-  Label* username_input_ = nullptr;
-  Label* password_label_ = nullptr;
-  Label* password_input_ = nullptr;
+  CheckedPtr<LabelButton> button_ = nullptr;
+  CheckedPtr<Label> username_label_ = nullptr;
+  CheckedPtr<Label> username_input_ = nullptr;
+  CheckedPtr<Label> password_label_ = nullptr;
+  CheckedPtr<Label> password_input_ = nullptr;
 };
 
 }  // namespace examples

@@ -12,6 +12,7 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/video_decoder.h"
@@ -112,7 +113,7 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
   const gfx::ColorSpace target_color_space_;
 
   // Frame renderer used to manage GL context.
-  FrameRenderer* const frame_renderer_;
+  const CheckedPtr<FrameRenderer> frame_renderer_;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // Owned by VideoDecoderClient.

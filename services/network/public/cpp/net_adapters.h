@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 
@@ -53,7 +54,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
                          void* buffer);
   ~NetToMojoPendingBuffer();
   mojo::ScopedDataPipeProducerHandle handle_;
-  void* buffer_;
+  CheckedPtr<void> buffer_;
   DISALLOW_COPY_AND_ASSIGN(NetToMojoPendingBuffer);
 };
 
@@ -112,7 +113,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
   ~MojoToNetPendingBuffer();
 
   mojo::ScopedDataPipeConsumerHandle handle_;
-  const void* buffer_;
+  CheckedPtr<const void> buffer_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoToNetPendingBuffer);
 };

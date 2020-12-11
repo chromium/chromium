@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/view.h"
 
 class Profile;
@@ -55,8 +56,8 @@ class AppInfoPanel : public views::View {
       std::unique_ptr<views::View> key,
       std::unique_ptr<views::View> value) const;
 
-  Profile* profile_;
-  const extensions::Extension* app_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<const extensions::Extension> app_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AppInfoPanel);

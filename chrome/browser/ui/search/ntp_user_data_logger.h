@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -157,7 +158,7 @@ class NTPUserDataLogger
   GURL ntp_url_;
 
   // The profile in which this New Tab Page was loaded.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
@@ -72,7 +73,7 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   std::unique_ptr<base::DictionaryValue> GetAccountNameAndIcon() const;
 
   // Weak pointer.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ScopedObserver<user_manager::UserManager, user_manager::UserManager::Observer>

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
 #include "gpu/command_buffer/client/implementation_base.h"
 #include "gpu/command_buffer/client/logging.h"
@@ -61,8 +62,8 @@ class WebGPUCommandSerializer final : public dawn_wire::CommandSerializer {
 
  private:
   DawnDeviceClientID device_client_id_;
-  WebGPUCmdHelper* helper_;
-  DawnClientMemoryTransferService* memory_transfer_service_;
+  CheckedPtr<WebGPUCmdHelper> helper_;
+  CheckedPtr<DawnClientMemoryTransferService> memory_transfer_service_;
 
   std::unique_ptr<dawn_wire::WireClient> wire_client_;
 
@@ -183,7 +184,7 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   DawnRequestAdapterSerial NextRequestAdapterSerial();
   DawnDeviceClientID NextDeviceClientID();
 
-  WebGPUCmdHelper* helper_;
+  CheckedPtr<WebGPUCmdHelper> helper_;
 #if BUILDFLAG(USE_DAWN)
   std::unique_ptr<DawnClientMemoryTransferService> memory_transfer_service_;
 

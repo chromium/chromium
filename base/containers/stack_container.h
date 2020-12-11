@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -118,7 +119,7 @@ class StackAllocator : public std::allocator<T> {
   }
 
  private:
-  Source* source_;
+  CheckedPtr<Source> source_;
 };
 
 // A wrapper around STL containers that maintains a stack-sized buffer that the

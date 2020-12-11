@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/page_info/permission_menu_model.h"
@@ -58,7 +59,7 @@ class ComboboxModelAdapter : public ui::ComboboxModel {
   base::string16 GetItemAt(int index) const override;
 
  private:
-  PermissionMenuModel* model_;
+  CheckedPtr<PermissionMenuModel> model_;
 };
 
 void ComboboxModelAdapter::OnPerformAction(int index) {
@@ -109,7 +110,7 @@ class PermissionCombobox : public views::Combobox {
  private:
   void PermissionChanged();
 
-  ComboboxModelAdapter* model_;
+  CheckedPtr<ComboboxModelAdapter> model_;
 
   // Minimum width for |PermissionCombobox|.
   int min_width_ = 0;

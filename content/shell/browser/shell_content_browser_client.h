@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/shell/browser/shell_speech_recognition_manager_delegate.h"
@@ -189,7 +190,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       override_web_preferences_callback_;
 
   // Owned by content::BrowserMainLoop.
-  ShellBrowserMainParts* shell_browser_main_parts_ = nullptr;
+  CheckedPtr<ShellBrowserMainParts> shell_browser_main_parts_ = nullptr;
 };
 
 // The delay for sending reports when running with --run-web-tests

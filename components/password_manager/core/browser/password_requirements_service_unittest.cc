@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/signatures.h"
@@ -55,7 +56,7 @@ class PasswordRequirementsServiceTest : public testing::Test {
   autofill::FieldSignature test_field_signature_{22};
 
   // Weak pointer.
-  MockPasswordRequirementsSpecFetcher* fetcher_ptr_;
+  CheckedPtr<MockPasswordRequirementsSpecFetcher> fetcher_ptr_;
   PasswordRequirementsService service_;
 };
 
@@ -81,9 +82,9 @@ TEST_F(PasswordRequirementsServiceTest, ExerciseEverything) {
 
   struct {
     const char* test_name;
-    autofill::PasswordRequirementsSpec* spec_for_signature = nullptr;
-    autofill::PasswordRequirementsSpec* spec_for_domain = nullptr;
-    autofill::PasswordRequirementsSpec* expected;
+    CheckedPtr<autofill::PasswordRequirementsSpec> spec_for_signature = nullptr;
+    CheckedPtr<autofill::PasswordRequirementsSpec> spec_for_domain = nullptr;
+    CheckedPtr<autofill::PasswordRequirementsSpec> expected;
   } tests[] = {
       {
           .test_name = "No data prefechted", .expected = &spec_l0_p0,

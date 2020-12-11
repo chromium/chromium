@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/linked_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
@@ -141,7 +142,7 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   int32_t max_size_;      // Maximum data size for this instance.
   int32_t current_size_;
 
-  net::NetLog* net_log_;
+  CheckedPtr<net::NetLog> net_log_;
   base::OnceClosure post_cleanup_callback_;
 
   base::MemoryPressureListener memory_pressure_listener_;

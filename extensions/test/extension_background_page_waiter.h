@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_TEST_EXTENSION_BACKGROUND_PAGE_WAITER_H_
 #define EXTENSIONS_TEST_EXTENSION_BACKGROUND_PAGE_WAITER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/extension_host.h"
@@ -53,7 +54,7 @@ class ExtensionBackgroundPageWaiter : public ProcessManagerObserver,
   void OnExtensionHostDidStopFirstLoad(const ExtensionHost* host) override;
   void OnExtensionHostDestroyed(ExtensionHost* host) override;
 
-  content::BrowserContext* const browser_context_;
+  const CheckedPtr<content::BrowserContext> browser_context_;
   scoped_refptr<const Extension> extension_;
   base::RunLoop host_ready_run_loop_;
   base::RunLoop host_created_run_loop_;

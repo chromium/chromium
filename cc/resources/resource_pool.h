@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -380,8 +381,8 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   base::TimeTicks GetUsageTimeForLRUResource() const;
   void FlushEvictedResources();
 
-  viz::ClientResourceProvider* const resource_provider_;
-  viz::ContextProvider* const context_provider_;
+  const CheckedPtr<viz::ClientResourceProvider> resource_provider_;
+  const CheckedPtr<viz::ContextProvider> context_provider_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const base::TimeDelta resource_expiration_delay_;
   const bool disallow_non_exact_reuse_ = false;
@@ -407,7 +408,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
   base::TimeTicks flush_evicted_resources_deadline_;
 
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
 
   base::WeakPtrFactory<ResourcePool> weak_ptr_factory_{this};
 };

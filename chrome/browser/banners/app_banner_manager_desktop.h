@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/banners/app_banner_manager.h"
@@ -94,7 +95,7 @@ class AppBannerManagerDesktop
 
   void CreateWebApp(webapps::WebappInstallSource install_source);
 
-  extensions::ExtensionRegistry* extension_registry_;
+  CheckedPtr<extensions::ExtensionRegistry> extension_registry_;
 
   ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
       registrar_observer_{this};

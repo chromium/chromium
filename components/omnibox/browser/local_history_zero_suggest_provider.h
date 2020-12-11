@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_LOCAL_HISTORY_ZERO_SUGGEST_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_LOCAL_HISTORY_ZERO_SUGGEST_PROVIDER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -56,10 +57,10 @@ class LocalHistoryZeroSuggestProvider : public AutocompleteProvider {
   const size_t max_matches_;
 
   // Client for accessing TemplateUrlService, prefs, etc.
-  AutocompleteProviderClient* const client_;
+  const CheckedPtr<AutocompleteProviderClient> client_;
 
   // Listener to notify when matches are available.
-  AutocompleteProviderListener* const listener_;
+  const CheckedPtr<AutocompleteProviderListener> listener_;
 
   // Used for the async tasks querying the HistoryService.
   base::CancelableTaskTracker history_task_tracker_;

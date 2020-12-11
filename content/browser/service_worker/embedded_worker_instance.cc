@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
@@ -666,7 +667,7 @@ class EmbeddedWorkerInstance::StartTask {
   }
 
   // |instance_| must outlive |this|.
-  EmbeddedWorkerInstance* instance_;
+  CheckedPtr<EmbeddedWorkerInstance> instance_;
 
   // Ownership is transferred by a PostTask() call after process allocation.
   mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient> receiver_;

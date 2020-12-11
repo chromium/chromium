@@ -6,6 +6,7 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBFRAME_NAVIGATION_FILTERING_THROTTLE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
@@ -84,7 +85,7 @@ class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
   void DeferStart(DeferStage stage);
 
   // Must outlive this class.
-  AsyncDocumentSubresourceFilter* parent_frame_filter_;
+  CheckedPtr<AsyncDocumentSubresourceFilter> parent_frame_filter_;
 
   int pending_load_policy_calculations_ = 0;
   DeferStage defer_stage_ = DeferStage::kNotDeferring;
@@ -96,7 +97,7 @@ class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
 
   // As specified in the constructor comment, |delegate_| must outlive this
   // object.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   base::WeakPtrFactory<SubframeNavigationFilteringThrottle> weak_ptr_factory_{
       this};

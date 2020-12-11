@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/autofill_handler_proxy.h"
 #include "components/autofill/core/browser/test_autofill_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +42,7 @@ class AutofillProviderTestHelper : public TestAutofillProvider {
     handler_ = handler;
   }
 
-  AutofillHandlerProxy* handler_;
+  CheckedPtr<AutofillHandlerProxy> handler_;
 };
 
 class AutofillProviderTest : public testing::Test {

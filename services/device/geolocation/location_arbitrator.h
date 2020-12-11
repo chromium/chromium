@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
@@ -101,7 +102,7 @@ class LocationArbitrator : public LocationProvider {
   std::vector<std::unique_ptr<LocationProvider>> providers_;
   bool enable_high_accuracy_;
   // The provider which supplied the current |position_|
-  const LocationProvider* position_provider_;
+  CheckedPtr<const LocationProvider> position_provider_;
   bool is_permission_granted_;
   // The current best estimate of our position.
   mojom::Geoposition position_;

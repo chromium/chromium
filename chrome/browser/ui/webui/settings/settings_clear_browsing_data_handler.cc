@@ -102,7 +102,7 @@ void ClearBrowsingDataHandler::RegisterMessages() {
 
 void ClearBrowsingDataHandler::OnJavascriptAllowed() {
   if (sync_service_)
-    sync_service_observer_.Add(sync_service_);
+    sync_service_observer_.Add(sync_service_.get());
 
   DCHECK(counters_.empty());
   for (const std::string& pref : kCounterPrefsBasic) {

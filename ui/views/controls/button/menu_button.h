@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_BUTTON_MENU_BUTTON_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -40,7 +41,7 @@ class VIEWS_EXPORT MenuButton : public LabelButton {
   void NotifyClick(const ui::Event& event) final;
 
  private:
-  MenuButtonController* menu_button_controller_;
+  CheckedPtr<MenuButtonController> menu_button_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuButton);
 };

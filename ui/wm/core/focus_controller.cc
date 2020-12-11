@@ -230,7 +230,7 @@ void FocusController::FocusAndActivateWindow(
   if (!updating_focus_) {
     aura::Window* const new_active_window = pending_activation_.has_value()
                                                 ? pending_activation_.value()
-                                                : active_window_;
+                                                : active_window_.get();
     const bool activation_changed_focus =
         last_focused_window != focused_window_;
     if (!activation_changed_focus || !focused_window_) {
@@ -258,13 +258,13 @@ void FocusController::SetFocusedWindow(aura::Window* window) {
   aura::WindowTracker window_tracker;
   if (lost_focus)
     window_tracker.Add(lost_focus);
-  if (focused_window_ && observer_manager_.IsObserving(focused_window_) &&
+  if (focused_window_ && observer_manager_.IsObserving(focused_window_.get()) &&
       focused_window_ != active_window_) {
-    observer_manager_.Remove(focused_window_);
+    observer_manager_.Remove(focused_window_.get());
   }
   focused_window_ = window;
-  if (focused_window_ && !observer_manager_.IsObserving(focused_window_))
-    observer_manager_.Add(focused_window_);
+  if (focused_window_ && !observer_manager_.IsObserving(focused_window_.get()))
+    observer_manager_.Add(focused_window_.get());
 
   for (auto& observer : focus_observers_) {
     observer.OnWindowFocused(
@@ -335,9 +335,9 @@ bool FocusController::SetActiveWindow(
     MAYBE_ACTIVATION_INTERRUPTED();
   }
 
-  if (active_window_ && observer_manager_.IsObserving(active_window_) &&
+  if (active_window_ && observer_manager_.IsObserving(active_window_.get()) &&
       focused_window_ != active_window_) {
-    observer_manager_.Remove(active_window_);
+    observer_manager_.Remove(active_window_.get());
   }
 
   active_window_ = window;

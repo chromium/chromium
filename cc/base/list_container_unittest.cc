@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1168,7 +1169,7 @@ class InstanceCounter {
   }
 
  private:
-  int* counter_;
+  CheckedPtr<int> counter_;
 };
 
 TEST(ListContainerTest, RemoveLastDestruction) {

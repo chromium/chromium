@@ -12,6 +12,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/blink/media_blink_export.h"
 #include "media/blink/multibuffer.h"
@@ -141,7 +142,7 @@ class MEDIA_BLINK_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   void Call(base::OnceClosure cb) const;
 
   // The multibuffer we're wrapping, not owned.
-  MultiBuffer* multibuffer_;
+  CheckedPtr<MultiBuffer> multibuffer_;
 
   // We're not interested in reading past this position.
   int64_t end_;

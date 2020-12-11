@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 
 namespace views {
@@ -57,10 +58,10 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   DesktopMediaTabList(const DesktopMediaTabList&) = delete;
   DesktopMediaTabList operator=(const DesktopMediaTabList&) = delete;
 
-  DesktopMediaListController* controller_;
+  CheckedPtr<DesktopMediaListController> controller_;
   std::unique_ptr<TabListModel> model_;
   std::unique_ptr<TabListViewObserver> view_observer_;
-  views::TableView* child_ = nullptr;
+  CheckedPtr<views::TableView> child_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_TAB_LIST_H_

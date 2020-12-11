@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PROFILING_HOST_BACKGROUND_PROFILING_TRIGGERS_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/timer/timer.h"
@@ -66,7 +67,7 @@ class BackgroundProfilingTriggers {
   // Virtual for testing. Called when a memory report needs to be send.
   virtual void TriggerMemoryReport(std::string trigger_name);
 
-  ProfilingProcessHost* host_;
+  CheckedPtr<ProfilingProcessHost> host_;
 
   // Timer to periodically check memory consumption and upload a slow-report.
   base::RepeatingTimer timer_;

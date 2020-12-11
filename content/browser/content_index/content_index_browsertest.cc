@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -85,9 +86,9 @@ class ContentIndexTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  ShellContentIndexProvider* provider_;
-  ContentIndexContext* context_;
-  Shell* shell_;
+  CheckedPtr<ShellContentIndexProvider> provider_;
+  CheckedPtr<ContentIndexContext> context_;
+  CheckedPtr<Shell> shell_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentIndexTest, GetIcons) {

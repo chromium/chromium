@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "base/profiler/profiler_buildflags.h"
@@ -135,7 +136,8 @@ class StackSamplingProfiler::SamplingThread : public Thread {
     const int collection_id;
 
     const SamplingParams params;    // Information about how to sample.
-    WaitableEvent* const finished;  // Signaled when all sampling complete.
+    const CheckedPtr<WaitableEvent>
+        finished;  // Signaled when all sampling complete.
 
     // Platform-specific module that does the actual sampling.
     std::unique_ptr<StackSampler> sampler;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "cc/trees/layer_tree_host.h"
 
 #include <stdint.h>
@@ -229,7 +230,7 @@ class LayerTreeHostPerfTestLeafInvalidates
   }
 
  protected:
-  Layer* layer_to_invalidate_;
+  CheckedPtr<Layer> layer_to_invalidate_;
 };
 
 // Simulates a tab switcher scene with two stacks of 10 tabs each. Invalidate a

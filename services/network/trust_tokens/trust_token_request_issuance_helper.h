@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/log/net_log_with_source.h"
@@ -252,8 +253,8 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // operation's execution.
   base::Optional<SuitableTrustTokenOrigin> issuer_;
   const SuitableTrustTokenOrigin top_level_origin_;
-  TrustTokenStore* const token_store_;
-  const TrustTokenKeyCommitmentGetter* const key_commitment_getter_;
+  const CheckedPtr<TrustTokenStore> token_store_;
+  const CheckedPtr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
 
   mojom::TrustTokenProtocolVersion protocol_version_;
 

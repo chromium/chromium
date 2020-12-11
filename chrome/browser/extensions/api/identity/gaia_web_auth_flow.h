@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_IDENTITY_GAIA_WEB_AUTH_FLOW_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
@@ -91,8 +92,8 @@ class GaiaWebAuthFlow : public WebAuthFlow::Delegate {
   // for testing. Used to kick off the MergeSession (step #2).
   virtual std::unique_ptr<WebAuthFlow> CreateWebAuthFlow(GURL url);
 
-  Delegate* delegate_;
-  Profile* profile_;
+  CheckedPtr<Delegate> delegate_;
+  CheckedPtr<Profile> profile_;
   CoreAccountId account_id_;
   std::string redirect_scheme_;
   std::string redirect_path_prefix_;

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
@@ -56,12 +57,12 @@ class NotificationPlatformBridgeDelegator {
   // Called when the |native_bridge_| may have been initialized.
   void OnNativeNotificationPlatformBridgeReady(bool success);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Bridge responsible for displaying notifications on the platform. The
   // message center's bridge is maintained for platforms where it is available.
   std::unique_ptr<NotificationPlatformBridge> message_center_bridge_;
-  NotificationPlatformBridge* native_bridge_;
+  CheckedPtr<NotificationPlatformBridge> native_bridge_;
   base::OnceClosure ready_callback_;
 
   base::WeakPtrFactory<NotificationPlatformBridgeDelegator> weak_factory_{this};

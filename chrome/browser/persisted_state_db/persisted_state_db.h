@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
@@ -137,7 +138,7 @@ class PersistedStateDB : public KeyedService {
   bool FailedToInit() const;
 
   // Browser context associated with the PersistedStateDB
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // Status of the database initialization.
   base::Optional<leveldb_proto::Enums::InitStatus> database_status_;

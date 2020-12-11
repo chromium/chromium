@@ -24,6 +24,7 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -195,7 +196,7 @@ class ClientSideDetectionService : public KeyedService {
   static GURL GetClientReportUrl(const std::string& report_url);
 
   // The profile this ClientSideDetectionService is attached to.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Whether the service is running or not.  When the service is not running,
   // it won't download the model nor report detected phishing URLs.

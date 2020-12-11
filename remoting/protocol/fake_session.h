@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "remoting/protocol/fake_stream_socket.h"
@@ -62,13 +63,13 @@ class FakeSession : public Session {
   // Called by the |peer_| to deliver incoming |transport_info|.
   void ProcessTransportInfo(std::unique_ptr<jingle_xmpp::XmlElement> transport_info);
 
-  EventHandler* event_handler_ = nullptr;
+  CheckedPtr<EventHandler> event_handler_ = nullptr;
   std::unique_ptr<SessionConfig> config_;
 
   std::string jid_;
 
   std::unique_ptr<FakeAuthenticator> authenticator_;
-  Transport* transport_;
+  CheckedPtr<Transport> transport_;
 
   ErrorCode error_ = OK;
   bool closed_ = false;

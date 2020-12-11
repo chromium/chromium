@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/metrics/memory_pressure_metrics.h"
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
@@ -57,7 +58,7 @@ class MemoryPressureMetricsTest : public GraphTestHarness {
   MemoryPressureMetrics* metrics() { return metrics_; }
 
  private:
-  MemoryPressureMetrics* metrics_;
+  CheckedPtr<MemoryPressureMetrics> metrics_;
   util::test::FakeMemoryPressureMonitor mem_pressure_monitor_;
   performance_manager::TestNodeWrapper<performance_manager::ProcessNodeImpl>
       process_node_;

@@ -17,9 +17,8 @@
 SyncedExtensionInstaller::SyncedExtensionInstaller(Profile* profile)
     : profile_(profile) {
   DoInstallSyncedExtensions();
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED,
-                 content::Source<Profile>(profile_));
+  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED,
+                 content::Source<Profile>(profile_.get()));
 }
 
 SyncedExtensionInstaller::~SyncedExtensionInstaller() {

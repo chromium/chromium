@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -215,7 +216,7 @@ class PrintViewManagerBase : public content::NotificationObserver,
   content::NotificationRegistrar registrar_;
 
   // The current RFH that is printing with a system printing dialog.
-  content::RenderFrameHost* printing_rfh_ = nullptr;
+  CheckedPtr<content::RenderFrameHost> printing_rfh_ = nullptr;
 
   // Indication of success of the print job.
   bool printing_succeeded_ = false;

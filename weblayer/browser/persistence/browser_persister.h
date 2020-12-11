@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "components/sessions/content/session_tab_helper_delegate.h"
@@ -118,7 +119,7 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
   void ProcessRestoreCommands(
       const std::vector<std::unique_ptr<sessions::SessionWindow>>& windows);
 
-  BrowserImpl* browser_;
+  CheckedPtr<BrowserImpl> browser_;
 
   // ID used for the browser. The sessions code requires each tab to be
   // associated with a browser.

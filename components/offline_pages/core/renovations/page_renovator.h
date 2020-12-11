@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -41,7 +42,7 @@ class PageRenovator {
   // renovations to run and populate |script_| with the renovations.
   void PrepareScript(const GURL& url);
 
-  PageRenovationLoader* renovation_loader_;
+  CheckedPtr<PageRenovationLoader> renovation_loader_;
   std::unique_ptr<ScriptInjector> script_injector_;
   base::string16 script_;
 };

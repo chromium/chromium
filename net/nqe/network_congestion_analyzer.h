@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -171,10 +172,10 @@ class NET_EXPORT_PRIVATE NetworkCongestionAnalyzer
   }
 
   // Guaranteed to be non-null during the duration of |this|.
-  NetworkQualityEstimator* network_quality_estimator_;
+  CheckedPtr<NetworkQualityEstimator> network_quality_estimator_;
 
   // Guaranteed to be non-null during the lifetime of |this|.
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   // Current value of the effective connection type.
   net::EffectiveConnectionType effective_connection_type_ =

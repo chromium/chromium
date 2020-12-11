@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_MANAGER_DELEGATE_H_
 #define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_PRERENDER_MANAGER_DELEGATE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "components/no_state_prefetch/browser/prerender_manager_delegate.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
@@ -33,7 +34,7 @@ class ChromePrerenderManagerDelegate : public PrerenderManagerDelegate {
 
  private:
   chrome_browser_net::NetworkPredictionStatus GetPredictionStatus() const;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 };
 
 }  // namespace prerender

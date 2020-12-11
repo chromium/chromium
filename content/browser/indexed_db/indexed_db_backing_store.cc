@@ -14,6 +14,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
@@ -101,7 +102,7 @@ class AutoDidCommitTransaction {
   AutoDidCommitTransaction operator=(const AutoDidCommitTransaction&) = delete;
 
  private:
-  IndexedDBBackingStore* backing_store_;
+  CheckedPtr<IndexedDBBackingStore> backing_store_;
 };
 
 namespace {
@@ -2977,7 +2978,7 @@ IndexedDBBackingStore::Transaction::Transaction(
     blink::mojom::IDBTransactionMode mode)
     : backing_store_(std::move(backing_store)),
       transactional_leveldb_factory_(
-          backing_store_ ? backing_store_->transactional_leveldb_factory_
+          backing_store_ ? backing_store_->transactional_leveldb_factory_.get()
                          : nullptr),
       database_id_(-1),
       committing_(false),

@@ -13,6 +13,7 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/video/video_encode_accelerator.h"
@@ -85,7 +86,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   std::vector<VideoBitrateAllocation> stored_bitrate_allocations_;
   bool will_initialization_succeed_;
 
-  VideoEncodeAccelerator::Client* client_;
+  CheckedPtr<VideoEncodeAccelerator::Client> client_;
 
   // Keeps track of if the current frame is the first encoded frame. This
   // is used to force a fake key frame for the first encoded frame.

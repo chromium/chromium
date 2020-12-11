@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -179,8 +180,8 @@ class NET_EXPORT_PRIVATE PacFileDecider {
   void DidComplete();
   void Cancel();
 
-  PacFileFetcher* pac_file_fetcher_;
-  DhcpPacFileFetcher* dhcp_pac_file_fetcher_;
+  CheckedPtr<PacFileFetcher> pac_file_fetcher_;
+  CheckedPtr<DhcpPacFileFetcher> dhcp_pac_file_fetcher_;
 
   CompletionOnceCallback callback_;
 

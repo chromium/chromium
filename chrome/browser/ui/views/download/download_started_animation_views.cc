@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/download/download_started_animation.h"
 
 #include "base/macros.h"
@@ -46,7 +47,7 @@ class DownloadStartedAnimationViews : public gfx::LinearAnimation,
 
   // We use a TYPE_POPUP for the popup so that it may float above any windows in
   // our UI.
-  views::Widget* popup_;
+  CheckedPtr<views::Widget> popup_;
 
   // The content area at the start of the animation. We store this so that the
   // download shelf's resizing of the content area doesn't cause the animation

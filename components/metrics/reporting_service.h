@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/data_use_tracker.h"
@@ -106,7 +107,7 @@ class ReportingService {
 
   // Used to interact with the embedder. Weak pointer; must outlive |this|
   // instance.
-  MetricsServiceClient* const client_;
+  const CheckedPtr<MetricsServiceClient> client_;
 
   // Largest log size to attempt to retransmit.
   size_t max_retransmit_size_;

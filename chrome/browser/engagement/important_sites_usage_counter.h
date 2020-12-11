@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "content/public/browser/storage_usage_info.h"
@@ -71,8 +72,8 @@ class ImportantSitesUsageCounter {
 
   UsageCallback callback_;
   std::vector<ImportantSitesUtil::ImportantDomainInfo> sites_;
-  storage::QuotaManager* quota_manager_;
-  content::DOMStorageContext* dom_storage_context_;
+  CheckedPtr<storage::QuotaManager> quota_manager_;
+  CheckedPtr<content::DOMStorageContext> dom_storage_context_;
   int tasks_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(ImportantSitesUsageCounter);

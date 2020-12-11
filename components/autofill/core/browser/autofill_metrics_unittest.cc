@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/ios/ios_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string16.h"
@@ -374,7 +375,7 @@ class AutofillMetricsTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   MockAutofillClient autofill_client_;
-  ukm::TestUkmRecorder* test_ukm_recorder_;
+  CheckedPtr<ukm::TestUkmRecorder> test_ukm_recorder_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestAutofillManager> autofill_manager_;

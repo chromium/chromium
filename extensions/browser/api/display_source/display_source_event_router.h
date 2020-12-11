@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_API_DISPLAY_SOURCE_DISPLAY_SOURCE_EVENT_ROUTER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/api/display_source/display_source_connection_delegate.h"
 #include "extensions/browser/event_router.h"
@@ -49,7 +50,7 @@ class DisplaySourceEventRouter
  private:
   void StartOrStopListeningForSinksChanges();
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
   bool listening_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplaySourceEventRouter);

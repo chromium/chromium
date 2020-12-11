@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
@@ -133,8 +134,8 @@ class BackgroundTokenHandleUpdater {
   // to notify that token handle validity has changed. Any instance of this
   // class should be owned by the CGaiaCredentialProvider to ensure that
   // this pointer outlives the updater.
-  ICredentialUpdateEventsHandler* event_handler_;
-  const std::vector<base::string16>* reauth_sids_;
+  CheckedPtr<ICredentialUpdateEventsHandler> event_handler_;
+  CheckedPtr<const std::vector<base::string16>> reauth_sids_;
 
   base::win::ScopedHandle token_update_thread_;
   base::WaitableEvent token_update_quit_event_;

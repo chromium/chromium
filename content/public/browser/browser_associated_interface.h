@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
@@ -97,7 +98,7 @@ class BrowserAssociatedInterface {
 
     ~InternalState() {}
 
-    Interface* impl_;
+    CheckedPtr<Interface> impl_;
     base::Optional<mojo::AssociatedReceiverSet<Interface>> receivers_;
 
     DISALLOW_COPY_AND_ASSIGN(InternalState);

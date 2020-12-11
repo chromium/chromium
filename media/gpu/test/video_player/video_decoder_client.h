@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
@@ -180,10 +181,10 @@ class VideoDecoderClient {
   // TODO(dstaessens@) Replace with StreamParser.
   std::unique_ptr<media::test::EncodedDataHelper> encoded_data_helper_;
   // The video being decoded.
-  const Video* video_ = nullptr;
+  CheckedPtr<const Video> video_ = nullptr;
 
   // Owned by VideoPlayerTestEnvironment.
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  const CheckedPtr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 
   SEQUENCE_CHECKER(video_player_sequence_checker_);
   SEQUENCE_CHECKER(decoder_client_sequence_checker_);

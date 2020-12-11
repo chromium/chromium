@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
@@ -59,8 +60,8 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
   virtual std::unique_ptr<WebUIBubbleView> CreateWebView() = 0;
   void ResetWebView();
 
-  views::View* anchor_view_;
-  content::BrowserContext* browser_context_;
+  CheckedPtr<views::View> anchor_view_;
+  CheckedPtr<content::BrowserContext> browser_context_;
   GURL webui_url_;
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
   const bool enable_extension_apis_;

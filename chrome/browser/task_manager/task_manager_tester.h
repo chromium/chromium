@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "components/sessions/core/session_id.h"
@@ -63,7 +64,7 @@ class TaskManagerTester {
 
   TaskManagerInterface* task_manager();
 
-  TaskManagerTableModel* model_;
+  CheckedPtr<TaskManagerTableModel> model_;
   std::unique_ptr<ScopedInterceptTableModelObserver> interceptor_;
 };
 

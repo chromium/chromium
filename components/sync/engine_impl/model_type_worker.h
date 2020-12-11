@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -240,7 +241,7 @@ class ModelTypeWorker : public UpdateHandler,
   PassphraseType passphrase_type_;
 
   // Interface used to access and send nudges to the sync scheduler. Not owned.
-  NudgeHandler* nudge_handler_;
+  CheckedPtr<NudgeHandler> nudge_handler_;
 
   // A map of sync entities, keyed by server_id. Holds updates encrypted with
   // pending keys. Entries are stored in a map for de-duplication (applying only
@@ -272,7 +273,7 @@ class ModelTypeWorker : public UpdateHandler,
 
   // Cancellation signal is used to cancel blocking operation on engine
   // shutdown.
-  CancelationSignal* cancelation_signal_;
+  CheckedPtr<CancelationSignal> cancelation_signal_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -325,7 +326,7 @@ class GetLocalChangesRequest
   friend class base::RefCountedThreadSafe<GetLocalChangesRequest>;
   ~GetLocalChangesRequest() override;
 
-  CancelationSignal* cancelation_signal_;
+  CheckedPtr<CancelationSignal> cancelation_signal_;
   base::WaitableEvent response_accepted_;
   CommitRequestDataList response_;
 

@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
@@ -72,11 +73,11 @@ class ChromePromptActions {
   // Extension service used to implement DisableExtensions. This can be null if
   // no ExtensionService is available, otherwise it is a long-running service
   // that will outlive ChromePromptActions.
-  extensions::ExtensionService* extension_service_;
+  CheckedPtr<extensions::ExtensionService> extension_service_;
 
   // The ExtensionRegistry instance for the current profile. This is a long-
   // lived object that will outlive ChromePromptActions.
-  extensions::ExtensionRegistry* extension_registry_;
+  CheckedPtr<extensions::ExtensionRegistry> extension_registry_;
 
   // Callback that will be invoked when PromptUser is called to display the
   // prompt.

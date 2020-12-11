@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_GENERIC_SENSOR_SENSOR_PROVIDER_PROXY_IMPL_H_
 #define CONTENT_BROWSER_GENERIC_SENSOR_SENSOR_PROVIDER_PROXY_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -49,8 +50,8 @@ class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
   void OnConnectionError();
 
   mojo::ReceiverSet<device::mojom::SensorProvider> receiver_set_;
-  PermissionControllerImpl* permission_controller_;
-  RenderFrameHost* render_frame_host_;
+  CheckedPtr<PermissionControllerImpl> permission_controller_;
+  CheckedPtr<RenderFrameHost> render_frame_host_;
   mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
 
   base::WeakPtrFactory<SensorProviderProxyImpl> weak_factory_{this};

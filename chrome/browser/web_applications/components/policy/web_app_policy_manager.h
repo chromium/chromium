@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -55,11 +56,11 @@ class WebAppPolicyManager {
       std::map<GURL, PendingAppManager::InstallResult> install_results,
       std::map<GURL, bool> uninstall_results);
 
-  Profile* profile_;
-  PrefService* pref_service_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<PrefService> pref_service_;
 
   // Used to install, uninstall, and update apps. Should outlive this class.
-  PendingAppManager* pending_app_manager_ = nullptr;
+  CheckedPtr<PendingAppManager> pending_app_manager_ = nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;
 

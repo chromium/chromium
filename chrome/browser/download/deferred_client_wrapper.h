@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/download/public/background_service/client.h"
@@ -81,7 +82,7 @@ class DeferredClientWrapper : public Client {
   std::unique_ptr<download::Client> wrapped_client_;
   std::vector<base::OnceClosure> deferred_closures_;
   ClientFactory client_factory_;
-  SimpleFactoryKey* key_;
+  CheckedPtr<SimpleFactoryKey> key_;
 
 #if defined(OS_ANDROID)
   // This is needed to record UMA for when DownloadClientWrapper requests a full

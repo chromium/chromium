@@ -54,8 +54,9 @@ AppWindowFrameView::~AppWindowFrameView() = default;
 void AppWindowFrameView::Init() {
   if (draw_frame_) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    auto close_button = std::make_unique<views::ImageButton>(
-        base::BindRepeating(&views::Widget::Close, base::Unretained(widget_)));
+    auto close_button =
+        std::make_unique<views::ImageButton>(base::BindRepeating(
+            &views::Widget::Close, base::Unretained(widget_.get())));
     close_button->SetImage(
         views::Button::STATE_NORMAL,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_CLOSE).ToImageSkia());
@@ -72,7 +73,7 @@ void AppWindowFrameView::Init() {
     // STATE_NORMAL images are set in SetButtonImagesForFrame, not here.
     auto maximize_button =
         std::make_unique<views::ImageButton>(base::BindRepeating(
-            &views::Widget::Maximize, base::Unretained(widget_)));
+            &views::Widget::Maximize, base::Unretained(widget_.get())));
     maximize_button->SetImage(
         views::Button::STATE_HOVERED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_MAXIMIZE_H).ToImageSkia());
@@ -88,7 +89,7 @@ void AppWindowFrameView::Init() {
     maximize_button_ = AddChildView(std::move(maximize_button));
     auto restore_button =
         std::make_unique<views::ImageButton>(base::BindRepeating(
-            &views::Widget::Restore, base::Unretained(widget_)));
+            &views::Widget::Restore, base::Unretained(widget_.get())));
     restore_button->SetImage(
         views::Button::STATE_HOVERED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_RESTORE_H).ToImageSkia());
@@ -101,7 +102,7 @@ void AppWindowFrameView::Init() {
     restore_button_ = AddChildView(std::move(restore_button));
     auto minimize_button =
         std::make_unique<views::ImageButton>(base::BindRepeating(
-            &views::Widget::Minimize, base::Unretained(widget_)));
+            &views::Widget::Minimize, base::Unretained(widget_.get())));
     minimize_button->SetImage(
         views::Button::STATE_HOVERED,
         rb.GetNativeImageNamed(IDR_APP_WINDOW_MINIMIZE_H).ToImageSkia());

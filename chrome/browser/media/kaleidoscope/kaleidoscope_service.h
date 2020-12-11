@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -76,13 +77,13 @@ class KaleidoscopeService : public KeyedService {
   scoped_refptr<::network::SharedURLLoaderFactory>
       test_url_loader_factory_for_fetcher_;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   std::unique_ptr<GetCollectionsRequest> request_;
 
   std::vector<GetCollectionsCallback> pending_callbacks_;
 
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   base::WeakPtrFactory<KaleidoscopeService> weak_ptr_factory_{this};
 };

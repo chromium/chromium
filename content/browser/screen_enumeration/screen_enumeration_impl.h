@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SCREEN_ENUMERATION_SCREEN_ENUMERATION_IMPL_H_
 #define CONTENT_BROWSER_SCREEN_ENUMERATION_SCREEN_ENUMERATION_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -36,7 +37,7 @@ class ScreenEnumerationImpl : public blink::mojom::ScreenEnumeration {
       GetDisplaysCallback callback,
       blink::mojom::PermissionStatus permission_status);
 
-  RenderFrameHost* render_frame_host_;
+  CheckedPtr<RenderFrameHost> render_frame_host_;
   mojo::ReceiverSet<blink::mojom::ScreenEnumeration> receivers_;
   base::WeakPtrFactory<ScreenEnumerationImpl> weak_factory_{this};
 };

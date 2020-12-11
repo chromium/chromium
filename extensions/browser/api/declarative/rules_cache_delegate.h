@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
@@ -111,7 +112,7 @@ class RulesCacheDelegate {
   void SetDeclarativeRulesStored(const std::string& extension_id,
                                  bool rules_stored);
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // Indicates whether the ruleset is non-empty. Valid for both |kEphemeral| and
   // |kPersistent| cache types.

@@ -34,7 +34,7 @@ void ComponentsHandler::RegisterMessages() {
 }
 
 void ComponentsHandler::OnJavascriptAllowed() {
-  observer_.Add(component_updater_);
+  observer_.Add(component_updater_.get());
 }
 
 void ComponentsHandler::OnJavascriptDisallowed() {

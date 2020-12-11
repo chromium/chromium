@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -165,10 +166,10 @@ class BASE_EXPORT ImportantFileWriter {
   OneShotTimer timer_;
 
   // An override for |timer_| used for testing.
-  OneShotTimer* timer_override_ = nullptr;
+  CheckedPtr<OneShotTimer> timer_override_ = nullptr;
 
   // Serializer which will provide the data to be saved.
-  DataSerializer* serializer_;
+  CheckedPtr<DataSerializer> serializer_;
 
   // Time delta after which scheduled data will be written to disk.
   const TimeDelta commit_interval_;

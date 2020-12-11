@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -255,7 +256,7 @@ class PageNodeImpl
   const std::string browser_context_id_;
 
   // The opener of this page, if there is one.
-  FrameNodeImpl* opener_frame_node_ = nullptr;
+  CheckedPtr<FrameNodeImpl> opener_frame_node_ = nullptr;
 
   // The way in which this page was opened, if it was opened.
   OpenedType opened_type_ = OpenedType::kInvalid;

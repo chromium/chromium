@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -79,7 +80,7 @@ class TaskQueue {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Owns and outlives this TaskQueue.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   // Currently running tasks.
   std::unique_ptr<Task> current_task_;

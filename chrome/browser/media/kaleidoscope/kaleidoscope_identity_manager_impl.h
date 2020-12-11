@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -71,10 +72,10 @@ class KaleidoscopeIdentityManagerImpl
   // The current set of credentials.
   media::mojom::CredentialsPtr credentials_;
 
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
 
-  content::WebUI* web_ui_ = nullptr;
-  Profile* profile_ = nullptr;
+  CheckedPtr<content::WebUI> web_ui_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
 
   mojo::RemoteSet<media::mojom::KaleidoscopeIdentityObserver>
       identity_observers_;

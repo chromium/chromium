@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -90,9 +91,9 @@ class WebAppMigrationUserDisplayModeCleanUp final
   void WaitForFirstSyncCycle(base::OnceClosure callback);
   void OnFirstSyncCycleComplete();
 
-  Profile* profile_ = nullptr;
-  WebAppSyncBridge* sync_bridge_ = nullptr;
-  syncer::SyncService* sync_service_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
+  CheckedPtr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  CheckedPtr<syncer::SyncService> sync_service_ = nullptr;
   base::OnceClosure sync_ready_callback_;
 
   std::unique_ptr<extensions::BookmarkAppRegistrar> bookmark_app_registrar_;

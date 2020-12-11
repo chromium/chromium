@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/download/offline_item_model.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -38,8 +39,8 @@ class DownloadShelfController : public OfflineContentProvider::Observer {
   // Called when a new OfflineItem is to be displayed on UI.
   void OnNewOfflineItemReady(DownloadUIModel::DownloadUIModelPtr model);
 
-  Profile* profile_;
-  OfflineContentAggregator* aggregator_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<OfflineContentAggregator> aggregator_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadShelfController);
 };

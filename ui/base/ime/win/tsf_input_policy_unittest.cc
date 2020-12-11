@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "ui/base/ime/win/tsf_text_store.h"
 
 #include <initguid.h>  // for GUID_NULL and GUID_PROP_INPUTSCOPE
@@ -174,8 +175,8 @@ class FakeInputMethod : public DummyInputMethod {
   int count_show_ime_if_needed() const { return count_show_ime_if_needed_; }
 
  private:
-  TextInputClient* client_;
-  MockTSFBridge* tsf_bridge_;
+  CheckedPtr<TextInputClient> client_;
+  CheckedPtr<MockTSFBridge> tsf_bridge_;
   int count_show_ime_if_needed_;
   int count_set_focused_text_input_client_;
   int count_on_text_input_type_changed_;

@@ -6,6 +6,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
@@ -273,7 +274,7 @@ struct MixedContentDownloadData {
 
   base::Optional<url::Origin> initiator_;
   std::string extension_;
-  const download::DownloadItem* item_;
+  CheckedPtr<const download::DownloadItem> item_;
   bool is_redirect_chain_secure_;
   bool is_mixed_content_;
 };

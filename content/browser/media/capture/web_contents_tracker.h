@@ -17,6 +17,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -110,7 +111,7 @@ class CONTENT_EXPORT WebContentsTracker
 
   // Pointer to the RenderWidgetHostView provided in the last run of
   // |callback_|. This is used to eliminate duplicate callback runs.
-  RenderWidgetHostView* last_target_view_;
+  CheckedPtr<RenderWidgetHostView> last_target_view_;
 
   // TaskRunner corresponding to the thread that called Start().
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

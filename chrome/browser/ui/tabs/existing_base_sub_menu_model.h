@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -88,8 +89,8 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   int context_index() const { return context_index_; }
 
  private:
-  ui::SimpleMenuModel::Delegate* parent_delegate_;
-  TabStripModel* model_;
+  CheckedPtr<ui::SimpleMenuModel::Delegate> parent_delegate_;
+  CheckedPtr<TabStripModel> model_;
   int context_index_;
   int min_command_id_;
   DISALLOW_COPY_AND_ASSIGN(ExistingBaseSubMenuModel);

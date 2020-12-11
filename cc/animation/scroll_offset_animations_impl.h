@@ -5,6 +5,7 @@
 #ifndef CC_ANIMATION_SCROLL_OFFSET_ANIMATIONS_IMPL_H_
 #define CC_ANIMATION_SCROLL_OFFSET_ANIMATIONS_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
@@ -87,7 +88,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
 
   void ReattachScrollOffsetAnimationIfNeeded(ElementId element_id);
 
-  AnimationHost* animation_host_;
+  CheckedPtr<AnimationHost> animation_host_;
   scoped_refptr<AnimationTimeline> scroll_offset_timeline_;
 
   // We have just one animation for impl-only scroll offset animations.

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -80,10 +81,10 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
 
   // TODO(altimin): Make these const. Blocked on removing
   // lazy initialisation support.
-  SequenceManagerImpl* funneled_sequence_manager_;
+  CheckedPtr<SequenceManagerImpl> funneled_sequence_manager_;
   scoped_refptr<SingleThreadTaskRunner> task_runner_;
 
-  RunLoop::NestingObserver* nesting_observer_ = nullptr;
+  CheckedPtr<RunLoop::NestingObserver> nesting_observer_ = nullptr;
 
  private:
   enum class WorkType { kImmediate, kDelayed };
@@ -117,11 +118,11 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   }
 
   scoped_refptr<SingleThreadTaskRunner> message_loop_task_runner_;
-  const TickClock* time_source_;
+  CheckedPtr<const TickClock> time_source_;
   RepeatingClosure immediate_do_work_closure_;
   RepeatingClosure delayed_do_work_closure_;
   CancelableClosure cancelable_delayed_do_work_closure_;
-  SequencedTaskSource* sequence_ = nullptr;  // Not owned.
+  CheckedPtr<SequencedTaskSource> sequence_ = nullptr;  // Not owned.
   TaskAnnotator task_annotator_;
   WorkDeduplicator work_deduplicator_;
 

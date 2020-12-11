@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -91,8 +92,8 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
                                   int tab_count,
                                   base::TimeDelta duration);
 
-  Browser* const browser_;
-  TabStripUIEmbedder* const embedder_;
+  const CheckedPtr<Browser> browser_;
+  const CheckedPtr<TabStripUIEmbedder> embedder_;
   ThumbnailTracker thumbnail_tracker_;
   tab_strip_ui::TabBeforeUnloadTracker tab_before_unload_tracker_;
 

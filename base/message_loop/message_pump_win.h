@@ -13,6 +13,7 @@
 
 #include "base/base_export.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -37,7 +38,7 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
 
  protected:
   struct RunState {
-    Delegate* delegate;
+    CheckedPtr<Delegate> delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
     bool should_quit;
@@ -72,7 +73,7 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   std::atomic_bool work_scheduled_{false};
 
   // State for the current invocation of Run.
-  RunState* state_ = nullptr;
+  CheckedPtr<RunState> state_ = nullptr;
 
   THREAD_CHECKER(bound_thread_);
 };

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_REAUTH_HANDLER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/signin_reauth_view_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -52,7 +53,7 @@ class SigninReauthHandler : public content::WebUIMessageHandler,
       const base::ListValue* args) const;
 
   // May be null if |controller_| gets destroyed earlier than |this|.
-  SigninReauthViewController* controller_;
+  CheckedPtr<SigninReauthViewController> controller_;
 
   ScopedObserver<SigninReauthViewController,
                  SigninReauthViewController::Observer>

@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -26,7 +27,7 @@ class FullscreenControlView : public views::View {
   }
 
  private:
-  views::Button* exit_fullscreen_button_;
+  CheckedPtr<views::Button> exit_fullscreen_button_;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenControlView);
 };

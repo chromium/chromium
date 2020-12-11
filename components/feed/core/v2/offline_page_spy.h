@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/offline_pages/core/offline_page_model.h"
@@ -65,10 +66,10 @@ class OfflinePageSpy : public offline_pages::OfflinePageModel::Observer,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  SurfaceUpdater* surface_updater_;                      // unowned
-  offline_pages::OfflinePageModel* offline_page_model_;  // unowned
+  CheckedPtr<SurfaceUpdater> surface_updater_;                      // unowned
+  CheckedPtr<offline_pages::OfflinePageModel> offline_page_model_;  // unowned
   // Null when the model is not loaded.
-  StreamModel* stream_model_ = nullptr;  // unowned
+  CheckedPtr<StreamModel> stream_model_ = nullptr;  // unowned
 
   // A list of offline badges for all content in the stream.
   std::vector<BadgeInfo> badges_;

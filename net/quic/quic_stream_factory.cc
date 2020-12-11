@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -254,7 +255,7 @@ class QuicStreamFactory::QuicCryptoClientConfigOwner {
 
   int num_refs_ = 0;
   quic::QuicCryptoClientConfig config_;
-  QuicStreamFactory* const quic_stream_factory_;
+  const CheckedPtr<QuicStreamFactory> quic_stream_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(QuicCryptoClientConfigOwner);
 };
@@ -441,9 +442,9 @@ class QuicStreamFactory::Job {
   }
 
   IoState io_state_;
-  QuicStreamFactory* factory_;
+  CheckedPtr<QuicStreamFactory> factory_;
   quic::ParsedQuicVersion quic_version_;
-  HostResolver* host_resolver_;
+  CheckedPtr<HostResolver> host_resolver_;
   const QuicSessionAliasKey key_;
   const std::unique_ptr<CryptoClientConfigHandle> client_config_handle_;
   RequestPriority priority_;

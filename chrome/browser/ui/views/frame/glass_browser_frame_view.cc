@@ -102,7 +102,7 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
     // of the window. Even though it does nothing on click, it will still
     // prevent us from giving the event back to Windows to handle properly.
     window_icon_->SetCanProcessEventsWithinSubtree(false);
-    AddChildView(window_icon_);
+    AddChildView(window_icon_.get());
   }
 
   web_app::AppBrowserController* controller =
@@ -120,7 +120,7 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-    AddChildView(window_title_);
+    AddChildView(window_title_.get());
   }
 
   caption_button_container_ =

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -144,7 +145,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   // verify functionality without mocking out any implementations.
   const bool debug_mode_;
 
-  const base::Clock* clock_;
+  CheckedPtr<const base::Clock> clock_;
 
   // Timer which administers calls to GetAndQueueReportsForNextInterval().
   base::RepeatingTimer get_and_queue_reports_timer_;

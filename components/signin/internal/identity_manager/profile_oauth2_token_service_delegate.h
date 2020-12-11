@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -172,7 +173,7 @@ class ProfileOAuth2TokenServiceDelegate {
     ~ScopedBatchChange();
 
    private:
-    ProfileOAuth2TokenServiceDelegate* delegate_;  // Weak.
+    CheckedPtr<ProfileOAuth2TokenServiceDelegate> delegate_;  // Weak.
     DISALLOW_COPY_AND_ASSIGN(ScopedBatchChange);
   };
 

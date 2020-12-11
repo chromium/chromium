@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
 
@@ -45,7 +46,7 @@ class HintsFetcherFactory {
   const GURL optimization_guide_service_url_;
 
   // A reference to the PrefService for this profile. Not owned.
-  PrefService* pref_service_ = nullptr;
+  CheckedPtr<PrefService> pref_service_ = nullptr;
 };
 
 }  // namespace optimization_guide

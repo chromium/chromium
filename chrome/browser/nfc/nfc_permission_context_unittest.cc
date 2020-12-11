@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nfc/nfc_permission_context.h"
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -62,7 +63,7 @@ class NfcPermissionContextTests : public ChromeRenderViewHostTestHarness {
   void ClosePrompt();
 
   // owned by the browser context
-  NfcPermissionContext* nfc_permission_context_;
+  CheckedPtr<NfcPermissionContext> nfc_permission_context_;
   std::vector<std::unique_ptr<permissions::MockPermissionPromptFactory>>
       mock_permission_prompt_factories_;
 

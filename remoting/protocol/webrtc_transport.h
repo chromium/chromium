@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -226,14 +227,14 @@ class WebrtcTransport : public Transport,
   base::ThreadChecker thread_checker_;
 
   scoped_refptr<TransportContext> transport_context_;
-  EventHandler* event_handler_ = nullptr;
+  CheckedPtr<EventHandler> event_handler_ = nullptr;
   SendTransportInfoCallback send_transport_info_callback_;
 
   crypto::HMAC handshake_hmac_;
 
   std::unique_ptr<PeerConnectionWrapper> peer_connection_wrapper_;
 
-  WebrtcDummyVideoEncoderFactory* video_encoder_factory_;
+  CheckedPtr<WebrtcDummyVideoEncoderFactory> video_encoder_factory_;
 
   bool negotiation_pending_ = false;
 

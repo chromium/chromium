@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
@@ -81,8 +82,8 @@ class ThemeSyncableService : public syncer::SyncableService {
       syncer::SyncChange::SyncChangeType change_type,
       const sync_pb::ThemeSpecifics& theme_specifics);
 
-  Profile* const profile_;
-  ThemeService* const theme_service_;
+  const CheckedPtr<Profile> profile_;
+  const CheckedPtr<ThemeService> theme_service_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler_;

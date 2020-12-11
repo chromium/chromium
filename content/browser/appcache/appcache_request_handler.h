@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/appcache/appcache_entry.h"
 #include "content/browser/appcache/appcache_host.h"
@@ -197,7 +198,7 @@ class CONTENT_EXPORT AppCacheRequestHandler
   // Data members -----------------------------------------------
 
   // What host we're servicing a request for.
-  AppCacheHost* host_;
+  CheckedPtr<AppCacheHost> host_;
 
   // Frame vs subresource vs sharedworker loads are somewhat different.
   network::mojom::RequestDestination request_destination_;
@@ -244,7 +245,7 @@ class CONTENT_EXPORT AppCacheRequestHandler
   GURL manifest_url_;
 
   // Backptr to the central service object.
-  AppCacheServiceImpl* service_;
+  CheckedPtr<AppCacheServiceImpl> service_;
 
   std::unique_ptr<AppCacheRequest> request_;
 

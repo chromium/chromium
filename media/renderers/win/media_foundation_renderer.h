@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -108,7 +109,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Keep this here so it's destroyed after all Media Foundation members below.
   MFSessionLifetime mf_session_life_time_;
 
-  RendererClient* renderer_client_;
+  CheckedPtr<RendererClient> renderer_client_;
 
   Microsoft::WRL::ComPtr<IMFMediaEngine> mf_media_engine_;
   Microsoft::WRL::ComPtr<MediaEngineNotifyImpl> mf_media_engine_notify_;
@@ -141,7 +142,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   base::win::ScopedHandle dcomp_surface_handle_;
 
   bool waiting_for_mf_cdm_ = false;
-  CdmContext* cdm_context_ = nullptr;
+  CheckedPtr<CdmContext> cdm_context_ = nullptr;
   Microsoft::WRL::ComPtr<MediaFoundationProtectionManager>
       content_protection_manager_;
 

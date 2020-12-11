@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -77,7 +78,7 @@ class UsbTestGadgetImpl : public UsbTestGadget {
   std::string device_address_;
   scoped_refptr<UsbDevice> device_;
   scoped_refptr<net::URLRequestContextGetter> request_context_getter_;
-  UsbService* usb_service_;
+  CheckedPtr<UsbService> usb_service_;
 
   DISALLOW_COPY_AND_ASSIGN(UsbTestGadgetImpl);
 };
@@ -219,7 +220,7 @@ class UsbGadgetFactory : public UsbService::Observer,
     session_id_ =
         base::StringPrintf("%" CrPRIdPid "-%d", process_id, next_session_id++);
 
-    observer_.Add(usb_service_);
+    observer_.Add(usb_service_.get());
   }
 
   ~UsbGadgetFactory() override = default;
@@ -399,7 +400,7 @@ class UsbGadgetFactory : public UsbService::Observer,
         base::TimeDelta::FromMilliseconds(kReenumeratePeriod));
   }
 
-  UsbService* usb_service_ = nullptr;
+  CheckedPtr<UsbService> usb_service_ = nullptr;
   scoped_refptr<net::URLRequestContextGetter> request_context_getter_;
   std::string session_id_;
   std::unique_ptr<net::URLFetcher> url_fetcher_;
@@ -421,7 +422,7 @@ class DeviceAddListener : public UsbService::Observer {
         serial_number_(serial_number),
         product_id_(product_id),
         observer_(this) {
-    observer_.Add(usb_service_);
+    observer_.Add(usb_service_.get());
   }
   ~DeviceAddListener() override = default;
 
@@ -472,7 +473,7 @@ class DeviceAddListener : public UsbService::Observer {
     }
   }
 
-  UsbService* usb_service_;
+  CheckedPtr<UsbService> usb_service_;
   const std::string serial_number_;
   const int product_id_;
   base::RunLoop run_loop_;
@@ -487,7 +488,7 @@ class DeviceRemoveListener : public UsbService::Observer {
  public:
   DeviceRemoveListener(UsbService* usb_service, scoped_refptr<UsbDevice> device)
       : usb_service_(usb_service), device_(device), observer_(this) {
-    observer_.Add(usb_service_);
+    observer_.Add(usb_service_.get());
   }
   ~DeviceRemoveListener() override = default;
 
@@ -520,7 +521,7 @@ class DeviceRemoveListener : public UsbService::Observer {
     }
   }
 
-  UsbService* usb_service_;
+  CheckedPtr<UsbService> usb_service_;
   base::RunLoop run_loop_;
   scoped_refptr<UsbDevice> device_;
   ScopedObserver<UsbService, UsbService::Observer> observer_;

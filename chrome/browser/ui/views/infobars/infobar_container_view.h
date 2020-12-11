@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/infobars/core/infobar_container.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -37,7 +38,7 @@ class InfoBarContainerView : public views::AccessiblePaneView,
   // This view draws the shadow over the web contents below the
   // lowest infobar. A separate view with a layer is used so it can
   // draw outside the bounds of |this|.
-  views::View* content_shadow_;
+  CheckedPtr<views::View> content_shadow_;
 
   DISALLOW_COPY_AND_ASSIGN(InfoBarContainerView);
 };

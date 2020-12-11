@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
@@ -99,9 +100,9 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   void RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason reason);
 
-  ExclusiveAccessBubbleViewsContext* const bubble_view_context_;
+  const CheckedPtr<ExclusiveAccessBubbleViewsContext> bubble_view_context_;
 
-  views::Widget* popup_;
+  CheckedPtr<views::Widget> popup_;
 
   // Classic mode: Bubble may show & hide multiple times. The callback only runs
   // for the first hide.
@@ -112,7 +113,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   std::unique_ptr<gfx::SlideAnimation> animation_;
 
   // The contents of the popup.
-  SubtleNotificationView* view_;
+  CheckedPtr<SubtleNotificationView> view_;
   base::string16 browser_fullscreen_exit_accelerator_;
 
   base::ScopedObservation<FullscreenController, FullscreenObserver>

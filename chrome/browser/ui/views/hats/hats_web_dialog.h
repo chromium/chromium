@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -81,8 +82,8 @@ class HatsWebDialog : public ui::WebDialogDelegate,
   void OnProfileWillBeDestroyed(Profile* profile) override;
   void Show(views::Widget* widget, bool accept);
 
-  Profile* otr_profile_;
-  Browser* browser_;
+  CheckedPtr<Profile> otr_profile_;
+  CheckedPtr<Browser> browser_;
   const std::string site_id_;
 
   // A timer to prevent unresponsive loading of survey dialog.
@@ -90,8 +91,8 @@ class HatsWebDialog : public ui::WebDialogDelegate,
 
   // The widget created for preloading. It is owned by us until it is shown to
   // user.
-  views::Widget* preloading_widget_ = nullptr;
-  views::WebDialogView* webview_ = nullptr;
+  CheckedPtr<views::Widget> preloading_widget_ = nullptr;
+  CheckedPtr<views::WebDialogView> webview_ = nullptr;
 
   // Indicate whether HaTS resources were loaded successfully.
   bool resource_loaded_ = false;

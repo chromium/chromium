@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner_helpers.h"
@@ -321,7 +322,7 @@ class ProtocolHandlerRegistry : public KeyedService {
   ProtocolHandlerMap default_handlers_;
 
   // The browser context that owns this ProtocolHandlerRegistry.
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
 
   // The Delegate that registers / deregisters external handlers on our behalf.
   std::unique_ptr<Delegate> delegate_;

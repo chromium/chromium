@@ -21,6 +21,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -587,12 +588,13 @@ class NET_EXPORT CookieMonster : public CookieStore {
 
   // Histogram variables; see CookieMonster::InitializeHistograms() in
   // cookie_monster.cc for details.
-  base::HistogramBase* histogram_expiration_duration_minutes_secure_;
-  base::HistogramBase* histogram_expiration_duration_minutes_non_secure_;
-  base::HistogramBase* histogram_count_;
-  base::HistogramBase* histogram_cookie_type_;
-  base::HistogramBase* histogram_cookie_source_scheme_;
-  base::HistogramBase* histogram_time_blocked_on_load_;
+  CheckedPtr<base::HistogramBase> histogram_expiration_duration_minutes_secure_;
+  CheckedPtr<base::HistogramBase>
+      histogram_expiration_duration_minutes_non_secure_;
+  CheckedPtr<base::HistogramBase> histogram_count_;
+  CheckedPtr<base::HistogramBase> histogram_cookie_type_;
+  CheckedPtr<base::HistogramBase> histogram_cookie_source_scheme_;
+  CheckedPtr<base::HistogramBase> histogram_time_blocked_on_load_;
 
   // Set of keys (eTLD+1's) for which non-expired cookies have
   // been evicted for hitting the per-domain max. The size of this set is

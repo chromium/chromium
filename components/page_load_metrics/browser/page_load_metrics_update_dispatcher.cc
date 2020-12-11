@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
@@ -417,7 +418,7 @@ class PageLoadTimingMerger {
   }
 
   // The target PageLoadTiming we are merging values into.
-  mojom::PageLoadTiming* const target_;
+  const CheckedPtr<mojom::PageLoadTiming> target_;
 
   // Whether we merged a new value into |target_|.
   bool should_buffer_timing_update_callback_ = false;

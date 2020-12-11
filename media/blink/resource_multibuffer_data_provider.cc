@@ -233,7 +233,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
 #endif
   DCHECK(active_loader_);
 
-  scoped_refptr<UrlData> destination_url_data(url_data_);
+  scoped_refptr<UrlData> destination_url_data(url_data_.get());
 
   if (!redirects_to_.is_empty()) {
     destination_url_data = url_data_->url_index()->GetByUrl(
@@ -333,12 +333,12 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     }
   }
 
-  if (destination_url_data != url_data_) {
+  if (destination_url_data != url_data_.get()) {
     // At this point, we've encountered a redirect, or found a better url data
     // instance for the data that we're about to download.
 
     // First, let's take a ref on the current url data.
-    scoped_refptr<UrlData> old_url_data(url_data_);
+    scoped_refptr<UrlData> old_url_data(url_data_.get());
     destination_url_data->Use();
 
     // Take ownership of ourselves. (From the multibuffer)
@@ -459,7 +459,7 @@ void ResourceMultiBufferDataProvider::DidFinishLoading() {
   fifo_.push_back(DataBuffer::CreateEOSBuffer());
 
   if (url_data_->url_index()) {
-    url_data_->url_index()->TryInsert(url_data_);
+    url_data_->url_index()->TryInsert(url_data_.get());
   }
 
   DCHECK(Available());

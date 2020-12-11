@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
@@ -64,7 +65,7 @@ class EVENTS_EXPORT EventDispatcherDelegate {
   EventDispatchDetails DispatchEventToTarget(EventTarget* target,
                                              Event* event) WARN_UNUSED_RESULT;
 
-  EventDispatcher* dispatcher_;
+  CheckedPtr<EventDispatcher> dispatcher_;
 
   DISALLOW_COPY_AND_ASSIGN(EventDispatcherDelegate);
 };
@@ -93,7 +94,7 @@ class EVENTS_EXPORT EventDispatcher {
   // dispatching the event to the event handler.
   void DispatchEvent(EventHandler* handler, Event* event);
 
-  EventDispatcherDelegate* delegate_;
+  CheckedPtr<EventDispatcherDelegate> delegate_;
 
   Event* current_event_ = nullptr;
 

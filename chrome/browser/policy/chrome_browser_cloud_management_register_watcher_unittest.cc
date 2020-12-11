@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -126,7 +127,7 @@ class ChromeBrowserCloudManagementRegisterWatcherTest : public ::testing::Test {
   ChromeBrowserCloudManagementRegisterWatcher watcher_;
   FakeBrowserDMTokenStorage storage_;
   std::unique_ptr<MockEnterpriseStartupDialog> dialog_;
-  MockEnterpriseStartupDialog* dialog_ptr_;
+  CheckedPtr<MockEnterpriseStartupDialog> dialog_ptr_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserCloudManagementRegisterWatcherTest);
 };

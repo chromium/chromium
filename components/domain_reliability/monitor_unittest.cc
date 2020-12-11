@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "components/domain_reliability/baked_in_configs.h"
@@ -105,7 +106,7 @@ class DomainReliabilityMonitorTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   net::TestURLRequestContext url_request_context_;
-  MockTime* time_;
+  CheckedPtr<MockTime> time_;
   DomainReliabilityMonitor monitor_;
   DomainReliabilityMonitor::RequestInfo request_;
 };

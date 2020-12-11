@@ -12,6 +12,7 @@
 
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -85,15 +86,17 @@ class ProfileSyncService : public SyncService,
     std::unique_ptr<SyncClient> sync_client;
     // TODO(treib): Remove this and instead retrieve it via
     // SyncClient::GetIdentityManager (but mind LocalSync).
-    signin::IdentityManager* identity_manager = nullptr;
-    invalidation::IdentityProvider* invalidations_identity_provider = nullptr;
+    CheckedPtr<signin::IdentityManager> identity_manager = nullptr;
+    CheckedPtr<invalidation::IdentityProvider> invalidations_identity_provider =
+        nullptr;
     StartBehavior start_behavior = MANUAL_START;
     NetworkTimeUpdateCallback network_time_update_callback;
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-    network::NetworkConnectionTracker* network_connection_tracker = nullptr;
+    CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker =
+        nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
-    policy::PolicyService* policy_service = nullptr;
+    CheckedPtr<policy::PolicyService> policy_service = nullptr;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(InitParams);
@@ -383,7 +386,7 @@ class ProfileSyncService : public SyncService,
   // Encapsulates user signin - used to set/get the user's authenticated
   // email address and sign-out upon error.
   // May be null (if local Sync is enabled).
-  signin::IdentityManager* const identity_manager_;
+  const CheckedPtr<signin::IdentityManager> identity_manager_;
 
   // The user-configurable knobs. Non-null between Initialize() and Shutdown().
   std::unique_ptr<SyncUserSettingsImpl> user_settings_;
@@ -421,7 +424,7 @@ class ProfileSyncService : public SyncService,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The global NetworkConnectionTracker instance.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Indicates if this is the first time sync is being configured.
   // This is set to true if last synced time is not set at the time of
@@ -471,7 +474,8 @@ class ProfileSyncService : public SyncService,
   // The account that it registers for should be the same as the currently
   // syncing account, so we'll need to update this whenever the account changes.
   // May be null (if local Sync is enabled).
-  invalidation::IdentityProvider* const invalidations_identity_provider_;
+  const CheckedPtr<invalidation::IdentityProvider>
+      invalidations_identity_provider_;
 
   // List of available data type controllers.
   DataTypeController::TypeMap data_type_controllers_;

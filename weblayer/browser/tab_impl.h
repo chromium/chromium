@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
@@ -363,12 +364,12 @@ class TabImpl : public Tab,
 
   bool SetDataInternal(const std::map<std::string, std::string>& data);
 
-  BrowserImpl* browser_ = nullptr;
-  ErrorPageDelegate* error_page_delegate_ = nullptr;
-  FullscreenDelegate* fullscreen_delegate_ = nullptr;
-  NewTabDelegate* new_tab_delegate_ = nullptr;
-  GoogleAccountsDelegate* google_accounts_delegate_ = nullptr;
-  ProfileImpl* profile_;
+  CheckedPtr<BrowserImpl> browser_ = nullptr;
+  CheckedPtr<ErrorPageDelegate> error_page_delegate_ = nullptr;
+  CheckedPtr<FullscreenDelegate> fullscreen_delegate_ = nullptr;
+  CheckedPtr<NewTabDelegate> new_tab_delegate_ = nullptr;
+  CheckedPtr<GoogleAccountsDelegate> google_accounts_delegate_ = nullptr;
+  CheckedPtr<ProfileImpl> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<NavigationControllerImpl> navigation_controller_;
   base::ObserverList<TabObserver>::Unchecked observers_;
