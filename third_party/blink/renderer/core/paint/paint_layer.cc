@@ -137,6 +137,25 @@ inline PhysicalRect PhysicalVisualOverflowRectAllowingUnset(
   return layout_object.PhysicalVisualOverflowRect();
 }
 
+PaintLayer* SlowContainingLayer(const PaintLayer* ancestor,
+                                bool* skipped_ancestor,
+                                LayoutObject* layout_object) {
+  // This is a universal approach to find the containing layer, but it is
+  // slower.
+  base::Optional<LayoutObject::AncestorSkipInfo> skip_info;
+  if (skipped_ancestor)
+    skip_info.emplace(&ancestor->GetLayoutObject());
+  while (auto* container = layout_object->Container(
+             skipped_ancestor ? &*skip_info : nullptr)) {
+    if (skipped_ancestor && skip_info->AncestorSkipped())
+      *skipped_ancestor = true;
+    if (container->HasLayer())
+      return To<LayoutBoxModelObject>(container)->Layer();
+    layout_object = container;
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 PaintLayerRareData::PaintLayerRareData()
@@ -889,6 +908,14 @@ PaintLayer* PaintLayer::ContainingLayer(const PaintLayer* ancestor,
 
   LayoutObject& layout_object = GetLayoutObject();
   if (layout_object.IsOutOfFlowPositioned()) {
+    // In NG, the containing block chain goes directly from a column spanner to
+    // the multi-column container. Thus, for an OOF nested inside a spanner, we
+    // need to find its containing layer through its containing block to handle
+    // this case correctly. Therefore, we technically only need to take this
+    // path for OOFs inside an NG spanner. However, doing so for all OOF
+    // descendants of a multicol container is reasonable enough.
+    if (layout_object.IsInsideFlowThread())
+      return SlowContainingLayer(ancestor, skipped_ancestor, &layout_object);
     auto can_contain_this_layer =
         layout_object.IsFixedPositioned()
             ? &LayoutObject::CanContainFixedPositionObjects
@@ -914,21 +941,7 @@ PaintLayer* PaintLayer::ContainingLayer(const PaintLayer* ancestor,
       !layout_object.IsColumnSpanAll() && !layout_object.IsRenderedLegend())
     return Parent();
 
-  // This is a universal approach to find containing layer, but is slower than
-  // the earlier code.
-  base::Optional<LayoutObject::AncestorSkipInfo> skip_info;
-  if (skipped_ancestor)
-    skip_info.emplace(&ancestor->GetLayoutObject());
-  auto* object = &layout_object;
-  while (auto* container =
-             object->Container(skipped_ancestor ? &*skip_info : nullptr)) {
-    if (skipped_ancestor && skip_info->AncestorSkipped())
-      *skipped_ancestor = true;
-    if (container->HasLayer())
-      return To<LayoutBoxModelObject>(container)->Layer();
-    object = container;
-  }
-  return nullptr;
+  return SlowContainingLayer(ancestor, skipped_ancestor, &layout_object);
 }
 
 PhysicalOffset PaintLayer::ComputeOffsetFromAncestor(
