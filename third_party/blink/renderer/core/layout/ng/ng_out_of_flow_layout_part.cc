@@ -752,7 +752,8 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
   // We also include items with aspect ratio here, because if the inline size
   // is auto and we have a definite block size, we want to use that for the
   // inline size calculation.
-  bool compute_inline_from_ar = IsInlineSizeComputableFromBlockSize(node);
+  bool compute_inline_from_ar =
+      IsInlineSizeComputableFromBlockSize(node) && !is_replaced;
   if (AbsoluteNeedsChildInlineSize(node) || NeedMinMaxSize(candidate_style) ||
       should_be_considered_as_replaced || compute_inline_from_ar) {
     MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kContent);
