@@ -10,10 +10,10 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsClient;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
@@ -47,7 +47,6 @@ public abstract class PageInfoControllerDelegate {
         int INSECURE_PAGE_PREVIEW = 3;
     }
 
-    private final Supplier<ModalDialogManager> mModalDialogManager;
     private final AutocompleteSchemeClassifier mAutocompleteSchemeClassifier;
     private final VrHandler mVrHandler;
     private final boolean mIsSiteSettingsAvailable;
@@ -57,10 +56,8 @@ public abstract class PageInfoControllerDelegate {
     protected boolean mIsHttpsImageCompressionApplied;
     protected String mOfflinePageUrl;
 
-    public PageInfoControllerDelegate(Supplier<ModalDialogManager> modalDialogManager,
-            AutocompleteSchemeClassifier autocompleteSchemeClassifier, VrHandler vrHandler,
-            boolean isSiteSettingsAvailable, boolean cookieControlsShown) {
-        mModalDialogManager = modalDialogManager;
+    public PageInfoControllerDelegate(AutocompleteSchemeClassifier autocompleteSchemeClassifier,
+            VrHandler vrHandler, boolean isSiteSettingsAvailable, boolean cookieControlsShown) {
         mAutocompleteSchemeClassifier = autocompleteSchemeClassifier;
         mVrHandler = vrHandler;
         mIsSiteSettingsAvailable = isSiteSettingsAvailable;
@@ -89,9 +86,7 @@ public abstract class PageInfoControllerDelegate {
     /**
      * Return the ModalDialogManager to be used.
      */
-    public ModalDialogManager getModalDialogManager() {
-        return mModalDialogManager.get();
-    }
+    public abstract ModalDialogManager getModalDialogManager();
 
     /**
      * Initialize viewParams with Preview UI info, if any.
@@ -253,4 +248,6 @@ public abstract class PageInfoControllerDelegate {
      * @return Returns the drawable for the Preview UI.
      */
     public abstract Drawable getPreviewUiIcon();
+
+    public abstract FragmentManager getFragmentManager();
 }

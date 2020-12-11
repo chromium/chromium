@@ -15,6 +15,7 @@ import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
@@ -569,6 +570,10 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
 
     public boolean isInConfigurationChangeAndWasAttached() {
         return mInConfigurationChangeAndWasAttached;
+    }
+
+    public FragmentManager getFragmentManager() {
+        return mWindowAndroid.getFragmentManager();
     }
 
     public boolean isViewAttachedToWindow() {

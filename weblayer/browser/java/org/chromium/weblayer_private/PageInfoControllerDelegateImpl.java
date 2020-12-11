@@ -13,10 +13,10 @@ import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsClient;
@@ -39,26 +39,34 @@ import org.chromium.weblayer_private.settings.WebLayerSiteSettingsClient;
 public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
     private final Context mContext;
     private final WebContents mWebContents;
+    private final BrowserImpl mBrowser;
     private final ProfileImpl mProfile;
 
     static PageInfoControllerDelegateImpl create(WebContents webContents) {
         TabImpl tab = TabImpl.fromWebContents(webContents);
         assert tab != null;
-        return new PageInfoControllerDelegateImpl(tab.getBrowser().getContext(), webContents,
-                tab.getProfile(), tab.getBrowser().getWindowAndroid()::getModalDialogManager);
+        return new PageInfoControllerDelegateImpl(webContents, tab.getBrowser());
     }
 
-    private PageInfoControllerDelegateImpl(Context context, WebContents webContents,
-            ProfileImpl profile, Supplier<ModalDialogManager> modalDialogManager) {
-        super(modalDialogManager, new AutocompleteSchemeClassifierImpl(),
+    private PageInfoControllerDelegateImpl(WebContents webContents, BrowserImpl browser) {
+        super(new AutocompleteSchemeClassifierImpl(),
                 /** vrHandler= */ null,
                 /** isSiteSettingsAvailable= */
                 isHttpOrHttps(webContents.getVisibleUrl()),
                 /** cookieControlsShown= */
-                CookieControlsBridge.isCookieControlsEnabled(profile));
-        mContext = context;
+                CookieControlsBridge.isCookieControlsEnabled(browser.getProfile()));
+        mContext = browser.getContext();
         mWebContents = webContents;
-        mProfile = profile;
+        mBrowser = browser;
+        mProfile = browser.getProfile();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ModalDialogManager getModalDialogManager() {
+        return mBrowser.getWindowAndroid().getModalDialogManager();
     }
 
     /**
@@ -69,7 +77,6 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
         Intent intent = SettingsIntentHelper.createIntentForSiteSettingsSingleWebsite(
                 mContext, mProfile.getName(), mProfile.isIncognito(), url);
 
-        // Disabling StrictMode to avoid violations (https://crbug.com/819410).
         launchIntent(intent);
     }
 
@@ -129,6 +136,9 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
                 }));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Nullable
     public Drawable getPreviewUiIcon() {
@@ -138,5 +148,13 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
     private static boolean isHttpOrHttps(GURL url) {
         String scheme = url.getScheme();
         return UrlConstants.HTTP_SCHEME.equals(scheme) || UrlConstants.HTTPS_SCHEME.equals(scheme);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FragmentManager getFragmentManager() {
+        return mBrowser.getFragmentManager();
     }
 }

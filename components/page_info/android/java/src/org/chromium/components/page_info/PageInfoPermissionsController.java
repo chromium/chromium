@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 
@@ -56,20 +56,19 @@ public class PageInfoPermissionsController
         mSubPage.setSiteSettingsClient(mDelegate.getSiteSettingsClient());
         mSubPage.setHideNonPermissionPreferences(true);
         mSubPage.setWebsiteSettingsObserver(this);
-        AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
-        host.getSupportFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
+        mDelegate.getFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
         return mSubPage.requireView();
     }
 
     @Override
     public void onSubpageRemoved() {
         assert mSubPage != null;
-        AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
+        FragmentManager fragmentManager = mDelegate.getFragmentManager();
         SingleWebsiteSettings subPage = mSubPage;
         mSubPage = null;
         // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (host.isFinishing() || host.getSupportFragmentManager().isStateSaved()) return;
-        host.getSupportFragmentManager().beginTransaction().remove(subPage).commitNow();
+        if (fragmentManager == null || fragmentManager.isStateSaved()) return;
+        fragmentManager.beginTransaction().remove(subPage).commitNow();
     }
 
     public void setPermissions(PageInfoView.PermissionParams params) {

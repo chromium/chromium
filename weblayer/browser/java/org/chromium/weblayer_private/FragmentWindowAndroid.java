@@ -12,6 +12,8 @@ import android.content.IntentSender;
 import android.os.Build;
 import android.view.View;
 
+import androidx.fragment.app.FragmentManager;
+
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.IntentWindowAndroid;
@@ -77,6 +79,10 @@ public class FragmentWindowAndroid extends IntentWindowAndroid {
 
     public BrowserImpl getBrowser() {
         return mFragment.getBrowser();
+    }
+
+    public FragmentManager getFragmentManager() {
+        return mFragment.getSupportFragmentManager();
     }
 
     @Override

@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
@@ -67,6 +69,7 @@ import java.util.Date;
  */
 public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate {
     private final WebContents mWebContents;
+    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Context mContext;
     private final Profile mProfile;
     private String mOfflinePageCreationDate;
@@ -75,8 +78,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public ChromePageInfoControllerDelegate(Context context, WebContents webContents,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate) {
-        super(modalDialogManagerSupplier,
-                new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
+        super(new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
                 VrModuleProvider.getDelegate(),
                 /** isSiteSettingsAvailable= */
                 SiteSettingsHelper.isSiteSettingsAvailable(webContents),
@@ -84,6 +86,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                 CookieControlsBridge.isCookieControlsEnabled(Profile.fromWebContents(webContents)));
         mContext = context;
         mWebContents = webContents;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mProfile = Profile.fromWebContents(mWebContents);
 
         mPreviewPageState = getPreviewPageStateAndRecordUma();
@@ -140,6 +143,14 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         if (mIsHttpsImageCompressionApplied) {
             PreviewsUma.recordHttpsImageCompressionPageInfoOpened();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ModalDialogManager getModalDialogManager() {
+        return mModalDialogManagerSupplier.get();
     }
 
     /**
@@ -341,5 +352,12 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @VisibleForTesting
     void setOfflinePageStateForTesting(@OfflinePageState int offlinePageState) {
         mOfflinePageState = offlinePageState;
+    }
+
+    @Override
+    public FragmentManager getFragmentManager() {
+        FragmentActivity activity = ((FragmentActivity) mContext);
+        if (activity.isFinishing()) return null;
+        return activity.getSupportFragmentManager();
     }
 }

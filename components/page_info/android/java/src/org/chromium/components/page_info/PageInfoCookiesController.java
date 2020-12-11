@@ -7,7 +7,7 @@ package org.chromium.components.page_info;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
@@ -73,8 +73,7 @@ public class PageInfoCookiesController
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
         mSubPage = new PageInfoCookiesPreference();
-        AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
-        host.getSupportFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
+        mDelegate.getFragmentManager().beginTransaction().add(mSubPage, null).commitNow();
 
         PageInfoCookiesPreference.PageInfoCookiesViewParams params =
                 new PageInfoCookiesPreference.PageInfoCookiesViewParams();
@@ -121,12 +120,12 @@ public class PageInfoCookiesController
     @Override
     public void onSubpageRemoved() {
         assert mSubPage != null;
-        AppCompatActivity host = (AppCompatActivity) mRowView.getContext();
+        FragmentManager fragmentManager = mDelegate.getFragmentManager();
         PageInfoCookiesPreference subPage = mSubPage;
         mSubPage = null;
         // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (host.isFinishing() || host.getSupportFragmentManager().isStateSaved()) return;
-        host.getSupportFragmentManager().beginTransaction().remove(subPage).commitNow();
+        if (fragmentManager == null || fragmentManager.isStateSaved()) return;
+        fragmentManager.beginTransaction().remove(subPage).commitNow();
     }
 
     @Override
