@@ -2180,6 +2180,10 @@ void PDFiumEngine::HandleAccessibilityAction(
           IsPageCharacterIndexInBounds(action_data.selection_end_index)) {
         SetSelection(action_data.selection_start_index,
                      action_data.selection_end_index);
+        gfx::Rect target_rect = RectFromPPRect(action_data.target_rect);
+        if (GetVisibleRect().Contains(target_rect))
+          return;
+        client_->ScrollBy(GetScreenRect(target_rect).OffsetFromOrigin());
       }
       break;
     }
