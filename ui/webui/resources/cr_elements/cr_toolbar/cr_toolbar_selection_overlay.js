@@ -69,6 +69,9 @@ Polymer({
       this.selectionLabel_ =
           this.show ? this.selectionLabel : this.selectionLabel_;
       this.setAttribute('aria-label', this.selectionLabel_);
+
+      Polymer.IronA11yAnnouncer.requestAvailability();
+      this.fire('iron-announce', {text: this.selectionLabel});
     });
   },
 

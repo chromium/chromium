@@ -20,6 +20,7 @@ js_library("cr_toolbar_search_field") {
 }
 
 js_library("cr_toolbar_selection_overlay") {
+  deps = [ "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted" ]
 }
 
 js_library("cr_toolbar") {
@@ -86,6 +87,7 @@ js_library("cr_toolbar_search_field.m") {
 js_library("cr_toolbar_selection_overlay.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.m.js" ]
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":cr_toolbar_selection_overlay_module" ]
