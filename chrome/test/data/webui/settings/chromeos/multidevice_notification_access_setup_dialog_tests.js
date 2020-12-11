@@ -31,6 +31,11 @@ suite('Multidevice', () => {
     Polymer.dom.flush();
   }
 
+  /** @return {boolean} */
+  function isSetupInstructionsShownSeparately() {
+    return notificationAccessSetupDialog.shouldShowSetupInstructionsSeparately_;
+  }
+
   setup(() => {
     PolymerTest.clearBody();
     browserProxy = new multidevice.TestMultideviceBrowserProxy();
@@ -46,6 +51,7 @@ suite('Multidevice', () => {
   });
 
   test('Test success flow', async () => {
+    assertTrue(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
@@ -55,12 +61,14 @@ suite('Multidevice', () => {
 
     simulateStatusChanged(
       NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED);
+    assertTrue(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     simulateStatusChanged(NotificationAccessSetupOperationStatus.CONNECTING);
+    assertTrue(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
@@ -68,6 +76,7 @@ suite('Multidevice', () => {
 
     simulateStatusChanged(NotificationAccessSetupOperationStatus.
         SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
+    assertFalse(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
@@ -75,7 +84,7 @@ suite('Multidevice', () => {
 
     simulateStatusChanged(
         NotificationAccessSetupOperationStatus.COMPLETED_SUCCESSFULLY);
-
+    assertFalse(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
     assertTrue(!!buttonContainer.querySelector('#doneButton'));
