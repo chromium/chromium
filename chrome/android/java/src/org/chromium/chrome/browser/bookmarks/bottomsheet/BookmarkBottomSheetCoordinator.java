@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.bookmarks.bottomsheet.BookmarkBottomSheetItem
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -81,7 +83,14 @@ public class BookmarkBottomSheetCoordinator {
         // Show the bottom sheet.
         mBottomSheetContent = new BookmarkBottomSheetContent(
                 contentView, sheetItemListView::computeHorizontalScrollOffset);
-        mBottomSheetController.requestShowContent(mBottomSheetContent, /*animate=*/false);
+        mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetClosed(@StateChangeReason int reason) {
+                onBottomSheetClosed();
+                mBottomSheetController.removeObserver(this);
+            }
+        });
+        mBottomSheetController.requestShowContent(mBottomSheetContent, /*animate=*/true);
     }
 
     // Loads top level bookmark folders into a ModelList.
@@ -131,9 +140,20 @@ public class BookmarkBottomSheetCoordinator {
     }
 
     private void onClick(BookmarkItem bookmarkItem) {
-        mBottomSheetController.hideContent(mBottomSheetContent, /*animate=*/false);
-        assert mCallback != null;
+        invokeCallback(bookmarkItem);
+
+        // This will result in onBottomSheetClosed() being called.
+        mBottomSheetController.hideContent(mBottomSheetContent, /*animate=*/true);
+    }
+
+    private void onBottomSheetClosed() {
+        invokeCallback(null);
+    }
+
+    private void invokeCallback(BookmarkItem bookmarkItem) {
+        if (mCallback == null) return;
         mCallback.onResult(bookmarkItem);
+        mCallback = null;
     }
 
     @VisibleForTesting

@@ -65,6 +65,7 @@ public class BookmarkBottomSheetTest {
     private BottomSheetController mBottomSheetController;
     private BookmarkModel mBookmarkModel;
     private BookmarkItem mItemClicked;
+    private boolean mCallbackInvoked;
 
     @Before
     public void setUp() {
@@ -87,16 +88,27 @@ public class BookmarkBottomSheetTest {
         mItemClicked = null;
     }
 
-    private void onBottomSheetClicked(BookmarkItem item) {
+    private void bottomSheetCallback(BookmarkItem item) {
         mItemClicked = item;
+        mCallbackInvoked = true;
     }
 
     private void showBottomSheet() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mBottomSheetCoordinator.show(this::onBottomSheetClicked); });
+                () -> { mBottomSheetCoordinator.show(this::bottomSheetCallback); });
 
         CriteriaHelper.pollUiThread(
                 () -> mBottomSheetController.getSheetState() == SheetState.FULL);
+    }
+
+    private void hideBottomSheet() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mBottomSheetController.hideContent(
+                    mBottomSheetCoordinator.getBottomSheetContentForTesting(), false);
+        });
+
+        CriteriaHelper.pollUiThread(
+                () -> mBottomSheetController.getSheetState() == SheetState.HIDDEN);
     }
 
     private void waitForBookmarkModelLoaded() {
@@ -187,5 +199,15 @@ public class BookmarkBottomSheetTest {
         waitForBookmarkClicked();
         Assert.assertEquals(BookmarkType.READING_LIST, mItemClicked.getId().getType());
         Assert.assertTrue(mItemClicked.isFolder());
+    }
+
+    @Test
+    @MediumTest
+    public void testBottomSheetCloseInvokeCallback() {
+        showBottomSheet();
+        onView(withText("Reading list")).check(matches(isDisplayed()));
+        hideBottomSheet();
+        Assert.assertNull(mItemClicked);
+        Assert.assertTrue(mCallbackInvoked);
     }
 }
