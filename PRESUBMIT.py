@@ -400,14 +400,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
 # * Sequence of paths to *not* check (regexps).
 _BANNED_CPP_FUNCTIONS = (
     (
-      r'/\bNULL\b',
-      (
-       'New code should not use NULL. Use nullptr instead.',
-      ),
-      False,
-      (),
-    ),
-    (
       r'/\busing namespace ',
       (
        'Using directives ("using namespace x") are banned by the Google Style',
