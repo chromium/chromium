@@ -5876,3 +5876,7 @@ crbug.com/1157857 [ Mac10.14 ] virtual/compositor-threaded-percent-based-scrolli
 crbug.com/1157861 http/tests/devtools/a11y-axe-core/sources/javascript-breakpoints-a11y-test.js [ Pass Failure ]
 crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Pass Failure ]
 crbug.com/1157861 [ Mac10.13 ] http/tests/devtools/console/paintworklet-console-selector.js [ Pass Failure ]
+
+# Wpt importer Sheriff 2020-12-11
+crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Pass Failure ]
+crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Pass Failure ]
