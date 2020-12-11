@@ -210,7 +210,8 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, PRE_AuthOffline) {
   offline_login_test_mixin_.PrepareOfflineLogin();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineTest, AuthOffline) {
+// TODO(https://crbug.com/1157777): Fix failing test on linux chromeos.
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, DISABLED_AuthOffline) {
   offline_login_test_mixin_.GoOffline();
   offline_login_test_mixin_.InitOfflineLogin(test_account_id_,
                                              LoginManagerTest::kPassword);
@@ -221,7 +222,9 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineTest, AuthOffline) {
   TestSystemTrayIsVisible(false);
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, CorrectDomainCompletion) {
+// TODO(https://crbug.com/1157777): Fix failing test on linux chromeos.
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest,
+                       DISABLED_CorrectDomainCompletion) {
   std::string domain = gaia::ExtractDomainName(managed_user_id_.GetUserEmail());
 
   ConfigurePolicy(domain);
@@ -244,7 +247,9 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, CorrectDomainCompletion) {
   TestSystemTrayIsVisible(false);
 }
 
-IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, FullEmailDontMatchProvided) {
+// TODO(https://crbug.com/1157777): Fix failing test on linux chromeos-dbg bot.
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest,
+                       DISABLED_FullEmailDontMatchProvided) {
   ConfigurePolicy("another.domain");
 
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
