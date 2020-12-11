@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INTER_PROCESS_TIME_TICKS_CONVERTER_H_
-#define CONTENT_COMMON_INTER_PROCESS_TIME_TICKS_CONVERTER_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_LOADER_INTER_PROCESS_TIME_TICKS_CONVERTER_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_LOADER_INTER_PROCESS_TIME_TICKS_CONVERTER_H_
 
 #include <stdint.h>
 
 #include "base/time/time.h"
-#include "content/common/content_export.h"
+#include "third_party/blink/public/common/common_export.h"
 
-namespace content {
+namespace blink {
 
 // SiteSpecificTimeDelta<T> is base::TimeDelta with a type tag. It it
 // essentially base::TimeDelta, but SiteSpecificTimeDelta<T> is different from
@@ -134,7 +134,7 @@ using RemoteTimeDelta = SiteSpecificTimeDelta<SiteSpecificTimeRemoteTag>;
 //
 // 2. The remote's range is shifted so that it is centered within the
 //    local's range. Any values converted will be shifted the same amount.
-class CONTENT_EXPORT InterProcessTimeTicksConverter {
+class BLINK_COMMON_EXPORT InterProcessTimeTicksConverter {
  public:
   InterProcessTimeTicksConverter(LocalTimeTicks local_lower_bound,
                                  LocalTimeTicks local_upper_bound,
@@ -165,6 +165,6 @@ class CONTENT_EXPORT InterProcessTimeTicksConverter {
   RemoteTimeTicks remote_upper_bound_;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_COMMON_INTER_PROCESS_TIME_TICKS_CONVERTER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_LOADER_INTER_PROCESS_TIME_TICKS_CONVERTER_H_

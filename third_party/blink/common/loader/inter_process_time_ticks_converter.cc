@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/inter_process_time_ticks_converter.h"
+#include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
 
 #include <algorithm>
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 
-namespace content {
+namespace blink {
 
 InterProcessTimeTicksConverter::InterProcessTimeTicksConverter(
     LocalTimeTicks local_lower_bound,
@@ -77,4 +77,4 @@ base::TimeDelta InterProcessTimeTicksConverter::GetSkewForMetrics() const {
   return remote_lower_bound_.ToTimeTicks() - local_base_time_.ToTimeTicks();
 }
 
-}  // namespace content
+}  // namespace blink

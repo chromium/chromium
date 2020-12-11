@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/inter_process_time_ticks_converter.h"
+#include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
 
 #include <stdint.h>
 
@@ -11,7 +11,7 @@
 
 using base::TimeTicks;
 
-namespace content {
+namespace blink {
 
 namespace {
 
@@ -40,6 +40,11 @@ RemoteTimeTicks GetRemoteTimeTicks(int64_t value) {
       base::TimeTicks() + base::TimeDelta::FromMicroseconds(value));
 }
 
+// Returns a fake TimeTicks based on the given microsecond offset.
+base::TimeTicks TicksFromMicroseconds(int64_t micros) {
+  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(micros);
+}
+
 TestResults RunTest(const TestParams& params) {
   InterProcessTimeTicksConverter converter(
       params.local_lower_bound, params.local_upper_bound,
@@ -48,7 +53,7 @@ TestResults RunTest(const TestParams& params) {
   TestResults results;
   results.result_time = converter.ToLocalTimeTicks(params.test_time);
   results.result_delta = converter.ToLocalTimeDelta(params.test_delta);
-  results.skew = converter.GetSkewForMetrics().ToInternalValue();
+  results.skew = converter.GetSkewForMetrics().InMicroseconds();
   return results;
 }
 
@@ -271,30 +276,34 @@ TEST(InterProcessTimeTicksConverterTest, LargeValue_RemoteIsLargetThanLocal) {
 
 TEST(InterProcessTimeTicksConverterTest, ValuesOutsideOfRange) {
   InterProcessTimeTicksConverter converter(
-      LocalTimeTicks::FromTimeTicks(TimeTicks::FromInternalValue(15)),
-      LocalTimeTicks::FromTimeTicks(TimeTicks::FromInternalValue(20)),
-      RemoteTimeTicks::FromTimeTicks(TimeTicks::FromInternalValue(10)),
-      RemoteTimeTicks::FromTimeTicks(TimeTicks::FromInternalValue(25)));
+      LocalTimeTicks::FromTimeTicks(TicksFromMicroseconds(15)),
+      LocalTimeTicks::FromTimeTicks(TicksFromMicroseconds(20)),
+      RemoteTimeTicks::FromTimeTicks(TicksFromMicroseconds(10)),
+      RemoteTimeTicks::FromTimeTicks(TicksFromMicroseconds(25)));
 
   RemoteTimeTicks remote_ticks =
-      RemoteTimeTicks::FromTimeTicks(TimeTicks::FromInternalValue(10));
-  int64_t result =
-      converter.ToLocalTimeTicks(remote_ticks).ToTimeTicks().ToInternalValue();
+      RemoteTimeTicks::FromTimeTicks(TicksFromMicroseconds(10));
+  int64_t result = converter.ToLocalTimeTicks(remote_ticks)
+                       .ToTimeTicks()
+                       .since_origin()
+                       .InMicroseconds();
   EXPECT_EQ(15, result);
 
-  remote_ticks =
-      RemoteTimeTicks::FromTimeTicks(TimeTicks::FromInternalValue(25));
-  result =
-      converter.ToLocalTimeTicks(remote_ticks).ToTimeTicks().ToInternalValue();
+  remote_ticks = RemoteTimeTicks::FromTimeTicks(TicksFromMicroseconds(25));
+  result = converter.ToLocalTimeTicks(remote_ticks)
+               .ToTimeTicks()
+               .since_origin()
+               .InMicroseconds();
   EXPECT_EQ(20, result);
 
-  remote_ticks =
-      RemoteTimeTicks::FromTimeTicks(TimeTicks::FromInternalValue(9));
-  result =
-      converter.ToLocalTimeTicks(remote_ticks).ToTimeTicks().ToInternalValue();
+  remote_ticks = RemoteTimeTicks::FromTimeTicks(TicksFromMicroseconds(9));
+  result = converter.ToLocalTimeTicks(remote_ticks)
+               .ToTimeTicks()
+               .since_origin()
+               .InMicroseconds();
   EXPECT_EQ(14, result);
 }
 
 }  // anonymous namespace
 
-}  // namespace content
+}  // namespace blink

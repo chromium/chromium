@@ -139,7 +139,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
-#include "content/common/inter_process_time_ticks_converter.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_mojom_traits.h"
@@ -219,6 +218,7 @@
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
@@ -3409,14 +3409,16 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
       // skew between the processes. Here we are converting the renderer's
       // notion of before_unload_end_time to TimeTicks in the browser process.
       // See comments in inter_process_time_ticks_converter.h for more.
-      InterProcessTimeTicksConverter converter(
-          LocalTimeTicks::FromTimeTicks(send_before_unload_start_time_),
-          LocalTimeTicks::FromTimeTicks(before_unload_completed_time),
-          RemoteTimeTicks::FromTimeTicks(renderer_before_unload_start_time),
-          RemoteTimeTicks::FromTimeTicks(renderer_before_unload_end_time));
-      LocalTimeTicks browser_before_unload_end_time =
-          converter.ToLocalTimeTicks(
-              RemoteTimeTicks::FromTimeTicks(renderer_before_unload_end_time));
+      blink::InterProcessTimeTicksConverter converter(
+          blink::LocalTimeTicks::FromTimeTicks(send_before_unload_start_time_),
+          blink::LocalTimeTicks::FromTimeTicks(before_unload_completed_time),
+          blink::RemoteTimeTicks::FromTimeTicks(
+              renderer_before_unload_start_time),
+          blink::RemoteTimeTicks::FromTimeTicks(
+              renderer_before_unload_end_time));
+      blink::LocalTimeTicks browser_before_unload_end_time =
+          converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
+              renderer_before_unload_end_time));
       before_unload_end_time = browser_before_unload_end_time.ToTimeTicks();
     }
 

@@ -117,6 +117,7 @@ source_set("headers") {
     "input/web_touch_event.h",
     "input/web_touch_point.h",
     "loader/http_body_element_type.h",
+    "loader/inter_process_time_ticks_converter.h",
     "loader/loading_behavior_flag.h",
     "loader/mime_sniffing_throttle.h",
     "loader/mime_sniffing_url_loader.h",

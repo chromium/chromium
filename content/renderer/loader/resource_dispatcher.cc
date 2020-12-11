@@ -21,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/common/inter_process_time_ticks_converter.h"
 #include "content/common/navigation_params.h"
 #include "content/public/renderer/resource_dispatcher_delegate.h"
 #include "content/renderer/loader/sync_load_context.h"
@@ -38,6 +37,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -55,9 +55,10 @@ namespace {
 // Converts |time| from a remote to local TimeTicks, overwriting the original
 // value.
 void RemoteToLocalTimeTicks(
-    const InterProcessTimeTicksConverter& converter,
+    const blink::InterProcessTimeTicksConverter& converter,
     base::TimeTicks* time) {
-  RemoteTimeTicks remote_time = RemoteTimeTicks::FromTimeTicks(*time);
+  blink::RemoteTimeTicks remote_time =
+      blink::RemoteTimeTicks::FromTimeTicks(*time);
   *time = converter.ToLocalTimeTicks(remote_time).ToTimeTicks();
 }
 
@@ -316,7 +317,7 @@ void ResourceDispatcher::OnRequestComplete(
   } else {
     // We have already converted the request start timestamp, let's use that
     // conversion information.
-    // Note: We cannot create a InterProcessTimeTicksConverter with
+    // Note: We cannot create a blink::InterProcessTimeTicksConverter with
     // (local_request_start, now, remote_request_start, remote_completion_time)
     // as that may result in inconsistent timestamps.
     renderer_status.completion_time =
@@ -577,11 +578,11 @@ void ResourceDispatcher::ToLocalURLResponseHead(
       response_head.load_timing.request_start.is_null()) {
     return;
   }
-  InterProcessTimeTicksConverter converter(
-      LocalTimeTicks::FromTimeTicks(request_info.local_request_start),
-      LocalTimeTicks::FromTimeTicks(request_info.local_response_start),
-      RemoteTimeTicks::FromTimeTicks(response_head.request_start),
-      RemoteTimeTicks::FromTimeTicks(response_head.response_start));
+  blink::InterProcessTimeTicksConverter converter(
+      blink::LocalTimeTicks::FromTimeTicks(request_info.local_request_start),
+      blink::LocalTimeTicks::FromTimeTicks(request_info.local_response_start),
+      blink::RemoteTimeTicks::FromTimeTicks(response_head.request_start),
+      blink::RemoteTimeTicks::FromTimeTicks(response_head.response_start));
 
   net::LoadTimingInfo* load_timing = &response_head.load_timing;
   RemoteToLocalTimeTicks(converter, &load_timing->request_start);

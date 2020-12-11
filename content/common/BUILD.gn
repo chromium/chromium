@@ -117,8 +117,6 @@ source_set("common") {
     "input/web_touch_event_traits.cc",
     "input/web_touch_event_traits.h",
     "input_messages.h",
-    "inter_process_time_ticks_converter.cc",
-    "inter_process_time_ticks_converter.h",
     "media/cdm_info.cc",
     "media/media_player_delegate_messages.h",
     "mojo_core_library_support.cc",

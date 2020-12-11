@@ -29,7 +29,6 @@
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/common/frame_messages.h"
-#include "content/common/inter_process_time_ticks_converter.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -51,6 +50,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -827,17 +827,18 @@ void Navigator::LogBeforeUnloadTime(
   if (!base::TimeTicks::IsConsistentAcrossProcesses()) {
     // These timestamps come directly from the renderer so they might need to be
     // converted to local time stamps.
-    InterProcessTimeTicksConverter converter(
-        LocalTimeTicks::FromTimeTicks(before_unload_sent_time),
-        LocalTimeTicks::FromTimeTicks(base::TimeTicks::Now()),
-        RemoteTimeTicks::FromTimeTicks(renderer_before_unload_start_time),
-        RemoteTimeTicks::FromTimeTicks(renderer_before_unload_end_time));
-    LocalTimeTicks converted_renderer_before_unload_start =
-        converter.ToLocalTimeTicks(
-            RemoteTimeTicks::FromTimeTicks(renderer_before_unload_start_time));
-    LocalTimeTicks converted_renderer_before_unload_end =
-        converter.ToLocalTimeTicks(
-            RemoteTimeTicks::FromTimeTicks(renderer_before_unload_end_time));
+    blink::InterProcessTimeTicksConverter converter(
+        blink::LocalTimeTicks::FromTimeTicks(before_unload_sent_time),
+        blink::LocalTimeTicks::FromTimeTicks(base::TimeTicks::Now()),
+        blink::RemoteTimeTicks::FromTimeTicks(
+            renderer_before_unload_start_time),
+        blink::RemoteTimeTicks::FromTimeTicks(renderer_before_unload_end_time));
+    blink::LocalTimeTicks converted_renderer_before_unload_start =
+        converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
+            renderer_before_unload_start_time));
+    blink::LocalTimeTicks converted_renderer_before_unload_end =
+        converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
+            renderer_before_unload_end_time));
     navigation_data_->before_unload_start_ =
         converted_renderer_before_unload_start.ToTimeTicks();
     navigation_data_->before_unload_end_ =
@@ -861,17 +862,18 @@ void Navigator::LogRendererInitiatedBeforeUnloadTime(
   if (!base::TimeTicks::IsConsistentAcrossProcesses()) {
     // These timestamps come directly from the renderer so they might need to be
     // converted to local time stamps.
-    InterProcessTimeTicksConverter converter(
-        LocalTimeTicks::FromTimeTicks(base::TimeTicks()),
-        LocalTimeTicks::FromTimeTicks(base::TimeTicks::Now()),
-        RemoteTimeTicks::FromTimeTicks(renderer_before_unload_start_time),
-        RemoteTimeTicks::FromTimeTicks(renderer_before_unload_end_time));
-    LocalTimeTicks converted_renderer_before_unload_start =
-        converter.ToLocalTimeTicks(
-            RemoteTimeTicks::FromTimeTicks(renderer_before_unload_start_time));
-    LocalTimeTicks converted_renderer_before_unload_end =
-        converter.ToLocalTimeTicks(
-            RemoteTimeTicks::FromTimeTicks(renderer_before_unload_end_time));
+    blink::InterProcessTimeTicksConverter converter(
+        blink::LocalTimeTicks::FromTimeTicks(base::TimeTicks()),
+        blink::LocalTimeTicks::FromTimeTicks(base::TimeTicks::Now()),
+        blink::RemoteTimeTicks::FromTimeTicks(
+            renderer_before_unload_start_time),
+        blink::RemoteTimeTicks::FromTimeTicks(renderer_before_unload_end_time));
+    blink::LocalTimeTicks converted_renderer_before_unload_start =
+        converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
+            renderer_before_unload_start_time));
+    blink::LocalTimeTicks converted_renderer_before_unload_end =
+        converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
+            renderer_before_unload_end_time));
     navigation_data_->renderer_before_unload_start_ =
         converted_renderer_before_unload_start.ToTimeTicks();
     navigation_data_->renderer_before_unload_end_ =
