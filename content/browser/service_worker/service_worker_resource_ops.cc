@@ -443,8 +443,13 @@ class ServiceWorkerResourceReaderImpl::DataReader {
 
 ServiceWorkerResourceReaderImpl::ServiceWorkerResourceReaderImpl(
     int64_t resource_id,
-    base::WeakPtr<ServiceWorkerDiskCache> disk_cache)
-    : entry_opener_(resource_id, std::move(disk_cache)) {}
+    base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
+    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader> receiver,
+    base::OnceClosure disconnect_handler)
+    : entry_opener_(resource_id, std::move(disk_cache)),
+      receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(std::move(disconnect_handler));
+}
 
 ServiceWorkerResourceReaderImpl::~ServiceWorkerResourceReaderImpl() = default;
 
@@ -634,8 +639,13 @@ void ServiceWorkerResourceReaderImpl::DidReadDataComplete() {
 
 ServiceWorkerResourceWriterImpl::ServiceWorkerResourceWriterImpl(
     int64_t resource_id,
-    base::WeakPtr<ServiceWorkerDiskCache> disk_cache)
-    : entry_creator_(resource_id, std::move(disk_cache)) {}
+    base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
+    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter> receiver,
+    base::OnceClosure disconnect_handler)
+    : entry_creator_(resource_id, std::move(disk_cache)),
+      receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(std::move(disconnect_handler));
+}
 
 ServiceWorkerResourceWriterImpl::~ServiceWorkerResourceWriterImpl() = default;
 
@@ -750,8 +760,14 @@ void ServiceWorkerResourceWriterImpl::DidWriteData(
 ServiceWorkerResourceMetadataWriterImpl::
     ServiceWorkerResourceMetadataWriterImpl(
         int64_t resource_id,
-        base::WeakPtr<ServiceWorkerDiskCache> disk_cache)
-    : entry_opener_(resource_id, std::move(disk_cache)) {}
+        base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
+        mojo::PendingReceiver<
+            storage::mojom::ServiceWorkerResourceMetadataWriter> receiver,
+        base::OnceClosure disconnect_handler)
+    : entry_opener_(resource_id, std::move(disk_cache)),
+      receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(std::move(disconnect_handler));
+}
 
 ServiceWorkerResourceMetadataWriterImpl::
     ~ServiceWorkerResourceMetadataWriterImpl() = default;

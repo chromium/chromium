@@ -418,6 +418,13 @@ class CONTENT_EXPORT ServiceWorkerStorage {
 
   bool IsDisabled() const { return state_ == STORAGE_STATE_DISABLED; }
 
+  uint64_t GetNextResourceOperationId() {
+    return next_resource_operation_id_++;
+  }
+  void OnResourceReaderDisconnected(uint64_t resource_operation_id);
+  void OnResourceWriterDisconnected(uint64_t resource_operation_id);
+  void OnResourceMetadataWriterDisconnected(uint64_t resource_operation_id);
+
   // Static cross-thread helpers.
   static void CollectStaleResourcesFromDB(
       ServiceWorkerDatabase* database,
@@ -560,6 +567,15 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   bool is_purge_pending_;
   bool has_checked_for_stale_resources_;
   base::OnceClosure purging_complete_callback_for_test_;
+
+  uint64_t next_resource_operation_id_ = 0;
+  base::flat_map<uint64_t, std::unique_ptr<ServiceWorkerResourceReaderImpl>>
+      resource_readers_;
+  base::flat_map<uint64_t, std::unique_ptr<ServiceWorkerResourceWriterImpl>>
+      resource_writers_;
+  base::flat_map<uint64_t,
+                 std::unique_ptr<ServiceWorkerResourceMetadataWriterImpl>>
+      resource_metadata_writers_;
 
   base::WeakPtrFactory<ServiceWorkerStorage> weak_factory_{this};
 

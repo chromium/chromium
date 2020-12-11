@@ -9,6 +9,7 @@
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_disk_cache.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 
@@ -114,7 +115,10 @@ class CONTENT_EXPORT ServiceWorkerResourceReaderImpl
  public:
   ServiceWorkerResourceReaderImpl(
       int64_t resource_id,
-      base::WeakPtr<ServiceWorkerDiskCache> disk_cache);
+      base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader>
+          receiver,
+      base::OnceClosure disconnect_handler);
 
   ServiceWorkerResourceReaderImpl(const ServiceWorkerResourceReaderImpl&) =
       delete;
@@ -172,6 +176,8 @@ class CONTENT_EXPORT ServiceWorkerResourceReaderImpl
   State state_ = State::kIdle;
 #endif  // DCHECK_IS_ON()
 
+  mojo::Receiver<storage::mojom::ServiceWorkerResourceReader> receiver_;
+
   base::WeakPtrFactory<ServiceWorkerResourceReaderImpl> weak_factory_{this};
 };
 
@@ -181,7 +187,10 @@ class CONTENT_EXPORT ServiceWorkerResourceWriterImpl
  public:
   ServiceWorkerResourceWriterImpl(
       int64_t resource_id,
-      base::WeakPtr<ServiceWorkerDiskCache> disk_cache);
+      base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter>
+          receiver,
+      base::OnceClosure disconnect_handler);
 
   ServiceWorkerResourceWriterImpl(const ServiceWorkerResourceWriterImpl&) =
       delete;
@@ -231,6 +240,8 @@ class CONTENT_EXPORT ServiceWorkerResourceWriterImpl
   State state_ = State::kIdle;
 #endif  // DCHECK_IS_ON()
 
+  mojo::Receiver<storage::mojom::ServiceWorkerResourceWriter> receiver_;
+
   base::WeakPtrFactory<ServiceWorkerResourceWriterImpl> weak_factory_{this};
 };
 
@@ -240,7 +251,10 @@ class CONTENT_EXPORT ServiceWorkerResourceMetadataWriterImpl
  public:
   ServiceWorkerResourceMetadataWriterImpl(
       int64_t resource_id,
-      base::WeakPtr<ServiceWorkerDiskCache> disk_cache);
+      base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceMetadataWriter>
+          receiver,
+      base::OnceClosure disconnect_handler);
 
   ServiceWorkerResourceMetadataWriterImpl(
       const ServiceWorkerResourceMetadataWriterImpl&) = delete;
@@ -274,6 +288,8 @@ class CONTENT_EXPORT ServiceWorkerResourceMetadataWriterImpl
   };
   State state_ = State::kIdle;
 #endif  // DCHECK_IS_ON()
+
+  mojo::Receiver<storage::mojom::ServiceWorkerResourceMetadataWriter> receiver_;
 
   base::WeakPtrFactory<ServiceWorkerResourceMetadataWriterImpl> weak_factory_{
       this};
