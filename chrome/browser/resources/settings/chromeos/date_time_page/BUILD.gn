@@ -180,6 +180,5 @@ js_modulizer("modulize") {
     "date_time_types.js",
     "timezone_browser_proxy.js",
   ]
-  namespace_rewrites = os_settings_namespace_rewrites +
-                       [ "settings.TimeZoneBrowserProxy|TimeZoneBrowserProxy" ]
+  namespace_rewrites = os_settings_namespace_rewrites
 }

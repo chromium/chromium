@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/nearby_share/shared/nearby_shared.gni")
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
@@ -106,13 +107,15 @@ js_modulizer("modulize") {
     "tts_subpage_test.js",
     "user_page_tests.js",
   ]
-  namespace_rewrites = os_settings_namespace_rewrites +
-                       os_test_namespace_rewrites + [
-                         "nearby_share.setNearbyShareSettingsForTesting|setNearbyShareSettingsForTesting",
-                         "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
-                         "nearby_share.FakeReceiveManager|FakeReceiveManager",
-                         "nearby_share.FakeContactManager|FakeContactManager",
-                         "test_util.isVisible|isVisible",
-                         "test_util.waitAfterNextRender|waitAfterNextRender",
-                       ]
+  namespace_rewrites =
+      os_settings_namespace_rewrites + os_test_namespace_rewrites +
+      nearby_shared_namespace_rewrites +
+      [
+        "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
+        "nearby_share.setReceiveManagerForTesting|setReceiveManagerForTesting",
+        "nearby_share.FakeReceiveManager|FakeReceiveManager",
+        "nearby_share.FakeContactManager|FakeContactManager",
+        "test_util.isVisible|isVisible",
+        "test_util.waitAfterNextRender|waitAfterNextRender",
+      ]
 }

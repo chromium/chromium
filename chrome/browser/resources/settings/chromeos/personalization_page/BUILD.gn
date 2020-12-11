@@ -131,8 +131,7 @@ polymer_modulizer("change_picture") {
   html_file = "change_picture.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites +
-                       [ "Polymer.IronA11yAnnouncer|IronA11yAnnouncer" ]
+  namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports + [
                    "ui/webui/resources/html/assert.html|assert,assertNotReached",
                    "ui/webui/resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.html|IronA11yAnnouncer",
