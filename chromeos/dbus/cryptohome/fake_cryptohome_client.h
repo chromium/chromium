@@ -75,7 +75,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   bool CallTpmIsEnabledAndBlock(bool* enabled) override;
   void TpmIsOwned(DBusMethodCallback<bool> callback) override;
   bool CallTpmIsOwnedAndBlock(bool* owned) override;
-  void TpmCanAttemptOwnership(VoidDBusMethodCallback callback) override;
   void Pkcs11IsTpmTokenReady(DBusMethodCallback<bool> callback) override;
   void Pkcs11GetTpmTokenInfo(
       DBusMethodCallback<TpmTokenInfo> callback) override;
