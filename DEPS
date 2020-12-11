@@ -1489,7 +1489,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/turbine',
-              'version': 'O_jNDJ4VdwYKBSDbd2BJ3mknaTFoVkvE7Po8XIiKy8sC',
+              'version': '_iPtB_ThhxlMOt2TsYqVppwriEEn0mp-NUNRwDwYLUAC',
           },
       ],
       'condition': 'checkout_android',
@@ -1497,7 +1497,7 @@ deps = {
   },
 
   'src/third_party/turbine/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/turbine.git' + '@' + '0f2a5024fe4a9bb745bcd5ac7c655cebe11649bc',
+      'url': Var('chromium_git') + '/external/github.com/google/turbine.git' + '@' + '3c31e67ae25b5e43713fd868e3a9b535ff6298af',
       'condition': 'checkout_android',
   },
 
