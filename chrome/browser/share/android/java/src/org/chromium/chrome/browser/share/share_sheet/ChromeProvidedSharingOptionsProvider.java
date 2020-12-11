@@ -164,7 +164,9 @@ class ChromeProvidedSharingOptionsProvider {
         }
 
         FirstPartyOptionBuilder setContentTypesToDisableFor(Integer... contentTypesToDisableFor) {
-            mContentTypesToDisableFor = contentTypesToDisableFor;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
+                mContentTypesToDisableFor = contentTypesToDisableFor;
+            }
             return this;
         }
 
