@@ -25,6 +25,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/chromeos/extensions/test_external_cache.h"
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -36,6 +37,7 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/channel.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -351,6 +353,7 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
 
     extensions::ExtensionServiceTestBase::SetUp();
 
+    InitializeKioskAppUser();
     InitializeEmptyExtensionService();
     external_apps_loader_handler_ = std::make_unique<TestKioskLoaderVisitor>(
         browser_context(), registry(), service());
@@ -554,6 +557,18 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   }
 
  protected:
+  void InitializeKioskAppUser() {
+    const AccountId kiosk_account_id(
+        AccountId::FromUserEmail(kTestUserAccount));
+    auto fake_user_manager_ =
+        std::make_unique<chromeos::FakeChromeUserManager>();
+    fake_user_manager_->AddKioskAppUser(kiosk_account_id);
+    fake_user_manager_->LoginUser(kiosk_account_id);
+
+    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager_));
+  }
+
   TestAppLaunchDelegate startup_launch_delegate_;
 
   std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
@@ -572,6 +587,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
 
   std::unique_ptr<extensions::ExternalProviderImpl> primary_app_provider_;
   std::unique_ptr<extensions::ExternalProviderImpl> secondary_apps_provider_;
+
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   DISALLOW_COPY_AND_ASSIGN(StartupAppLauncherTest);
 };

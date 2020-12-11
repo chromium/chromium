@@ -48,6 +48,8 @@ const char kExternalAppId[] = "kekdneafjmhmndejhmbcadfiiofngffo";
 const char kStandaloneAppId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 const char kStandaloneChildAppId[] = "hcglmfcclpfgljeaiahehebeoaiicbko";
 
+const char kTestUserAccount[] = "user@test";
+
 class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
  public:
   ExternalProviderImplChromeOSTest()
@@ -114,6 +116,25 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
            pending_extension_manager->IsIdPending(kStandaloneChildAppId)) {
       base::RunLoop().RunUntilIdle();
     }
+  }
+
+  void ValidateExternalProviderCountInAppMode(int expected_count) {
+    base::CommandLine* command = base::CommandLine::ForCurrentProcess();
+    command->AppendSwitchASCII(switches::kForceAppMode, std::string());
+    command->AppendSwitchASCII(switches::kAppId, std::string("app_id"));
+
+    InitializeEmptyExtensionService();
+
+    ProviderCollection providers;
+    extensions::ExternalProviderImpl::CreateExternalProviders(
+        service_, profile_.get(), service_->pending_extension_manager(),
+        &providers);
+
+    EXPECT_EQ(providers.size(), expected_count);
+  }
+
+  chromeos::FakeChromeUserManager* fake_user_manager() const {
+    return fake_user_manager_;
   }
 
  private:
@@ -261,6 +282,41 @@ TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
       content::NotificationService::AllSources()).Wait();
 
   EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
+}
+
+// Validate the external providers enabled in the Chrome App Kiosk session. The
+// expected number should be 3.
+// - |policy_provider|.
+// - |kiosk_app_provider|.
+// - |secondary_kiosk_app_provider|.
+TEST_F(ExternalProviderImplChromeOSTest, ChromeAppKiosk) {
+  const AccountId kiosk_account_id(AccountId::FromUserEmail(kTestUserAccount));
+  fake_user_manager()->AddKioskAppUser(kiosk_account_id);
+  fake_user_manager()->LoginUser(kiosk_account_id);
+
+  ValidateExternalProviderCountInAppMode(3);
+}
+
+// Validate the external providers enabled in the ARC++ App Kiosk session. The
+// expected number should be only 1.
+// - |policy_provider|.
+TEST_F(ExternalProviderImplChromeOSTest, ArcAppKiosk) {
+  const AccountId kiosk_account_id(AccountId::FromUserEmail(kTestUserAccount));
+  fake_user_manager()->AddArcKioskAppUser(kiosk_account_id);
+  fake_user_manager()->LoginUser(kiosk_account_id);
+
+  ValidateExternalProviderCountInAppMode(1);
+}
+
+// Validate the external providers enabled in the Web App Kiosk session. The
+// expected number should be only 1.
+// - |policy_provider|.
+TEST_F(ExternalProviderImplChromeOSTest, WebAppKiosk) {
+  const AccountId kiosk_account_id(AccountId::FromUserEmail(kTestUserAccount));
+  fake_user_manager()->AddWebKioskAppUser(kiosk_account_id);
+  fake_user_manager()->LoginUser(kiosk_account_id);
+
+  ValidateExternalProviderCountInAppMode(1);
 }
 
 }  // namespace extensions

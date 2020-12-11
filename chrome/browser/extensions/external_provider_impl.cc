@@ -664,42 +664,44 @@ void ExternalProviderImpl::CreateExternalProviders(
     provider_list->push_back(std::move(policy_provider));
   }
 
-  // Load the KioskAppExternalProvider when running in kiosk mode.
+  // Load the KioskAppExternalProvider when running in the Chrome App kiosk
+  // mode.
   if (chrome::IsRunningInForcedAppMode()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Kiosk primary app external provider.
-    // For enterprise managed kiosk apps, change the location to
-    // "force-installed by policy".
-    policy::BrowserPolicyConnectorChromeOS* const connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
-    Manifest::Location location = Manifest::EXTERNAL_PREF;
-    if (connector && connector->IsEnterpriseManaged())
-      location = Manifest::EXTERNAL_POLICY;
+    if (user && user->GetType() == user_manager::USER_TYPE_KIOSK_APP) {
+      // Kiosk primary app external provider.
+      // For enterprise managed kiosk apps, change the location to
+      // "force-installed by policy".
+      policy::BrowserPolicyConnectorChromeOS* const connector =
+          g_browser_process->platform_part()
+              ->browser_policy_connector_chromeos();
+      Manifest::Location location = Manifest::EXTERNAL_PREF;
+      if (connector && connector->IsEnterpriseManaged())
+        location = Manifest::EXTERNAL_POLICY;
 
-    std::unique_ptr<ExternalProviderImpl> kiosk_app_provider(
-        new ExternalProviderImpl(
-            service,
-            base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
-                chromeos::KioskAppExternalLoader::AppClass::kPrimary),
-            profile, location, Manifest::INVALID_LOCATION,
-            Extension::NO_FLAGS));
-    kiosk_app_provider->set_auto_acknowledge(true);
-    kiosk_app_provider->set_install_immediately(true);
-    kiosk_app_provider->set_allow_updates(true);
-    provider_list->push_back(std::move(kiosk_app_provider));
+      auto kiosk_app_provider = std::make_unique<ExternalProviderImpl>(
+          service,
+          base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
+              chromeos::KioskAppExternalLoader::AppClass::kPrimary),
+          profile, location, Manifest::INVALID_LOCATION, Extension::NO_FLAGS);
+      kiosk_app_provider->set_auto_acknowledge(true);
+      kiosk_app_provider->set_install_immediately(true);
+      kiosk_app_provider->set_allow_updates(true);
+      provider_list->push_back(std::move(kiosk_app_provider));
 
-    // Kiosk secondary app external provider.
-    std::unique_ptr<ExternalProviderImpl> secondary_kiosk_app_provider(
-        new ExternalProviderImpl(
-            service,
-            base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
-                chromeos::KioskAppExternalLoader::AppClass::kSecondary),
-            profile, Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
-            Extension::NO_FLAGS));
-    secondary_kiosk_app_provider->set_auto_acknowledge(true);
-    secondary_kiosk_app_provider->set_install_immediately(true);
-    secondary_kiosk_app_provider->set_allow_updates(true);
-    provider_list->push_back(std::move(secondary_kiosk_app_provider));
+      // Kiosk secondary app external provider.
+      auto secondary_kiosk_app_provider =
+          std::make_unique<ExternalProviderImpl>(
+              service,
+              base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
+                  chromeos::KioskAppExternalLoader::AppClass::kSecondary),
+              profile, Manifest::EXTERNAL_PREF,
+              Manifest::EXTERNAL_PREF_DOWNLOAD, Extension::NO_FLAGS);
+      secondary_kiosk_app_provider->set_auto_acknowledge(true);
+      secondary_kiosk_app_provider->set_install_immediately(true);
+      secondary_kiosk_app_provider->set_allow_updates(true);
+      provider_list->push_back(std::move(secondary_kiosk_app_provider));
+    }
 #endif
     return;
   }
