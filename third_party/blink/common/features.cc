@@ -855,7 +855,7 @@ const base::Feature kCloneSessionStorageForNoOpener{
 // When enabled, WebRTC's worker thread will run on a thread context distinct
 // from the WebRTC signaling and network threads.
 const base::Feature kWebRtcDistinctWorkerThread{
-    "WebRtcDistinctWorkerThread", base::FEATURE_ENABLED_BY_DEFAULT};
+    "WebRtcDistinctWorkerThread", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink
