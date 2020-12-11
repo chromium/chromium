@@ -1610,6 +1610,9 @@ While in incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_READING_LIST_UNREAD_HEADER" desc="Header for the list containing the unread reading list entries" meaning="The entries below this header are unread. [Length: 15em]">
         Unread
       </message>
+      <message name="IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION" desc="This message is shown in the Other Devices section of the Recent Tabs view if browser sign-in is disabled via policy by the device's administrator / organization.">
+        Turned off by your organization.
+      </message>
       <message name="IDS_IOS_RECENT_TABS_DISCLOSURE_VIEW_COLLAPSED_HINT" desc="The accessibility hint spoken to signify that the given cell expands the given section when tapped.">
         Expands the section.
       </message>

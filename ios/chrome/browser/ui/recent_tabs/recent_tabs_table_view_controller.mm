@@ -12,7 +12,9 @@
 #include "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #include "ios/chrome/browser/sessions/session_util.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
@@ -97,6 +100,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSessionHeader,
   ItemTypeSessionTabData,
   ItemTypeShowFullHistory,
+  ItemTypeSigninDisabled,
 };
 
 // Key for saving whether the Other Device section is collapsed.
@@ -494,7 +498,18 @@ API_AVAILABLE(ios(13.0))
         [self.tableViewModel sectionIsCollapsed:SectionIdentifierOtherDevices];
   }
 
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
+  if (ShouldInstallBrowserSigninPolicyHandler() &&
+      !self.browserState->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+    // If sign-in is disabled, don't show an illustration or a sign-in promo.
+    TableViewTextItem* disabledByOrganizationText =
+        [[TableViewTextItem alloc] initWithType:ItemTypeSigninDisabled];
+    disabledByOrganizationText.text =
+        l10n_util::GetNSString(IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION);
+    disabledByOrganizationText.textColor =
+        [UIColor colorNamed:kTextSecondaryColor];
+    [self.tableViewModel addItem:disabledByOrganizationText
+         toSectionWithIdentifier:SectionIdentifierOtherDevices];
+  } else if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
     ItemType itemType;
     NSString* itemSubtitle;
     NSString* itemButtonText;
@@ -816,6 +831,7 @@ API_AVAILABLE(ios(13.0))
     case ItemTypeOtherDevicesSyncOff:
     case ItemTypeOtherDevicesNoSessions:
     case ItemTypeOtherDevicesSigninPromo:
+    case ItemTypeSigninDisabled:
       break;
   }
 }
@@ -860,8 +876,10 @@ API_AVAILABLE(ios(13.0))
       itemTypeSelected == ItemTypeSessionTabData) {
     [self loadFaviconForCell:cell indexPath:indexPath];
   }
-  // ItemTypeOtherDevicesNoSessions should not be selectable.
-  if (itemTypeSelected == ItemTypeOtherDevicesNoSessions) {
+  // ItemTypeOtherDevicesNoSessions and ItemTypeSigninDisabled should not be
+  // selectable.
+  if (itemTypeSelected == ItemTypeOtherDevicesNoSessions ||
+      itemTypeSelected == ItemTypeSigninDisabled) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
   // Set button action method for ItemTypeOtherDevicesSyncOff.
@@ -997,6 +1015,7 @@ API_AVAILABLE(ios(13.0))
     case ItemTypeOtherDevicesSyncInProgressHeader:
     case ItemTypeSessionHeader:
     case ItemTypeShowFullHistory:
+    case ItemTypeSigninDisabled:
       break;
   }
   return nil;
