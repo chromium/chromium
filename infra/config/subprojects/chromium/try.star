@@ -983,6 +983,14 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-mbi-mode-per-render-process-host-rel",
+)
+
+try_.chromium_linux_builder(
+    name = "linux-mbi-mode-per-site-instance-rel",
+)
+
+try_.chromium_linux_builder(
     name = "linux-lacros-fyi-rel",
 )
 

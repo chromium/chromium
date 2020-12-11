@@ -965,6 +965,8 @@
       'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot',
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot',
+      'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host',
+      'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance',
       'linux-ozone-rel': 'ozone_linux_release_trybot',
       'linux-perfetto-rel': 'perfetto_release_trybot',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
@@ -2035,6 +2037,14 @@
       'gpu_tests', 'release_trybot',
     ],
 
+    'gpu_tests_release_trybot_mbi_mode_per_render_process_host': [
+      'gpu_tests', 'release_trybot', 'mbi_mode_per_render_process_host'
+    ],
+
+    'gpu_tests_release_trybot_mbi_mode_per_site_instance': [
+      'gpu_tests', 'release_trybot', 'mbi_mode_per_site_instance'
+    ],
+
     # TODO(https://crbug.com/330262): Once deterministic builds are default on
     # macOS, remove this special case of gpu_tests_release_trybot.
     'gpu_tests_release_trybot_deterministic_mac': [
@@ -2962,6 +2972,14 @@
 
     'ios_enable_multi_window': {
       'gn_args': 'ios_enable_multi_window=true'
+    },
+
+    'mbi_mode_per_render_process_host': {
+      'gn_args': 'mbi_mode=\"per_render_process_host\"',
+    },
+
+    'mbi_mode_per_site_instance': {
+      'gn_args': 'mbi_mode=\"per_site_instance\"',
     },
 
     'mojo_fuzzer': {
