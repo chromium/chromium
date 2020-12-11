@@ -225,7 +225,7 @@ bool VulkanSwapChain::InitializeSwapChain(
   }
 
   if (UNLIKELY(VK_SUCCESS != result)) {
-    LOG(FATAL) << "vkCreateSwapchainKHR() failed: " << result;
+    LOG(DFATAL) << "vkCreateSwapchainKHR() failed: " << result;
     return false;
   }
 
