@@ -577,6 +577,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
   if (viewRevealState == ViewRevealState::Revealed) {
     self.scrollView.scrollEnabled = YES;
+    [self setInsetForRemoteTabs];
   }
 }
 
