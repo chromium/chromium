@@ -692,10 +692,12 @@ void MediaNotificationService::SetDialogDelegate(
 
   std::list<std::string> sorted_session_ids;
   for (const std::string& id : active_controllable_session_ids_) {
-    if (sessions_.find(id)->second.IsPlaying())
+    auto session_it = sessions_.find(id);
+    if (session_it != sessions_.end() && session_it->second.IsPlaying()) {
       sorted_session_ids.push_front(id);
-    else
+    } else {
       sorted_session_ids.push_back(id);
+    }
   }
 
   for (const std::string& id : sorted_session_ids) {
