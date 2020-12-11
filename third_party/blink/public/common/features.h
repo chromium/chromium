@@ -106,6 +106,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kBlockingFocusWithoutUserActivation;
 
 BLINK_COMMON_EXPORT extern const base::Feature kAudioWorkletRealtimeThread;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kAudioWorkletThreadRealtimePriority;
 
 BLINK_COMMON_EXPORT extern const base::Feature kLightweightNoStatePrefetch;
 

@@ -325,43 +325,55 @@ struct ThreadPriorityTestParam {
   const bool use_top_level_await;
   const bool has_realtime_constraint;
   const bool is_top_level_frame;
-  const bool is_flag_enabled;
+  const bool is_enabled_by_finch;
+  const bool is_enabled_by_flag;
   const base::ThreadPriority expected_priority;
 };
 
 constexpr ThreadPriorityTestParam kThreadPriorityTestParams[] = {
-    // A real-time priority thread is guaranteed when the context has real-time
-    // constraint and is spawned from a top-level frame. The flag setting
-    // is ignored.
-    {false, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
-    {false, true, true, false, base::ThreadPriority::REALTIME_AUDIO},
-    // With top-level-await module:
-    {true, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
-    {true, true, true, false, base::ThreadPriority::REALTIME_AUDIO},
+  // RT thread enabled by Finch.
+  {true, true, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
+  {true, true, true, true, false, base::ThreadPriority::REALTIME_AUDIO},
 
-    // A DISPLAY priority thread is given when the context has real-time
-    // constraint but is spawned from a sub frame.
-    {false, true, false, false, base::ThreadPriority::DISPLAY},
-    // With top-level-await module:
-    {true, true, false, false, base::ThreadPriority::DISPLAY},
+  // RT thread disabled by Finch.
+  {true, true, true, false, true, base::ThreadPriority::NORMAL},
+  {true, true, true, false, false, base::ThreadPriority::NORMAL},
 
-    // Enabling the real-time thread flag will override thread priority logic
-    // for a real-time context.
-    {false, true, false, true, base::ThreadPriority::REALTIME_AUDIO},
-    // With top-level-await module:
-    {true, true, false, true, base::ThreadPriority::REALTIME_AUDIO},
+  // Non-main frame, RT thread enabled by Finch: depends the local flag.
+  {true, true, false, true, true, base::ThreadPriority::REALTIME_AUDIO},
+  {true, true, false, true, false, base::ThreadPriority::DISPLAY},
 
-    // OfflineAudioWorkletThread is always a NORMAL priority no matter what
-    // the flag setting or the originating frame level is.
-    {false, false, true, true, base::ThreadPriority::NORMAL},
-    {false, false, true, false, base::ThreadPriority::NORMAL},
-    {false, false, false, true, base::ThreadPriority::NORMAL},
-    {false, false, false, false, base::ThreadPriority::NORMAL},
-    // With top-level-await module:
-    {true, false, true, true, base::ThreadPriority::NORMAL},
-    {true, false, true, false, base::ThreadPriority::NORMAL},
-    {true, false, false, true, base::ThreadPriority::NORMAL},
-    {true, false, false, false, base::ThreadPriority::NORMAL},
+  // Non-main frame, RT thread disabled by Finch.
+  {true, true, false, false, true, base::ThreadPriority::NORMAL},
+  {true, true, false, false, false, base::ThreadPriority::NORMAL},
+
+  // The OfflineAudioContext always uses a NORMAL priority thread.
+  {true, false, true, true, true, base::ThreadPriority::NORMAL},
+  {true, false, true, true, false, base::ThreadPriority::NORMAL},
+  {true, false, true, false, true, base::ThreadPriority::NORMAL},
+  {true, false, true, false, false, base::ThreadPriority::NORMAL},
+  {true, false, false, true, true, base::ThreadPriority::NORMAL},
+  {true, false, false, true, false, base::ThreadPriority::NORMAL},
+  {true, false, false, false, true, base::ThreadPriority::NORMAL},
+  {true, false, false, false, false, base::ThreadPriority::NORMAL},
+
+  // Top-level await does not affect the test result.
+  {false, true, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
+  {false, true, true, true, false, base::ThreadPriority::REALTIME_AUDIO},
+  {false, true, true, false, true, base::ThreadPriority::NORMAL},
+  {false, true, true, false, false, base::ThreadPriority::NORMAL},
+  {false, true, false, true, true, base::ThreadPriority::REALTIME_AUDIO},
+  {false, true, false, true, false, base::ThreadPriority::DISPLAY},
+  {false, true, false, false, true, base::ThreadPriority::NORMAL},
+  {false, true, false, false, false, base::ThreadPriority::NORMAL},
+  {false, false, true, true, true, base::ThreadPriority::NORMAL},
+  {false, false, true, true, false, base::ThreadPriority::NORMAL},
+  {false, false, true, false, true, base::ThreadPriority::NORMAL},
+  {false, false, true, false, false, base::ThreadPriority::NORMAL},
+  {false, false, false, true, true, base::ThreadPriority::NORMAL},
+  {false, false, false, true, false, base::ThreadPriority::NORMAL},
+  {false, false, false, false, true, base::ThreadPriority::NORMAL},
+  {false, false, false, false, false, base::ThreadPriority::NORMAL},
 };
 
 class AudioWorkletThreadPriorityTest
@@ -371,13 +383,19 @@ class AudioWorkletThreadPriorityTest
   AudioWorkletThreadPriorityTest()
       : AudioWorkletThreadTestBase(GetParam().use_top_level_await) {}
 
-  void InitAndSetRealtimePriorityFlag(bool is_flag_enabled) {
-    if (is_flag_enabled) {
-      feature_list_.InitAndEnableFeature(features::kAudioWorkletRealtimeThread);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kAudioWorkletRealtimeThread);
-    }
+  void InitWithRealtimePrioritySettings(bool is_enabled_by_finch,
+                                        bool is_enabled_by_flag) {
+    std::vector<base::Feature> enabled;
+    std::vector<base::Feature> disabled;
+    if (is_enabled_by_finch)
+      enabled.push_back(features::kAudioWorkletThreadRealtimePriority);
+    else
+      disabled.push_back(features::kAudioWorkletThreadRealtimePriority);
+    if (is_enabled_by_flag)
+      enabled.push_back(features::kAudioWorkletRealtimeThread);
+    else
+      disabled.push_back(features::kAudioWorkletRealtimeThread);
+    feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   void CreateCheckThreadPriority(bool has_realtime_constraint,
@@ -434,7 +452,8 @@ class AudioWorkletThreadPriorityTest
 
 TEST_P(AudioWorkletThreadPriorityTest, CheckThreadPriority) {
   const auto& test_param = GetParam();
-  InitAndSetRealtimePriorityFlag(test_param.is_flag_enabled);
+  InitWithRealtimePrioritySettings(test_param.is_enabled_by_finch,
+                                   test_param.is_enabled_by_flag);
   CreateCheckThreadPriority(test_param.has_realtime_constraint,
                             test_param.is_top_level_frame,
                             test_param.expected_priority);

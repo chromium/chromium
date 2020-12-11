@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/semi_realtime_audio_worklet_thread.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -24,9 +26,15 @@ SemiRealtimeAudioWorkletThread::SemiRealtimeAudioWorkletThread(
   ThreadCreationParams params =
       ThreadCreationParams(ThreadType::kSemiRealtimeAudioWorkletThread);
 
-  // TODO(crbug.com/1022888): The worklet thread priority is always NORMAL
-  // on OS_LINUX and OS_CHROMEOS regardless of this thread priority setting.
-  params.thread_priority = base::ThreadPriority::DISPLAY;
+  // Use a higher priority thread only when it is allowed by Finch.
+  if (base::FeatureList::IsEnabled(
+          features::kAudioWorkletThreadRealtimePriority)) {
+    // TODO(crbug.com/1022888): The worklet thread priority is always NORMAL on
+    // Linux and Chrome OS regardless of this thread priority setting.
+    params.thread_priority = base::ThreadPriority::DISPLAY;
+  } else {
+    params.thread_priority = base::ThreadPriority::NORMAL;
+  }
 
   if (++s_ref_count_ == 1)
     EnsureSharedBackingThread(params);
