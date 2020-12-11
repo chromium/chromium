@@ -51,21 +51,23 @@ public class ChromeApplication extends SplitCompatApplication {
         public void onCreate() {
             super.onCreate();
 
-            if (SplitCompatApplication.isBrowserProcess()
-                    && CachedFeatureFlags.isEnabled(ChromeFeatureList.EARLY_LIBRARY_LOAD)) {
-                // Kick off library loading in a separate thread so it's ready when we need it.
-                new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized()).start();
+            if (isBrowserProcess()) {
+                if (CachedFeatureFlags.isEnabled(ChromeFeatureList.EARLY_LIBRARY_LOAD)) {
+                    // Kick off library loading in a separate thread so it's ready when we need it.
+                    new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized())
+                            .start();
+                }
+
+                if (VersionConstants.CHANNEL == Channel.CANARY) {
+                    GURL.setReportDebugThrowableCallback(
+                            PureJavaExceptionReporter::reportJavaException);
+                }
+
+                // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
+                ChromeBackgroundTaskFactory.setAsDefault();
+
+                AppHooks.get().getChimeDelegate().initialize();
             }
-
-            if (VersionConstants.CHANNEL == Channel.CANARY) {
-                GURL.setReportDebugThrowableCallback(
-                        PureJavaExceptionReporter::reportJavaException);
-            }
-
-            // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
-            ChromeBackgroundTaskFactory.setAsDefault();
-
-            AppHooks.get().getChimeDelegate().initialize();
         }
 
         @MainDex
