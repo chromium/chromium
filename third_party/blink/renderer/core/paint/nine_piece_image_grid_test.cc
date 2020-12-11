@@ -30,7 +30,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_NoDrawables) {
   NinePieceImage nine_piece;
   nine_piece.SetImage(GeneratedImage());
 
-  IntSize image_size(100, 100);
+  FloatSize image_size(100, 100);
   IntRect border_image_area(0, 0, 100, 100);
   IntRectOutsets border_widths(0, 0, 0, 0);
 
@@ -50,7 +50,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_AllDrawable) {
   nine_piece.SetImageSlices(LengthBox(10, 10, 10, 10));
   nine_piece.SetFill(true);
 
-  IntSize image_size(100, 100);
+  FloatSize image_size(100, 100);
   IntRect border_image_area(0, 0, 100, 100);
   IntRectOutsets border_widths(10, 10, 10, 10);
 
@@ -70,7 +70,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_NoFillMiddleNotDrawable) {
   nine_piece.SetImageSlices(LengthBox(10, 10, 10, 10));
   nine_piece.SetFill(false);  // default
 
-  IntSize image_size(100, 100);
+  FloatSize image_size(100, 100);
   IntRect border_image_area(0, 0, 100, 100);
   IntRectOutsets border_widths(10, 10, 10, 10);
 
@@ -92,7 +92,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_TopLeftDrawable) {
   nine_piece.SetImage(GeneratedImage());
   nine_piece.SetImageSlices(LengthBox(10, 10, 10, 10));
 
-  IntSize image_size(100, 100);
+  FloatSize image_size(100, 100);
   IntRect border_image_area(0, 0, 100, 100);
 
   const struct {
@@ -123,7 +123,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ScaleDownBorder) {
   nine_piece.SetImage(GeneratedImage());
   nine_piece.SetImageSlices(LengthBox(10, 10, 10, 10));
 
-  IntSize image_size(100, 100);
+  FloatSize image_size(100, 100);
   IntRect border_image_area(0, 0, 100, 100);
   IntRectOutsets border_widths(10, 10, 10, 10);
 
@@ -185,7 +185,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ScaleDownBorder) {
 
 TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
   const struct {
-    IntSize image_size;
+    FloatSize image_size;
     IntRect border_image_area;
     IntRectOutsets border_widths;
     bool fill;
@@ -204,7 +204,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
     } pieces[9];
   } test_cases[] = {
       {// Empty border and slices but with fill
-       IntSize(100, 100),
+       FloatSize(100, 100),
        IntRect(0, 0, 100, 100),
        IntRectOutsets(0, 0, 0, 0),
        true,
@@ -233,7 +233,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
             1, 1, kStretchImageRule, kStretchImageRule},
        }},
       {// Single border and fill
-       IntSize(100, 100),
+       FloatSize(100, 100),
        IntRect(0, 0, 100, 100),
        IntRectOutsets(0, 0, 10, 0),
        true,
@@ -262,7 +262,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
             1.666667, 1.5, kStretchImageRule, kStretchImageRule},
        }},
       {// All borders, no fill
-       IntSize(100, 100),
+       FloatSize(100, 100),
        IntRect(0, 0, 100, 100),
        IntRectOutsets(10, 10, 10, 10),
        false,
@@ -291,7 +291,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
             kStretchImageRule, kStretchImageRule},
        }},
       {// Single border, no fill
-       IntSize(100, 100),
+       FloatSize(100, 100),
        IntRect(0, 0, 100, 100),
        IntRectOutsets(0, 0, 0, 10),
        false,
@@ -321,7 +321,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting) {
        }},
       {// All borders but no slices, with fill (stretch horizontally, space
        // vertically)
-       IntSize(100, 100),
+       FloatSize(100, 100),
        IntRect(0, 0, 100, 100),
        IntRectOutsets(10, 10, 10, 10),
        true,
@@ -407,7 +407,7 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_Zoomed) {
   nine_piece.SetImageSlices(LengthBox(10, 10, 10, 10));
   nine_piece.SetFill(true);
 
-  IntSize image_size(50, 50);
+  FloatSize image_size(50, 50);
   IntRect border_image_area(0, 0, 200, 200);
   IntRectOutsets border_widths(20, 20, 20, 20);
 
@@ -452,6 +452,84 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_Zoomed) {
     const auto& expected = expected_pieces[piece];
     EXPECT_EQ(draw_info.destination, expected.destination);
     EXPECT_EQ(draw_info.source, expected.source);
+
+    if (expected.is_corner_piece)
+      continue;
+
+    EXPECT_FLOAT_EQ(draw_info.tile_scale.Width(),
+                    expected.tile_scale_horizontal);
+    EXPECT_FLOAT_EQ(draw_info.tile_scale.Height(),
+                    expected.tile_scale_vertical);
+    EXPECT_EQ(draw_info.tile_rule.vertical, expected.vertical_rule);
+    EXPECT_EQ(draw_info.tile_rule.horizontal, expected.horizontal_rule);
+  }
+}
+
+TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ZoomedNarrowSlices) {
+  NinePieceImage nine_piece;
+  nine_piece.SetImage(GeneratedImage());
+  // Image slices are specified in CSS pixels.
+  nine_piece.SetImageSlices(LengthBox(1, 1, 1, 1));
+  nine_piece.SetFill(true);
+
+  constexpr float zoom = 2.2f;
+  FloatSize image_size(3 * zoom, 3 * zoom);
+  IntRect border_image_area(0, 0, 220, 220);
+  IntRectOutsets border_widths(33, 33, 33, 33);
+
+  NinePieceImageGrid grid =
+      NinePieceImageGrid(nine_piece, image_size, FloatSize(zoom, zoom), zoom,
+                         border_image_area, border_widths);
+  struct {
+    bool is_drawable;
+    bool is_corner_piece;
+    FloatRect destination;
+    FloatRect source;
+    float tile_scale_horizontal;
+    float tile_scale_vertical;
+    ENinePieceImageRule horizontal_rule;
+    ENinePieceImageRule vertical_rule;
+  } expected_pieces[kMaxPiece] = {
+      {true, true, FloatRect(0, 0, 33, 33), FloatRect(0, 0, 2.2f, 2.2f), 0, 0,
+       kStretchImageRule, kStretchImageRule},
+      {true, true, FloatRect(0, 187, 33, 33), FloatRect(0, 4.4f, 2.2f, 2.2f), 0,
+       0, kStretchImageRule, kStretchImageRule},
+      {true, false, FloatRect(0, 33, 33, 154), FloatRect(0, 2.2f, 2.2f, 2.2f),
+       15, 15, kStretchImageRule, kStretchImageRule},
+      {true, true, FloatRect(187, 0, 33, 33), FloatRect(4.4f, 0, 2.2f, 2.2f), 0,
+       0, kStretchImageRule, kStretchImageRule},
+      {true, true, FloatRect(187, 187, 33, 33),
+       FloatRect(4.4f, 4.4f, 2.2f, 2.2f), 0, 0, kStretchImageRule,
+       kStretchImageRule},
+      {true, false, FloatRect(187, 33, 33, 154),
+       FloatRect(4.4f, 2.2f, 2.2f, 2.2f), 15, 15, kStretchImageRule,
+       kStretchImageRule},
+      {true, false, FloatRect(33, 0, 154, 33), FloatRect(2.2f, 0, 2.2f, 2.2f),
+       15, 15, kStretchImageRule, kStretchImageRule},
+      {true, false, FloatRect(33, 187, 154, 33),
+       FloatRect(2.2f, 4.4f, 2.2f, 2.2f), 15, 15, kStretchImageRule,
+       kStretchImageRule},
+      {true, false, FloatRect(33, 33, 154, 154),
+       FloatRect(2.2f, 2.2f, 2.2f, 2.2f), 70, 70, kStretchImageRule,
+       kStretchImageRule},
+  };
+
+  for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
+    NinePieceImageGrid::NinePieceDrawInfo draw_info =
+        grid.GetNinePieceDrawInfo(piece);
+    EXPECT_TRUE(draw_info.is_drawable);
+
+    const auto& expected = expected_pieces[piece];
+    EXPECT_FLOAT_EQ(draw_info.destination.X(), expected.destination.X());
+    EXPECT_FLOAT_EQ(draw_info.destination.Y(), expected.destination.Y());
+    EXPECT_FLOAT_EQ(draw_info.destination.Width(),
+                    expected.destination.Width());
+    EXPECT_FLOAT_EQ(draw_info.destination.Height(),
+                    expected.destination.Height());
+    EXPECT_FLOAT_EQ(draw_info.source.X(), expected.source.X());
+    EXPECT_FLOAT_EQ(draw_info.source.Y(), expected.source.Y());
+    EXPECT_FLOAT_EQ(draw_info.source.Width(), expected.source.Width());
+    EXPECT_FLOAT_EQ(draw_info.source.Height(), expected.source.Height());
 
     if (expected.is_corner_piece)
       continue;

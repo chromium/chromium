@@ -93,15 +93,11 @@ void PaintPieces(GraphicsContext& context,
   FloatSize slice_scale(image_size.Width() / unzoomed_image_size.Width(),
                         image_size.Height() / unzoomed_image_size.Height());
 
-  // TODO(fs): Use FloatSize here to avoid additional rounding (leave that to
-  // NinePieceImageGrid if needed). For narrow slices the rounding can introduce
-  // large errors (fairly visible in the TC in crbug.com/596075 when zooming).
-  IntSize rounded_image_size = RoundedIntSize(image_size);
   IntRectOutsets border_widths(style.BorderTopWidth(), style.BorderRightWidth(),
                                style.BorderBottomWidth(),
                                style.BorderLeftWidth());
   NinePieceImageGrid grid(
-      nine_piece_image, rounded_image_size, slice_scale, style.EffectiveZoom(),
+      nine_piece_image, image_size, slice_scale, style.EffectiveZoom(),
       PixelSnappedIntRect(border_image_rect), border_widths, sides_to_include);
 
   ScopedInterpolationQuality interpolation_quality_scope(
