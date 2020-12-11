@@ -1075,6 +1075,12 @@ void V4L2SliceVideoDecodeAccelerator::DecodeBufferTask() {
     TRACE_EVENT_END0("media,gpu", "V4L2SVDA::DecodeBufferTask AVD::Decode");
     switch (res) {
       case AcceleratedVideoDecoder::kConfigChange:
+        if (decoder_->GetBitDepth() != 8u) {
+          LOG(ERROR) << "Unsupported bit depth: "
+                     << base::strict_cast<int>(decoder_->GetBitDepth());
+          NOTIFY_ERROR(PLATFORM_FAILURE);
+          return;
+        }
         if (!IsSupportedProfile(decoder_->GetProfile())) {
           LOG(ERROR) << "Unsupported profile: " << decoder_->GetProfile();
           NOTIFY_ERROR(PLATFORM_FAILURE);

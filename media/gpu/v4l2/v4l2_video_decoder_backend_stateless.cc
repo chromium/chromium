@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequenced_task_runner.h"
 #include "media/base/decode_status.h"
@@ -379,6 +380,12 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
   while (true) {
     switch (avd_->Decode()) {
       case AcceleratedVideoDecoder::kConfigChange:
+        if (avd_->GetBitDepth() != 8u) {
+          VLOGF(2) << "Unsupported bit depth: "
+                   << base::strict_cast<int>(avd_->GetBitDepth());
+          return false;
+        }
+
         if (profile_ != avd_->GetProfile()) {
           DVLOGF(3) << "Profile is changed: " << profile_ << " -> "
                     << avd_->GetProfile();

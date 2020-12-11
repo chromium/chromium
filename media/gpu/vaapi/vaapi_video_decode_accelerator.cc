@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -468,6 +469,11 @@ void VaapiVideoDecodeAccelerator::DecodeTask() {
 
     switch (res) {
       case AcceleratedVideoDecoder::kConfigChange: {
+        RETURN_AND_NOTIFY_ON_FAILURE(
+            decoder_->GetBitDepth() == 8u,
+            "Unsupported bit depth: "
+                << base::strict_cast<int>(decoder_->GetBitDepth()),
+            PLATFORM_FAILURE, );
         // The visible rect should be a subset of the picture size. Otherwise,
         // the encoded stream is bad.
         const gfx::Size pic_size = decoder_->GetPicSize();

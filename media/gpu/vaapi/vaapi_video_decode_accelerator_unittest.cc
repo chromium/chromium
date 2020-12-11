@@ -238,6 +238,7 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
     EXPECT_CALL(*mock_decoder_, Decode())
         .WillOnce(Return(AcceleratedVideoDecoder::kConfigChange));
 
+    EXPECT_CALL(*mock_decoder_, GetBitDepth()).WillOnce(Return(8u));
     EXPECT_CALL(*mock_decoder_, GetPicSize()).WillOnce(Return(picture_size));
     EXPECT_CALL(*mock_decoder_, GetVisibleRect())
         .WillOnce(Return(gfx::Rect(picture_size)));
