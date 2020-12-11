@@ -4,7 +4,6 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_top_host_provider.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
@@ -184,8 +183,8 @@ class OptimizationGuideTopHostProviderTest
   std::unique_ptr<OptimizationGuideTopHostProvider> top_host_provider_;
   std::unique_ptr<data_reduction_proxy::DataReductionProxyTestContext>
       drp_test_context_;
-  CheckedPtr<SiteEngagementService> service_;
-  CheckedPtr<PrefService> pref_service_;
+  SiteEngagementService* service_;
+  PrefService* pref_service_;
 };
 
 TEST_F(OptimizationGuideTopHostProviderTest, CreateIfAllowedNonDataSaverUser) {

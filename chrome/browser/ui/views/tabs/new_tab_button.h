@@ -89,10 +89,10 @@ class NewTabButton : public views::ImageButton,
   void UpdateInkDropBaseColor();
 
   // Tab strip that contains this button.
-  CheckedPtr<TabStrip> tab_strip_;
+  TabStrip* tab_strip_;
 
   // Contains our ink drop layer so it can paint above our background.
-  CheckedPtr<views::InkDropContainerView> ink_drop_container_;
+  views::InkDropContainerView* ink_drop_container_;
 
   // For tracking whether this object has been destroyed. Must be last.
   base::WeakPtrFactory<NewTabButton> weak_factory_{this};

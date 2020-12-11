@@ -10,7 +10,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -166,7 +165,7 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
 
   ::testing::StrictMock<MockTabLifecycleObserver> observer_;
   base::ObserverList<TabLifecycleObserver>::Unchecked observers_;
-  CheckedPtr<content::WebContents> web_contents_;  // Owned by tab_strip_model_.
+  content::WebContents* web_contents_;  // Owned by tab_strip_model_.
   std::unique_ptr<TabStripModel> tab_strip_model_;
   base::SimpleTestTickClock test_clock_;
   std::unique_ptr<UsageClock> usage_clock_;
@@ -241,8 +240,7 @@ TEST_F(TabLifecycleUnitTest, AutoDiscardable) {
   EXPECT_TRUE(tab_lifecycle_unit.IsAutoDiscardable());
   ExpectCanDiscardTrueAllReasons(&tab_lifecycle_unit);
 
-  EXPECT_CALL(observer_,
-              OnAutoDiscardableStateChange(web_contents_.get(), false));
+  EXPECT_CALL(observer_, OnAutoDiscardableStateChange(web_contents_, false));
   tab_lifecycle_unit.SetAutoDiscardable(false);
   ::testing::Mock::VerifyAndClear(&observer_);
   EXPECT_FALSE(tab_lifecycle_unit.IsAutoDiscardable());
@@ -250,8 +248,7 @@ TEST_F(TabLifecycleUnitTest, AutoDiscardable) {
       &tab_lifecycle_unit,
       DecisionFailureReason::LIVE_STATE_EXTENSION_DISALLOWED);
 
-  EXPECT_CALL(observer_,
-              OnAutoDiscardableStateChange(web_contents_.get(), true));
+  EXPECT_CALL(observer_, OnAutoDiscardableStateChange(web_contents_, true));
   tab_lifecycle_unit.SetAutoDiscardable(true);
   ::testing::Mock::VerifyAndClear(&observer_);
   EXPECT_TRUE(tab_lifecycle_unit.IsAutoDiscardable());

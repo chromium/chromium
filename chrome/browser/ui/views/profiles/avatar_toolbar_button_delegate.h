@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_DELEGATE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
@@ -107,8 +106,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-  CheckedPtr<AvatarToolbarButton> avatar_toolbar_button_ = nullptr;
-  CheckedPtr<Profile> profile_ = nullptr;
+  AvatarToolbarButton* avatar_toolbar_button_ = nullptr;
+  Profile* profile_ = nullptr;
   IdentityAnimationState identity_animation_state_ =
       IdentityAnimationState::kNotShowing;
   bool refresh_tokens_loaded_ = false;

@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/model/data_batch.h"
@@ -106,7 +105,7 @@ class SessionStore {
     std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch_;
     CommitCallback commit_cb_;
     syncer::OnceModelErrorHandler error_handler_;
-    const CheckedPtr<SyncedSessionTracker> session_tracker_;
+    SyncedSessionTracker* const session_tracker_;
 
     DISALLOW_COPY_AND_ASSIGN(WriteBatch);
   };

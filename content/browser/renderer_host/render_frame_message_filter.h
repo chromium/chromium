@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "content/common/frame_replication_state.h"
 #include "content/common/pepper_renderer_instance_data.h"
@@ -87,7 +86,7 @@ class CONTENT_EXPORT RenderFrameMessageFilter : public BrowserMessageFilter {
                                              bool is_external);
   void OnOpenChannelToPpapiBroker(int routing_id, const base::FilePath& path);
 
-  CheckedPtr<PluginServiceImpl> plugin_service_;
+  PluginServiceImpl* plugin_service_;
   base::FilePath profile_data_directory_;
 
   // Initialized to 0, accessed on FILE thread only.

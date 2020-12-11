@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 #define FILE_TRACING_PREFIX "File"
 
@@ -79,7 +78,7 @@ class BASE_EXPORT FileTracing {
    private:
     // The ID of this trace. Based on the |file| passed to |Initialize()|. Must
     // outlive this class.
-    CheckedPtr<const void> id_;
+    const void* id_;
 
     // The name of the event to trace (e.g. "Read", "Write"). Prefixed with
     // "File".

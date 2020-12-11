@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_AURA_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/common/content_export.h"
 
@@ -38,7 +37,7 @@ class CONTENT_EXPORT DelegatedFrameHostClientAura
   bool ShouldShowStaleContentOnEviction() override;
 
  private:
-  CheckedPtr<RenderWidgetHostViewAura> render_widget_host_view_;
+  RenderWidgetHostViewAura* render_widget_host_view_;
 
   DISALLOW_COPY_AND_ASSIGN(DelegatedFrameHostClientAura);
 };

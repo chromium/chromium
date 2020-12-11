@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_piece.h"
 
@@ -218,7 +217,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
 
    private:
     // Weak-pointer to memory allocator being iterated over.
-    CheckedPtr<const PersistentMemoryAllocator> allocator_;
+    const PersistentMemoryAllocator* allocator_;
 
     // The last record that was returned.
     std::atomic<Reference> last_record_;
@@ -336,7 +335,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Direct access to underlying memory segment. If the segment is shared
   // across threads or processes, reading data through these values does
   // not guarantee consistency. Use with care. Do not write.
-  const void* data() const { return const_cast<const char*>(mem_base_.get()); }
+  const void* data() const { return const_cast<const char*>(mem_base_); }
   size_t length() const { return mem_size_; }
   size_t size() const { return mem_size_; }
   size_t used() const;
@@ -624,8 +623,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Implementation of Flush that accepts how much to flush.
   virtual void FlushPartial(size_t length, bool sync);
 
-  const CheckedPtr<volatile char>
-      mem_base_;                   // Memory base. (char so sizeof guaranteed 1)
+  volatile char* const mem_base_;  // Memory base. (char so sizeof guaranteed 1)
   const MemoryType mem_type_;      // Type of memory allocation.
   const uint32_t mem_size_;        // Size of entire memory segment.
   const uint32_t mem_page_;        // Page size allocations shouldn't cross.
@@ -642,11 +640,10 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // pointer within the code.
   const SharedMetadata* shared_meta() const {
     return reinterpret_cast<const SharedMetadata*>(
-        const_cast<const char*>(mem_base_.get()));
+        const_cast<const char*>(mem_base_));
   }
   SharedMetadata* shared_meta() {
-    return reinterpret_cast<SharedMetadata*>(
-        const_cast<char*>(mem_base_.get()));
+    return reinterpret_cast<SharedMetadata*>(const_cast<char*>(mem_base_));
   }
 
   // Actual method for doing the allocation.
@@ -679,9 +676,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
   const bool readonly_;                // Indicates access to read-only memory.
   mutable std::atomic<bool> corrupt_;  // Local version of "corrupted" flag.
 
-  CheckedPtr<HistogramBase> allocs_histogram_;  // Histogram recording allocs.
-  CheckedPtr<HistogramBase> used_histogram_;  // Histogram recording used space.
-  CheckedPtr<HistogramBase> errors_histogram_;  // Histogram recording errors.
+  HistogramBase* allocs_histogram_;  // Histogram recording allocs.
+  HistogramBase* used_histogram_;    // Histogram recording used space.
+  HistogramBase* errors_histogram_;  // Histogram recording errors.
 
   friend class PersistentMemoryAllocatorTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);

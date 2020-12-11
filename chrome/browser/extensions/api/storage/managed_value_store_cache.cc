@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observer.h"
@@ -97,11 +96,11 @@ class ManagedValueStoreCache::ExtensionTracker
       base::WeakPtr<ExtensionTracker> self);
   void Register(const policy::ComponentMap* components);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   policy::PolicyDomain policy_domain_;
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};
-  CheckedPtr<policy::SchemaRegistry> schema_registry_;
+  policy::SchemaRegistry* schema_registry_;
   base::WeakPtrFactory<ExtensionTracker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionTracker);

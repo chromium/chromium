@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -145,7 +144,7 @@ class ApiParameterExtractor {
   }
 
  private:
-  CheckedPtr<T> params_;
+  T* params_;
 };
 
 bool GetBrowserFromWindowID(const ChromeExtensionFunctionDetails& details,
@@ -1754,7 +1753,7 @@ class TabsRemoveFunction::WebContentsDestroyedObserver
 
  private:
   // Guaranteed to outlive this object.
-  CheckedPtr<extensions::TabsRemoveFunction> owner_;
+  extensions::TabsRemoveFunction* owner_;
 };
 
 ExtensionFunction::ResponseAction TabsGroupFunction::Run() {

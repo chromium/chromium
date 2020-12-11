@@ -49,7 +49,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
@@ -180,7 +179,7 @@ class BASE_EXPORT DelegateSimpleThread : public SimpleThread {
   void Run() override;
 
  private:
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(DelegateSimpleThread);
 };

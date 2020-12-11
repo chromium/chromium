@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
 
@@ -42,7 +41,7 @@ class ExternalSemaphorePool {
       std::vector<ExternalSemaphore> semaphores);
 
  private:
-  const CheckedPtr<SharedContextState> shared_context_state_;
+  SharedContextState* const shared_context_state_;
   base::circular_deque<ExternalSemaphore> semaphores_;
   base::WeakPtrFactory<ExternalSemaphorePool> weak_ptr_factory_{this};
 };

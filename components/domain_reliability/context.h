@@ -12,7 +12,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/beacon.h"
@@ -111,11 +110,11 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   void RemoveExpiredBeacons();
 
   std::unique_ptr<const DomainReliabilityConfig> config_;
-  CheckedPtr<const MockableTime> time_;
+  const MockableTime* time_;
   const std::string& upload_reporter_string_;
   DomainReliabilityScheduler scheduler_;
-  CheckedPtr<DomainReliabilityDispatcher> dispatcher_;
-  CheckedPtr<DomainReliabilityUploader> uploader_;
+  DomainReliabilityDispatcher* dispatcher_;
+  DomainReliabilityUploader* uploader_;
 
   base::circular_deque<std::unique_ptr<DomainReliabilityBeacon>> beacons_;
   size_t uploading_beacons_size_;
@@ -123,7 +122,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   base::TimeTicks last_upload_time_;
   // The last network change time is not tracked per-context, so this is a
   // pointer to that value in a wider (e.g. per-Monitor or unittest) scope.
-  CheckedPtr<const base::TimeTicks> last_network_change_time_;
+  const base::TimeTicks* last_network_change_time_;
   const UploadAllowedCallback& upload_allowed_callback_;
 
   base::WeakPtrFactory<DomainReliabilityContext> weak_factory_{this};

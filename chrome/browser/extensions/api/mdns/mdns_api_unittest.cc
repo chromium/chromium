@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -269,7 +268,7 @@ class MDnsAPIDiscoveryTest : public MDnsAPITest {
   }
 
  protected:
-  CheckedPtr<MockedMDnsAPI> mdns_api_;
+  MockedMDnsAPI* mdns_api_;
 };
 
 TEST_F(MDnsAPIDiscoveryTest, ServiceListenersAddedAndRemoved) {

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -66,7 +65,7 @@ class SharesheetServiceDelegate : public SharesheetController {
   const uint32_t id_;
   base::string16 active_action_;
   std::unique_ptr<SharesheetBubbleView> sharesheet_bubble_view_;
-  CheckedPtr<SharesheetService> sharesheet_service_;
+  SharesheetService* sharesheet_service_;
 };
 
 }  // namespace sharesheet

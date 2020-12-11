@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace install_static {
 
@@ -30,7 +29,7 @@ class ScopedInstallDetails {
   // A raw pointer to the InstallDetails instance created by this object. This
   // is used only to assert that no intervening instances were swapped in yet
   // not restored during the lifetime of this object.
-  CheckedPtr<const InstallDetails> these_details_ = nullptr;
+  const InstallDetails* these_details_ = nullptr;
 
   // The module's InstallDetails instance prior to the creation of this object.
   // This instance will be swapped back into place when this object is

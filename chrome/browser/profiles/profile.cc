@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -500,7 +499,7 @@ class Profile::ChromeVariationsClient : public variations::VariationsClient {
   }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 variations::VariationsClient* Profile::GetVariationsClient() {

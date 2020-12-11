@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CERTIFICATE_REPORTING_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CERTIFICATE_REPORTING_SERVICE_FACTORY_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -55,10 +54,10 @@ class CertificateReportingServiceFactory
       content::BrowserContext* context) const override;
 
   // Encryption parameters for certificate reports.
-  CheckedPtr<uint8_t> server_public_key_;
+  uint8_t* server_public_key_;
   uint32_t server_public_key_version_;
 
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
   base::TimeDelta queued_report_ttl_;
   size_t max_queued_report_count_;
   base::RepeatingClosure service_reset_callback_;

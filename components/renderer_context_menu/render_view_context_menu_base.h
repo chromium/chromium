@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
@@ -177,8 +176,8 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
                                bool started_from_context_menu);
 
   content::ContextMenuParams params_;
-  const CheckedPtr<content::WebContents> source_web_contents_;
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::WebContents* const source_web_contents_;
+  content::BrowserContext* const browser_context_;
 
   ui::SimpleMenuModel menu_model_;
 

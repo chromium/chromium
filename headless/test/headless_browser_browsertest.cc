@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -349,8 +348,8 @@ class CookieSetter {
   }
 
  private:
-  CheckedPtr<HeadlessBrowserTest> browser_test_;  // Not owned.
-  CheckedPtr<HeadlessWebContents> web_contents_;  // Not owned.
+  HeadlessBrowserTest* browser_test_;  // Not owned.
+  HeadlessWebContents* web_contents_;  // Not owned.
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
 
   std::unique_ptr<network::SetCookieResult> result_;
@@ -461,8 +460,8 @@ class CrashReporterTest : public HeadlessBrowserTest,
   }
 
  protected:
-  CheckedPtr<HeadlessBrowserContext> browser_context_ = nullptr;
-  CheckedPtr<HeadlessWebContents> web_contents_ = nullptr;
+  HeadlessBrowserContext* browser_context_ = nullptr;
+  HeadlessWebContents* web_contents_ = nullptr;
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
   base::FilePath crash_dumps_dir_;
 };
@@ -595,8 +594,8 @@ class TraceHelper : public tracing::ExperimentalObserver {
     browser_test_->FinishAsynchronousTest();
   }
 
-  CheckedPtr<HeadlessBrowserTest> browser_test_;  // Not owned.
-  CheckedPtr<HeadlessDevToolsTarget> target_;     // Not owned.
+  HeadlessBrowserTest* browser_test_;  // Not owned.
+  HeadlessDevToolsTarget* target_;     // Not owned.
   std::unique_ptr<HeadlessDevToolsClient> client_;
 
   std::unique_ptr<base::ListValue> tracing_data_;

@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -141,8 +140,7 @@ class OptimizationHintsComponentInstallerTest : public PlatformTest {
 
   std::unique_ptr<OptimizationHintsComponentInstallerPolicy> policy_;
 
-  CheckedPtr<TestOptimizationGuideService> optimization_guide_service_ =
-      nullptr;
+  TestOptimizationGuideService* optimization_guide_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(OptimizationHintsComponentInstallerTest);
 };

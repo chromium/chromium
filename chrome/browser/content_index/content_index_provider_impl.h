@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -97,10 +96,10 @@ class ContentIndexProviderImpl
   offline_items_collection::OfflineItem EntryToOfflineItem(
       const content::ContentIndexEntry& entry);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   ContentIndexMetrics metrics_;
-  CheckedPtr<offline_items_collection::OfflineContentAggregator> aggregator_;
-  CheckedPtr<SiteEngagementService> site_engagement_service_;
+  offline_items_collection::OfflineContentAggregator* aggregator_;
+  SiteEngagementService* site_engagement_service_;
   base::ObserverList<Observer>::Unchecked observers_;
   base::Optional<std::vector<gfx::Size>> icon_sizes_for_testing_;
   base::WeakPtrFactory<ContentIndexProviderImpl> weak_ptr_factory_{this};

@@ -8,7 +8,6 @@
 
 #include <tuple>
 
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_reg_util_win.h"
@@ -352,7 +351,7 @@ class InstallStaticUtilTest
 
   const bool system_level_;
   const ScopedInstallDetails scoped_install_details_;
-  CheckedPtr<const InstallConstants> mode_;
+  const InstallConstants* mode_;
   const HKEY root_key_;
   const nt::ROOT_KEY nt_root_key_;
   registry_util::RegistryOverrideManager override_manager_;

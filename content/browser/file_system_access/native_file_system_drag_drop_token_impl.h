@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_DRAG_DROP_TOKEN_IMPL_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/file_system_access/native_file_system_manager_impl.h"
 #include "content/common/content_export.h"
@@ -59,7 +58,7 @@ class CONTENT_EXPORT NativeFileSystemDragDropTokenImpl
   void OnMojoDisconnect();
 
   // Raw pointer since NativeFileSystemManagerImpl owns `this`.
-  const CheckedPtr<NativeFileSystemManagerImpl> manager_;
+  NativeFileSystemManagerImpl* const manager_;
   const NativeFileSystemManagerImpl::PathType path_type_;
   const base::FilePath file_path_;
   const int renderer_process_id_;

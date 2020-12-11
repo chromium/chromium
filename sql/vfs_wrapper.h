@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -27,8 +26,8 @@ sqlite3_vfs* VFSWrapper();
 
 // Internal representation of sqlite3_file for VFSWrapper.
 struct VfsFile {
-  CheckedPtr<const sqlite3_io_methods> methods;
-  CheckedPtr<sqlite3_file> wrapped_file;
+  const sqlite3_io_methods* methods;
+  sqlite3_file* wrapped_file;
 #if defined(OS_FUCHSIA)
   std::string file_name;
   int lock_level;

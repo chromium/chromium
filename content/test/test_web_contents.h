@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/site_instance_impl.h"
@@ -197,10 +196,10 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                             const base::string16& suggested_filename) override;
   void ReattachToOuterWebContentsFrame() override {}
 
-  CheckedPtr<RenderViewHostDelegateView> delegate_view_override_;
+  RenderViewHostDelegateView* delegate_view_override_;
 
   // See set_web_preferences_changed_counter() above. May be nullptr.
-  CheckedPtr<int> web_preferences_changed_counter_;
+  int* web_preferences_changed_counter_;
   // Expectations for arguments of |SetHistoryOffsetAndLength()|.
   bool expect_set_history_offset_and_length_;
   int expect_set_history_offset_and_length_history_offset_;

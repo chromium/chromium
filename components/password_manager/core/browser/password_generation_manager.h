@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/clock.h"
@@ -81,7 +80,7 @@ class PasswordGenerationManager {
                              const PasswordForm& pending);
 
   // The client for the password form.
-  const CheckedPtr<PasswordManagerClient> client_;
+  PasswordManagerClient* const client_;
   // Stores the pre-saved credential.
   base::Optional<PasswordForm> presaved_;
   // Interface to get current time.

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/api/developer_private.h"
@@ -79,14 +78,14 @@ class ExtensionInfoGenerator {
   std::string GetIconUrlFromImage(const gfx::Image& image);
 
   // Various systems, cached for convenience.
-  CheckedPtr<content::BrowserContext> browser_context_;
-  CheckedPtr<CommandService> command_service_;
-  CheckedPtr<ExtensionSystem> extension_system_;
-  CheckedPtr<ExtensionPrefs> extension_prefs_;
-  CheckedPtr<ExtensionActionAPI> extension_action_api_;
-  CheckedPtr<WarningService> warning_service_;
-  CheckedPtr<ErrorConsole> error_console_;
-  CheckedPtr<ImageLoader> image_loader_;
+  content::BrowserContext* browser_context_;
+  CommandService* command_service_;
+  ExtensionSystem* extension_system_;
+  ExtensionPrefs* extension_prefs_;
+  ExtensionActionAPI* extension_action_api_;
+  WarningService* warning_service_;
+  ErrorConsole* error_console_;
+  ImageLoader* image_loader_;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserService* supervised_user_service_;
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)

@@ -15,7 +15,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
@@ -631,11 +630,11 @@ class AutofillManagerTest : public testing::Test {
   std::unique_ptr<TestAutofillManager> autofill_manager_;
   std::unique_ptr<TestAutofillExternalDelegate> external_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
-  CheckedPtr<MockAutofillDownloadManager> download_manager_;
+  MockAutofillDownloadManager* download_manager_;
   TestPersonalDataManager personal_data_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  CheckedPtr<TestStrikeDatabase> strike_database_;
+  TestStrikeDatabase* strike_database_;
 
  private:
   int ToHistogramSample(AutofillMetrics::CardUploadDecisionMetric metric) {

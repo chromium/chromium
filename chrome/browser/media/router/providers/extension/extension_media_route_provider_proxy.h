@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_EXTENSION_EXTENSION_MEDIA_ROUTE_PROVIDER_PROXY_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_EXTENSION_EXTENSION_MEDIA_ROUTE_PROVIDER_PROXY_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -168,7 +167,7 @@ class ExtensionMediaRouteProviderProxy : public mojom::MediaRouteProvider {
 
   // Request manager responsible for waking the component extension and calling
   // the requests to it.
-  const CheckedPtr<EventPageRequestManager> request_manager_;
+  EventPageRequestManager* const request_manager_;
 
   base::WeakPtrFactory<ExtensionMediaRouteProviderProxy> weak_factory_{this};
 };

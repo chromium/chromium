@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 
 namespace sessions {
@@ -37,7 +36,7 @@ class CommandStorageManagerTestHelper {
   scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner();
 
  private:
-  CheckedPtr<CommandStorageManager> command_storage_manager_;
+  CommandStorageManager* command_storage_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(CommandStorageManagerTestHelper);
 };

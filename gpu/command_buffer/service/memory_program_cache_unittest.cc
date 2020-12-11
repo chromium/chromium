@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/service/gl_utils.h"
@@ -200,8 +199,8 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   GpuProcessActivityFlags activity_flags_;
   std::unique_ptr<MemoryProgramCache> cache_;
   ShaderManager shader_manager_;
-  CheckedPtr<Shader> vertex_shader_;
-  CheckedPtr<Shader> fragment_shader_;
+  Shader* vertex_shader_;
+  Shader* fragment_shader_;
   int32_t shader_cache_count_;
   std::string shader_cache_shader_;
   std::vector<std::string> varyings_;

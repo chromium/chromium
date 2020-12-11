@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
@@ -81,7 +80,7 @@ class DiscoveryNetworkMonitorMetricObserverTest : public ::testing::Test {
   base::TimeDelta time_advance_ = base::TimeDelta::FromMilliseconds(10);
   const base::TimeTicks start_ticks_;
   std::unique_ptr<MockMetrics> metrics_;
-  CheckedPtr<MockMetrics> mock_metrics_;
+  MockMetrics* mock_metrics_;
 
   DiscoveryNetworkMonitorMetricObserver metric_observer_;
 };

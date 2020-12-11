@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -43,9 +42,9 @@ class BluetoothStatusContainer : public views::View {
  private:
   friend class DeviceChooserContentView;
 
-  CheckedPtr<views::LabelButton> re_scan_button_;
-  CheckedPtr<views::Throbber> throbber_;
-  CheckedPtr<views::Label> scanning_label_;
+  views::LabelButton* re_scan_button_;
+  views::Throbber* throbber_;
+  views::Label* scanning_label_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothStatusContainer);
 };

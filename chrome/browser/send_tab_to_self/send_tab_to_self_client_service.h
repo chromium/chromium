@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -52,11 +51,11 @@ class SendTabToSelfClientService : public KeyedService,
 
  private:
   // Owned by the SendTabToSelfSyncService which should outlive this class
-  CheckedPtr<SendTabToSelfModel> model_;
+  SendTabToSelfModel* model_;
   // Singleton instance not owned by this class
-  CheckedPtr<ReceivingUiHandlerRegistry> registry_;
+  ReceivingUiHandlerRegistry* registry_;
   // Profile for which this service is associated.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfClientService);
 };
 

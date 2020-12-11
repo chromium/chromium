@@ -12,7 +12,6 @@
 #include "base/big_endian.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -49,7 +48,7 @@ class FlushHistoryDBQueueTask : public history::HistoryDBTask {
  private:
   ~FlushHistoryDBQueueTask() override {}
 
-  CheckedPtr<base::WaitableEvent> wait_event_;
+  base::WaitableEvent* wait_event_;
 };
 
 class GetTypedUrlsTask : public history::HistoryDBTask {
@@ -70,8 +69,8 @@ class GetTypedUrlsTask : public history::HistoryDBTask {
  private:
   ~GetTypedUrlsTask() override {}
 
-  CheckedPtr<history::URLRows> rows_;
-  CheckedPtr<base::WaitableEvent> wait_event_;
+  history::URLRows* rows_;
+  base::WaitableEvent* wait_event_;
 };
 
 class GetUrlTask : public history::HistoryDBTask {
@@ -96,9 +95,9 @@ class GetUrlTask : public history::HistoryDBTask {
   ~GetUrlTask() override {}
 
   GURL url_;
-  CheckedPtr<history::URLRow> row_;
-  CheckedPtr<base::WaitableEvent> wait_event_;
-  CheckedPtr<bool> found_;
+  history::URLRow* row_;
+  base::WaitableEvent* wait_event_;
+  bool* found_;
 };
 
 class GetVisitsTask : public history::HistoryDBTask {
@@ -122,8 +121,8 @@ class GetVisitsTask : public history::HistoryDBTask {
   ~GetVisitsTask() override {}
 
   history::URLID id_;
-  CheckedPtr<history::VisitVector> visits_;
-  CheckedPtr<base::WaitableEvent> wait_event_;
+  history::VisitVector* visits_;
+  base::WaitableEvent* wait_event_;
 };
 
 class RemoveVisitsTask : public history::HistoryDBTask {
@@ -146,7 +145,7 @@ class RemoveVisitsTask : public history::HistoryDBTask {
   ~RemoveVisitsTask() override {}
 
   const history::VisitVector& visits_;
-  CheckedPtr<base::WaitableEvent> wait_event_;
+  base::WaitableEvent* wait_event_;
 };
 
 // Waits for the history DB thread to finish executing its current set of
@@ -184,8 +183,8 @@ class GetTypedUrlsMetadataTask : public history::HistoryDBTask {
   void DoneRunOnMainThread() override {}
 
  private:
-  CheckedPtr<syncer::MetadataBatch> metadata_batch_;
-  CheckedPtr<base::WaitableEvent> wait_event_;
+  syncer::MetadataBatch* metadata_batch_;
+  base::WaitableEvent* wait_event_;
 };
 
 class WriteTypedUrlsMetadataTask : public history::HistoryDBTask {
@@ -209,7 +208,7 @@ class WriteTypedUrlsMetadataTask : public history::HistoryDBTask {
  private:
   const std::string storage_key_;
   const sync_pb::EntityMetadata metadata_;
-  CheckedPtr<base::WaitableEvent> wait_event_;
+  base::WaitableEvent* wait_event_;
 };
 
 // Creates a URLRow in the specified HistoryService with the passed transition

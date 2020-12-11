@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
@@ -122,9 +121,9 @@ class BookmarkRemoteUpdatesHandler {
       const syncer::EntityData& entity_data,
       const SyncedBookmarkTracker::Entity* tracked_entity);
 
-  const CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
-  const CheckedPtr<favicon::FaviconService> favicon_service_;
-  const CheckedPtr<SyncedBookmarkTracker> bookmark_tracker_;
+  bookmarks::BookmarkModel* const bookmark_model_;
+  favicon::FaviconService* const favicon_service_;
+  SyncedBookmarkTracker* const bookmark_tracker_;
 
   // Counts number of initiated reuploads.
   size_t valid_updates_without_full_title_ = 0;

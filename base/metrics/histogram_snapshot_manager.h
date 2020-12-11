@@ -14,7 +14,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -71,7 +70,7 @@ class BASE_EXPORT HistogramSnapshotManager final {
 
   // |histogram_flattener_| handles the logistics of recording the histogram
   // deltas.
-  const CheckedPtr<HistogramFlattener> histogram_flattener_;  // Weak.
+  HistogramFlattener* const histogram_flattener_;  // Weak.
 
   // For histograms, track what has been previously seen, indexed
   // by the hash of the histogram name.

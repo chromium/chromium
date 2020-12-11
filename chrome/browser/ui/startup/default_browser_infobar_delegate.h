@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_INFOBAR_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -60,7 +59,7 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Accept() override;
 
   // The WebContents's corresponding profile.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Whether the info bar should be dismissed on the next navigation.
   bool should_expire_ = false;

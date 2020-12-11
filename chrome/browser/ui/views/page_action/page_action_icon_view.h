@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -167,10 +166,10 @@ class PageActionIconView : public IconLabelBubbleView {
   SkColor icon_color_ = gfx::kPlaceholderColor;
 
   // The CommandUpdater for the Browser object that owns the location bar.
-  const CheckedPtr<CommandUpdater> command_updater_;
+  CommandUpdater* const command_updater_;
 
   // Delegate for access to associated state.
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   // The command ID executed when the user clicks this icon.
   const int command_id_;
@@ -181,7 +180,7 @@ class PageActionIconView : public IconLabelBubbleView {
   bool active_ = false;
 
   // The loading indicator, showing a throbber animation on top of the icon.
-  CheckedPtr<PageActionIconLoadingIndicatorView> loading_indicator_ = nullptr;
+  PageActionIconLoadingIndicatorView* loading_indicator_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PageActionIconView);
 };

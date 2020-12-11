@@ -99,7 +99,7 @@ void WebAppMigrationUserDisplayModeCleanUp::Start() {
   // circular KeyedService dependency.
   sync_service_ = ProfileSyncServiceFactory::GetForProfile(profile_);
   if (sync_service_)
-    sync_observer_.Add(sync_service_.get());
+    sync_observer_.Add(sync_service_);
   bookmark_app_registry_controller_->Init(base::BindOnce(
       &WebAppMigrationUserDisplayModeCleanUp::OnBookmarkAppRegistryReady,
       weak_ptr_factory_.GetWeakPtr()));

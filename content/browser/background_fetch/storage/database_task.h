@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
@@ -163,7 +162,7 @@ class DatabaseTask : public DatabaseTaskHost {
 
   base::WeakPtr<DatabaseTaskHost> GetWeakPtr() override;
 
-  CheckedPtr<DatabaseTaskHost> host_;
+  DatabaseTaskHost* host_;
 
   // Map the raw pointer to its unique_ptr, to make lookups easier.
   std::map<DatabaseTask*, std::unique_ptr<DatabaseTask>> active_subtasks_;

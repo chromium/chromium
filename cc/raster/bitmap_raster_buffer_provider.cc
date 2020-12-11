@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -39,7 +38,7 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
                                          importance);
   }
 
-  CheckedPtr<LayerTreeFrameSink> frame_sink;
+  LayerTreeFrameSink* frame_sink;
   base::WritableSharedMemoryMapping mapping;
 };
 
@@ -87,7 +86,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
  private:
   const gfx::Size resource_size_;
   const gfx::ColorSpace color_space_;
-  const CheckedPtr<void> pixels_;
+  void* const pixels_;
   bool resource_has_previous_content_;
 };
 

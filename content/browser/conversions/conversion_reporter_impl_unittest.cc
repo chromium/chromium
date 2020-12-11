@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
@@ -82,7 +81,7 @@ class ConversionReporterImplTest : public testing::Test {
   std::unique_ptr<TestBrowserContext> browser_context_;
 
   std::unique_ptr<ConversionReporterImpl> reporter_;
-  CheckedPtr<MockNetworkSender> sender_;
+  MockNetworkSender* sender_;
 };
 
 TEST_F(ConversionReporterImplTest,

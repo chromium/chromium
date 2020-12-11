@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/debug/alias.h"
-#include "base/memory/checked_ptr.h"
 #include "base/profiler/native_unwinder_win.h"
 #include "build/build_config.h"
 
@@ -63,7 +62,7 @@ const TEB* GetThreadEnvironmentBlock(HANDLE thread_handle) {
 
   struct THREAD_BASIC_INFORMATION {
     NTSTATUS ExitStatus;
-    CheckedPtr<TEB> Teb;
+    TEB* Teb;
     CLIENT_ID ClientId;
     KAFFINITY AffinityMask;
     LONG Priority;

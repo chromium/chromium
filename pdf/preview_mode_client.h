@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "pdf/pdf_engine.h"
 
 namespace gfx {
@@ -81,7 +80,7 @@ class PreviewModeClient : public PDFEngine::Client {
   bool IsValidLink(const std::string& url) override;
 
  private:
-  const CheckedPtr<Client> client_;
+  Client* const client_;
 };
 
 }  // namespace chrome_pdf

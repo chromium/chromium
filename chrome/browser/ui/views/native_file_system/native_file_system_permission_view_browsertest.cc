@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/native_file_system/native_file_system_permission_view.h"
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -73,7 +72,7 @@ class NativeFileSystemPermissionViewTest : public DialogBrowserTest {
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://example.com"));
 
-  CheckedPtr<views::Widget> widget_ = nullptr;
+  views::Widget* widget_ = nullptr;
 
   bool callback_called_ = false;
   permissions::PermissionAction callback_result_ =

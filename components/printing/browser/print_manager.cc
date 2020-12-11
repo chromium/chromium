@@ -5,7 +5,6 @@
 #include "components/printing/browser/print_manager.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/printing/common/print_messages.h"
 #include "content/public/browser/render_frame_host.h"
@@ -14,8 +13,8 @@
 namespace printing {
 
 struct PrintManager::FrameDispatchHelper {
-  CheckedPtr<PrintManager> manager;
-  CheckedPtr<content::RenderFrameHost> render_frame_host;
+  PrintManager* manager;
+  content::RenderFrameHost* render_frame_host;
 
   bool Send(IPC::Message* msg) { return render_frame_host->Send(msg); }
 

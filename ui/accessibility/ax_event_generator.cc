@@ -159,17 +159,17 @@ AXEventGenerator::AXEventGenerator() = default;
 
 AXEventGenerator::AXEventGenerator(AXTree* tree) : tree_(tree) {
   if (tree_)
-    tree_event_observer_.Add(tree_.get());
+    tree_event_observer_.Add(tree_);
 }
 
 AXEventGenerator::~AXEventGenerator() = default;
 
 void AXEventGenerator::SetTree(AXTree* new_tree) {
   if (tree_)
-    tree_event_observer_.Remove(tree_.get());
+    tree_event_observer_.Remove(tree_);
   tree_ = new_tree;
   if (tree_)
-    tree_event_observer_.Add(tree_.get());
+    tree_event_observer_.Add(tree_);
 }
 
 void AXEventGenerator::ReleaseTree() {

@@ -6,7 +6,6 @@
 #define CC_INPUT_SCROLLBAR_ANIMATION_CONTROLLER_H_
 
 #include "base/cancelable_callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -134,7 +133,7 @@ class CC_EXPORT ScrollbarAnimationController {
 
   void ApplyOpacityToScrollbars(float opacity);
 
-  CheckedPtr<ScrollbarAnimationControllerClient> client_;
+  ScrollbarAnimationControllerClient* client_;
 
   base::TimeTicks last_awaken_time_;
 

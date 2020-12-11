@@ -5,7 +5,6 @@
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -85,7 +84,7 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<content::RenderFrameHost> subframe_;
+  content::RenderFrameHost* subframe_;
 };
 
 TEST_F(PDFIFrameNavigationThrottleTest, OnlyCreateThrottleForSubframes) {

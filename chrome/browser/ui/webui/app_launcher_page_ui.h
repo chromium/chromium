@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_APP_LAUNCHER_PAGE_UI_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/base/layout.h"
@@ -52,7 +51,7 @@ class AppLauncherPageUI : public content::WebUIController {
    private:
 
     // Pointer back to the original profile.
-    CheckedPtr<Profile> profile_;
+    Profile* profile_;
 
     DISALLOW_COPY_AND_ASSIGN(HTMLSource);
   };

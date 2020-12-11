@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,7 +46,7 @@ class BuiltInChromeOsApps : public apps::PublisherBase {
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   DISALLOW_COPY_AND_ASSIGN(BuiltInChromeOsApps);
 };

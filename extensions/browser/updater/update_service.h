@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
@@ -106,7 +105,7 @@ class UpdateService : public KeyedService,
   base::Value GetExtensionOmahaAttributes(const std::string& extension_id);
 
  private:
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   scoped_refptr<update_client::UpdateClient> update_client_;
   scoped_refptr<UpdateDataProvider> update_data_provider_;

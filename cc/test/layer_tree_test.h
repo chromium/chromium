@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
@@ -286,8 +285,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
   int timeout_seconds_ = 0;
 
-  CheckedPtr<viz::BeginFrameSource> begin_frame_source_ =
-      nullptr;  // NOT OWNED.
+  viz::BeginFrameSource* begin_frame_source_ = nullptr;  // NOT OWNED.
 
   std::unique_ptr<LayerTreeTestLayerTreeFrameSinkClient>
       layer_tree_frame_sink_client_;

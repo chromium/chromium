@@ -5,8 +5,6 @@
 #ifndef PDF_PDFIUM_PDFIUM_UNSUPPORTED_FEATURES_H_
 #define PDF_PDFIUM_PDFIUM_UNSUPPORTED_FEATURES_H_
 
-#include "base/memory/checked_ptr.h"
-
 namespace chrome_pdf {
 
 class PDFiumEngine;
@@ -23,7 +21,7 @@ class ScopedUnsupportedFeature {
   ~ScopedUnsupportedFeature();
 
  private:
-  const CheckedPtr<PDFiumEngine> old_engine_;
+  PDFiumEngine* const old_engine_;
 };
 
 }  // namespace chrome_pdf

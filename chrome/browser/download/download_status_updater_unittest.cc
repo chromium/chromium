@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/download/download_status_updater.h"
@@ -44,7 +43,7 @@ class TestDownloadStatusUpdater : public DownloadStatusUpdater {
   }
  private:
   size_t notification_count_;
-  CheckedPtr<download::DownloadItem> acceptable_notification_item_;
+  download::DownloadItem* acceptable_notification_item_;
 };
 
 class DownloadStatusUpdaterTest : public testing::Test {
@@ -179,7 +178,7 @@ class DownloadStatusUpdaterTest : public testing::Test {
 
   // Pointer so we can verify that destruction triggers appropriate
   // changes.
-  CheckedPtr<TestDownloadStatusUpdater> updater_;
+  TestDownloadStatusUpdater* updater_;
 
   // Thread so that the DownloadManager (which is a DeleteOnUIThread
   // object) can be deleted.

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -48,7 +47,7 @@ class ThumbnailWaiter : public ThumbnailImage::Observer {
   // ThumbnailImage::Observer:
   void OnThumbnailImageAvailable(gfx::ImageSkia thumbnail_image) override {
     if (thumbnail_) {
-      scoped_observer_.Remove(thumbnail_.get());
+      scoped_observer_.Remove(thumbnail_);
       thumbnail_ = nullptr;
       image_ = thumbnail_image;
       run_loop_.Quit();
@@ -57,7 +56,7 @@ class ThumbnailWaiter : public ThumbnailImage::Observer {
 
  private:
   base::RunLoop run_loop_;
-  CheckedPtr<ThumbnailImage> thumbnail_ = nullptr;
+  ThumbnailImage* thumbnail_ = nullptr;
   base::Optional<gfx::ImageSkia> image_;
   ScopedObserver<ThumbnailImage, ThumbnailImage::Observer> scoped_observer_{
       this};
@@ -153,7 +152,7 @@ class ThumbnailTabHelperBrowserTest : public InProcessBrowserTest {
   GURL url1_;
   GURL url2_;
 
-  CheckedPtr<const BrowserList> active_browser_list_ = nullptr;
+  const BrowserList* active_browser_list_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

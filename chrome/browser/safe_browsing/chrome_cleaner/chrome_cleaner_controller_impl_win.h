@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_CONTROLLER_IMPL_WIN_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_CONTROLLER_IMPL_WIN_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 
 #include <memory>
@@ -128,10 +127,10 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
 
   std::unique_ptr<ChromeCleanerControllerDelegate> real_delegate_;
   // Pointer to either real_delegate_ or one set by tests.
-  CheckedPtr<ChromeCleanerControllerDelegate> delegate_;
+  ChromeCleanerControllerDelegate* delegate_;
 
-  CheckedPtr<extensions::ExtensionService> extension_service_ = nullptr;
-  CheckedPtr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
+  extensions::ExtensionService* extension_service_ = nullptr;
+  extensions::ExtensionRegistry* extension_registry_ = nullptr;
 
   State state_ = State::kIdle;
   // Whether Cleanup is powered by an external partner.

@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -68,7 +67,7 @@ class DiceInterceptedSessionStartupHelper
   // still open.
   void MoveTab();
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   CoreAccountId account_id_;
   base::OnceClosure callback_;
   bool reconcile_error_encountered_ = false;

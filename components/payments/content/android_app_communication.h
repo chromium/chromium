@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/supports_user_data.h"
@@ -107,7 +106,7 @@ class AndroidAppCommunication : public base::SupportsUserData::Data {
       content::BrowserContext* context);
 
   // Owns this object, so always valid.
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 
   base::WeakPtrFactory<AndroidAppCommunication> weak_ptr_factory_{this};
 };

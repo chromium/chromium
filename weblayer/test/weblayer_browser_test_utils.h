@@ -6,7 +6,6 @@
 #define WEBLAYER_TEST_WEBLAYER_BROWSER_TEST_UTILS_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
@@ -90,7 +89,7 @@ class OneShotNavigationObserver : public NavigationObserver {
   void Finish(Navigation* navigation);
 
   base::RunLoop run_loop_;
-  CheckedPtr<Tab> tab_;
+  Tab* tab_;
   bool completed_ = false;
   bool is_error_page_ = false;
   bool is_download_ = false;

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service_base.h"
 #include "url/gurl.h"
@@ -72,7 +71,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
   policy::DMToken GetDMToken() const;
 
   // Unowned object used for checking profile based settings.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 

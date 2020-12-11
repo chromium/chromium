@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,7 +64,7 @@ class TrendingTilesHandler {
  private:
   std::vector<std::string> tiles_to_remove_;
   int trending_tiles_count_ = 0;
-  CheckedPtr<ImpressionMap> impression_map_;
+  ImpressionMap* impression_map_;
 };
 
 class TileManagerImpl : public TileManager {
@@ -365,7 +364,7 @@ class TileManagerImpl : public TileManager {
   std::unique_ptr<TileGroup> tile_stats_group_;
 
   // Clock object.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Accept languages from the PrefService. Used to check if tiles stored are of
   // the same language.

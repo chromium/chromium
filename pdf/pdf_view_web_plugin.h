@@ -5,7 +5,6 @@
 #ifndef PDF_PDF_VIEW_WEB_PLUGIN_H_
 #define PDF_PDF_VIEW_WEB_PLUGIN_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/ppapi_migration/url_loader.h"
@@ -127,7 +126,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   ~PdfViewWebPlugin() override;
 
   blink::WebPluginParams initial_params_;
-  CheckedPtr<blink::WebPluginContainer> container_ = nullptr;
+  blink::WebPluginContainer* container_ = nullptr;
 
   // The background color of the PDF viewer.
   uint32_t background_color_ = 0;

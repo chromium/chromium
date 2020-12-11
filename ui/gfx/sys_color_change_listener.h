@@ -6,7 +6,6 @@
 #define UI_GFX_SYS_COLOR_CHANGE_LISTENER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
@@ -28,7 +27,7 @@ class GFX_EXPORT ScopedSysColorChangeListener {
   ~ScopedSysColorChangeListener();
 
  private:
-  CheckedPtr<SysColorChangeListener> listener_;
+  SysColorChangeListener* listener_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSysColorChangeListener);
 };

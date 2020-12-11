@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/nqe/cached_network_quality.h"
@@ -54,7 +53,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualitiesPrefDelegate {
   net::NetworkQualitiesPrefsManager prefs_manager_;
 
   // Guaranteed to be non-null during the lifetime of |this|.
-  CheckedPtr<net::NetworkQualityEstimator> network_quality_estimator_;
+  net::NetworkQualityEstimator* network_quality_estimator_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

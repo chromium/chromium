@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
@@ -220,7 +219,7 @@ class InstallDetails {
   static std::unique_ptr<const InstallDetails> Swap(
       std::unique_ptr<const InstallDetails> install_details);
 
-  const CheckedPtr<const Payload> payload_;
+  const Payload* const payload_;
 };
 
 // A kind of InstallDetails that owns its payload. A single instance of this

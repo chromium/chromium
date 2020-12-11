@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
@@ -305,7 +304,7 @@ class InterventionsInternalsPageHandlerTest : public testing::Test {
  protected:
   TestingProfileManager profile_manager_;
 
-  CheckedPtr<TestPreviewsLogger> logger_;
+  TestPreviewsLogger* logger_;
   network::TestNetworkQualityTracker test_network_quality_tracker_;
   std::unique_ptr<TestPreviewsUIService> previews_ui_service_;
 

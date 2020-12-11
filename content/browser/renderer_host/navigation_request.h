@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -1137,13 +1136,13 @@ class CONTENT_EXPORT NavigationRequest
   bool IsPrerenderedPageActivation() const;
 
   // Never null. The pointee node owns this navigation request instance.
-  const CheckedPtr<FrameTreeNode> frame_tree_node_;
+  FrameTreeNode* const frame_tree_node_;
 
   // Value of |is_for_commit| supplied to the constructor.
   const bool is_for_commit_;
 
   // Invariant: At least one of |loader_| or |render_frame_host_| is null.
-  CheckedPtr<RenderFrameHostImpl> render_frame_host_ = nullptr;
+  RenderFrameHostImpl* render_frame_host_ = nullptr;
 
   // Initialized on creation of the NavigationRequest. Sent to the renderer when
   // the navigation is ready to commit.
@@ -1417,7 +1416,7 @@ class CONTENT_EXPORT NavigationRequest
   // The RenderFrameHost that was restored from the back-forward cache. This
   // will be null except for navigations that are restoring a page from the
   // back-forward cache.
-  const CheckedPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache_;
+  RenderFrameHostImpl* const rfh_restored_from_back_forward_cache_;
 
   // These are set to the values from the FrameNavigationEntry this
   // NavigationRequest is associated with (if any).

@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -108,13 +107,13 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   void HandleTimePeriodChanged(const std::string& pref_name);
 
   // Cached profile corresponding to the WebUI of this handler.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Counters that calculate the data volume for individual data types.
   std::vector<std::unique_ptr<browsing_data::BrowsingDataCounter>> counters_;
 
   // SyncService to observe sync state changes.
-  CheckedPtr<syncer::SyncService> sync_service_;
+  syncer::SyncService* sync_service_;
   ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_;
 

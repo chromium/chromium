@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/sequenced_task_runner.h"
@@ -218,7 +217,7 @@ class BackgroundModeManager : public content::NotificationObserver,
     void OnProfileWillBeDestroyed(Profile* profile) override;
 
    private:
-    const CheckedPtr<BackgroundModeManager> manager_;
+    BackgroundModeManager* const manager_;
 
     ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
     ScopedObserver<extensions::ForceInstalledTracker,
@@ -232,11 +231,11 @@ class BackgroundModeManager : public content::NotificationObserver,
     base::string16 name_;
 
     // The profile associated with this background app data.
-    const CheckedPtr<Profile> profile_;
+    Profile* const profile_;
 
     // Weak ref vector owned by BackgroundModeManager where the indices
     // correspond to Command IDs and values correspond to their handlers.
-    const CheckedPtr<CommandIdHandlerVector> command_id_handler_vector_;
+    CommandIdHandlerVector* const command_id_handler_vector_;
 
     // The list of notified extensions for this profile. We track this to ensure
     // that we never notify the user about the same extension twice in a single
@@ -396,7 +395,7 @@ class BackgroundModeManager : public content::NotificationObserver,
 
   // Reference to the ProfileAttributesStorage. It is used to update the
   // background app status of profiles when they open/close background apps.
-  CheckedPtr<ProfileAttributesStorage> profile_storage_;
+  ProfileAttributesStorage* profile_storage_;
 
   // Registrars for managing our change observers.
   content::NotificationRegistrar registrar_;
@@ -413,14 +412,14 @@ class BackgroundModeManager : public content::NotificationObserver,
 
   // Reference to our status tray. If null, the platform doesn't support status
   // icons.
-  CheckedPtr<StatusTray> status_tray_ = nullptr;
+  StatusTray* status_tray_ = nullptr;
 
   // Reference to our status icon (if any) - owned by the StatusTray.
-  CheckedPtr<StatusIcon> status_icon_ = nullptr;
+  StatusIcon* status_icon_ = nullptr;
 
   // Reference to our status icon's context menu (if any) - owned by the
   // status_icon_.
-  CheckedPtr<StatusIconMenuModel> context_menu_ = nullptr;
+  StatusIconMenuModel* context_menu_ = nullptr;
 
   // Set to true when we are running in background mode. Allows us to track our
   // current background state so we can take the appropriate action when the

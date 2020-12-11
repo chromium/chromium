@@ -6,7 +6,6 @@
 #define CC_BASE_DELAYED_UNIQUE_NOTIFIER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "cc/base/base_export.h"
@@ -59,7 +58,7 @@ class CC_BASE_EXPORT DelayedUniqueNotifier {
 
   THREAD_CHECKER(thread_checker_);
 
-  const CheckedPtr<base::SequencedTaskRunner> task_runner_;
+  base::SequencedTaskRunner* const task_runner_;
   const base::RepeatingClosure closure_;
   const base::TimeDelta delay_;
 

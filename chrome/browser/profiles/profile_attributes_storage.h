@@ -15,7 +15,6 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
@@ -167,7 +166,7 @@ class ProfileAttributesStorage
                              const base::FilePath& image_path,
                              base::OnceClosure callback);
 
-  const CheckedPtr<PrefService> prefs_;
+  PrefService* const prefs_;
   mutable std::unordered_map<base::FilePath::StringType,
                              std::unique_ptr<ProfileAttributesEntry>>
       profile_attributes_entries_;

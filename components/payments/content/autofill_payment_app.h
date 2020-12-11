@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_normalizer.h"
@@ -98,8 +97,8 @@ class AutofillPaymentApp
 
   const std::string app_locale_;
 
-  CheckedPtr<PaymentApp::Delegate> delegate_;
-  CheckedPtr<PaymentRequestBaseDelegate> payment_request_delegate_;
+  PaymentApp::Delegate* delegate_;
+  PaymentRequestBaseDelegate* payment_request_delegate_;
   autofill::AutofillProfile billing_address_;
 
   base::string16 cvc_;

@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -182,7 +181,7 @@ class HintCache {
   URLKeyedHintCache url_keyed_hint_cache_;
 
   // The clock used to determine if hints have expired.
-  CheckedPtr<const base::Clock> clock_;
+  const base::Clock* clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

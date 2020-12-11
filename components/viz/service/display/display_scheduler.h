@@ -10,7 +10,6 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -94,8 +93,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   bool UpdateHasPendingSurfaces();
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
-  CheckedPtr<BeginFrameSource> begin_frame_source_;
-  CheckedPtr<base::SingleThreadTaskRunner> task_runner_;
+  BeginFrameSource* begin_frame_source_;
+  base::SingleThreadTaskRunner* task_runner_;
 
   BeginFrameArgs current_begin_frame_args_;
   base::RepeatingClosure begin_frame_deadline_closure_;

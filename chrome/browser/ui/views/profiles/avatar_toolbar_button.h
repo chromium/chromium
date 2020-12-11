@@ -7,7 +7,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -83,8 +82,8 @@ class AvatarToolbarButton : public ToolbarButton,
 
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 
-  const CheckedPtr<Browser> browser_;
-  const CheckedPtr<ToolbarIconContainerView> parent_;
+  Browser* const browser_;
+  ToolbarIconContainerView* const parent_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

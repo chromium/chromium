@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -127,7 +126,7 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
   static gfx::ImageSkia CropPreviewImage(const gfx::ImageSkia& source_image,
                                          const gfx::Size& minimum_size);
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   CompressedThumbnailData data_;
 

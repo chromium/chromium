@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -219,13 +218,13 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Unowned object used for getting and storing real time url check cache.
-  CheckedPtr<VerdictCacheManager> cache_manager_;
+  VerdictCacheManager* cache_manager_;
 
   // Unowned object used for checking sync status of the profile.
-  CheckedPtr<syncer::SyncService> sync_service_;
+  syncer::SyncService* sync_service_;
 
   // Unowned object used for getting preference settings.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   const ChromeUserPopulation::ProfileManagementStatus
       profile_management_status_;

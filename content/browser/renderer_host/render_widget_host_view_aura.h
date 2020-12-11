@@ -18,7 +18,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -588,7 +587,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   blink::mojom::FrameWidgetInputHandler*
   GetFrameWidgetInputHandlerForFocusedWidget();
 
-  CheckedPtr<aura::Window> window_;
+  aura::Window* window_;
 
   std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client_;
   // NOTE: this may be null.
@@ -607,10 +606,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool in_bounds_changed_;
 
   // Our parent host view, if this is a popup.  NULL otherwise.
-  CheckedPtr<RenderWidgetHostViewAura> popup_parent_host_view_;
+  RenderWidgetHostViewAura* popup_parent_host_view_;
 
   // Our child popup host. NULL if we do not have a child popup.
-  CheckedPtr<RenderWidgetHostViewAura> popup_child_host_view_;
+  RenderWidgetHostViewAura* popup_child_host_view_;
 
   class EventObserverForPopupExit;
   std::unique_ptr<EventObserverForPopupExit> event_observer_for_popup_exit_;
@@ -647,8 +646,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // The LegacyRenderWidgetHostHWND instance is created during the first call
   // to RenderWidgetHostViewAura::InternalSetBounds. The instance is destroyed
   // when the LegacyRenderWidgetHostHWND hwnd is destroyed.
-  CheckedPtr<content::LegacyRenderWidgetHostHWND>
-      legacy_render_widget_host_HWND_;
+  content::LegacyRenderWidgetHostHWND* legacy_render_widget_host_HWND_;
 
   // Set to true if the legacy_render_widget_host_HWND_ instance was destroyed
   // by Windows. This could happen if the browser window was destroyed by

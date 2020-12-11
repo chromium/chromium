@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_mode_observer.h"
@@ -178,16 +177,16 @@ class WEBVIEW_EXPORT WebView : public View,
   std::unique_ptr<content::WebContents> CreateWebContents(
       content::BrowserContext* browser_context);
 
-  const CheckedPtr<NativeViewHost> holder_ =
+  NativeViewHost* const holder_ =
       AddChildView(std::make_unique<NativeViewHost>());
   // Non-NULL if |web_contents()| was created and is owned by this WebView.
   std::unique_ptr<content::WebContents> wc_owner_;
   // Set to true when |holder_| is letterboxed (scaled to be smaller than this
   // view, to preserve its aspect ratio).
   bool is_letterboxing_ = false;
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   bool allow_accelerators_ = false;
-  CheckedPtr<View> crashed_overlay_view_ = nullptr;
+  View* crashed_overlay_view_ = nullptr;
   bool is_primary_web_contents_for_window_ = false;
 
   // Minimum and maximum sizes to determine WebView bounds for auto-resizing.

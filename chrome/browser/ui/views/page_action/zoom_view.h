@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_ZOOM_VIEW_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 
 // View for the zoom icon in the Omnibox.
@@ -37,7 +36,7 @@ class ZoomView : public PageActionIconView {
   bool ShouldBeVisible(bool can_show_bubble) const;
   bool HasAssociatedBubble() const;
 
-  CheckedPtr<const gfx::VectorIcon> icon_ = nullptr;
+  const gfx::VectorIcon* icon_ = nullptr;
 
   int current_zoom_percent_ = 100;
 

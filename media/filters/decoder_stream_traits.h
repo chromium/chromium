@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
@@ -79,7 +78,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
   // if timestamp gaps are detected. Sufficiently large gaps can lead to AV sync
   // drift.
   std::unique_ptr<AudioTimestampValidator> audio_ts_validator_;
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
   // HW layout at the time pipeline was started. Will not reflect possible
   // device changes.
   ChannelLayout initial_hw_layout_;

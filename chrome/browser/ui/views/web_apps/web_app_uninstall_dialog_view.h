@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
@@ -61,9 +60,9 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
   void OnDialogAccepted();
   void OnDialogCanceled();
 
-  CheckedPtr<WebAppUninstallDialogViews> dialog_;
+  WebAppUninstallDialogViews* dialog_;
 
-  CheckedPtr<views::Checkbox> checkbox_ = nullptr;
+  views::Checkbox* checkbox_ = nullptr;
   gfx::ImageSkia image_;
 
   // The web app we are showing the dialog for.
@@ -71,7 +70,7 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
   // The dialog needs start_url copy even if app gets uninstalled.
   GURL app_start_url_;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 };
 
 // The implementation of the uninstall dialog for web apps.
@@ -125,11 +124,11 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
   ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
       registrar_observer_{this};
 
-  CheckedPtr<WebAppUninstallDialogDelegateView> view_ = nullptr;
+  WebAppUninstallDialogDelegateView* view_ = nullptr;
 
   // The web app we are showing the dialog for.
   web_app::AppId app_id_;
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   THREAD_CHECKER(thread_checker_);
 

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -56,7 +55,7 @@ class ResizingHostObserver : public ScreenControls {
   // State to manage rate-limiting of desktop resizes.
   base::OneShotTimer deferred_resize_timer_;
   base::TimeTicks previous_resize_time_;
-  CheckedPtr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 
   base::WeakPtrFactory<ResizingHostObserver> weak_factory_{this};
 

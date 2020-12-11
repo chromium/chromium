@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "components/permissions/notification_permission_ui_selector.h"
 
 class PredictionServiceRequest;
@@ -57,7 +56,7 @@ class PredictionBasedPermissionUiSelector
     likelihood_override_for_testing_ = mock_likelihood;
   }
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<PredictionServiceRequest> request_;
   base::Optional<PredictionGrantLikelihood> last_request_grant_likelihood_;
 

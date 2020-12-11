@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_PICKER_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 
 class Browser;
@@ -33,7 +32,7 @@ class IntentPickerView : public PageActionIconView {
   bool IsIncognitoMode() const;
   bool ShouldShowIcon() const;
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   DISALLOW_COPY_AND_ASSIGN(IntentPickerView);
 };

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -41,7 +40,7 @@ class MockChildProcessLauncherClient
   bool CanUseWarmUpConnection() override { return true; }
 #endif
 
-  CheckedPtr<content::ChildProcessLauncher::Client> client_;
+  content::ChildProcessLauncher::Client* client_;
   bool simulate_failure_;
 };
 

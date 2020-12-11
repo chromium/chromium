@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -37,7 +36,7 @@ class MediaRouterInternalsWebUIMessageHandler
   void OnProviderState(base::Value callback_id, mojom::ProviderStatePtr state);
 
   // Pointer to the MediaRouter.
-  const CheckedPtr<const MediaRouter> router_;
+  const MediaRouter* const router_;
 
   base::WeakPtrFactory<MediaRouterInternalsWebUIMessageHandler> weak_factory_{
       this};

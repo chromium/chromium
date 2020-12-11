@@ -62,7 +62,7 @@ MallocMemoryAllocator::MallocMemoryAllocator(UniqueMallocPtr buffer,
     : base::PersistentMemoryAllocator(buffer.release(), size, 0, 0, "", true) {}
 
 MallocMemoryAllocator::~MallocMemoryAllocator() {
-  free(const_cast<char*>(mem_base_.get()));
+  free(const_cast<char*>(mem_base_));
 }
 
 class BufferExtensionStreamDataSource final

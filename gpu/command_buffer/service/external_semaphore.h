@@ -7,7 +7,6 @@
 
 #include <vulkan/vulkan.h>
 
-#include "base/memory/checked_ptr.h"
 #include "base/types/pass_key.h"
 #include "gpu/vulkan/semaphore_handle.h"
 
@@ -50,7 +49,7 @@ class ExternalSemaphore {
   SemaphoreHandle handle() { return handle_.Duplicate(); }
 
  private:
-  CheckedPtr<viz::VulkanContextProvider> context_provider_ = nullptr;
+  viz::VulkanContextProvider* context_provider_ = nullptr;
   VkSemaphore semaphore_ = VK_NULL_HANDLE;
   SemaphoreHandle handle_;
   unsigned int gl_semaphore_ = 0;

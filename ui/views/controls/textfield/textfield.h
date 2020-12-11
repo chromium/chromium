@@ -12,8 +12,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
-
 #if defined(OS_WIN)
 #include <vector>
 #endif
@@ -604,7 +602,7 @@ class VIEWS_EXPORT Textfield : public View,
   std::unique_ptr<TextfieldModel> model_;
 
   // This is the current listener for events from this Textfield.
-  CheckedPtr<TextfieldController> controller_ = nullptr;
+  TextfieldController* controller_ = nullptr;
 
   // An edit command to execute on the next key event. When set to a valid
   // value, the key event is still passed to |controller_|, but otherwise
@@ -716,7 +714,7 @@ class VIEWS_EXPORT Textfield : public View,
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   // View containing the text cursor.
-  CheckedPtr<View> cursor_view_ = nullptr;
+  View* cursor_view_ = nullptr;
 
 #if defined(OS_APPLE)
   // Used to track active password input sessions.
@@ -728,7 +726,7 @@ class VIEWS_EXPORT Textfield : public View,
       ui::TextInputClient::FOCUS_REASON_NONE;
 
   // The focus ring for this TextField.
-  CheckedPtr<FocusRing> focus_ring_ = nullptr;
+  FocusRing* focus_ring_ = nullptr;
 
   // The password char reveal index, for testing only.
   int password_char_reveal_index_ = -1;

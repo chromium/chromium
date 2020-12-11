@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/sync/base/unique_position.h"
@@ -269,7 +268,7 @@ class ToValueVisitor {
     value_->Set(field_name, ToValue(field));
   }
 
-  CheckedPtr<base::DictionaryValue> value_;
+  base::DictionaryValue* value_;
   bool include_specifics_;
 };
 

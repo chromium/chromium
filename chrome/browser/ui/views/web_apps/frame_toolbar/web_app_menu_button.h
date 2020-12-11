@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_MENU_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_MENU_BUTTON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -43,7 +42,7 @@ class WebAppMenuButton : public AppMenuButton {
   const char* GetClassName() const override;
 
   // The containing browser view.
-  CheckedPtr<BrowserView> browser_view_;
+  BrowserView* browser_view_;
 
   SkColor ink_drop_color_ = gfx::kPlaceholderColor;
 

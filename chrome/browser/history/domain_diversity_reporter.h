@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/clock.h"
 #include "components/history/core/browser/history_service.h"
@@ -55,9 +54,9 @@ class DomainDiversityReporter : public KeyedService,
   void Shutdown() override {}
 
  private:
-  CheckedPtr<history::HistoryService> history_service_;
-  CheckedPtr<PrefService> prefs_;
-  CheckedPtr<base::Clock> clock_;
+  history::HistoryService* history_service_;
+  PrefService* prefs_;
+  base::Clock* clock_;
 
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
       history_service_observer_;

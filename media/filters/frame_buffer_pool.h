@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_tick_clock.h"
@@ -94,7 +93,7 @@ class MEDIA_EXPORT FrameBufferPool
   bool registered_dump_provider_ = false;
 
   // |tick_clock_| is always a DefaultTickClock outside of testing.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

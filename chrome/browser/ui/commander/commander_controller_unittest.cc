@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/test/bind.h"
@@ -111,7 +110,7 @@ class ViewModelCallbackWaiter {
   ~ViewModelCallbackWaiter() { test_->WaitForExpectedCallbacks(); }
 
  private:
-  CheckedPtr<CommanderControllerTest> test_;
+  CommanderControllerTest* test_;
 };
 
 TEST_F(CommanderControllerTest, PassesInputToCommandSourcesOnTextChanged) {

@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -124,7 +123,7 @@ class PreEventDispatchHandler : public ui::EventHandler {
 #endif
   }
 
-  CheckedPtr<View> owner_;
+  View* owner_;
 };
 
 // This event handler receives events in the post-target phase and takes care of
@@ -361,7 +360,7 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
   // event to mouse_pressed_handler_
   if (mouse_pressed_handler_) {
     ui::MouseEvent mouse_pressed_event(event, static_cast<View*>(this),
-                                       mouse_pressed_handler_.get());
+                                       mouse_pressed_handler_);
     drag_info_.Reset();
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler_, &mouse_pressed_event);
@@ -382,7 +381,7 @@ bool RootView::OnMousePressed(const ui::MouseEvent& event) {
 
     // See if this view wants to handle the mouse press.
     ui::MouseEvent mouse_pressed_event(event, static_cast<View*>(this),
-                                       mouse_pressed_handler_.get());
+                                       mouse_pressed_handler_);
 
     // Remove the double-click flag if the handler is different than the
     // one which got the first click part of the double-click.
@@ -434,7 +433,7 @@ bool RootView::OnMouseDragged(const ui::MouseEvent& event) {
     SetMouseLocationAndFlags(event);
 
     ui::MouseEvent mouse_event(event, static_cast<View*>(this),
-                               mouse_pressed_handler_.get());
+                               mouse_pressed_handler_);
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler_, &mouse_event);
     if (dispatch_details.dispatcher_destroyed)
@@ -448,7 +447,7 @@ void RootView::OnMouseReleased(const ui::MouseEvent& event) {
 
   if (mouse_pressed_handler_) {
     ui::MouseEvent mouse_released(event, static_cast<View*>(this),
-                                  mouse_pressed_handler_.get());
+                                  mouse_pressed_handler_);
     // We allow the view to delete us from the event dispatch callback. As such,
     // configure state such that we're done first, then call View.
     View* mouse_pressed_handler = mouse_pressed_handler_;
@@ -500,7 +499,7 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
            !mouse_move_handler_->Contains(v))) {
         MouseEnterExitEvent exit(event, ui::ET_MOUSE_EXITED);
         exit.ConvertLocationToTarget(static_cast<View*>(this),
-                                     mouse_move_handler_.get());
+                                     mouse_move_handler_);
         ui::EventDispatchDetails dispatch_details =
             DispatchEvent(mouse_move_handler_, &exit);
         if (dispatch_details.dispatcher_destroyed)
@@ -525,7 +524,7 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
           !mouse_move_handler_->Contains(old_handler)) {
         MouseEnterExitEvent entered(event, ui::ET_MOUSE_ENTERED);
         entered.ConvertLocationToTarget(static_cast<View*>(this),
-                                        mouse_move_handler_.get());
+                                        mouse_move_handler_);
         ui::EventDispatchDetails dispatch_details =
             DispatchEvent(mouse_move_handler_, &entered);
         if (dispatch_details.dispatcher_destroyed ||
@@ -546,7 +545,7 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
       }
     }
     ui::MouseEvent moved_event(event, static_cast<View*>(this),
-                               mouse_move_handler_.get());
+                               mouse_move_handler_);
     mouse_move_handler_->OnMouseMoved(moved_event);
     // TODO(tdanderson): It may be possible to avoid setting the cursor twice
     //                   (once here and once from CompoundEventFilter) on a

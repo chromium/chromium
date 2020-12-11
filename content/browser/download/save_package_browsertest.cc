@@ -4,7 +4,6 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/download/download_manager_impl.h"
@@ -125,13 +124,13 @@ class DownloadCancelObserver : public DownloadManager::Observer {
       item_ = nullptr;
     }
 
-    CheckedPtr<download::DownloadItem> item_;
+    download::DownloadItem* item_;
     base::OnceClosure canceled_closure_;
   };
 
   std::unique_ptr<DownloadItemCancelObserver> item_cancel_observer_;
   base::OnceClosure canceled_closure_;
-  CheckedPtr<std::string> mime_type_out_;
+  std::string* mime_type_out_;
 };
 
 }  // namespace

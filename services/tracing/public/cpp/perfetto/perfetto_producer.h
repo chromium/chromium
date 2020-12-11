@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/basic_types.h"
@@ -139,7 +138,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // subprocess to start tracing after it connects).
   base::TimeDelta startup_tracing_timeout_ = base::TimeDelta::FromSeconds(60);
 
-  const CheckedPtr<PerfettoTaskRunner> task_runner_;
+  PerfettoTaskRunner* const task_runner_;
 
   std::atomic<bool> startup_tracing_active_{false};
 

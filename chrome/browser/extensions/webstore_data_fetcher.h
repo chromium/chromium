@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
@@ -49,7 +48,7 @@ class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
                          const network::mojom::URLResponseHead& response_head);
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
-  CheckedPtr<WebstoreDataFetcherDelegate> delegate_;
+  WebstoreDataFetcherDelegate* delegate_;
   GURL referrer_url_;
   std::string id_;
   std::string post_data_;

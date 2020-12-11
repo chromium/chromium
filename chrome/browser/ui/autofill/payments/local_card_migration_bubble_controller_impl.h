@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
@@ -77,7 +76,7 @@ class LocalCardMigrationBubbleControllerImpl
   void AddStrikesForBubbleClose();
 
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  CheckedPtr<LocalCardMigrationBubble> local_card_migration_bubble_ = nullptr;
+  LocalCardMigrationBubble* local_card_migration_bubble_ = nullptr;
 
   // Callback to run if user presses Save button in the offer-to-migrate bubble.
   base::OnceClosure local_card_migration_bubble_closure_;

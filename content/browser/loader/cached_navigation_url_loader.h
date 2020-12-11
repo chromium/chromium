@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_LOADER_CACHED_NAVIGATION_URL_LOADER_H_
 #define CONTENT_BROWSER_LOADER_CACHED_NAVIGATION_URL_LOADER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/loader/navigation_url_loader.h"
 
 namespace content {
@@ -35,7 +34,7 @@ class CachedNavigationURLLoader : public NavigationURLLoader {
  private:
   void OnResponseStarted();
   std::unique_ptr<NavigationRequestInfo> request_info_;
-  CheckedPtr<NavigationURLLoaderDelegate> delegate_;
+  NavigationURLLoaderDelegate* delegate_;
   base::WeakPtrFactory<CachedNavigationURLLoader> weak_factory_{this};
 };
 

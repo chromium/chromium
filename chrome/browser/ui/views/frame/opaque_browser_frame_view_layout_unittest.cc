@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
@@ -155,7 +154,7 @@ class OpaqueBrowserFrameViewLayoutTest
     tab_icon_view_ = new TabIconView(nullptr, views::Button::PressedCallback());
     tab_icon_view_->set_is_light(true);
     tab_icon_view_->SetID(VIEW_ID_WINDOW_ICON);
-    root_view_->AddChildView(tab_icon_view_.get());
+    root_view_->AddChildView(tab_icon_view_);
 
     window_title_ = new views::Label(delegate_->GetWindowTitle());
     window_title_->SetVisible(delegate_->ShouldShowWindowTitle());
@@ -163,7 +162,7 @@ class OpaqueBrowserFrameViewLayoutTest
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-    root_view_->AddChildView(window_title_.get());
+    root_view_->AddChildView(window_title_);
   }
 
   int CaptionY() const {
@@ -340,18 +339,18 @@ class OpaqueBrowserFrameViewLayoutTest
   }
 
   std::unique_ptr<views::Widget> widget_;
-  CheckedPtr<views::View> root_view_ = nullptr;
-  CheckedPtr<OpaqueBrowserFrameViewLayout> layout_manager_ = nullptr;
+  views::View* root_view_ = nullptr;
+  OpaqueBrowserFrameViewLayout* layout_manager_ = nullptr;
   std::unique_ptr<TestLayoutDelegate> delegate_;
 
   // Widgets:
-  CheckedPtr<views::ImageButton> minimize_button_ = nullptr;
-  CheckedPtr<views::ImageButton> maximize_button_ = nullptr;
-  CheckedPtr<views::ImageButton> restore_button_ = nullptr;
-  CheckedPtr<views::ImageButton> close_button_ = nullptr;
+  views::ImageButton* minimize_button_ = nullptr;
+  views::ImageButton* maximize_button_ = nullptr;
+  views::ImageButton* restore_button_ = nullptr;
+  views::ImageButton* close_button_ = nullptr;
 
-  CheckedPtr<TabIconView> tab_icon_view_ = nullptr;
-  CheckedPtr<views::Label> window_title_ = nullptr;
+  TabIconView* tab_icon_view_ = nullptr;
+  views::Label* window_title_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(OpaqueBrowserFrameViewLayoutTest);
 };

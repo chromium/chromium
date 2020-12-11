@@ -11,7 +11,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -62,7 +61,7 @@ class CONTENT_EXPORT DragDownloadFile : public ui::DownloadFileProvider {
   State state_ = INITIALIZED;
   scoped_refptr<ui::DownloadFileObserver> observer_;
   base::RunLoop nested_loop_;
-  CheckedPtr<DragDownloadFileUI> drag_ui_ = nullptr;
+  DragDownloadFileUI* drag_ui_ = nullptr;
   base::WeakPtrFactory<DragDownloadFile> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DragDownloadFile);

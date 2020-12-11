@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -117,7 +116,7 @@ class TransportClient final : public media::cast::CastTransport::Client {
   }
 
  private:
-  const CheckedPtr<Session> session_;  // Outlives this class.
+  Session* const session_;  // Outlives this class.
 
   DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };

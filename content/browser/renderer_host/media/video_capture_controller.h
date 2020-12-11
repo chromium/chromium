@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -203,8 +202,7 @@ class CONTENT_EXPORT VideoCaptureController
     int buffer_id_;
     bool is_retired_;
     int frame_feedback_id_;
-    CheckedPtr<media::VideoFrameConsumerFeedbackObserver>
-        consumer_feedback_observer_;
+    media::VideoFrameConsumerFeedbackObserver* consumer_feedback_observer_;
     media::mojom::VideoBufferHandlePtr buffer_handle_;
     media::VideoFrameFeedback combined_consumer_feedback_;
 
@@ -263,7 +261,7 @@ class CONTENT_EXPORT VideoCaptureController
   std::unique_ptr<VideoCaptureDeviceLauncher> device_launcher_;
   base::RepeatingCallback<void(const std::string&)> emit_log_message_cb_;
   std::unique_ptr<LaunchedVideoCaptureDevice> launched_device_;
-  CheckedPtr<VideoCaptureDeviceLaunchObserver> device_launch_observer_;
+  VideoCaptureDeviceLaunchObserver* device_launch_observer_;
 
   std::vector<BufferContext> buffer_contexts_;
 

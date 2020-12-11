@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -148,7 +147,7 @@ class AppWindowRegistry : public KeyedService,
   void DevToolsAgentHostDetached(
       content::DevToolsAgentHost* agent_host) override;
 
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
   AppWindowList app_windows_;
   InspectedWindowSet inspected_windows_;
   base::ObserverList<Observer> observers_;

@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -95,7 +94,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   // Raw pointer to DnsSdRegistry instance, which is a global leaky singleton
   // and lives as long as the browser process.
-  CheckedPtr<DnsSdRegistry> dns_sd_registry_ = nullptr;
+  DnsSdRegistry* dns_sd_registry_ = nullptr;
 
   // Created on the UI thread, used and destroyed on its SequencedTaskRunner.
   std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter> impl_;

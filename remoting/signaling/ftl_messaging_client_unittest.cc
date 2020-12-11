@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -161,7 +160,7 @@ class FtlMessagingClientTest : public testing::Test {
   ProtobufHttpTestResponder test_responder_;
   FakeOAuthTokenGetter token_getter_{OAuthTokenGetter::Status::SUCCESS, "", ""};
   std::unique_ptr<FtlMessagingClient> messaging_client_;
-  CheckedPtr<MockMessageReceptionChannel> mock_message_reception_channel_;
+  MockMessageReceptionChannel* mock_message_reception_channel_;
 
  private:
   base::test::TaskEnvironment task_environment_;

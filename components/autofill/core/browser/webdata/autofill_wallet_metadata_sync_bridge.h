@@ -10,7 +10,6 @@
 #include <unordered_set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
@@ -123,7 +122,7 @@ class AutofillWalletMetadataSyncBridge
 
   // AutofillWalletMetadataSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.
-  const CheckedPtr<AutofillWebDataBackend> web_data_backend_;
+  AutofillWebDataBackend* const web_data_backend_;
 
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>

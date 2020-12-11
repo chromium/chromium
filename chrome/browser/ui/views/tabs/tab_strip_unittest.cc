@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -84,7 +83,7 @@ class TestTabStripObserver : public TabStripObserver {
 
   void OnTabRemoved(int index) override { last_tab_removed_ = index; }
 
-  CheckedPtr<TabStrip> tab_strip_;
+  TabStrip* tab_strip_;
   int last_tab_added_ = -1;
   int last_tab_removed_ = -1;
   int last_tab_moved_from_ = -1;
@@ -119,7 +118,7 @@ class TabStripTest : public ChromeViewsTestBase,
             views::kFlexBehaviorKey,
             views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                      views::MaximumFlexSizeRule::kPreferred));
-    tab_strip_parent->AddChildView(tab_strip_.get());
+    tab_strip_parent->AddChildView(tab_strip_);
     // The tab strip is free to use all of the space in its parent view, since
     // there are no sibling controls such as the NTB in the test context.
     tab_strip_->SetAvailableWidthCallback(base::BindRepeating(
@@ -249,9 +248,9 @@ class TabStripTest : public ChromeViewsTestBase,
   }
 
   // Owned by TabStrip.
-  CheckedPtr<FakeBaseTabStripController> controller_ = nullptr;
-  CheckedPtr<TabStrip> tab_strip_ = nullptr;
-  CheckedPtr<views::View> tab_strip_parent_ = nullptr;
+  FakeBaseTabStripController* controller_ = nullptr;
+  TabStrip* tab_strip_ = nullptr;
+  views::View* tab_strip_parent_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 
   ui::MouseEvent dummy_event_ = ui::MouseEvent(ui::ET_MOUSE_PRESSED,

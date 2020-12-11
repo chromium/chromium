@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -218,12 +217,12 @@ class AppLauncherHandler
 
   // The apps are represented in the extensions model, which
   // outlives us since it's owned by our containing profile.
-  const CheckedPtr<extensions::ExtensionService> extension_service_;
+  extensions::ExtensionService* const extension_service_;
 
   // The apps are represented in the web apps model, which outlives us since
   // it's owned by our containing profile. Populated iff
   // features::kDesktopPWAsWithoutExtensions is enabled.
-  const CheckedPtr<web_app::WebAppProvider> web_app_provider_;
+  web_app::WebAppProvider* const web_app_provider_;
 
   ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
       web_apps_observer_{this};

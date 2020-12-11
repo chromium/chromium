@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/appcache/appcache_storage.h"
 
 namespace content {
@@ -40,7 +39,7 @@ class AppCacheTestHelper : public AppCacheStorage::Delegate {
   int appcache_id_;
   int response_id_;
   scoped_refptr<AppCacheInfoCollection> appcache_info_;
-  CheckedPtr<std::set<url::Origin>> origins_;  // not owned
+  std::set<url::Origin>* origins_;  // not owned
 
   DISALLOW_COPY_AND_ASSIGN(AppCacheTestHelper);
 };

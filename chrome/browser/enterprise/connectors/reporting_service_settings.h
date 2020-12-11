@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -36,8 +35,7 @@ class ReportingServiceSettings {
   // The service provider matching the name given in a Connector policy. nullptr
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.
-  CheckedPtr<const ServiceProviderConfig::ServiceProvider> service_provider_ =
-      nullptr;
+  const ServiceProviderConfig::ServiceProvider* service_provider_ = nullptr;
 };
 
 }  // namespace enterprise_connectors

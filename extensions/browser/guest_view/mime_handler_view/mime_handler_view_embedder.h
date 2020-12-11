@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_MIME_HANDLER_VIEW_MIME_HANDLER_VIEW_EMBEDDER_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_MIME_HANDLER_VIEW_MIME_HANDLER_VIEW_EMBEDDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -85,7 +84,7 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
       content::RenderFrameHost::kNoFrameTreeNodeId;
   // The frame associated with |frame_tree_node_id_|. Known to MHVE after the
   // navigation commits.
-  CheckedPtr<content::RenderFrameHost> render_frame_host_ = nullptr;
+  content::RenderFrameHost* render_frame_host_ = nullptr;
   // Used in attaching the GuestView. Will be initialized to the routing ID of
   // the child frame which will be used to attach the GuestView to its outer
   // WebContents.

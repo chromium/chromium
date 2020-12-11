@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-#define ENABLE_BACKUP_REF_PTR_IMPL 1
+#define ENABLE_BACKUP_REF_PTR_IMPL 0
 #if ENABLE_BACKUP_REF_PTR_IMPL
 static_assert(ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR,
               "BackupRefPtrImpl can only by used if PartitionRefCount is "

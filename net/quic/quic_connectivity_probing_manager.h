@@ -5,7 +5,6 @@
 #ifndef NET_QUIC_QUIC_CONNECTIVITY_PROBING_MANAGER_H_
 #define NET_QUIC_QUIC_CONNECTIVITY_PROBING_MANAGER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/ip_endpoint.h"
@@ -116,7 +115,7 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
 
   void NotifyDelegateProbeFailed();
 
-  CheckedPtr<Delegate> delegate_;  // Unowned, must outlive |this|.
+  Delegate* delegate_;  // Unowned, must outlive |this|.
   NetLogWithSource net_log_;
 
   // Current path: |peer_address_| on |network_|, that is under probing
@@ -136,7 +135,7 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
   base::TimeDelta initial_timeout_;
   base::OneShotTimer retransmit_timer_;
 
-  CheckedPtr<base::SequencedTaskRunner> task_runner_;
+  base::SequencedTaskRunner* task_runner_;
 
   // The cached local address set when probing is cancelled.
   IPEndPoint last_self_address_;

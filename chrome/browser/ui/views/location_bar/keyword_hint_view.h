@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
@@ -45,12 +44,13 @@ class KeywordHintView : public views::Button {
   void OnThemeChanged() override;
 
  private:
-  CheckedPtr<Profile> profile_ = nullptr;
 
-  CheckedPtr<views::Label> leading_label_ = nullptr;
-  CheckedPtr<views::View> chip_container_ = nullptr;
-  CheckedPtr<views::Label> chip_label_ = nullptr;
-  CheckedPtr<views::Label> trailing_label_ = nullptr;
+  Profile* profile_ = nullptr;
+
+  views::Label* leading_label_ = nullptr;
+  views::View* chip_container_ = nullptr;
+  views::Label* chip_label_ = nullptr;
+  views::Label* trailing_label_ = nullptr;
 
   base::string16 keyword_;
 

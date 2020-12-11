@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -128,7 +127,7 @@ class CC_EXPORT StagingBufferPool final
       base::MemoryPressureListener::MemoryPressureLevel level);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  const CheckedPtr<viz::RasterContextProvider> worker_context_provider_;
+  viz::RasterContextProvider* const worker_context_provider_;
   const bool use_partial_raster_;
 
   mutable base::Lock lock_;

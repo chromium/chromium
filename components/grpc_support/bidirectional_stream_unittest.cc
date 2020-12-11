@@ -11,7 +11,6 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
@@ -101,7 +100,7 @@ class TestBidirectionalStreamCallback {
     DISALLOW_COPY_AND_ASSIGN(WriteData);
   };
 
-  CheckedPtr<bidirectional_stream> stream;
+  bidirectional_stream* stream;
   base::WaitableEvent stream_done_event;
 
   // Test parameters.
@@ -113,7 +112,7 @@ class TestBidirectionalStreamCallback {
 
   // Test results.
   ResponseStep response_step;
-  CheckedPtr<char> read_buffer;
+  char* read_buffer;
   std::map<std::string, std::string> response_headers;
   std::map<std::string, std::string> response_trailers;
   std::vector<std::string> read_data;

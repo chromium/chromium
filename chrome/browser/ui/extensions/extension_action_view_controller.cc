@@ -408,7 +408,7 @@ bool ExtensionActionViewController::TriggerPopupWithUrl(
     return false;
 
   popup_host_ = host.get();
-  popup_host_observer_.Add(popup_host_.get());
+  popup_host_observer_.Add(popup_host_);
   extensions_container_->SetPopupOwner(this);
 
   if (!extensions_container_->IsActionVisibleOnToolbar(this) ||
@@ -440,7 +440,7 @@ void ExtensionActionViewController::ShowPopup(
 }
 
 void ExtensionActionViewController::OnPopupClosed() {
-  popup_host_observer_.Remove(popup_host_.get());
+  popup_host_observer_.Remove(popup_host_);
   popup_host_ = nullptr;
   extensions_container_->SetPopupOwner(nullptr);
   if (extensions_container_->GetPoppedOutAction() == this &&

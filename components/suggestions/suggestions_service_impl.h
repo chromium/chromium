@@ -14,7 +14,6 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
@@ -172,9 +171,9 @@ class SuggestionsServiceImpl : public SuggestionsService,
 
   base::ThreadChecker thread_checker_;
 
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
-  CheckedPtr<syncer::SyncService> sync_service_;
+  syncer::SyncService* sync_service_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
 
@@ -189,7 +188,7 @@ class SuggestionsServiceImpl : public SuggestionsService,
   // The local cache for temporary blocklist, until uploaded to the server.
   std::unique_ptr<BlocklistStore> blocklist_store_;
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Backoff for scheduling blocklist upload tasks.
   net::BackoffEntry blocklist_upload_backoff_;

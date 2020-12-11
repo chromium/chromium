@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -153,7 +152,7 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
 
   std::unique_ptr<RuntimeAPIDelegate> delegate_;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   content::NotificationRegistrar registrar_;
 

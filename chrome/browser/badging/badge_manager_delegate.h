@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BADGING_BADGE_MANAGER_DELEGATE_H_
 #define CHROME_BROWSER_BADGING_BADGE_MANAGER_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -33,9 +32,9 @@ class BadgeManagerDelegate {
 
  private:
   // The profile the badge manager delegate is associated with.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   // The badge manager that owns this delegate.
-  CheckedPtr<BadgeManager> badge_manager_;
+  BadgeManager* badge_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(BadgeManagerDelegate);
 };

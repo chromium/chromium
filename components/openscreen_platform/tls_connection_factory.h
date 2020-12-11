@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -103,8 +102,8 @@ class TlsConnectionFactory final : public openscreen::TlsConnectionFactory {
                     mojo::ScopedDataPipeProducerHandle send_stream,
                     const base::Optional<net::SSLInfo>& ssl_info);
 
-  CheckedPtr<openscreen::TlsConnectionFactory::Client> client_;
-  const CheckedPtr<openscreen::TaskRunner> task_runner_;
+  openscreen::TlsConnectionFactory::Client* client_;
+  openscreen::TaskRunner* const task_runner_;
   base::WeakPtrFactory<TlsConnectionFactory> weak_factory_{this};
 };
 

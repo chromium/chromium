@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D11_VP9_PICTURE_H_
 #define MEDIA_GPU_WINDOWS_D3D11_VP9_PICTURE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "media/gpu/vp9_picture.h"
 
 #include "media/gpu/windows/d3d11_picture_buffer.h"
@@ -26,7 +25,7 @@ class D3D11VP9Picture : public VP9Picture {
   ~D3D11VP9Picture() override;
 
  private:
-  CheckedPtr<D3D11PictureBuffer> picture_buffer_;
+  D3D11PictureBuffer* picture_buffer_;
   size_t picture_index_;
 };
 

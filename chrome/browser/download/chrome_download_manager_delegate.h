@@ -16,7 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -214,7 +213,7 @@ class ChromeDownloadManagerDelegate
 
   // So that test classes that inherit from this for override purposes
   // can call back into the DownloadManager.
-  CheckedPtr<content::DownloadManager> download_manager_;
+  content::DownloadManager* download_manager_;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeDownloadManagerDelegate>;
@@ -286,7 +285,7 @@ class ChromeDownloadManagerDelegate
   // Returns whether to show download later dialog.
   bool ShouldShowDownloadLaterDialog() const;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
 #if defined(OS_ANDROID)
   std::unique_ptr<DownloadDialogBridge> download_dialog_bridge_;

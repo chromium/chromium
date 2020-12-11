@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/printing/cloud_print/gcd_api_flow.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -45,7 +44,7 @@ class GCDApiFlowImpl : public GCDApiFlow {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   std::unique_ptr<Request> request_;
   base::WeakPtrFactory<GCDApiFlowImpl> weak_factory_{this};
 

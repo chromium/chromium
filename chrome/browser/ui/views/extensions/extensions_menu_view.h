@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
@@ -109,12 +108,12 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   struct Section {
     // The root view for this section; this is used to toggle the visibility of
     // the entire section (depending on whether there are any menu items).
-    CheckedPtr<views::View> container;
+    views::View* container;
 
     // The view containing only the extension menu items for this section. This
     // is separated for easy sorting, insertion, and iteration of menu items.
     // The children are guaranteed to only be ExtensionMenuItemViews.
-    CheckedPtr<views::View> menu_items;
+    views::View* menu_items;
 
     // The id of the string to use for the section heading.
     const int header_string_id;
@@ -160,15 +159,15 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   // if DCHECKs are disabled.
   void SanityCheck();
 
-  const CheckedPtr<Browser> browser_;
-  const CheckedPtr<ExtensionsContainer> extensions_container_;
+  Browser* const browser_;
+  ExtensionsContainer* const extensions_container_;
   bool allow_pinning_;
-  const CheckedPtr<ToolbarActionsModel> toolbar_model_;
+  ToolbarActionsModel* const toolbar_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_model_observation_{this};
   std::vector<ExtensionsMenuItemView*> extensions_menu_items_;
 
-  CheckedPtr<views::Button> manage_extensions_button_for_testing_ = nullptr;
+  views::Button* manage_extensions_button_for_testing_ = nullptr;
 
   // The different sections in the menu.
   Section cant_access_;

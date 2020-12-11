@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/public/test/browser_test_utils.h"
-#include "base/memory/checked_ptr.h"
 
 #include <stddef.h>
 
@@ -2872,7 +2871,7 @@ class FrameFocusedObserver::FrameTreeNodeObserverImpl
   }
 
  private:
-  CheckedPtr<FrameTreeNode> owner_;
+  FrameTreeNode* owner_;
   base::RunLoop run_loop_;
 };
 
@@ -2903,7 +2902,7 @@ class FrameDeletedObserver::FrameTreeNodeObserverImpl
       run_loop_.Quit();
   }
 
-  CheckedPtr<FrameTreeNode> owner_;
+  FrameTreeNode* owner_;
   base::RunLoop run_loop_;
 };
 
@@ -3214,7 +3213,7 @@ class EvictionStateWaiter : public DelegatedFrameHost::Observer {
   }
 
  private:
-  CheckedPtr<DelegatedFrameHost> delegated_frame_host_;
+  DelegatedFrameHost* delegated_frame_host_;
   DelegatedFrameHost::FrameEvictionState waited_eviction_state_;
   base::OnceClosure quit_closure_;
 

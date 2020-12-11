@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
@@ -40,7 +39,7 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
 
  private:
   const content::MainFunctionParams parameters_;  // For running browser tests.
-  CheckedPtr<HeadlessBrowserImpl> browser_;       // Not owned.
+  HeadlessBrowserImpl* browser_;  // Not owned.
 
   bool run_message_loop_ = true;
   bool devtools_http_handler_started_ = false;

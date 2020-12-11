@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/interventions_internals/interventions_internals.mojom.h"
 #include "components/previews/content/previews_ui_service.h"
@@ -58,15 +57,15 @@ class InterventionsInternalsPageHandler
 
   // The PreviewsLogger that this handler is listening to, and guaranteed to
   // outlive |this|.
-  CheckedPtr<previews::PreviewsLogger> logger_;
+  previews::PreviewsLogger* logger_;
 
   // A pointer to the PreviewsUIService associated with this handler, and
   // guaranteed to outlive |this|.
-  CheckedPtr<previews::PreviewsUIService> previews_ui_service_;
+  previews::PreviewsUIService* previews_ui_service_;
 
   // Passed in during construction. If null, the main browser process tracker
   // will be used instead.
-  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_;
+  network::NetworkQualityTracker* network_quality_tracker_;
 
   // The current estimated effective connection type.
   net::EffectiveConnectionType current_estimated_ect_;

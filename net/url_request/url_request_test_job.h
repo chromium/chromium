@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
@@ -174,7 +173,7 @@ class NET_EXPORT_PRIVATE URLRequestTestJob : public URLRequestJob {
   int offset_;
 
   // Holds the buffer for an asynchronous ReadRawData call
-  CheckedPtr<IOBuffer> async_buf_;
+  IOBuffer* async_buf_;
   int async_buf_size_;
 
   LoadTimingInfo load_timing_info_;

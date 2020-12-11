@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
@@ -568,7 +567,7 @@ class GpuImageDecodeTaskImpl : public TileTask {
   ~GpuImageDecodeTaskImpl() override = default;
 
  private:
-  CheckedPtr<GpuImageDecodeCache> cache_;
+  GpuImageDecodeCache* cache_;
   DrawImage image_;
   const ImageDecodeCache::TracingInfo tracing_info_;
   const GpuImageDecodeCache::DecodeTaskType task_type_;
@@ -619,7 +618,7 @@ class ImageUploadTaskImpl : public TileTask {
   ~ImageUploadTaskImpl() override = default;
 
  private:
-  CheckedPtr<GpuImageDecodeCache> cache_;
+  GpuImageDecodeCache* cache_;
   DrawImage image_;
   const ImageDecodeCache::TracingInfo tracing_info_;
 };

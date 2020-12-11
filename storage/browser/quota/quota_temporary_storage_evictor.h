@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -92,7 +91,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
   void OnEvictionRoundFinished();
 
   // Not owned; quota_eviction_handler owns us.
-  CheckedPtr<QuotaEvictionHandler> quota_eviction_handler_;
+  QuotaEvictionHandler* quota_eviction_handler_;
 
   Statistics statistics_;
   Statistics previous_statistics_;

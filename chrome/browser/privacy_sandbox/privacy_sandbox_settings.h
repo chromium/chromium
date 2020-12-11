@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -73,8 +72,8 @@ class PrivacySandboxSettings : public KeyedService {
       const ContentSettingsForOneType& cookie_settings) const;
 
  private:
-  CheckedPtr<content_settings::CookieSettings> cookie_settings_;
-  CheckedPtr<PrefService> pref_service_;
+  content_settings::CookieSettings* cookie_settings_;
+  PrefService* pref_service_;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_FIND_BAR_ICON_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 
 class Browser;
@@ -33,7 +32,7 @@ class FindBarIcon : public PageActionIconView {
  private:
   DISALLOW_COPY_AND_ASSIGN(FindBarIcon);
 
-  CheckedPtr<Browser> browser_ = nullptr;
+  Browser* browser_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_FIND_BAR_ICON_H_

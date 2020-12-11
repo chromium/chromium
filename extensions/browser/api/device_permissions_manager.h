@@ -15,7 +15,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
@@ -191,7 +190,7 @@ class DevicePermissionsManager : public KeyedService {
   DevicePermissions* GetInternal(const std::string& extension_id) const;
 
   base::ThreadChecker thread_checker_;
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
   std::map<std::string, DevicePermissions*> extension_id_to_device_permissions_;
 
   DISALLOW_COPY_AND_ASSIGN(DevicePermissionsManager);

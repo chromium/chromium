@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -235,7 +234,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   // A ClientView object or subclass, responsible for sizing the contents view
   // of the window, hit testing and perhaps other tasks depending on the
   // implementation.
-  const CheckedPtr<ClientView> client_view_;
+  ClientView* const client_view_;
 
   // The NonClientFrameView that renders the non-client portions of the window.
   // This object is not owned by the view hierarchy because it can be replaced
@@ -244,7 +243,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
 
   // The overlay view, when non-NULL and visible, takes up the entire widget and
   // is placed on top of the ClientView and NonClientFrameView.
-  CheckedPtr<View> overlay_view_ = nullptr;
+  View* overlay_view_ = nullptr;
 
   // The accessible name of this view.
   base::string16 accessible_name_;

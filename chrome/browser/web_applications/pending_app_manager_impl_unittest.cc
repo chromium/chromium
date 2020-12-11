@@ -12,7 +12,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -296,7 +295,7 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
     }
 
    private:
-    CheckedPtr<TestPendingAppManagerImpl> pending_app_manager_impl_;
+    TestPendingAppManagerImpl* pending_app_manager_impl_;
     ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 
   };
@@ -327,14 +326,14 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
           install_url, RegistrationResultCode::kSuccess);
     }
 
-    const CheckedPtr<TestPendingAppManagerImpl> pending_app_manager_impl_;
+    TestPendingAppManagerImpl* const pending_app_manager_impl_;
 
     base::WeakPtrFactory<TestPendingAppRegistrationTask> weak_ptr_factory_{
         this};
 
   };
 
-  CheckedPtr<TestAppRegistrar> test_app_registrar_;
+  TestAppRegistrar* test_app_registrar_;
 
   std::vector<ExternalInstallOptions> install_options_list_;
   GURL last_registered_install_url_;
@@ -498,11 +497,11 @@ class PendingAppManagerImplTest : public ChromeRenderViewHostTestHarness {
   TestInstallFinalizer* install_finalizer() { return install_finalizer_; }
 
  private:
-  CheckedPtr<TestAppRegistrar> app_registrar_ = nullptr;
-  CheckedPtr<TestPendingAppManagerImpl> pending_app_manager_impl_ = nullptr;
-  CheckedPtr<TestInstallFinalizer> install_finalizer_ = nullptr;
-  CheckedPtr<TestWebAppUiManager> ui_manager_ = nullptr;
-  CheckedPtr<TestWebAppUrlLoader> url_loader_ = nullptr;
+  TestAppRegistrar* app_registrar_ = nullptr;
+  TestPendingAppManagerImpl* pending_app_manager_impl_ = nullptr;
+  TestInstallFinalizer* install_finalizer_ = nullptr;
+  TestWebAppUiManager* ui_manager_ = nullptr;
+  TestWebAppUrlLoader* url_loader_ = nullptr;
 };
 
 TEST_F(PendingAppManagerImplTest, Install_Succeeds) {

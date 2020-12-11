@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/offline_pages/core/prefetch/store/prefetch_store.h"
@@ -91,7 +90,7 @@ class PrefetchStoreTestUtil {
   base::ScopedTempDir temp_directory_;
   // TODO(jianli): Refactor this class to avoid owning the store.
   std::unique_ptr<PrefetchStore> owned_store_;
-  CheckedPtr<PrefetchStore> store_;
+  PrefetchStore* store_;
   base::SimpleTestClock clock_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchStoreTestUtil);

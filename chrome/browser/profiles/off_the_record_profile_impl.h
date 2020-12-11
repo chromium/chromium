@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -152,7 +151,7 @@ class OffTheRecordProfileImpl : public Profile {
 #endif  // !defined(OS_ANDROID)
 
   // The real underlying profile.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   const OTRProfileID otr_profile_id_;
 

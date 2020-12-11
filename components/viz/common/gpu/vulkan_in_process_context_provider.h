@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/viz_vulkan_context_provider_export.h"
 #include "gpu/vulkan/buildflags.h"
@@ -54,7 +53,7 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
 
 #if BUILDFLAG(ENABLE_VULKAN)
   sk_sp<GrDirectContext> gr_context_;
-  CheckedPtr<gpu::VulkanImplementation> vulkan_implementation_;
+  gpu::VulkanImplementation* vulkan_implementation_;
   std::unique_ptr<gpu::VulkanDeviceQueue> device_queue_;
 #endif
 

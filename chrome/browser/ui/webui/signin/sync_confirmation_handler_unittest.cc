@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -198,7 +197,7 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<SyncConfirmationUI> sync_confirmation_ui_;
-  CheckedPtr<TestingSyncConfirmationHandler> handler_;  // Not owned.
+  TestingSyncConfirmationHandler* handler_;  // Not owned.
   base::UserActionTester user_action_tester_;
   std::unordered_map<std::string, int> string_to_grd_id_map_;
   ScopedObserver<LoginUIService, LoginUIService::Observer>

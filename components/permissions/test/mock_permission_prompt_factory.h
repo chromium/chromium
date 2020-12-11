@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -85,7 +84,7 @@ class MockPermissionPromptFactory {
   base::Closure show_bubble_quit_closure_;
 
   // The bubble manager that will be associated with this factory.
-  CheckedPtr<PermissionRequestManager> manager_;
+  PermissionRequestManager* manager_;
 
   DISALLOW_COPY_AND_ASSIGN(MockPermissionPromptFactory);
 };

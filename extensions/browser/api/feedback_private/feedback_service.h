@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feedback/feedback_data.h"
 
@@ -55,7 +54,7 @@ class FeedbackService : public base::SupportsWeakPtr<FeedbackService> {
   void CompleteSendFeedback(scoped_refptr<feedback::FeedbackData> feedback_data,
                             const SendFeedbackCallback& callback);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(FeedbackService);
 };

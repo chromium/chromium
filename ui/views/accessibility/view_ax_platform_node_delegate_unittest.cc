@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -65,7 +64,7 @@ class TestAXEventObserver : public AXEventObserver {
   }
 
  private:
-  CheckedPtr<AXAuraObjCache> cache_;
+  AXAuraObjCache* cache_;
 };
 
 }  // namespace
@@ -122,9 +121,9 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
 
     label_ = new Label();
     label_->SetID(DEFAULT_VIEW_ID);
-    button_->AddChildView(label_.get());
+    button_->AddChildView(label_);
 
-    widget_->GetContentsView()->AddChildView(button_.get());
+    widget_->GetContentsView()->AddChildView(button_);
     widget_->Show();
   }
 
@@ -199,9 +198,9 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   const int DEFAULT_VIEW_ID = 0;
   const int NON_DEFAULT_VIEW_ID = 1;
 
-  CheckedPtr<Widget> widget_ = nullptr;
-  CheckedPtr<Button> button_ = nullptr;
-  CheckedPtr<Label> label_ = nullptr;
+  Widget* widget_ = nullptr;
+  Button* button_ = nullptr;
+  Label* label_ = nullptr;
 };
 
 class ViewAXPlatformNodeDelegateTableTest
@@ -238,7 +237,7 @@ class ViewAXPlatformNodeDelegateTableTest
 
  private:
   std::unique_ptr<TestTableModel> model_;
-  CheckedPtr<TableView> table_ = nullptr;  // Owned by parent.
+  TableView* table_ = nullptr;  // Owned by parent.
 };
 
 TEST_F(ViewAXPlatformNodeDelegateTest, FocusBehaviorShouldAffectIgnoredState) {

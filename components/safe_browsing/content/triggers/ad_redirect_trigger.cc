@@ -100,8 +100,8 @@ void AdRedirectTrigger::CreateAdRedirectReport() {
       FROM_HERE,
       base::BindOnce(
           IgnoreResult(&TriggerManager::FinishCollectingThreatDetails),
-          base::Unretained(trigger_manager_.get()), TriggerType::AD_REDIRECT,
-          base::Unretained(web_contents_.get()), base::TimeDelta(),
+          base::Unretained(trigger_manager_), TriggerType::AD_REDIRECT,
+          base::Unretained(web_contents_), base::TimeDelta(),
           /*did_proceed=*/false, /*num_visits=*/0, error_options),
       base::TimeDelta::FromMilliseconds(finish_report_delay_ms_));
   RecordAdRedirectTriggerAction(AdRedirectTriggerAction::AD_REDIRECT);

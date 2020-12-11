@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/feed_network_impl.h"
@@ -36,7 +35,7 @@ class EulaObserver : public web_resource::EulaAcceptedNotifier::Observer {
   void OnEulaAccepted() override { feed_stream_->OnEulaAccepted(); }
 
  private:
-  CheckedPtr<FeedStream> feed_stream_;
+  FeedStream* feed_stream_;
 };
 
 }  // namespace
@@ -74,8 +73,8 @@ class FeedService::HistoryObserverImpl
   }
 
  private:
-  CheckedPtr<FeedStream> feed_stream_;
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  FeedStream* feed_stream_;
+  signin::IdentityManager* identity_manager_;
 };
 
 class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
@@ -91,7 +90,7 @@ class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
   }
 
  private:
-  CheckedPtr<FeedService::Delegate> service_delegate_;
+  FeedService::Delegate* service_delegate_;
 };
 
 class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
@@ -126,11 +125,11 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   bool IsSignedIn() override { return identity_manager_->HasPrimaryAccount(); }
 
  private:
-  CheckedPtr<FeedService::Delegate> service_delegate_;
+  FeedService::Delegate* service_delegate_;
   web_resource::EulaAcceptedNotifier eula_notifier_;
   std::unique_ptr<EulaObserver> eula_observer_;
   std::unique_ptr<HistoryObserverImpl> history_observer_;
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 };
 
 class FeedService::IdentityManagerObserverImpl
@@ -155,8 +154,8 @@ class FeedService::IdentityManagerObserverImpl
   }
 
  private:
-  CheckedPtr<signin::IdentityManager> identity_manager_;
-  CheckedPtr<FeedStream> feed_stream_;
+  signin::IdentityManager* identity_manager_;
+  FeedStream* feed_stream_;
 };
 
 FeedService::FeedService(std::unique_ptr<FeedStream> stream)

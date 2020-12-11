@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -97,8 +96,8 @@ class AuthenticatorRequestDialogView
 
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;
 
-  CheckedPtr<AuthenticatorRequestSheetView> sheet_ = nullptr;
-  CheckedPtr<views::View> other_transports_button_ = nullptr;
+  AuthenticatorRequestSheetView* sheet_ = nullptr;
+  views::View* other_transports_button_ = nullptr;
   std::unique_ptr<views::MenuRunner> other_transports_menu_runner_;
   bool first_shown_ = false;
 

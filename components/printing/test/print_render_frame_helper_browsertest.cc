@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -161,7 +160,7 @@ class DidPreviewPageListener : public IPC::Listener {
   }
 
  private:
-  const CheckedPtr<base::RunLoop> run_loop_;
+  base::RunLoop* const run_loop_;
 };
 
 class FakePrintPreviewUI : public mojom::PrintPreviewUI {
@@ -367,7 +366,7 @@ class TestPrintManagerHost
 
   uint32_t number_pages_ = 0;
   bool is_printed_ = false;
-  CheckedPtr<MockPrinter> printer_;
+  MockPrinter* printer_;
   base::OnceClosure quit_closure_;
   mojo::AssociatedReceiver<mojom::PrintManagerHost> receiver_{this};
 };
@@ -575,7 +574,7 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
 #endif
   // Naked pointer as ownership is with
   // |content::RenderViewTest::render_thread_|.
-  CheckedPtr<PrintMockRenderThread> print_render_thread_ = nullptr;
+  PrintMockRenderThread* print_render_thread_ = nullptr;
   std::map<content::RenderFrame*, std::unique_ptr<TestPrintManagerHost>>
       frame_to_print_manager_map_;
 };

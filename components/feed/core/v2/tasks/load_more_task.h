@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/enums.h"
@@ -48,7 +47,7 @@ class LoadMoreTask : public offline_pages::Task {
   void QueryRequestComplete(FeedNetwork::QueryRequestResult result);
   void Done(LoadStreamStatus status);
 
-  CheckedPtr<FeedStream> stream_;  // Unowned.
+  FeedStream* stream_;  // Unowned.
   base::TimeTicks fetch_start_time_;
   std::unique_ptr<UploadActionsTask> upload_actions_task_;
 

@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -50,7 +49,7 @@ class SharedUserScriptManager : public ExtensionRegistryObserver {
   // and notifying renderers of scripts in shared memory.
   ExtensionUserScriptLoader loader_;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};

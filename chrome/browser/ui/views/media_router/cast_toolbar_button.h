@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_TOOLBAR_BUTTON_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 #include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -73,8 +72,8 @@ class CastToolbarButton : public ToolbarButton,
 
   void LogIconChange(const gfx::VectorIcon* icon);
 
-  const CheckedPtr<Browser> browser_;
-  const CheckedPtr<Profile> profile_;
+  Browser* const browser_;
+  Profile* const profile_;
 
   // This value is set only when there is an outstanding issue.
   std::unique_ptr<media_router::IssueInfo> current_issue_;
@@ -83,9 +82,9 @@ class CastToolbarButton : public ToolbarButton,
 
   bool has_local_display_route_ = false;
 
-  CheckedPtr<const gfx::VectorIcon> icon_ = nullptr;
+  const gfx::VectorIcon* icon_ = nullptr;
 
-  const CheckedPtr<LoggerImpl> logger_;
+  LoggerImpl* const logger_;
 
   DISALLOW_COPY_AND_ASSIGN(CastToolbarButton);
 };

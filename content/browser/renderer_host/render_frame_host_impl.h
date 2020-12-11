@@ -25,7 +25,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
@@ -2608,7 +2607,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // some form of page context.
   scoped_refptr<RenderViewHostImpl> render_view_host_;
 
-  const CheckedPtr<RenderFrameHostDelegate> delegate_;
+  RenderFrameHostDelegate* const delegate_;
 
   // The SiteInstance associated with this RenderFrameHost. All content drawn
   // in this RenderFrameHost is part of this SiteInstance. Cannot change over
@@ -2626,10 +2625,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Reference to the whole frame tree that this RenderFrameHost belongs to.
   // Allows this RenderFrameHost to add and remove nodes in response to
   // messages from the renderer requesting DOM manipulation.
-  const CheckedPtr<FrameTree> frame_tree_;
+  FrameTree* const frame_tree_;
 
   // The FrameTreeNode which this RenderFrameHostImpl is hosted in.
-  const CheckedPtr<FrameTreeNode> frame_tree_node_;
+  FrameTreeNode* const frame_tree_node_;
 
   // The immediate children of this specific frame.
   std::vector<std::unique_ptr<FrameTreeNode>> children_;
@@ -2640,7 +2639,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // deletion, and GetParent() should never return a different value, even if
   // this RenderFrameHost is on the pending deletion list and the parent
   // FrameTreeNode has changed its current RenderFrameHost.
-  const CheckedPtr<RenderFrameHostImpl> parent_;
+  RenderFrameHostImpl* const parent_;
 
   // Track this frame's last committed URL.
   GURL last_committed_url_;
@@ -3113,7 +3112,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::string canonical_encoding_;
 
   // Used to intercept DidCommit* calls in tests.
-  CheckedPtr<CommitCallbackInterceptor> commit_callback_interceptor_ = nullptr;
+  CommitCallbackInterceptor* commit_callback_interceptor_ = nullptr;
 
   // Used to hear about CreateNewPopupWidget calls in tests.
   CreateNewPopupWidgetCallbackForTesting create_new_popup_widget_callback_;

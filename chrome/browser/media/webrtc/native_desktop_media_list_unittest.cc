@@ -13,7 +13,6 @@
 
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -90,7 +89,7 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
   }
 
  protected:
-  CheckedPtr<Callback> callback_;
+  Callback* callback_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeScreenCapturer);
 };
@@ -143,7 +142,7 @@ class FakeWindowCapturer : public webrtc::DesktopCapturer {
   bool FocusOnSelectedSource() override { return true; }
 
  private:
-  CheckedPtr<Callback> callback_;
+  Callback* callback_;
   SourceList window_list_;
   base::Lock window_list_lock_;
 
@@ -254,7 +253,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   void AddWindowsAndVerify(bool has_view_dialog) {
     window_capturer_ = new FakeWindowCapturer();
     model_ = std::make_unique<NativeDesktopMediaList>(
-        DesktopMediaID::TYPE_WINDOW, base::WrapUnique(window_capturer_.get()));
+        DesktopMediaID::TYPE_WINDOW, base::WrapUnique(window_capturer_));
 
     // Set update period to reduce the time it takes to run tests.
     model_->SetUpdatePeriod(base::TimeDelta::FromMilliseconds(20));
@@ -324,7 +323,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   MockObserver observer_;
 
   // Owned by |model_|;
-  CheckedPtr<FakeWindowCapturer> window_capturer_;
+  FakeWindowCapturer* window_capturer_;
 
   webrtc::DesktopCapturer::SourceList window_list_;
   std::vector<std::unique_ptr<views::Widget>> desktop_widgets_;
@@ -527,7 +526,7 @@ TEST_F(NativeDesktopMediaListTest, MoveWindow) {
 TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
   window_capturer_ = new FakeWindowCapturer();
   model_ = std::make_unique<NativeDesktopMediaList>(
-      DesktopMediaID::TYPE_WINDOW, base::WrapUnique(window_capturer_.get()));
+      DesktopMediaID::TYPE_WINDOW, base::WrapUnique(window_capturer_));
   model_->SetThumbnailSize(gfx::Size());
 
   // Set update period to reduce the time it takes to run tests.

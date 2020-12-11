@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -101,11 +100,11 @@ class KaleidoscopeDataProviderImpl
           GetContinueWatchingMediaFeedItemsCallback callback,
       std::vector<media_feeds::mojom::MediaFeedItemPtr> items);
 
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
-  const CheckedPtr<KaleidoscopeMetricsRecorder> metrics_recorder_;
+  KaleidoscopeMetricsRecorder* const metrics_recorder_;
 
   mojo::Receiver<media::mojom::KaleidoscopeDataProvider> receiver_;
 

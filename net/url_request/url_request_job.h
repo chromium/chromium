@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "net/base/completion_once_callback.h"
@@ -348,7 +347,7 @@ class NET_EXPORT URLRequestJob {
   void ReadRawDataComplete(int bytes_read);
 
   // The request that initiated this job. This value will never be nullptr.
-  const CheckedPtr<URLRequest> request_;
+  URLRequest* const request_;
 
  private:
   class URLRequestJobSourceStream;

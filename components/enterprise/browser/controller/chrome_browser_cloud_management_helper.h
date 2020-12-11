@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -57,7 +56,7 @@ class ChromeBrowserCloudManagementRegistrar {
       CloudManagementRegistrationCallback callback);
 
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
-  CheckedPtr<DeviceManagementService> device_management_service_;
+  DeviceManagementService* device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserCloudManagementRegistrar);
@@ -95,9 +94,9 @@ class MachineLevelUserCloudPolicyFetcher : public CloudPolicyService::Observer {
   // Fetch policy if device is enrolled.
   void TryToFetchPolicy();
 
-  CheckedPtr<MachineLevelUserCloudPolicyManager> policy_manager_;
-  CheckedPtr<PrefService> local_state_;
-  CheckedPtr<DeviceManagementService> device_management_service_;
+  MachineLevelUserCloudPolicyManager* policy_manager_;
+  PrefService* local_state_;
+  DeviceManagementService* device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyFetcher);

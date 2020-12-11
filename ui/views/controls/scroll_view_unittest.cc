@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
@@ -92,7 +91,7 @@ class ScrollViewTestApi {
   }
 
  private:
-  CheckedPtr<ScrollView> scroll_view_;
+  ScrollView* scroll_view_;
 
   DISALLOW_COPY_AND_ASSIGN(ScrollViewTestApi);
 };
@@ -372,7 +371,7 @@ class WidgetScrollViewTest : public test::WidgetTest,
     quit_closure_.Reset();
   }
 
-  CheckedPtr<Widget> widget_ = nullptr;
+  Widget* widget_ = nullptr;
 
   // Disable scrollbar hiding (i.e. disable overlay scrollbars) by default.
   bool use_overlay_scrollers_ = false;

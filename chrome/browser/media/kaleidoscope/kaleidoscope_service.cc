@@ -7,7 +7,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
@@ -157,7 +156,7 @@ class GetCollectionsRequest {
   }
 
   std::string const gaia_id_;
-  const CheckedPtr<base::Clock> clock_;
+  base::Clock* const clock_;
   base::Time const start_time_;
 
   std::unique_ptr<::network::SimpleURLLoader> pending_request_;

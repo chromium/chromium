@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -63,7 +62,7 @@ class DebuggerApiTest : public ExtensionApiTest {
 
   // The command-line for the test process, preserved in order to modify
   // mid-test.
-  CheckedPtr<base::CommandLine> command_line_;
+  base::CommandLine* command_line_;
 
   // A basic extension with the debugger permission.
   scoped_refptr<const Extension> extension_;

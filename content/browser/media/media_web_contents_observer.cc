@@ -8,7 +8,6 @@
 #include <tuple>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/media/audible_metrics.h"
@@ -132,7 +131,7 @@ class MediaWebContentsObserver::PlayerInfo {
   }
 
   const MediaPlayerId id_;
-  const CheckedPtr<MediaWebContentsObserver> observer_;
+  MediaWebContentsObserver* const observer_;
 
   bool has_audio_ = false;
   bool has_video_ = false;

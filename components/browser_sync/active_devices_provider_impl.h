@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BROWSER_SYNC_ACTIVE_DEVICES_PROVIDER_IMPL_H_
 #define COMPONENTS_BROWSER_SYNC_ACTIVE_DEVICES_PROVIDER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_clock.h"
 #include "components/sync/driver/active_devices_provider.h"
@@ -34,8 +33,8 @@ class ActiveDevicesProviderImpl : public syncer::ActiveDevicesProvider,
   void OnDeviceInfoChange() override;
 
  private:
-  const CheckedPtr<syncer::DeviceInfoTracker> device_info_tracker_;
-  const CheckedPtr<const base::Clock> clock_;
+  syncer::DeviceInfoTracker* const device_info_tracker_;
+  const base::Clock* const clock_;
   ActiveDevicesChangedCallback callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);

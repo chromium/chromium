@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/previews/core/previews_experiments.h"
 
@@ -54,7 +53,7 @@ class PreviewsPageLoadMetricsObserver
   // Records UMA of page size when the observer is about to be deleted.
   void RecordPageSizeUMA() const;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // The previews type active for the page load (available at commit-time).
   previews::PreviewsType previews_type_ = previews::PreviewsType::UNSPECIFIED;

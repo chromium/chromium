@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
@@ -195,7 +194,7 @@ class TestingProfile : public Profile {
     scoped_refptr<ExtensionSpecialStoragePolicy> extension_policy_;
 #endif
     base::FilePath path_;
-    CheckedPtr<Delegate> delegate_;
+    Delegate* delegate_;
     bool guest_session_;
     bool allows_browser_windows_;
     base::Optional<bool> is_new_profile_;
@@ -421,7 +420,7 @@ class TestingProfile : public Profile {
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   // ref only for right type, lifecycle is managed by prefs_
-  CheckedPtr<sync_preferences::TestingPrefServiceSyncable> testing_prefs_;
+  sync_preferences::TestingPrefServiceSyncable* testing_prefs_;
 
   // Profile implementation.
   bool IsSignedIn() override;
@@ -453,7 +452,7 @@ class TestingProfile : public Profile {
       extensions_cookie_store_;
 
   std::map<OTRProfileID, std::unique_ptr<Profile>> otr_profiles_;
-  CheckedPtr<TestingProfile> original_profile_;
+  TestingProfile* original_profile_;
 
   bool guest_session_;
 
@@ -484,13 +483,12 @@ class TestingProfile : public Profile {
   // We keep a weak pointer to the dependency manager we want to notify on our
   // death. Defaults to the Singleton implementation but overridable for
   // testing.
-  CheckedPtr<SimpleDependencyManager> simple_dependency_manager_;
-  CheckedPtr<BrowserContextDependencyManager>
-      browser_context_dependency_manager_;
+  SimpleDependencyManager* simple_dependency_manager_;
+  BrowserContextDependencyManager* browser_context_dependency_manager_;
 
   // Owned, but must be deleted on the IO thread so not placing in a
   // std::unique_ptr<>.
-  CheckedPtr<content::MockResourceContext> resource_context_;
+  content::MockResourceContext* resource_context_;
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -502,7 +500,7 @@ class TestingProfile : public Profile {
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
 
   // Weak pointer to a delegate for indicating that a profile was created.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   std::string profile_name_;
 

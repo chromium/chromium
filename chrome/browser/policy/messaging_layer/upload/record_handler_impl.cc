@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
@@ -58,7 +57,7 @@ class RecordHandlerImpl::ReportUploader
   void Complete(DmServerUploadService::CompletionResponse result);
 
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
-  CheckedPtr<policy::CloudPolicyClient> client_;
+  policy::CloudPolicyClient* client_;
 
   // Last successful response to be processed.
   // Note: I could not find a way to pass it as a parameter,

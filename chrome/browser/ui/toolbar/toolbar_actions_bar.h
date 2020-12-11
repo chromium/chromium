@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -299,17 +298,17 @@ class ToolbarActionsBar : public ExtensionsContainer,
   ToolbarActionsBar* GetMainBar();
 
   // The delegate for this object (in a real build, this is the view).
-  CheckedPtr<ToolbarActionsBarDelegate> delegate_;
+  ToolbarActionsBarDelegate* delegate_;
 
   // The associated browser.
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   // The observed toolbar model.
-  CheckedPtr<ToolbarActionsModel> model_;
+  ToolbarActionsModel* model_;
 
   // The controller for the main toolbar actions bar. This will be null if this
   // is the main bar.
-  CheckedPtr<ToolbarActionsBar> main_bar_;
+  ToolbarActionsBar* main_bar_;
 
   // Platform-specific settings for dimensions.
   PlatformSettings platform_settings_;
@@ -319,7 +318,7 @@ class ToolbarActionsBar : public ExtensionsContainer,
 
   // The action that triggered the current popup (just a reference to an action
   // from toolbar_actions_).
-  CheckedPtr<ToolbarActionViewController> popup_owner_;
+  ToolbarActionViewController* popup_owner_;
 
   ScopedObserver<ToolbarActionsModel, ToolbarActionsModel::Observer>
       model_observer_;
@@ -344,7 +343,7 @@ class ToolbarActionsBar : public ExtensionsContainer,
 
   // The action, if any, which is currently "popped out" of the overflow in
   // order to show a popup.
-  CheckedPtr<ToolbarActionViewController> popped_out_action_;
+  ToolbarActionViewController* popped_out_action_;
 
   // True if the popped out action is "sticky", meaning it will stay popped
   // out even if another menu is opened.

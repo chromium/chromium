@@ -6,7 +6,6 @@
 
 #include <ostream>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -66,8 +65,8 @@ class ThreeTasksTest {
   base::SingleThreadTaskRunner& task_runner =
       *task_environment.GetMainThreadTaskRunner();
 
-  CheckedPtr<const void> task_a_address = nullptr;
-  CheckedPtr<const void> task_b_address = nullptr;
+  const void* task_a_address = nullptr;
+  const void* task_b_address = nullptr;
 };
 
 TEST(TaskTraceTest, ThreeTasks) {

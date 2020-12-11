@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
@@ -399,7 +398,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
   base::FilePath extension_dir_;
   std::unique_ptr<ChromeTestExtensionLoader> loader_;
   scoped_refptr<const Extension> extension_;
-  CheckedPtr<const ExtensionPrefs> extension_prefs_ = nullptr;
+  const ExtensionPrefs* extension_prefs_ = nullptr;
 };
 
 // Fixture testing that declarative rules corresponding to the Declarative Net

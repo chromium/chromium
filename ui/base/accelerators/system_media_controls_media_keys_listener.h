@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -58,12 +57,12 @@ class COMPONENT_EXPORT(UI_BASE) SystemMediaControlsMediaKeysListener
   // Sends the key code to the delegate if the delegate has asked for it.
   void MaybeSendKeyCode(KeyboardCode key_code);
 
-  CheckedPtr<MediaKeysListener::Delegate> delegate_;
+  MediaKeysListener::Delegate* delegate_;
 
   // Set of keys codes that we're currently listening for.
   base::flat_set<KeyboardCode> key_codes_;
 
-  CheckedPtr<system_media_controls::SystemMediaControls> service_ = nullptr;
+  system_media_controls::SystemMediaControls* service_ = nullptr;
 
   bool is_media_playing_ = false;
 

@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace ui {
@@ -32,7 +31,7 @@ class COMPOSITOR_EXPORT LayerTreeOwner {
   const Layer* root() const { return root_; }
 
  private:
-  CheckedPtr<Layer> root_;
+  Layer* root_;
 
   DISALLOW_COPY_AND_ASSIGN(LayerTreeOwner);
 };

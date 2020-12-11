@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CONTENT_RENOVATIONS_RENDER_FRAME_SCRIPT_INJECTOR_H_
 #define COMPONENTS_OFFLINE_PAGES_CONTENT_RENOVATIONS_RENDER_FRAME_SCRIPT_INJECTOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/offline_pages/core/renovations/script_injector.h"
 
 namespace content {
@@ -29,7 +28,7 @@ class RenderFrameScriptInjector : public ScriptInjector {
   void Inject(base::string16 script, ResultCallback callback) override;
 
  private:
-  CheckedPtr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
   int32_t isolated_world_id_;
 };
 

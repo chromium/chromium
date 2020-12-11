@@ -25,7 +25,6 @@
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -473,7 +472,7 @@ class RenderWidgetHostVisibilityObserver : public RenderWidgetHostObserver {
         was_observed_(false),
         did_fail_(false),
         render_widget_(rwhi) {
-    observation_.Observe(render_widget_.get());
+    observation_.Observe(render_widget_);
     message_loop_runner_ = new MessageLoopRunner;
   }
 
@@ -504,7 +503,7 @@ class RenderWidgetHostVisibilityObserver : public RenderWidgetHostObserver {
       observation_{this};
   bool was_observed_;
   bool did_fail_;
-  CheckedPtr<RenderWidgetHost> render_widget_;
+  RenderWidgetHost* render_widget_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostVisibilityObserver);
 };
@@ -695,10 +694,10 @@ class UpdateViewportIntersectionMessageFilter
   void set_run_loop(base::RunLoop* run_loop) { run_loop_ = run_loop; }
 
  private:
-  CheckedPtr<base::RunLoop> run_loop_ = nullptr;
+  base::RunLoop* run_loop_ = nullptr;
   bool msg_received_;
   blink::mojom::ViewportIntersectionStatePtr intersection_state_;
-  CheckedPtr<content::RenderFrameProxyHost> render_frame_proxy_host_;
+  content::RenderFrameProxyHost* render_frame_proxy_host_;
 };
 
 //
@@ -1074,7 +1073,7 @@ class TextAutosizerPageInfoInterceptor
   }
 
  private:
-  CheckedPtr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* render_frame_host_;
   bool remote_page_info_seen_ = false;
   blink::mojom::TextAutosizerPageInfoPtr remote_page_info_ =
       blink::mojom::TextAutosizerPageInfo::New(/*main_frame_width=*/0,
@@ -8172,7 +8171,7 @@ class ShowCreatedWindowInterceptor
   }
 
  private:
-  CheckedPtr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* render_frame_host_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
   ShowCreatedWindowCallback show_callback_;
   base::UnguessableToken opener_frame_token_;
@@ -8307,7 +8306,7 @@ class RequestCloseWidgetInterceptor
   void RequestClosePopup() override {}
 
  private:
-  CheckedPtr<RenderWidgetHostImpl> render_widget_host_;
+  RenderWidgetHostImpl* render_widget_host_;
 };
 
 // Intercepts calls to PopupWidgetHost's ShowPopup mojo method, and
@@ -8343,7 +8342,7 @@ class ShowCreatedPopupWidgetInterceptor
   }
 
  private:
-  CheckedPtr<RenderWidgetHostImpl> render_widget_host_;
+  RenderWidgetHostImpl* render_widget_host_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
   ShowPopupCallback show_callback_;
   gfx::Rect initial_rect_;
@@ -8379,7 +8378,7 @@ class NewPopupWidgetCreatedObserver {
     frame_host_ = nullptr;
   }
 
-  CheckedPtr<RenderFrameHostImpl> frame_host_;
+  RenderFrameHostImpl* frame_host_;
   std::unique_ptr<ShowCreatedPopupWidgetInterceptor> show_interceptor_;
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
 };
@@ -8806,7 +8805,7 @@ class DispatchLoadInterceptor
   void DispatchLoad() override {}
 
  private:
-  CheckedPtr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* render_frame_host_;
 };
 
 // Test that the renderer isn't killed when a frame generates a load event just
@@ -9760,7 +9759,7 @@ class RequestDelayingSitePerProcessBrowserTest
     }
 
    private:
-    CheckedPtr<RequestDelayingSitePerProcessBrowserTest> test_harness_;
+    RequestDelayingSitePerProcessBrowserTest* test_harness_;
 
     DISALLOW_COPY_AND_ASSIGN(DelayedResponse);
   };
@@ -11415,8 +11414,8 @@ class TouchEventObserver : public RenderWidgetHost::InputEventObserver {
   }
 
  private:
-  CheckedPtr<std::vector<uint32_t>> outgoing_touch_event_ids_;
-  CheckedPtr<std::vector<uint32_t>> acked_touch_event_ids_;
+  std::vector<uint32_t>* outgoing_touch_event_ids_;
+  std::vector<uint32_t>* acked_touch_event_ids_;
   DISALLOW_COPY_AND_ASSIGN(TouchEventObserver);
 };
 
@@ -16049,7 +16048,7 @@ class InnerWebContentsAttachTest
     }
 
     bool did_call_prepare_ = false;
-    CheckedPtr<RenderFrameHostImpl> new_render_frame_host_ = nullptr;
+    RenderFrameHostImpl* new_render_frame_host_ = nullptr;
     base::RunLoop run_loop_;
 
     DISALLOW_COPY_AND_ASSIGN(PrepareFrameJob);

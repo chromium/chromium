@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
@@ -236,7 +235,7 @@ class PasswordProtectionRequest
               std::unique_ptr<LoginReputationClientResponse> response);
 
   // WebContents of the password protection event.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // Main frame URL of the login form.
   const GURL main_frame_url_;
@@ -283,7 +282,7 @@ class PasswordProtectionRequest
 
   // The PasswordProtectionService instance owns |this|.
   // Can only be accessed on UI thread.
-  CheckedPtr<PasswordProtectionService> password_protection_service_;
+  PasswordProtectionService* password_protection_service_;
 
   // The outcome of the password protection request.
   RequestOutcome request_outcome_;

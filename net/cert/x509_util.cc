@@ -10,7 +10,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -155,7 +154,7 @@ class BufferPoolSingleton {
 
  private:
   // The singleton is leaky, so there is no need to use a smart pointer.
-  CheckedPtr<CRYPTO_BUFFER_POOL> pool_;
+  CRYPTO_BUFFER_POOL* pool_;
 };
 
 base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =

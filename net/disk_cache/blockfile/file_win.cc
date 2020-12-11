@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -31,7 +30,7 @@ struct MyOverlapped {
   base::MessagePumpForIO::IOContext context_;
   scoped_refptr<disk_cache::File> file_;
   scoped_refptr<CompletionHandler> completion_handler_;
-  CheckedPtr<disk_cache::FileIOCallback> callback_;
+  disk_cache::FileIOCallback* callback_;
 };
 
 static_assert(offsetof(MyOverlapped, context_) == 0,

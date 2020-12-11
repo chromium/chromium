@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -64,7 +63,7 @@ class ProtobufHttpClient final {
   void CancelRequest(const PendingRequestListIterator& request_iterator);
 
   std::string server_endpoint_;
-  CheckedPtr<OAuthTokenGetter> token_getter_;
+  OAuthTokenGetter* token_getter_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   PendingRequestList pending_requests_;
 

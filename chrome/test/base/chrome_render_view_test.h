@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/renderer/chrome_mock_render_thread.h"
 #include "content/public/test/render_view_test.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -45,18 +44,16 @@ class ChromeRenderViewTest : public content::RenderViewTest {
 
   void WaitForAutofillDidAssociateFormControl();
 
-  CheckedPtr<autofill::TestPasswordAutofillAgent> password_autofill_agent_ =
-      nullptr;
-  CheckedPtr<autofill::PasswordGenerationAgent> password_generation_ = nullptr;
-  CheckedPtr<autofill::AutofillAssistantAgent> autofill_assistant_agent_ =
-      nullptr;
-  CheckedPtr<autofill::AutofillAgent> autofill_agent_ = nullptr;
+  autofill::TestPasswordAutofillAgent* password_autofill_agent_ = nullptr;
+  autofill::PasswordGenerationAgent* password_generation_ = nullptr;
+  autofill::AutofillAssistantAgent* autofill_assistant_agent_ = nullptr;
+  autofill::AutofillAgent* autofill_agent_ = nullptr;
 
   std::unique_ptr<service_manager::BinderRegistry> registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;
 
   // Naked pointer as ownership is with content::RenderViewTest::render_thread_.
-  CheckedPtr<ChromeMockRenderThread> chrome_render_thread_ = nullptr;
+  ChromeMockRenderThread* chrome_render_thread_ = nullptr;
 };
 
 #endif  // CHROME_TEST_BASE_CHROME_RENDER_VIEW_TEST_H_

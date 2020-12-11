@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/signin/public/base/signin_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -94,9 +93,9 @@ class TestSigninClient : public SigninClient {
  private:
   std::unique_ptr<network::TestURLLoaderFactory>
       default_test_url_loader_factory_;
-  CheckedPtr<network::TestURLLoaderFactory> test_url_loader_factory_;
+  network::TestURLLoaderFactory* test_url_loader_factory_;
 
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
   std::unique_ptr<network::mojom::CookieManager> cookie_manager_;
   bool are_signin_cookies_allowed_;
   bool network_calls_delayed_;

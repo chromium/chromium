@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
@@ -76,8 +75,7 @@ class OptimizationGuideWebContentsObserver
 
   // Initialized in constructor. It may be null if the
   // OptimizationGuideKeyedService feature is not enabled.
-  CheckedPtr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
-      nullptr;
+  OptimizationGuideKeyedService* optimization_guide_keyed_service_ = nullptr;
 
   base::WeakPtrFactory<OptimizationGuideWebContentsObserver> weak_factory_{
       this};

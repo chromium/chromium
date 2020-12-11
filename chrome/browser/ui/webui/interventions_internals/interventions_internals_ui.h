@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_INTERVENTIONS_INTERNALS_INTERVENTIONS_INTERNALS_UI_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/interventions_internals/interventions_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/interventions_internals/interventions_internals_page_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -29,7 +28,7 @@ class InterventionsInternalsUI : public ui::MojoWebUIController {
 
  private:
   // The PreviewsUIService associated with this UI.
-  CheckedPtr<previews::PreviewsUIService> previews_ui_service_;
+  previews::PreviewsUIService* previews_ui_service_;
 
   std::unique_ptr<InterventionsInternalsPageHandler> page_handler_;
 

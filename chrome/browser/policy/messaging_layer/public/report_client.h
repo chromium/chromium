@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
@@ -73,7 +72,7 @@ class ReportingClient {
 
     // TODO(chromium:1078512) Passing around a raw pointer is unsafe. Wrap
     // CloudPolicyClient and guard access.
-    CheckedPtr<policy::CloudPolicyClient> cloud_policy_client;
+    policy::CloudPolicyClient* cloud_policy_client;
     scoped_refptr<StorageModule> storage;
   };
 

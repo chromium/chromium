@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
@@ -196,7 +195,7 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
   }
 
   // The NativeFileSystemManagerImpl that owns this instance.
-  const CheckedPtr<NativeFileSystemManagerImpl> manager_;
+  NativeFileSystemManagerImpl* const manager_;
   const BindingContext context_;
   const storage::FileSystemURL url_;
   const SharedHandleState handle_state_;

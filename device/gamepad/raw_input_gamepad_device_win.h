@@ -15,7 +15,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
 #include "device/gamepad/hid_dll_functions_win.h"
@@ -116,7 +115,7 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
   int64_t last_update_timestamp_;
 
   // Functions loaded from hid.dll. Not owned.
-  CheckedPtr<HidDllFunctionsWin> hid_functions_ = nullptr;
+  HidDllFunctionsWin* hid_functions_ = nullptr;
 
   uint16_t vendor_id_ = 0;
   uint16_t product_id_ = 0;

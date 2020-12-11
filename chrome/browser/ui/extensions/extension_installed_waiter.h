@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALLED_WAITER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
@@ -62,7 +61,7 @@ class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver {
   void OnExtensionRemoved();
 
   const scoped_refptr<const extensions::Extension> extension_;
-  const CheckedPtr<const Browser> browser_;
+  const Browser* const browser_;
   base::OnceClosure done_callback_;
 
   ScopedObserver<extensions::ExtensionRegistry,

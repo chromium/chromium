@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/clock.h"
@@ -306,7 +305,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
     }
 
    private:
-    const CheckedPtr<PrerenderManager> manager_;
+    PrerenderManager* const manager_;
     std::unique_ptr<PrerenderContents> contents_;
 
     // The number of distinct PrerenderHandles created for |this|, including
@@ -462,7 +461,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   Config config_;
 
   // The browser_context that owns this PrerenderManager.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // The delegate that allows content embedder to override the logic in this
   // class.
@@ -510,7 +509,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   using PrerenderProcessSet = std::set<content::RenderProcessHost*>;
   PrerenderProcessSet prerender_process_hosts_;
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   bool page_load_metric_observer_disabled_ = false;
 

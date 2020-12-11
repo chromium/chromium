@@ -32,10 +32,10 @@ VirtualCardSelectionDialogViewImpl::VirtualCardSelectionDialogViewImpl(
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_->GetCancelButtonLabel());
   SetAcceptCallback(
       base::BindOnce(&VirtualCardSelectionDialogController::OnOkButtonClicked,
-                     base::Unretained(controller_.get())));
+                     base::Unretained(controller_)));
   SetCancelCallback(base::BindOnce(
       &VirtualCardSelectionDialogController::OnCancelButtonClicked,
-      base::Unretained(controller_.get())));
+      base::Unretained(controller_)));
 
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);

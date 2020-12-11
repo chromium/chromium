@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -95,7 +94,7 @@ class CloudPrintProxyService : public KeyedService {
   void OnReadCloudPrintSetupProxyList(PrintersCallback callback,
                                       const std::string& printers_json);
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   std::string proxy_id_;
 
   // For watching for connector policy changes.

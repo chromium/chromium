@@ -110,7 +110,7 @@ ToolbarActionsBar::ToolbarActionsBar(ToolbarActionsBarDelegate* delegate,
       is_popped_out_sticky_(false),
       is_showing_bubble_(false) {
   if (model_)  // |model_| can be null in unittests.
-    model_observer_.Add(model_.get());
+    model_observer_.Add(model_);
 
   DCHECK(!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
 
@@ -639,7 +639,7 @@ void ToolbarActionsBar::MaybeShowExtensionBubble() {
 }
 
 ToolbarActionsBar* ToolbarActionsBar::GetMainBar() {
-  return main_bar_ ? main_bar_.get() : this;
+  return main_bar_ ? main_bar_ : this;
 }
 
 // static

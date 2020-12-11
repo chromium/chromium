@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "url/gurl.h"
@@ -52,7 +51,7 @@ class FlashTemporaryPermissionTracker : public RefcountedKeyedService {
   // RefCountedProfileKeyedBase method override.
   void ShutdownOnUIThread() override;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // We use GURLs to store the origins because we need to support the file:
   // scheme comparing equal to itself.

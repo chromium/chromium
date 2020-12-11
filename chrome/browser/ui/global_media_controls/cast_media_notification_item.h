@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_ITEM_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_ITEM_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
@@ -120,9 +119,9 @@ class CastMediaNotificationItem
 
   bool recorded_metadata_metrics_ = false;
 
-  const CheckedPtr<media_message_center::MediaNotificationController>
+  media_message_center::MediaNotificationController* const
       notification_controller_;
-  CheckedPtr<media_message_center::MediaNotificationView> view_ = nullptr;
+  media_message_center::MediaNotificationView* view_ = nullptr;
 
   std::unique_ptr<CastMediaSessionController> session_controller_;
   const media_router::MediaRoute::Id media_route_id_;
@@ -132,7 +131,7 @@ class CastMediaNotificationItem
   media_session::mojom::MediaSessionInfoPtr session_info_;
   mojo::Receiver<media_router::mojom::MediaStatusObserver> observer_receiver_{
       this};
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   base::WeakPtrFactory<CastMediaNotificationItem> weak_ptr_factory_{this};
 };
 

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -167,7 +166,7 @@ class FakeThreadJoinWatchdog : public base::Watchdog {
   void Alarm() override { *alarm_triggered_ = true; }
 
  private:
-  CheckedPtr<bool> alarm_triggered_;
+  bool* alarm_triggered_;
 };
 
 }  // namespace

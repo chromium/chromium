@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/task_runner.h"
@@ -125,7 +124,7 @@ class SimpleEntryImpl::ScopedOperationRunner {
   }
 
  private:
-  const CheckedPtr<SimpleEntryImpl> entry_;
+  SimpleEntryImpl* const entry_;
 };
 
 SimpleEntryImpl::ActiveEntryProxy::~ActiveEntryProxy() = default;
@@ -983,13 +982,12 @@ void SimpleEntryImpl::CloseInternal() {
   std::unique_ptr<SimpleEntryCloseResults> results =
       std::make_unique<SimpleEntryCloseResults>();
   if (synchronous_entry_) {
-    OnceClosure task =
-        base::BindOnce(&SimpleSynchronousEntry::Close,
-                       base::Unretained(synchronous_entry_.get()),
-                       SimpleEntryStat(last_used_, last_modified_, data_size_,
-                                       sparse_data_size_),
-                       std::move(crc32s_to_write),
-                       base::RetainedRef(stream_0_data_), results.get());
+    OnceClosure task = base::BindOnce(
+        &SimpleSynchronousEntry::Close, base::Unretained(synchronous_entry_),
+        SimpleEntryStat(last_used_, last_modified_, data_size_,
+                        sparse_data_size_),
+        std::move(crc32s_to_write), base::RetainedRef(stream_0_data_),
+        results.get());
     OnceClosure reply = base::BindOnce(&SimpleEntryImpl::CloseOperationComplete,
                                        this, std::move(results));
     synchronous_entry_ = nullptr;
@@ -1083,10 +1081,9 @@ int SimpleEntryImpl::ReadDataInternal(bool sync_possible,
       std::make_unique<SimpleSynchronousEntry::ReadResult>();
   std::unique_ptr<SimpleEntryStat> entry_stat(new SimpleEntryStat(
       last_used_, last_modified_, data_size_, sparse_data_size_));
-  OnceClosure task =
-      base::BindOnce(&SimpleSynchronousEntry::ReadData,
-                     base::Unretained(synchronous_entry_.get()), read_req,
-                     entry_stat.get(), base::RetainedRef(buf), result.get());
+  OnceClosure task = base::BindOnce(
+      &SimpleSynchronousEntry::ReadData, base::Unretained(synchronous_entry_),
+      read_req, entry_stat.get(), base::RetainedRef(buf), result.get());
   OnceClosure reply = base::BindOnce(
       &SimpleEntryImpl::ReadOperationComplete, this, stream_index, offset,
       std::move(callback), std::move(entry_stat), std::move(result));
@@ -1199,8 +1196,7 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
   // renaming rather than delete, creating a new stream 2 of doomed entry will
   // just work.
   OnceClosure task = base::BindOnce(
-      &SimpleSynchronousEntry::WriteData,
-      base::Unretained(synchronous_entry_.get()),
+      &SimpleSynchronousEntry::WriteData, base::Unretained(synchronous_entry_),
       SimpleSynchronousEntry::WriteRequest(
           stream_index, offset, buf_len, initial_crc, truncate,
           doom_state_ != DOOM_NONE, request_update_crc),
@@ -1248,7 +1244,7 @@ void SimpleEntryImpl::ReadSparseDataInternal(
   std::unique_ptr<base::Time> last_used(new base::Time());
   OnceClosure task = base::BindOnce(
       &SimpleSynchronousEntry::ReadSparseData,
-      base::Unretained(synchronous_entry_.get()),
+      base::Unretained(synchronous_entry_),
       SimpleSynchronousEntry::SparseRequest(sparse_offset, buf_len),
       base::RetainedRef(buf), last_used.get(), result.get());
   OnceClosure reply = base::BindOnce(
@@ -1303,7 +1299,7 @@ void SimpleEntryImpl::WriteSparseDataInternal(
   std::unique_ptr<int> result(new int());
   OnceClosure task = base::BindOnce(
       &SimpleSynchronousEntry::WriteSparseData,
-      base::Unretained(synchronous_entry_.get()),
+      base::Unretained(synchronous_entry_),
       SimpleSynchronousEntry::SparseRequest(sparse_offset, buf_len),
       base::RetainedRef(buf), max_sparse_data_size, entry_stat.get(),
       result.get());
@@ -1337,7 +1333,7 @@ void SimpleEntryImpl::GetAvailableRangeInternal(
   std::unique_ptr<int> result(new int());
   OnceClosure task =
       base::BindOnce(&SimpleSynchronousEntry::GetAvailableRange,
-                     base::Unretained(synchronous_entry_.get()),
+                     base::Unretained(synchronous_entry_),
                      SimpleSynchronousEntry::SparseRequest(sparse_offset, len),
                      out_start, result.get());
   OnceClosure reply =
@@ -1385,7 +1381,7 @@ void SimpleEntryImpl::DoomEntryInternal(net::CompletionOnceCallback callback) {
     prioritized_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&SimpleSynchronousEntry::Doom,
-                       base::Unretained(synchronous_entry_.get())),
+                       base::Unretained(synchronous_entry_)),
         base::BindOnce(&SimpleEntryImpl::DoomOperationComplete, this,
                        std::move(callback), state_),
         entry_priority_);

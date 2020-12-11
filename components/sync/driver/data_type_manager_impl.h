@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_DRIVER_DATA_TYPE_MANAGER_IMPL_H__
 #define COMPONENTS_SYNC_DRIVER_DATA_TYPE_MANAGER_IMPL_H__
 
-#include "base/memory/checked_ptr.h"
 #include "components/sync/driver/data_type_manager.h"
 
 #include <map>
@@ -148,11 +147,11 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   ModelTypeSet GetEnabledTypes() const;
 
-  const CheckedPtr<ModelTypeConfigurer> configurer_;
+  ModelTypeConfigurer* const configurer_;
 
   // Map of all data type controllers that are available for sync.
   // This list is determined at startup by various command line flags.
-  const CheckedPtr<const DataTypeController::TypeMap> controllers_;
+  const DataTypeController::TypeMap* const controllers_;
 
   State state_;
 
@@ -188,7 +187,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // DataTypeManager must have only one observer -- the ProfileSyncService that
   // created it and manages its lifetime.
-  const CheckedPtr<DataTypeManagerObserver> observer_;
+  DataTypeManagerObserver* const observer_;
 
   // For querying failed data types (having unrecoverable error) when
   // configuring backend.
@@ -227,7 +226,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // The encryption handler lets the DataTypeManager know the state of sync
   // datatype encryption.
-  CheckedPtr<const DataTypeEncryptionHandler> encryption_handler_;
+  const DataTypeEncryptionHandler* encryption_handler_;
 
   // Timing stats of data type configuration.
   std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;

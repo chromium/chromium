@@ -11,7 +11,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -115,7 +114,7 @@ class ExtensionFunctionDispatcher::ResponseCallbackWrapper
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
-  CheckedPtr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
   base::WeakPtrFactory<ResponseCallbackWrapper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResponseCallbackWrapper);
@@ -131,7 +130,7 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
       : dispatcher_(dispatcher),
         observer_(this),
         render_process_host_(render_process_host) {
-    observer_.Add(render_process_host_.get());
+    observer_.Add(render_process_host_);
 
     DCHECK(ExtensionsClient::Get()
                ->ExtensionAPIEnabledInExtensionServiceWorkers());
@@ -184,7 +183,7 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
   ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
       observer_{this};
-  const CheckedPtr<content::RenderProcessHost> render_process_host_;
+  content::RenderProcessHost* const render_process_host_;
   base::WeakPtrFactory<WorkerResponseCallbackWrapper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WorkerResponseCallbackWrapper);

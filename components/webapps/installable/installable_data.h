@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/webapps/installable/installable_logging.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -44,7 +43,7 @@ struct InstallableData {
 
   // The parsed web app manifest. nullptr if the site has an unparseable
   // manifest.
-  CheckedPtr<const blink::Manifest> manifest;
+  const blink::Manifest* manifest;
 
   // The URL of the chosen primary icon.
   const GURL& primary_icon_url;
@@ -52,7 +51,7 @@ struct InstallableData {
   // nullptr if the most appropriate primary icon couldn't be determined or
   // downloaded. The underlying primary icon is owned by the InstallableManager;
   // clients must copy the bitmap if they want to to use it.
-  CheckedPtr<const SkBitmap> primary_icon;
+  const SkBitmap* primary_icon;
 
   // Whether the primary icon had the 'maskable' purpose, meaningless if no
   // primary_icon was requested.
@@ -67,7 +66,7 @@ struct InstallableData {
   // icon is optional, no error code is set if it cannot be fetched, and clients
   // specifying |valid_splash_icon| must check that the bitmap exists before
   // using it.
-  CheckedPtr<const SkBitmap> splash_icon;
+  const SkBitmap* splash_icon;
 
   // true if the site has a valid, installable web app manifest. If
   // |valid_manifest| or |has_worker| was true and the site isn't installable,

@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/base/region.h"
 #include "cc/layers/recording_source.h"
 #include "cc/paint/paint_filter.h"
@@ -146,7 +145,7 @@ class FakeRecordingSource : public RecordingSource {
  private:
   FakeContentLayerClient client_;
   PaintFlags default_flags_;
-  CheckedPtr<base::WaitableEvent> playback_allowed_event_ = nullptr;
+  base::WaitableEvent* playback_allowed_event_ = nullptr;
 };
 
 }  // namespace cc

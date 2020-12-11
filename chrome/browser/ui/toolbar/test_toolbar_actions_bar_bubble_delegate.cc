@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 class TestToolbarActionsBarBubbleDelegate::DelegateImpl
     : public ToolbarActionsBarBubbleDelegate {
@@ -48,7 +47,7 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
     parent_->close_action_ = std::make_unique<CloseAction>(action);
   }
 
-  CheckedPtr<TestToolbarActionsBarBubbleDelegate> parent_;
+  TestToolbarActionsBarBubbleDelegate* parent_;
 
   DISALLOW_COPY_AND_ASSIGN(DelegateImpl);
 };

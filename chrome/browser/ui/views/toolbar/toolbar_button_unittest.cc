@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -46,7 +45,7 @@ class ToolbarButtonTestApi {
   }
 
  private:
-  CheckedPtr<ToolbarButton> button_;
+  ToolbarButton* button_;
 };
 
 }  // namespace test
@@ -72,7 +71,7 @@ class CheckActiveWebContentsMenuModel : public ui::SimpleMenuModel {
   }
 
  private:
-  const CheckedPtr<TabStripModel> tab_strip_model_;
+  TabStripModel* const tab_strip_model_;
 };
 
 class TestToolbarButton : public ToolbarButton {
@@ -161,7 +160,7 @@ class ToolbarButtonUITest : public ChromeViewsTestBase {
   views::Widget* widget() { return widget_.get(); }
 
  protected:
-  CheckedPtr<TestToolbarButton> button_ = nullptr;
+  TestToolbarButton* button_ = nullptr;
 
  private:
   std::unique_ptr<views::Widget> widget_;

@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_IMPORT_COMPLETED_TASK_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -30,9 +29,9 @@ class ImportCompletedTask : public Task {
   void Run() override;
   void OnStateUpdatedToFinished(bool success);
 
-  CheckedPtr<PrefetchDispatcher> prefetch_dispatcher_;  // Outlives this class.
-  CheckedPtr<PrefetchStore> prefetch_store_;            // Outlives this class.
-  CheckedPtr<PrefetchImporter> prefetch_importer_;      // Outlives this class.
+  PrefetchDispatcher* prefetch_dispatcher_;  // Outlives this class.
+  PrefetchStore* prefetch_store_;            // Outlives this class.
+  PrefetchImporter* prefetch_importer_;      // Outlives this class.
   int64_t offline_id_;
   bool success_;
 

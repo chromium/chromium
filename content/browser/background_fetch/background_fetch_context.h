@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -197,7 +196,7 @@ class CONTENT_EXPORT BackgroundFetchContext
                         BackgroundFetchPermission permission);
 
   // |this| is owned, indirectly, by the BrowserContext.
-  CheckedPtr<BrowserContext> browser_context_;
+  BrowserContext* browser_context_;
 
   std::unique_ptr<BackgroundFetchDataManager> data_manager_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;

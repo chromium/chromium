@@ -24,7 +24,6 @@
 #include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -268,7 +267,7 @@ class PrintPreviewObserver : public WebContentsObserver {
     }
 
    private:
-    const CheckedPtr<PrintPreviewObserver> observer_;
+    PrintPreviewObserver* const observer_;
 
     DISALLOW_COPY_AND_ASSIGN(UIDoneLoadingMessageHandler);
   };
@@ -295,7 +294,7 @@ class PrintPreviewObserver : public WebContentsObserver {
     Observe(new_web_contents);
   }
 
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
   base::OnceClosure quit_closure_;
   std::unique_ptr<PrintPreviewSettings> settings_;
 

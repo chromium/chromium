@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/browser_interface_broker_impl.h"
@@ -85,7 +84,7 @@ class CONTENT_EXPORT ServiceWorkerHost {
 
   // The service worker being hosted. Raw pointer is safe because the version
   // owns |this|.
-  const CheckedPtr<ServiceWorkerVersion> version_;
+  ServiceWorkerVersion* const version_;
 
   BrowserInterfaceBrokerImpl<ServiceWorkerHost, const ServiceWorkerVersionInfo&>
       broker_{this, /*policy_applier=*/nullptr};

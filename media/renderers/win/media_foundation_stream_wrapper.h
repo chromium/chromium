@@ -10,7 +10,6 @@
 #include <wrl.h>
 #include <queue>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -124,7 +123,7 @@ class MediaFoundationStreamWrapper
     kStopped,
     kPaused
   } state_ = State::kInitialized;
-  CheckedPtr<DemuxerStream> demuxer_stream_ = nullptr;
+  DemuxerStream* demuxer_stream_ = nullptr;
   DemuxerStream::Type stream_type_ = DemuxerStream::Type::UNKNOWN;
 
   // Need exclusive access to some members between calls from MF threadpool

@@ -70,7 +70,7 @@ void RemoteModuleWatcher::HandleModuleEvent(
 
   // Accumulate events. They will be sent when the |delay_timer_| fires.
   module_load_addresses_.push_back(
-      reinterpret_cast<uintptr_t>(event.module_load_address.get()));
+      reinterpret_cast<uintptr_t>(event.module_load_address));
 
   // Ensure the timer is running.
   delay_timer_.Reset();

@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observer.h"
 #include "base/single_thread_task_runner.h"
@@ -138,7 +137,7 @@ class NetExportMessageHandler
   void ShowSelectFileDialog(const base::FilePath& default_path);
 
   // Cached pointer to SystemNetworkContextManager's NetExportFileWriter.
-  CheckedPtr<net_log::NetExportFileWriter> file_writer_;
+  net_log::NetExportFileWriter* file_writer_;
 
   ScopedObserver<net_log::NetExportFileWriter,
                  net_log::NetExportFileWriter::StateObserver>
@@ -206,7 +205,7 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
     const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!state_observer_manager_.IsObservingSources()) {
-    state_observer_manager_.Add(file_writer_.get());
+    state_observer_manager_.Add(file_writer_);
   }
   NotifyUIWithState(file_writer_->GetState());
 }

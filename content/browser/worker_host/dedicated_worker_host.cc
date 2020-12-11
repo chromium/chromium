@@ -67,7 +67,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
   DCHECK(coep_reporter_);
 
-  scoped_process_host_observation_.Observe(worker_process_host_.get());
+  scoped_process_host_observation_.Observe(worker_process_host_);
 
   service_->NotifyWorkerCreated(this);
 }

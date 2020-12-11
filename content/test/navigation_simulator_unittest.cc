@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -183,7 +182,7 @@ class ResponseHeadersCheckingNavigationSimulatorTest
     }
   }
 
-  CheckedPtr<const net::HttpResponseHeaders> response_headers_;
+  const net::HttpResponseHeaders* response_headers_;
 };
 
 TEST_F(NavigationSimulatorTest, AutoAdvanceOff) {

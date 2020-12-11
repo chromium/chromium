@@ -17,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/process/kill.h"
@@ -383,7 +382,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   const std::unique_ptr<RenderWidgetHostImpl> render_widget_host_;
 
   // Our delegate, which wants to know about changes in the RenderView.
-  CheckedPtr<RenderViewHostDelegate> delegate_;
+  RenderViewHostDelegate* delegate_;
 
   // The SiteInstance associated with this RenderViewHost.  All pages drawn
   // in this RenderViewHost are part of this SiteInstance.  Cannot change

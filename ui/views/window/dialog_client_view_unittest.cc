@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -163,7 +162,7 @@ class DialogClientViewTest : public test::WidgetTest,
  private:
   // The dialog Widget.
   std::unique_ptr<test::TestLayoutProvider> layout_provider_;
-  CheckedPtr<Widget> widget_ = nullptr;
+  Widget* widget_ = nullptr;
 
   gfx::Size preferred_size_;
   gfx::Size min_size_;

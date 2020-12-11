@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -187,7 +186,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   It2MeHostState last_host_state_ = It2MeHostState::kDisconnected;
 
   // Used to set ConfirmationDialog behavior.
-  CheckedPtr<FakeIt2MeDialogFactory> dialog_factory_ = nullptr;
+  FakeIt2MeDialogFactory* dialog_factory_ = nullptr;
 
   std::unique_ptr<base::DictionaryValue> policies_;
 

@@ -6,7 +6,6 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
@@ -139,7 +138,7 @@ class QuicTransport::Stream final {
   }
 
   void Abort(quic::QuicRstStreamErrorCode code) {
-    auto* stream = incoming_ ? incoming_.get() : outgoing_.get();
+    auto* stream = incoming_ ? incoming_ : outgoing_;
     if (!stream) {
       return;
     }
@@ -152,7 +151,7 @@ class QuicTransport::Stream final {
   }
 
   ~Stream() {
-    auto* stream = incoming_ ? incoming_.get() : outgoing_.get();
+    auto* stream = incoming_ ? incoming_ : outgoing_;
     if (!stream) {
       return;
     }
@@ -301,14 +300,14 @@ class QuicTransport::Stream final {
         base::BindOnce(&Stream::Dispose, weak_factory_.GetWeakPtr()));
   }
 
-  const CheckedPtr<QuicTransport> transport_;  // outlives |this|.
+  QuicTransport* const transport_;  // outlives |this|.
   const uint32_t id_;
   // |outgoing_| and |incoming_| point to the same stream when this is a
   // bidirectional stream. They are owned by |transport_| (via
   // quic::QuicSession), and the properties will be null-set when the streams
   // are gone (via StreamVisitor).
-  CheckedPtr<quic::QuicTransportStream> outgoing_ = nullptr;
-  CheckedPtr<quic::QuicTransportStream> incoming_ = nullptr;
+  quic::QuicTransportStream* outgoing_ = nullptr;
+  quic::QuicTransportStream* incoming_ = nullptr;
   mojo::ScopedDataPipeConsumerHandle readable_;  // for |outgoing|
   mojo::ScopedDataPipeProducerHandle writable_;  // for |incoming|
 

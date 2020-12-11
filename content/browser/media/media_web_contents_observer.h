@@ -12,7 +12,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -267,7 +266,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
       RenderFrameHost* render_frame_host);
 
   // Helper class for recording audible metrics.
-  CheckedPtr<AudibleMetrics> audible_metrics_;
+  AudibleMetrics* audible_metrics_;
 
   // Tracking variables and associated wake locks for media playback.
   PlayerInfoMap player_info_map_;
@@ -277,7 +276,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   bool has_audio_wake_lock_for_testing_ = false;
 
   MediaSessionControllersManager session_controllers_manager_;
-  CheckedPtr<MediaPowerExperimentManager> power_experiment_manager_ = nullptr;
+  MediaPowerExperimentManager* power_experiment_manager_ = nullptr;
 
   std::map<RenderFrameHost*,
            std::unique_ptr<base::WeakPtrFactory<MediaWebContentsObserver>>>

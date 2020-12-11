@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -101,9 +100,9 @@ class HistoryUiFaviconRequestHandlerImpl
       base::Time request_start_time_for_uma,
       favicon_base::GoogleFaviconServerRequestStatus status);
 
-  const CheckedPtr<FaviconService> favicon_service_;
+  FaviconService* const favicon_service_;
 
-  const CheckedPtr<LargeIconService> large_icon_service_;
+  LargeIconService* const large_icon_service_;
 
   CanSendHistoryDataGetter const can_send_history_data_getter_;
 

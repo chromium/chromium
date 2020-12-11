@@ -6,7 +6,6 @@
 #define UI_VIEWS_WINDOW_NATIVE_FRAME_VIEW_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/window/non_client_view.h"
 
 namespace views {
@@ -39,7 +38,7 @@ class VIEWS_EXPORT NativeFrameView : public NonClientFrameView {
 
  private:
   // Our containing frame.
-  CheckedPtr<Widget> frame_;
+  Widget* frame_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeFrameView);
 };

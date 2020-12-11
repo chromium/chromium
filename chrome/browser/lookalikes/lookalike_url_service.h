@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -55,8 +54,8 @@ class LookalikeUrlService : public KeyedService {
   void OnFetchEngagedSites(EngagedSitesCallback callback,
                            std::vector<mojom::SiteEngagementDetails> details);
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<base::Clock> clock_;
+  Profile* profile_;
+  base::Clock* clock_;
   base::Time last_engagement_fetch_time_;
   std::vector<DomainInfo> engaged_sites_;
   base::WeakPtrFactory<LookalikeUrlService> weak_factory_{this};

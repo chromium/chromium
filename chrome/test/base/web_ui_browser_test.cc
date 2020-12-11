@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -92,7 +91,7 @@ class WebUIJsInjectionReadyObserver : public content::WebContentsObserver {
   }
 
  private:
-  const CheckedPtr<BaseWebUIBrowserTest> browser_test_;
+  BaseWebUIBrowserTest* const browser_test_;
   std::string preload_test_fixture_;
   std::string preload_test_name_;
 };
@@ -311,11 +310,11 @@ class PrintContentBrowserClient : public ChromeContentBrowserClient {
     return nullptr;
   }
 
-  const CheckedPtr<BaseWebUIBrowserTest> browser_test_;
+  BaseWebUIBrowserTest* const browser_test_;
   std::unique_ptr<WebUIJsInjectionReadyObserver> observer_;
   std::string preload_test_fixture_;
   std::string preload_test_name_;
-  CheckedPtr<content::WebContents> preview_dialog_ = nullptr;
+  content::WebContents* preview_dialog_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 #endif

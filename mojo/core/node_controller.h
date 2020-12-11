@@ -17,7 +17,6 @@
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/optional.h"
@@ -255,7 +254,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   void ForceDisconnectProcessForTestingOnIOThread(base::ProcessId process_id);
 
   // These are safe to access from any thread as long as the Node is alive.
-  const CheckedPtr<Core> core_;
+  Core* const core_;
   const ports::NodeName name_;
   const std::unique_ptr<ports::Node> node_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

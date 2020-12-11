@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -238,7 +237,7 @@ class DriveUploader : public DriveUploaderInterface {
 
   // The lifetime of this object should be guaranteed to exceed that of the
   // DriveUploader instance.
-  CheckedPtr<DriveServiceInterface> drive_service_;  // Not owned by this class.
+  DriveServiceInterface* drive_service_;  // Not owned by this class.
 
   scoped_refptr<base::TaskRunner> blocking_task_runner_;
   scoped_refptr<RefCountedBatchRequest> current_batch_request_;

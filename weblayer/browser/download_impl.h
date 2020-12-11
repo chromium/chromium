@@ -6,7 +6,6 @@
 #define WEBLAYER_BROWSER_DOWNLOAD_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
@@ -74,7 +73,7 @@ class DownloadImpl : public Download, public base::SupportsUserData::Data {
   void ResumeInternal();
   void CancelInternal();
 
-  CheckedPtr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
   bool pause_pending_ = false;
   bool resume_pending_ = false;
   bool cancel_pending_ = false;

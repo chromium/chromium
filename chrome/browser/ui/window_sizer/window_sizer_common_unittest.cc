@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -44,7 +43,7 @@ class TestScreen : public display::ScreenBase {
   }
 
  private:
-  CheckedPtr<display::Screen> previous_screen_;
+  display::Screen* previous_screen_;
 
   DISALLOW_COPY_AND_ASSIGN(TestScreen);
 };

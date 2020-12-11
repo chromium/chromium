@@ -44,7 +44,7 @@ WebUIBubbleDialogView::~WebUIBubbleDialogView() = default;
 
 std::unique_ptr<WebUIBubbleView> WebUIBubbleDialogView::RemoveWebView() {
   DCHECK(web_view_);
-  auto* web_view = web_view_.get();
+  auto* web_view = web_view_;
   web_view_ = nullptr;
   web_view->set_host(nullptr);
   return RemoveChildViewT(web_view);

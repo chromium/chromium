@@ -14,7 +14,6 @@
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -648,7 +647,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   // allowed to play it.
   bool HasUnmutedAudio() const;
 
-  const CheckedPtr<blink::WebLocalFrame> frame_;
+  blink::WebLocalFrame* const frame_;
 
   blink::WebMediaPlayer::NetworkState network_state_ =
       WebMediaPlayer::kNetworkStateEmpty;
@@ -732,8 +731,8 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   // Whether the current decoder requires a restart on overlay transitions.
   bool decoder_requires_restart_for_overlay_ = false;
 
-  const CheckedPtr<blink::WebMediaPlayerClient> client_;
-  const CheckedPtr<blink::WebMediaPlayerEncryptedMediaClient> encrypted_client_;
+  blink::WebMediaPlayerClient* const client_;
+  blink::WebMediaPlayerEncryptedMediaClient* const encrypted_client_;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using
   // |delegate_id_|; an id provided after registering with the delegate.  The
@@ -745,7 +744,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   // Document::shutdown() is called before the frame detaches (and before the
   // frame is destroyed). RenderFrameImpl owns |delegate_| and is guaranteed
   // to outlive |this|; thus it is safe to store |delegate_| as a raw pointer.
-  CheckedPtr<blink::WebMediaPlayerDelegate> delegate_;
+  blink::WebMediaPlayerDelegate* delegate_;
   int delegate_id_ = 0;
 
   // The playback state last reported to |delegate_|, to avoid setting duplicate
@@ -773,17 +772,17 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   //
   // |demuxer_| will contain the appropriate demuxer based on which resource
   // load strategy we're using.
-  CheckedPtr<MultibufferDataSource> mb_data_source_ = nullptr;
+  MultibufferDataSource* mb_data_source_ = nullptr;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<Demuxer> demuxer_;
-  CheckedPtr<ChunkDemuxer> chunk_demuxer_ = nullptr;
+  ChunkDemuxer* chunk_demuxer_ = nullptr;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
-  CheckedPtr<const base::TickClock> tick_clock_ = nullptr;
+  const base::TickClock* tick_clock_ = nullptr;
 
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
-  const CheckedPtr<UrlIndex> url_index_;
+  UrlIndex* const url_index_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
   // Video rendering members.

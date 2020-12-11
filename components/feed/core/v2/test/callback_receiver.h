@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 
@@ -57,7 +56,7 @@ class CallbackReceiver {
 
  private:
   std::tuple<base::Optional<T>...> results_;
-  CheckedPtr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
 };
 
 }  // namespace feed

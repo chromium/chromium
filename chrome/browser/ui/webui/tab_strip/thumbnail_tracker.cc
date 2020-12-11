@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
@@ -51,7 +50,7 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver,
   }
 
  private:
-  CheckedPtr<ThumbnailTracker> parent_;
+  ThumbnailTracker* parent_;
   scoped_refptr<ThumbnailImage> thumbnail_;
   ScopedObserver<ThumbnailImage, ThumbnailImage::Observer> observer_{this};
 

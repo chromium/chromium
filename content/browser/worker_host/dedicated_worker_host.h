@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -173,13 +172,13 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
 
   void OnMojoDisconnect();
 
-  const CheckedPtr<DedicatedWorkerServiceImpl> service_;
+  DedicatedWorkerServiceImpl* const service_;
 
   // The renderer generated ID of this worker, unique across all processes.
   const blink::DedicatedWorkerToken token_;
 
   // The RenderProcessHost that hosts this worker.
-  const CheckedPtr<RenderProcessHost> worker_process_host_;
+  RenderProcessHost* const worker_process_host_;
 
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       scoped_process_host_observation_{this};

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/accessibility/invert_bubble_view.h"
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -60,7 +59,7 @@ class InvertBubbleView : public views::BubbleDialogDelegateView {
 
   void OpenLink(const std::string& url, const ui::Event& event);
 
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
 
   DISALLOW_COPY_AND_ASSIGN(InvertBubbleView);
 };

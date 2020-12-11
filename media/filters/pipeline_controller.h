@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
@@ -179,7 +178,7 @@ class MEDIA_EXPORT PipelineController {
   const PipelineStatusCB error_cb_;
 
   // State for handling StartWaitingForSeek()/CancelPendingSeek().
-  CheckedPtr<Demuxer> demuxer_ = nullptr;
+  Demuxer* demuxer_ = nullptr;
   bool waiting_for_seek_ = false;
 
   // When true, Resume() will start at time zero instead of seeking to the

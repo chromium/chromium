@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
@@ -158,9 +157,8 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
   }
 
  private:
-  CheckedPtr<storage::mojom::BlobStorageContext> blob_storage_context_;
-  CheckedPtr<storage::mojom::NativeFileSystemContext>
-      native_file_system_context_;
+  storage::mojom::BlobStorageContext* blob_storage_context_;
+  storage::mojom::NativeFileSystemContext* native_file_system_context_;
 
   DISALLOW_COPY_AND_ASSIGN(TestIDBFactory);
 };
@@ -441,10 +439,10 @@ class IndexedDBBackingStoreTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> idb_context_;
   std::unique_ptr<TestIDBFactory> idb_factory_;
-  CheckedPtr<DisjointRangeLockManager> lock_manager_;
+  DisjointRangeLockManager* lock_manager_;
 
   IndexedDBOriginStateHandle origin_state_handle_;
-  CheckedPtr<TestableIndexedDBBackingStore> backing_store_ = nullptr;
+  TestableIndexedDBBackingStore* backing_store_ = nullptr;
   IndexedDBDataLossInfo data_loss_info_;
 
   // Sample keys and values that are consistent.

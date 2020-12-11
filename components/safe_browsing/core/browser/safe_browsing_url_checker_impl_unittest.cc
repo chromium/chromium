@@ -5,7 +5,6 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/mock_callback.h"
@@ -158,7 +157,7 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   ~MockUrlCheckerDelegate() override = default;
 
  private:
-  CheckedPtr<SafeBrowsingDatabaseManager> database_manager_;
+  SafeBrowsingDatabaseManager* database_manager_;
   SBThreatTypeSet threat_types_;
 };
 

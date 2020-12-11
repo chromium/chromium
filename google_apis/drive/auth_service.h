@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -68,7 +67,7 @@ class AuthService : public AuthServiceInterface,
                        DriveApiErrorCode error,
                        const std::string& access_token);
 
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   CoreAccountId account_id_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   bool has_refresh_token_;

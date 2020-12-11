@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/quota/quota_reservation_manager.h"
@@ -83,8 +82,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
   // Owned by SandboxFileSystemBackendDelegate.
-  CheckedPtr<ObfuscatedFileUtil> obfuscated_file_util_;
-  CheckedPtr<FileSystemUsageCache> file_system_usage_cache_;
+  ObfuscatedFileUtil* obfuscated_file_util_;
+  FileSystemUsageCache* file_system_usage_cache_;
 
   scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
 

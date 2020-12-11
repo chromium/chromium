@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 
@@ -63,8 +62,8 @@ class DownloadDangerPromptViews : public DownloadDangerPrompt,
   base::string16 GetMessageBody() const;
   void RunDone(Action action);
 
-  CheckedPtr<download::DownloadItem> download_;
-  CheckedPtr<Profile> profile_;
+  download::DownloadItem* download_;
+  Profile* profile_;
   // If show_context_ is true, this is a download confirmation dialog by
   // download API, otherwise it is download recovery dialog from a regular
   // download.

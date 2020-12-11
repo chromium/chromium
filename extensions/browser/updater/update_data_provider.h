@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "extensions/browser/updater/extension_installer.h"
@@ -65,7 +64,7 @@ class UpdateDataProvider : public base::RefCounted<UpdateDataProvider> {
                           bool install_immediately,
                           UpdateClientCallback update_client_callback);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdateDataProvider);
 };

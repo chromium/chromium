@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_POLICY_CLOUD_REMOTE_COMMANDS_INVALIDATOR_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/policy/cloud/remote_commands_invalidator.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -49,9 +48,9 @@ class RemoteCommandsInvalidatorImpl : public RemoteCommandsInvalidator,
  private:
   void RecordInvalidationMetric(const syncer::Invalidation& invalidation) const;
 
-  const CheckedPtr<CloudPolicyCore> core_;
+  CloudPolicyCore* const core_;
 
-  const CheckedPtr<const base::Clock> clock_;
+  const base::Clock* const clock_;
 
   const PolicyInvalidationScope scope_;
 

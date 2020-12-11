@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "cc/metrics/frame_sequence_metrics.h"
@@ -76,7 +75,7 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
 
   void Report(const cc::FrameSequenceMetrics::CustomReportData& data);
 
-  CheckedPtr<Compositor> compositor_;
+  Compositor* compositor_;
   ReportRepeatingCallback report_repeating_callback_;
   ReportOnceCallback report_once_callback_;
   bool should_delete_ = false;

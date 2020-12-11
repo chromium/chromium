@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/view.h"
 
 class BrowserView;
@@ -27,7 +26,7 @@ class TopContainerView : public views::View {
 
  private:
   // The parent of this view. Not owned.
-  CheckedPtr<BrowserView> browser_view_;
+  BrowserView* browser_view_;
 
   DISALLOW_COPY_AND_ASSIGN(TopContainerView);
 };

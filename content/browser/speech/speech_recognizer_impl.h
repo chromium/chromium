@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/speech/endpointer/endpointer.h"
@@ -166,7 +165,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   static media::AudioSystem* audio_system_for_tests_;
   static media::AudioCapturerSource* audio_capturer_source_for_tests_;
 
-  CheckedPtr<media::AudioSystem> audio_system_;
+  media::AudioSystem* audio_system_;
   std::unique_ptr<SpeechRecognitionEngine> recognition_engine_;
   Endpointer endpointer_;
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;

@@ -6,7 +6,6 @@
 #define MEDIA_BASE_WAIT_AND_REPLACE_SYNC_TOKEN_CLIENT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
@@ -25,7 +24,7 @@ class MEDIA_EXPORT WaitAndReplaceSyncTokenClient
   void WaitSyncToken(const gpu::SyncToken& sync_token) final;
 
  private:
-  CheckedPtr<gpu::InterfaceBase> ib_;
+  gpu::InterfaceBase* ib_;
 
   DISALLOW_COPY_AND_ASSIGN(WaitAndReplaceSyncTokenClient);
 };

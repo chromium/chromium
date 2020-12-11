@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_BRAILLE_DISPLAY_PRIVATE_MOCK_BRAILLE_CONTROLLER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_BRAILLE_DISPLAY_PRIVATE_MOCK_BRAILLE_CONTROLLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/api/braille_display_private/stub_braille_controller.h"
 
 namespace extensions {
@@ -27,7 +26,7 @@ class MockBrailleController : public StubBrailleController {
 
  private:
   bool available_;
-  CheckedPtr<BrailleObserver> observer_;
+  BrailleObserver* observer_;
 };
 
 }  // namespace braille_display_private

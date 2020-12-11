@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -326,7 +325,7 @@ class ExtensionSameSiteCookiesTest
   net::EmbeddedTestServer test_server_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestExtensionDir> extension_dir_;
-  CheckedPtr<const Extension> extension_ = nullptr;
+  const Extension* extension_ = nullptr;
 };
 
 // Tests where the extension page initiates the request.

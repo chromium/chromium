@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PERMISSIONS_ABUSIVE_ORIGIN_PERMISSION_REVOCATION_REQUEST_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
@@ -62,7 +61,7 @@ class AbusiveOriginPermissionRevocationRequest {
       CrowdDenySafeBrowsingRequest::Verdict verdict);
 
   base::Optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   const GURL origin_;
   OutcomeCallback callback_;
   base::WeakPtrFactory<AbusiveOriginPermissionRevocationRequest> weak_factory_{

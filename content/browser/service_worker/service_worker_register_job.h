@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_register_job_base.h"
@@ -168,7 +167,7 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   void BumpLastUpdateCheckTimeIfNeeded();
 
   // The ServiceWorkerContextCore object must outlive this.
-  const CheckedPtr<ServiceWorkerContextCore> context_;
+  ServiceWorkerContextCore* const context_;
 
   std::unique_ptr<ServiceWorkerUpdateChecker> update_checker_;
 

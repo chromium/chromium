@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -352,7 +351,7 @@ class ChromeCleanerRunnerTest
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  CheckedPtr<TestingProfile> testing_profile_;
+  TestingProfile* testing_profile_;
 
   base::RunLoop run_loop_;
 

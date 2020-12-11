@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"

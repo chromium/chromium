@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_DESKTOP_SESSION_DURATION_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -45,7 +44,7 @@ class DesktopSessionDurationObserver
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
 
-  CheckedPtr<DesktopSessionDurationTracker> service_;
+  DesktopSessionDurationTracker* service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

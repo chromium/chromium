@@ -5,7 +5,6 @@
 #ifndef UI_ACCESSIBILITY_TEST_AX_NODE_HELPER_H_
 #define UI_ACCESSIBILITY_TEST_AX_NODE_HELPER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_coordinate_system.h"
 #include "ui/accessibility/ax_node.h"
@@ -42,8 +41,8 @@ class TestAXNodeHelper {
                                const int end_offset) const;
   AXOffscreenResult DetermineOffscreenResult(gfx::RectF bounds) const;
 
-  CheckedPtr<AXTree> tree_;
-  CheckedPtr<AXNode> node_;
+  AXTree* tree_;
+  AXNode* node_;
 };
 
 }  // namespace ui

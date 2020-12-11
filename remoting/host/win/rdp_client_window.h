@@ -6,7 +6,6 @@
 #define REMOTING_HOST_WIN_RDP_HOST_WINDOW_H_
 
 // Must be included before <atlapp.h>.
-#include "base/memory/checked_ptr.h"
 #include "base/win/atl.h"  // NOLINT(build/include_order)
 
 #include <atlapp.h>
@@ -155,7 +154,7 @@ class RdpClientWindow
   void ReapplyDesktopResolution();
 
   // Invoked to report connect/disconnect events.
-  CheckedPtr<EventHandler> event_handler_;
+  EventHandler* event_handler_;
 
   // Contains the requested dimensions of the screen.
   remoting::ScreenResolution screen_resolution_;

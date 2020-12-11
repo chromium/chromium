@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -71,17 +70,15 @@ class FallbackVideoDecoderUnittest : public ::testing::TestWithParam<bool> {
   }
 
  protected:
-  void Destroy() {
-    std::default_delete<VideoDecoder>()(fallback_decoder_.get());
-  }
+  void Destroy() { std::default_delete<VideoDecoder>()(fallback_decoder_); }
 
   bool PreferredShouldSucceed() { return GetParam(); }
 
   base::test::TaskEnvironment task_environment_;
 
-  CheckedPtr<StrictMock<MockVideoDecoder>> backup_decoder_;
-  CheckedPtr<StrictMock<MockVideoDecoder>> preferred_decoder_;
-  CheckedPtr<VideoDecoder> fallback_decoder_;
+  StrictMock<MockVideoDecoder>* backup_decoder_;
+  StrictMock<MockVideoDecoder>* preferred_decoder_;
+  VideoDecoder* fallback_decoder_;
   VideoDecoderConfig video_decoder_config_;
 
  private:

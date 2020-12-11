@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -182,7 +181,7 @@ class MenuViewDragAndDropTest : public MenuTestBase,
   bool ShouldCloseOnDragComplete() override;
 
   // The special view in the menu, which supports its own drag and drop.
-  CheckedPtr<TestTargetView> target_view_ = nullptr;
+  TestTargetView* target_view_ = nullptr;
 
   // Whether or not we have been asked to close on drag complete.
   bool asked_to_close_ = false;
@@ -202,7 +201,7 @@ void MenuViewDragAndDropTest::BuildMenu(views::MenuItemView* menu) {
   views::MenuItemView* menu_item_view =
       menu->AppendMenuItem(1, base::ASCIIToUTF16("item 1"));
   target_view_ = new TestTargetView();
-  menu_item_view->AddChildView(target_view_.get());
+  menu_item_view->AddChildView(target_view_);
   // ... as well as two other, normal items.
   menu->AppendMenuItem(2, base::ASCIIToUTF16("item 2"));
   menu->AppendMenuItem(3, base::ASCIIToUTF16("item 3"));

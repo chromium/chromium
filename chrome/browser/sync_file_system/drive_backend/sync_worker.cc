@@ -405,7 +405,7 @@ void SyncWorker::UpdateRegisteredApps() {
                      // This is protected by checking the extension_service_
                      // weak pointer, since the underlying ExtensionService
                      // also relies on the ExtensionRegistry.
-                     base::Unretained(extension_registry_.get()),
+                     base::Unretained(extension_registry_),
                      base::Owned(app_ids.release()), app_status,
                      RelayCallbackToTaskRunner(context_->GetWorkerTaskRunner(),
                                                FROM_HERE, callback)));

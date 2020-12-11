@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
@@ -211,8 +210,8 @@ class ExperimentTestMetricsProvider : public TestMetricsProvider {
   }
 
  private:
-  CheckedPtr<base::FieldTrial> profile_metrics_trial_;
-  CheckedPtr<base::FieldTrial> session_data_trial_;
+  base::FieldTrial* profile_metrics_trial_;
+  base::FieldTrial* session_data_trial_;
 };
 
 }  // namespace

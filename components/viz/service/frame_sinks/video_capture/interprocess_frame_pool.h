@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -108,7 +107,7 @@ class VIZ_SERVICE_EXPORT InterprocessFramePool {
 
   // The pointer to the mapped memory of the buffer that was set as "marked"
   // via a call to SetMarkedBuffer().
-  CheckedPtr<const void> marked_frame_buffer_ = nullptr;
+  const void* marked_frame_buffer_ = nullptr;
   gfx::Size marked_frame_size_;
   gfx::ColorSpace marked_frame_color_space_;
   media::VideoPixelFormat marked_frame_pixel_format_;

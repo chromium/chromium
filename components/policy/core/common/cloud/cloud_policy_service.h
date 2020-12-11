@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -115,10 +114,10 @@ class POLICY_EXPORT CloudPolicyService : public CloudPolicyClient::Observer,
   std::string settings_entity_id_;
 
   // The client used to talk to the cloud.
-  CheckedPtr<CloudPolicyClient> client_;
+  CloudPolicyClient* client_;
 
   // Takes care of persisting and decoding cloud policy.
-  CheckedPtr<CloudPolicyStore> store_;
+  CloudPolicyStore* store_;
 
   // Tracks the state of a pending refresh operation, if any.
   enum {

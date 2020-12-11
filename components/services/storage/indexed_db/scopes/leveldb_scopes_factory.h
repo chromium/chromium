@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace content {
@@ -29,7 +28,7 @@ struct LevelDBScopesOptions {
 
   std::vector<uint8_t> metadata_key_prefix;
   size_t max_write_batch_size = 1 * 1024 * 1024;
-  CheckedPtr<ScopesLockManager> lock_manager = nullptr;
+  ScopesLockManager* lock_manager = nullptr;
   base::RepeatingCallback<void(leveldb::Status)> failure_callback;
 
  private:

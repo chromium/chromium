@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -110,7 +109,7 @@ class ConnectorsManagerTest : public testing::Test {
     ~ScopedConnectorPref() { pref_service_->ClearPref(pref_); }
 
    private:
-    CheckedPtr<PrefService> pref_service_;
+    PrefService* pref_service_;
     const char* pref_;
   };
 
@@ -118,7 +117,7 @@ class ConnectorsManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
   GURL url_ = GURL("https://google.com");
 
   // Set to the default value of their legacy policy.

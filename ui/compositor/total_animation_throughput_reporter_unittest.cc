@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -68,7 +67,7 @@ class TestReporter : public TotalAnimationThroughputReporter {
 #endif
   }
 
-  CheckedPtr<AnimationThroughputReporterTestBase> test_base_;
+  AnimationThroughputReporterTestBase* test_base_;
   bool reported_ = false;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -343,7 +342,7 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporterShouldDelete) {
     ~DeleteTestReporter() override { *deleted_ = true; }
 
    private:
-    CheckedPtr<bool> deleted_;
+    bool* deleted_;
   };
 
   Layer layer;

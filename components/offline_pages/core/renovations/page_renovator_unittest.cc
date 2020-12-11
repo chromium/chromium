@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/offline_pages/core/renovations/script_injector.h"
@@ -37,7 +36,7 @@ class PageRenovatorTest : public testing::Test {
     void Inject(base::string16 script, ResultCallback callback) override;
 
    private:
-    CheckedPtr<PageRenovatorTest> fixture_;
+    PageRenovatorTest* fixture_;
   };
 
   // Creates a PageRenovator with simple defaults for testing.

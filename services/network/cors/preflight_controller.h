@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/types/strong_alias.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -84,7 +83,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   std::set<std::unique_ptr<PreflightLoader>, base::UniquePtrComparator>
       loaders_;
 
-  const CheckedPtr<NetworkService> network_service_;
+  NetworkService* const network_service_;
 
   DISALLOW_COPY_AND_ASSIGN(PreflightController);
 };

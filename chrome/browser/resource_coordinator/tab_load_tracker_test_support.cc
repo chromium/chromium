@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/run_loop.h"
 
@@ -128,9 +127,9 @@ class WaitForLoadingStateHelper : public TabLoadTracker::Observer {
 
  private:
   // The WebContents or TabStripModel and state that is being waited for.
-  const CheckedPtr<content::WebContents> waiting_for_contents_ = nullptr;
+  content::WebContents* const waiting_for_contents_ = nullptr;
 #if !defined(OS_ANDROID)
-  const CheckedPtr<TabStripModel> waiting_for_tab_strip_ = nullptr;
+  TabStripModel* const waiting_for_tab_strip_ = nullptr;
 #endif
   const LoadingState waiting_for_state_;
   const bool waiting_for_no_longer_tracked_;

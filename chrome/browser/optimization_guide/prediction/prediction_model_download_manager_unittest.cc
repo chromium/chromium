@@ -6,7 +6,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -215,7 +214,7 @@ class PredictionModelDownloadManagerTest
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> path_override_;
-  CheckedPtr<download::test::MockDownloadService> mock_download_service_;
+  download::test::MockDownloadService* mock_download_service_;
   std::unique_ptr<PredictionModelDownloadManager> download_manager_;
 };
 

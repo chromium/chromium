@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -45,9 +44,9 @@ class RoundedOmniboxResultsFrame : public views::View {
   void OnThemeChanged() override;
 
  private:
-  CheckedPtr<views::View> top_background_ = nullptr;
-  CheckedPtr<views::View> contents_host_ = nullptr;
-  CheckedPtr<views::View> contents_;
+  views::View* top_background_ = nullptr;
+  views::View* contents_host_ = nullptr;
+  views::View* contents_;
 
   DISALLOW_COPY_AND_ASSIGN(RoundedOmniboxResultsFrame);
 };

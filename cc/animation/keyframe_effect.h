@@ -5,7 +5,6 @@
 #ifndef CC_ANIMATION_KEYFRAME_EFFECT_H_
 #define CC_ANIMATION_KEYFRAME_EFFECT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_events.h"
@@ -174,7 +173,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect {
       base::TimeTicks monotonic_time);
 
   std::vector<std::unique_ptr<KeyframeModel>> keyframe_models_;
-  CheckedPtr<Animation> animation_;
+  Animation* animation_;
 
   ElementId element_id_;
 

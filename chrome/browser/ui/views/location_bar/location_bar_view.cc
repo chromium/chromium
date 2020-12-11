@@ -305,7 +305,7 @@ void LocationBarView::Init() {
   auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
       static_cast<void (OmniboxView::*)(const base::string16&)>(
           &OmniboxView::SetUserText),
-      base::Unretained(omnibox_view_.get()), base::string16()));
+      base::Unretained(omnibox_view_), base::string16()));
   clear_all_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_CLEAR_ALL));
   clear_all_button_ = AddChildView(std::move(clear_all_button));

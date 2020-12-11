@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -47,7 +46,7 @@ class StarView : public PageActionIconView,
   void ExecuteCommand(int command_id, int event_flags) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<StarMenuModel> menu_model_;

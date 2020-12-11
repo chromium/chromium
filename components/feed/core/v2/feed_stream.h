@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
@@ -100,7 +99,7 @@ class FeedStream : public FeedStreamApi,
     LocalActionId GetNextActionId();
 
    private:
-    CheckedPtr<FeedStore> store_;
+    FeedStore* store_;
     feedstore::Metadata metadata_;
   };
 
@@ -320,15 +319,15 @@ class FeedStream : public FeedStreamApi,
 
   // Unowned.
 
-  CheckedPtr<offline_pages::PrefetchService> prefetch_service_;
-  CheckedPtr<RefreshTaskScheduler> refresh_task_scheduler_;
-  CheckedPtr<MetricsReporter> metrics_reporter_;
-  CheckedPtr<Delegate> delegate_;
-  CheckedPtr<PrefService> profile_prefs_;  // May be null.
-  CheckedPtr<FeedNetwork> feed_network_;
-  CheckedPtr<ImageFetcher> image_fetcher_;
-  CheckedPtr<FeedStore> store_;
-  CheckedPtr<const WireResponseTranslator> wire_response_translator_;
+  offline_pages::PrefetchService* prefetch_service_;
+  RefreshTaskScheduler* refresh_task_scheduler_;
+  MetricsReporter* metrics_reporter_;
+  Delegate* delegate_;
+  PrefService* profile_prefs_;  // May be null.
+  FeedNetwork* feed_network_;
+  ImageFetcher* image_fetcher_;
+  FeedStore* store_;
+  const WireResponseTranslator* wire_response_translator_;
 
   ChromeInfo chrome_info_;
 

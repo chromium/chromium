@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
@@ -219,9 +218,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                         std::unique_ptr<std::string> body);
 
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
-  CheckedPtr<InstantService> instant_service_;
-  CheckedPtr<NtpBackgroundService> ntp_background_service_;
-  CheckedPtr<search_provider_logos::LogoService> logo_service_;
+  InstantService* instant_service_;
+  NtpBackgroundService* ntp_background_service_;
+  search_provider_logos::LogoService* logo_service_;
   GURL last_blocklisted_;
   GetBackgroundCollectionsCallback background_collections_callback_;
   base::TimeTicks background_collections_request_start_time_;
@@ -229,25 +228,25 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   GetBackgroundImagesCallback background_images_callback_;
   base::TimeTicks background_images_request_start_time_;
   std::vector<GetOneGoogleBarPartsCallback> one_google_bar_parts_callbacks_;
-  CheckedPtr<OneGoogleBarService> one_google_bar_service_;
+  OneGoogleBarService* one_google_bar_service_;
   ScopedObserver<OneGoogleBarService, OneGoogleBarServiceObserver>
       one_google_bar_service_observer_{this};
   base::Optional<base::TimeTicks> one_google_bar_load_start_time_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
   FaviconCache favicon_cache_;
-  CheckedPtr<BitmapFetcherService> bitmap_fetcher_service_;
+  BitmapFetcherService* bitmap_fetcher_service_;
   std::vector<BitmapFetcherService::RequestId> bitmap_request_ids_;
   base::TimeTicks time_of_first_autocomplete_query_;
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   base::Time ntp_navigation_start_time_;
-  CheckedPtr<NTPUserDataLogger> logger_;
+  NTPUserDataLogger* logger_;
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>
       loader_map_;
   std::vector<GetPromoCallback> promo_callbacks_;
-  CheckedPtr<PromoService> promo_service_;
+  PromoService* promo_service_;
   ScopedObserver<PromoService, PromoServiceObserver> promo_service_observer_{
       this};
   base::Optional<base::TimeTicks> promo_load_start_time_;

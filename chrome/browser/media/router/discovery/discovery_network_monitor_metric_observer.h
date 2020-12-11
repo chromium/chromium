@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_DISCOVERY_NETWORK_MONITOR_METRIC_OBSERVER_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_DISCOVERY_NETWORK_MONITOR_METRIC_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
 
 #include "base/optional.h"
@@ -37,7 +36,7 @@ class DiscoveryNetworkMonitorMetricObserver final
   // value instead of the time that this later check runs.
   void ConfirmDisconnectedToReportMetrics(base::TimeTicks disconnect_time);
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
   std::unique_ptr<DiscoveryNetworkMonitorMetrics> metrics_;
   base::Optional<base::TimeTicks> last_event_time_;
   base::OneShotTimer disconnect_timer_;

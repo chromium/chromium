@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ui/base/models/table_model.h"
@@ -86,13 +85,13 @@ class TemplateURLTableModel : public ui::TableModel,
   // TemplateURLServiceObserver notification.
   void OnTemplateURLServiceChanged() override;
 
-  CheckedPtr<ui::TableModelObserver> observer_;
+  ui::TableModelObserver* observer_;
 
   // The entries.
   std::vector<TemplateURL*> entries_;
 
   // The model we're displaying entries from.
-  CheckedPtr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
 
   // Index of the last search engine in entries_. This is used to determine the
   // group boundaries.

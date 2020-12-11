@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/notification_observer.h"
@@ -129,7 +128,7 @@ class UnloadController : public content::NotificationObserver,
     return !on_close_confirmed_.is_null();
   }
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   content::NotificationRegistrar registrar_;
 

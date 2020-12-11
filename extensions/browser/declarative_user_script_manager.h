@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -56,7 +55,7 @@ class DeclarativeUserScriptManager : public KeyedService,
   // initialized.
   UserScriptSetMap declarative_user_script_sets_;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
@@ -71,7 +70,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
   static int g_num_instances_for_testing_;
 
  private:
-  CheckedPtr<DeviceChooserContentView> device_chooser_content_view_ = nullptr;
+  DeviceChooserContentView* device_chooser_content_view_ = nullptr;
 
   base::WeakPtrFactory<ChooserBubbleUiViewDelegate> weak_ptr_factory_{this};
 
@@ -110,19 +109,19 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   device_chooser_content_view_ =
       new DeviceChooserContentView(this, std::move(chooser_controller));
-  AddChildView(device_chooser_content_view_.get());
+  AddChildView(device_chooser_content_view_);
 
   SetExtraView(device_chooser_content_view_->CreateExtraView());
 
   SetAcceptCallback(
       base::BindOnce(&DeviceChooserContentView::Accept,
-                     base::Unretained(device_chooser_content_view_.get())));
+                     base::Unretained(device_chooser_content_view_)));
   SetCancelCallback(
       base::BindOnce(&DeviceChooserContentView::Cancel,
-                     base::Unretained(device_chooser_content_view_.get())));
+                     base::Unretained(device_chooser_content_view_)));
   SetCloseCallback(
       base::BindOnce(&DeviceChooserContentView::Close,
-                     base::Unretained(device_chooser_content_view_.get())));
+                     base::Unretained(device_chooser_content_view_)));
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::CHOOSER_UI);
 }

@@ -79,7 +79,7 @@ ExtensionsMenuView::ExtensionsMenuView(
                   IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA_SHORT,
                   IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA,
                   ToolbarActionViewController::PageInteractionStatus::kActive} {
-  toolbar_model_observation_.Observe(toolbar_model_.get());
+  toolbar_model_observation_.Observe(toolbar_model_);
   browser_->tab_strip_model()->AddObserver(this);
   set_margins(gfx::Insets(0));
 

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/blink/media_blink_export.h"
 #include "media/blink/multibuffer.h"
@@ -94,7 +93,7 @@ class MEDIA_BLINK_EXPORT ResourceMultiBufferDataProvider
   // We don't need (or want) a scoped_refptr for this one, because
   // we are owned by it. Note that we may change this when we encounter
   // a redirect because we actually change ownership.
-  CheckedPtr<UrlData> url_data_;
+  UrlData* url_data_;
 
   // Temporary storage for incoming data.
   std::list<scoped_refptr<DataBuffer>> fifo_;

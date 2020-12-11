@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
@@ -289,7 +288,7 @@ class ContentSubresourceFilterThrottleManager
   bool current_committed_load_has_notified_disallowed_load_ = false;
 
   // This member outlives this class.
-  CheckedPtr<VerifiedRulesetDealer::Handle> dealer_handle_;
+  VerifiedRulesetDealer::Handle* dealer_handle_;
 
   std::unique_ptr<SubresourceFilterClient> client_;
 

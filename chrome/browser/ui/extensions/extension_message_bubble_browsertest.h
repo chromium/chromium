@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 
@@ -148,7 +147,7 @@ class ExtensionMessageBubbleBrowserTest
   // no custom extension is loaded.
   std::unique_ptr<extensions::TestExtensionDir> custom_extension_dir_;
 
-  CheckedPtr<ToolbarActionsModel> toolbar_model_ = nullptr;
+  ToolbarActionsModel* toolbar_model_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleBrowserTest);
 };

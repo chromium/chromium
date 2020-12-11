@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
@@ -97,9 +96,9 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   }
 
   // This pointer may be nullptr if client-side phishing detection is disabled.
-  CheckedPtr<ClientSideDetectionService> csd_service_;
+  ClientSideDetectionService* csd_service_;
   // The WebContents that the class is observing.
-  CheckedPtr<content::WebContents> tab_;
+  content::WebContents* tab_;
   // These pointers may be nullptr if SafeBrowsing is disabled.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
@@ -113,7 +112,7 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionHost);

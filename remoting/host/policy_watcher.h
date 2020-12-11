@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "components/policy/core/common/policy_service.h"
@@ -147,7 +146,7 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   std::unique_ptr<base::DictionaryValue> old_policies_;
   std::unique_ptr<base::DictionaryValue> default_values_;
 
-  CheckedPtr<policy::PolicyService> policy_service_;
+  policy::PolicyService* policy_service_;
 
   // Order of fields below is important to ensure destruction takes object
   // dependencies into account:

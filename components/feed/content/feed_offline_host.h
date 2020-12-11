@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
@@ -113,8 +112,8 @@ class FeedOfflineHost : public offline_pages::SuggestionsProvider,
 
   // The following objects all outlive us, so it is safe to hold raw pointers to
   // them. This is guaranteed by the FeedHostServiceFactory.
-  CheckedPtr<offline_pages::OfflinePageModel> offline_page_model_;
-  CheckedPtr<offline_pages::PrefetchService> prefetch_service_;
+  offline_pages::OfflinePageModel* offline_page_model_;
+  offline_pages::PrefetchService* prefetch_service_;
 
   base::RepeatingClosure on_suggestion_consumed_;
   base::RepeatingClosure on_suggestions_shown_;

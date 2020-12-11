@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_EXTENSION_TOOLBAR_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_EXTENSION_TOOLBAR_MENU_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
@@ -68,16 +67,16 @@ class ExtensionToolbarMenuView : public AppMenuButtonObserver,
   int GetEndPadding() const;
 
   // The associated browser.
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   // The app menu, which may need to be closed after a drag-and-drop.
-  CheckedPtr<AppMenu> app_menu_ = nullptr;
+  AppMenu* app_menu_ = nullptr;
 
   // The MenuItemView this view is contained within.
-  CheckedPtr<views::MenuItemView> menu_item_;
+  views::MenuItemView* menu_item_;
 
   // The overflow BrowserActionsContainer which is nested in this view.
-  CheckedPtr<BrowserActionsContainer> container_ = nullptr;
+  BrowserActionsContainer* container_ = nullptr;
 
   // The maximum allowed height for the view.
   int max_height_ = 0;

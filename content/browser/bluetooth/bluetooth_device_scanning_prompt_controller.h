@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "content/common/content_export.h"
@@ -43,11 +42,11 @@ class CONTENT_EXPORT BluetoothDeviceScanningPromptController final {
 
  private:
   // The WebBluetoothServiceImpl that owns this instance.
-  const CheckedPtr<WebBluetoothServiceImpl> web_bluetooth_service_;
+  WebBluetoothServiceImpl* const web_bluetooth_service_;
   // The RenderFrameHost that owns |web_bluetooth_service_|.
-  const CheckedPtr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* const render_frame_host_;
   // The WebContents that owns |render_frame_host_|.
-  const CheckedPtr<WebContents> web_contents_;
+  WebContents* const web_contents_;
 
   // The currently opened BluetoothScanningPrompt.
   std::unique_ptr<BluetoothScanningPrompt> prompt_;

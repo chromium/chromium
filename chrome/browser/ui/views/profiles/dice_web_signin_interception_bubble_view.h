@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #include "base/callback.h"
@@ -66,7 +65,7 @@ class DiceWebSigninInterceptionBubbleView
         delete;
 
    private:
-    CheckedPtr<BrowserListObserver> owner_;
+    BrowserListObserver* owner_;
   };
 
   DiceWebSigninInterceptionBubbleView(
@@ -83,7 +82,7 @@ class DiceWebSigninInterceptionBubbleView
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
 

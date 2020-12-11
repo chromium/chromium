@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
@@ -90,7 +89,7 @@ class NewTabPageHandlerTest : public testing::Test {
   TestingProfile profile_;
   MockInstantService mock_instant_service_;
   content::TestWebContentsFactory factory_;
-  CheckedPtr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
+  content::WebContents* web_contents_;  // Weak. Owned by factory_.
   MockNTPUserDataLogger logger_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;

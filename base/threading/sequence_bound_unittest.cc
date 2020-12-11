@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -56,7 +55,7 @@ class SequenceBoundTest : public ::testing::Test {
     Derived(Value* ptr) : ptr_(ptr) { *ptr_ = kDerivedCtorValue; }
     ~Derived() override { *ptr_ = kDerivedDtorValue; }
     void SetValue(Value value) { *ptr_ = value; }
-    CheckedPtr<Value> ptr_;
+    Value* ptr_;
   };
 
   // Another base class, which sets ints to different values.
@@ -65,7 +64,7 @@ class SequenceBoundTest : public ::testing::Test {
     Other(Value* ptr) : ptr_(ptr) { *ptr = kOtherCtorValue; }
     virtual ~Other() { *ptr_ = kOtherDtorValue; }
     void SetValue(Value value) { *ptr_ = value; }
-    CheckedPtr<Value> ptr_;
+    Value* ptr_;
   };
 
   class MultiplyDerived : public Other, public Derived {
@@ -467,10 +466,10 @@ class IntArgVoidReturn {
   void set_loop(RunLoop* loop) { loop_ = loop; }
 
  private:
-  const CheckedPtr<int> method_called_with_;
-  const CheckedPtr<int> const_method_called_with_;
+  int* const method_called_with_;
+  int* const const_method_called_with_;
 
-  CheckedPtr<RunLoop> loop_ = nullptr;
+  RunLoop* loop_ = nullptr;
 };
 
 class IntArgIntReturn {

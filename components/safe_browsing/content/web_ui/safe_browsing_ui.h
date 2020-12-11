@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -213,7 +212,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   void OnGetCookie(const std::string& callback_id,
                    const std::vector<net::CanonicalCookie>& cookies);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
 
@@ -520,10 +519,10 @@ class WebUIInfoSingleton {
 #endif
 
   // The current referrer chain provider, if any. Can be nullptr.
-  CheckedPtr<ReferrerChainProvider> referrer_chain_provider_ = nullptr;
+  ReferrerChainProvider* referrer_chain_provider_ = nullptr;
 
   // The Safe Browsing service.
-  CheckedPtr<SafeBrowsingServiceInterface> sb_service_ = nullptr;
+  SafeBrowsingServiceInterface* sb_service_ = nullptr;
 
   // Whether there is a test listener.
   bool has_test_listener_ = false;

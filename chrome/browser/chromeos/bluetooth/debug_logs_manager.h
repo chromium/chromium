@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_BLUETOOTH_DEBUG_LOGS_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -61,7 +60,7 @@ class DebugLogsManager : public mojom::DebugLogsChangeHandler {
                                 const std::string& error_message);
 
   const std::string primary_user_email_;
-  CheckedPtr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
   mojo::ReceiverSet<mojom::DebugLogsChangeHandler> receivers_;
 
   base::WeakPtrFactory<DebugLogsManager> weak_ptr_factory_{this};

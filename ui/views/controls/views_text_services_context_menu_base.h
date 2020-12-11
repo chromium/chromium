@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_BASE_H_
 #define UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_BASE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/views/controls/views_text_services_context_menu.h"
 
@@ -39,7 +38,7 @@ class ViewsTextServicesContextMenuBase : public ViewsTextServicesContextMenu {
 
  private:
   // The view associated with the menu. Weak. Owns |this|.
-  const CheckedPtr<Textfield> client_;
+  Textfield* const client_;
 };
 
 }  // namespace views

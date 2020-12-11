@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/views/style/typography.h"
@@ -57,8 +56,8 @@ class DiceBubbleSyncPromoView : public views::View {
   const char* GetClassName() const override;
 
   // Delegate, to handle clicks on the sign-in buttons.
-  CheckedPtr<BubbleSyncPromoDelegate> delegate_;
-  CheckedPtr<DiceSigninButtonView> signin_button_view_ = nullptr;
+  BubbleSyncPromoDelegate* delegate_;
+  DiceSigninButtonView* signin_button_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(DiceBubbleSyncPromoView);
 };

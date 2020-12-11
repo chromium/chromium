@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -93,7 +92,7 @@ class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
 
   // Set in constructor.
   scoped_refptr<base::SequencedTaskRunner> const task_runner_;
-  const CheckedPtr<MediaLog> media_log_;
+  MediaLog* const media_log_;
 
   State state_ = kUninitialized;
 
@@ -106,7 +105,7 @@ class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
   // The current decoder configuration.
   AudioDecoderConfig config_;
 
-  CheckedPtr<Decryptor> decryptor_ = nullptr;
+  Decryptor* decryptor_ = nullptr;
 
   // The buffer that needs decrypting/decoding.
   scoped_refptr<media::DecoderBuffer> pending_buffer_to_decode_;

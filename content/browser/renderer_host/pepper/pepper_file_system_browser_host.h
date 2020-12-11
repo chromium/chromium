@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
 #include "content/common/content_export.h"
@@ -144,7 +143,7 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
   // Returns plugin ID generated from plugin's MIME type.
   std::string GeneratePluginId(const std::string& mime_type) const;
 
-  CheckedPtr<BrowserPpapiHost> browser_ppapi_host_;
+  BrowserPpapiHost* browser_ppapi_host_;
 
   PP_FileSystemType type_;
   bool called_open_;  // whether open has been called.

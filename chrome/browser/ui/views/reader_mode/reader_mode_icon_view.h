@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_READER_MODE_READER_MODE_ICON_VIEW_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
@@ -55,7 +54,7 @@ class ReaderModeIconView : public PageActionIconView,
   void OnResult(const dom_distiller::DistillabilityResult& result) override;
 
  private:
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ReaderModeIconView);
 };

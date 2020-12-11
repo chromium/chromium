@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -67,7 +66,7 @@ class MESSAGE_CENTER_EXPORT PopupTimersController
 
  private:
   // Weak, global.
-  CheckedPtr<MessageCenter> message_center_;
+  MessageCenter* message_center_;
 
   // The PopupTimerCollection contains all the managed timers by their ID.
   using PopupTimerCollection =

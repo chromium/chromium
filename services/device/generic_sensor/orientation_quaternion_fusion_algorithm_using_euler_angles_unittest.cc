@@ -4,7 +4,6 @@
 
 #include <cmath>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "services/device/generic_sensor/fake_platform_sensor_fusion.h"
@@ -31,8 +30,7 @@ class OrientationQuaternionFusionAlgorithmUsingEulerAnglesTest
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<FakePlatformSensorFusion> fake_fusion_sensor_;
-  CheckedPtr<OrientationQuaternionFusionAlgorithmUsingEulerAngles>
-      fusion_algorithm_;
+  OrientationQuaternionFusionAlgorithmUsingEulerAngles* fusion_algorithm_;
 };
 
 TEST_F(OrientationQuaternionFusionAlgorithmUsingEulerAnglesTest,

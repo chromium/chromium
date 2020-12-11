@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -47,12 +46,12 @@ class UniqueWidgetPtrTest : public ViewsTestBase, public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override {
     ASSERT_NE(widget_, nullptr);
     ASSERT_EQ(widget_, widget);
-    widget_observer_.Remove(widget_.get());
+    widget_observer_.Remove(widget_);
     widget_ = nullptr;
   }
 
  private:
-  CheckedPtr<Widget> widget_ = nullptr;
+  Widget* widget_ = nullptr;
   ScopedObserver<Widget, WidgetObserver> widget_observer_{this};
 };
 

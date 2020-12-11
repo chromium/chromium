@@ -12,7 +12,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -149,8 +148,8 @@ class MultihopSyncTask : public ExclusiveTask {
     std::move(callback).Run(SYNC_STATUS_OK);
   }
 
-  CheckedPtr<bool> task_started_;
-  CheckedPtr<bool> task_completed_;
+  bool* task_started_;
+  bool* task_completed_;
   base::WeakPtrFactory<MultihopSyncTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MultihopSyncTask);
@@ -207,7 +206,7 @@ class BackgroundTask : public SyncTask {
 
   std::string app_id_;
   base::FilePath path_;
-  CheckedPtr<Stats> stats_;
+  Stats* stats_;
 
   base::WeakPtrFactory<BackgroundTask> weak_ptr_factory_{this};
 
@@ -270,7 +269,7 @@ class BlockerUpdateTestHelper : public SyncTask {
   std::string name_;
   std::string app_id_;
   base::circular_deque<std::string> paths_;
-  CheckedPtr<Log> log_;
+  Log* log_;
 
   base::WeakPtrFactory<BlockerUpdateTestHelper> weak_ptr_factory_{this};
 

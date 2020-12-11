@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -392,8 +391,8 @@ class ScopedBrowserShower {
   }
 
  private:
-  CheckedPtr<NavigateParams> params_;
-  CheckedPtr<content::WebContents*> contents_;
+  NavigateParams* params_;
+  content::WebContents** contents_;
   DISALLOW_COPY_AND_ASSIGN(ScopedBrowserShower);
 };
 
@@ -460,7 +459,7 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
 
 }  // namespace
 
-Browser* Navigate(NavigateParams* params) {
+void Navigate(NavigateParams* params) {
   Browser* source_browser = params->browser;
   if (source_browser)
     params->initiating_profile = source_browser->profile();
@@ -469,7 +468,7 @@ Browser* Navigate(NavigateParams* params) {
   if (source_browser &&
       platform_util::IsBrowserLockedFullscreen(source_browser)) {
     // Block any navigation requests in locked fullscreen mode.
-    return params->browser;
+    return;
   }
 
   // Open System Apps in their standalone window if necessary.
@@ -494,11 +493,11 @@ Browser* Navigate(NavigateParams* params) {
     // app will either open in its own browser window, or navigate an existing
     // browser window exclusively used by this app. For the initiating browser,
     // the navigation should appear to be cancelled.
-    return params->browser;
+    return;
   }
 
   if (!AdjustNavigateParamsForURL(params))
-    return params->browser;
+    return;
 
   // Trying to open a background tab when in an app browser results in
   // focusing a regular browser window and opening a tab in the background
@@ -528,7 +527,7 @@ Browser* Navigate(NavigateParams* params) {
   std::tie(params->browser, singleton_index) =
       GetBrowserAndTabForDisposition(*params);
   if (!params->browser)
-    return params->browser;
+    return;
   if (singleton_index != -1) {
     contents_to_navigate_or_insert =
         params->browser->tab_strip_model()->GetWebContentsAt(singleton_index);
@@ -543,7 +542,7 @@ Browser* Navigate(NavigateParams* params) {
     // |params->browser|.
     Browser* browser = params->browser;
     ShowSingletonTabOverwritingNTP(browser, std::move(*params));
-    return browser;
+    return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (source_browser) {
@@ -556,7 +555,7 @@ Browser* Navigate(NavigateParams* params) {
       if (!settings_window_manager->IsSettingsBrowser(source_browser)) {
         settings_window_manager->ShowChromePageForProfile(
             GetSourceProfile(params), params->url);
-        return params->browser;
+        return;
       }
     }
 
@@ -737,7 +736,6 @@ Browser* Navigate(NavigateParams* params) {
   }
 
   params->navigated_or_inserted_contents = contents_to_navigate_or_insert;
-  return params->browser;
 }
 
 bool IsHostAllowedInIncognito(const GURL& url) {

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
@@ -186,7 +185,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher
   // Implements a timeout on the call to the Win32 DHCP API.
   base::OneShotTimer wait_timer_;
 
-  const CheckedPtr<URLRequestContext> url_request_context_;
+  URLRequestContext* const url_request_context_;
 
   THREAD_CHECKER(thread_checker_);
 

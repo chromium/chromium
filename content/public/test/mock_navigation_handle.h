@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_HANDLE_H_
 #define CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_HANDLE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
@@ -209,13 +208,13 @@ class MockNavigationHandle : public NavigationHandle {
   int64_t navigation_id_;
   GURL url_;
   GURL previous_url_;
-  CheckedPtr<SiteInstance> starting_site_instance_ = nullptr;
-  CheckedPtr<WebContents> web_contents_ = nullptr;
+  SiteInstance* starting_site_instance_ = nullptr;
+  WebContents* web_contents_ = nullptr;
   GURL base_url_for_data_url_;
   blink::mojom::Referrer referrer_;
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   net::Error net_error_code_ = net::OK;
-  CheckedPtr<RenderFrameHost> render_frame_host_ = nullptr;
+  RenderFrameHost* render_frame_host_ = nullptr;
   bool is_same_document_ = false;
   bool is_renderer_initiated_ = true;
   std::vector<GURL> redirect_chain_;
