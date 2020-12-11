@@ -745,8 +745,14 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
   [self.overscrollActionsController scrollViewDidEndDragging:scrollView
                                               willDecelerate:decelerate];
-  [self.discoverFeedMetricsRecorder
-      recordFeedScrolled:scrollView.contentOffset.y - self.scrollStartPosition];
+  if (IsDiscoverFeedEnabled()) {
+    [self.discoverFeedMetricsRecorder
+        recordFeedScrolled:scrollView.contentOffset.y -
+                           self.scrollStartPosition];
+  } else {
+    [self.metricsRecorder recordFeedScrolled:scrollView.contentOffset.y -
+                                             self.scrollStartPosition];
+  }
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView

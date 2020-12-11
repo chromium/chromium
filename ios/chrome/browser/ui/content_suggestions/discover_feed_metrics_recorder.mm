@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feed/core/v2/common_enums.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -144,6 +145,7 @@ const int kMinutesBetweenSessions = 5;
 #pragma mark - Public
 
 - (void)recordFeedScrolled:(int)scrollDistance {
+  DCHECK(IsDiscoverFeedEnabled());
   [self recordEngagement:scrollDistance interacted:NO];
 
   if (!self.scrolledReported) {
@@ -339,6 +341,7 @@ const int kMinutesBetweenSessions = 5;
 
 // Records any direct interaction with the Feed, this doesn't include scrolling.
 - (void)recordInteraction {
+  DCHECK(IsDiscoverFeedEnabled());
   [self recordEngagement:0 interacted:YES];
   [self recordEngagementTypeHistogram:FeedEngagementType::kFeedInteracted];
 }
