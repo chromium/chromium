@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_handler_proxy.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -357,9 +356,6 @@ void ContentAutofillDriver::SetAutofillManager(
     std::unique_ptr<AutofillManager> manager) {
   autofill_handler_ = std::move(manager);
   autofill_manager_ = static_cast<AutofillManager*>(autofill_handler_.get());
-  autofill_external_delegate_ =
-      std::make_unique<AutofillExternalDelegate>(autofill_manager_, this);
-  autofill_manager_->SetExternalDelegate(autofill_external_delegate_.get());
 }
 
 ContentAutofillDriver::ContentAutofillDriver()

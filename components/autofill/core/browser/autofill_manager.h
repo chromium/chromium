@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_handler.h"
 #include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -47,7 +48,6 @@ class RectF;
 namespace autofill {
 
 class AutofillDataModel;
-class AutofillExternalDelegate;
 class AutofillField;
 class AutofillClient;
 class AutofillManagerTestDelegate;
@@ -83,9 +83,6 @@ class AutofillManager : public AutofillHandler,
                   const std::string& app_locale,
                   AutofillDownloadManagerState enable_download_manager);
   ~AutofillManager() override;
-
-  // Sets an external delegate.
-  void SetExternalDelegate(AutofillExternalDelegate* delegate);
 
   void ShowAutofillSettings(bool show_credit_card_settings);
 
@@ -259,6 +256,11 @@ class AutofillManager : public AutofillHandler,
   }
 
 #if defined(UNIT_TEST)
+  void SetExternalDelegateForTest(
+      std::unique_ptr<AutofillExternalDelegate> external_delegate) {
+    external_delegate_ = std::move(external_delegate);
+  }
+
   // A public wrapper that calls |DeterminePossibleFieldTypesForUpload| for
   // testing purposes only.
   static void DeterminePossibleFieldTypesForUploadForTest(
@@ -358,6 +360,8 @@ class AutofillManager : public AutofillHandler,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AutofillManagerTest, PageLanguageGetsCorrectlySet);
+  FRIEND_TEST_ALL_PREFIXES(AutofillManagerTest,
+                           PageLanguageGetsCorrectlyDetected);
 
   // Keeps track of the filling context for a form, used to make refill attemps.
   struct FillingContext {
@@ -600,6 +604,10 @@ class AutofillManager : public AutofillHandler,
 
   AutofillClient* const client_;
 
+  // Delegate to perform external processing (display, selection) on
+  // our behalf.
+  std::unique_ptr<AutofillExternalDelegate> external_delegate_;
+
   LogManager* log_manager_;
 
   std::string app_locale_;
@@ -676,10 +684,6 @@ class AutofillManager : public AutofillHandler,
   // Note that the integers are not frontend IDs.
   mutable std::map<std::string, int> backend_to_int_map_;
   mutable std::map<int, std::string> int_to_backend_map_;
-
-  // Delegate to perform external processing (display, selection) on
-  // our behalf.  Weak.
-  AutofillExternalDelegate* external_delegate_ = nullptr;
 
   // Delegate used in test to get notifications on certain events.
   AutofillManagerTestDelegate* test_delegate_ = nullptr;

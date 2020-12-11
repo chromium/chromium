@@ -282,8 +282,9 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
 
 #ifdef UNIT_TEST
   // Exposed for testing.
-  void set_download_manager(AutofillDownloadManager* manager) {
-    download_manager_.reset(manager);
+  void set_download_manager_for_test(
+      std::unique_ptr<AutofillDownloadManager> manager) {
+    download_manager_ = std::move(manager);
   }
 
   // Exposed for testing.

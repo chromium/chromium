@@ -356,17 +356,20 @@ class AutofillManagerTest : public testing::Test {
     autofill_manager_ = std::make_unique<TestAutofillManager>(
         autofill_driver_.get(), &autofill_client_, &personal_data_,
         autocomplete_history_manager_.get());
-    download_manager_ = new MockAutofillDownloadManager(
+
+    auto download_manager = std::make_unique<MockAutofillDownloadManager>(
         autofill_driver_.get(), autofill_manager_.get());
-    // AutofillManager takes ownership of |download_manager_|.
-    autofill_manager_->set_download_manager(download_manager_);
-    external_delegate_ = std::make_unique<TestAutofillExternalDelegate>(
+    download_manager_ = download_manager.get();
+    autofill_manager_->set_download_manager_for_test(
+        std::move(download_manager));
+
+    auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
         autofill_manager_.get(), autofill_driver_.get(),
         /*call_parent_methods=*/false);
-    autofill_manager_->SetExternalDelegate(external_delegate_.get());
+    external_delegate_ = external_delegate.get();
+    autofill_manager_->SetExternalDelegateForTest(std::move(external_delegate));
 
-    std::unique_ptr<TestStrikeDatabase> test_strike_database =
-        std::make_unique<TestStrikeDatabase>();
+    auto test_strike_database = std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
 
@@ -427,7 +430,6 @@ class AutofillManagerTest : public testing::Test {
     // Order of destruction is important as AutofillManager relies on
     // PersonalDataManager to be around when it gets destroyed.
     autofill_manager_.reset();
-    autofill_driver_.reset();
 
     personal_data_.SetPrefService(nullptr);
     personal_data_.ClearCreditCards();
@@ -632,7 +634,7 @@ class AutofillManagerTest : public testing::Test {
   MockAutofillClient autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestAutofillManager> autofill_manager_;
-  std::unique_ptr<TestAutofillExternalDelegate> external_delegate_;
+  TestAutofillExternalDelegate* external_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
   MockAutofillDownloadManager* download_manager_;
   TestPersonalDataManager personal_data_;
@@ -4829,10 +4831,11 @@ TEST_P(AutofillManagerStructuredProfileTest,
                               autocomplete_history_manager_.get()));
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
-  external_delegate_ = std::make_unique<TestAutofillExternalDelegate>(
+  auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
       autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
-  autofill_manager_->SetExternalDelegate(external_delegate_.get());
+  external_delegate_ = external_delegate.get();
+  autofill_manager_->SetExternalDelegateForTest(std::move(external_delegate));
 
   // Set up our form data.
   FormData form;
@@ -4858,10 +4861,11 @@ TEST_P(AutofillManagerStructuredProfileTest,
                               autocomplete_history_manager_.get()));
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
-  external_delegate_ = std::make_unique<TestAutofillExternalDelegate>(
+  auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
       autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
-  autofill_manager_->SetExternalDelegate(external_delegate_.get());
+  external_delegate_ = external_delegate.get();
+  autofill_manager_->SetExternalDelegateForTest(std::move(external_delegate));
 
   // Set up our form data.
   FormData form;
@@ -4940,10 +4944,11 @@ TEST_P(AutofillManagerStructuredProfileTest,
                               autocomplete_history_manager_.get()));
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
-  external_delegate_ = std::make_unique<TestAutofillExternalDelegate>(
+  auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
       autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
-  autofill_manager_->SetExternalDelegate(external_delegate_.get());
+  external_delegate_ = external_delegate.get();
+  autofill_manager_->SetExternalDelegateForTest(std::move(external_delegate));
 
   // Set up our form data.
   FormData form;
@@ -4978,10 +4983,11 @@ TEST_P(AutofillManagerStructuredProfileTest,
                               autocomplete_history_manager_.get()));
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
-  external_delegate_ = std::make_unique<TestAutofillExternalDelegate>(
+  auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
       autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
-  autofill_manager_->SetExternalDelegate(external_delegate_.get());
+  external_delegate_ = external_delegate.get();
+  autofill_manager_->SetExternalDelegateForTest(std::move(external_delegate));
 
   // Set up our form data.
   FormData form;
@@ -5032,10 +5038,11 @@ TEST_P(AutofillManagerStructuredProfileTest,
                               autocomplete_history_manager_.get()));
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
-  external_delegate_ = std::make_unique<TestAutofillExternalDelegate>(
+  auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
       autofill_manager_.get(), autofill_driver_.get(),
       /*call_parent_methods=*/false);
-  autofill_manager_->SetExternalDelegate(external_delegate_.get());
+  external_delegate_ = external_delegate.get();
+  autofill_manager_->SetExternalDelegateForTest(std::move(external_delegate));
 
   EXPECT_CALL(*(autocomplete_history_manager_.get()),
               OnGetAutocompleteSuggestions)

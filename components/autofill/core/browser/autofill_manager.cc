@@ -446,6 +446,51 @@ AutofillManager::AutofillManager(
                       app_locale,
                       enable_download_manager) {}
 
+AutofillManager::AutofillManager(
+    AutofillDriver* driver,
+    AutofillClient* client,
+    PersonalDataManager* personal_data,
+    AutocompleteHistoryManager* autocomplete_history_manager,
+    const std::string app_locale,
+    AutofillDownloadManagerState enable_download_manager,
+    std::unique_ptr<CreditCardAccessManager> cc_access_manager)
+    : AutofillHandler(driver,
+                      client->GetLogManager(),
+                      enable_download_manager,
+                      client->GetChannel()),
+      client_(client),
+      external_delegate_(
+          std::make_unique<AutofillExternalDelegate>(this, driver)),
+      log_manager_(client_->GetLogManager()),
+      app_locale_(app_locale),
+      personal_data_(personal_data),
+      field_filler_(app_locale, client->GetAddressNormalizer()),
+      autocomplete_history_manager_(
+          autocomplete_history_manager->GetWeakPtr()) {
+  DCHECK(driver);
+  DCHECK(client_);
+  // The factory callback must be set first because the logger is used to create
+  // |address_form_event_logger_| and |credit_card_form_event_logger_|; and the
+  // callback can't be set in constructor of AutofillHandler because |client_|
+  // is used in callback function.
+  InitFormInteractionsUkmLogger(
+      base::BindRepeating(&AutofillManager::CreateFormInteractionsUkmLogger,
+                          base::Unretained(this)));
+  address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
+      driver->IsInMainFrame(), form_interactions_ukm_logger(), client_);
+  credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
+      driver->IsInMainFrame(), form_interactions_ukm_logger(), personal_data_,
+      client_);
+
+  credit_card_access_manager_ = cc_access_manager
+                                    ? std::move(cc_access_manager)
+                                    : std::make_unique<CreditCardAccessManager>(
+                                          driver, client_, personal_data_,
+                                          credit_card_form_event_logger_.get());
+  CountryNames::SetLocaleString(app_locale_);
+  offer_manager_ = client_->GetAutofillOfferManager();
+}
+
 AutofillManager::~AutofillManager() {
   if (has_parsed_forms_) {
     base::UmaHistogramBoolean(
@@ -458,13 +503,6 @@ AutofillManager::~AutofillManager() {
   if (autocomplete_history_manager_) {
     autocomplete_history_manager_->CancelPendingQueries(this);
   }
-}
-
-void AutofillManager::SetExternalDelegate(AutofillExternalDelegate* delegate) {
-  // TODO(jrg): consider passing delegate into the ctor.  That won't
-  // work if the delegate has a pointer to the AutofillManager, but
-  // future directions may not need such a pointer.
-  external_delegate_ = delegate;
 }
 
 void AutofillManager::ShowAutofillSettings(bool show_credit_card_settings) {
@@ -1539,49 +1577,6 @@ void AutofillManager::Reset() {
   external_delegate_->Reset();
   filling_context_by_renderer_id_.clear();
   filling_context_by_unique_name_.clear();
-}
-
-AutofillManager::AutofillManager(
-    AutofillDriver* driver,
-    AutofillClient* client,
-    PersonalDataManager* personal_data,
-    AutocompleteHistoryManager* autocomplete_history_manager,
-    const std::string app_locale,
-    AutofillDownloadManagerState enable_download_manager,
-    std::unique_ptr<CreditCardAccessManager> cc_access_manager)
-    : AutofillHandler(driver,
-                      client->GetLogManager(),
-                      enable_download_manager,
-                      client->GetChannel()),
-      client_(client),
-      log_manager_(client_->GetLogManager()),
-      app_locale_(app_locale),
-      personal_data_(personal_data),
-      field_filler_(app_locale, client->GetAddressNormalizer()),
-      autocomplete_history_manager_(
-          autocomplete_history_manager->GetWeakPtr()) {
-  DCHECK(driver);
-  DCHECK(client_);
-  // The factory callback must be set first because the logger is used to create
-  // |address_form_event_logger_| and |credit_card_form_event_logger_|; and the
-  // callback can't be set in constructor of AutofillHandler because |client_|
-  // is used in callback function.
-  InitFormInteractionsUkmLogger(
-      base::BindRepeating(&AutofillManager::CreateFormInteractionsUkmLogger,
-                          base::Unretained(this)));
-  address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
-      driver->IsInMainFrame(), form_interactions_ukm_logger(), client_);
-  credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
-      driver->IsInMainFrame(), form_interactions_ukm_logger(), personal_data_,
-      client_);
-
-  credit_card_access_manager_ = cc_access_manager
-                                    ? std::move(cc_access_manager)
-                                    : std::make_unique<CreditCardAccessManager>(
-                                          driver, client_, personal_data_,
-                                          credit_card_form_event_logger_.get());
-  CountryNames::SetLocaleString(app_locale_);
-  offer_manager_ = client_->GetAutofillOfferManager();
 }
 
 bool AutofillManager::RefreshDataModels() {

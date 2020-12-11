@@ -54,10 +54,8 @@ AutofillDriverIOS::AutofillDriverIOS(
     AutofillManager::AutofillDownloadManagerState enable_download_manager)
     : web_state_(web_state),
       bridge_(bridge),
-      autofill_manager_(this, client, app_locale, enable_download_manager),
-      autofill_external_delegate_(&autofill_manager_, this) {
+      autofill_manager_(this, client, app_locale, enable_download_manager) {
   web_frame_id_ = web::GetWebFrameId(web_frame);
-  autofill_manager_.SetExternalDelegate(&autofill_external_delegate_);
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() {}

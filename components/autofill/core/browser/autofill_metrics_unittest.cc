@@ -381,7 +381,7 @@ class AutofillMetricsTest : public testing::Test {
   std::unique_ptr<TestAutofillManager> autofill_manager_;
   std::unique_ptr<TestPersonalDataManager> personal_data_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
-  std::unique_ptr<AutofillExternalDelegate> external_delegate_;
+  AutofillExternalDelegate* external_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -431,9 +431,10 @@ void AutofillMetricsTest::SetUp() {
   autofill_manager_ = std::make_unique<TestAutofillManager>(
       autofill_driver_.get(), &autofill_client_, personal_data_.get(),
       autocomplete_history_manager_.get());
-  external_delegate_ = std::make_unique<AutofillExternalDelegate>(
+  auto external_delegate = std::make_unique<AutofillExternalDelegate>(
       autofill_manager_.get(), autofill_driver_.get());
-  autofill_manager_->SetExternalDelegate(external_delegate_.get());
+  external_delegate_ = external_delegate.get();
+  autofill_manager_->SetExternalDelegateForTest(std::move(external_delegate));
 
 #if !defined(OS_IOS)
   autofill_manager_->credit_card_access_manager()

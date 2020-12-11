@@ -99,8 +99,6 @@ class AutofillDriverIOS : public AutofillDriver {
   // AutofillManager instance via which this object drives the shared Autofill
   // code.
   AutofillManager autofill_manager_;
-  // AutofillExternalDelegate instance that is passed to the AutofillManager.
-  AutofillExternalDelegate autofill_external_delegate_;
 };
 
 }  // namespace autofill
