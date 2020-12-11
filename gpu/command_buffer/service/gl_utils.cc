@@ -895,8 +895,10 @@ bool ValidateCopyTexFormatHelper(const FeatureInfo* feature_info,
   // YUV formats are not valid for CopyTex[Sub]Image.
   if (internal_format == GL_RGB_YCRCB_420_CHROMIUM ||
       internal_format == GL_RGB_YCBCR_420V_CHROMIUM ||
+      internal_format == GL_RGB_YCBCR_P010_CHROMIUM ||
       read_format == GL_RGB_YCRCB_420_CHROMIUM ||
-      read_format == GL_RGB_YCBCR_420V_CHROMIUM) {
+      read_format == GL_RGB_YCBCR_420V_CHROMIUM ||
+      read_format == GL_RGB_YCBCR_P010_CHROMIUM) {
     return false;
   }
   // Check we have compatible formats.

@@ -360,6 +360,8 @@ bool SizedFormatAvailable(const FeatureInfo* feature_info,
 
   if ((feature_info->feature_flags().chromium_image_ycbcr_420v &&
        internal_format == GL_RGB_YCBCR_420V_CHROMIUM) ||
+      (feature_info->feature_flags().chromium_image_ycbcr_p010 &&
+       internal_format == GL_RGB_YCBCR_P010_CHROMIUM) ||
       (feature_info->feature_flags().chromium_image_ycbcr_422 &&
        internal_format == GL_RGB_YCBCR_422_CHROMIUM)) {
     return true;
