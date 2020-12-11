@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_request.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -24,6 +25,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/image_view.h"
@@ -140,11 +142,20 @@ void PermissionChip::DisplayRequest(
   }
   requested_time_ = base::TimeTicks::Now();
   PreferredSizeChanged();
+
+  AnnouncePermissionRequested();
+  // In case the user didn't hear the initial alert, reannounce permission again
+  // with a 2 minute delay.
+  constexpr auto kDelayBeforeReannouncingRequest =
+      base::TimeDelta::FromMinutes(2);
+  announce_timer_.Start(FROM_HERE, kDelayBeforeReannouncingRequest, this,
+                        &PermissionChip::AnnouncePermissionRequested);
 }
 
 void PermissionChip::FinalizeRequest() {
   SetVisible(false);
   timer_.AbandonAndStop();
+  announce_timer_.AbandonAndStop();
   delegate_ = nullptr;
   if (prompt_bubble_)
     prompt_bubble_->GetWidget()->Close();
@@ -228,6 +239,9 @@ void PermissionChip::OpenBubble() {
   // deactivation.
   DCHECK(!prompt_bubble_);
 
+  // If the user opens the bubble, they must know about the pending request so
+  // we don't need to announce it again later.
+  announce_timer_.AbandonAndStop();
   prompt_bubble_ = new PermissionPromptBubbleView(
       browser_, delegate_, requested_time_, PermissionPromptStyle::kChip);
   prompt_bubble_->Show();
@@ -303,4 +317,9 @@ base::string16 PermissionChip::GetPermissionMessage() {
              ? requests[0]->GetChipText().value()
              : l10n_util::GetStringUTF16(
                    IDS_MEDIA_CAPTURE_VIDEO_AND_AUDIO_PERMISSION_CHIP);
+}
+
+void PermissionChip::AnnouncePermissionRequested() {
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT));
 }
