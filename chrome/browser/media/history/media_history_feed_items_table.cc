@@ -481,7 +481,7 @@ MediaHistoryFeedItemsTable::GetItems(
     if (request.filter_by_type.has_value())
       sql.push_back("AND type = ?");
 
-    sql.push_back("ORDER BY clicked ASC, shown_count ASC LIMIT ?");
+    sql.push_back("LIMIT ?");
 
     // For each different query combination we should have an assign statement
     // call that will generate a unique SQL_FROM_HERE value.
