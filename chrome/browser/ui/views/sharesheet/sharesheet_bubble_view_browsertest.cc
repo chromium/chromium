@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -61,9 +62,21 @@ class SharesheetBubbleViewBrowserTest
                         std::inserter(added_widgets, added_widgets.begin()));
     ASSERT_EQ(added_widgets.size(), 1u);
     sharesheet_widget_ = *added_widgets.begin();
+    ASSERT_EQ(sharesheet_widget_->GetName(), "SharesheetBubbleView");
   }
 
-  bool VerifyUi() { return sharesheet_widget_->IsVisible(); }
+  bool VerifyUi() {
+    if (sharesheet_widget_) {
+      return sharesheet_widget_->IsVisible();
+    }
+    return false;
+  }
+
+  void DismissUi() {
+    ASSERT_TRUE(sharesheet_widget_);
+    sharesheet_widget_->Close();
+    ASSERT_FALSE(sharesheet_widget_->IsVisible());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -77,4 +90,5 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewBrowserTest, InvokeUi_Default) {
   ShowUi();
   ASSERT_TRUE(VerifyUi());
+  DismissUi();
 }

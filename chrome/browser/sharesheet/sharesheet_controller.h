@@ -15,10 +15,6 @@ class SharesheetController {
  public:
   virtual ~SharesheetController() = default;
 
-  // Each Controller is assigned a unique id used to distinuish between
-  // different invocations of the sharesheet.
-  virtual uint32_t GetId() = 0;
-
   virtual Profile* GetProfile() = 0;
 
   // When called will set the bubble size to |width| and |height|.
