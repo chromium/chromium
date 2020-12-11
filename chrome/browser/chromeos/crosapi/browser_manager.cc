@@ -445,8 +445,12 @@ void BrowserManager::OnSessionStateChanged() {
 
   // Wait for session to become active.
   auto* session_manager = session_manager::SessionManager::Get();
-  if (session_manager->session_state() != session_manager::SessionState::ACTIVE)
+  if (session_manager->session_state() !=
+      session_manager::SessionState::ACTIVE) {
+    LOG(WARNING)
+        << "Session not yet active. Lacros-chrome will not be launched yet";
     return;
+  }
 
   // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);

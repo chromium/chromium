@@ -126,23 +126,32 @@ bool IsLacrosEnabled() {
 }
 
 bool IsLacrosEnabled(Channel channel) {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport))
+  if (!base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport)) {
+    LOG(WARNING) << "Lacros-chrome is not supported";
     return false;
+  }
 
   const User* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user)
+  if (!user) {
+    LOG(WARNING)
+        << "Unable to get primary user. Lacros-chrome will be disabled";
     return false;
+  }
 
-  if (!IsUserTypeAllowed(user))
+  if (!IsUserTypeAllowed(user)) {
+    LOG(WARNING) << "Current user type not allowed to launch lacros-chrome";
     return false;
+  }
 
   // TODO(https://crbug.com/1135494): Remove the free ticket for
   // Channel::UNKNOWN after the policy is set on server side for developers.
   if (channel == Channel::UNKNOWN)
     return true;
 
-  if (!g_browser_process->local_state()->GetBoolean(prefs::kLacrosAllowed))
+  if (!g_browser_process->local_state()->GetBoolean(prefs::kLacrosAllowed)) {
+    LOG(WARNING) << "Lacros-chrome is not allowed by policy";
     return false;
+  }
 
   switch (channel) {
     case Channel::UNKNOWN:
