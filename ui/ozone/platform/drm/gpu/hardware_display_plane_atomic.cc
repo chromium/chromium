@@ -4,7 +4,10 @@
 
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_atomic.h"
 
+#include <drm_fourcc.h>
+
 #include "base/logging.h"
+#include "media/media_buildflags.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
@@ -20,12 +23,15 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
       return DRM_MODE_REFLECT_X | DRM_MODE_ROTATE_0;
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
       return DRM_MODE_REFLECT_Y | DRM_MODE_ROTATE_0;
+    // Driver code swaps 90 and 270 to be compliant with how xrandr uses these
+    // values, so we need to invert them here as well to get them back to the
+    // proper value.
     case gfx::OVERLAY_TRANSFORM_ROTATE_90:
-      return DRM_MODE_ROTATE_90;
+      return DRM_MODE_ROTATE_270;
     case gfx::OVERLAY_TRANSFORM_ROTATE_180:
       return DRM_MODE_ROTATE_180;
     case gfx::OVERLAY_TRANSFORM_ROTATE_270:
-      return DRM_MODE_ROTATE_270;
+      return DRM_MODE_ROTATE_90;
     default:
       NOTREACHED();
   }
@@ -35,8 +41,22 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
 // Rotations are dependent on modifiers. Tiled formats can be rotated,
 // linear formats cannot. Atomic tests currently ignore modifiers, so there
 // isn't a way of determining if the rotation is supported.
-// TODO(https://crbug/880464): Remove this.
-bool IsRotationTransformSupported(gfx::OverlayTransform transform) {
+// TODO(https://b/172210707): Atomic tests should work if we are using
+// kUseRealBuffersForPageFlipTest, so this should be revisited and tested more
+// broadly with a condition on that.
+// NOTE: This is enabled for TGL+ and NV12/P010 formats for 90/270 rotation
+// currently since we always allocate those formats as Y-tiled and 90/270
+// rotation is supported by the HW in that case. This is needed for protected
+// content that requires overlays.
+bool IsRotationTransformSupported(gfx::OverlayTransform transform,
+                                  uint32_t format_fourcc) {
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  if ((format_fourcc == DRM_FORMAT_NV12 || format_fourcc == DRM_FORMAT_P010) &&
+      (transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
+       transform == gfx::OVERLAY_TRANSFORM_ROTATE_270)) {
+    return true;
+  }
+#endif
   if ((transform == gfx::OVERLAY_TRANSFORM_ROTATE_90) ||
       (transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) ||
       (transform == gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL)) {
@@ -80,11 +100,12 @@ bool HardwareDisplayPlaneAtomic::AssignPlaneProps(
     const gfx::Rect& crtc_rect,
     const gfx::Rect& src_rect,
     const gfx::OverlayTransform transform,
-    int in_fence_fd) {
+    int in_fence_fd,
+    uint32_t format_fourcc) {
   if (transform != gfx::OVERLAY_TRANSFORM_NONE && !properties_.rotation.id)
     return false;
 
-  if (!IsRotationTransformSupported(transform))
+  if (!IsRotationTransformSupported(transform, format_fourcc))
     return false;
 
   // Make a copy of properties to get the props IDs for the new intermediate

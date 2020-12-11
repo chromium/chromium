@@ -204,9 +204,9 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
       plane->set_in_use(false);
       HardwareDisplayPlaneAtomic* atomic_plane =
           static_cast<HardwareDisplayPlaneAtomic*>(plane);
-      atomic_plane->AssignPlaneProps(0, 0, gfx::Rect(), gfx::Rect(),
-                                     gfx::OVERLAY_TRANSFORM_NONE,
-                                     base::kInvalidPlatformFile);
+      atomic_plane->AssignPlaneProps(
+          0, 0, gfx::Rect(), gfx::Rect(), gfx::OVERLAY_TRANSFORM_NONE,
+          base::kInvalidPlatformFile, DRM_FORMAT_INVALID);
       atomic_plane->SetPlaneProps(atomic_request);
     }
   }
@@ -307,9 +307,9 @@ bool HardwareDisplayPlaneManagerAtomic::DisableOverlayPlanes(
 
       HardwareDisplayPlaneAtomic* atomic_plane =
           static_cast<HardwareDisplayPlaneAtomic*>(plane);
-      atomic_plane->AssignPlaneProps(0, 0, gfx::Rect(), gfx::Rect(),
-                                     gfx::OVERLAY_TRANSFORM_NONE,
-                                     base::kInvalidPlatformFile);
+      atomic_plane->AssignPlaneProps(
+          0, 0, gfx::Rect(), gfx::Rect(), gfx::OVERLAY_TRANSFORM_NONE,
+          base::kInvalidPlatformFile, DRM_FORMAT_INVALID);
       atomic_plane->SetPlaneProps(plane_list->atomic_property_set.get());
     }
     ret = drm_->CommitProperties(plane_list->atomic_property_set.get(),
@@ -382,9 +382,10 @@ bool HardwareDisplayPlaneManagerAtomic::SetPlaneData(
     fence_fd = gpu_fence_handle.owned_fd.get();
   }
 
-  if (!atomic_plane->AssignPlaneProps(crtc_id, framebuffer_id,
-                                      overlay.display_bounds, src_rect,
-                                      overlay.plane_transform, fence_fd)) {
+  if (!atomic_plane->AssignPlaneProps(
+          crtc_id, framebuffer_id, overlay.display_bounds, src_rect,
+          overlay.plane_transform, fence_fd,
+          overlay.buffer->framebuffer_pixel_format())) {
     return false;
   }
   return true;

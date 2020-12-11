@@ -31,7 +31,8 @@ class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
                                 const gfx::Rect& crtc_rect,
                                 const gfx::Rect& src_rect,
                                 const gfx::OverlayTransform transform,
-                                int in_fence_fd);
+                                int in_fence_fd,
+                                uint32_t format_fourcc);
   // Sets the props on |property_set| for commit.
   bool SetPlaneProps(drmModeAtomicReq* property_set);
 

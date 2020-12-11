@@ -1379,7 +1379,8 @@ class HardwareDisplayPlaneAtomicMock : public ui::HardwareDisplayPlaneAtomic {
                         const gfx::Rect& crtc_rect,
                         const gfx::Rect& src_rect,
                         const gfx::OverlayTransform transform,
-                        int in_fence_fd) override {
+                        int in_fence_fd,
+                        uint32_t format_fourcc) override {
     framebuffer_ = framebuffer;
     return true;
   }
