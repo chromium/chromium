@@ -27,6 +27,10 @@ class PrepareDirectoryTask {
   PrepareDirectoryTask& operator=(const PrepareDirectoryTask&) = delete;
   ~PrepareDirectoryTask();
 
+  // Deletes specified |file_paths| after waiting |delay|.
+  static void ScheduleSharedFileDeletion(std::vector<base::FilePath> file_paths,
+                                         base::TimeDelta delay);
+
   // Launches the task. |callback_| will be called on the original (UI) thread
   // when the task completes.
   void Start();

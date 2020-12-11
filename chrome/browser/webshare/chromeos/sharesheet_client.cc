@@ -157,6 +157,8 @@ void SharesheetClient::SetSharesheetCallbackForTesting(
 
 void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!current_share_.has_value())
+    return;
 
   if (!web_contents() || error != blink::mojom::ShareError::OK) {
     std::move(current_share_->callback).Run(error);
@@ -183,9 +185,13 @@ void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
 
 void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!current_share_.has_value())
+    return;
 
   if (!web_contents() || error != blink::mojom::ShareError::OK) {
     std::move(current_share_->callback).Run(error);
+    PrepareDirectoryTask::ScheduleSharedFileDeletion(
+        std::move(current_share_->file_paths), base::TimeDelta::FromMinutes(0));
     current_share_ = base::nullopt;
     return;
   }
@@ -198,7 +204,13 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
 }
 
 void SharesheetClient::OnShowSharesheet(sharesheet::SharesheetResult result) {
+  if (!current_share_.has_value())
+    return;
+
   std::move(current_share_->callback).Run(SharesheetResultToShareError(result));
+  PrepareDirectoryTask::ScheduleSharedFileDeletion(
+      std::move(current_share_->file_paths),
+      PrepareDirectoryTask::kSharedFileLifetime);
   current_share_ = base::nullopt;
 }
 

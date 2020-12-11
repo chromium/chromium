@@ -27,6 +27,17 @@ StoreFileTask::StoreFileTask(base::FilePath filename,
 StoreFileTask::~StoreFileTask() = default;
 
 void StoreFileTask::Start() {
+  {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+    output_file_.Initialize(
+        filename_, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  }
+
+  (this->*GetStartReadFunc())();
+}
+
+void StoreFileTask::StartRead() {
   constexpr size_t kDataPipeCapacity = 65536;
 
   MojoCreateDataPipeOptions options;
@@ -42,16 +53,14 @@ void StoreFileTask::Start() {
     return;
   }
 
-  {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::WILL_BLOCK);
-    output_file_.Initialize(
-        filename_, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  }
-
   mojo::Remote<blink::mojom::Blob> blob(std::move(file_->blob->blob));
   blob->ReadAll(std::move(producer_handle),
                 receiver_.BindNewPipeAndPassRemote());
+}
+
+// static
+void StoreFileTask::SkipCopyingForTesting() {
+  GetStartReadFunc() = &StoreFileTask::OnSuccess;
 }
 
 void StoreFileTask::OnDataPipeReadable(MojoResult result) {
@@ -142,6 +151,13 @@ void StoreFileTask::OnComplete(int32_t status, uint64_t data_length) {
   received_on_complete_ = true;
   if (received_all_data_)
     OnSuccess();
+}
+
+// static
+StoreFileTask::StartReadFunc& StoreFileTask::GetStartReadFunc() {
+  static StartReadFunc start_read_func = &StoreFileTask::StartRead;
+
+  return start_read_func;
 }
 
 }  // namespace webshare

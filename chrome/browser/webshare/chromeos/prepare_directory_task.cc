@@ -6,7 +6,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -15,6 +14,18 @@
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
 using content::BrowserThread;
+
+namespace {
+
+void DeleteSharedFiles(std::vector<base::FilePath> file_paths) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  for (const base::FilePath& name : file_paths) {
+    base::DeleteFile(name);
+  }
+}
+
+}  // namespace
 
 namespace webshare {
 
@@ -38,6 +49,15 @@ void PrepareDirectoryTask::Start() {
                      required_space_),
       base::BindOnce(&PrepareDirectoryTask::OnPrepareDirectory,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+// static
+void PrepareDirectoryTask::ScheduleSharedFileDeletion(
+    std::vector<base::FilePath> file_paths,
+    base::TimeDelta delay) {
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&DeleteSharedFiles, std::move(file_paths)), delay);
 }
 
 // static

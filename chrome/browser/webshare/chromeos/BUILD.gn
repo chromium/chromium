@@ -34,6 +34,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chrome/browser",
+    "//chrome/browser/chromeos:chromeos",
     "//chrome/common",
     "//chrome/test:test_support",
     "//content/public/browser",

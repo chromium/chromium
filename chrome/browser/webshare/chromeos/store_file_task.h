@@ -31,7 +31,13 @@ class StoreFileTask : public blink::mojom::BlobReaderClient {
   // Must be called on a thread that allows blocking IO.
   void Start();
 
+  // Create empty files instead of copying from the SharedFilePtr.
+  static void SkipCopyingForTesting();
+
  private:
+  using StartReadFunc = void (StoreFileTask::*)();
+
+  void StartRead();
   void OnDataPipeReadable(MojoResult result);
   void OnSuccess();
 
@@ -39,6 +45,8 @@ class StoreFileTask : public blink::mojom::BlobReaderClient {
   void OnCalculatedSize(uint64_t total_size,
                         uint64_t expected_content_size) override;
   void OnComplete(int32_t status, uint64_t data_length) override;
+
+  static StartReadFunc& GetStartReadFunc();
 
   base::FilePath filename_;
   blink::mojom::SharedFilePtr file_;
