@@ -17,7 +17,10 @@ android_library("java") {
     "//components/signin/public/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_appcompat_appcompat_java",
+    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/signin/ui/ConfirmImportSyncDataDialog.java",
@@ -27,6 +30,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/ui/GoogleActivityController.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninActivityLauncher.java",
     "java/src/org/chromium/chrome/browser/signin/ui/SigninScrollView.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/SigninView.java",
   ]
   resources_package = "org.chromium.chrome.browser.signin.ui"
 }
@@ -35,11 +39,13 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/confirm_import_sync_data.xml",
     "java/res/layout/signin_progress_bar_dialog.xml",
+    "java/res/layout/signin_view.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
   ]
 }
 

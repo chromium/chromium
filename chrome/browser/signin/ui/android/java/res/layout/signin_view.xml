@@ -2,7 +2,7 @@
 <!-- Copyright 2018 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<org.chromium.chrome.browser.signin.SigninView
+<org.chromium.chrome.browser.signin.ui.SigninView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -180,4 +180,4 @@
             android:layout_weight="1"
             android:visibility="gone"/>
     </LinearLayout>
-</org.chromium.chrome.browser.signin.SigninView>
+</org.chromium.chrome.browser.signin.ui.SigninView>

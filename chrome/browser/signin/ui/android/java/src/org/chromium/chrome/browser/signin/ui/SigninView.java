@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -16,8 +16,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.ui.SigninScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.drawable.AnimationLooper;
 import org.chromium.ui.widget.ButtonCompat;
@@ -72,76 +70,130 @@ public class SigninView extends LinearLayout {
         mAnimationLooper = new AnimationLooper(mHeaderImage.getDrawable());
     }
 
-    SigninScrollView getScrollView() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public SigninScrollView getScrollView() {
         return mScrollView;
     }
 
-    TextView getTitleView() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public TextView getTitleView() {
         return mTitle;
     }
 
-    View getAccountPickerView() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public View getAccountPickerView() {
         return mAccountPicker;
     }
 
-    ImageView getAccountImageView() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public ImageView getAccountImageView() {
         return mAccountImage;
     }
 
-    TextView getAccountTextPrimary() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public TextView getAccountTextPrimary() {
         return mAccountTextPrimary;
     }
 
-    TextView getAccountTextSecondary() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public TextView getAccountTextSecondary() {
         return mAccountTextSecondary;
     }
 
-    ImageView getAccountPickerEndImageView() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public ImageView getAccountPickerEndImageView() {
         return mAccountPickerEndImage;
     }
 
-    TextView getSyncTitleView() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public TextView getSyncTitleView() {
         return mSyncTitle;
     }
 
-    TextView getSyncDescriptionView() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public TextView getSyncDescriptionView() {
         return mSyncDescription;
     }
 
-    TextView getDetailsDescriptionView() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public TextView getDetailsDescriptionView() {
         return mDetailsDescription;
     }
 
-    ButtonCompat getAcceptButton() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public ButtonCompat getAcceptButton() {
         return mAcceptButton;
     }
 
-    Button getRefuseButton() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public Button getRefuseButton() {
         return mRefuseButton;
     }
 
-    Button getMoreButton() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public Button getMoreButton() {
         return mMoreButton;
     }
 
-    View getAcceptButtonEndPadding() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public View getAcceptButtonEndPadding() {
         return mAcceptButtonEndPadding;
     }
 
-    void startAnimations() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public void startAnimations() {
         mAnimationLooper.start();
     }
 
-    void stopAnimations() {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public void stopAnimations() {
         mAnimationLooper.stop();
     }
 
-    static Drawable getExpandArrowDrawable(Context context) {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public static Drawable getExpandArrowDrawable(Context context) {
         return UiUtils.getTintedDrawable(context, R.drawable.ic_expand_more_black_24dp,
                 R.color.default_icon_color_tint_list);
     }
 
-    static Drawable getCheckmarkDrawable(Context context) {
+    /**
+     * TODO(crbug.com/1155123) Change the method to package private after modularization.
+     */
+    public static Drawable getCheckmarkDrawable(Context context) {
         return AppCompatResources.getDrawable(context, R.drawable.ic_check_googblue_24dp);
     }
 }
