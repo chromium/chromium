@@ -169,6 +169,15 @@ static int gAnyContext = 0;
     // -asUIScrollView method.
     _underlyingScrollView = [[UIScrollView alloc] init];
 
+    // There are a few properties where the default WKWebView.scrollView has
+    // different values from a base UIScrollView. As _underlyingScrollView
+    // starts out as a base UIScrollView, the property preservation code will
+    // copy over these incorrect values and overwrite the default
+    // WKWebView.scrollView values for those properties. Instead, set those
+    // values to their WebKit defaults.
+    _underlyingScrollView.alwaysBounceVertical = YES;
+    _underlyingScrollView.directionalLockEnabled = YES;
+
     [self.class startObservingScrollView:_underlyingScrollView proxy:self];
   }
   return self;
