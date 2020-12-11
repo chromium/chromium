@@ -1501,6 +1501,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Accessibility.CrosSelectToSpeak.PauseSpeech">
+  <owner>ajitnarayanan@google.com</owner>
+  <description>A Chrome OS user manually pauses Select To Speak.</description>
+</action>
+
+<action name="Accessibility.CrosSelectToSpeak.ResumeSpeech">
+  <owner>ajitnarayanan@google.com</owner>
+  <description>
+    A Chrome OS user manually resumes Select To Speak after pausing.
+  </description>
+</action>
+
 <action name="Accessibility.CrosSelectToSpeak.StartSpeech">
   <owner>katie@chromium.org</owner>
   <description>A Chrome OS user manually starts Select To Speak.</description>

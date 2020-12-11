@@ -9,12 +9,15 @@ class MetricsUtils {
 
   /**
    * Records a cancel event if speech was in progress.
-   * @param {boolean} speaking Whether speech was in progress
    */
-  static recordCancelIfSpeaking(speaking) {
-    if (speaking) {
-      MetricsUtils.recordCancelEvent_();
-    }
+  static recordCancelIfSpeaking() {
+    // TODO(b/1157214): Use select-to-speak's internal state instead of TTS
+    // state.
+    chrome.tts.isSpeaking((speaking) => {
+      if (speaking) {
+        MetricsUtils.recordCancelEvent_();
+      }
+    });
   }
 
   /**
@@ -43,6 +46,20 @@ class MetricsUtils {
    */
   static recordCancelEvent_() {
     chrome.metricsPrivate.recordUserAction(MetricsUtils.CANCEL_SPEECH_METRIC);
+  }
+
+  /**
+   * Records an event that Select-to-Speak speech has been paused.
+   */
+  static recordPauseEvent() {
+    chrome.metricsPrivate.recordUserAction(MetricsUtils.PAUSE_SPEECH_METRIC);
+  }
+
+  /**
+   * Records an event that Select-to-Speak speech has been resumed from pause.
+   */
+  static recordResumeEvent() {
+    chrome.metricsPrivate.recordUserAction(MetricsUtils.RESUME_SPEECH_METRIC);
   }
 
   /**
@@ -119,6 +136,20 @@ MetricsUtils.START_SPEECH_METRIC =
  */
 MetricsUtils.CANCEL_SPEECH_METRIC =
     'Accessibility.CrosSelectToSpeak.CancelSpeech';
+
+/**
+ * The pause speech metric name.
+ * @type {string}
+ */
+MetricsUtils.PAUSE_SPEECH_METRIC =
+    'Accessibility.CrosSelectToSpeak.PauseSpeech';
+
+/**
+ * The resume speech after pausing metric name.
+ * @type {string}
+ */
+MetricsUtils.RESUME_SPEECH_METRIC =
+    'Accessibility.CrosSelectToSpeak.ResumeSpeech';
 
 /**
  * The background shading metric name.
