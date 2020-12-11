@@ -41,10 +41,15 @@ void LinkToTextTabHelper::CreateForWebState(web::WebState* web_state) {
 
 bool LinkToTextTabHelper::ShouldOffer() {
   // TODO(crbug.com/1134708): add more checks, like text only.
-  return true;
+  web::WebFrame* main_frame =
+      web_state_->GetWebFramesManager()->GetMainWebFrame();
+  return web_state_->ContentIsHTML() && main_frame &&
+         main_frame->CanCallJavaScriptFunction();
 }
 
 void LinkToTextTabHelper::GetLinkToText(LinkToTextCallback callback) {
+  DCHECK(ShouldOffer());
+
   link_generation_timer_ = std::make_unique<base::ElapsedTimer>();
 
   base::WeakPtr<LinkToTextTabHelper> weak_ptr = weak_ptr_factory_.GetWeakPtr();
