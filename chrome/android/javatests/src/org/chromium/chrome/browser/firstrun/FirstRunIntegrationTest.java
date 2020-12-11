@@ -36,6 +36,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -320,6 +321,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Test flaky: crbug.com/1157611")
     public void testFirstRunSkippedSharedPreferenceRefresh() {
         // Set first run was previous skipped by policy in shared preference, then refresh shared
         // preference value, since there's no policy set in this test case.
