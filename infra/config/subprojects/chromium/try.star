@@ -1073,7 +1073,6 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-warmed-orchestrator",
     executable = "recipe:chromium/mini_orchestrator",
-    goma_backend = None,
     properties = {
         "builder_to_trigger": {
             "builder_group": "tryserver.chromium.linux",
