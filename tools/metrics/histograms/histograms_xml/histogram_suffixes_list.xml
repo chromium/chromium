@@ -19859,6 +19859,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="ShowBookmarkMgr" label=""/>
   <suffix name="ShowDownloads" label=""/>
   <suffix name="ShowHistory" label=""/>
+  <suffix name="ShowKaleidoscope" label=""/>
   <suffix name="ShowSyncSetup" label=""/>
   <suffix name="SiteSettings" label=""/>
   <suffix name="TaskManager" label=""/>

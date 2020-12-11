@@ -80534,6 +80534,7 @@ Called by update_scheduler_enums.py.-->
   <int value="49" label="Site Settings"/>
   <int value="50" label="App Info"/>
   <int value="51" label="Uninstall app"/>
+  <int value="52" label="Show Kaleidoscope"/>
 </enum>
 
 <enum name="XFrameOptions">

@@ -11087,6 +11087,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
              desc="Label to identify the Commander feature in Task Manager">
       Commander
     </message>
+    <message name="IDS_SHOW_KALEIDOSCOPE"
+             desc="Menu item to launch the Chrome watch feature">
+      Watch
+    </message>
   </messages>
 </release>
 </grit>

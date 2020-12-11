@@ -26,6 +26,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_shelf.h"
+#include "chrome/browser/media/kaleidoscope/constants.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -418,6 +419,12 @@ void ShowAboutChrome(Browser* browser) {
 void ShowSearchEngineSettings(Browser* browser) {
   base::RecordAction(UserMetricsAction("EditSearchEngines"));
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
+}
+
+void ShowKaleidoscope(Browser* browser) {
+  base::RecordAction(UserMetricsAction("ShowKaleidoscope"));
+  ShowSingletonTabIgnorePathOverwriteNTP(browser,
+                                         GURL(kKaleidoscopeWatchUIURL));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

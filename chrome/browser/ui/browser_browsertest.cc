@@ -1698,6 +1698,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisableMenuItemsWhenIncognitoIsForced) {
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_IMPORT_SETTINGS));
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_MANAGE_EXTENSIONS));
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_OPTIONS));
+  EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SHOW_KALEIDOSCOPE));
 
   // Set Incognito to FORCED.
   IncognitoModePrefs::SetAvailability(browser()->profile()->GetPrefs(),
@@ -1708,6 +1709,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisableMenuItemsWhenIncognitoIsForced) {
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_IMPORT_SETTINGS));
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_MANAGE_EXTENSIONS));
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_OPTIONS));
+  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SHOW_KALEIDOSCOPE));
   // New Incognito Window command, however, should be enabled.
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_NEW_INCOGNITO_WINDOW));
 
@@ -1722,6 +1724,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisableMenuItemsWhenIncognitoIsForced) {
   EXPECT_FALSE(new_command_updater->IsCommandEnabled(IDC_IMPORT_SETTINGS));
   EXPECT_FALSE(new_command_updater->IsCommandEnabled(IDC_MANAGE_EXTENSIONS));
   EXPECT_FALSE(new_command_updater->IsCommandEnabled(IDC_OPTIONS));
+  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SHOW_KALEIDOSCOPE));
   EXPECT_TRUE(new_command_updater->IsCommandEnabled(IDC_NEW_INCOGNITO_WINDOW));
 }
 

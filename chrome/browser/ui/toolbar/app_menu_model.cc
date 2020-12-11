@@ -71,6 +71,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/profiling.h"
+#include "media/base/media_switches.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
@@ -668,6 +669,12 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.AppInfo", delta);
       LogMenuAction(MENU_ACTION_APP_INFO);
       break;
+    case IDC_SHOW_KALEIDOSCOPE:
+      if (!uma_action_recorded_)
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowKaleidoscope",
+                                   delta);
+      LogMenuAction(MENU_ACTION_SHOW_KALEIDOSCOPE);
+      break;
   }
 
   if (!uma_action_recorded_) {
@@ -774,6 +781,11 @@ void AppMenuModel::Build() {
   if (ShouldShowNewIncognitoWindowMenuItem())
     AddItemWithStringId(IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW);
   AddSeparator(ui::NORMAL_SEPARATOR);
+
+  if (!browser_->profile()->IsOffTheRecord() &&
+      base::FeatureList::IsEnabled(media::kKaleidoscopeInMenu)) {
+    AddItemWithStringId(IDC_SHOW_KALEIDOSCOPE, IDS_SHOW_KALEIDOSCOPE);
+  }
 
   if (!browser_->profile()->IsOffTheRecord()) {
     sub_menus_.push_back(

@@ -812,6 +812,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       }
       break;
     }
+    case IDC_SHOW_KALEIDOSCOPE:
+      ShowKaleidoscope(browser_);
+      break;
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
       break;
@@ -1013,6 +1016,10 @@ void BrowserCommandController::InitCommandState() {
       IDC_CLEAR_BROWSING_DATA,
       (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
        !profile()->IsIncognitoProfile()));
+  command_updater_.UpdateCommandEnabled(
+      IDC_SHOW_KALEIDOSCOPE,
+      (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
+       !profile()->IsEphemeralGuestProfile()));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_TAKE_SCREENSHOT, true);
   // Chrome OS uses the system tray menu to handle multi-profiles. Avatar menu
@@ -1137,6 +1144,8 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
   command_updater->UpdateCommandEnabled(IDC_OPTIONS,
                                         !forced_incognito || is_guest);
   command_updater->UpdateCommandEnabled(IDC_SHOW_SIGNIN,
+                                        !forced_incognito && !is_guest);
+  command_updater->UpdateCommandEnabled(IDC_SHOW_KALEIDOSCOPE,
                                         !forced_incognito && !is_guest);
 }
 
