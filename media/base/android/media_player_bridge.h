@@ -153,6 +153,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
 
   // Set the data source for the media player.
   void SetDataSource(const std::string& url);
+  void SetDataSourceInternal();
 
   // Functions that implements media player control.
   void StartInternal();
@@ -219,6 +220,12 @@ class MEDIA_EXPORT MediaPlayerBridge {
 
   // Used to check for cookie content settings.
   url::Origin top_frame_origin_;
+
+  // Waiting to retrieve cookies for |url_|.
+  bool pending_retrieve_cookies_;
+
+  // Whether to prepare after cookies retrieved.
+  bool should_prepare_on_retrieved_cookies_;
 
   // User agent string to be used for media player.
   const std::string user_agent_;
