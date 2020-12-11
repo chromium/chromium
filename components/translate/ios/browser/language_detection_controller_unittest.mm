@@ -18,7 +18,7 @@
 #import "components/translate/ios/browser/js_language_detection_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -67,7 +67,7 @@ class LanguageDetectionControllerTest
     language_detection_tab_helper->RemoveObserver(this);
   }
 
-  web::TestWebState& web_state() { return web_state_; }
+  web::FakeWebState& web_state() { return web_state_; }
   LanguageDetectionController* controller() { return controller_.get(); }
   LanguageDetectionDetails* details() { return details_.get(); }
 
@@ -76,7 +76,7 @@ class LanguageDetectionControllerTest
 
  private:
   TestingPrefServiceSimple prefs_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   std::unique_ptr<LanguageDetectionController> controller_;
   std::unique_ptr<LanguageDetectionDetails> details_;
   base::test::TaskEnvironment environment_;

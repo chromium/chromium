@@ -9,7 +9,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/translate/core/common/language_detection_details.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
@@ -60,7 +60,7 @@ class IOSLanguageDetectionTabHelperObserverBridgeTest : public PlatformTest {
   TestIOSLanguageDetectionTabHelperObserver* observer() { return observer_; }
 
  private:
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   language::IOSLanguageDetectionTabHelper* tab_helper_;
   TestIOSLanguageDetectionTabHelperObserver* observer_;
   std::unique_ptr<language::IOSLanguageDetectionTabHelperObserverBridge>

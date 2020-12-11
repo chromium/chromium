@@ -8,9 +8,9 @@
 
 #include "base/values.h"
 #import "components/translate/ios/browser/js_translate_manager.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "testing/platform_test.h"
@@ -27,8 +27,8 @@ class TranslateControllerTest : public PlatformTest,
                                 public TranslateController::Observer {
  protected:
   TranslateControllerTest()
-      : test_web_state_(std::make_unique<web::TestWebState>()),
-        test_browser_state_(std::make_unique<web::TestBrowserState>()),
+      : fake_web_state_(std::make_unique<web::FakeWebState>()),
+        fake_browser_state_(std::make_unique<web::FakeBrowserState>()),
         fake_main_frame_(/*frame_id=*/"", /*is_main_frame=*/true, GURL()),
         fake_iframe_(/*frame_id=*/"", /*is_main_frame=*/false, GURL()),
         error_type_(TranslateErrors::Type::NONE),
@@ -37,11 +37,11 @@ class TranslateControllerTest : public PlatformTest,
         translation_time_(0),
         on_script_ready_called_(false),
         on_translate_complete_called_(false) {
-    test_web_state_->SetBrowserState(test_browser_state_.get());
+    fake_web_state_->SetBrowserState(fake_browser_state_.get());
     mock_js_translate_manager_ =
         [OCMockObject niceMockForClass:[JsTranslateManager class]];
     translate_controller_ = std::make_unique<TranslateController>(
-        test_web_state_.get(), mock_js_translate_manager_);
+        fake_web_state_.get(), mock_js_translate_manager_);
     translate_controller_->set_observer(this);
   }
 
@@ -65,8 +65,8 @@ class TranslateControllerTest : public PlatformTest,
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<web::TestWebState> test_web_state_;
-  std::unique_ptr<web::TestBrowserState> test_browser_state_;
+  std::unique_ptr<web::FakeWebState> fake_web_state_;
+  std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   web::FakeWebFrame fake_main_frame_;
   web::FakeWebFrame fake_iframe_;
   id mock_js_translate_manager_;
