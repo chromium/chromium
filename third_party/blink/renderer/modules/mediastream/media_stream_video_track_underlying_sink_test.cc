@@ -53,11 +53,14 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
         /*enabled=*/true);
   }
 
-  ScriptValue CreateVideoFrameChunk(ScriptState* script_state) {
+  ScriptValue CreateVideoFrameChunk(ScriptState* script_state,
+                                    VideoFrame** video_frame_out = nullptr) {
     const scoped_refptr<media::VideoFrame> media_frame =
         media::VideoFrame::CreateBlackFrame(gfx::Size(100, 50));
     VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
         std::move(media_frame), ExecutionContext::From(script_state));
+    if (video_frame_out)
+      *video_frame_out = video_frame;
     return ScriptValue(script_state->GetIsolate(),
                        ToV8(video_frame, script_state->GetContext()->Global(),
                             script_state->GetIsolate()));
@@ -69,9 +72,8 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
   PushableMediaStreamVideoSource* pushable_video_source_;
 };
 
-// crbug.com/1153092: flaky on several platforms.
 TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,
-       DISABLED_WriteToStreamForwardsToMediaStreamSink) {
+       WriteToStreamForwardsToMediaStreamSink) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* underlying_sink = CreateUnderlyingSink(script_state);
@@ -85,12 +87,17 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,
   NonThrowableExceptionState exception_state;
   auto* writer = writable_stream->getWriter(script_state, exception_state);
 
+  VideoFrame* video_frame = nullptr;
+  auto video_frame_chunk = CreateVideoFrameChunk(script_state, &video_frame);
+  EXPECT_NE(video_frame, nullptr);
+  EXPECT_NE(video_frame->frame(), nullptr);
   EXPECT_CALL(media_stream_video_sink, OnVideoFrame(_));
   ScriptPromiseTester write_tester(
       script_state,
-      writer->write(script_state, CreateVideoFrameChunk(script_state),
-                    exception_state));
-  EXPECT_FALSE(write_tester.IsFulfilled());
+      writer->write(script_state, video_frame_chunk, exception_state));
+  write_tester.WaitUntilSettled();
+  // |video_frame| should be invalidated after sending it to the sink.
+  EXPECT_EQ(video_frame->frame(), nullptr);
 
   writer->releaseLock(script_state);
   ScriptPromiseTester close_tester(
@@ -115,6 +122,23 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteInvalidDataFails) {
   // Writing something that is not a VideoFrame to the sink should fail.
   DummyExceptionStateForTesting dummy_exception_state;
   sink->write(script_state, v8_integer, nullptr, dummy_exception_state);
+  EXPECT_TRUE(dummy_exception_state.HadException());
+
+  // Writing something that is not a VideoFrame to the sink should fail.
+  dummy_exception_state.ClearException();
+  EXPECT_FALSE(dummy_exception_state.HadException());
+  sink->write(script_state, ScriptValue::CreateNull(v8_scope.GetIsolate()),
+              nullptr, dummy_exception_state);
+  EXPECT_TRUE(dummy_exception_state.HadException());
+
+  // Writing a destroyed VideoFrame to the sink should fail.
+  dummy_exception_state.ClearException();
+  VideoFrame* video_frame = nullptr;
+  auto chunk = CreateVideoFrameChunk(script_state, &video_frame);
+  video_frame->destroy();
+  EXPECT_FALSE(dummy_exception_state.HadException());
+  sink->write(script_state, ScriptValue::CreateNull(v8_scope.GetIsolate()),
+              nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
 }
 

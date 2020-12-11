@@ -29,7 +29,13 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::write(
   VideoFrame* video_frame = V8VideoFrame::ToImplWithTypeCheck(
       script_state->GetIsolate(), chunk.V8Value());
   if (!video_frame) {
-    exception_state.ThrowTypeError("Invalid video frame.");
+    exception_state.ThrowTypeError("Null video frame.");
+    return ScriptPromise();
+  }
+
+  if (!video_frame->frame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Empty video frame.");
     return ScriptPromise();
   }
 
@@ -41,6 +47,10 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::write(
 
   base::TimeTicks estimated_capture_time = base::TimeTicks::Now();
   source_->PushFrame(video_frame->frame(), estimated_capture_time);
+  // Invalidate the JS |video_frame|. Otherwise, the media frames might not be
+  // released, which would leak resources and also cause some MediaStream
+  // sources such as cameras to drop frames.
+  video_frame->destroy();
 
   return ScriptPromise::CastUndefined(script_state);
 }
