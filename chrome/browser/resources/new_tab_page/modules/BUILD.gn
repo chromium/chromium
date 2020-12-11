@@ -6,6 +6,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 js_library("module_descriptor") {
@@ -59,38 +60,56 @@ group("web_components") {
   ]
 }
 
-if (optimize_webui) {
-  # Up one folder to get to the root NTP gen dir, where files need to live
-  # for bundling.
-  preprocess_folder = "../preprocessed/modules"
+# Up one folder to get to the root NTP gen dir, where files need to live
+# for bundling.
+preprocess_folder = "../preprocessed/modules"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
-  preprocess_if_expr("preprocess") {
-    defines = [ "is_official_build=$is_official_build" ]
-    in_folder = "./"
+generate_grd("build_grdp") {
+  grd_prefix = "new_tab_page"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [
+    ":preprocess",
+    ":preprocess_gen",
+  ]
+  manifest_files = [
+    "$target_gen_dir/preprocessed_manifest.json",
+    "$target_gen_dir/preprocessed_gen_manifest.json",
+  ]
+  resource_path_prefix = "modules"
+}
 
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "module_descriptor.js",
-      "modules.js",
-      "module_registry.js",
-      "task_module/task_module_handler_proxy.js",
-    ]
-    if (!is_official_build) {
-      in_files += [ "dummy/foo_proxy.js" ]
-    }
+preprocess_if_expr("preprocess") {
+  defines = [ "is_official_build=$is_official_build" ]
+  in_folder = "./"
+
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "module_descriptor.js",
+    "modules.js",
+    "module_registry.js",
+    "task_module/task_module_handler_proxy.js",
+  ]
+  if (!is_official_build) {
+    in_files += [ "dummy/foo_proxy.js" ]
   }
+}
 
-  preprocess_if_expr("preprocess_gen") {
-    deps = [ ":web_components" ]
-    defines = [ "is_official_build=$is_official_build" ]
-    in_folder = target_gen_dir
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "module_header.js",
-      "module_wrapper.js",
-      "dummy/module.js",
-      "kaleidoscope/module.js",
-      "task_module/module.js",
-    ]
+preprocess_if_expr("preprocess_gen") {
+  deps = [ ":web_components" ]
+  defines = [ "is_official_build=$is_official_build" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "kaleidoscope/module.js",
+    "module_header.js",
+    "module_wrapper.js",
+    "task_module/module.js",
+  ]
+  if (!is_official_build) {
+    in_files += [ "dummy/module.js" ]
   }
 }

@@ -22,12 +22,12 @@ group("resources") {
       ":component_extension_resources",
       ":dev_ui_paks",
       ":local_ntp_resources",
-      ":new_tab_page_resources",
       "bookmarks:bookmarks_resources",
       "commander:commander_resources",
       "downloads:downloads_resources",
       "gaia_auth_host:resources",
       "history:history_resources",
+      "new_tab_page:resources",
       "read_later:read_later_resources",
       "settings:settings_resources",
       "tab_search:tab_search_resources",
@@ -196,39 +196,6 @@ if (!is_android) {
     outputs = [
       "grit/local_ntp_resources.h",
       "local_ntp_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
-  grit("new_tab_page_resources") {
-    if (optimize_webui) {
-      source = "new_tab_page/new_tab_page_resources_vulcanized.grd"
-    } else {
-      source = "new_tab_page/new_tab_page_resources.grd"
-    }
-
-    deps = [
-      "//chrome/browser/promo_browser_command:mojo_bindings_js",
-      "//chrome/browser/search/task_module:mojo_bindings_js",
-      "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
-      "//skia/public/mojom:mojom_js",
-    ]
-    if (!is_official_build) {
-      deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js" ]
-    }
-
-    if (optimize_webui) {
-      deps += [ "//chrome/browser/resources/new_tab_page:optimized_js" ]
-    } else {
-      deps += [ "//chrome/browser/resources/new_tab_page:web_components" ]
-    }
-
-    defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
-    outputs = [
-      "grit/new_tab_page_resources.h",
-      "grit/new_tab_page_resources_map.cc",
-      "grit/new_tab_page_resources_map.h",
-      "new_tab_page_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

@@ -59,9 +59,6 @@ using content::WebContents;
 
 namespace {
 
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/new_tab_page/";
-
 content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINewTabPageHost);
@@ -256,29 +253,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       "shoppingTasksModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpShoppingTasksModule));
 
-  source->AddResourcePath("new_tab_page.mojom-lite.js",
-                          IDR_NEW_TAB_PAGE_MOJO_LITE_JS);
-  source->AddResourcePath("omnibox.mojom-lite.js",
-                          IDR_NEW_TAB_PAGE_OMNIBOX_MOJO_LITE_JS);
-  source->AddResourcePath("promo_browser_command.mojom-lite.js",
-                          IDR_NEW_TAB_PAGE_PROMO_BROWSER_COMMAND_MOJO_LITE_JS);
-  source->AddResourcePath(
-      "modules/task_module/task_module.mojom-lite.js",
-      IDR_NEW_TAB_PAGE_MODULES_TASK_MODULE_TASK_MODULE_MOJO_LITE_JS);
-#if !defined(OFFICIAL_BUILD)
-  source->AddResourcePath("foo.mojom-lite.js",
-                          IDR_NEW_TAB_PAGE_FOO_MOJO_LITE_JS);
-#endif
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  source->AddResourcePath("new_tab_page.js",
-                          IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_ROLLUP_JS);
-  source->AddResourcePath("shared.rollup.js",
-                          IDR_NEW_TAB_PAGE_SHARED_ROLLUP_JS);
-  source->AddResourcePath("lazy_load.js", IDR_NEW_TAB_PAGE_LAZY_LOAD_ROLLUP_JS);
-#endif  // BUILDFLAG(OPTIMIZE_WEBUI)
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),
-      kGeneratedPath, IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
+      "", IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
 
   // Allows creating <script> and inlining as well as network requests to
   // support inlining the OneGoogleBar.

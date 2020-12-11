@@ -151,10 +151,8 @@
     "META": {"sizes": {"includes": [100]}},
     "includes": [1640],
   },
-  "chrome/browser/resources/new_tab_page/new_tab_page_resources_vulcanized.grd": {
-    "includes": [1660],
-  },
-  "chrome/browser/resources/new_tab_page/new_tab_page_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/new_tab_page/resources.grd": {
+    "META": {"sizes": {"includes": [200]}},
     "includes": [1680],
   },
   "chrome/browser/resources/preinstalled_web_apps/resources.grd": {

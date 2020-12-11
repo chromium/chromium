@@ -5,8 +5,10 @@
 import("//chrome/browser/resources/optimize_webui.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 js_type_check("closure_compile") {
@@ -278,52 +280,177 @@ group("web_components") {
   ]
 }
 
+grd_prefix = "new_tab_page"
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
 if (optimize_webui) {
-  preprocess_folder = "preprocessed"
+  build_manifest = "build_manifest.json"
+}
 
-  preprocess_if_expr("preprocess") {
-    defines = [ "is_official_build=$is_official_build" ]
-    in_folder = "./"
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "background_manager.js",
-      "browser_proxy.js",
-      "img.js",
-      "lazy_load.js",
-      "customize_dialog_types.js",
-      "new_tab_page.js",
-      "one_google_bar_api.js",
-      "promo_browser_command_proxy.js",
-      "utils.js",
+preprocess_if_expr("preprocess") {
+  defines = [ "is_official_build=$is_official_build" ]
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "background_manager.js",
+    "browser_proxy.js",
+    "img.js",
+    "lazy_load.js",
+    "customize_dialog_types.js",
+    "new_tab_page.js",
+    "promo_browser_command_proxy.js",
+    "utils.js",
+  ]
+}
+
+preprocess_if_expr("preprocess_gen") {
+  deps = [ ":web_components" ]
+  defines = [ "is_official_build=$is_official_build" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "app.js",
+    "middle_slot_promo.js",
+    "most_visited.js",
+    "customize_dialog.js",
+    "voice_search_overlay.js",
+    "customize_backgrounds.js",
+    "customize_modules.js",
+    "customize_shortcuts.js",
+    "iframe.js",
+    "mini_page.js",
+    "fakebox.js",
+    "logo.js",
+    "doodle_share_dialog.js",
+    "realbox.js",
+    "realbox_dropdown.js",
+    "realbox_icon.js",
+    "realbox_match.js",
+  ]
+}
+
+generate_grd("build_new_tab_page_mojo_grdp") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/new_tab_page_mojo_resources.grdp"
+  input_files = [ "new_tab_page.mojom-lite.js" ]
+  if (!is_official_build) {
+    input_files += [ "foo/foo.mojom-lite.js" ]
+    resource_path_rewrites = [ "foo/foo.mojom-lite.js|foo.mojom-lite.js" ]
+  }
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/browser/ui/webui/new_tab_page",
+                  root_build_dir)
+}
+
+generate_grd("build_promo_browser_command_mojo_grdp") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/promo_browser_command_mojo_resources.grdp"
+  input_files = [ "promo_browser_command.mojom-lite.js" ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/browser/promo_browser_command",
+                  root_build_dir)
+}
+
+generate_grd("build_search_mojo_grdp") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/search_mojo_resources.grdp"
+  input_files = [ "omnibox.mojom-lite.js" ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/common/search", root_build_dir)
+}
+
+generate_grd("build_task_module_mojo_grdp") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/task_module_mojo_resources.grdp"
+  input_files = [ "task_module.mojom-lite.js" ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/browser/search/task_module",
+                  root_build_dir)
+  resource_path_prefix = "modules/task_module"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "new_tab_page.html",
+    "shared_vars.css",
+    "one_google_bar_api.js",
+    "untrusted/background_image.html",
+    "untrusted/background_image.js",
+    "untrusted/image.html",
+    "untrusted/one_google_bar.html",
+    "untrusted/one_google_bar.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  grdp_files = [
+    "$target_gen_dir/icons/resources.grdp",
+    "$target_gen_dir/new_tab_page_mojo_resources.grdp",
+    "$target_gen_dir/promo_browser_command_mojo_resources.grdp",
+    "$target_gen_dir/search_mojo_resources.grdp",
+    "$target_gen_dir/task_module_mojo_resources.grdp",
+  ]
+  deps = [
+    ":build_new_tab_page_mojo_grdp",
+    ":build_promo_browser_command_mojo_grdp",
+    ":build_search_mojo_grdp",
+    ":build_task_module_mojo_grdp",
+    "icons:build_grdp",
+  ]
+
+  if (optimize_webui) {
+    deps += [ ":optimized_js" ]
+    resource_path_rewrites = [
+      "new_tab_page.rollup.js|new_tab_page.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
+    deps += [
+      ":preprocess",
+      ":preprocess_gen",
+      "modules:build_grdp",
+    ]
+    grdp_files += [ "$target_gen_dir/modules/resources.grdp" ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_manifest",
+      "$target_gen_dir/$preprocess_gen_manifest",
     ]
   }
+}
 
-  preprocess_if_expr("preprocess_gen") {
-    deps = [ ":web_components" ]
-    defines = [ "is_official_build=$is_official_build" ]
-    in_folder = target_gen_dir
-    out_folder = "$target_gen_dir/$preprocess_folder"
-    in_files = [
-      "app.js",
-      "middle_slot_promo.js",
-      "most_visited.js",
-      "customize_dialog.js",
-      "voice_search_overlay.js",
-      "customize_backgrounds.js",
-      "customize_modules.js",
-      "customize_shortcuts.js",
-      "iframe.js",
-      "mini_page.js",
-      "fakebox.js",
-      "logo.js",
-      "doodle_share_dialog.js",
-      "realbox.js",
-      "realbox_dropdown.js",
-      "realbox_icon.js",
-      "realbox_match.js",
-    ]
+grit("resources") {
+  defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
+
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+
+  deps = [
+    ":build_grd",
+    "//chrome/browser/promo_browser_command:mojo_bindings_js",
+    "//chrome/browser/search/task_module:mojo_bindings_js",
+    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
+    "//chrome/common/search:mojo_bindings_js",
+  ]
+  if (!is_official_build) {
+    deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js" ]
   }
 
+  outputs = [
+    "grit/new_tab_page_resources.h",
+    "grit/new_tab_page_resources_map.cc",
+    "grit/new_tab_page_resources_map.h",
+    "new_tab_page_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+if (optimize_webui) {
   optimize_webui("optimized_js") {
     host = "new-tab-page"
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
@@ -338,6 +465,7 @@ if (optimize_webui) {
       "new_tab_page.js",
       "lazy_load.js",
     ]
+    out_manifest = "$target_gen_dir/$build_manifest"
     js_out_files = [
       "new_tab_page.rollup.js",
       "lazy_load.rollup.js",
@@ -358,6 +486,7 @@ if (optimize_webui) {
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
       "new_tab_page.mojom-lite.js",
       "omnibox.mojom-lite.js",
+      "one_google_bar_api.js",
       "promo_browser_command.mojom-lite.js",
       "modules/task_module/task_module.mojom-lite.js",
       "foo.mojom-lite.js",
