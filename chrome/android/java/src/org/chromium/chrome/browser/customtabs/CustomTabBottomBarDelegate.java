@@ -30,6 +30,8 @@ import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProv
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.tab.Tab;
@@ -70,7 +72,11 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
         public void onClick(View v) {
             if (mClickPendingIntent == null) return;
             Intent extraIntent = new Intent();
-            extraIntent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_CLICKED_ID, v.getId());
+            int originalId = v.getId();
+            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS)) {
+                originalId = (Integer) v.getTag(R.id.view_id_tag_key);
+            }
+            extraIntent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_CLICKED_ID, originalId);
             sendPendingIntentWithUrl(mClickPendingIntent, extraIntent, mActivity);
         }
     };
@@ -276,6 +282,21 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
         mBrowserControlsSizer.setBottomControlsHeight(0, 0);
     }
 
+    private void transformViewIds(View view) {
+        // Store the old id in a tag. The tag key here does not matter as long
+        // as it is unique across all tags.
+        view.setTag(R.id.view_id_tag_key, view.getId());
+        view.setId(View.NO_ID);
+        if (view instanceof ViewGroup) {
+            final ViewGroup group = (ViewGroup) view;
+            final int childCount = group.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                final View child = group.getChildAt(i);
+                transformViewIds(child);
+            }
+        }
+    }
+
     private boolean showRemoteViews(RemoteViews remoteViews) {
         final View inflatedView = RemoteViewsWithNightModeInflater.inflate(remoteViews,
                 getBottomBarView(), mNightModeStateController.isInNightMode(),
@@ -289,6 +310,11 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
                 View view = inflatedView.findViewById(id);
                 if (view != null) view.setOnClickListener(mBottomBarClickListener);
             }
+        }
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS)) {
+            // Set all views' ids to be View.NO_ID to prevent them clashing with
+            // chrome's resource ids. See http://crbug.com/1061872
+            transformViewIds(inflatedView);
         }
         getBottomBarView().addView(inflatedView, 1);
         inflatedView.addOnLayoutChangeListener(new OnLayoutChangeListener() {

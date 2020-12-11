@@ -83,6 +83,7 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.USE_CHIME_ANDROID_SDK, false);
             put(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);
             put(ChromeFeatureList.READ_LATER, false);
+            put(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS, true);
         }
     };
 
