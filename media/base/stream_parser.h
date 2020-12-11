@@ -140,7 +140,12 @@ class MEDIA_EXPORT StreamParser {
   // Called when there is new data to parse.
   //
   // Returns true if the parse succeeds.
+  //
+  // Regular "bytestream-formatted" StreamParsers should fully implement
+  // Parse(), but WebCodecsEncodedChunkStreamParsers should instead fully
+  // implement ProcessChunks().
   virtual bool Parse(const uint8_t* buf, int size) = 0;
+  virtual bool ProcessChunks(std::unique_ptr<BufferQueue> buffer_queue);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(StreamParser);

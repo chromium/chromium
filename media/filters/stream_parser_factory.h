@@ -15,7 +15,9 @@
 
 namespace media {
 
+class AudioDecoderConfig;
 class StreamParser;
+class VideoDecoderConfig;
 
 class MEDIA_EXPORT StreamParserFactory {
  public:
@@ -36,10 +38,28 @@ class MEDIA_EXPORT StreamParserFactory {
   // Returns a new StreamParser object if |type| and all codecs listed in
   //   |codecs| are supported.
   // Returns NULL otherwise.
+  // The |audio_config| and |video_config| overloads behave similarly, except
+  // the caller must provide a valid, supported decoder config; those overloads'
+  // usage indicates that we intend to buffer WebCodecs encoded audio or video
+  // chunks with this parser's ProcessChunks() method. Note that
+  // these overloads do not check support, unlike the |type| and |codecs|
+  // version. Support checking for WebCodecs-originated decoder configs could be
+  // async, and should be done by the caller if necessary as part of the decoder
+  // config creation rather than relying upon parser creation to do this
+  // potentially expensive step (this step is typically done in a synchronous
+  // API call by the web app, such as addSourceBuffer().) Like |type| and
+  // |codecs| versions, basic IsValidConfig() is done on configs emitted from
+  // the parser. Failing that catching an unsupported config, eventual pipeline
+  // error should occur for unsupported or invalid decoder configs during
+  // attempted decode.
   static std::unique_ptr<StreamParser> Create(
       const std::string& type,
       const std::vector<std::string>& codecs,
       MediaLog* media_log);
+  static std::unique_ptr<StreamParser> Create(
+      std::unique_ptr<AudioDecoderConfig> audio_config);
+  static std::unique_ptr<StreamParser> Create(
+      std::unique_ptr<VideoDecoderConfig> video_config);
 };
 
 }  // namespace media

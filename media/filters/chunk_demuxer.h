@@ -241,8 +241,8 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // type's "codecs" parameter string (if any) for the data that we intend to
   // append for this ID.  kOk is returned if the demuxer has enough resources to
   // support another ID and supports the format indicated by |content_type| and
-  // |codecs|.  kReachedIdLimit is returned if the demuxer cannot handle another
-  // ID right now.  kNotSupported is returned if |content_type| and |codecs| is
+  // |codecs|. kReachedIdLimit is returned if the demuxer cannot handle another
+  // ID right now. kNotSupported is returned if |content_type| and |codecs| is
   // not a supported format.
   // The |audio_config| and |video_config| overloads behave similarly, except
   // the caller must provide valid, supported decoder configs; those overloads'
@@ -251,8 +251,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   Status AddId(const std::string& id,
                const std::string& content_type,
                const std::string& codecs);
-  // TODO(crbug.com/1144908): Consider templating the following two if they
-  // continue to be so similar except for specific decoder config type.
   Status AddId(const std::string& id,
                std::unique_ptr<AudioDecoderConfig> audio_config);
   Status AddId(const std::string& id,
@@ -405,6 +403,14 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
     PARSE_ERROR,
     SHUTDOWN,
   };
+
+  // Helper for AddId's creation of FrameProcessor, and
+  // SourceBufferState creation, initialization and tracking in
+  // source_state_map_.
+  ChunkDemuxer::Status AddIdInternal(
+      const std::string& id,
+      std::unique_ptr<media::StreamParser> stream_parser,
+      std::string expected_codecs);
 
   // Helper for vide and audio track changing.
   void FindAndEnableProperTracks(const std::vector<MediaTrack::Id>& track_ids,

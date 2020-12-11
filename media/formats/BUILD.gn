@@ -45,6 +45,8 @@ source_set("formats") {
     "mpeg/mpeg1_audio_stream_parser.h",
     "mpeg/mpeg_audio_stream_parser_base.cc",
     "mpeg/mpeg_audio_stream_parser_base.h",
+    "webcodecs/webcodecs_encoded_chunk_stream_parser.cc",
+    "webcodecs/webcodecs_encoded_chunk_stream_parser.h",
     "webm/webm_audio_client.cc",
     "webm/webm_audio_client.h",
     "webm/webm_cluster_parser.cc",

@@ -632,10 +632,22 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(
            << " audio_config=" << audio_config->AsHumanReadableString();
   base::AutoLock auto_lock(lock_);
 
-  // TODO(crbug.com/1144908): Build a new kind of templated StreamParser subtype
-  // which emits configs and streamparserbuffers almost trivially when directed
-  // to by ChunkDemuxer/SourceBufferState. Replace the following:
-  return kReachedIdLimit;
+  // Any valid audio config provided by WC is bufferable here, though decode
+  // error may occur later.
+  if (!audio_config->IsValidConfig())
+    return ChunkDemuxer::kNotSupported;
+
+  if ((state_ != WAITING_FOR_INIT && state_ != INITIALIZING) || IsValidId(id))
+    return kReachedIdLimit;
+
+  DCHECK(init_cb_);
+
+  std::string expected_codec = GetCodecName(audio_config->codec());
+  std::unique_ptr<media::StreamParser> stream_parser(
+      media::StreamParserFactory::Create(std::move(audio_config)));
+  DCHECK(stream_parser);
+
+  return AddIdInternal(id, std::move(stream_parser), expected_codec);
 }
 
 ChunkDemuxer::Status ChunkDemuxer::AddId(
@@ -646,10 +658,22 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(
            << " video_config=" << video_config->AsHumanReadableString();
   base::AutoLock auto_lock(lock_);
 
-  // TODO(crbug.com/1144908): Build a new kind of templated StreamParser subtype
-  // which emits configs and streamparserbuffers almost trivially when directed
-  // to by ChunkDemuxer/SourceBufferState. Replace the following:
-  return kReachedIdLimit;
+  // Any valid video config provided by WC is bufferable here, though decode
+  // error may occur later.
+  if (!video_config->IsValidConfig())
+    return ChunkDemuxer::kNotSupported;
+
+  if ((state_ != WAITING_FOR_INIT && state_ != INITIALIZING) || IsValidId(id))
+    return kReachedIdLimit;
+
+  DCHECK(init_cb_);
+
+  std::string expected_codec = GetCodecName(video_config->codec());
+  std::unique_ptr<media::StreamParser> stream_parser(
+      media::StreamParserFactory::Create(std::move(video_config)));
+  DCHECK(stream_parser);
+
+  return AddIdInternal(id, std::move(stream_parser), expected_codec);
 }
 
 ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
@@ -673,6 +697,18 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
              << " codecs=" << codecs;
     return ChunkDemuxer::kNotSupported;
   }
+
+  return AddIdInternal(id, std::move(stream_parser),
+                       ExpectedCodecs(content_type, codecs));
+}
+
+ChunkDemuxer::Status ChunkDemuxer::AddIdInternal(
+    const std::string& id,
+    std::unique_ptr<media::StreamParser> stream_parser,
+    std::string expected_codecs) {
+  DVLOG(2) << __func__ << " id=" << id
+           << " expected_codecs=" << expected_codecs;
+  lock_.AssertAcquired();
 
   std::unique_ptr<FrameProcessor> frame_processor =
       std::make_unique<FrameProcessor>(
@@ -698,8 +734,8 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
 
   source_state->Init(base::BindOnce(&ChunkDemuxer::OnSourceInitDone,
                                     base::Unretained(this), id),
-                     ExpectedCodecs(content_type, codecs),
-                     encrypted_media_init_data_cb_, base::NullCallback());
+                     expected_codecs, encrypted_media_init_data_cb_,
+                     base::NullCallback());
 
   // TODO(wolenetz): Change to DCHECKs once less verification in release build
   // is needed. See https://crbug.com/786975.

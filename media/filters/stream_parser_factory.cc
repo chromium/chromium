@@ -14,13 +14,16 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "media/base/audio_decoder_config.h"
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_decoder_config.h"
 #include "media/formats/mp4/mp4_stream_parser.h"
 #include "media/formats/mpeg/adts_stream_parser.h"
 #include "media/formats/mpeg/mpeg1_audio_stream_parser.h"
+#include "media/formats/webcodecs/webcodecs_encoded_chunk_stream_parser.h"
 #include "media/formats/webm/webm_stream_parser.h"
 #include "media/media_buildflags.h"
 
@@ -517,6 +520,7 @@ static SupportsType CheckTypeAndCodecs(
   return IsNotSupported;
 }
 
+// static
 SupportsType StreamParserFactory::IsTypeSupported(
     const std::string& type,
     const std::vector<std::string>& codecs) {
@@ -526,6 +530,7 @@ SupportsType StreamParserFactory::IsTypeSupported(
                             nullptr);
 }
 
+// static
 std::unique_ptr<StreamParser> StreamParserFactory::Create(
     const std::string& type,
     const std::vector<std::string>& codecs,
@@ -567,6 +572,30 @@ std::unique_ptr<StreamParser> StreamParserFactory::Create(
   }
 
   return stream_parser;
+}
+
+// static
+std::unique_ptr<StreamParser> StreamParserFactory::Create(
+    std::unique_ptr<AudioDecoderConfig> audio_config) {
+  DCHECK(audio_config);
+
+  // TODO(crbug.com/1144908): Histogram-log the codec used for buffering
+  // WebCodecs in MSE?
+
+  return std::make_unique<media::WebCodecsEncodedChunkStreamParser>(
+      std::move(audio_config));
+}
+
+// static
+std::unique_ptr<StreamParser> StreamParserFactory::Create(
+    std::unique_ptr<VideoDecoderConfig> video_config) {
+  DCHECK(video_config);
+
+  // TODO(crbug.com/1144908): Histogram-log the codec used for buffering
+  // WebCodecs in MSE?
+
+  return std::make_unique<media::WebCodecsEncodedChunkStreamParser>(
+      std::move(video_config));
 }
 
 }  // namespace media

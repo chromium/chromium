@@ -19,6 +19,12 @@ StreamParser::StreamParser() = default;
 
 StreamParser::~StreamParser() = default;
 
+// Default implementation of ProcessChunks() is not fully implemented.
+bool StreamParser::ProcessChunks(std::unique_ptr<BufferQueue> buffer_queue) {
+  NOTIMPLEMENTED();  // Likely the wrong type of parser is being used.
+  return false;
+}
+
 static bool MergeBufferQueuesInternal(
     const std::vector<const StreamParser::BufferQueue*>& buffer_queues,
     StreamParser::BufferQueue* merged_buffers) {
