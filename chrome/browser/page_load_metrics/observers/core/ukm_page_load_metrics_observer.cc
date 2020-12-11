@@ -264,9 +264,11 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     RecordNavigationTimingMetrics();
     RecordPageLoadMetrics(current_time);
     RecordRendererUsageMetrics();
-    RecordTimingMetrics(timing);
+    RecordSiteEngagement();
     RecordInputTimingMetrics();
   }
+  if (GetDelegate().StartedInForeground())
+    RecordTimingMetrics(timing);
   ReportLayoutStability();
   RecordSmoothnessMetrics();
   // Assume that page ends on this method, as the app could be evicted right
@@ -288,7 +290,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
     RecordNavigationTimingMetrics();
     RecordPageLoadMetrics(base::TimeTicks() /* no app_background_time */);
     RecordRendererUsageMetrics();
-    RecordTimingMetrics(timing);
+    RecordSiteEngagement();
     RecordInputTimingMetrics();
     was_hidden_ = true;
   }
@@ -340,9 +342,11 @@ void UkmPageLoadMetricsObserver::OnComplete(
     RecordNavigationTimingMetrics();
     RecordPageLoadMetrics(current_time /* no app_background_time */);
     RecordRendererUsageMetrics();
-    RecordTimingMetrics(timing);
+    RecordSiteEngagement();
     RecordInputTimingMetrics();
   }
+  if (GetDelegate().StartedInForeground())
+    RecordTimingMetrics(timing);
   ReportLayoutStability();
   RecordSmoothnessMetrics();
   ReportPerfectHeuristicsMetrics();
@@ -504,8 +508,7 @@ void UkmPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void UkmPageLoadMetricsObserver::RecordTimingMetrics(
-    const page_load_metrics::mojom::PageLoadTiming& timing) {
+void UkmPageLoadMetricsObserver::RecordSiteEngagement() const {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
 
   base::Optional<int64_t> rounded_site_engagement_score =
@@ -514,40 +517,44 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetSiteEngagementScore(rounded_site_engagement_score.value());
   }
 
-  base::Optional<bool> third_party_cookie_blocking_enabled =
-      GetThirdPartyCookieBlockingEnabled();
-  if (third_party_cookie_blocking_enabled) {
-    builder.SetThirdPartyCookieBlockingEnabledForSite(
-        third_party_cookie_blocking_enabled.value());
-    UMA_HISTOGRAM_BOOLEAN("Privacy.ThirdPartyCookieBlockingEnabledForSite",
-                          third_party_cookie_blocking_enabled.value());
-  }
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::RecordTimingMetrics(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
 
   if (timing.input_to_navigation_start) {
     builder.SetExperimental_InputToNavigationStart(
         timing.input_to_navigation_start.value().InMilliseconds());
   }
-  if (timing.parse_timing->parse_start) {
+  if (WasStartedInForegroundOptionalEventInForeground(
+          timing.parse_timing->parse_start, GetDelegate())) {
     builder.SetParseTiming_NavigationToParseStart(
         timing.parse_timing->parse_start.value().InMilliseconds());
   }
-  if (timing.document_timing->dom_content_loaded_event_start) {
+  if (WasStartedInForegroundOptionalEventInForeground(
+          timing.document_timing->dom_content_loaded_event_start,
+          GetDelegate())) {
     builder.SetDocumentTiming_NavigationToDOMContentLoadedEventFired(
         timing.document_timing->dom_content_loaded_event_start.value()
             .InMilliseconds());
   }
-  if (timing.document_timing->load_event_start) {
+  if (WasStartedInForegroundOptionalEventInForeground(
+          timing.document_timing->load_event_start, GetDelegate())) {
     builder.SetDocumentTiming_NavigationToLoadEventFired(
         timing.document_timing->load_event_start.value().InMilliseconds());
   }
-  if (timing.paint_timing->first_paint) {
+  if (WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_paint, GetDelegate())) {
     builder.SetPaintTiming_NavigationToFirstPaint(
         timing.paint_timing->first_paint.value().InMilliseconds());
   }
 
   // FCP is reported in OnFirstContentfulPaintInPage.
 
-  if (timing.paint_timing->first_meaningful_paint) {
+  if (WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
     builder.SetExperimental_PaintTiming_NavigationToFirstMeaningfulPaint(
         timing.paint_timing->first_meaningful_paint.value().InMilliseconds());
   }
@@ -604,13 +611,16 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   }
   RecordInternalTimingMetrics(all_frames_largest_contentful_paint,
                               all_frames_experimental_largest_contentful_paint);
-  if (timing.interactive_timing->first_input_delay) {
+  if (timing.interactive_timing->first_input_delay &&
+      WasStartedInForegroundOptionalEventInForeground(
+          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
     base::TimeDelta first_input_delay =
         timing.interactive_timing->first_input_delay.value();
     builder.SetInteractiveTiming_FirstInputDelay4(
         first_input_delay.InMilliseconds());
   }
-  if (timing.interactive_timing->first_input_timestamp) {
+  if (WasStartedInForegroundOptionalEventInForeground(
+          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
     base::TimeDelta first_input_timestamp =
         timing.interactive_timing->first_input_timestamp.value();
     builder.SetInteractiveTiming_FirstInputTimestamp4(
@@ -629,13 +639,17 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetInteractiveTiming_LongestInputTimestamp4(
         longest_input_timestamp.InMilliseconds());
   }
-  if (timing.interactive_timing->first_scroll_delay) {
+  if (timing.interactive_timing->first_scroll_delay &&
+      WasStartedInForegroundOptionalEventInForeground(
+          timing.interactive_timing->first_scroll_timestamp, GetDelegate())) {
     base::TimeDelta first_scroll_delay =
         timing.interactive_timing->first_scroll_delay.value();
     builder.SetInteractiveTiming_FirstScrollDelay(
         first_scroll_delay.InMilliseconds());
   }
-  if (timing.interactive_timing->first_input_processing_time) {
+  if (timing.interactive_timing->first_input_processing_time &&
+      WasStartedInForegroundOptionalEventInForeground(
+          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
     base::TimeDelta first_input_processing_time =
         timing.interactive_timing->first_input_processing_time.value();
     builder.SetInteractiveTiming_FirstInputProcessingTimes(
@@ -661,7 +675,7 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
   builder.SetNet_MediaBytes(ukm::GetExponentialBucketMin(media_bytes_, 1.15));
 
   if (main_frame_timing_)
-    ReportMainResourceTimingMetrics(timing, &builder);
+    ReportMainResourceTimingMetrics(builder);
 
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -681,8 +695,7 @@ void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
           static_cast<int>(all_frames_largest_contentful_paint.Type()));
       lcp_state = LargestContentState::kReported;
     } else {
-      // TODO(npm): figure out why this code can be reached given that
-      // RecordTimingMetrics() is only called when was_hidden_ is set to false.
+      // This can be reached if LCP occurs after tab hide.
       lcp_state = LargestContentState::kFoundButNotReported;
     }
   } else if (all_frames_largest_contentful_paint.Time().has_value()) {
@@ -706,8 +719,7 @@ void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
                   all_frames_experimental_largest_contentful_paint.Type()));
       experimental_lcp_state = LargestContentState::kReported;
     } else {
-      // TODO(npm): figure out why this code can be reached given that
-      // RecordTimingMetrics() is only called when was_hidden_ is set to false.
+      // This can be reached if LCP occurs after tab hide.
       experimental_lcp_state = LargestContentState::kFoundButNotReported;
     }
   } else if (all_frames_experimental_largest_contentful_paint.Time()
@@ -727,6 +739,16 @@ void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
 void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     base::TimeTicks app_background_time) {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+
+  base::Optional<bool> third_party_cookie_blocking_enabled =
+      GetThirdPartyCookieBlockingEnabled();
+  if (third_party_cookie_blocking_enabled) {
+    builder.SetThirdPartyCookieBlockingEnabledForSite(
+        third_party_cookie_blocking_enabled.value());
+    UMA_HISTOGRAM_BOOLEAN("Privacy.ThirdPartyCookieBlockingEnabledForSite",
+                          third_party_cookie_blocking_enabled.value());
+  }
+
   base::Optional<base::TimeDelta> foreground_duration =
       page_load_metrics::GetInitialForegroundDuration(GetDelegate(),
                                                       app_background_time);
@@ -788,11 +810,10 @@ void UkmPageLoadMetricsObserver::RecordRendererUsageMetrics() {
 }
 
 void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    ukm::builders::PageLoad* builder) {
+    ukm::builders::PageLoad& builder) {
   DCHECK(main_frame_timing_.has_value());
 
-  builder->SetMainFrameResource_SocketReused(main_frame_timing_->socket_reused);
+  builder.SetMainFrameResource_SocketReused(main_frame_timing_->socket_reused);
 
   int64_t dns_start_ms =
       main_frame_timing_->connect_timing.dns_start.since_origin()
@@ -825,17 +846,17 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
   int64_t request_start_to_receive_headers_end_ms =
       receive_headers_end_ms - request_start_ms;
 
-  builder->SetMainFrameResource_DNSDelay(dns_duration_ms);
-  builder->SetMainFrameResource_ConnectDelay(connect_duration_ms);
+  builder.SetMainFrameResource_DNSDelay(dns_duration_ms);
+  builder.SetMainFrameResource_ConnectDelay(connect_duration_ms);
   if (request_start_to_send_start_ms >= 0) {
-    builder->SetMainFrameResource_RequestStartToSendStart(
+    builder.SetMainFrameResource_RequestStartToSendStart(
         request_start_to_send_start_ms);
   }
   if (send_start_to_receive_headers_end_ms >= 0) {
-    builder->SetMainFrameResource_SendStartToReceiveHeadersEnd(
+    builder.SetMainFrameResource_SendStartToReceiveHeadersEnd(
         send_start_to_receive_headers_end_ms);
   }
-  builder->SetMainFrameResource_RequestStartToReceiveHeadersEnd(
+  builder.SetMainFrameResource_RequestStartToReceiveHeadersEnd(
       request_start_to_receive_headers_end_ms);
 
   if (!main_frame_timing_->request_start.is_null() &&
@@ -843,7 +864,7 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
     base::TimeDelta navigation_start_to_request_start =
         main_frame_timing_->request_start - GetDelegate().GetNavigationStart();
 
-    builder->SetMainFrameResource_NavigationStartToRequestStart(
+    builder.SetMainFrameResource_NavigationStartToRequestStart(
         navigation_start_to_request_start.InMilliseconds());
   }
 
@@ -852,7 +873,7 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
     base::TimeDelta navigation_start_to_receive_headers_start =
         main_frame_timing_->receive_headers_start -
         GetDelegate().GetNavigationStart();
-    builder->SetMainFrameResource_NavigationStartToReceiveHeadersStart(
+    builder.SetMainFrameResource_NavigationStartToReceiveHeadersStart(
         navigation_start_to_receive_headers_start.InMilliseconds());
   }
 
@@ -860,13 +881,13 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
     page_load_metrics::NetworkProtocol protocol =
         page_load_metrics::GetNetworkProtocol(*connection_info_);
     if (IsSupportedProtocol(protocol)) {
-      builder->SetMainFrameResource_HttpProtocolScheme(
+      builder.SetMainFrameResource_HttpProtocolScheme(
           static_cast<int>(protocol));
     }
   }
 
   if (main_frame_request_redirect_count_ > 0) {
-    builder->SetMainFrameResource_RedirectCount(
+    builder.SetMainFrameResource_RedirectCount(
         main_frame_request_redirect_count_);
   }
 }
@@ -1192,7 +1213,8 @@ void UkmPageLoadMetricsObserver::SetUpSharedMemoryForSmoothness(
 void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::CpuTiming& timing) {
-  if (GetDelegate().GetVisibilityTracker().currently_in_foreground())
+  if (GetDelegate().GetVisibilityTracker().currently_in_foreground() &&
+      !was_hidden_)
     total_foreground_cpu_time_ += timing.task_time;
 }
 

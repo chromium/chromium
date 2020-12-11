@@ -1839,6 +1839,34 @@ TEST_F(UkmPageLoadMetricsObserverTest, FCPHiddenWhileFlushing) {
   }
 }
 
+TEST_F(UkmPageLoadMetricsObserverTest, LCPHiddenWhileFlushing) {
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  // Simulate hiding the tab.
+  web_contents()->WasHidden();
+  base::TimeDelta background_time =
+      *tester()->GetDelegateForCommittedLoad().GetFirstBackgroundTime();
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.paint_timing->largest_contentful_paint->largest_image_paint =
+      background_time;
+  timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  PopulateExperimentalLCP(timing.paint_timing);
+  PopulateRequiredTimingFields(&timing);
+
+  // Simulate LCP at the same time as the hide (but reported after).
+  tester()->SimulateTimingUpdate(timing);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  // Check that we reported the LCP UKM.
+  TestLCP(background_time.InMilliseconds(), LargestContentType::kImage,
+          true /* test_main_frame */);
+}
+
 class TestOfflinePreviewsUkmPageLoadMetricsObserver
     : public UkmPageLoadMetricsObserver {
  public:
