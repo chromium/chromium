@@ -272,9 +272,8 @@ bool IsUrlPotentiallyTrustworthy(const GURL& url) {
     return true;
 
   // 2. If url’s scheme is "data", return "Potentially Trustworthy".
-  // TODO(https://crbug.com/1119740): The spec says we should return true here.
   if (url.SchemeIs(url::kDataScheme))
-    return false;
+    return true;
 
   // 3. Return the result of executing §3.2 Is origin potentially trustworthy?
   //    on url’s origin.

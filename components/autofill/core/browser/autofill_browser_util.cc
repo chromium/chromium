@@ -14,14 +14,9 @@ bool IsInsecureFormAction(const GURL& action_url) {
   // to same-origin contexts, so they are not blocked. Some forms use
   // javascript URLs to handle submissions in JS, those don't count as mixed
   // content either.
-  // The data scheme is explicitly allowed in order to match blink's equivalent
-  // check, since IsUrlPotentiallyTrustworthy excludes it.
-  // TODO(https://crbug.com/1119740): Remove the check for "data" scheme when
-  // it is handled by network::IsUrlPotentiallyTrustworthy.
   if (action_url.SchemeIs(url::kJavaScriptScheme) ||
       action_url.SchemeIs(url::kBlobScheme) ||
-      action_url.SchemeIs(url::kFileSystemScheme) ||
-      action_url.SchemeIs(url::kDataScheme)) {
+      action_url.SchemeIs(url::kFileSystemScheme)) {
     return false;
   }
   return !network::IsUrlPotentiallyTrustworthy(action_url);

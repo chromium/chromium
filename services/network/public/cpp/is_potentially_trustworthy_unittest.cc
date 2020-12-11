@@ -64,8 +64,7 @@ TEST(IsPotentiallyTrustworthy, Url) {
 
   EXPECT_FALSE(IsUrlPotentiallyTrustworthy("about:about"));
 
-  // TODO(https://crbug.com/1119740): Should return true for data: URLs.
-  EXPECT_FALSE(IsUrlPotentiallyTrustworthy("data:test/plain;blah"));
+  EXPECT_TRUE(IsUrlPotentiallyTrustworthy("data:test/plain;blah"));
   EXPECT_FALSE(IsUrlPotentiallyTrustworthy("javascript:alert('blah')"));
 
   EXPECT_TRUE(IsUrlPotentiallyTrustworthy("file:///test/fun.html"));

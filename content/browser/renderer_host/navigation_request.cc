@@ -2335,14 +2335,7 @@ void NavigationRequest::OnResponseStarted(
   if (base::FeatureList::IsEnabled(
           network::features::kCrossOriginEmbedderPolicy)) {
     const auto& url = common_params_->url;
-    // https://w3c.github.io/webappsec-secure-contexts/#is-url-trustworthy
-    // returns "Potentially Trustworthy" for data URLs, but
-    // network::IsUrlPotentiallyTrustworthy returns false, so we need this
-    // extra condition.
-    // TODO(https://crbug.com/1119740): Remove the check for "data" scheme when
-    // it is handled by network::IsUrlPotentiallyTrustworthy.
-    if (network::IsUrlPotentiallyTrustworthy(url) ||
-        url.SchemeIs(url::kDataScheme)) {
+    if (network::IsUrlPotentiallyTrustworthy(url)) {
       // https://mikewest.github.io/corpp/#process-navigation-response
       if (auto* const parent = GetParentFrame()) {
         const auto& parent_coep = parent->cross_origin_embedder_policy();

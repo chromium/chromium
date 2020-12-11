@@ -38,16 +38,6 @@ bool IsURLHandledByNetworkService(const GURL& url) {
 }
 
 bool IsOriginSecure(const GURL& url) {
-  // TODO(https://crbug.com/1119740): data: URLs (and opaque origins associated
-  // with them) should be considered insecure according to
-  // https://www.w3.org/TR/powerful-features/#is-url-trustworthy.
-  // Unfortunately, changing this behavior of NetworkUtils::IsOriginSecure
-  // breaks quite a few tests for now (e.g. considering data: insecure makes us
-  // think that https + data = mixed content), so fixing this is postponed to a
-  // follow-up CL.  WIP CL @ https://crrev.com/c/1505897.
-  if (url.SchemeIs(url::kDataScheme))
-    return true;
-
   return network::IsUrlPotentiallyTrustworthy(url);
 }
 
