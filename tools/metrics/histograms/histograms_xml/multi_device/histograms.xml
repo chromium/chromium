@@ -248,6 +248,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.SecureChannel.Nearby.ConnectionMedium"
+    enum="SecureChannelNearbyConnectionMedium" expires_after="2021-11-30">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the connection medium used by Nearby Connections requested by
+    SecureChannel. These connections are always initiated using Bluetooth, then
+    can upgrade to WebRTC if both the Chrome OS device and the phone are online.
+
+    One value is emitted when a connection is initially established, and another
+    value is emitted when a bandwidth upgrade occurs.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.SecureChannel.Nearby.ConnectionResult"
     enum="MultiDeviceNearbyConnectionsInitiatorResult"
     expires_after="2021-11-30">
@@ -279,6 +293,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Measures the success rate of sending a SecureChannel message via the Nearby
     Connections library. Emitted when the Nearby Connections library sends a
     message.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.WebRtcUpgradeDuration"
+    units="ms" expires_after="2021-11-30">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the amount of time taken between when a connection is accepted over
+    Bluetooth and when the connection upgrades bandwidth to WebRTC. Emitted
+    after this upgrade occurs.
+
+    Note that this histogram is not emitted if an upgrade to WebRTC never occurs
+    during.
   </summary>
 </histogram>
 

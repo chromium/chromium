@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connection_broker.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
@@ -169,6 +170,9 @@ class NearbyConnectionBrokerImpl
   // Starts as false; set to true in OnConnectionInitiated() and back to false
   // in OnDisconnected().
   bool need_to_disconnect_endpoint_ = false;
+
+  // Starts as null; set in OnConnectionAccepted().
+  base::Time time_when_connection_accepted_;
 
   base::WeakPtrFactory<NearbyConnectionBrokerImpl> weak_ptr_factory_{this};
 };

@@ -15,11 +15,6 @@ namespace chromeos {
 namespace secure_channel {
 namespace {
 
-NearbyConnectionBrokerImpl::Factory* g_test_factory = nullptr;
-
-constexpr base::TimeDelta kConnectionStatusChangeTimeout =
-    base::TimeDelta::FromSeconds(10);
-
 using location::nearby::connections::mojom::BytesPayload;
 using location::nearby::connections::mojom::ConnectionInfoPtr;
 using location::nearby::connections::mojom::ConnectionOptions;
@@ -32,6 +27,34 @@ using location::nearby::connections::mojom::PayloadContent;
 using location::nearby::connections::mojom::PayloadPtr;
 using location::nearby::connections::mojom::PayloadTransferUpdatePtr;
 using location::nearby::connections::mojom::Status;
+
+NearbyConnectionBrokerImpl::Factory* g_test_factory = nullptr;
+
+constexpr base::TimeDelta kConnectionStatusChangeTimeout =
+    base::TimeDelta::FromSeconds(10);
+
+// Numerical values should not be reused or changed since this is used by
+// metrics.
+enum class ConnectionMedium {
+  kConnectedViaBluetooth = 0,
+  kUpgradedToWebRtc = 1,
+  kMaxValue = kUpgradedToWebRtc
+};
+
+void RecordConnectionMediumMetric(ConnectionMedium medium) {
+  base::UmaHistogramEnumeration(
+      "MultiDevice.SecureChannel.Nearby.ConnectionMedium", medium);
+}
+
+void RecordWebRtcUpgradeDuration(base::TimeDelta duration) {
+  // Note: min/max/bucket values should not be changed. If they need to be
+  // adjusted, a new histogram should be created.
+  base::UmaHistogramCustomTimes(
+      "MultiDevice.SecureChannel.Nearby.WebRtcUpgradeDuration", duration,
+      /*min=*/base::TimeDelta::FromSeconds(1),
+      /*max=*/base::TimeDelta::FromMinutes(5),
+      /*buckets=*/50);
+}
 
 }  // namespace
 
@@ -300,6 +323,8 @@ void NearbyConnectionBrokerImpl::OnConnectionAccepted(
   DCHECK_EQ(ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice,
             connection_status_);
   TransitionToStatus(ConnectionStatus::kConnected);
+  RecordConnectionMediumMetric(ConnectionMedium::kConnectedViaBluetooth);
+  time_when_connection_accepted_ = base::Time::Now();
 
   NotifyConnected();
 }
@@ -342,6 +367,15 @@ void NearbyConnectionBrokerImpl::OnBandwidthChanged(
   }
 
   PA_LOG(INFO) << "Bandwidth changed: " << medium;
+
+  if (medium == Medium::kWebRtc) {
+    RecordConnectionMediumMetric(ConnectionMedium::kUpgradedToWebRtc);
+
+    DCHECK(!time_when_connection_accepted_.is_null());
+    base::TimeDelta webrtc_upgrade_duration =
+        base::Time::Now() - time_when_connection_accepted_;
+    RecordWebRtcUpgradeDuration(webrtc_upgrade_duration);
+  }
 }
 
 void NearbyConnectionBrokerImpl::OnPayloadReceived(
