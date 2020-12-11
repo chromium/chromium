@@ -17,32 +17,25 @@
 
 namespace {
 
-// Name of the console logging test page. This is also used as the expected
-// message text, since console log messages include the name of the originating
-// file.
+// Name of the console logging test page.
 constexpr char kLogTestPageFileName[] = "console_logging.html";
+constexpr char kLogTestPageDebugMessage[] = "This is a debug() message.";
 
-constexpr char kWebEngineLogTag[] = "web_engine_exe";
+// Debug name to create Frames with, to use as their logging tag.
+constexpr char kFrameLogTag[] = "Test🖼🪵";
 
-constexpr char kNormalizedLineNumber[] = "12345";
 constexpr char kNormalizedPortNumber[] = "678";
 
 // Replaces the line number in frame_impl.cc with kNormalizedLineNumber and
 // the port with kNormalizedPortNumber to enable reliable comparison of
 // console log messages.
 std::string NormalizeConsoleLogMessage(base::StringPiece original) {
-  size_t line_number_begin = original.find("(") + 1;
-  size_t close_parenthesis = original.find(")", line_number_begin);
-  std::string normalized = original.as_string().replace(
-      line_number_begin, close_parenthesis - line_number_begin,
-      kNormalizedLineNumber);
-
   const char kSchemePortColon[] = "http://127.0.0.1:";
   size_t port_begin =
-      normalized.find(kSchemePortColon) + strlen(kSchemePortColon);
-  size_t path_begin = normalized.find("/", port_begin);
-  return normalized.replace(port_begin, path_begin - port_begin,
-                            kNormalizedPortNumber);
+      original.find(kSchemePortColon) + strlen(kSchemePortColon);
+  size_t path_begin = original.find("/", port_begin);
+  return original.as_string().replace(port_begin, path_begin - port_begin,
+                                      kNormalizedPortNumber);
 }
 
 }  // namespace
@@ -135,30 +128,42 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
 // Verifies that calling messages from console.debug() calls go to the Fuchsia
 // system log when the script log level is set to DEBUG.
 TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
-  auto options = std::make_unique<fuchsia::logger::LogFilterOptions>();
-  options->tags = {kWebEngineLogTag};
   base::SimpleTestLogListener log_listener;
-  log_listener.ListenToLog(logger_.get(), std::move(options));
+  log_listener.ListenToLog(logger_.get(), nullptr);
 
   // Create the Context & Frame with all log severities enabled.
-  CreateContextAndFrame(ContextParamsWithIsolatedLogSink());
+  fuchsia::web::CreateFrameParams frame_params;
+  frame_params.set_debug_name(kFrameLogTag);
+  CreateContextAndFrameWithParams(ContextParamsWithIsolatedLogSink(),
+                                  std::move(frame_params));
   frame_->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
 
+  // Re-connect to the NavigationController, to ensure that the new log level
+  // has been applied before the LoadUrl() request is processed.
+  navigation_controller_ = nullptr;
+  navigation_listener_ = nullptr;
+  AddNavigationControllerAndListenerToFrame(&frame_);
+
+  // Navigate to the test page, which will emit console logging.
   LoadLogTestPage();
   navigation_listener_->RunUntilTitleEquals("ended");
 
-  // Run until a message containing kLogTestPageFileName is received.
+  // Run until the message passed to console.debug() is received.
   base::Optional<fuchsia::logger::LogMessage> logged_message =
-      log_listener.RunUntilMessageReceived(kLogTestPageFileName);
+      log_listener.RunUntilMessageReceived(kLogTestPageDebugMessage);
 
   ASSERT_TRUE(logged_message.has_value());
+
+  // console.debug() should map to Fuchsia's DEBUG log severity.
   EXPECT_EQ(logged_message->severity,
-            static_cast<int32_t>(fuchsia::logger::LogLevelFilter::INFO));
-  ASSERT_EQ(logged_message->tags.size(), 1u);
-  EXPECT_EQ(logged_message->tags[0], kWebEngineLogTag);
+            static_cast<int32_t>(fuchsia::logger::LogLevelFilter::DEBUG));
+
+  // Verify that the Frame's |debug_name| is amongst the log message tags.
+  EXPECT_FALSE(logged_message->tags.empty());
+  EXPECT_TRUE(base::Contains(logged_message->tags, kFrameLogTag));
+
+  // Verify that the message is formatted as expected.
   EXPECT_EQ(NormalizeConsoleLogMessage(logged_message->msg),
-            "[frame_impl.cc(" + std::string(kNormalizedLineNumber) +
-                ")] debug:http://127.0.0.1:" + kNormalizedPortNumber +
-                "/console_logging.html:8 "
-                ": This is a debug() message.");
+            std::string("http://127.0.0.1:") + kNormalizedPortNumber +
+                "/console_logging.html:8 : This is a debug() message.");
 }

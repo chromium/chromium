@@ -93,6 +93,7 @@ SimpleTestLogListener::RunUntilMessageReceived(
 
 void SimpleTestLogListener::PushLoggedMessage(
     const fuchsia::logger::LogMessage& message) {
+  DVLOG(1) << "TestLogListener received: " << message.msg;
   if (on_log_message_) {
     DCHECK(logged_messages_.empty());
     on_log_message_.Run(message);

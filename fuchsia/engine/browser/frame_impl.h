@@ -5,8 +5,10 @@
 #ifndef FUCHSIA_ENGINE_BROWSER_FRAME_IMPL_H_
 #define FUCHSIA_ENGINE_BROWSER_FRAME_IMPL_H_
 
+#include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
+#include <lib/syslog/logger.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <lib/zx/channel.h>
 
@@ -17,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/fuchsia/scoped_fx_logger.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/optional.h"
@@ -59,11 +62,13 @@ class FrameImpl : public fuchsia::web::Frame,
   static FrameImpl* FromRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
-  // |params_for_popups| is saved and applied to popups created by content
-  // running in this Frame.
+  // |context| must out-live |this|.
+  // |params| apply both to this Frame, and also to any popup Frames it creates.
+  // DestroyFrame() is automatically called on |context| if the |frame_request|
+  // channel disconnects.
   FrameImpl(std::unique_ptr<content::WebContents> web_contents,
             ContextImpl* context,
-            fuchsia::web::CreateFrameParams params_for_popups,
+            fuchsia::web::CreateFrameParams params,
             fidl::InterfaceRequest<fuchsia::web::Frame> frame_request);
   ~FrameImpl() override;
 
@@ -187,6 +192,7 @@ class FrameImpl : public fuchsia::web::Frame,
       fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener)
       override;
   void SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel level) override;
+  void SetConsoleLogSink(fuchsia::logger::LogSinkHandle sink) override;
   void ConfigureInputTypes(fuchsia::web::InputTypes types,
                            fuchsia::web::AllowInputState allow) override;
   void SetPopupFrameCreationListener(
@@ -267,6 +273,13 @@ class FrameImpl : public fuchsia::web::Frame,
   const std::unique_ptr<content::WebContents> web_contents_;
   ContextImpl* const context_;
 
+  // Optional tag to apply when emitting web console logs.
+  const std::string console_log_tag_;
+
+  // Logger used for console messages from content, depending on |log_level_|.
+  base::ScopedFxLogger console_logger_;
+  fx_log_severity_t log_level_ = FX_LOG_NONE;
+
   // Parameters applied to popups created by content running in this Frame.
   const fuchsia::web::CreateFrameParams params_for_popups_;
 
@@ -283,7 +296,6 @@ class FrameImpl : public fuchsia::web::Frame,
 
   EventFilter event_filter_;
   NavigationControllerImpl navigation_controller_;
-  logging::LogSeverity log_level_;
   UrlRequestRewriteRulesManager url_request_rewrite_rules_manager_;
   FramePermissionController permission_controller_;
   std::unique_ptr<NavigationPolicyHandler> navigation_policy_handler_;

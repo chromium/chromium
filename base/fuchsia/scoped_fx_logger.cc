@@ -5,19 +5,28 @@
 #include "base/fuchsia/scoped_fx_logger.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 
 ScopedFxLogger CreateFxLoggerFromLogSink(
     fuchsia::logger::LogSinkHandle log_sink) {
+  return CreateFxLoggerFromLogSinkWithTag(std::move(log_sink), {});
+}
+
+ScopedFxLogger CreateFxLoggerFromLogSinkWithTag(
+    fuchsia::logger::LogSinkHandle log_sink,
+    base::StringPiece tag) {
+  std::string tag_string = tag.as_string();
+  const char* tag_c_string = tag_string.c_str();
+
   fx_logger_config_t config = {
       // Selecting based on log level is handled outside the fx_logger.
       .min_severity = FX_LOG_ALL,
       .console_fd = -1,
       .log_sink_channel = log_sink.TakeChannel().release(),
-      // Do not set any custom tags.
-      .tags = nullptr,
-      .num_tags = 0,
+      .tags = tag.empty() ? nullptr : &tag_c_string,
+      .num_tags = tag.empty() ? 0 : 1,
   };
 
   fx_logger_t* fx_logger = nullptr;

@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/strings/string_piece_forward.h"
 
 namespace base {
 
@@ -24,12 +25,17 @@ struct FxLoggerDeleter {
 
 using ScopedFxLogger = std::unique_ptr<fx_logger_t, internal::FxLoggerDeleter>;
 
-// Creates a new logger connected to the specified |log_sink| service.
-// The logger is configured to log all severities of message, and has no
-// custom tags set.
+// Returns a new logger connected to the specified |log_sink| service.
+// The logger is initially configured to log all severities of message.
 // Returns null if creation of the new logger fails.
 BASE_EXPORT ScopedFxLogger
-CreateFxLoggerFromLogSink(fuchsia::logger::LogSinkHandle log_sink);
+CreateFxLoggerFromLogSink(::fuchsia::logger::LogSinkHandle log_sink);
+
+// Similar to CreateFxLoggerFromLogSink(), but returns a logger which annotates
+// messages with the specified |tag|, if non-empty.
+BASE_EXPORT ScopedFxLogger
+CreateFxLoggerFromLogSinkWithTag(::fuchsia::logger::LogSinkHandle log_sink,
+                                 base::StringPiece tag);
 
 }  // namespace base
 

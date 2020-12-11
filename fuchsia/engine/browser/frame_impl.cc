@@ -61,12 +61,6 @@
 
 namespace {
 
-// logging::LogSeverity does not define a value to disable logging; define one.
-// Since this value is used to determine whether incoming log severity is above
-// a threshold, set the value much higher than logging::LOG_ERROR.
-const logging::LogSeverity kLogSeverityUnreachable =
-    std::numeric_limits<logging::LogSeverity>::max();
-
 // Simulated screen bounds to use when headless rendering is enabled.
 constexpr gfx::Size kHeadlessWindowSize = {1, 1};
 
@@ -124,24 +118,46 @@ bool IsUrlMatchedByOriginList(const GURL& url,
   return false;
 }
 
-logging::LogSeverity ConsoleLogLevelToLoggingSeverity(
+fx_log_severity_t FuchsiaWebConsoleLogLevelToFxLogSeverity(
     fuchsia::web::ConsoleLogLevel level) {
   switch (level) {
-    case fuchsia::web::ConsoleLogLevel::NONE:
-      return kLogSeverityUnreachable;
     case fuchsia::web::ConsoleLogLevel::DEBUG:
-      return logging::LOG_VERBOSE;
+      return FX_LOG_DEBUG;
     case fuchsia::web::ConsoleLogLevel::INFO:
-      return logging::LOG_INFO;
+      return FX_LOG_INFO;
     case fuchsia::web::ConsoleLogLevel::WARN:
-      return logging::LOG_WARNING;
+      return FX_LOG_WARNING;
     case fuchsia::web::ConsoleLogLevel::ERROR:
-      return logging::LOG_ERROR;
+      return FX_LOG_ERROR;
+    case fuchsia::web::ConsoleLogLevel::NONE:
+      return FX_LOG_NONE;
+    default:
+      // Cope gracefully with callers setting undefined levels.
+      DLOG(ERROR) << "Unknown log level:"
+                  << static_cast<std::underlying_type<decltype(level)>::type>(
+                         level);
+      return FX_LOG_NONE;
   }
-  NOTREACHED()
-      << "Unknown log level: "
-      << static_cast<std::underlying_type<fuchsia::web::ConsoleLogLevel>::type>(
-             level);
+}
+
+fx_log_severity_t BlinkConsoleMessageLevelToFxLogSeverity(
+    blink::mojom::ConsoleMessageLevel level) {
+  switch (level) {
+    case blink::mojom::ConsoleMessageLevel::kVerbose:
+      return FX_LOG_DEBUG;
+    case blink::mojom::ConsoleMessageLevel::kInfo:
+      return FX_LOG_INFO;
+    case blink::mojom::ConsoleMessageLevel::kWarning:
+      return FX_LOG_WARNING;
+    case blink::mojom::ConsoleMessageLevel::kError:
+      return FX_LOG_ERROR;
+  }
+
+  // Cope gracefully with callers setting undefined levels.
+  DLOG(ERROR) << "Unknown log level:"
+              << static_cast<std::underlying_type<decltype(level)>::type>(
+                     level);
+  return FX_LOG_NONE;
 }
 
 bool IsHeadless() {
@@ -245,13 +261,15 @@ FrameImpl* FrameImpl::FromRenderFrameHost(
 
 FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
                      ContextImpl* context,
-                     fuchsia::web::CreateFrameParams params_for_popups,
+                     fuchsia::web::CreateFrameParams params,
                      fidl::InterfaceRequest<fuchsia::web::Frame> frame_request)
     : web_contents_(std::move(web_contents)),
       context_(context),
-      params_for_popups_(std::move(params_for_popups)),
+      console_log_tag_(params.has_debug_name()
+                           ? params.debug_name()
+                           : std::string()),
+      params_for_popups_(std::move(params)),
       navigation_controller_(web_contents_.get()),
-      log_level_(kLogSeverityUnreachable),
       url_request_rewrite_rules_manager_(web_contents_.get()),
       binding_(this, std::move(frame_request)),
       media_blocker_(web_contents_.get()),
@@ -751,7 +769,16 @@ void FrameImpl::SetNavigationEventListener(
 }
 
 void FrameImpl::SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel level) {
-  log_level_ = ConsoleLogLevelToLoggingSeverity(level);
+  log_level_ = FuchsiaWebConsoleLogLevelToFxLogSeverity(level);
+}
+
+void FrameImpl::SetConsoleLogSink(fuchsia::logger::LogSinkHandle sink) {
+  if (sink) {
+    console_logger_ = base::CreateFxLoggerFromLogSinkWithTag(std::move(sink),
+                                                             console_log_tag_);
+  } else {
+    console_logger_ = nullptr;
+  }
 }
 
 void FrameImpl::ConfigureInputTypes(fuchsia::web::InputTypes types,
@@ -981,39 +1008,29 @@ bool FrameImpl::DidAddMessageToConsole(
     const base::string16& message,
     int32_t line_no,
     const base::string16& source_id) {
-  logging::LogSeverity log_severity =
-      blink::ConsoleMessageLevelToLogSeverity(log_level);
-  if (log_level_ > log_severity) {
+  fx_log_severity_t severity =
+      BlinkConsoleMessageLevelToFxLogSeverity(log_level);
+  if (severity < log_level_) {
     // Prevent the default logging mechanism from logging the message.
     return true;
+  }
+
+  if (!console_logger_) {
+    // Log via the process' LogSink service if none was set on the Frame.
+    // Connect on-demand, so that embedders need not provide a LogSink in the
+    // CreateContextParams services, unless they actually enable logging.
+    console_logger_ = base::CreateFxLoggerFromLogSinkWithTag(
+        base::ComponentContextForProcess()
+            ->svc()
+            ->Connect<fuchsia::logger::LogSink>(),
+        console_log_tag_);
   }
 
   std::string formatted_message =
       base::StringPrintf("%s:%d : %s", base::UTF16ToUTF8(source_id).data(),
                          line_no, base::UTF16ToUTF8(message).data());
-  switch (log_level) {
-    case blink::mojom::ConsoleMessageLevel::kVerbose:
-      // TODO(crbug.com/1139396): Use a more verbose value than INFO once using
-      // fx_logger directly. LOG() does not support VERBOSE.
-      LOG(INFO) << "debug:" << formatted_message;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kInfo:
-      LOG(INFO) << "info:" << formatted_message;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kWarning:
-      LOG(WARNING) << "warn:" << formatted_message;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kError:
-      LOG(ERROR) << "error:" << formatted_message;
-      break;
-    default:
-      // TODO(crbug.com/1139396): Eliminate this case via refactoring. All
-      // values are handled above.
-      DLOG(WARNING) << "Unknown log level: " << log_severity;
-      // Let the default logging mechanism handle the message.
-      return false;
-  }
-
+  fx_logger_log(console_logger_.get(), severity, nullptr,
+                formatted_message.data());
   return true;
 }
 
