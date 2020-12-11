@@ -498,7 +498,9 @@ else
   dev_list="${dev_list} libudev0"
   nacl_list="${nacl_list} libudev0:i386"
 fi
-if package_exists libbrlapi0.7; then
+if package_exists libbrlapi0.8; then
+  dev_list="${dev_list} libbrlapi0.8"
+elif package_exists libbrlapi0.7; then
   dev_list="${dev_list} libbrlapi0.7"
 elif package_exists libbrlapi0.6; then
   dev_list="${dev_list} libbrlapi0.6"
