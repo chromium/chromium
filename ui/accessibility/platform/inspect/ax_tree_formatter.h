@@ -5,8 +5,9 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_H_
 
-#include "ui/accessibility/platform/inspect/ax_inspect.h"
+#include <vector>
 
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace base {
