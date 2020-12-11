@@ -196,6 +196,8 @@ class VaapiVideoDecoder : public DecoderInterface,
   // pipeline (and thus the VaapiVideoDecoder) on the decoder thread.
   std::unique_ptr<CdmContextRef> cdm_context_ref_;
 
+  EncryptionScheme encryption_scheme_;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // To keep the CdmContext event callback registered.
   std::unique_ptr<CallbackRegistration> cdm_event_cb_registration_;

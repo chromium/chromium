@@ -234,6 +234,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   profile_ = profile;
   color_space_ = config.color_space_info();
+  encryption_scheme_ = config.encryption_scheme();
   auto accel_status = CreateAcceleratedVideoDecoder();
   if (!accel_status.is_ok()) {
     std::move(init_cb).Run(std::move(accel_status));
@@ -707,7 +708,8 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
     auto accelerator = std::make_unique<H264VaapiVideoDecoderDelegate>(
         this, vaapi_wrapper_, std::move(protected_update_cb),
-        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr);
+        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr,
+        encryption_scheme_);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(
@@ -721,7 +723,8 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
   } else if (profile_ >= VP9PROFILE_MIN && profile_ <= VP9PROFILE_MAX) {
     auto accelerator = std::make_unique<VP9VaapiVideoDecoderDelegate>(
         this, vaapi_wrapper_, std::move(protected_update_cb),
-        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr);
+        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr,
+        encryption_scheme_);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(
@@ -731,7 +734,8 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
   else if (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) {
     auto accelerator = std::make_unique<H265VaapiVideoDecoderDelegate>(
         this, vaapi_wrapper_, std::move(protected_update_cb),
-        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr);
+        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr,
+        encryption_scheme_);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(

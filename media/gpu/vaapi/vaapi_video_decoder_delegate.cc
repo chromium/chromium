@@ -22,11 +22,13 @@ VaapiVideoDecoderDelegate::VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     ProtectedSessionUpdateCB on_protected_session_update_cb,
-    CdmContext* cdm_context)
+    CdmContext* cdm_context,
+    EncryptionScheme encryption_scheme)
     : vaapi_dec_(vaapi_dec),
       vaapi_wrapper_(std::move(vaapi_wrapper)),
       on_protected_session_update_cb_(
           std::move(on_protected_session_update_cb)),
+      encryption_scheme_(encryption_scheme),
       protected_session_state_(ProtectedSessionState::kNotCreated) {
   DCHECK(vaapi_wrapper_);
   DCHECK(vaapi_dec_);
@@ -56,17 +58,14 @@ bool VaapiVideoDecoderDelegate::SetDecryptConfig(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // It is possible to switch between clear and encrypted (and vice versa), but
   // we should not be changing encryption schemes across encrypted portions.
-  if (decrypt_config_) {
-    if (!decrypt_config)
-      return true;
-    // TODO(jkardatzke): Handle changing encryption modes midstream, the latest
-    // OEMCrypto spec allows this, although we won't hit it in reality for now.
-    // Check to make sure they are compatible.
-    if (decrypt_config_->encryption_scheme() !=
-        decrypt_config->encryption_scheme()) {
-      LOG(ERROR) << "Cannot change encryption modes midstream";
-      return false;
-    }
+  if (!decrypt_config)
+    return true;
+  // TODO(jkardatzke): Handle changing encryption modes midstream, the latest
+  // OEMCrypto spec allows this, although we won't hit it in reality for now.
+  // Check to make sure they are compatible.
+  if (decrypt_config->encryption_scheme() != encryption_scheme_) {
+    LOG(ERROR) << "Cannot change encryption modes midstream";
+    return false;
   }
   decrypt_config_ = std::move(decrypt_config);
   return true;
@@ -83,15 +82,13 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(crypto_params);
   DCHECK(segments);
-  DCHECK(decrypt_config_);
   if (protected_session_state_ == ProtectedSessionState::kInProcess ||
       protected_session_state_ == ProtectedSessionState::kFailed) {
     return protected_session_state_;
   }
   if (protected_session_state_ == ProtectedSessionState::kNotCreated) {
-    if (!decrypt_config_ || !chromeos_cdm_context_) {
-      LOG(ERROR) << "Cannot create protected session w/out "
-                    "DecryptConfig/ChromeOsCdmContext";
+    if (!chromeos_cdm_context_) {
+      LOG(ERROR) << "Cannot create protected session w/out ChromeOsCdmContext";
       protected_session_state_ = ProtectedSessionState::kFailed;
       return protected_session_state_;
     }
@@ -107,7 +104,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
 
   DCHECK_EQ(protected_session_state_, ProtectedSessionState::kCreated);
 
-  if (decrypt_config_->encryption_scheme() == EncryptionScheme::kCenc) {
+  if (encryption_scheme_ == EncryptionScheme::kCenc) {
     crypto_params->encryption_type =
         full_sample_ ? VA_ENCRYPTION_TYPE_CENC_CTR : VA_ENCRYPTION_TYPE_CTR_128;
   } else {
@@ -119,7 +116,8 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     crypto_params->encryption_type = VA_ENCRYPTION_TYPE_CBC;
   }
 
-  if (subsamples.empty()) {
+  if (subsamples.empty() ||
+      (subsamples.size() == 1 && subsamples[0].cypher_bytes == 0)) {
     // We still need to specify the crypto params to the driver for some reason
     // and indicate the entire content is clear.
     VAEncryptionSegmentInfo segment_info = {};
@@ -136,6 +134,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     return protected_session_state_;
   }
 
+  DCHECK(decrypt_config_);
   // We also need to make sure we have the key data for the active
   // DecryptConfig now that the protected session exists.
   if (!hw_key_data_map_.count(decrypt_config_->key_id())) {
@@ -206,9 +205,8 @@ void VaapiVideoDecoderDelegate::OnGetHwConfigData(
   }
 
   hw_identifier_.clear();
-  if (!vaapi_wrapper_->CreateProtectedSession(
-          decrypt_config_->encryption_scheme(), full_sample_, config_data,
-          &hw_identifier_)) {
+  if (!vaapi_wrapper_->CreateProtectedSession(encryption_scheme_, full_sample_,
+                                              config_data, &hw_identifier_)) {
     LOG(ERROR) << "Failed to setup protected session";
     protected_session_state_ = ProtectedSessionState::kFailed;
     on_protected_session_update_cb_.Run(false);

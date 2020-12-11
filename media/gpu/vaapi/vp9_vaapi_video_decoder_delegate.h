@@ -24,7 +24,8 @@ class VP9VaapiVideoDecoderDelegate : public VP9Decoder::VP9Accelerator,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb =
           base::DoNothing(),
-      CdmContext* cdm_context = nullptr);
+      CdmContext* cdm_context = nullptr,
+      EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted);
   ~VP9VaapiVideoDecoderDelegate() override;
 
   // VP9Decoder::VP9Accelerator implementation.

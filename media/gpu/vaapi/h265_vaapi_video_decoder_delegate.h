@@ -28,7 +28,8 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
       DecodeSurfaceHandler<VASurface>* vaapi_dec,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb,
-      CdmContext* cdm_context);
+      CdmContext* cdm_context,
+      EncryptionScheme encryption_scheme);
 
   H265VaapiVideoDecoderDelegate(const H265VaapiVideoDecoderDelegate&) = delete;
   H265VaapiVideoDecoderDelegate& operator=(

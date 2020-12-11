@@ -41,11 +41,13 @@ H265VaapiVideoDecoderDelegate::H265VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     ProtectedSessionUpdateCB on_protected_session_update_cb,
-    CdmContext* cdm_context)
+    CdmContext* cdm_context,
+    EncryptionScheme encryption_scheme)
     : VaapiVideoDecoderDelegate(vaapi_dec,
                                 std::move(vaapi_wrapper),
                                 std::move(on_protected_session_update_cb),
-                                cdm_context) {
+                                cdm_context,
+                                encryption_scheme) {
   ref_pic_list_pocs_.reserve(kMaxRefIdxActive);
 }
 
@@ -297,9 +299,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
 
   bool uses_crypto = false;
   VAEncryptionParameters crypto_params = {};
-  const bool encrypted_bytes_present =
-      !subsamples.empty() && subsamples[0].cypher_bytes;
-  if (encrypted_bytes_present || IsProtectedSession()) {
+  if (IsEncryptedSession()) {
     const ProtectedSessionState state =
         SetupDecryptDecode(/*full_sample=*/false, size, &crypto_params,
                            &encryption_segment_info_, subsamples);

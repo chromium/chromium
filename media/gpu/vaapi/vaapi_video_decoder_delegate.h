@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/decryptor.h"
+#include "media/base/encryption_scheme.h"
 #include "media/base/subsample_entry.h"
 #include "third_party/libva_protected_content/va_protected_content.h"
 
@@ -49,7 +50,8 @@ class VaapiVideoDecoderDelegate {
       DecodeSurfaceHandler<VASurface>* const vaapi_dec,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb,
-      CdmContext* cdm_context);
+      CdmContext* cdm_context,
+      EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted);
   virtual ~VaapiVideoDecoderDelegate();
 
   void set_vaapi_wrapper(scoped_refptr<VaapiWrapper> vaapi_wrapper);
@@ -79,9 +81,8 @@ class VaapiVideoDecoderDelegate {
   // is setup for a protected session, it will fill in the |crypto_params|.
   // |segments| must retain its memory until the frame is submitted.
   // |subsamples| is for the current slice. |size| is the size of the slice
-  // data. This should be called if IsProtectedSession() is true even if the
-  // data is not encrypted (i.e. |subsamples| is empty), and in that case the
-  // |full_sample| parameter is ignored.
+  // data. This should be called if IsEncrypted() is true even if the current
+  // data is not encrypted (i.e. |subsamples| is empty).
   ProtectedSessionState SetupDecryptDecode(
       bool full_sample,
       size_t size,
@@ -89,10 +90,10 @@ class VaapiVideoDecoderDelegate {
       std::vector<VAEncryptionSegmentInfo>* segments,
       const std::vector<SubsampleEntry>& subsamples);
 
-  // Returns true if we have established a protected session, in which case
-  // SetupDecryptDecode() should be called for every slice after that.
-  bool IsProtectedSession() const {
-    return protected_session_state_ == ProtectedSessionState::kCreated;
+  // Returns true if we are handling encrypted content, in which case
+  // SetupDecryptDecode() should be called for every slice.
+  bool IsEncryptedSession() const {
+    return encryption_scheme_ != EncryptionScheme::kUnencrypted;
   }
 
   // Both owned by caller.
@@ -112,6 +113,7 @@ class VaapiVideoDecoderDelegate {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ChromeOsCdmContext* chromeos_cdm_context_{nullptr};  // Not owned.
 #endif
+  EncryptionScheme encryption_scheme_;
   ProtectedSessionState protected_session_state_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
   bool full_sample_;

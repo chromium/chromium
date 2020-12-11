@@ -22,11 +22,13 @@ VP9VaapiVideoDecoderDelegate::VP9VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     ProtectedSessionUpdateCB on_protected_session_update_cb,
-    CdmContext* cdm_context)
+    CdmContext* cdm_context,
+    EncryptionScheme encryption_scheme)
     : VaapiVideoDecoderDelegate(vaapi_dec,
                                 std::move(vaapi_wrapper),
                                 std::move(on_protected_session_update_cb),
-                                cdm_context) {}
+                                cdm_context,
+                                encryption_scheme) {}
 
 VP9VaapiVideoDecoderDelegate::~VP9VaapiVideoDecoderDelegate() {
   DCHECK(!picture_params_);
@@ -86,10 +88,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     return DecodeStatus::kFail;
 
   VAEncryptionParameters crypto_param{};
-  const bool encrypted_bytes_present =
-      decrypt_config && !decrypt_config->subsamples().empty() &&
-      decrypt_config->subsamples()[0].cypher_bytes;
-  if (encrypted_bytes_present || IsProtectedSession()) {
+  if (IsEncryptedSession()) {
     const ProtectedSessionState state = SetupDecryptDecode(
         /*full_sample=*/false, frame_hdr->frame_size, &crypto_param,
         &encryption_segment_info,

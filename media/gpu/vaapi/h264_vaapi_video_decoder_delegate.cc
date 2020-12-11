@@ -49,11 +49,13 @@ H264VaapiVideoDecoderDelegate::H264VaapiVideoDecoderDelegate(
     DecodeSurfaceHandler<VASurface>* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     ProtectedSessionUpdateCB on_protected_session_update_cb,
-    CdmContext* cdm_context)
+    CdmContext* cdm_context,
+    EncryptionScheme encryption_scheme)
     : VaapiVideoDecoderDelegate(vaapi_dec,
                                 std::move(vaapi_wrapper),
                                 std::move(on_protected_session_update_cb),
-                                cdm_context) {}
+                                cdm_context,
+                                encryption_scheme) {}
 
 H264VaapiVideoDecoderDelegate::~H264VaapiVideoDecoderDelegate() = default;
 
@@ -366,14 +368,15 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
 
   bool uses_crypto = false;
   VAEncryptionParameters crypto_params = {};
-  const bool encrypted_bytes_present =
-      !subsamples.empty() && subsamples[0].cypher_bytes;
-  if (encrypted_bytes_present || IsProtectedSession()) {
-    // If there is only one clear byte, then this is CENC v1, full sample
-    // encryption (i.e. only the NALU header is unencrypted).
+  if (IsEncryptedSession()) {
+    // Always indicate full sample since H264 can support that and we don't know
+    // yet which it is.
+    // TODO(jkardatzke): Fix full sample encryption, specifying true for it here
+    // always will cause H264 subsample to fail and we don't know which it is
+    // yet.
     const ProtectedSessionState state = SetupDecryptDecode(
-        !subsamples.empty() && subsamples[0].clear_bytes == 1, size,
-        &crypto_params, &encryption_segment_info_, subsamples);
+        /*full_sample=*/false, size, &crypto_params, &encryption_segment_info_,
+        subsamples);
     if (state == ProtectedSessionState::kFailed) {
       LOG(ERROR) << "SubmitSlice fails because we couldn't setup the protected "
                     "session";

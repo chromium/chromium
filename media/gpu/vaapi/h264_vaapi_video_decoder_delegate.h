@@ -28,7 +28,8 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb =
           base::DoNothing(),
-      CdmContext* cdm_context = nullptr);
+      CdmContext* cdm_context = nullptr,
+      EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted);
   ~H264VaapiVideoDecoderDelegate() override;
 
   // H264Decoder::H264Accelerator implementation.
