@@ -377,18 +377,6 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdapterClient
     std::move(callback).Run(base::nullopt);
   }
 
-  void PauseDiscovery(const dbus::ObjectPath& object_path,
-                      base::OnceClosure callback,
-                      ErrorCallback error_callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void UnpauseDiscovery(const dbus::ObjectPath& object_path,
-                        base::OnceClosure callback,
-                        ErrorCallback error_callback) override {
-    NOTIMPLEMENTED();
-  }
-
   void RemoveDevice(const dbus::ObjectPath& object_path,
                     const dbus::ObjectPath& device_path,
                     base::OnceClosure callback,

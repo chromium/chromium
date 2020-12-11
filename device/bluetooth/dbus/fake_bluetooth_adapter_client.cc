@@ -77,8 +77,6 @@ FakeBluetoothAdapterClient::FakeBluetoothAdapterClient()
     : visible_(true),
       second_visible_(false),
       discovering_count_(0),
-      pause_count_(0),
-      unpause_count_(0),
       set_discovery_filter_should_fail_(false),
       simulation_interval_ms_(kSimulationIntervalMs),
       last_handle_(0) {
@@ -207,22 +205,6 @@ void FakeBluetoothAdapterClient::StopDiscovery(
 
 void FakeBluetoothAdapterClient::UpdateDiscoveringProperty(bool discovering) {
   properties_->discovering.ReplaceValue(discovering);
-}
-
-void FakeBluetoothAdapterClient::PauseDiscovery(
-    const dbus::ObjectPath& object_path,
-    base::OnceClosure callback,
-    ErrorCallback error_callback) {
-  ++pause_count_;
-  std::move(callback).Run();
-}
-
-void FakeBluetoothAdapterClient::UnpauseDiscovery(
-    const dbus::ObjectPath& object_path,
-    base::OnceClosure callback,
-    ErrorCallback error_callback) {
-  ++unpause_count_;
-  std::move(callback).Run();
 }
 
 void FakeBluetoothAdapterClient::RemoveDevice(
