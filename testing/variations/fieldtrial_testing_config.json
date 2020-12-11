@@ -2425,6 +2425,36 @@
             ]
         }
     ],
+    "DesktopWebAppInstallIconExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithDownloadIcon",
+                    "params": {
+                        "shape": "download"
+                    },
+                    "enable_features": [
+                        "InstallIconExperiment"
+                    ]
+                },
+                {
+                    "name": "EnabledWithDownloadToDeviceIcon",
+                    "params": {
+                        "shape": "downloadToDevice"
+                    },
+                    "enable_features": [
+                        "InstallIconExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesynchronizedScrolling": [
         {
             "platforms": [
