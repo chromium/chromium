@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Callback;
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -75,16 +76,19 @@ public class ShoppingFeedFetcher {
      * @param callback Function to call when response comes back.
      */
     public static void fetchProductLine(List<String> brandIds, Callback<String> callback) {
+        String[] headers =
+                new String[] {"Accept-Language", LocaleUtils.getDefaultLocaleListString()};
         EndpointFetcher.fetchUsingChromeAPIKey(
                 (endpoindResponse)
                         -> { callback.onResult(endpoindResponse.getResponseString()); },
                 Profile.getLastUsedRegularProfile(), PRODUCT_LINE_ENDPOINT, POST_METHOD,
-                CONTENT_TYPE, buildPostBody(brandIds, "brandMids"), TIMEOUT_MS, new String[1]);
+                CONTENT_TYPE, buildPostBody(brandIds, "brandMids"), TIMEOUT_MS, headers);
 
         Log.e("Meil_ShoppingFeedFetcher", "fetch product line: ");
         Log.e("Meil_ShoppingFeedFetcher", "endpoint: " + PRODUCT_LINE_ENDPOINT);
         Log.e("Meil_ShoppingFeedFetcher", "method: " + POST_METHOD);
         Log.e("Meil_ShoppingFeedFetcher", "content type: " + CONTENT_TYPE);
+        Log.e("Meil_ShoppingFeedFetcher", "headers: " + Arrays.toString(headers));
         Log.e("Meil_ShoppingFeedFetcher", "request body: " + buildPostBody(brandIds, "brandMids"));
         Log.e("Meil_ShoppingFeedFetcher", "time out: " + TIMEOUT_MS);
     }

@@ -736,6 +736,8 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     }
 
     public boolean isTabLayoutOffscreen() {
+        if (mScrollDelegate.isChildVisibleAtPosition(0)) return false;
+
         return !mScrollDelegate.isChildVisibleAtPosition(1)
                 || mScrollDelegate.getVerticalTabLayoutOffset() > 0;
     }
