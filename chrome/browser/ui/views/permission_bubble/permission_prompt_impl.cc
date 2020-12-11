@@ -71,7 +71,7 @@ PermissionPromptImpl::~PermissionPromptImpl() {
     case PermissionPromptStyle::kChip:
       DCHECK(!prompt_bubble_);
       DCHECK(permission_chip_);
-      permission_chip_->Hide();
+      permission_chip_->FinalizeRequest();
       permission_chip_ = nullptr;
       break;
     case PermissionPromptStyle::kQuiet:
@@ -108,7 +108,7 @@ void PermissionPromptImpl::UpdateAnchorPosition() {
       // If there is fresh pending request shown as chip UI and location bar
       // isn't visible anymore, show bubble UI instead.
       if (!permission_chip_->is_collapsed() && !is_location_bar_drawn) {
-        permission_chip_->Hide();
+        permission_chip_->FinalizeRequest();
         permission_chip_ = nullptr;
         ShowBubble();
       }
@@ -128,7 +128,7 @@ void PermissionPromptImpl::ShowChipUI() {
   DCHECK(lbv);
 
   permission_chip_ = lbv->permission_chip();
-  permission_chip_->Show(delegate_);
+  permission_chip_->DisplayRequest(delegate_);
   prompt_style_ = PermissionPromptStyle::kChip;
 }
 

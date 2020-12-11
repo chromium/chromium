@@ -102,9 +102,7 @@ PermissionChip::PermissionChip(Browser* browser)
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           chip_button_)));
 
-  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(350);
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
-  animation_->SetSlideDuration(kAnimationDuration);
 }
 
 PermissionChip::~PermissionChip() {
@@ -113,7 +111,8 @@ PermissionChip::~PermissionChip() {
   CHECK(!IsInObserverList());
 }
 
-void PermissionChip::Show(permissions::PermissionPrompt::Delegate* delegate) {
+void PermissionChip::DisplayRequest(
+    permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
   delegate_ = delegate;
 
@@ -136,16 +135,14 @@ void PermissionChip::Show(permissions::PermissionPrompt::Delegate* delegate) {
   SetVisible(true);
   // TODO(olesiamarukhno): Add tests for animation logic.
   animation_->Reset();
-  is_collapsed_ = true;
   if (!delegate_->WasCurrentRequestAlreadyDisplayed()) {
-    animation_->Show();
-    is_collapsed_ = false;
+    AnimateExpand();
   }
   requested_time_ = base::TimeTicks::Now();
   PreferredSizeChanged();
 }
 
-void PermissionChip::Hide() {
+void PermissionChip::FinalizeRequest() {
   SetVisible(false);
   timer_.AbandonAndStop();
   delegate_ = nullptr;
@@ -153,6 +150,38 @@ void PermissionChip::Hide() {
     prompt_bubble_->GetWidget()->Close();
   already_recorded_interaction_ = false;
   PreferredSizeChanged();
+}
+
+void PermissionChip::Reshow() {
+  if (GetVisible())
+    return;
+
+  SetVisible(true);
+  // TODO(olesiamarukhno): Add tests for animation logic.
+  animation_->Reset();
+  if (!delegate_->WasCurrentRequestAlreadyDisplayed())
+    AnimateExpand();
+  PreferredSizeChanged();
+}
+
+void PermissionChip::Hide() {
+  SetVisible(false);
+}
+
+void PermissionChip::AnimateCollapse() {
+  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(250);
+  animation_->SetSlideDuration(kAnimationDuration);
+  animation_->Hide();
+}
+
+void PermissionChip::AnimateExpand() {
+  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(350);
+  animation_->SetSlideDuration(kAnimationDuration);
+  animation_->Show();
+}
+
+bool PermissionChip::HasActiveRequest() {
+  return delegate_;
 }
 
 gfx::Size PermissionChip::CalculatePreferredSize() const {
@@ -177,6 +206,7 @@ void PermissionChip::OnThemeChanged() {
 
 void PermissionChip::AnimationEnded(const gfx::Animation* animation) {
   DCHECK_EQ(animation, animation_.get());
+  is_collapsed_ = animation->GetCurrentValue() != 1.0;
   if (animation->GetCurrentValue() == 1.0)
     StartCollapseTimer();
 }
@@ -190,8 +220,7 @@ void PermissionChip::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(widget, prompt_bubble_->GetWidget());
   widget->RemoveObserver(this);
   prompt_bubble_ = nullptr;
-  animation_->Hide();
-  is_collapsed_ = true;
+  AnimateCollapse();
 }
 
 void PermissionChip::OpenBubble() {
@@ -224,8 +253,7 @@ void PermissionChip::Collapse() {
   if (IsMouseHovered() || prompt_bubble_) {
     StartCollapseTimer();
   } else {
-    animation_->Hide();
-    is_collapsed_ = true;
+    AnimateCollapse();
   }
 }
 

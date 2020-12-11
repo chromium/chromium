@@ -1155,6 +1155,7 @@ void LocationBarView::OnChanged() {
   SchedulePaint();
   UpdateSendTabToSelfIcon();
   UpdateQRCodeGeneratorIcon();
+  UpdatePermissionChipVisibility();
 }
 
 void LocationBarView::OnPopupVisibilityChanged() {
@@ -1285,4 +1286,17 @@ ui::ImageModel LocationBarView::GetLocationIcon(
                                       location_icon_view_->GetForegroundColor(),
                                       std::move(on_icon_fetched))
              : ui::ImageModel();
+}
+
+void LocationBarView::UpdatePermissionChipVisibility() {
+  if (!permission_chip()->HasActiveRequest()) {
+    DCHECK(!permission_chip()->GetVisible());
+    return;
+  }
+
+  if (IsEditingOrEmpty()) {
+    permission_chip()->Hide();
+  } else {
+    permission_chip()->Reshow();
+  }
 }

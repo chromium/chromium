@@ -39,9 +39,12 @@ class PermissionChip : public views::View,
 
   ~PermissionChip() override;
 
-  void Show(permissions::PermissionPrompt::Delegate* delegate);
-  void Hide();
+  void DisplayRequest(permissions::PermissionPrompt::Delegate* delegate);
+  void FinalizeRequest();
   void OpenBubble();
+  void Hide();
+  void Reshow();
+  bool HasActiveRequest();
 
   views::Button* button() { return chip_button_; }
   bool is_collapsed() { return is_collapsed_; }
@@ -73,6 +76,9 @@ class PermissionChip : public views::View,
   void UpdatePermissionIconAndTextColor();
   base::string16 GetPermissionMessage();
   const gfx::VectorIcon& GetPermissionIconId();
+
+  void AnimateCollapse();
+  void AnimateExpand();
 
   Browser* browser_ = nullptr;
   permissions::PermissionPrompt::Delegate* delegate_ = nullptr;

@@ -347,6 +347,10 @@ class LocationBarView : public LocationBar,
   // Returns true if visibility changed.
   bool UpdateSendTabToSelfIcon();
 
+  // Updates the visibility of the permission chip when omnibox is in the edit
+  // mode.
+  void UpdatePermissionChipVisibility();
+
   // The Browser this LocationBarView is in.  Note that at least
   // chromeos::SimpleWebViewDialog uses a LocationBarView outside any browser
   // window, so this may be NULL.
