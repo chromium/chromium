@@ -62,6 +62,8 @@ component("views") {
     "accessibility/ax_virtual_view.h",
     "accessibility/view_accessibility.h",
     "accessibility/view_accessibility_utils.h",
+    "accessibility/views_ax_tree_manager.h",
+    "accessibility/widget_ax_tree_id_map.h",
     "accessible_pane_view.h",
     "animation/animation_delegate_views.h",
     "animation/bounds_animator.h",
@@ -731,6 +733,12 @@ component("views") {
         "corewm/tooltip_win.cc",
       ]
     }
+    if (!is_chromeos) {
+      sources += [
+        "accessibility/views_ax_tree_manager.cc",
+        "accessibility/widget_ax_tree_id_map.cc",
+      ]
+    }
     deps += [
       "//ui/aura",
       "//ui/events",
@@ -830,8 +838,6 @@ component("views") {
 
     if (use_aura) {
       sources += [
-        "accessibility/views_ax_tree_manager.cc",
-        "accessibility/views_ax_tree_manager.h",
         "accessibility/views_utilities_aura.cc",
         "accessibility/views_utilities_aura.h",
       ]

@@ -9,13 +9,13 @@ body {
   font-size: 12px;
   margin: 10px 20px;
   min-width: 47em;
-  padding-bottom: 65px;
+  padding-block-end: 65px;
 }
 
 img {
   float: left;
   height: 16px;
-  padding-right: 5px;
+  padding-inline-end: 5px;
   width: 16px;
 }
 
@@ -57,10 +57,14 @@ p {
   margin: 0 0 12px 32px;
 }
 
+.hidden {
+  display: none;
+}
+
 a {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 20px;
+  margin-block-end: 10px;
+  margin-block-start: 10px;
+  margin-inline-start: 20px;
 }
 
 label {
@@ -74,5 +78,5 @@ label.disabled {
 }
 
 label input[type='checkbox'] {
-  margin-right: 6px;
+  margin-inline-end: 6px;
 }

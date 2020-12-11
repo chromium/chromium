@@ -16,6 +16,8 @@ class Value;
 
 namespace ui {
 
+class AXNode;
+class AXTreeID;
 class AXPlatformNodeDelegate;
 
 // A utility class for formatting platform-specific accessibility information,
@@ -74,6 +76,14 @@ class AX_EXPORT AXTreeFormatter {
   // Build an accessibility tree for an application with a name matching the
   // given pattern.
   virtual base::Value BuildTreeForSelector(const AXTreeSelector&) const = 0;
+
+  // Build an accessibility tree for an application with |node| as the root.
+  virtual base::Value BuildTreeForNode(ui::AXNode* node) const = 0;
+
+  // Returns a string representing the internal tree represented by |tree_id|.
+  virtual std::string DumpInternalAccessibilityTree(
+      ui::AXTreeID tree_id,
+      const std::vector<AXPropertyFilter>& property_filters) = 0;
 
   // Dumps accessibility tree.
   virtual std::string FormatTree(const base::Value& tree_node) const = 0;

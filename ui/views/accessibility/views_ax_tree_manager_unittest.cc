@@ -13,6 +13,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
@@ -41,7 +43,8 @@ class TestButton : public Button {
   ~TestButton() override = default;
 };
 
-class ViewsAXTreeManagerTest : public ViewsTestBase {
+class ViewsAXTreeManagerTest : public ViewsTestBase,
+                               public ::testing::WithParamInterface<bool> {
  public:
   ViewsAXTreeManagerTest() = default;
   ~ViewsAXTreeManagerTest() override = default;
@@ -51,6 +54,7 @@ class ViewsAXTreeManagerTest : public ViewsTestBase {
  protected:
   void SetUp() override;
   void TearDown() override;
+  void CloseWidget();
   ui::AXNode* FindNode(const ax::mojom::Role role,
                        const std::string& name_or_value) const;
   void WaitFor(const ui::AXEventGenerator::Event event);
@@ -58,7 +62,7 @@ class ViewsAXTreeManagerTest : public ViewsTestBase {
   Widget* widget() const { return widget_; }
   Button* button() const { return button_; }
   Label* label() const { return label_; }
-  const ViewsAXTreeManager& manager() const { return *manager_; }
+  ViewsAXTreeManager* manager() const { return manager_.get(); }
 
  private:
   ui::AXNode* FindNodeInSubtree(ui::AXNode* root,
@@ -74,13 +78,20 @@ class ViewsAXTreeManagerTest : public ViewsTestBase {
   std::unique_ptr<ViewsAXTreeManager> manager_;
   ui::AXEventGenerator::Event event_to_wait_for_;
   std::unique_ptr<base::RunLoop> loop_runner_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void ViewsAXTreeManagerTest::SetUp() {
   ViewsTestBase::SetUp();
 
+  if (GetParam()) {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kEnableAccessibilityTreeForViews}, {});
+  }
+
   widget_ = new Widget;
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 200, 200);
   widget_->Init(std::move(params));
 
@@ -93,26 +104,45 @@ void ViewsAXTreeManagerTest::SetUp() {
   widget_->GetContentsView()->AddChildView(button_);
   widget_->Show();
 
-  manager_ = std::make_unique<ViewsAXTreeManager>(widget_);
-  ASSERT_NE(nullptr, manager_.get());
-  manager_->SetGeneratedEventCallbackForTesting(base::BindRepeating(
+  // AccessibilityTreeForViewsEnabled will create and manage its own
+  // ViewsAXTreeManager, so we don't need to create one for testing.
+  if (features::IsAccessibilityTreeForViewsEnabled()) {
+    manager_.reset(
+        widget_->GetRootView()->GetViewAccessibility().AXTreeManager());
+  } else {
+    manager_ = std::make_unique<ViewsAXTreeManager>(widget_);
+  }
+
+  ASSERT_NE(nullptr, manager_);
+  manager()->SetGeneratedEventCallbackForTesting(base::BindRepeating(
       &ViewsAXTreeManagerTest::OnGeneratedEvent, base::Unretained(this)));
   WaitFor(ui::AXEventGenerator::Event::LOAD_COMPLETE);
 }
 
 void ViewsAXTreeManagerTest::TearDown() {
-  manager_->UnsetGeneratedEventCallbackForTesting();
+  if (manager())
+    manager()->UnsetGeneratedEventCallbackForTesting();
   manager_.reset();
-  if (!widget_->IsClosed())
-    widget_->Close();
+  CloseWidget();
   ViewsTestBase::TearDown();
+}
+
+void ViewsAXTreeManagerTest::CloseWidget() {
+  if (!widget_->IsClosed())
+    widget_->CloseNow();
+
+  RunPendingMessages();
 }
 
 ui::AXNode* ViewsAXTreeManagerTest::FindNode(
     const ax::mojom::Role role,
     const std::string& name_or_value) const {
-  ui::AXNode* root = manager_->GetRootAsAXNode();
-  EXPECT_NE(nullptr, root);
+  ui::AXNode* root = manager()->GetRootAsAXNode();
+
+  // If the manager has been closed, it will return nullptr as root.
+  if (!root)
+    return nullptr;
+
   return FindNodeInSubtree(root, role, name_or_value);
 }
 
@@ -149,15 +179,16 @@ ui::AXNode* ViewsAXTreeManagerTest::FindNodeInSubtree(
 void ViewsAXTreeManagerTest::OnGeneratedEvent(Widget* widget,
                                               ui::AXEventGenerator::Event event,
                                               ui::AXNode::AXID node_id) {
-  ASSERT_NE(nullptr, manager_.get())
-      << "Should not be called after TearDown().";
+  ASSERT_NE(nullptr, manager()) << "Should not be called after TearDown().";
   if (loop_runner_ && event == event_to_wait_for_)
     loop_runner_->Quit();
 }
 
 }  // namespace
 
-TEST_F(ViewsAXTreeManagerTest, MirrorInitialTree) {
+INSTANTIATE_TEST_SUITE_P(All, ViewsAXTreeManagerTest, testing::Bool());
+
+TEST_P(ViewsAXTreeManagerTest, MirrorInitialTree) {
   ui::AXNodeData button_data;
   button()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
   ui::AXNode* ax_button = FindNode(ax::mojom::Role::kButton, "");
@@ -174,7 +205,7 @@ TEST_F(ViewsAXTreeManagerTest, MirrorInitialTree) {
   EXPECT_TRUE(ax_button->data().HasState(ax::mojom::State::kFocusable));
 }
 
-TEST_F(ViewsAXTreeManagerTest, PerformAction) {
+TEST_P(ViewsAXTreeManagerTest, PerformAction) {
   ui::AXNode* ax_button = FindNode(ax::mojom::Role::kButton, "");
   ASSERT_NE(nullptr, ax_button);
   ASSERT_FALSE(ax_button->data().HasIntAttribute(
@@ -183,6 +214,23 @@ TEST_F(ViewsAXTreeManagerTest, PerformAction) {
   button()->NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
                                      true);
   WaitFor(ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED);
+}
+
+TEST_P(ViewsAXTreeManagerTest, CloseWidget) {
+  // This test is only relevant when IsAccessibilityTreeForViewsEnabled is set,
+  // as it tests the lifetime management of ViewsAXTreeManager when a Widget is
+  // closed.
+  if (!features::IsAccessibilityTreeForViewsEnabled())
+    return;
+
+  ui::AXNode* ax_button = FindNode(ax::mojom::Role::kButton, "");
+  ASSERT_NE(nullptr, ax_button);
+
+  CloseWidget();
+
+  // Looking up a node after its Widget has been closed should return nullptr.
+  ax_button = FindNode(ax::mojom::Role::kButton, "");
+  EXPECT_EQ(nullptr, ax_button);
 }
 
 }  // namespace test

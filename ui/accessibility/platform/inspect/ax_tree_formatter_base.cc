@@ -4,8 +4,10 @@
 
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 namespace ui {
@@ -49,6 +51,12 @@ std::string AXTreeFormatterBase::FormatTree(const base::Value& dict) const {
   }
 
   return contents;
+}
+
+base::Value AXTreeFormatterBase::BuildTreeForNode(ui::AXNode* root) const {
+  NOTREACHED()
+      << "Only supported when called on AccessibilityTreeFormatterBlink.";
+  return base::Value();
 }
 
 void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
@@ -101,6 +109,14 @@ void AXTreeFormatterBase::SetNodeFilters(
 
 void AXTreeFormatterBase::set_show_ids(bool show_ids) {
   show_ids_ = show_ids;
+}
+
+std::string AXTreeFormatterBase::DumpInternalAccessibilityTree(
+    ui::AXTreeID tree_id,
+    const std::vector<AXPropertyFilter>& property_filters) {
+  NOTREACHED()
+      << "Only supported when called on AccessibilityTreeFormatterBlink.";
+  return std::string("");
 }
 
 std::vector<AXPropertyNode> AXTreeFormatterBase::PropertyFilterNodesFor(

@@ -28,6 +28,7 @@ class AXPlatformNodeDelegate;
 namespace views {
 
 class View;
+class ViewsAXTreeManager;
 class Widget;
 
 // An object that manages the accessibility interface for a View.
@@ -117,6 +118,7 @@ class VIEWS_EXPORT ViewAccessibility {
   View* view() const { return view_; }
   AXVirtualView* FocusedVirtualChild() const { return focused_virtual_child_; }
   virtual bool IsLeaf() const;
+  ViewsAXTreeManager* AXTreeManager() const;
   virtual bool IsIgnored() const;
 
   //
@@ -219,6 +221,12 @@ class VIEWS_EXPORT ViewAccessibility {
   // screen readers, transition focus from one widget to another.
   Widget* next_focus_ = nullptr;
   Widget* previous_focus_ = nullptr;
+
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+  // Each instance of ViewAccessibility that's associated with a root View
+  // owns an ViewsAXTreeManager. For other Views, this should be nullptr.
+  std::unique_ptr<views::ViewsAXTreeManager> ax_tree_manager_;
+#endif
 };
 
 }  // namespace views

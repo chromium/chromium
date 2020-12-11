@@ -65,8 +65,14 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
 
   void ToggleAccessibility(const base::ListValue* args);
   void SetGlobalFlag(const base::ListValue* args);
+  void GetRequestTypeAndFilters(const base::DictionaryValue* data,
+                                std::string& request_type,
+                                std::string& allow,
+                                std::string& allow_empty,
+                                std::string& deny);
   void RequestWebContentsTree(const base::ListValue* args);
   void RequestNativeUITree(const base::ListValue* args);
+  void RequestWidgetsTree(const base::ListValue* args);
   void RequestAccessibilityEvents(const base::ListValue* args);
   void Callback(const std::string&);
   void StopRecording(content::WebContents* web_contents);

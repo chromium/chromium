@@ -13,6 +13,7 @@ AXTreeManagerMap::AXTreeManagerMap() {}
 
 AXTreeManagerMap::~AXTreeManagerMap() {}
 
+// static
 AXTreeManagerMap& AXTreeManagerMap::GetInstance() {
   static base::NoDestructor<AXTreeManagerMap> instance;
   return *instance;

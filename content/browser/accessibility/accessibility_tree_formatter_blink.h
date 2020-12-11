@@ -24,6 +24,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
+  base::Value BuildTreeForNode(ui::AXNode* node) const override;
+  std::string DumpInternalAccessibilityTree(
+      ui::AXTreeID tree_id,
+      const std::vector<AXPropertyFilter>& property_filters) override;
 
  protected:
   void AddDefaultFilters(
@@ -33,12 +37,16 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   void RecursiveBuildTree(const BrowserAccessibility& node,
                           base::Value* dict) const;
 
+  void RecursiveBuildTree(const ui::AXNode& node, base::Value* dict) const;
+
   uint32_t ChildCount(const BrowserAccessibility& node) const;
   BrowserAccessibility* GetChild(const BrowserAccessibility& node,
                                  uint32_t i) const;
 
   void AddProperties(const BrowserAccessibility& node,
                      base::DictionaryValue* dict) const;
+
+  void AddProperties(const ui::AXNode& node, base::DictionaryValue* dict) const;
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;

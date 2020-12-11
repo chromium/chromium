@@ -26,6 +26,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/ax_event_notification_details.h"
+#include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/favicon_status.h"
@@ -38,15 +39,20 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/escape.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "ui/views/accessibility/widget_ax_tree_id_map.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #endif
 
 static const char kTargetsDataFile[] = "targets-data.json";
@@ -71,6 +77,12 @@ static const char kStartField[] = "start";
 static const char kTreeField[] = "tree";
 static const char kTypeField[] = "type";
 static const char kUrlField[] = "url";
+static const char kWidgetsField[] = "widgets";
+
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+static const char kWidgetIdField[] = "widgetId";
+static const char kWidget[] = "widget";
+#endif
 
 // Global flags
 static const char kBrowser[] = "browser";
@@ -84,6 +96,7 @@ static const char kPDF[] = "pdf";
 static const char kScreenReader[] = "screenreader";
 static const char kShowOrRefreshTree[] = "showOrRefreshTree";
 static const char kText[] = "text";
+static const char kViewsAccessibility[] = "viewsAccessibility";
 static const char kWeb[] = "web";
 
 // Possible global flag values
@@ -159,6 +172,22 @@ std::unique_ptr<base::DictionaryValue> BuildTargetDescriptor(Browser* browser) {
 }
 #endif  // !defined(OS_ANDROID)
 
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+std::unique_ptr<base::DictionaryValue> BuildTargetDescriptor(
+    views::Widget* widget) {
+  std::unique_ptr<base::DictionaryValue> widget_data(
+      new base::DictionaryValue());
+  widget_data->SetString(kNameField,
+                         widget->widget_delegate()->GetWindowTitle());
+  widget_data->SetString(kTypeField, kWidget);
+
+  // Use the Widget's root view ViewAccessibility's unique ID for lookup.
+  int id = widget->GetRootView()->GetViewAccessibility().GetUniqueId().Get();
+  widget_data->SetInteger(kWidgetIdField, id);
+  return widget_data;
+}
+#endif  // defined(USE_AURA) && !defined(OS_CHROMEOS)
+
 bool ShouldHandleAccessibilityRequestCallback(const std::string& path) {
   return path == kTargetsDataFile;
 }
@@ -210,6 +239,11 @@ void HandleAccessibilityRequestCallback(
   // The "pdf" flag is independent of the others.
   data.SetString(kPDF, pdf ? kOn : kOff);
 
+  // The "Top Level Widgets" section is only relevant if views accessibility is
+  // enabled.
+  data.SetBoolean(kViewsAccessibility,
+                  features::IsAccessibilityTreeForViewsEnabled());
+
   bool show_internal = pref->GetBoolean(prefs::kShowInternalAccessibilityTree);
   data.SetString(kInternal, show_internal ? kOn : kOff);
 
@@ -253,6 +287,19 @@ void HandleAccessibilityRequestCallback(
   }
 #endif  // !defined(OS_ANDROID)
   data.Set(kBrowsersField, std::move(browser_list));
+
+  std::unique_ptr<base::ListValue> widgets_list(new base::ListValue());
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+  if (features::IsAccessibilityTreeForViewsEnabled()) {
+    views::WidgetAXTreeIDMap& manager_map =
+        views::WidgetAXTreeIDMap::GetInstance();
+    const std::vector<views::Widget*> widgets = manager_map.GetWidgets();
+    for (views::Widget* widget : widgets) {
+      widgets_list->Append(BuildTargetDescriptor(widget));
+    }
+  }
+#endif  // defined(USE_AURA) && !defined(OS_CHROMEOS)
+  data.Set(kWidgetsField, std::move(widgets_list));
 
   std::string json_string;
   base::JSONWriter::Write(data, &json_string);
@@ -375,6 +422,14 @@ void AccessibilityUIMessageHandler::RegisterMessages() {
       "requestNativeUITree",
       base::BindRepeating(&AccessibilityUIMessageHandler::RequestNativeUITree,
                           base::Unretained(this)));
+
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+  web_ui()->RegisterMessageCallback(
+      "requestWidgetsTree",
+      base::BindRepeating(&AccessibilityUIMessageHandler::RequestWidgetsTree,
+                          base::Unretained(this)));
+#endif
+
   web_ui()->RegisterMessageCallback(
       "requestAccessibilityEvents",
       base::BindRepeating(
@@ -497,28 +552,39 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(const base::ListValue* args) {
     state->RemoveAccessibilityModeFlags(new_mode);
 }
 
+void AccessibilityUIMessageHandler::GetRequestTypeAndFilters(
+    const base::DictionaryValue* data,
+    std::string& request_type,
+    std::string& allow,
+    std::string& allow_empty,
+    std::string& deny) {
+  DCHECK(data);
+  const std::string* request_type_p = data->FindStringPath(kRequestTypeField);
+  CHECK(IsValidJSValue(request_type_p));
+  request_type = *request_type_p;
+  CHECK(request_type == kShowOrRefreshTree || request_type == kCopyTree);
+
+  const std::string* allow_p = data->FindStringPath("filters.allow");
+  CHECK(IsValidJSValue(allow_p));
+  allow = *allow_p;
+  const std::string* allow_empty_p = data->FindStringPath("filters.allowEmpty");
+  CHECK(IsValidJSValue(allow_empty_p));
+  allow_empty = *allow_empty_p;
+  const std::string* deny_p = data->FindStringPath("filters.deny");
+  CHECK(IsValidJSValue(deny_p));
+  deny = *deny_p;
+}
+
 void AccessibilityUIMessageHandler::RequestWebContentsTree(
     const base::ListValue* args) {
   const base::DictionaryValue* data;
   CHECK(args->GetDictionary(0, &data));
 
+  std::string request_type, allow, allow_empty, deny;
+  GetRequestTypeAndFilters(data, request_type, allow, allow_empty, deny);
+
   int process_id = *data->FindIntPath(kProcessIdField);
   int routing_id = *data->FindIntPath(kRoutingIdField);
-
-  const std::string* request_type_p = data->FindStringPath(kRequestTypeField);
-  CHECK(IsValidJSValue(request_type_p));
-  std::string request_type = *request_type_p;
-  CHECK(request_type == kShowOrRefreshTree || request_type == kCopyTree);
-
-  const std::string* allow_p = data->FindStringPath("filters.allow");
-  CHECK(IsValidJSValue(allow_p));
-  std::string allow = *allow_p;
-  const std::string* allow_empty_p = data->FindStringPath("filters.allowEmpty");
-  CHECK(IsValidJSValue(allow_empty_p));
-  std::string allow_empty = *allow_empty_p;
-  const std::string* deny_p = data->FindStringPath("filters.deny");
-  CHECK(IsValidJSValue(deny_p));
-  std::string deny = *deny_p;
 
   AllowJavascript();
   content::RenderViewHost* rvh =
@@ -561,21 +627,10 @@ void AccessibilityUIMessageHandler::RequestNativeUITree(
   const base::DictionaryValue* data;
   CHECK(args->GetDictionary(0, &data));
 
-  int session_id = *data->FindIntPath(kSessionIdField);
-  const std::string* request_type_p = data->FindStringPath(kRequestTypeField);
-  CHECK(IsValidJSValue(request_type_p));
-  std::string request_type = *request_type_p;
-  CHECK(request_type == kShowOrRefreshTree || request_type == kCopyTree);
+  std::string request_type, allow, allow_empty, deny;
+  GetRequestTypeAndFilters(data, request_type, allow, allow_empty, deny);
 
-  const std::string* allow_p = data->FindStringPath("filters.allow");
-  CHECK(IsValidJSValue(allow_p));
-  std::string allow = *allow_p;
-  const std::string* allow_empty_p = data->FindStringPath("filters.allowEmpty");
-  CHECK(IsValidJSValue(allow_empty_p));
-  std::string allow_empty = *allow_empty_p;
-  const std::string* deny_p = data->FindStringPath("filters.deny");
-  CHECK(IsValidJSValue(deny_p));
-  std::string deny = *deny_p;
+  int session_id = *data->FindIntPath(kSessionIdField);
 
   AllowJavascript();
 
@@ -607,6 +662,55 @@ void AccessibilityUIMessageHandler::RequestNativeUITree(
   result->SetString(kTypeField, kBrowser);
   result->SetString(kErrorField, "Browser no longer exists.");
   FireWebUIListener(request_type, *(result.get()));
+}
+
+void AccessibilityUIMessageHandler::RequestWidgetsTree(
+    const base::ListValue* args) {
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+  const base::DictionaryValue* data;
+  CHECK(args->GetDictionary(0, &data));
+
+  std::string request_type, allow, allow_empty, deny;
+  GetRequestTypeAndFilters(data, request_type, allow, allow_empty, deny);
+
+  std::vector<AXPropertyFilter> property_filters;
+  AddPropertyFilters(property_filters, allow, AXPropertyFilter::ALLOW);
+  AddPropertyFilters(property_filters, allow_empty,
+                     AXPropertyFilter::ALLOW_EMPTY);
+  AddPropertyFilters(property_filters, deny, AXPropertyFilter::DENY);
+
+  if (features::IsAccessibilityTreeForViewsEnabled()) {
+    int widget_id = *data->FindIntPath(kWidgetIdField);
+    views::WidgetAXTreeIDMap& manager_map =
+        views::WidgetAXTreeIDMap::GetInstance();
+    const std::vector<views::Widget*> widgets = manager_map.GetWidgets();
+    for (views::Widget* widget : widgets) {
+      int current_id =
+          widget->GetRootView()->GetViewAccessibility().GetUniqueId().Get();
+      if (current_id == widget_id) {
+        ui::AXTreeID tree_id = manager_map.GetWidgetTreeID(widget);
+        DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
+        std::unique_ptr<ui::AXTreeFormatter> formatter(
+            content::AXInspectFactory::CreateBlinkFormatter());
+        std::string tree_dump =
+            formatter->DumpInternalAccessibilityTree(tree_id, property_filters);
+
+        std::unique_ptr<base::DictionaryValue> result(
+            BuildTargetDescriptor(widget));
+        result->SetKey(kTreeField, base::Value(tree_dump));
+        AllowJavascript();
+        FireWebUIListener(request_type, *(result.get()));
+        return;
+      }
+    }
+  }
+
+  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
+  result->SetString(kTypeField, kWidget);
+  result->SetString(kErrorField, "Window no longer exists.");
+  AllowJavascript();
+  FireWebUIListener(request_type, *(result.get()));
+#endif  // defined(USE_AURA) && !defined(OS_CHROMEOS)
 }
 
 void AccessibilityUIMessageHandler::Callback(const std::string& str) {

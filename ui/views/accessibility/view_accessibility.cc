@@ -10,10 +10,14 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/buildflags.h"
+#include "ui/views/accessibility/views_ax_tree_manager.h"
+#include "ui/views/accessibility/widget_ax_tree_id_map.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -57,7 +61,20 @@ ViewAccessibility::ViewAccessibility(View* view)
     : view_(view),
       focused_virtual_child_(nullptr),
       is_leaf_(false),
-      is_ignored_(false) {}
+      is_ignored_(false) {
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+  if (features::IsAccessibilityTreeForViewsEnabled()) {
+    Widget* widget = view_->GetWidget();
+    if (widget && widget->is_top_level() &&
+        !WidgetAXTreeIDMap::GetInstance().HasWidget(widget)) {
+      View* root_view = static_cast<View*>(widget->GetRootView());
+      if (root_view && root_view == view) {
+        ax_tree_manager_ = std::make_unique<views::ViewsAXTreeManager>(widget);
+      }
+    }
+  }
+#endif
+}
 
 ViewAccessibility::~ViewAccessibility() = default;
 
@@ -137,6 +154,30 @@ const ui::AXUniqueId& ViewAccessibility::GetUniqueId() const {
 
 bool ViewAccessibility::IsLeaf() const {
   return is_leaf_;
+}
+
+ViewsAXTreeManager* ViewAccessibility::AXTreeManager() const {
+  ViewsAXTreeManager* manager = nullptr;
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
+  Widget* widget = view_->GetWidget();
+
+  // Don't return managers for closing Widgets.
+  if (widget->IsClosed())
+    return nullptr;
+
+  manager = ax_tree_manager_.get();
+
+  // ViewsAXTreeManagers are only created for top-level windows (Widgets). For
+  // non top-level Views, look up the Widget's tree ID to retrieve the manager.
+  if (!manager) {
+    ui::AXTreeID tree_id =
+        WidgetAXTreeIDMap::GetInstance().GetWidgetTreeID(widget);
+    DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
+    manager = static_cast<views::ViewsAXTreeManager*>(
+        ui::AXTreeManagerMap::GetInstance().GetManager(tree_id));
+  }
+#endif
+  return manager;
 }
 
 bool ViewAccessibility::IsIgnored() const {

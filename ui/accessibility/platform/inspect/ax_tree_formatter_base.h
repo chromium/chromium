@@ -31,10 +31,14 @@ class AX_EXPORT AXTreeFormatterBase : public AXTreeFormatter {
 
   // AXTreeFormatter overrides.
   std::string FormatTree(const base::Value& tree_node) const override;
+  base::Value BuildTreeForNode(ui::AXNode* root) const override;
   void SetPropertyFilters(const std::vector<AXPropertyFilter>& property_filters,
                           PropertyFilterSet default_filters_set) override;
   void SetNodeFilters(const std::vector<AXNodeFilter>& node_filters) override;
   void set_show_ids(bool show_ids) override;
+  std::string DumpInternalAccessibilityTree(
+      ui::AXTreeID tree_id,
+      const std::vector<AXPropertyFilter>& property_filters) override;
 
  protected:
   static const char kChildrenDictAttr[];
