@@ -49,7 +49,7 @@ class ArcKeymasterBridge : public KeyedService, public mojom::KeymasterHost {
   // Points to a proxy bound to the implementation in arc-keymasterd.
   mojo::Remote<mojom::KeymasterServer> keymaster_server_proxy_;
 
-  // Points to a proxy bound to the implementation in arc-keymasterd.
+  // Points to the host implementation in Chrome, used to interact with arc-keymasterd.
   std::unique_ptr<keymaster::CertStoreBridge> cert_store_bridge_;
 
   // WeakPtrFactory to use for callbacks.
