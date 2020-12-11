@@ -59,10 +59,14 @@ Entry* DataTransferItemFileSystem::webkitGetAsEntry(ScriptState* script_state,
     return nullptr;
   DCHECK(IsA<File>(file));
 
+  auto* context = ExecutionContext::From(script_state);
+  if (!context)
+    return nullptr;
+
   DOMFileSystem* dom_file_system =
       DraggedIsolatedFileSystemImpl::GetDOMFileSystem(
-          item.GetDataTransfer()->GetDataObject(),
-          ExecutionContext::From(script_state), *item.GetDataObjectItem());
+          item.GetDataTransfer()->GetDataObject(), context,
+          *item.GetDataObjectItem());
   if (!dom_file_system) {
     // IsolatedFileSystem may not be enabled.
     return nullptr;
@@ -75,7 +79,7 @@ Entry* DataTransferItemFileSystem::webkitGetAsEntry(ScriptState* script_state,
   // FIXME: This involves synchronous file operation. Consider passing file type
   // data when we dispatch drag event.
   FileMetadata metadata;
-  if (!GetFileMetadata(To<File>(file)->GetPath(), metadata))
+  if (!GetFileMetadata(To<File>(file)->GetPath(), *context, metadata))
     return nullptr;
 
   if (metadata.type == FileMetadata::kTypeDirectory)

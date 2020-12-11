@@ -41,7 +41,8 @@ class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
   // named interface.
   bool SetBinderForTesting(
       const std::string& name,
-      base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder);
+      base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder)
+      const;
 
  private:
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> broker_;
@@ -49,7 +50,7 @@ class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
   using BinderMap =
       std::map<std::string,
                base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>>;
-  BinderMap binder_map_for_testing_;
+  mutable BinderMap binder_map_for_testing_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserInterfaceBrokerProxy);
 };

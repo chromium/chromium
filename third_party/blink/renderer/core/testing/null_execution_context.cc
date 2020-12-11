@@ -43,7 +43,8 @@ scoped_refptr<base::SingleThreadTaskRunner> NullExecutionContext::GetTaskRunner(
   return Thread::Current()->GetTaskRunner();
 }
 
-BrowserInterfaceBrokerProxy& NullExecutionContext::GetBrowserInterfaceBroker() {
+const BrowserInterfaceBrokerProxy&
+NullExecutionContext::GetBrowserInterfaceBroker() const {
   return GetEmptyBrowserInterfaceBroker();
 }
 

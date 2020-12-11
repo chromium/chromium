@@ -288,7 +288,7 @@ class QuicTransportTest : public ::testing::Test {
         mojom::blink::QuicTransportConnector::Name_, {});
   }
 
-  BrowserInterfaceBrokerProxy* interface_broker_ = nullptr;
+  const BrowserInterfaceBrokerProxy* interface_broker_ = nullptr;
   WTF::Deque<AcceptUnidirectionalStreamCallback>
       pending_unidirectional_accept_callbacks_;
   WTF::Deque<AcceptBidirectionalStreamCallback>

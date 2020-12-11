@@ -126,7 +126,7 @@ class CORE_EXPORT WorkerGlobalScope
   ScriptWrappable* ToScriptWrappable() final { return this; }
 
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() final;
+  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
 
   OffscreenFontSelector* GetFontSelector() { return font_selector_; }
 

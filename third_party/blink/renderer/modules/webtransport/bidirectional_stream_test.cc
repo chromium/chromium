@@ -266,7 +266,7 @@ class ScopedQuicTransport : public mojom::blink::QuicTransportConnector {
   // |browser_interface_broker_| is cached here because we need to use it in the
   // destructor. This means ScopedQuicTransport must always be destroyed before
   // the V8TestingScope object that owns the BrowserInterfaceBrokerProxy.
-  BrowserInterfaceBrokerProxy* browser_interface_broker_;
+  const BrowserInterfaceBrokerProxy* browser_interface_broker_;
   QuicTransport* quic_transport_;
   std::unique_ptr<StubQuicTransport> stub_;
   mojo::Remote<network::mojom::blink::QuicTransportClient> client_remote_;

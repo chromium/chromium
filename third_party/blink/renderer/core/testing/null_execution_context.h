@@ -52,7 +52,7 @@ class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
 
   void CountUse(mojom::WebFeature) override {}
 
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
+  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const override;
 
   ExecutionContextToken GetExecutionContextToken() const final {
     return token_;

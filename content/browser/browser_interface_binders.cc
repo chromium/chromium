@@ -31,6 +31,7 @@
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_ui.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
+#include "content/browser/renderer_host/file_utilities_host_impl.h"
 #include "content/browser/renderer_host/media/media_devices_dispatcher_host.h"
 #include "content/browser/renderer_host/media/media_stream_dispatcher_host.h"
 #include "content/browser/renderer_host/raw_clipboard_host_impl.h"
@@ -92,6 +93,7 @@
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom.h"
+#include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/native_file_system_manager.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom.h"
@@ -363,6 +365,12 @@ void BindTextSuggestionHostForFrame(
   view->text_suggestion_host()->BindTextSuggestionHost(std::move(receiver));
 }
 #endif
+
+void BindFileUtilitiesHost(
+    const ServiceWorkerHost* host,
+    mojo::PendingReceiver<blink::mojom::FileUtilitiesHost> receiver) {
+  FileUtilitiesHostImpl::Create(host->worker_process_id(), std::move(receiver));
+}
 
 template <typename WorkerHost, typename Interface>
 base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>
@@ -665,6 +673,12 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<blink::mojom::FileChooser>(
       base::BindRepeating(&FileChooserImpl::Create, base::Unretained(host)));
+
+  map->Add<blink::mojom::FileUtilitiesHost>(
+      base::BindRepeating(FileUtilitiesHostImpl::Create,
+                          host->GetProcess()->GetID()),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
   map->Add<device::mojom::GamepadMonitor>(
       base::BindRepeating(&device::GamepadMonitor::Create));
@@ -1103,6 +1117,10 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
   map->Add<blink::mojom::ContentSecurityNotifier>(base::DoNothing());
 
   // static binders
+  map->Add<blink::mojom::FileUtilitiesHost>(
+      base::BindRepeating(&BindFileUtilitiesHost, host),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
   map->Add<shape_detection::mojom::BarcodeDetectionProvider>(
       base::BindRepeating(&BindBarcodeDetectionProvider));
   map->Add<shape_detection::mojom::FaceDetectionProvider>(

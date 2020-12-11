@@ -7,6 +7,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/heap/impl/heap.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -16,11 +18,13 @@ class DOMFileSystemBaseTest : public testing::Test {
   DOMFileSystemBaseTest() {
     file_path_ = test::BlinkRootDir() +
                  "/renderer/modules/filesystem/dom_file_system_base_test.cc";
-    GetFileMetadata(file_path_, file_metadata_);
+    GetFileMetadata(file_path_, *context_, file_metadata_);
     file_metadata_.platform_path = file_path_;
   }
 
  protected:
+  Persistent<ExecutionContext> context_ =
+      MakeGarbageCollected<NullExecutionContext>();
   String file_path_;
   FileMetadata file_metadata_;
 };

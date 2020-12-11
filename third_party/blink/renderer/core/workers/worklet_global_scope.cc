@@ -129,7 +129,8 @@ WorkletGlobalScope::WorkletGlobalScope(
 
 WorkletGlobalScope::~WorkletGlobalScope() = default;
 
-BrowserInterfaceBrokerProxy& WorkletGlobalScope::GetBrowserInterfaceBroker() {
+const BrowserInterfaceBrokerProxy&
+WorkletGlobalScope::GetBrowserInterfaceBroker() const {
   NOTIMPLEMENTED();
   return GetEmptyBrowserInterfaceBroker();
 }

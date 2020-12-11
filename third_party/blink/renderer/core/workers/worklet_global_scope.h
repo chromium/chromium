@@ -124,7 +124,7 @@ class CORE_EXPORT WorkletGlobalScope
                      WorkerReportingProxy&,
                      WorkerThread*);
 
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
+  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const override;
 
   // Returns the WorkletToken that uniquely identifies this worklet.
   virtual WorkletToken GetWorkletToken() const = 0;

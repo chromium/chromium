@@ -408,7 +408,8 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
         case FormDataElement::kEncodedFile: {
           auto file_length = element.file_length_;
           if (file_length < 0) {
-            if (!GetFileSize(element.filename_, file_length)) {
+            if (!GetFileSize(element.filename_, *execution_context,
+                             file_length)) {
               form_data_ = nullptr;
               blob_bytes_consumer_ = BytesConsumer::CreateErrored(
                   Error("Cannot determine a file size"));

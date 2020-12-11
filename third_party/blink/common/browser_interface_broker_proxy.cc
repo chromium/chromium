@@ -45,7 +45,7 @@ void BrowserInterfaceBrokerProxy::GetInterface(
 
 bool BrowserInterfaceBrokerProxy::SetBinderForTesting(
     const std::string& name,
-    base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder) {
+    base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder) const {
   if (!binder) {
     binder_map_for_testing_.erase(name);
     return true;

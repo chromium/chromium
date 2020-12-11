@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
+#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -62,7 +63,6 @@
 #include "v8/include/v8.h"
 
 namespace base {
-class SingleThreadTaskRunner;
 class UnguessableToken;
 }  // namespace base
 
@@ -73,7 +73,6 @@ class UkmRecorder;
 namespace blink {
 
 class Agent;
-class BrowserInterfaceBrokerProxy;
 class ConsoleMessage;
 class ContentSecurityPolicy;
 class ContentSecurityPolicyDelegate;
@@ -92,8 +91,6 @@ class SecurityOrigin;
 class ScriptState;
 class ScriptWrappable;
 class TrustedTypePolicyFactory;
-
-enum class TaskType : unsigned char;
 
 enum ReasonForCallingCanExecuteScripts {
   kAboutToExecuteScript,
@@ -126,6 +123,7 @@ enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
 // in common.
 class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
                                      public ContextLifecycleNotifier,
+                                     public MojoBindingContext,
                                      public ConsoleLogger,
                                      public UseCounter,
                                      public FeatureContext {
@@ -299,11 +297,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   virtual CoreProbeSink* GetProbeSink() { return nullptr; }
 
-  virtual BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() = 0;
-
   virtual FrameOrWorkerScheduler* GetScheduler() = 0;
-  virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
-      TaskType) = 0;
 
   v8::Isolate* GetIsolate() const { return isolate_; }
   Agent* GetAgent() const { return agent_; }

@@ -28,7 +28,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
   using ReportingServiceProxy = mojom::blink::ReportingServiceProxy;
 
  public:
-  MockReportingServiceProxy(BrowserInterfaceBrokerProxy& broker,
+  MockReportingServiceProxy(const BrowserInterfaceBrokerProxy& broker,
                             base::OnceClosure reached_callback)
       : broker_(broker), reached_callback_(std::move(reached_callback)) {
     broker_.SetBinderForTesting(
@@ -114,7 +114,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
       std::move(reached_callback_).Run();
   }
 
-  BrowserInterfaceBrokerProxy& broker_;
+  const BrowserInterfaceBrokerProxy& broker_;
   mojo::ReceiverSet<ReportingServiceProxy> receivers_;
   base::OnceClosure reached_callback_;
 

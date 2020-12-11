@@ -158,7 +158,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   String OutgoingReferrer() const final;
   network::mojom::ReferrerPolicy GetReferrerPolicy() const final;
   CoreProbeSink* GetProbeSink() final;
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() final;
+  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
   FrameOrWorkerScheduler* GetScheduler() final;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
   TrustedTypePolicyFactory* GetTrustedTypes() const final {

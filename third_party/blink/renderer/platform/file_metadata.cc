@@ -36,26 +36,15 @@
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/filename_util.h"
-#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/mojo_binding_context.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "url/gurl.h"
 
 namespace blink {
-
-namespace {
-
-mojo::Remote<mojom::blink::FileUtilitiesHost>& GetFileUtilitiesHost() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<mojo::Remote<mojom::blink::FileUtilitiesHost>>,
-      thread_specific_host, ());
-  return *thread_specific_host;
-}
-
-}  // namespace
 
 // static
 FileMetadata FileMetadata::From(const base::File::Info& file_info) {
@@ -70,20 +59,22 @@ FileMetadata FileMetadata::From(const base::File::Info& file_info) {
   return file_metadata;
 }
 
-bool GetFileSize(const String& path, int64_t& result) {
+bool GetFileSize(const String& path,
+                 const MojoBindingContext& context,
+                 int64_t& result) {
   FileMetadata metadata;
-  if (!GetFileMetadata(path, metadata))
+  if (!GetFileMetadata(path, context, metadata))
     return false;
   result = metadata.length;
   return true;
 }
 
-bool GetFileMetadata(const String& path, FileMetadata& metadata) {
-  auto& host = GetFileUtilitiesHost();
-  if (!host) {
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        host.BindNewPipeAndPassReceiver());
-  }
+bool GetFileMetadata(const String& path,
+                     const MojoBindingContext& context,
+                     FileMetadata& metadata) {
+  mojo::Remote<mojom::blink::FileUtilitiesHost> host;
+  context.GetBrowserInterfaceBroker().GetInterface(
+      host.BindNewPipeAndPassReceiver());
 
   base::Optional<base::File::Info> file_info;
   if (!host->GetFileInfo(WebStringToFilePath(path), &file_info) || !file_info)

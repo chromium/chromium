@@ -144,6 +144,7 @@ source_set("blink_headers") {
     "platform/modules/service_worker/web_service_worker_registration_object_info.h",
     "platform/modules/video_capture/web_video_capture_impl_manager.h",
     "platform/modules/webrtc/webrtc_logging.h",
+    "platform/mojo_binding_context.h",
     "platform/platform.h",
     "platform/resource_load_info_notifier_wrapper.h",
     "platform/scheduler/web_agent_group_scheduler.h",

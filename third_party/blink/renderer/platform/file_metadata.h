@@ -41,30 +41,35 @@
 
 namespace blink {
 
+class MojoBindingContext;
+
 class FileMetadata {
   DISALLOW_NEW();
 
  public:
-  FileMetadata()
-      : modification_time(base::nullopt), length(-1), type(kTypeUnknown) {}
+  FileMetadata() = default;
 
   PLATFORM_EXPORT static FileMetadata From(const base::File::Info& file_info);
 
   // The last modification time of the file.
-  base::Optional<base::Time> modification_time;
+  base::Optional<base::Time> modification_time = base::nullopt;
 
   // The length of the file in bytes.
   // The value -1 means that the length is not set.
-  int64_t length;
+  int64_t length = -1;
 
   enum Type { kTypeUnknown = 0, kTypeFile, kTypeDirectory };
 
-  Type type;
+  Type type = kTypeUnknown;
   String platform_path;
 };
 
-PLATFORM_EXPORT bool GetFileSize(const String&, int64_t& result);
-PLATFORM_EXPORT bool GetFileMetadata(const String&, FileMetadata&);
+PLATFORM_EXPORT bool GetFileSize(const String&,
+                                 const MojoBindingContext&,
+                                 int64_t& result);
+PLATFORM_EXPORT bool GetFileMetadata(const String&,
+                                     const MojoBindingContext&,
+                                     FileMetadata& result);
 PLATFORM_EXPORT KURL FilePathToURL(const String&);
 
 inline base::Optional<base::Time> NullableTimeToOptionalTime(base::Time time) {
