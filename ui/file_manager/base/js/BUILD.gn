@@ -25,6 +25,7 @@ js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
   deps = [
     ":app_util.m",
+    ":error_counter.m",
     ":filtered_volume_manager.m",
     ":volume_manager_types.m",
   ]
@@ -84,6 +85,12 @@ js_library("app_util.m") {
 }
 
 js_library("error_counter") {
+}
+
+js_library("error_counter.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/base/js/error_counter.m.js" ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("filtered_volume_manager") {
@@ -200,6 +207,7 @@ js_modulizer("modulize") {
     "mock_chrome.js",
     "test_error_reporting.js",
     "volume_manager_types.js",
+    "error_counter.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {MetadataModel} from './metadata_model.m.js';
+
 /**
  * Returns a mock of metadata model.
  *
  * @extends {MetadataModel}
  * @final
  */
-class MockMetadataModel {
+/* #export */ class MockMetadataModel {
   /** @param {Object} initial_properties */
   constructor(initial_properties) {
     /**

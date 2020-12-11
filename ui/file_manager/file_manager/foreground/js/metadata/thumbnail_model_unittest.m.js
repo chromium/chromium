@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {reportPromise} from '../../../../base/js/test_error_reporting.m.js';
+
+import {MetadataItem} from './metadata_item.m.js';
+import {MetadataModel} from './metadata_model.m.js';
+import {ThumbnailModel} from './thumbnail_model.m.js';
+
 const imageEntry = {
   name: 'image.jpg',
   toURL: function() {
@@ -32,7 +40,7 @@ let metadata;
 let contentMetadata;
 let thumbnailModel;
 
-function setUp() {
+export function setUp() {
   metadata = new MetadataItem();
   metadata.modificationTime = new Date(2015, 0, 1);
   metadata.present = true;
@@ -54,7 +62,7 @@ function setUp() {
   }));
 }
 
-function testThumbnailModelGetBasic(callback) {
+export function testThumbnailModelGetBasic(callback) {
   reportPromise(
       thumbnailModel.get([imageEntry]).then(results => {
         assertEquals(1, results.length);
@@ -72,7 +80,7 @@ function testThumbnailModelGetBasic(callback) {
       callback);
 }
 
-function testThumbnailModelGetNotPresent(callback) {
+export function testThumbnailModelGetNotPresent(callback) {
   metadata.present = false;
   reportPromise(
       thumbnailModel.get([imageEntry]).then(results => {
@@ -91,7 +99,7 @@ function testThumbnailModelGetNotPresent(callback) {
       callback);
 }
 
-function testThumbnailModelGetNonImage(callback) {
+export function testThumbnailModelGetNonImage(callback) {
   reportPromise(
       thumbnailModel.get([nonImageEntry]).then(results => {
         assertEquals(1, results.length);

@@ -17,7 +17,6 @@ group("closure_compile") {
     ":closure_compile_jsmodules",
     ":closure_compile_module",
     ":js_test_gen_html_modules_type_check_auto",
-    ":js_test_gen_html_type_check_auto",
   ]
 }
 
@@ -43,8 +42,10 @@ js_type_check("closure_compile_jsmodules") {
     ":metadata_parser.m",
     ":metadata_provider.m",
     ":metadata_request.m",
+    ":mock_metadata.m",
     ":mpeg_parser.m",
     ":multi_metadata_provider.m",
+    ":thumbnail_model.m",
   ]
 }
 
@@ -467,6 +468,13 @@ js_library("mock_metadata") {
   deps = [ ":metadata_model" ]
 }
 
+js_library("mock_metadata.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata/mock_metadata.m.js" ]
+  deps = [ ":metadata_model.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("mpeg_parser") {
   deps = [ ":metadata_parser" ]
 }
@@ -527,11 +535,23 @@ js_library("thumbnail_model") {
   deps = [ ":metadata_model" ]
 }
 
-js_unittest("thumbnail_model_unittest") {
+js_library("thumbnail_model.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/metadata/thumbnail_model.m.js" ]
   deps = [
-    ":thumbnail_model",
-    "//ui/file_manager/base/js:test_error_reporting",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":metadata_model.m",
+    "//ui/file_manager/file_manager/common/js:file_type.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("thumbnail_model_unittest.m") {
+  deps = [
+    ":metadata_item.m",
+    ":metadata_model.m",
+    ":thumbnail_model.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:test_error_reporting.m",
   ]
 }
 
@@ -546,6 +566,7 @@ js_test_gen_html("js_test_gen_html_modules") {
     ":metadata_cache_set_unittest.m",
     ":metadata_model_unittest.m",
     ":multi_metadata_provider_unittest.m",
+    ":thumbnail_model_unittest.m",
   ]
   js_module = true
 
@@ -556,11 +577,6 @@ js_test_gen_html("js_test_gen_html_modules") {
         "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
         "hide_warnings_for=third_party/",
       ]
-}
-
-js_test_gen_html("js_test_gen_html") {
-  deps = [ ":thumbnail_model_unittest" ]
-  mocks = [ "metadata_dispatcher_mock_deps.js" ]
 }
 
 js_modulizer("modulize") {
@@ -586,6 +602,8 @@ js_modulizer("modulize") {
     "metadata_provider.js",
     "mpeg_parser.js",
     "multi_metadata_provider.js",
+    "mock_metadata.js",
+    "thumbnail_model.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites
