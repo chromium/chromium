@@ -129,8 +129,18 @@ class WavMixerInputSource : public MixerInput::Source {
                               ::media::AudioBus* buffer) override {
     CHECK(buffer);
     size_t bytes_written;
-    CHECK_EQ(num_frames, buffer->frames());
-    CHECK(input_handler_->CopyTo(buffer, cursor_, &bytes_written));
+    CHECK_LE(num_frames, buffer->frames());
+    if (num_frames < buffer->frames()) {
+      std::vector<float*> channel_data;
+      for (int i = 0; i < buffer->channels(); ++i) {
+        channel_data.push_back(buffer->channel(i));
+      }
+      std::unique_ptr<::media::AudioBus> buffer_wrapper =
+          ::media::AudioBus::WrapVector(num_frames, channel_data);
+      CHECK(input_handler_->CopyTo(buffer_wrapper.get(), cursor_, &bytes_written));
+    } else {
+      CHECK(input_handler_->CopyTo(buffer, cursor_, &bytes_written));
+    }
     cursor_ += bytes_written;
     return bytes_written / bytes_per_frame_;
   }
