@@ -2327,9 +2327,6 @@ crbug.com/1029514 external/wpt/html/semantics/embedded-content/the-video-element
 # css-pseudo-4 opacity not applied to ::first-line
 crbug.com/1085772 external/wpt/css/css-pseudo/first-line-opacity-001.html [ Failure ]
 
-# Disabling test to checkin associated frontend changes on DevTools
-crbug.com/1136655 http/tests/devtools/throttling/mobile-throttling.js [ Failure Pass Timeout ]
-
 # motion-1 issues
 crbug.com/641245 external/wpt/css/motion/offset-path-ray-002.html [ Failure ]
 crbug.com/641245 external/wpt/css/motion/offset-path-ray-003.html [ Failure ]
