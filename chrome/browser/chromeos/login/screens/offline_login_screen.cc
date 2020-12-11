@@ -154,8 +154,8 @@ void OfflineLoginScreen::StartIdleDetection() {
   if (!idle_detector_) {
     auto callback = base::BindRepeating(&OfflineLoginScreen::OnIdle,
                                         weak_ptr_factory_.GetWeakPtr());
-    idle_detector_ =
-        std::make_unique<IdleDetector>(std::move(callback), tick_clock_);
+    idle_detector_ = std::make_unique<IdleDetector>(std::move(callback),
+                                                    nullptr /* tick_clock */);
   }
   idle_detector_->Start(kIdleTimeDelta);
 }

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/scoped_observation.h"
-#include "base/time/tick_clock.h"
 #include "chrome/browser/chromeos/idle_detector.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
@@ -75,8 +74,6 @@ class OfflineLoginScreen
       scoped_observer_;
 
   ScreenExitCallback exit_callback_;
-
-  const base::TickClock* tick_clock_;
 
   // Will monitor if the user is idle for a long period of time and we can try
   // to get back to Online Gaia.
