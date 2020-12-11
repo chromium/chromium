@@ -8,14 +8,57 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/browser_thread.h"
 #include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace {
+
+void InitializeCertDbOnWorkerThread(bool should_load_chaps,
+                                    base::FilePath software_nss_db_path) {
+  crypto::EnsureNSSInit();
+
+  if (should_load_chaps) {
+    // NSS functions may reenter //net via extension hooks. If the reentered
+    // code needs to synchronously wait for a task to run but the thread pool in
+    // which that task must run doesn't have enough threads to schedule it, a
+    // deadlock occurs. To prevent that, the base::ScopedBlockingCall below
+    // increments the thread pool capacity for the duration of the TPM
+    // initialization.
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+    // There's no need to save the result of `LoadChaps()`, chaps will stay
+    // loaded and can be used anyway. Using the result only to determine
+    // success/failure.
+    if (!crypto::LoadChaps()) {
+      LOG(ERROR) << "Failed to load chaps.";
+      return;
+    }
+  }
+
+  // The slot doesn't need to be saved either. `description` doesn't affect
+  // anything. `software_nss_db_path` file path should be already created by
+  // Ash-Chrome.
+  auto slot = crypto::OpenSoftwareNSSDB(software_nss_db_path,
+                                        /*description=*/"cert_db");
+  if (!slot) {
+    LOG(ERROR) << "Failed to open user certificate database";
+    return;
+  }
+
+  return;
+}
+
+}  // namespace
 
 class IdentityManagerObserver : public signin::IdentityManager::Observer {
  public:
@@ -56,9 +99,12 @@ CertDbInitializer::CertDbInitializer(
     Profile* profile)
     : cert_database_remote_(cert_database_remote), profile_(profile) {}
 
-CertDbInitializer::~CertDbInitializer() = default;
+CertDbInitializer::~CertDbInitializer() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
 
 void CertDbInitializer::Start(signin::IdentityManager* identity_manager) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(identity_manager);
   // TODO(crbug.com/1148300): This is temporary. Until ~2021
   // `Profile::IsMainProfile()` method can return a false negative response if
@@ -76,11 +122,14 @@ void CertDbInitializer::Start(signin::IdentityManager* identity_manager) {
 }
 
 void CertDbInitializer::OnRefreshTokensLoaded() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   identity_manager_observer_.reset();
   WaitForCertDbReady();
 }
 
 void CertDbInitializer::WaitForCertDbReady() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (!profile_->IsMainProfile()) {
     return;
   }
@@ -91,27 +140,18 @@ void CertDbInitializer::WaitForCertDbReady() {
 
 void CertDbInitializer::OnCertDbInfoReceived(
     crosapi::mojom::GetCertDatabaseInfoResultPtr cert_db_info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (!cert_db_info) {
     LOG(WARNING) << "Certificate database is not accesible";
     return;
   }
 
-  crypto::EnsureNSSInit();
-
-  // There's no need to save the result of `LoadChaps()`, chaps will stay loaded
-  // and can be used anyway. Using the result only to determine success/failure.
-  if (cert_db_info->should_load_chaps && !crypto::LoadChaps()) {
-    LOG(ERROR) << "Failed to load chaps.";
-    return;
-  }
-
-  // The slot doesn't need to be saved either. `description` doesn't affect
-  // anything. `software_nss_db_path` file path should be already created by
-  // Ash-Chrome.
-  base::FilePath software_nss_db_path(cert_db_info->software_nss_db_path);
-  auto slot = crypto::OpenSoftwareNSSDB(software_nss_db_path,
-                                        /*description=*/"cert_db");
-  if (!slot) {
-    LOG(ERROR) << "Failed to open user certificate database";
-  }
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&InitializeCertDbOnWorkerThread,
+                     cert_db_info->should_load_chaps,
+                     base::FilePath(cert_db_info->software_nss_db_path)));
 }

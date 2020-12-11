@@ -22,11 +22,12 @@ class CertDbInitializer : public KeyedService {
       Profile* profile);
   ~CertDbInitializer() override;
 
+  // Starts the initialization. The first step is to wait for
+  // IdentityManager.
   void Start(signin::IdentityManager* identity_manager);
 
  private:
-  // Starts the initialization. The first step is to wait for IdentityManager.
-
+  // It is called when IdentityManager is ready.
   void OnRefreshTokensLoaded();
 
   // Checks that the current profile is the main profile and, if yes, makes a
