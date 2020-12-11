@@ -52,11 +52,13 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.BuildConfig;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.SysUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -927,6 +929,25 @@ public class InstantStartTest {
         Layout activeLayout = mActivityTestRule.getActivity().getLayoutManager().getActiveLayout();
         Assert.assertTrue(activeLayout instanceof StaticLayout);
         Assert.assertEquals(123, ((StaticLayout) activeLayout).getCurrentTabIdForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    // clang-format off
+    public void  testInstantStartDisabledOnLowEndDevice() throws IOException {
+        // clang-format on
+        createTabStateFile(new int[] {123});
+        mActivityTestRule.startMainActivityFromLauncher();
+        // SysUtils.resetForTesting is required here due to the test restriction setup. With the
+        // RESTRICTION_TYPE_NON_LOW_END_DEVICE restriction on the class, SysUtils#detectLowEndDevice
+        // is called before the BaseSwitches.ENABLE_LOW_END_DEVICE_MODE is applied. Reset here to
+        // make sure BaseSwitches.ENABLE_LOW_END_DEVICE_MODE can be applied.
+        SysUtils.resetForTesting();
+
+        Assert.assertFalse(TabUiFeatureUtilities.supportInstantStart(false));
     }
 
     @Test
