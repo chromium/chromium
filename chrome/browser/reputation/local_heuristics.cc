@@ -23,12 +23,12 @@ namespace {
 const base::FeatureParam<bool> kEnableLookalikeTopSites{
     &security_state::features::kSafetyTipUI, "topsites", true};
 const base::FeatureParam<bool> kEnableLookalikeEditDistance{
-    &security_state::features::kSafetyTipUI, "editdistance", true};
+    &security_state::features::kSafetyTipUI, "editdistance", false};
 const base::FeatureParam<bool> kEnableLookalikeEditDistanceSiteEngagement{
     &security_state::features::kSafetyTipUI, "editdistance_siteengagement",
     true};
 const base::FeatureParam<bool> kEnableLookalikeTargetEmbedding{
-    &security_state::features::kSafetyTipUI, "targetembedding", true};
+    &security_state::features::kSafetyTipUI, "targetembedding", false};
 
 // Binary search through |words| to find |needle|.
 bool SortedWordListContains(const std::string& needle,

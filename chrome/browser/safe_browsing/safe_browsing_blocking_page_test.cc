@@ -124,6 +124,7 @@ using content::NavigationController;
 using content::RenderFrameHost;
 using content::WebContents;
 using security_interstitials::BaseSafeBrowsingErrorUI;
+using FeatureAndParams = base::test::ScopedFeatureList::FeatureAndParams;
 
 namespace safe_browsing {
 
@@ -1882,35 +1883,22 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
   SafeBrowsingBlockingPageDelayedWarningBrowserTest() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> additional_enabled_features;
-    std::vector<base::Feature> additional_disabled_features;
-    GetAdditionalFeatures(&additional_enabled_features,
-                          &additional_disabled_features);
+    std::vector<FeatureAndParams> enabled_features{
+        FeatureAndParams(blink::features::kPortals, {}),
+        FeatureAndParams(blink::features::kPortalsCrossOrigin, {}),
+    };
     if (warning_on_mouse_click_enabled()) {
-      const std::map<std::string, std::string> parameters{{"mouse", "true"}};
-      std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-          enabled_features{base::test::ScopedFeatureList::FeatureAndParams(
-                               kDelayedWarnings, parameters),
-                           base::test::ScopedFeatureList::FeatureAndParams(
-                               blink::features::kPortals, {}),
-                           base::test::ScopedFeatureList::FeatureAndParams(
-                               blink::features::kPortalsCrossOrigin, {})};
-      for (const auto& feature : additional_enabled_features) {
-        enabled_features.push_back(
-            base::test::ScopedFeatureList::FeatureAndParams(feature, {}));
-      }
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          enabled_features, additional_disabled_features);
+      enabled_features.push_back(
+          FeatureAndParams(kDelayedWarnings, {{"mouse", "true"}}));
     } else {
-      std::vector<base::Feature> enabled_features = {
-          kDelayedWarnings, blink::features::kPortals,
-          blink::features::kPortalsCrossOrigin};
-      for (const auto& feature : additional_enabled_features) {
-        enabled_features.push_back(feature);
-      }
-      scoped_feature_list_.InitWithFeatures(enabled_features,
-                                            additional_disabled_features);
+      enabled_features.push_back(FeatureAndParams(kDelayedWarnings, {}));
     }
+
+    std::vector<base::Feature> disabled_features;
+    GetAdditionalFeatures(&enabled_features, &disabled_features);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
     InProcessBrowserTest::SetUp();
   }
 
@@ -2013,7 +2001,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
  protected:
   // Subclasses can override to enable/disable features in SetUp().
   virtual void GetAdditionalFeatures(
-      std::vector<base::Feature>* enabled_features,
+      std::vector<FeatureAndParams>* enabled_features,
       std::vector<base::Feature>* disabled_features) {}
 
   // Initiates a download and waits for it to be completed or cancelled.
@@ -2662,10 +2650,10 @@ class SafeBrowsingBlockingPageDelayedWarningWithSafetyTipBrowserTest
   }
 
   void GetAdditionalFeatures(
-      std::vector<base::Feature>* enabled_features,
+      std::vector<FeatureAndParams>* enabled_features,
       std::vector<base::Feature>* disabled_features) override {
-    enabled_features->push_back(
-        security_state::features::kSafetyTipUIOnDelayedWarning);
+    enabled_features->push_back(FeatureAndParams(
+        security_state::features::kSafetyTipUIOnDelayedWarning, {}));
     // Explicitly disable the main Safety Tip feature. This feature is used to
     // enable Safety Tips independently of delayed warnings, so that we can
     // have one experiment studying regular Safety Tips running at the same time
@@ -2786,11 +2774,12 @@ class SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest
   }
 
   void GetAdditionalFeatures(
-      std::vector<base::Feature>* enabled_features,
+      std::vector<FeatureAndParams>* enabled_features,
       std::vector<base::Feature>* disabled_features) override {
-    enabled_features->push_back(
-        security_state::features::kSafetyTipUIOnDelayedWarning);
-    enabled_features->push_back(security_state::features::kSafetyTipUI);
+    enabled_features->push_back(FeatureAndParams(
+        security_state::features::kSafetyTipUIOnDelayedWarning, {}));
+    enabled_features->push_back(FeatureAndParams(
+        security_state::features::kSafetyTipUI, {{"editdistance", "true"}}));
   }
 };
 

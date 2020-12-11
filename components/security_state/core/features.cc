@@ -10,8 +10,7 @@ namespace features {
 const base::Feature kLegacyTLSWarnings{"LegacyTLSWarnings",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSafetyTipUI{"SafetyTip",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSafetyTipUI{"SafetyTip", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSafetyTipUIForSimplifiedDomainDisplay{
     "SafetyTipForSimplifiedDomainDisplay", base::FEATURE_DISABLED_BY_DEFAULT};
