@@ -143,9 +143,9 @@ bool SecurityContext::IsSandboxed(
          network::mojom::blink::WebSandboxFlags::kNone;
 }
 
-void SecurityContext::ApplySandboxFlags(
+void SecurityContext::SetSandboxFlags(
     network::mojom::blink::WebSandboxFlags flags) {
-  sandbox_flags_ |= flags;
+  sandbox_flags_ = flags;
 }
 
 void SecurityContext::SetRequireTrustedTypes() {

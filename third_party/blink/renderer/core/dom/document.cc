@@ -52,6 +52,7 @@
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -3472,8 +3473,28 @@ void Document::open(LocalDOMWindow* entered_window,
     auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
     csp->CopyStateFrom(entered_window->GetContentSecurityPolicy());
     // We inherit the sandbox flags of the entered document, so mask on
-    // the ones contained in the CSP.
-    dom_window_->GetSecurityContext().ApplySandboxFlags(csp->GetSandboxMask());
+    // the ones contained in the CSP. The operator| is a bitwise operation on
+    // the sandbox flags bits. It makes the sandbox policy stricter (or as
+    // strict) as both policy.
+    //
+    // TODO(arthursonzogni): Why merging sandbox flags?
+    // This doesn't look great at many levels:
+    // - The browser process won't be notified of the update.
+    // - The origin won't be made opaque, despite the new flags.
+    // - The sandbox flags of the document can't be considered to be an
+    //   immutable property anymore.
+    //
+    // Ideally:
+    // - javascript-url document.
+    // - XSLT document.
+    // - document.open.
+    // should not mutate the security properties of the current document. From
+    // the browser process point of view, all of those operations are not
+    // considered to produce new documents. No IPCs are sent, it is as if it was
+    // a no-op.
+    dom_window_->GetSecurityContext().SetSandboxFlags(
+        dom_window_->GetSecurityContext().GetSandboxFlags() |
+        entered_window->GetSandboxFlags());
     dom_window_->GetSecurityContext().SetContentSecurityPolicy(csp);
     dom_window_->GetContentSecurityPolicy()->BindToDelegate(
         dom_window_->GetContentSecurityPolicyDelegate());

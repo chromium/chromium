@@ -113,7 +113,7 @@ class CORE_EXPORT SecurityContext {
     return sandbox_flags_;
   }
   bool IsSandboxed(network::mojom::blink::WebSandboxFlags mask) const;
-  void ApplySandboxFlags(network::mojom::blink::WebSandboxFlags flags);
+  void SetSandboxFlags(network::mojom::blink::WebSandboxFlags flags);
 
   void SetRequireTrustedTypes();
   void SetRequireTrustedTypesForTesting();  // Skips sanity checks.

@@ -1633,7 +1633,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   SecurityContext& security_context = frame_->DomWindow()->GetSecurityContext();
   security_context.SetContentSecurityPolicy(content_security_policy_.Get());
-  security_context.ApplySandboxFlags(sandbox_flags);
+  security_context.SetSandboxFlags(sandbox_flags);
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that
   // wants to inspect sandbox flags.

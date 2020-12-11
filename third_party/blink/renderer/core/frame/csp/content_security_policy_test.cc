@@ -218,7 +218,7 @@ TEST_F(ContentSecurityPolicyTest, SandboxInMeta) {
                         ContentSecurityPolicySource::kMeta);
   EXPECT_EQ(network::mojom::blink::WebSandboxFlags::kNone,
             csp->GetSandboxMask());
-  execution_context->GetSecurityContext().ApplySandboxFlags(
+  execution_context->GetSecurityContext().SetSandboxFlags(
       network::mojom::blink::WebSandboxFlags::kAll);
   csp->DidReceiveHeader("sandbox;", ContentSecurityPolicyType::kEnforce,
                         ContentSecurityPolicySource::kHTTP);

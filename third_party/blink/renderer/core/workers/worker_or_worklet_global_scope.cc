@@ -429,9 +429,9 @@ WorkerOrWorkletGlobalScope::GetTaskRunner(TaskType type) {
   return GetThread()->GetTaskRunner(type);
 }
 
-void WorkerOrWorkletGlobalScope::ApplySandboxFlags(
+void WorkerOrWorkletGlobalScope::SetSandboxFlags(
     network::mojom::blink::WebSandboxFlags mask) {
-  GetSecurityContext().ApplySandboxFlags(mask);
+  GetSecurityContext().SetSandboxFlags(mask);
   if (IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin) &&
       !GetSecurityOrigin()->IsOpaque()) {
     GetSecurityContext().SetSecurityOrigin(

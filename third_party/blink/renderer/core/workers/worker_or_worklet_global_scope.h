@@ -150,7 +150,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
 
-  void ApplySandboxFlags(network::mojom::blink::WebSandboxFlags mask);
+  void SetSandboxFlags(network::mojom::blink::WebSandboxFlags mask);
 
   void SetDefersLoadingForResourceFetchers(WebURLLoader::DeferType defers);
 

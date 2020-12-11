@@ -5793,12 +5793,6 @@ crbug.com/1123116 external/wpt/feature-policy/reporting/xr-reporting.https.html 
 crbug.com/1140329 http/tests/devtools/network/network-filter-service-worker.js [ Pass Timeout Failure ]
 crbug.com/1140329 virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Pass Failure Timeout ]
 
-# Crash in debug mode.
-# Fail in release mode.
-#
-# To be fixed by https://crbug.com/1156632
-crbug.com/1156632 external/wpt/html/browsers/sandboxing/sandbox-initial-empty-document-toward-same-origin.html [ Crash Failure ]
-
 #Sheriff 2020-10-21
 crbug.com/1141206 scrollbars/overflow-scrollbar-combinations.html [ Pass Failure ]
 
