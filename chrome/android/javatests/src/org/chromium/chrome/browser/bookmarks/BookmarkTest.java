@@ -1082,6 +1082,29 @@ public class BookmarkTest {
     }
 
     @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    public void testReadingListDeletion() throws Exception {
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
+        BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
+        openBookmarkManager();
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(TEST_URL_A) != null);
+
+        // Open the "Reading list" folder.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+        onView(withText("Reading list")).perform(click());
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+
+        // Delete the reading list page.
+        View readingListItem = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        View more = readingListItem.findViewById(R.id.more);
+        TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
+        onView(withText("Delete")).check(matches(isDisplayed())).perform(click());
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(TEST_URL_A) == null);
+    }
+
+    @Test
     @MediumTest
     public void testMoveUpMenuItem() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, TEST_URL_A);
