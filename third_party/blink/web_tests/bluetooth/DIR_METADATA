@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Bluetooth"
+}
+team_email: "web-bluetooth@chromium.org"

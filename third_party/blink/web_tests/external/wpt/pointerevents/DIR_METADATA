@@ -5,3 +5,4 @@ team_email: "input-dev@chromium.org"
 wpt {
   notify: YES
 }
+

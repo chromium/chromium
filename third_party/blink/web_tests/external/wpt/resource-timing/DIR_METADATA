@@ -5,3 +5,4 @@ team_email: "speed-metrics-dev@chromium.org"
 wpt {
   notify: YES
 }
+
