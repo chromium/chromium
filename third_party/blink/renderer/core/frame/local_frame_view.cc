@@ -4445,6 +4445,8 @@ void LocalFrameView::BeginLifecycleUpdates() {
   if (GetFrame().GetDocument()->IsInitialEmptyDocument())
     return;
   lifecycle_updates_throttled_ = false;
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    SetForeignLayerListNeedsUpdate();
   if (auto* owner = GetLayoutEmbeddedContent())
     owner->SetShouldCheckForPaintInvalidation();
 

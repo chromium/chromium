@@ -1676,6 +1676,50 @@ TEST_P(FrameThrottlingTest, GraphicsLayerCollection) {
   EXPECT_EQ(display_item_count, paint_controller->GetDisplayItemList().size());
 }
 
+TEST_P(FrameThrottlingTest, GraphicsLayerCollectionLifecycleThrottling) {
+  // GraphicsLayers are not created with CompositeAfterPaint.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  // The frame is initially throttled.
+  main_resource.Complete(
+      "<iframe id='frame' sandbox src='iframe.html'></iframe>");
+  frame_resource.Complete(
+      "<div id='div' style='will-change: transform'>Foo</div>");
+
+  CompositeFrame();
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* paint_controller = GetDocument().View()->GetPaintController();
+  ASSERT_NE(nullptr, paint_controller);
+  auto display_item_count = paint_controller->GetDisplayItemList().size();
+
+  auto* frame_document = frame_element->contentDocument();
+  frame_document->View()->SetLifecycleUpdatesThrottledForTesting(true);
+  GetDocument().View()->SetForeignLayerListNeedsUpdate();
+  GetDocument().View()->ScheduleAnimation();
+  CompositeFrame();
+  paint_controller = GetDocument().View()->GetPaintController();
+  ASSERT_NE(nullptr, paint_controller);
+  // We no longer collect the graphics layers of the iframe and the composited
+  // content.
+  EXPECT_GT(display_item_count, paint_controller->GetDisplayItemList().size());
+
+  frame_document->View()->BeginLifecycleUpdates();
+  // The above will unthrottle the iframe and force re-collection of graphics
+  // layers.
+  EXPECT_EQ(nullptr, GetDocument().View()->GetPaintController());
+  CompositeFrame();
+  paint_controller = GetDocument().View()->GetPaintController();
+  ASSERT_NE(nullptr, paint_controller);
+  // Now we should collect all graphics layers again.
+  EXPECT_EQ(display_item_count, paint_controller->GetDisplayItemList().size());
+}
+
 TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   InitializeRemote();
 
