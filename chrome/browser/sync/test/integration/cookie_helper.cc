@@ -26,7 +26,7 @@ const char kSigninCookieName[] = "SAPISID";
 
 void AddSigninCookie(Profile* profile) {
   DCHECK(profile);
-  net::CanonicalCookie cookie(
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       kSigninCookieName, std::string(), ".google.com", "/",
       /*creation=*/base::Time(),
       /*expires=*/base::Time(), /*last_access=*/base::Time(), /*secure=*/true,
@@ -41,7 +41,7 @@ void AddSigninCookie(Profile* profile) {
 
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
-      cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
+      *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
       net::CookieOptions(),
       base::BindLambdaForTesting(
           [&run_loop](net::CookieAccessResult) { run_loop.Quit(); }));
