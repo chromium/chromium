@@ -42,7 +42,8 @@ bool IsUVPlatformAuthenticatorAvailable(
 bool IsUVPlatformAuthenticatorAvailable() {
   return base::FeatureList::IsEnabled(
              device::kWebAuthCrosPlatformAuthenticator) &&
-         device::ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable();
+         device::ChromeOSAuthenticator::
+             IsUVPlatformAuthenticatorAvailableBlocking();
 }
 
 #else

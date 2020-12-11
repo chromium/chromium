@@ -31,7 +31,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   bool HasCredentialForGetAssertionRequest(
       const CtapGetAssertionRequest& request);
 
-  static bool IsUVPlatformAuthenticatorAvailable();
+  // Returns whether the platform authenticator is available, which is true if
+  // the current user has a PIN set up or biometrics enrolled.
+  //
+  // Since this call makes a (quick) dbus call, it is potentially blocking and
+  // should not run on the main thread/sequence.
+  //
+  // TODO(crbug.com/1154063): Refactor IsUVPAA() to be async.
+  static bool IsUVPlatformAuthenticatorAvailableBlocking();
 
   // FidoAuthenticator
   void InitializeAuthenticator(base::OnceClosure callback) override;
