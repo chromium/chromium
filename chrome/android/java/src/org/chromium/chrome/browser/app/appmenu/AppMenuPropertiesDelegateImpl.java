@@ -444,6 +444,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                         addToMenuItem.getSubMenu().findItem(R.id.add_to_bookmarks_menu_id);
                 updateBookmarkMenuItem(addToBookmarksMenuItem, currentTab);
 
+                MenuItem addToReadingListMenuItem =
+                        addToMenuItem.getSubMenu().findItem(R.id.add_to_reading_list_menu_id);
+                addToReadingListMenuItem.setVisible(
+                        CachedFeatureFlags.isEnabled(ChromeFeatureList.READ_LATER));
+
                 MenuItem addToDownloadsMenuItem =
                         addToMenuItem.getSubMenu().findItem(R.id.add_to_downloads_menu_id);
                 addToDownloadsMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));

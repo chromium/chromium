@@ -26,10 +26,12 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.bottomsheet.BookmarkBottomSheetCoordinator;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -82,7 +84,12 @@ public class BookmarkUtils {
             return;
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) {
+        boolean isAddToOptionVariation =
+                CachedFeatureFlags.isEnabled(
+                        ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR)
+                && AppMenuPropertiesDelegateImpl.THREE_BUTTON_ACTION_BAR_VARIATION.getValue()
+                           .equals("add_to_option");
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.READ_LATER) && !isAddToOptionVariation) {
             // Show a bottom sheet to let the user select target bookmark folder.
             showBookmarkBottomSheet(bookmarkModel, tab, snackbarManager, bottomSheetController,
                     activity, fromCustomTab, callback);
@@ -174,14 +181,14 @@ public class BookmarkUtils {
      * @param url The associated URL.
      * @param title The title of the reading list item being added.
      * @param snackbarManager The snackbar manager that will be used to show a snackbar.
-     * @param bookmarkModel The bookmark model that talks to the bookmark backend.
+     * @param bookmarkBridge The bookmark bridge that talks to the bookmark backend.
      * @param context The associated context.
      * @return The bookmark ID created after saving the article to the reading list.
      */
     public static BookmarkId addToReadingList(String url, String title,
-            SnackbarManager snackbarManager, BookmarkModel bookmarkModel, Context context) {
-        assert bookmarkModel.isBookmarkModelLoaded();
-        BookmarkId bookmarkId = bookmarkModel.addToReadingList(title, url);
+            SnackbarManager snackbarManager, BookmarkBridge bookmarkBridge, Context context) {
+        assert bookmarkBridge.isBookmarkModelLoaded();
+        BookmarkId bookmarkId = bookmarkBridge.addToReadingList(title, url);
 
         if (bookmarkId != null) {
             Snackbar snackbar = Snackbar.make(context.getString(R.string.reading_list_saved),

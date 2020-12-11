@@ -2043,6 +2043,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 || id == R.id.add_to_bookmarks_menu_id) {
             addOrEditBookmark(currentTab);
             RecordUserAction.record("MobileMenuAddToBookmarks");
+        } else if (id == R.id.add_to_reading_list_menu_id) {
+            mBookmarkBridgeSupplier.get().finishLoadingBookmarkModel(() -> {
+                BookmarkUtils.addToReadingList(currentTab.getOriginalUrl(), currentTab.getTitle(),
+                        this.getSnackbarManager(), mBookmarkBridgeSupplier.get(), this);
+            });
         } else if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id
                 || id == R.id.add_to_downloads_menu_id) {
             DownloadUtils.downloadOfflinePage(this, currentTab);
