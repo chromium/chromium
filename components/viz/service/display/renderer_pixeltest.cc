@@ -3152,6 +3152,8 @@ TEST_F(GLRendererPixelTestWithBackdropFilter, FilterQuality) {
       &this->pass_list_,
       base::FilePath(FILE_PATH_LITERAL("gl_backdrop_filter_1.png")),
       cc::FuzzyPixelOffByOneComparator(true)));
+  if (this->context_provider()->ContextCapabilities().major_version < 3)
+    return;
   this->backdrop_filter_quality_ = 0.33f;
   this->SetUpRenderPassList();
   EXPECT_TRUE(this->RunPixelTest(
