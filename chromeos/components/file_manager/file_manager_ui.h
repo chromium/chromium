@@ -9,6 +9,8 @@
 
 #include "chromeos/components/file_manager/file_manager_ui_delegate.h"
 #include "chromeos/components/file_manager/mojom/file_manager.mojom.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,7 +21,7 @@ namespace file_manager {
 
 class FileManagerPageHandler;
 
-// The WebUI controller for chrome://file-manager.
+// WebUI controller for chrome://file-manager.
 class FileManagerUI : public ui::MojoWebUIController,
                       public mojom::PageHandlerFactory {
  public:
@@ -27,7 +29,6 @@ class FileManagerUI : public ui::MojoWebUIController,
                 std::unique_ptr<FileManagerUIDelegate> delegate);
   ~FileManagerUI() override;
 
-  // Disallow copy and assign.
   FileManagerUI(const FileManagerUI&) = delete;
   FileManagerUI& operator=(const FileManagerUI&) = delete;
 
@@ -37,6 +38,8 @@ class FileManagerUI : public ui::MojoWebUIController,
   const FileManagerUIDelegate* delegate() { return delegate_.get(); }
 
  private:
+  content::WebUIDataSource* CreateTrustedAppDataSource();
+
   // mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<mojom::Page> pending_page,

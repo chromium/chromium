@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 #include "ui/file_manager/grit/file_manager_resources_map.h"
@@ -37,15 +38,25 @@ void AddFilesAppResources(content::WebUIDataSource* source,
 FileManagerUI::FileManagerUI(content::WebUI* web_ui,
                              std::unique_ptr<FileManagerUIDelegate> delegate)
     : MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
-  auto source = base::WrapUnique(content::WebUIDataSource::Create(
-      chromeos::file_manager::kChromeUIFileManagerHost));
-  source->AddLocalizedStrings(*this->delegate()->GetFileManagerAppStrings());
-  // The HTML content loaded on chrome://file-manager.
-  source->AddResourcePath("", IDR_FILE_MANAGER_SWA_MAIN_HTML);
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  auto* trusted_source = CreateTrustedAppDataSource();
+  content::WebUIDataSource::Add(browser_context, trusted_source);
+}
 
-  // The resources requested by chrome://file-manager HTML.
-  // TOD(majewski): Rename main.* to main_swa.*
+content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
+  content::WebUIDataSource* source = content::WebUIDataSource::Create(
+      chromeos::file_manager::kChromeUIFileManagerHost);
+
+  // Setup chrome://file-manager main and default page.
+  source->AddResourcePath("", IDR_FILE_MANAGER_SWA_MAIN_HTML);
+  source->SetDefaultResource(IDR_FILE_MANAGER_SWA_MAIN_HTML);
+
+  // Add chrome://file-manager content.
   source->AddResourcePath("main.js", IDR_FILE_MANAGER_SWA_MAIN_JS);
+  source->AddResourcePath("file_manager_private_fakes.js",
+                          IDR_FILE_MANAGER_SWA_FILE_MANAGER_PRIVATE_FAKES_JS);
+  source->AddResourcePath("file_manager_fakes.js",
+                          IDR_FILE_MANAGER_SWA_FILE_MANAGER_FAKES_JS);
   source->AddResourcePath("file_manager.mojom-lite.js",
                           IDR_FILE_MANAGER_SWA_MOJO_LITE_JS);
   source->AddResourcePath("browser_proxy.js",
@@ -53,28 +64,23 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
   source->AddResourcePath("script_loader.js",
                           IDR_FILE_MANAGER_SWA_SCRIPT_LOADER_JS);
 
-  // Sets up legacy_main_script.js to be the same as Files App
-  //   ui/file_manager/file_manager/foreground/js/main_scripts.js
-  source->AddResourcePath("legacy_main_scripts.js", IDR_FILE_MANAGER_MAIN_JS);
-
-#if !DCHECK_IS_ON()
-  // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
-  // is set, serve a default page so the user sees your default page instead
-  // of an unexpected error. But if DCHECK is set, the user will be a
-  // developer and be able to identify an error occurred.
-  source->SetDefaultResource(IDR_FILE_MANAGER_SWA_MAIN_HTML);
-#endif  // !DCHECK_IS_ON()
-
-  AddFilesAppResources(source.get(), kFileManagerResources,
+  AddFilesAppResources(source, kFileManagerResources,
                        kFileManagerResourcesSize);
-  AddFilesAppResources(source.get(), kFileManagerGenResources,
+  AddFilesAppResources(source, kFileManagerGenResources,
                        kFileManagerGenResourcesSize);
+
+  // Load time data: add files app strings and feature flags.
+  delegate_->PopulateLoadTimeData(source);
+  source->UseStringsJs();
+
+  // Shared worker security policy.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self' ;");
 
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
 
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, source.release());
+  return source;
 }
 
 FileManagerUI::~FileManagerUI() = default;

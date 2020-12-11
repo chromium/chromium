@@ -7,10 +7,6 @@
 
 #include "chromeos/components/file_manager/file_manager_ui_delegate.h"
 
-#include <memory>
-
-#include "base/values.h"
-
 namespace content {
 class WebUI;
 }  // namespace content
@@ -24,9 +20,8 @@ class ChromeFileManagerUIDelegate : public FileManagerUIDelegate {
   ChromeFileManagerUIDelegate& operator=(const ChromeFileManagerUIDelegate&) =
       delete;
 
-  // Returns a map from message labels to actual messages used by Files app.
-  std::unique_ptr<base::DictionaryValue> GetFileManagerAppStrings()
-      const override;
+  // FileManagerUIDelegate:
+  void PopulateLoadTimeData(content::WebUIDataSource*) const override;
 
  private:
   content::WebUI* web_ui_;  // Owns |this|.
