@@ -5,210 +5,29 @@
 #include "components/performance_manager/v8_memory/web_memory_aggregator.h"
 
 #include <algorithm>
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/check.h"
-#include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "base/trace_event/traced_value.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
-#include "components/performance_manager/graph/page_node_impl.h"
-#include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
-#include "components/performance_manager/public/mojom/web_memory.mojom.h"
-#include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
-#include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/v8_memory/v8_memory_test_helpers.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
 namespace v8_memory {
 
+namespace {
+
 using AttributionScope = mojom::WebMemoryAttribution::Scope;
 using NodeAggregationType = WebMemoryAggregator::NodeAggregationType;
 
-using WebMemoryAggregatorPMTest = V8MemoryPerformanceManagerTestHarness;
-
-class WebMemoryAggregatorTest : public GraphTestHarness {
- public:
-  using Super = GraphTestHarness;
-
-  // Wrapper for memory usage bytes to improve test readability.
-  struct Bytes {
-    uint64_t bytes;
-    bool operator==(const Bytes& other) const { return bytes == other.bytes; }
-  };
-
-  void SetUp() override;
-
-  // Creates and adds a new frame node to the graph.
-  FrameNodeImpl* AddFrameNode(
-      std::string url,
-      Bytes bytes,
-      FrameNodeImpl* parent = nullptr,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt) {
-    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
-                            /*opener=*/nullptr, id_attribute, src_attribute);
-  }
-
-  // Creates a frame node as if from window.open and adds it to the graph.
-  FrameNodeImpl* AddFrameNodeFromOpener(std::string url,
-                                        Bytes bytes,
-                                        FrameNodeImpl* opener) {
-    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes,
-                            /*parent=*/nullptr, opener);
-  }
-
-  // Creates a frame node in a different browsing instance and adds it to the
-  // graph.
-  FrameNodeImpl* AddCrossBrowsingInstanceFrameNode(
-      std::string url,
-      Bytes bytes,
-      FrameNodeImpl* parent = nullptr,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt) {
-    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes, parent,
-                            /*opener=*/nullptr, id_attribute, src_attribute);
-  }
-
-  // Creates a frame node in a different browsing instance as if from
-  // window.open and adds it to the graph.
-  FrameNodeImpl* AddCrossBrowsingInstanceFrameNodeFromOpener(
-      std::string url,
-      Bytes bytes,
-      FrameNodeImpl* opener) {
-    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes,
-                            /*parent=*/nullptr, opener);
-  }
-
-  // Invokes memory measurement and verifies that the result matches the
-  // expected memory usage that is provided as a table from a frame URL to
-  // bytes.
-  void MeasureAndVerify(FrameNodeImpl* frame,
-                        base::flat_map<std::string, Bytes> expected);
-
- private:
-  static constexpr int kDefaultBrowsingInstanceId = 0;
-
-  // Creates and adds a new frame node to the graph.
-  FrameNodeImpl* AddFrameNodeImpl(
-      std::string url,
-      int browsing_instance_id,
-      Bytes bytes,
-      FrameNodeImpl* parent = nullptr,
-      FrameNodeImpl* opener = nullptr,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt);
-  int GetNextUniqueId();
-  TestNodeWrapper<ProcessNodeImpl> process_;
-  std::vector<TestNodeWrapper<PageNodeImpl>> pages_;
-  std::vector<TestNodeWrapper<FrameNodeImpl>> frames_;
-  int next_unique_id_ = 0;
-};
-
-void WebMemoryAggregatorTest::SetUp() {
-  GetGraphFeaturesHelper().EnableV8ContextTracker();
-  Super::SetUp();
-  process_ = CreateNode<ProcessNodeImpl>();
-  pages_.push_back(CreateNode<PageNodeImpl>());
-}
-
-int WebMemoryAggregatorTest::GetNextUniqueId() {
-  return next_unique_id_++;
-}
-
-FrameNodeImpl* WebMemoryAggregatorTest::AddFrameNodeImpl(
-    std::string url,
-    int browsing_instance_id,
-    Bytes memory_usage,
-    FrameNodeImpl* parent,
-    FrameNodeImpl* opener,
-    base::Optional<std::string> id_attribute,
-    base::Optional<std::string> src_attribute) {
-  // If there's an opener, the new frame is also a new page.
-  auto* page = pages_.front().get();
-  if (opener) {
-    pages_.push_back(CreateNode<PageNodeImpl>());
-    page = pages_.back().get();
-    page->SetOpenerFrameNodeAndOpenedType(opener, PageNode::OpenedType::kPopup);
-  }
-
-  int frame_tree_node_id = GetNextUniqueId();
-  int frame_routing_id = GetNextUniqueId();
-  auto frame_token = blink::LocalFrameToken();
-  auto frame = CreateNode<FrameNodeImpl>(process_.get(), page, parent,
-                                         frame_tree_node_id, frame_routing_id,
-                                         frame_token, browsing_instance_id);
-  frame->OnNavigationCommitted(GURL(url), /*same document*/ true);
-  V8DetailedMemoryExecutionContextData::CreateForTesting(frame.get())
-      ->set_v8_bytes_used(memory_usage.bytes);
-  frames_.push_back(std::move(frame));
-  FrameNodeImpl* frame_impl = frames_.back().get();
-
-  // Create a V8ContextDescription with attribution data for this frame. (In
-  // production this is done by PerformanceManager monitoring frame lifetime
-  // events.)
-  auto description = mojom::V8ContextDescription::New();
-  description->token = blink::V8ContextToken();
-  description->world_type = mojom::V8ContextWorldType::kMain;
-  description->execution_context_token = frame_token;
-
-  mojom::IframeAttributionDataPtr attribution;
-  if (parent) {
-    // Frame attribution attributes come from the frame's parent node, so
-    // V8ContextTracker expects an IframeAttributionData. The attribute values
-    // may be empty.
-    attribution = mojom::IframeAttributionData::New();
-    attribution->id = id_attribute;
-    attribution->src = src_attribute;
-  } else {
-    // V8ContextTracker expects no IframeAttributionData.
-    DCHECK(!id_attribute);
-    DCHECK(!src_attribute);
-  }
-  DCHECK(frame_impl->process_node());
-  frame_impl->process_node()->OnV8ContextCreated(std::move(description),
-                                                 std::move(attribution));
-
-  return frame_impl;
-}
-
-void WebMemoryAggregatorTest::MeasureAndVerify(
-    FrameNodeImpl* frame,
-    base::flat_map<std::string, Bytes> expected) {
-  bool measurement_done = false;
-  WebMemoryMeasurer web_memory(
-      frame->frame_token(), V8DetailedMemoryRequest::MeasurementMode::kDefault,
-      base::BindLambdaForTesting([&measurement_done, &expected](
-                                     mojom::WebMemoryMeasurementPtr result) {
-        base::flat_map<std::string, Bytes> actual;
-        for (const auto& entry : result->breakdown) {
-          EXPECT_EQ(1u, entry->attribution.size());
-          EXPECT_EQ(AttributionScope::kWindow, entry->attribution[0]->scope);
-          actual[*entry->attribution[0]->url] = Bytes{entry->bytes};
-        }
-        EXPECT_EQ(expected, actual);
-        measurement_done = true;
-      }));
-  V8DetailedMemoryProcessData process_data;
-  web_memory.MeasurementComplete(process_.get(), &process_data);
-  EXPECT_TRUE(measurement_done);
-}
+using WebMemoryAggregatorTest = WebMemoryTestHarness;
 
 struct ExpectedMemoryBreakdown {
   uint64_t bytes = 0U;
@@ -273,125 +92,6 @@ std::string MeasurementToJSON(
   base::trace_event::TracedValueJSON json_value;
   canonical_measurement->AsValueInto(&json_value);
   return json_value.ToJSON();
-}
-
-TEST_F(WebMemoryAggregatorTest, MeasurerIncludesSameOriginRelatedFrames) {
-  auto* main = AddFrameNode("http://foo.com/", Bytes{10u});
-
-  AddFrameNode("http://foo.com/iframe", Bytes{20}, main);
-
-  MeasureAndVerify(main, {
-                             {"http://foo.com/", Bytes{10u}},
-                             {"http://foo.com/iframe", Bytes{20u}},
-                         });
-}
-
-// TODO(b/1085129): Currently WebMemoryMeasurer only includes the results for a
-// single process. Once it invokes WebMemoryAggregator, update this test to
-// expect cross-origin frames to be included in the aggregation.
-TEST_F(WebMemoryAggregatorTest, MeasurerSkipsCrossOriginFrames) {
-  auto* main = AddFrameNode("http://foo.com", Bytes{10u});
-
-  AddFrameNode("http://bar.com/iframe", Bytes{20}, main);
-
-  MeasureAndVerify(main, {{"http://foo.com/", Bytes{10u}}});
-}
-
-TEST_F(WebMemoryAggregatorTest, MeasurerSkipsCrossBrowserContextGroupFrames) {
-  auto* main = AddFrameNode("http://foo.com", Bytes{10u});
-
-  AddCrossBrowsingInstanceFrameNode("http://foo.com/unrelated", Bytes{20});
-
-  MeasureAndVerify(main, {{"http://foo.com/", Bytes{10u}}});
-}
-
-TEST_F(WebMemoryAggregatorPMTest, WebMeasureMemory) {
-  blink::LocalFrameToken frame_token =
-      blink::LocalFrameToken(main_frame()->GetFrameToken());
-
-  // Call WebMeasureMemory on the performance manager sequence and verify that
-  // the result matches the data provided by the mock reporter.
-  base::RunLoop run_loop;
-  auto measurement_callback =
-      base::BindLambdaForTesting([&](mojom::WebMemoryMeasurementPtr result) {
-        EXPECT_EQ(1u, result->breakdown.size());
-        const auto& entry = result->breakdown[0];
-        EXPECT_EQ(1u, entry->attribution.size());
-        EXPECT_EQ(kMainFrameUrl, *(entry->attribution[0]->url));
-        EXPECT_EQ(1001u, entry->bytes);
-        run_loop.Quit();
-      });
-
-  base::WeakPtr<FrameNode> frame_node_wrapper =
-      PerformanceManager::GetFrameNodeForRenderFrameHost(main_frame());
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        ASSERT_TRUE(frame_node_wrapper);
-        FrameNode* frame_node = frame_node_wrapper.get();
-        WebMeasureMemory(frame_node,
-                         mojom::WebMemoryMeasurement::Mode::kDefault,
-                         std::move(measurement_callback));
-      }));
-
-  // Set up and bind the mock reporter.
-  MockV8DetailedMemoryReporter mock_reporter;
-  {
-    auto data = NewPerProcessV8MemoryUsage(1);
-    AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
-    ExpectBindAndRespondToQuery(&mock_reporter, std::move(data),
-                                main_process_id());
-  }
-
-  // Finally, run all tasks to verify that the memory measurement callback
-  // is actually invoked. The test will time out if not.
-  run_loop.Run();
-}
-
-TEST_F(WebMemoryAggregatorPMTest, MeasurementInterrupted) {
-  CreateCrossProcessChildFrame();
-
-  blink::LocalFrameToken frame_token =
-      blink::LocalFrameToken(child_frame()->GetFrameToken());
-
-  // Call WebMeasureMemory on the performance manager sequence but delete the
-  // process being measured before the result arrives.
-  auto measurement_callback =
-      base::BindOnce([](mojom::WebMemoryMeasurementPtr result) {
-        FAIL() << "Measurement callback ran unexpectedly";
-      });
-
-  base::WeakPtr<FrameNode> frame_node_wrapper =
-      PerformanceManager::GetFrameNodeForRenderFrameHost(child_frame());
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        ASSERT_TRUE(frame_node_wrapper);
-        FrameNode* frame_node = frame_node_wrapper.get();
-        WebMeasureMemory(frame_node,
-                         mojom::WebMemoryMeasurement::Mode::kDefault,
-                         std::move(measurement_callback));
-      }));
-
-  // Set up and bind the mock reporter.
-  MockV8DetailedMemoryReporter mock_reporter;
-  {
-    ::testing::InSequence seq;
-    ExpectBindReceiver(&mock_reporter, child_process_id());
-
-    auto data = NewPerProcessV8MemoryUsage(1);
-    AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
-    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
-                             std::move(data));
-  }
-
-  // Verify that requests are sent but reply is not yet received.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
-  ::testing::Mock::VerifyAndClearExpectations(&mock_reporter);
-
-  // Remove the child frame, which will destroy the child process.
-  content::RenderFrameHostTester::For(child_frame())->Detach();
-
-  // Advance until the reply is expected to make sure nothing explodes.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
 }
 
 TEST_F(WebMemoryAggregatorTest, CreateBreakdownEntry) {
@@ -805,6 +505,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
               MeasurementToJSON(expected_cross_site_result));
   }
 }
+
+}  // namespace
 
 }  // namespace v8_memory
 

@@ -8,10 +8,16 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/performance_manager/embedder/graph_features_helper.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -208,6 +214,80 @@ V8MemoryPerformanceManagerTestHarness::GetMainThreadTaskRunner() {
 // Storage for static members.
 constexpr char V8MemoryPerformanceManagerTestHarness::kMainFrameUrl[];
 constexpr char V8MemoryPerformanceManagerTestHarness::kChildFrameUrl[];
+
+////////////////////////////////////////////////////////////////////////////////
+// WebMemoryTestHarness
+
+WebMemoryTestHarness::WebMemoryTestHarness() = default;
+
+WebMemoryTestHarness::~WebMemoryTestHarness() = default;
+
+void WebMemoryTestHarness::SetUp() {
+  GetGraphFeaturesHelper().EnableV8ContextTracker();
+  Super::SetUp();
+  process_ = CreateNode<ProcessNodeImpl>();
+  pages_.push_back(CreateNode<PageNodeImpl>());
+}
+
+int WebMemoryTestHarness::GetNextUniqueId() {
+  return next_unique_id_++;
+}
+
+FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
+    std::string url,
+    int browsing_instance_id,
+    Bytes memory_usage,
+    FrameNodeImpl* parent,
+    FrameNodeImpl* opener,
+    base::Optional<std::string> id_attribute,
+    base::Optional<std::string> src_attribute) {
+  // If there's an opener, the new frame is also a new page.
+  auto* page = pages_.front().get();
+  if (opener) {
+    pages_.push_back(CreateNode<PageNodeImpl>());
+    page = pages_.back().get();
+    page->SetOpenerFrameNodeAndOpenedType(opener, PageNode::OpenedType::kPopup);
+  }
+
+  int frame_tree_node_id = GetNextUniqueId();
+  int frame_routing_id = GetNextUniqueId();
+  auto frame_token = blink::LocalFrameToken();
+  auto frame = CreateNode<FrameNodeImpl>(process_.get(), page, parent,
+                                         frame_tree_node_id, frame_routing_id,
+                                         frame_token, browsing_instance_id);
+  frame->OnNavigationCommitted(GURL(url), /*same document*/ true);
+  V8DetailedMemoryExecutionContextData::CreateForTesting(frame.get())
+      ->set_v8_bytes_used(memory_usage.bytes);
+  frames_.push_back(std::move(frame));
+  FrameNodeImpl* frame_impl = frames_.back().get();
+
+  // Create a V8ContextDescription with attribution data for this frame. (In
+  // production this is done by PerformanceManager monitoring frame lifetime
+  // events.)
+  auto description = mojom::V8ContextDescription::New();
+  description->token = blink::V8ContextToken();
+  description->world_type = mojom::V8ContextWorldType::kMain;
+  description->execution_context_token = frame_token;
+
+  mojom::IframeAttributionDataPtr attribution;
+  if (parent) {
+    // Frame attribution attributes come from the frame's parent node, so
+    // V8ContextTracker expects an IframeAttributionData. The attribute values
+    // may be empty.
+    attribution = mojom::IframeAttributionData::New();
+    attribution->id = id_attribute;
+    attribution->src = src_attribute;
+  } else {
+    // V8ContextTracker expects no IframeAttributionData.
+    DCHECK(!id_attribute);
+    DCHECK(!src_attribute);
+  }
+  DCHECK(frame_impl->process_node());
+  frame_impl->process_node()->OnV8ContextCreated(std::move(description),
+                                                 std::move(attribution));
+
+  return frame_impl;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Free functions

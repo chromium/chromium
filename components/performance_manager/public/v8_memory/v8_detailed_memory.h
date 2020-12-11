@@ -306,7 +306,8 @@ class V8DetailedMemoryExecutionContextData {
       const execution_context::ExecutionContext* ec);
 
  private:
-  friend class WebMemoryAggregatorTest;
+  friend class WebMemoryTestHarness;
+
   // Creates frame data for the given node.
   static V8DetailedMemoryExecutionContextData* CreateForTesting(
       const FrameNode* node);

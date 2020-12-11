@@ -5,50 +5,18 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_WEB_MEMORY_AGGREGATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_WEB_MEMORY_AGGREGATOR_H_
 
-#include <memory>
+#include <string>
 
-#include "base/callback.h"
+#include "base/optional.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
-#include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/origin.h"
 
 namespace performance_manager {
 
 class FrameNode;
-class ProcessNode;
+class PageNode;
 
 namespace v8_memory {
-
-// A helper class for implementing WebMeasureMemory(). This manages a request
-// object that sends a V8 detailed memory request to the renderer, and formats
-// the result into a mojom::WebMemoryMeasurement.
-// TODO(crbug.com/1085129): Extend this to measure all renderers that are
-// reachable from the requesting node.
-class WebMemoryMeasurer {
- public:
-  using MeasurementCallback =
-      base::OnceCallback<void(mojom::WebMemoryMeasurementPtr)>;
-
-  WebMemoryMeasurer(const blink::LocalFrameToken&,
-                    V8DetailedMemoryRequest::MeasurementMode,
-                    MeasurementCallback);
-  ~WebMemoryMeasurer();
-
-  WebMemoryMeasurer(const WebMemoryMeasurer& other) = delete;
-  WebMemoryMeasurer& operator=(const WebMemoryMeasurer& other) = delete;
-
-  V8DetailedMemoryRequestOneShot* request() const { return request_.get(); }
-
-  // A callback for V8DetailedMemoryRequestOneShot.
-  void MeasurementComplete(const ProcessNode*,
-                           const V8DetailedMemoryProcessData*);
-
- private:
-  blink::LocalFrameToken frame_token_;
-  MeasurementCallback callback_;
-  std::unique_ptr<V8DetailedMemoryRequestOneShot> request_;
-};
 
 // Traverses the graph of execution contexts to find the results of the last
 // memory measurement and aggregates them according to the rules defined in

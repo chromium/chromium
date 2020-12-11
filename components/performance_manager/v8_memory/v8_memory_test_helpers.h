@@ -7,12 +7,17 @@
 
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 
+#include <string>
+#include <vector>
+
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,6 +31,11 @@ class RenderFrameHost;
 }
 
 namespace performance_manager {
+
+class FrameNodeImpl;
+class PageNodeImpl;
+class ProcessNodeImpl;
+
 namespace v8_memory {
 
 // A fake implementation of the mojo interface that reports memory measurement
@@ -206,6 +216,85 @@ class V8MemoryPerformanceManagerTestHarness
   content::RenderFrameHost* child_frame_ = nullptr;
   RenderProcessHostId main_process_id_;
   RenderProcessHostId child_process_id_;
+};
+
+// A GraphTestHarness that adds convenience functions used by both
+// WebMemoryImplTest and WebMemoryAggregatorTest.
+class WebMemoryTestHarness : public GraphTestHarness {
+ public:
+  using Super = GraphTestHarness;
+
+  // Wrapper for memory usage bytes to improve test readability.
+  struct Bytes {
+    uint64_t bytes;
+    bool operator==(const Bytes& other) const { return bytes == other.bytes; }
+  };
+
+  WebMemoryTestHarness();
+  ~WebMemoryTestHarness() override;
+
+  void SetUp() override;
+
+  // Creates and adds a new frame node to the graph.
+  FrameNodeImpl* AddFrameNode(
+      std::string url,
+      Bytes bytes,
+      FrameNodeImpl* parent = nullptr,
+      base::Optional<std::string> id_attribute = base::nullopt,
+      base::Optional<std::string> src_attribute = base::nullopt) {
+    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
+                            /*opener=*/nullptr, id_attribute, src_attribute);
+  }
+
+  // Creates a frame node as if from window.open and adds it to the graph.
+  FrameNodeImpl* AddFrameNodeFromOpener(std::string url,
+                                        Bytes bytes,
+                                        FrameNodeImpl* opener) {
+    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes,
+                            /*parent=*/nullptr, opener);
+  }
+
+  // Creates a frame node in a different browsing instance and adds it to the
+  // graph.
+  FrameNodeImpl* AddCrossBrowsingInstanceFrameNode(
+      std::string url,
+      Bytes bytes,
+      FrameNodeImpl* parent = nullptr,
+      base::Optional<std::string> id_attribute = base::nullopt,
+      base::Optional<std::string> src_attribute = base::nullopt) {
+    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes, parent,
+                            /*opener=*/nullptr, id_attribute, src_attribute);
+  }
+
+  // Creates a frame node in a different browsing instance as if from
+  // window.open and adds it to the graph.
+  FrameNodeImpl* AddCrossBrowsingInstanceFrameNodeFromOpener(
+      std::string url,
+      Bytes bytes,
+      FrameNodeImpl* opener) {
+    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes,
+                            /*parent=*/nullptr, opener);
+  }
+
+  ProcessNode* process_node() const { return process_.get(); }
+
+ private:
+  static constexpr int kDefaultBrowsingInstanceId = 0;
+
+  // Creates and adds a new frame node to the graph.
+  FrameNodeImpl* AddFrameNodeImpl(
+      std::string url,
+      int browsing_instance_id,
+      Bytes bytes,
+      FrameNodeImpl* parent = nullptr,
+      FrameNodeImpl* opener = nullptr,
+      base::Optional<std::string> id_attribute = base::nullopt,
+      base::Optional<std::string> src_attribute = base::nullopt);
+  int GetNextUniqueId();
+  TestNodeWrapper<ProcessNodeImpl> process_;
+  std::vector<TestNodeWrapper<PageNodeImpl>> pages_;
+  std::vector<TestNodeWrapper<FrameNodeImpl>> frames_;
+  int next_unique_id_ = 0;
 };
 
 // Returns a new mojom::PerProcessV8MemoryUsage struct with
