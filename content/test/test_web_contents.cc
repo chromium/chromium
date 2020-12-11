@@ -51,7 +51,8 @@ TestWebContents::TestWebContents(BrowserContext* browser_context)
       expect_set_history_offset_and_length_(false),
       expect_set_history_offset_and_length_history_length_(0),
       pause_subresource_loading_called_(false),
-      audio_group_id_(base::UnguessableToken::Create()) {
+      audio_group_id_(base::UnguessableToken::Create()),
+      is_page_frozen_(false) {
   if (!RenderProcessHostImpl::get_render_process_host_factory_for_testing()) {
     // Most unit tests should prefer to create a generic MockRenderProcessHost
     // (instead of a real RenderProcessHostImpl).  Tests that need to use a
@@ -203,6 +204,10 @@ void TestWebContents::OnWebPreferencesChanged() {
   WebContentsImpl::OnWebPreferencesChanged();
   if (web_preferences_changed_counter_)
     ++*web_preferences_changed_counter_;
+}
+
+bool TestWebContents::IsPageFrozen() {
+  return is_page_frozen_;
 }
 
 bool TestWebContents::TestDidDownloadImage(
@@ -451,6 +456,10 @@ WebContents* TestWebContents::GetPortalContents(
   if (!portal)
     return nullptr;
   return portal->GetPortalContents();
+}
+
+void TestWebContents::SetPageFrozen(bool frozen) {
+  is_page_frozen_ = frozen;
 }
 
 }  // namespace content

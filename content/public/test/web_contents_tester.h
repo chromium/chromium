@@ -168,6 +168,10 @@ class WebContentsTester {
       std::unique_ptr<WebContents> portal_web_contents) = 0;
   virtual WebContents* GetPortalContents(
       const blink::PortalToken& portal_token) = 0;
+
+  // Indicates if this WebContents has been frozen via a call to
+  // SetPageFrozen().
+  virtual bool IsPageFrozen() = 0;
 };
 
 }  // namespace content

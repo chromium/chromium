@@ -161,6 +161,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
     web_preferences_changed_counter_ = counter;
   }
 
+  bool IsPageFrozen() override;
+
  protected:
   // The deprecated WebContentsTester still needs to subclass this.
   explicit TestWebContents(BrowserContext* browser_context);
@@ -195,6 +197,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                             const std::string& headers,
                             const base::string16& suggested_filename) override;
   void ReattachToOuterWebContentsFrame() override {}
+  void SetPageFrozen(bool frozen) override;
 
   RenderViewHostDelegateView* delegate_view_override_;
 
@@ -213,6 +216,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   base::Optional<base::string16> title_;
   bool pause_subresource_loading_called_;
   base::UnguessableToken audio_group_id_;
+  bool is_page_frozen_;
 };
 
 }  // namespace content
