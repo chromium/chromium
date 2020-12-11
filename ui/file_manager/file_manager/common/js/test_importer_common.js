@@ -7,10 +7,12 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// Shared cloud importer namespace.
 // #import {importer} from './importer_common.m.js';
 // #import {TestCallRecorder} from './unittest_util.m.js';
 
+// Shared cloud importer namespace
+// eslint-disable-next-line no-var
+/* #ignore */ var importer = importer || {};
 
 /**
  * Sets up a logger for use in unit tests.  The test logger doesn't attempt to
