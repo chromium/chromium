@@ -1,7 +1,6 @@
 # The bulk of the files in this directory are related to WebGL, though
 # there are a couple used by accelerated 2D canvas as well.
 
-# COMPONENT: Blink>WebGL
 
 # WebGL, WebGPU, Dawn, etc.
 kainino@chromium.org

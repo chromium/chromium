@@ -1,0 +1,4 @@
+monorail {
+  component: "IO>Gamepad"
+}
+team_email: "device-dev@chromium.org"

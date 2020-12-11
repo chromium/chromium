@@ -1,6 +1,3 @@
 tsepez@chromium.org
 
 per-file origin_access_entry.*=toyoshim@chromium.org
-
-# TEAM: platform-architecture-dev@chromium.org
-# COMPONENT: Blink>SecurityFeature

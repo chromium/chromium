@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>SecurityFeature>CredentialManagement"
+}
+team_email: "identity-dev@chromium.org"

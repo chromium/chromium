@@ -3,6 +3,3 @@ per-file text_codec*.*=jsbell@chromium.org
 per-file text_codec*.*=jshin@chromium.org
 per-file text_encoding*.*=jshin@chromium.org
 per-file text_encoding*.*=jshin@chromium.org
-
-# TEAM: platform-architecture-dev@chromium.org
-# COMPONENT: Blink>Internals>WTF

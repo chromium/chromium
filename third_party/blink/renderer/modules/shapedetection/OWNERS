@@ -5,6 +5,3 @@ mcasas@chromium.org
 
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: Blink>ShapeDetection
-# TEAM: device-dev@chromium.org

@@ -3,6 +3,3 @@ hbos@chromium.org
 tommi@chromium.org
 
 per-file media_stream_audio_processor*=olka@chromium.org
-
-# TEAM: webrtc-dev@chromium.org
-# COMPONENT: Blink>GetUserMedia

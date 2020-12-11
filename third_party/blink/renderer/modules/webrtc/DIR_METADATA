@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>WebRTC"
+}
+team_email: "webrtc-dev@chromium.org"

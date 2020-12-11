@@ -1,5 +1,2 @@
 file://content/browser/service_worker/OWNERS
 
-# TEAM: worker-dev@chromium.org
-# COMPONENT: Blink>ServiceWorker
-

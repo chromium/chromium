@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Internals>Modularization"
+}
+team_email: "platform-architecture-dev@chromium.org"
