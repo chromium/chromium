@@ -681,7 +681,7 @@ class TrustTokenRequestIssuanceHelperTestWithPlatformIssuance
         std::is_same<decltype(features::kPlatformProvidedTrustTokenIssuance
                                   .default_value),
                      const bool>::value,
-        "Need to update this initializaiton logic if the type of the param "
+        "Need to update this initialization logic if the type of the param "
         "changes.");
     features_.InitAndEnableFeatureWithParameters(
         features::kTrustTokens,
