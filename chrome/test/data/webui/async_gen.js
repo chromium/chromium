@@ -109,18 +109,6 @@ TEST_F('WebUIBrowserAsyncGenTest', 'TestContinue', function() {
 // Test that runAllActionsAsync can be called with multiple functions, and with
 // bound, saved, or mixed arguments.
 TEST_F('WebUIBrowserAsyncGenTest', 'TestRunAllActionsAsync', function() {
-  // Bind some arguments.
-  var var1, var2;
-  function testBoundArgs() {
-    const action1 = callFunction(function(args) {
-      var1 = args[0];
-    }, ['val1']);
-    const action2 = callFunction(function(args) {
-      var2 = args[0];
-    }, ['val2']);
-    runAllActionsAsync(WhenTestDone.DEFAULT, action1, action2).invoke();
-  }
-
   // Receive some saved arguments.
   var var3, var4;
   var savedArgs = new SaveMockArguments();
@@ -153,7 +141,6 @@ TEST_F('WebUIBrowserAsyncGenTest', 'TestRunAllActionsAsync', function() {
 
   // Send the cases to the mocked handler & tell the C++ handler to continue2.
   window.continueTest = this.continueTest(WhenTestDone.ASSERT, function() {
-    testBoundArgs();
     testSavedArgs(['passedVal1']);
     testMixedArgs(['passedVal2']);
     setTimeout(window.continueTest2, 0);
@@ -161,8 +148,6 @@ TEST_F('WebUIBrowserAsyncGenTest', 'TestRunAllActionsAsync', function() {
 
   // Check expectations after mocks have been called.
   window.continueTest2 = this.continueTest(WhenTestDone.ALWAYS, function() {
-    expectEquals('val1', var1);
-    expectEquals('val2', var2);
     expectEquals('passedVal1', var3);
     expectEquals('passedVal1', var4);
     expectEquals('passedVal2', var5);

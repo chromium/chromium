@@ -1053,17 +1053,6 @@ CallFunctionAction.prototype = {
 
 /**
  * Syntactic sugar for use with will() on a Mock4JS.Mock.
- * @param {!Function} func The function to call when the method is invoked.
- * @param {...*} var_args Arguments to pass when calling func.
- * @return {CallFunctionAction} Action for use in will.
- */
-function callFunction(func, var_args) {
-  return new CallFunctionAction(
-      null, null, func, Array.prototype.slice.call(arguments, 1));
-}
-
-/**
- * Syntactic sugar for use with will() on a Mock4JS.Mock.
  * @param {SaveMockArguments} savedArgs Arguments saved with this object
  *     are passed to |func|.
  * @param {!Function} func The function to call when the method is invoked.
@@ -1248,7 +1237,6 @@ function exportExpects() {
  * Exports methods related to Mock4JS mocking.
  */
 function exportMock4JsHelpers() {
-  exports.callFunction = callFunction;
   exports.callFunctionWithSavedArgs = callFunctionWithSavedArgs;
   exports.SaveMockArguments = SaveMockArguments;
 }
