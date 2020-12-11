@@ -18,6 +18,7 @@
 .text
 
 
+.hidden	OPENSSL_armcap_P
 .globl	sha1_block_data_order
 .hidden	sha1_block_data_order
 .type	sha1_block_data_order,%function
@@ -1232,8 +1233,6 @@ sha1_block_armv8:
 .byte	83,72,65,49,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
 .align	2
-.comm	OPENSSL_armcap_P,4,4
-.hidden	OPENSSL_armcap_P
 #endif
 #endif  // !OPENSSL_NO_ASM
 .section	.note.GNU-stack,"",%progbits

@@ -58,6 +58,7 @@
 .text
 
 
+.private_extern	_OPENSSL_armcap_P
 .globl	_sha256_block_data_order
 .private_extern	_sha256_block_data_order
 
@@ -1206,9 +1207,5 @@ Loop_hw:
 	ldr	x29,[sp],#16
 	ret
 
-#endif
-#ifndef	__KERNEL__
-.comm	_OPENSSL_armcap_P,4,4
-.private_extern	_OPENSSL_armcap_P
 #endif
 #endif  // !OPENSSL_NO_ASM
