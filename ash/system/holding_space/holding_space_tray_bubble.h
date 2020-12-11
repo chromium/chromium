@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_TRAY_BUBBLE_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
@@ -19,9 +20,9 @@
 namespace ash {
 
 class HoldingSpaceTray;
-class PinnedFilesContainer;
-class RecentFilesContainer;
+class HoldingSpaceTrayChildBubble;
 
+// The bubble associated with the `HoldingSpaceTray`.
 class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
                                           public ShelfObserver,
                                           public TabletModeObserver {
@@ -60,8 +61,8 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   // for context menu, drag-and-drop, and multiple selection.
   HoldingSpaceItemViewDelegate delegate_;
 
-  PinnedFilesContainer* pinned_files_container_ = nullptr;
-  RecentFilesContainer* recent_files_container_ = nullptr;
+  // Views owned by view hierarchy.
+  std::vector<HoldingSpaceTrayChildBubble*> child_bubbles_;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;
 

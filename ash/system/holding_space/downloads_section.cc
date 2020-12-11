@@ -4,12 +4,9 @@
 
 #include "ash/system/holding_space/downloads_section.h"
 
-#include <memory>
-
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
-#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -19,7 +16,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
-#include "base/containers/adapters.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -32,15 +28,7 @@ namespace ash {
 
 namespace {
 
-// Helpers ---------------------------------------------------------------------
-
-// Returns if an item of the specified `type` belongs in this section.
-bool BelongsToSection(HoldingSpaceItem::Type type) {
-  return type == HoldingSpaceItem::Type::kDownload ||
-         type == HoldingSpaceItem::Type::kNearbyShare;
-}
-
-// Header-----------------------------------------------------------------------
+// Header ----------------------------------------------------------------------
 
 class Header : public views::Button {
  public:
@@ -88,105 +76,32 @@ class Header : public views::Button {
 // DownloadsSection ------------------------------------------------------------
 
 DownloadsSection::DownloadsSection(HoldingSpaceItemViewDelegate* delegate)
-    : HoldingSpaceItemViewsContainer(delegate) {
-  SetVisible(false);
-
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kHoldingSpaceContainerChildSpacing));
-
-  // Header.
-  header_ = AddChildView(std::make_unique<Header>());
-  header_->SetPaintToLayer();
-  header_->layer()->SetFillsBoundsOpaquely(false);
-  header_->SetVisible(false);
-
-  // Container.
-  container_ = AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());
-  container_->SetVisible(false);
-}
+    : HoldingSpaceItemViewsContainer(delegate,
+                                     /*supported_types=*/
+                                     {HoldingSpaceItem::Type::kDownload,
+                                      HoldingSpaceItem::Type::kNearbyShare},
+                                     /*max_count=*/kMaxDownloads) {}
 
 DownloadsSection::~DownloadsSection() = default;
 
-void DownloadsSection::ChildVisibilityChanged(views::View* child) {
-  // This section should be visible iff it has visible children.
-  bool visible = false;
-  for (const views::View* c : children()) {
-    if (c->GetVisible()) {
-      visible = true;
-      break;
-    }
-  }
-
-  if (visible != GetVisible())
-    SetVisible(visible);
-
-  HoldingSpaceItemViewsContainer::ChildVisibilityChanged(child);
+const char* DownloadsSection::GetClassName() const {
+  return "DownloadsSection";
 }
 
-void DownloadsSection::ViewHierarchyChanged(
-    const views::ViewHierarchyChangedDetails& details) {
-  if (details.parent != container_)
-    return;
-
-  // Update visibility when becoming empty or non-empty. Note that in the case
-  // of a view being added, `ViewHierarchyChanged()` is called *after* the view
-  // has been parented but in the case of a view being removed, it is called
-  // *before* the view is unparented.
-  if (container_->children().size() == 1u) {
-    header_->SetVisible(details.is_add);
-    container_->SetVisible(details.is_add);
-  }
+std::unique_ptr<views::View> DownloadsSection::CreateHeader() {
+  auto header = std::make_unique<Header>();
+  header->SetPaintToLayer();
+  header->layer()->SetFillsBoundsOpaquely(false);
+  return header;
 }
 
-bool DownloadsSection::ContainsHoldingSpaceItemView(
+std::unique_ptr<views::View> DownloadsSection::CreateContainer() {
+  return std::make_unique<HoldingSpaceItemChipsContainer>();
+}
+
+std::unique_ptr<HoldingSpaceItemView> DownloadsSection::CreateView(
     const HoldingSpaceItem* item) {
-  return base::Contains(views_by_item_id_, item->id());
-}
-
-bool DownloadsSection::ContainsHoldingSpaceItemViews() {
-  return !views_by_item_id_.empty();
-}
-
-bool DownloadsSection::WillAddHoldingSpaceItemView(
-    const HoldingSpaceItem* item) {
-  return BelongsToSection(item->type());
-}
-
-void DownloadsSection::AddHoldingSpaceItemView(const HoldingSpaceItem* item) {
-  DCHECK(item->IsFinalized());
-  DCHECK(BelongsToSection(item->type()));
-  DCHECK(!base::Contains(views_by_item_id_, item->id()));
-
-  // Remove the last download view if we are already at max capacity.
-  if (container_->children().size() == kMaxDownloads) {
-    std::unique_ptr<views::View> view =
-        container_->RemoveChildViewT(container_->children().back());
-    views_by_item_id_.erase(
-        HoldingSpaceItemView::Cast(view.get())->item()->id());
-  }
-
-  // Add the download view to the front in order to sort by recency.
-  views_by_item_id_[item->id()] = container_->AddChildViewAt(
-      std::make_unique<HoldingSpaceItemChipView>(delegate(), item), 0);
-}
-
-void DownloadsSection::RemoveAllHoldingSpaceItemViews() {
-  views_by_item_id_.clear();
-  container_->RemoveAllChildViews(true);
-}
-
-// TODO(dmblack): Handle grow/shrink of container.
-void DownloadsSection::AnimateIn(ui::LayerAnimationObserver* observer) {
-  for (auto& view_by_item_id : views_by_item_id_)
-    view_by_item_id.second->AnimateIn(observer);
-}
-
-// TODO(dmblack): Handle animate out of `header_` if this section is going away
-// permanently.
-void DownloadsSection::AnimateOut(ui::LayerAnimationObserver* observer) {
-  for (auto& view_by_item_id : views_by_item_id_)
-    view_by_item_id.second->AnimateOut(observer);
+  return std::make_unique<HoldingSpaceItemChipView>(delegate(), item);
 }
 
 }  // namespace ash

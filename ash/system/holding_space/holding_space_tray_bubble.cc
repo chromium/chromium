@@ -52,19 +52,6 @@ void RecordTimeFromFirstAvailabilityToFirstEntry(PrefService* prefs) {
       time_of_first_entry - time_of_first_availability);
 }
 
-// Sets up the layer for the specified `view`.
-void SetupViewLayer(views::View* view) {
-  view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-
-  auto* layer = view->layer();
-  layer->SetRoundedCornerRadius(gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
-  layer->SetColor(AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80));
-  layer->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
-  layer->SetFillsBoundsOpaquely(false);
-  layer->SetIsFastRoundedCorner(true);
-}
-
 // HoldingSpaceBubbleContainer -------------------------------------------------
 
 class HoldingSpaceBubbleContainer : public views::View {
@@ -123,18 +110,18 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   HoldingSpaceBubbleContainer* bubble_container = bubble_view->AddChildView(
       std::make_unique<HoldingSpaceBubbleContainer>());
 
-  // Add pinned files container.
-  pinned_files_container_ = bubble_container->AddChildView(
-      std::make_unique<PinnedFilesContainer>(&delegate_));
-  bubble_container->SetFlexForChild(pinned_files_container_, 1);
-  SetupViewLayer(pinned_files_container_);
-  pinned_files_container_->Init();
+  // Add pinned files child bubble.
+  child_bubbles_.push_back(bubble_container->AddChildView(
+      std::make_unique<PinnedFilesContainer>(&delegate_)));
+  bubble_container->SetFlexForChild(child_bubbles_.back(), 1);
 
-  // Add recent files container.
-  recent_files_container_ = bubble_container->AddChildView(
-      std::make_unique<RecentFilesContainer>(&delegate_));
-  SetupViewLayer(recent_files_container_);
-  recent_files_container_->Init();
+  // Add recent files child bubble.
+  child_bubbles_.push_back(bubble_container->AddChildView(
+      std::make_unique<RecentFilesContainer>(&delegate_)));
+
+  // Initialize child bubbles.
+  for (HoldingSpaceTrayChildBubble* child_bubble : child_bubbles_)
+    child_bubble->Init();
 
   // Show the bubble.
   bubble_wrapper_ = std::make_unique<TrayBubbleWrapper>(
@@ -167,11 +154,10 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
   bubble_wrapper_->bubble_view()->ResetDelegate();
 
-  // Explicitly reset holding space item view containers so that they will stop
-  // observing the holding space controller/model while they are asynchronously
-  // destroyed.
-  pinned_files_container_->Reset();
-  recent_files_container_->Reset();
+  // Explicitly reset child bubbles so that they will stop observing the holding
+  // space controller/model while they are asynchronously destroyed.
+  for (HoldingSpaceTrayChildBubble* child_bubble : child_bubbles_)
+    child_bubble->Reset();
 }
 
 void HoldingSpaceTrayBubble::AnchorUpdated() {

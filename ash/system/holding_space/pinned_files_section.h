@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_HOLDING_SPACE_DOWNLOADS_SECTION_H_
-#define ASH_SYSTEM_HOLDING_SPACE_DOWNLOADS_SECTION_H_
+#ifndef ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_SECTION_H_
+#define ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_SECTION_H_
 
 #include <memory>
 
@@ -11,13 +11,13 @@
 
 namespace ash {
 
-// Section for downloads in the `RecentFilesContainer`.
-class DownloadsSection : public HoldingSpaceItemViewsContainer {
+// Section for pinned files in the `PinnedFilesContainer`.
+class PinnedFilesSection : public HoldingSpaceItemViewsContainer {
  public:
-  explicit DownloadsSection(HoldingSpaceItemViewDelegate* delegate);
-  DownloadsSection(const DownloadsSection& other) = delete;
-  DownloadsSection& operator=(const DownloadsSection& other) = delete;
-  ~DownloadsSection() override;
+  explicit PinnedFilesSection(HoldingSpaceItemViewDelegate* delegate);
+  PinnedFilesSection(const PinnedFilesSection& other) = delete;
+  PinnedFilesSection& operator=(const PinnedFilesSection& other) = delete;
+  ~PinnedFilesSection() override;
 
   // HoldingSpaceItemViewsContainer:
   const char* GetClassName() const override;
@@ -25,8 +25,9 @@ class DownloadsSection : public HoldingSpaceItemViewsContainer {
   std::unique_ptr<views::View> CreateContainer() override;
   std::unique_ptr<HoldingSpaceItemView> CreateView(
       const HoldingSpaceItem* item) override;
+  std::unique_ptr<views::View> CreatePlaceholder() override;
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_HOLDING_SPACE_DOWNLOADS_SECTION_H_
+#endif  // ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_SECTION_H_

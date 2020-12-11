@@ -5,12 +5,18 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEWS_CONTAINER_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_VIEWS_CONTAINER_H_
 
-#include "ash/ash_export.h"
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
-#include "base/scoped_observer.h"
+#include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -20,28 +26,37 @@ class LayerAnimationObserver;
 
 namespace ash {
 
-class HoldingSpaceItem;
+class HoldingSpaceItemView;
 class HoldingSpaceItemViewDelegate;
 
+// TODO(dmblack): Rename to `HoldingSpaceItemViewsSection`.
+// A section of holding space item views in a `HoldingSpaceTrayChildBubble`.
 class HoldingSpaceItemViewsContainer : public views::View,
                                        public HoldingSpaceControllerObserver,
                                        public HoldingSpaceModelObserver {
  public:
-  explicit HoldingSpaceItemViewsContainer(HoldingSpaceItemViewDelegate*);
+  HoldingSpaceItemViewsContainer(
+      HoldingSpaceItemViewDelegate* delegate,
+      std::vector<HoldingSpaceItem::Type> supported_types,
+      const base::Optional<size_t>& max_count);
   HoldingSpaceItemViewsContainer(const HoldingSpaceItemViewsContainer& other) =
       delete;
   HoldingSpaceItemViewsContainer& operator=(
       const HoldingSpaceItemViewsContainer& other) = delete;
   ~HoldingSpaceItemViewsContainer() override;
 
-  // Resets the container. Called when the tray bubble starts closing to
-  // stop observing the holding space controller/model to ensure that no new
-  // items are created while the bubble widget is being asynchronously closed.
+  // Initializes the section.
+  void Init();
+
+  // Resets the section. Called when the tray bubble starts closing to stop
+  // observing the holding space controller/model to ensure that no new items
+  // are created while the bubble widget is being asynchronously closed.
   void Reset();
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
+  void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
 
   // HoldingSpaceControllerObserver:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override;
@@ -53,38 +68,25 @@ class HoldingSpaceItemViewsContainer : public views::View,
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
 
  protected:
-  // Returns whether a view for the specified `item` exists in this holding
-  // space item views container. Note that returning true will result in a call
-  // to `RemoveAllHoldingSpaceItemViews()` after which views for existing
-  // holding space items will be re-added via call to
-  // `AddHoldingSpaceItemView()`.
-  virtual bool ContainsHoldingSpaceItemView(const HoldingSpaceItem* item) = 0;
+  // Invoked to create the `header_` for this section.
+  virtual std::unique_ptr<views::View> CreateHeader() = 0;
 
-  // Returns whether any views associated with holding space items exist which
-  // in this holding space item views container. Note that returning true will
-  // result in a call to `RemoveAllHoldingSpaceItemViews()`.
-  virtual bool ContainsHoldingSpaceItemViews() = 0;
+  // Invoked to create the `container_` for this section which parents its
+  // holding space item views.
+  virtual std::unique_ptr<views::View> CreateContainer() = 0;
 
-  // Returns whether a view for the specified `item` will be added to this
-  // holding space item views container. Note that `AddHoldingSpaceItemView()`
-  // will only be invoked if this method returns true for the given `item`.
-  virtual bool WillAddHoldingSpaceItemView(const HoldingSpaceItem* item) = 0;
+  // Invoked to create the view for the specified holding space `item`. Note
+  // that the created view will be parented by `container_`.
+  virtual std::unique_ptr<HoldingSpaceItemView> CreateView(
+      const HoldingSpaceItem* item) = 0;
 
-  // Invoked to add a view to this holding space item views container for the
-  // specified `item`.
-  virtual void AddHoldingSpaceItemView(const HoldingSpaceItem* item) = 0;
+  // Invoked to create the `placeholder_` for this section which shows when
+  // `container_` is empty. The `placeholder_` can be destroyed via call to
+  // `DestroyPlaceholder()` if it is no longer needed to exist.
+  virtual std::unique_ptr<views::View> CreatePlaceholder();
 
-  // Invoked to remove all views associated with holding space items from this
-  // holding space item views container.
-  virtual void RemoveAllHoldingSpaceItemViews() = 0;
-
-  // Invoked to initiate animate in of the contents of this holding space item
-  // views container. Any animations created must be associated with `observer`.
-  virtual void AnimateIn(ui::LayerAnimationObserver* observer) = 0;
-
-  // Invoked to initiate animate out of the contents of this holding space item
-  // views container. Any animations created must be associated with `observer`.
-  virtual void AnimateOut(ui::LayerAnimationObserver* observer) = 0;
+  // Invoked to destroy `placeholder_`.
+  void DestroyPlaceholder();
 
   HoldingSpaceItemViewDelegate* delegate() { return delegate_; }
 
@@ -95,31 +97,48 @@ class HoldingSpaceItemViewsContainer : public views::View,
     kAnimatingOut = 1 << 2,
   };
 
-  // Invoke to start animating in the contents of this holding space item views
-  // container. No-ops if animate in is already in progress.
+  // Invoke to start animating in the contents of this section. No-ops if
+  // animate in is already in progress.
   void MaybeAnimateIn();
 
-  // Invoke to start animating out the contents of this holding space item views
-  // container. No-ops if animate out is already in progress.
+  // Invoke to start animating out the contents of this section. No-ops if
+  // animate out is already in progress.
   void MaybeAnimateOut();
 
-  // Invoked when an animate in/out of the contents of this holding space item
-  // views container has been completed. These methods always return true to
-  // delete the observer which notified the event.
+  // Invoked to animate in the contents of this section. Any created animation
+  // sequences must be observed by `observer`.
+  void AnimateIn(ui::LayerAnimationObserver* observer);
+
+  // Invoked to animate out the contents of this section. Any created animation
+  // sequences must be observed by `observer`.
+  void AnimateOut(ui::LayerAnimationObserver* observer);
+
+  // Invoked when an animate in/out of the contents of this section has been
+  // completed. These methods always return true to delete the observer which
+  // notified the event.
   bool OnAnimateInCompleted(const ui::CallbackLayerAnimationObserver&);
   bool OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
   HoldingSpaceItemViewDelegate* const delegate_;
+  const std::vector<HoldingSpaceItem::Type> supported_types_;
+  const base::Optional<size_t> max_count_;
+
+  // Owned by view hierarchy.
+  views::View* header_ = nullptr;
+  views::View* container_ = nullptr;
+  views::View* placeholder_ = nullptr;
+  std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
 
   // Bit flag representation of current `AnimationState`. Note that it is
   // briefly possible to be both `kAnimatingIn` and `kAnimatingOut` when one
   // animation is preempting another.
   uint32_t animation_state_ = AnimationState::kNotAnimating;
 
-  ScopedObserver<HoldingSpaceController, HoldingSpaceControllerObserver>
+  base::ScopedObservation<HoldingSpaceController,
+                          HoldingSpaceControllerObserver>
       controller_observer_{this};
-  ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver> model_observer_{
-      this};
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      model_observer_{this};
 };
 
 }  // namespace ash

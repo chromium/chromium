@@ -5,46 +5,26 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_CONTAINER_H_
 #define ASH_SYSTEM_HOLDING_SPACE_PINNED_FILES_CONTAINER_H_
 
-#include <map>
+#include <memory>
+#include <vector>
 
-#include "ash/system/holding_space/holding_space_item_views_container.h"
-
-namespace views {
-class Label;
-}  // namespace views
+#include "ash/system/holding_space/holding_space_tray_child_bubble.h"
 
 namespace ash {
 
-class HoldingSpaceItemChipsContainer;
-class HoldingSpaceItemView;
-
-// Container for pinned files that the user adds to the holding space bubble.
-class PinnedFilesContainer : public HoldingSpaceItemViewsContainer {
+// TODO(dmblack): Rename to `PinnedFilesBubble`.
+// Child bubble of `HoldingSpaceTrayBubble` for pinned files.
+class PinnedFilesContainer : public HoldingSpaceTrayChildBubble {
  public:
   explicit PinnedFilesContainer(HoldingSpaceItemViewDelegate* delegate);
   PinnedFilesContainer(const PinnedFilesContainer& other) = delete;
   PinnedFilesContainer& operator=(const PinnedFilesContainer& other) = delete;
   ~PinnedFilesContainer() override;
 
-  // Initializes the container.
-  void Init();
-
-  // HoldingSpaceItemViewsContainer:
-  void ViewHierarchyChanged(const views::ViewHierarchyChangedDetails&) override;
-  bool ContainsHoldingSpaceItemView(const HoldingSpaceItem* item) override;
-  bool ContainsHoldingSpaceItemViews() override;
-  bool WillAddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
-  void AddHoldingSpaceItemView(const HoldingSpaceItem* item) override;
-  void RemoveAllHoldingSpaceItemViews() override;
-  void AnimateIn(ui::LayerAnimationObserver* observer) override;
-  void AnimateOut(ui::LayerAnimationObserver* observer) override;
-
- private:
-  // Owned by view hierarchy.
-  views::Label* empty_prompt_label_ = nullptr;
-  HoldingSpaceItemChipsContainer* item_chips_container_ = nullptr;
-
-  std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
+  // HoldingSpaceTrayChildBubble:
+  const char* GetClassName() const override;
+  std::vector<std::unique_ptr<HoldingSpaceItemViewsContainer>> CreateSections()
+      override;
 };
 
 }  // namespace ash
