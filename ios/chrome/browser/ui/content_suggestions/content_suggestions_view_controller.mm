@@ -840,6 +840,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     // more reliably.
     if (self.feedView.contentSize.height > kDiscoverFeedLoadedHeight) {
       [self.discoverFeedMenuHandler notifyFeedLoadedForHeaderMenu];
+      [self.audience discoverFeedShown];
     }
   }
 }

@@ -80,6 +80,10 @@ const char kIosBookmarkPromoAlreadySeen[] = "ios.bookmark.promo_already_seen";
 const char kIosBookmarkSigninPromoDisplayedCount[] =
     "ios.bookmark.signin_promo_displayed_count";
 
+// The time when the DiscoverFeed was last refreshed.
+const char kIosDiscoverFeedLastRefreshTime[] =
+    "ios.discover_feed.last_refresh_time";
+
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in settings view.
 const char kIosSettingsPromoAlreadySeen[] = "ios.settings.promo_already_seen";

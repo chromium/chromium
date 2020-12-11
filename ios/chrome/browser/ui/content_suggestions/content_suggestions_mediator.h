@@ -27,6 +27,10 @@ namespace ntp_tiles {
 class MostVisitedSites;
 }
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsConsumer;
 @protocol ContentSuggestionsGestureCommands;
@@ -60,6 +64,9 @@ class ReadingListModel;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Registers the feature preferences.
++ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Command handler for the mediator.
 @property(nonatomic, weak)

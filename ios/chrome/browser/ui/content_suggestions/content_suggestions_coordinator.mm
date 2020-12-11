@@ -124,6 +124,11 @@
 @property(nonatomic, assign) AuthenticationService* authService;
 // Coordinator in charge of handling sharing use cases.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
+// YES if the feedShown method has already been called.
+// TODO(crbug.com/1126940): The coordinator shouldn't be keeping track of this
+// for its |self.discoverFeedViewController| remove once we have an appropriate
+// callback.
+@property(nonatomic, assign) BOOL feedShownWasCalled;
 
 @end
 
@@ -373,6 +378,13 @@
 
 - (void)discoverHeaderMenuButtonShown:(UIView*)menuButton {
   _discoverFeedHeaderMenuButton = menuButton;
+}
+
+- (void)discoverFeedShown {
+  if (IsDiscoverFeedEnabled() && !self.feedShownWasCalled) {
+    ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->FeedWasShown();
+    self.feedShownWasCalled = YES;
+  }
 }
 
 #pragma mark - OverscrollActionsControllerDelegate
