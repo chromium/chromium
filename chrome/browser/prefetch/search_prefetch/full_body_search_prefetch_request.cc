@@ -67,7 +67,7 @@ void FullBodySearchPrefetchRequest::LoadDone(
     return;
   }
 
-  MarkPrefetchAsComplete();
+  MarkPrefetchAsServable();
   prefetch_response_container_ = std::make_unique<PrefetchedResponseContainer>(
       simple_loader_->ResponseInfo()->Clone(), std::move(response_body));
   simple_loader_.reset();

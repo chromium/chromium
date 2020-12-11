@@ -19,19 +19,15 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 // This class starts a search prefetch and is able to serve it once headers are
 // received. This allows streaming the response from memory as the response
-// finishes from the network. The class drains the network request URL Loader,
-// and creates a data pipe to handoff, so it may close the network URL Loader
-// after the read from the network is done.
+// finishes from the network.
 class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
                                          public network::mojom::URLLoaderClient,
-                                         public SearchPrefetchURLLoader,
-                                         public mojo::DataPipeDrainer::Client {
+                                         public SearchPrefetchURLLoader {
  public:
   // Creates a network service URLLoader, binds to the URL Loader, and starts
   // the request.
@@ -49,10 +45,6 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   void ClearOwnerPointer();
 
  private:
-  // mojo::DataPipeDrainer::Client:
-  void OnDataAvailable(const void* data, size_t num_bytes) override;
-  void OnDataComplete() override;
-
   // SearchPrefetchURLLoader:
   SearchPrefetchURLLoader::RequestHandler ServingResponseHandler(
       std::unique_ptr<SearchPrefetchURLLoader> loader) override;
@@ -81,28 +73,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-  // When a disconnection occurs in the network URLLoader mojo pipe, this
-  // object's lifetime needs to be managed and the connections need to be closed
-  // unless complete has happened.
-  void OnURLLoaderMojoDisconnect();
-
-  // When a disconnection occurs in the navigation client mojo pipe, this
-  // object's lifetime needs to be managed and the connections need to be
-  // closed.
-  void OnURLLoaderClientMojoDisconnect();
-
-  // Start serving the response from |producer_handle_|, which serves
-  // |body_content_|.
-  void OnStartLoadingResponseBodyFromData();
-
-  // Called when more data can be sent into |producer_handle_|.
-  void OnHandleReady(MojoResult result, const mojo::HandleSignalsState& state);
-
-  // Push data into |producer_handle_|.
-  void PushData();
-
-  // Clears |producer_handle_| and |handle_watcher_|.
-  void Finish();
+  // When a disconnection occurs in either mojo pipe, this object's lifetime
+  // needs to be managed and the connections need to be closed.
+  void OnMojoDisconnect();
 
   // Sets up mojo forwarding to the navigation path. Resumes
   // |network_url_loader_| calls. Serves the start of the response to the
@@ -114,9 +87,6 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
       const network::ResourceRequest&,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
-
-  // Forwards all queued events to |forwarding_client_|.
-  void RunEventQueue();
 
   // The network URLLoader that fetches the prefetch URL and its receiver.
   mojo::Remote<network::mojom::URLLoader> network_url_loader_;
@@ -134,34 +104,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // the navigation stack.
   StreamingSearchPrefetchRequest* streaming_prefetch_request_;
 
-  // Whether we are serving from |bdoy_content_|.
-  bool serving_from_data_ = false;
-
-  // The status returned from |network_url_loader_|.
-  base::Optional<network::URLLoaderCompletionStatus> status_;
-
-  // Total amount of bytes to transfer.
-  int bytes_of_raw_data_to_transfer_ = 0;
-  // Bytes sent to |producer_handle_| already.
-  int write_position_ = 0;
-  // The request body.
-  std::string body_content_;
-  int estimated_length_ = 0;
-  // Whether the body has fully been drained from |network_url_loader_|.
-  bool drain_complete_ = false;
-  // Drainer for the content in |network_url_loader_|.
-  std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
-
-  // URL Loader Events that occur before serving to the navigation stack should
-  // be queued internally until the request is being served.
-  std::vector<base::OnceClosure> event_queue_;
-
   // Forwarding client receiver.
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
-
-  mojo::ScopedDataPipeProducerHandle producer_handle_;
-  std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
   base::WeakPtrFactory<StreamingSearchPrefetchURLLoader> weak_factory_{this};
 };

@@ -206,17 +206,17 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
 }
 
 void BaseSearchPrefetchRequest::CancelPrefetch() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
-         current_status_ == SearchPrefetchStatus::kCanBeServed);
+  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight);
   current_status_ = SearchPrefetchStatus::kRequestCancelled;
   StopPrefetch();
 }
 
 void BaseSearchPrefetchRequest::ErrorEncountered() {
   DCHECK(!report_error_callback_.is_null());
+  // A streaming response can still encounter an error after the headers, so
+  // both these states are possible.
   DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
-         current_status_ == SearchPrefetchStatus::kCanBeServed ||
-         current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked);
+         current_status_ == SearchPrefetchStatus::kCanBeServed);
   current_status_ = SearchPrefetchStatus::kRequestFailed;
   std::move(report_error_callback_).Run();
   StopPrefetch();
@@ -225,18 +225,6 @@ void BaseSearchPrefetchRequest::ErrorEncountered() {
 void BaseSearchPrefetchRequest::MarkPrefetchAsServable() {
   DCHECK(current_status_ == SearchPrefetchStatus::kInFlight);
   current_status_ = SearchPrefetchStatus::kCanBeServed;
-}
-
-void BaseSearchPrefetchRequest::MarkPrefetchAsComplete() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
-         current_status_ == SearchPrefetchStatus::kCanBeServed ||
-         current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked);
-  current_status_ = SearchPrefetchStatus::kComplete;
-}
-
-void BaseSearchPrefetchRequest::MarkPrefetchAsClicked() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServed);
-  current_status_ = SearchPrefetchStatus::kCanBeServedAndUserClicked;
 }
 
 bool BaseSearchPrefetchRequest::CanServePrefetchRequest(

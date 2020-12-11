@@ -21,8 +21,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/omnibox_event_global_tracker.h"
-#include "components/omnibox/browser/omnibox_log.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "url/origin.h"
@@ -91,11 +89,6 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
     if (template_url) {
       template_url_service_data_ = template_url->data();
     }
-
-    omnibox_subscription_ =
-        OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-            base::BindRepeating(&SearchPrefetchService::OnURLOpenedFromOmnibox,
-                                base::Unretained(this)));
   }
 
   base::string16 search_terms;
@@ -145,33 +138,6 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
       base::BindOnce(&SearchPrefetchService::DeletePrefetch,
                      base::Unretained(this), search_terms));
   return true;
-}
-
-void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
-  if (!log)
-    return;
-  const AutocompleteMatch& match = log->result.match_at(log->selected_index);
-  const GURL& opened_url = match.destination_url;
-
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
-  DCHECK(template_url_service);
-  auto* default_search = template_url_service->GetDefaultSearchProvider();
-  if (!default_search)
-    return;
-
-  base::string16 match_search_terms;
-
-  default_search->ExtractSearchTermsFromURL(
-      opened_url, template_url_service->search_terms_data(),
-      &match_search_terms);
-
-  if (prefetches_.find(match_search_terms) == prefetches_.end() ||
-      prefetches_[match_search_terms]->current_status() !=
-          SearchPrefetchStatus::kCanBeServed) {
-    return;
-  }
-  prefetches_[match_search_terms]->MarkPrefetchAsClicked();
 }
 
 base::Optional<SearchPrefetchStatus>
@@ -227,9 +193,7 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
     return nullptr;
   }
 
-  if (iter->second->current_status() != SearchPrefetchStatus::kComplete &&
-      iter->second->current_status() !=
-          SearchPrefetchStatus::kCanBeServedAndUserClicked) {
+  if (iter->second->current_status() != SearchPrefetchStatus::kCanBeServed) {
     return nullptr;
   }
 
@@ -283,9 +247,7 @@ void SearchPrefetchService::OnResultChanged(
       const auto& search_terms = kv_pair.first;
       auto& prefetch_request = kv_pair.second;
       if (prefetch_request->current_status() !=
-              SearchPrefetchStatus::kInFlight &&
-          prefetch_request->current_status() !=
-              SearchPrefetchStatus::kCanBeServed) {
+          SearchPrefetchStatus::kInFlight) {
         continue;
       }
       bool should_cancel_request = true;

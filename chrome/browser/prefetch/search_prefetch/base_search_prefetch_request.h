@@ -27,22 +27,12 @@ enum class SearchPrefetchStatus {
   // The request is on the network and may move to any other state.
   kInFlight = 1,
   // The request can be served to the navigation stack, but may still encounter
-  // errors and move to |kRequestFailed| or it may complete and move to
-  // |kComplete|. It may also move to |kCanBeServedAndUserClicked| when the user
-  // navigates to the result in omnibox or |kRequestCancelled| if the user
-  // closes omnibox.
+  // errors and move to |kRequestFailed|.
   kCanBeServed = 2,
-  // The request can be served to the navigation stack, and is marked as being
-  // clicked by the user. At this point, it may move to |kComplete| or
-  // |kRequestFailed|.
-  kCanBeServedAndUserClicked = 3,
-  // The request can be served to the navigation stack, and has fully streamed
-  // the response with no errors. This is a terminal state.
-  kComplete = 4,
   // The request hit an error and cannot be served. This is a terminal state.
-  kRequestFailed = 5,
+  kRequestFailed = 3,
   // The request was cancelled before completion. This is terminal state.
-  kRequestCancelled = 6,
+  kRequestCancelled = 4,
 };
 
 // A class representing a prefetch used by the Search Prefetch Service.
@@ -72,12 +62,6 @@ class BaseSearchPrefetchRequest {
 
   // Update the status when the request is serveable.
   void MarkPrefetchAsServable();
-
-  // Update the status when the request is complete.
-  void MarkPrefetchAsComplete();
-
-  // Update the status when the relevant search item is clicked in omnibox.
-  void MarkPrefetchAsClicked();
 
   // Whether the prefetch should be served based on |headers|.
   bool CanServePrefetchRequest(
