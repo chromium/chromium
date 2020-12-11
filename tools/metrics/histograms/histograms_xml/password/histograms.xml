@@ -686,7 +686,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithAutoButton"
-    enum="PasswordCheckResolutionAction" expires_after="M90">
+    enum="PasswordCheckResolutionAction" expires_after="M92">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -696,7 +696,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton"
-    enum="PasswordCheckResolutionAction" expires_after="M90">
+    enum="PasswordCheckResolutionAction" expires_after="M92">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -706,7 +706,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.ForSitesWithScripts"
-    enum="PasswordCheckResolutionAction" expires_after="M90">
+    enum="PasswordCheckResolutionAction" expires_after="M92">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -1768,7 +1768,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.PasswordScriptsFetcher.CacheState"
-    enum="PasswordScriptsFetcherCacheState" expires_after="M89">
+    enum="PasswordScriptsFetcherCacheState" expires_after="M92">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -1779,7 +1779,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PasswordManager.PasswordScriptsFetcher.HttpResponseAndNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M89">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M92">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -1789,14 +1789,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.PasswordScriptsFetcher.ParsingResult"
-    enum="PasswordScriptsFetcherParsingResult" expires_after="M89">
+    enum="PasswordScriptsFetcherParsingResult" expires_after="M92">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>Result of parsing of a list of available password scripts.</summary>
 </histogram>
 
 <histogram name="PasswordManager.PasswordScriptsFetcher.ResponseTime"
-    units="ms" expires_after="M89">
+    units="ms" expires_after="M92">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>
