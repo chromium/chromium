@@ -775,10 +775,15 @@ suite('TabList', () => {
     await testTabsApiProxy.whenCalled('setThumbnailTracked');
     testTabsApiProxy.reset();
 
-    // Update width such that at all tabs can fit and do not fire the
-    // IntersectionObserver based on intersection alone.
-    tabList.style.setProperty(
-        '--tabstrip-tab-width', `${window.innerWidth / tabs.length}px`);
+    // Remove all other tabs to isolate the tab to test, and then wait for
+    // each tab to get untracked as it is removed from the DOM.
+    const tabElements = getUnpinnedTabs();
+    tabElements[0].remove();
+    await testTabsApiProxy.whenCalled('setThumbnailTracked');
+    testTabsApiProxy.reset();
+    tabElements[1].remove();
+    await testTabsApiProxy.whenCalled('setThumbnailTracked');
+    testTabsApiProxy.reset();
 
     // Pinning the third tab should untrack thumbnails for the tab
     pinTabAt(tabs[2], 0);
