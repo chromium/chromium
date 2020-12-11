@@ -1066,6 +1066,19 @@ public class BookmarkTest {
         onView(withText("Mark as read")).check(matches(isDisplayed()));
         onView(withText("Move up")).check(doesNotExist());
         onView(withText("Move down")).check(doesNotExist());
+
+        // Click "Mark as read". The page should be moved to read section.
+        onView(withText("Mark as read")).perform(click());
+        onView(withText("Read")).check(matches(isDisplayed()));
+
+        // A read page should not have "Mark as read" menu option.
+        TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
+        onView(withText("Select")).check(matches(isDisplayed()));
+        onView(withText("Edit")).check(doesNotExist());
+        onView(withText("Delete")).check(matches(isDisplayed()));
+        onView(withText("Mark as read")).check(doesNotExist());
+        onView(withText("Move up")).check(doesNotExist());
+        onView(withText("Move down")).check(doesNotExist());
     }
 
     @Test

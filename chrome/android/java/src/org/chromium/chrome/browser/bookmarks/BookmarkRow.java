@@ -143,13 +143,16 @@ public abstract class BookmarkRow
     private ModelList getItems() {
         // Rebuild listItems, cause mLocation may be changed anytime.
         boolean canMove = false;
+        BookmarkItem bookmarkItem = null;
         if (mDelegate != null && mDelegate.getModel() != null) {
-            BookmarkItem bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
+            bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
             if (bookmarkItem != null) canMove = bookmarkItem.isMovable();
         }
         ModelList listItems = new ModelList();
         if (mBookmarkId.getType() == BookmarkType.READING_LIST) {
-            listItems.add(buildMenuListItem(R.string.reading_list_mark_as_read, 0, 0));
+            if (bookmarkItem != null && !bookmarkItem.isRead()) {
+                listItems.add(buildMenuListItem(R.string.reading_list_mark_as_read, 0, 0));
+            }
             listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
             listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
         } else {
