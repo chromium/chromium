@@ -3,15 +3,15 @@
 # This is consumed by presubmit checks that need to validate the config
 
 {
-  # 61510 (scheduler total) + 344575 (weighted CQ total)
+  # 61590 (scheduler total) + 344575 (weighted CQ total)
   # (weighted CQ total) = 6891.5 (CQ total) * 50 (CQ weight)
-  '*weighted total*': 406085,
+  '*weighted total*': 406165,
   'scheduler': {
-    '*total*': 61510,
+    '*total*': 61590,
     'triggered': {
-      '*total*': 59600,
+      '*total*': 59680,
       ('https://chromium.googlesource.com/chromium/src', 'regexp:refs/heads/master'): {
-        '*total*': 58720,
+        '*total*': 58800,
         # 4 concurrent builds x 80 jobs
         'ci/ASAN Debug': 320,
         # 5 concurrent builds x 80 jobs
@@ -273,6 +273,7 @@
         'ci/fuchsia-arm64-cast': 500,
         'ci/fuchsia-fyi-arm64-dbg': 80,
         'ci/fuchsia-fyi-arm64-rel': 80,
+        'ci/fuchsia-fyi-arm64-size': 80,
         'ci/fuchsia-fyi-x64-dbg': 80,
         'ci/fuchsia-fyi-x64-rel': 80,
         'ci/fuchsia-official': 200,

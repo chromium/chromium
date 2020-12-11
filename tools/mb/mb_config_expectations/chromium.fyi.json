@@ -345,6 +345,16 @@
       "use_goma": true
     }
   },
+  "fuchsia-fyi-arm64-size": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "is_official_build": true,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
   "fuchsia-fyi-x64-dbg": {
     "gn_args": {
       "is_component_build": true,

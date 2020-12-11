@@ -2375,6 +2375,17 @@
           'linux-xenial',
         ],
       },
+      'fuchsia-fyi-arm64-size': {
+        'additional_compile_targets': [],
+        'test_suites': {
+          'isolated_scripts': 'fuchsia_sizes_tests',
+        },
+        'mixins': [
+          'arm64',
+          'docker',
+          'linux-xenial',
+        ],
+      },
       'fuchsia-fyi-x64-dbg': {
         'additional_compile_targets': [
           'all',
