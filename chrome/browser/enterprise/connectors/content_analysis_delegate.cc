@@ -264,14 +264,6 @@ bool ContentAnalysisDelegate::IsEnabled(
     GURL url,
     Data* data,
     enterprise_connectors::AnalysisConnector connector) {
-  // If this is an incognitio profile, don't perform scans.
-  if (profile->IsOffTheRecord())
-    return false;
-
-  // If there's no valid DM token, the upload will fail.
-  if (!policy::GetDMToken(profile).is_valid())
-    return false;
-
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           profile);
@@ -540,7 +532,7 @@ void ContentAnalysisDelegate::PrepareRequest(
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
-  request->set_device_token(policy::GetDMToken(profile).value());
+  request->set_device_token(data_.settings.dm_token);
   request->set_analysis_connector(connector);
   request->set_email(safe_browsing::GetProfileEmail(profile));
   request->set_url(data_.url.spec());

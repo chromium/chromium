@@ -846,12 +846,15 @@ void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient() {
   //
   // Therefore, it is OK to retrieve the dm token once here on initialization
   // of the router to determine if real-time reporting can be enabled or not.
-  policy::DMToken dm_token =
-      policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
+  auto settings =
+      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          context_)
+          ->GetReportingSettings(
+              enterprise_connectors::ReportingConnector::SECURITY_EVENT);
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 
-  if (!dm_token.is_valid())
+  if (!settings.has_value() || settings.value().dm_token.empty())
     return;
 
   // Make sure DeviceManagementService has been initialized.
@@ -869,7 +872,7 @@ void SafeBrowsingPrivateEventRouter::InitRealtimeReportingClient() {
 
   if (!client->is_registered()) {
     client->SetupRegistration(
-        dm_token.value(), client_id,
+        settings.value().dm_token, client_id,
         /*user_affiliation_ids=*/std::vector<std::string>());
   }
 #endif

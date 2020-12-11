@@ -58,16 +58,21 @@ struct AnalysisSettings {
 
   // Minimum text size for BulkDataEntry scans. 0 means no minimum.
   size_t minimum_data_size = 100;
+
+  // The DM token to be used for scanning. May be empty, for example if this
+  // scan is initiated by APP.
+  std::string dm_token = "";
 };
 
 struct ReportingSettings {
   ReportingSettings();
-  explicit ReportingSettings(GURL url);
+  explicit ReportingSettings(GURL url, const std::string& dm_token);
   ReportingSettings(ReportingSettings&&);
   ReportingSettings& operator=(ReportingSettings&&);
   ~ReportingSettings();
 
   GURL reporting_url;
+  std::string dm_token;
 };
 
 // Returns the pref path corresponding to a connector.

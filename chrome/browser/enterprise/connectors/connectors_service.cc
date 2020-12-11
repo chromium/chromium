@@ -9,7 +9,12 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 
@@ -98,8 +103,10 @@ ServiceProviderConfig* GetServiceProviderConfig() {
 // ConnectorsService implementation
 // --------------------------------
 
-ConnectorsService::ConnectorsService(std::unique_ptr<ConnectorsManager> manager)
-    : connectors_manager_(std::move(manager)) {
+ConnectorsService::ConnectorsService(content::BrowserContext* context,
+                                     std::unique_ptr<ConnectorsManager> manager)
+    : context_(context), connectors_manager_(std::move(manager)) {
+  DCHECK(context_);
   DCHECK(connectors_manager_);
 }
 
@@ -107,37 +114,57 @@ ConnectorsService::~ConnectorsService() = default;
 
 base::Optional<ReportingSettings> ConnectorsService::GetReportingSettings(
     ReportingConnector connector) {
-  if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
+  if (!ConnectorsEnabled())
     return base::nullopt;
 
-  return connectors_manager_->GetReportingSettings(connector);
+  base::Optional<DmToken> dm_token = GetDmToken(ConnectorPref(connector));
+  if (!dm_token.has_value())
+    return base::nullopt;
+
+  base::Optional<ReportingSettings> settings =
+      connectors_manager_->GetReportingSettings(connector);
+  if (settings.has_value()) {
+    settings.value().dm_token = dm_token.value().value;
+  }
+
+  return settings;
 }
 
 base::Optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
-  if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
+  if (!ConnectorsEnabled())
     return base::nullopt;
 
-  return connectors_manager_->GetAnalysisSettings(url, connector);
+  base::Optional<DmToken> dm_token = GetDmToken(ConnectorPref(connector));
+  if (!dm_token.has_value())
+    return base::nullopt;
+
+  base::Optional<AnalysisSettings> settings =
+      connectors_manager_->GetAnalysisSettings(url, connector);
+  if (settings.has_value()) {
+    settings.value().dm_token = dm_token.value().value;
+  }
+
+  return settings;
 }
 
 bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
-  if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
+  if (!ConnectorsEnabled())
     return false;
 
   return connectors_manager_->IsConnectorEnabled(connector);
 }
 
 bool ConnectorsService::IsConnectorEnabled(ReportingConnector connector) const {
-  if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
+  if (!ConnectorsEnabled())
     return false;
 
   return connectors_manager_->IsConnectorEnabled(connector);
 }
 
 bool ConnectorsService::DelayUntilVerdict(AnalysisConnector connector) {
-  if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
+  if (!ConnectorsEnabled())
     return false;
 
   return connectors_manager_->DelayUntilVerdict(connector);
@@ -145,6 +172,35 @@ bool ConnectorsService::DelayUntilVerdict(AnalysisConnector connector) {
 
 ConnectorsManager* ConnectorsService::ConnectorsManagerForTesting() {
   return connectors_manager_.get();
+}
+
+ConnectorsService::DmToken::DmToken(const std::string& value,
+                                    policy::PolicyScope scope)
+    : value(value), scope(scope) {}
+ConnectorsService::DmToken::DmToken(DmToken&&) = default;
+ConnectorsService::DmToken& ConnectorsService::DmToken::operator=(DmToken&&) =
+    default;
+ConnectorsService::DmToken::~DmToken() = default;
+
+base::Optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
+    const char* pref) {
+  // TODO(crbug.com/1148789): Add code to check the scope of |pref| and handle
+  // the "user" case.
+
+  policy::DMToken dm_token =
+      policy::GetDMToken(Profile::FromBrowserContext(context_));
+
+  if (!dm_token.is_valid())
+    return base::nullopt;
+
+  return DmToken(dm_token.value(), policy::POLICY_SCOPE_MACHINE);
+}
+
+bool ConnectorsService::ConnectorsEnabled() const {
+  if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
+    return false;
+
+  return !Profile::FromBrowserContext(context_)->IsOffTheRecord();
 }
 
 // ---------------------------------------
@@ -171,9 +227,11 @@ ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 
 KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new ConnectorsService(std::make_unique<ConnectorsManager>(
-      user_prefs::UserPrefs::Get(context), GetServiceProviderConfig(),
-      base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled)));
+  return new ConnectorsService(
+      context,
+      std::make_unique<ConnectorsManager>(
+          user_prefs::UserPrefs::Get(context), GetServiceProviderConfig(),
+          base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled)));
 }
 
 content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(

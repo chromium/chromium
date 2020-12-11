@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "content/public/browser/browser_context.h"
 
 namespace base {
@@ -36,7 +37,8 @@ ServiceProviderConfig* GetServiceProviderConfig();
 // A keyed service to access ConnectorsManager, which tracks Connector policies.
 class ConnectorsService : public KeyedService {
  public:
-  explicit ConnectorsService(std::unique_ptr<ConnectorsManager> manager);
+  ConnectorsService(content::BrowserContext* context,
+                    std::unique_ptr<ConnectorsManager> manager);
   ~ConnectorsService() override;
 
   // Accessors that check kEnterpriseConnectorsEnabled is enabled, and then call
@@ -56,6 +58,24 @@ class ConnectorsService : public KeyedService {
   ConnectorsManager* ConnectorsManagerForTesting();
 
  private:
+  struct DmToken {
+    DmToken(const std::string& value, policy::PolicyScope scope);
+    DmToken(DmToken&&);
+    DmToken& operator=(DmToken&&);
+    ~DmToken();
+
+    // The value of the token to use.
+    std::string value;
+
+    // The scope of the token. This is determined by the scope of the Connector
+    // policy used to get a DM token.
+    policy::PolicyScope scope;
+  };
+  base::Optional<DmToken> GetDmToken(const char* pref);
+
+  bool ConnectorsEnabled() const;
+
+  content::BrowserContext* context_;
   std::unique_ptr<ConnectorsManager> connectors_manager_;
 };
 

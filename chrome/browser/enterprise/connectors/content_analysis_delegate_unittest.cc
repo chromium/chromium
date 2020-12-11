@@ -1613,6 +1613,9 @@ class ContentAnalysisDelegateSettingsTest
   void SetUp() override {
     BaseTest::SetUp();
     EnableFeatures();
+
+    // Settings can't be returned if no DM token exists.
+    SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
   }
 
   bool allowed() const { return !GetParam(); }
