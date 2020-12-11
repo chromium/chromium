@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -57,7 +59,7 @@ import java.util.List;
 class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDelegate,
                                      VoiceRecognitionHandler.Delegate,
                                      AssistantVoiceSearchService.Observer, UrlBarDelegate,
-                                     OnKeyListener {
+                                     OnKeyListener, ComponentCallbacks {
     private final LocationBarLayout mLocationBarLayout;
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
     private final LocationBarDataProvider mLocationBarDataProvider;
@@ -170,12 +172,25 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         // This method is only used in CustomTabToolbar.
     }
 
+    /**
+     * Update the location bar visuals based on a loading state change.
+     * @param updateUrl Whether to update the URL as a result of this call.
+     */
     /*package */ void updateLoadingState(boolean updateUrl) {
-        mLocationBarLayout.updateLoadingState(updateUrl);
+        if (updateUrl) mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
+        mStatusCoordinator.updateStatusIcon();
     }
 
     /*package */ void showUrlBarCursorWithoutFocusAnimations() {
-        mLocationBarLayout.showUrlBarCursorWithoutFocusAnimations();
+        if (mLocationBarLayout.isUrlBarFocused() || mLocationBarLayout.didFocusUrlFromFakebox()) {
+            return;
+        }
+
+        mLocationBarLayout.setIsUrlFocusedWithoutAnimations(true);
+        // This method should only be called on devices with a hardware keyboard attached, as
+        // described in the documentation for LocationBar#showUrlBarCursorWithoutFocusAnimations.
+        setUrlBarFocus(/*shouldBeFocused=*/true, /*pastedText=*/null,
+                OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD);
     }
 
     /*package */ void revertChanges() {
@@ -194,12 +209,15 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         }
     }
 
+    /** Updates the security icon displayed in the LocationBar. */
     /*package */ void updateStatusIcon() {
-        mLocationBarLayout.updateStatusIcon();
+        mStatusCoordinator.updateStatusIcon();
+        // Update the URL in case the scheme change triggers a URL emphasis change.
+        mLocationBarLayout.setUrl(mLocationBarDataProvider.getCurrentUrl());
     }
 
     /* package */ void onUrlTextChanged() {
-        mLocationBarLayout.onUrlTextChanged();
+        updateButtonVisibility();
     }
 
     /* package */ void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {
@@ -399,7 +417,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void clearOmniboxFocus() {
-        mLocationBarLayout.clearOmniboxFocus();
+        setUrlBarFocus(/*shouldBeFocused=*/false, /*pastedText=*/null, OmniboxFocusReason.UNFOCUS);
     }
 
     // AssistantVoiceSearchService.Observer implementation.
@@ -432,7 +450,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
         // Ensure the UrlBar has focus before entering text. If the UrlBar is not focused,
         // autocomplete text will be updated but the visible text will not.
-        mLocationBarLayout.setUrlBarFocus(true, null, OmniboxFocusReason.SEARCH_QUERY);
+        mLocationBarLayout.setUrlBarFocus(
+                /*shouldBeFocused=*/true, /*pastedText=*/null, OmniboxFocusReason.SEARCH_QUERY);
         mLocationBarLayout.setUrlBarText(UrlBarData.forNonUrlText(query),
                 UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
         mAutocompleteCoordinator.startAutocompleteForQuery(query);
@@ -477,12 +496,27 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void gestureDetected(boolean isLongPress) {
-        mLocationBarLayout.gestureDetected(isLongPress);
+        mLocationBarLayout.recordOmniboxFocusReason(isLongPress
+                        ? OmniboxFocusReason.OMNIBOX_LONG_PRESS
+                        : OmniboxFocusReason.OMNIBOX_TAP);
     }
 
     // OnKeyListener implementation.
     @Override
     public boolean onKey(View view, int keyCode, KeyEvent event) {
+        boolean result = handleKeyEvent(view, keyCode, event);
+
+        if (result && mLocationBarLayout.isUrlBarFocused()
+                && mLocationBarLayout.isUrlBarFocusedWithoutAnimations()
+                && event.getAction() == KeyEvent.ACTION_DOWN && event.isPrintingKey()
+                && event.hasNoModifiers()) {
+            mLocationBarLayout.handleUrlFocusAnimation(/*hasFocus=*/true);
+        }
+
+        return result;
+    }
+
+    private boolean handleKeyEvent(View view, int keyCode, KeyEvent event) {
         boolean isRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         if (mAutocompleteCoordinator.handleKeyEvent(keyCode, event)) {
             return true;
@@ -513,4 +547,21 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         }
         return false;
     }
+
+    // ComponentCallbacks implementation.
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (mLocationBarLayout.isUrlBarFocused()
+                && mLocationBarLayout.isUrlBarFocusedWithoutAnimations()
+                && newConfig.keyboard != Configuration.KEYBOARD_QWERTY) {
+            // If we lose the hardware keyboard and the focus animations were not run, then the
+            // user has not typed any text, so we will just clear the focus instead.
+            setUrlBarFocus(
+                    /*shouldBeFocused=*/false, /*pastedText=*/null, OmniboxFocusReason.UNFOCUS);
+        }
+    }
+
+    @Override
+    public void onLowMemory() {}
 }

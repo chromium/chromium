@@ -6,13 +6,11 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,7 +42,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
@@ -156,29 +153,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        boolean retVal = super.dispatchKeyEvent(event);
-        if (retVal && mUrlHasFocus && mUrlFocusedWithoutAnimations
-                && event.getAction() == KeyEvent.ACTION_DOWN && event.isPrintingKey()
-                && event.hasNoModifiers()) {
-            handleUrlFocusAnimation(mUrlHasFocus);
-        }
-        return retVal;
-    }
-
-    @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        if (mUrlHasFocus && mUrlFocusedWithoutAnimations
-                && newConfig.keyboard != Configuration.KEYBOARD_QWERTY) {
-            // If we lose the hardware keyboard and the focus animations were not run, then the
-            // user has not typed any text, so we will just clear the focus instead.
-            setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
-        }
-    }
-
     /**
      * Initializes LocationBarLayout with dependencies that aren't immediately available at
      * construction time.
@@ -236,21 +210,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         updateMicButtonVisibility();
     }
 
-    /** Initiates a prefetch of autocomplete suggestions. */
-    public void startPrefetch() {
-        if (!mNativeInitialized) return;
-
-        mAutocompleteCoordinator.prefetchZeroSuggestResults();
-    }
-
-    /* package */ void clearOmniboxFocus() {
-        setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
-    }
-
-    /* package */ void onUrlTextChanged() {
-        updateButtonVisibility();
-    }
-
     /* package */ boolean didFocusUrlFromFakebox() {
         return mUrlFocusedFromFakebox;
     }
@@ -259,14 +218,8 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         return mUrlFocusedFromQueryTiles;
     }
 
-    public void showUrlBarCursorWithoutFocusAnimations() {
-        if (mUrlHasFocus || mUrlFocusedFromFakebox) return;
-
-        mUrlFocusedWithoutAnimations = true;
-
-        // This interface should only be called to devices with a hardware keyboard attached as
-        // described in the LocationBar.
-        setUrlBarFocus(true, null, OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD);
+    /* package */ void setIsUrlFocusedWithoutAnimations(boolean isUrlFocusedWithoutAnimations) {
+        mUrlFocusedWithoutAnimations = isUrlFocusedWithoutAnimations;
     }
 
     /**
@@ -280,15 +233,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
         mAutocompleteCoordinator.setLocationBarDataProviderForTesting(locationBarDataProvider);
         mStatusCoordinator.setLocationBarDataProviderForTesting(locationBarDataProvider);
-    }
-
-    /**
-     * Updates the security icon displayed in the LocationBar.
-     */
-    public void updateStatusIcon() {
-        mStatusCoordinator.updateStatusIcon();
-        // Update the URL in case the scheme change triggers a URL emphasis change.
-        setUrl(mLocationBarDataProvider.getCurrentUrl());
     }
 
     /* package */ void onSuggestionsHidden() {}
@@ -329,20 +273,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         setUrl(mLocationBarDataProvider.getCurrentUrl());
     }
 
-    public void gestureDetected(boolean isLongPress) {
-        recordOmniboxFocusReason(isLongPress ? OmniboxFocusReason.OMNIBOX_LONG_PRESS
-                                             : OmniboxFocusReason.OMNIBOX_TAP);
-    }
-
-    /**
-     * Update the location bar visuals based on a loading state change.
-     * @param updateUrl Whether to update the URL as a result of this call.
-     */
-    public void updateLoadingState(boolean updateUrl) {
-        if (updateUrl) setUrl(mLocationBarDataProvider.getCurrentUrl());
-        mStatusCoordinator.updateStatusIcon();
-    }
-
     /* package */ void setUrlBarFocus(
             boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason) {
         if (shouldBeFocused) {
@@ -379,6 +309,10 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
     /* package */ boolean isUrlBarFocused() {
         return mUrlHasFocus;
+    }
+
+    /* package */ boolean isUrlBarFocusedWithoutAnimations() {
+        return mUrlFocusedWithoutAnimations;
     }
 
     protected VoiceRecognitionHandler getVoiceRecognitionHandler() {
@@ -582,14 +516,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      */
     protected void notifyShouldAnimateIconChanges(boolean shouldAnimate) {
         mStatusCoordinator.setShouldAnimateIconChanges(shouldAnimate);
-    }
-
-    /** Focuses the current page. */
-    private void focusCurrentTab() {
-        if (mLocationBarDataProvider.hasTab()) {
-            View view = getCurrentTab().getView();
-            if (view != null) view.requestFocus();
-        }
     }
 
     /**
@@ -862,13 +788,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         return textChanged;
     }
 
-    /** @return The current active {@link Tab}. */
-    @Nullable
-    private Tab getCurrentTab() {
-        if (mLocationBarDataProvider == null) return null;
-        return mLocationBarDataProvider.getTab();
-    }
-
     protected void setUnfocusedWidth(int unfocusedWidth) {
         mStatusCoordinator.setUnfocusedLocationBarWidth(unfocusedWidth);
     }
@@ -916,7 +835,7 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete, textWithAutocomplete);
     }
 
-    private void recordOmniboxFocusReason(@OmniboxFocusReason int reason) {
+    /* package */ void recordOmniboxFocusReason(@OmniboxFocusReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.OmniboxFocusReason", reason, OmniboxFocusReason.NUM_ENTRIES);
     }

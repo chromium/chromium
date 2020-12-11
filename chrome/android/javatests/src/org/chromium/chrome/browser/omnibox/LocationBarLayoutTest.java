@@ -167,8 +167,14 @@ public class LocationBarLayoutTest {
                 () -> getLocationBar().setLocationBarDataProviderForTesting(mTestLocationBarModel));
     }
 
-    private void setUrlToPageUrl(LocationBarLayout locationBar) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { getLocationBar().updateLoadingState(true); });
+    private void setUrlToPageUrl() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getToolbarManager()
+                    .getToolbarLayoutForTesting()
+                    .getLocationBar()
+                    .updateLoadingState(true);
+        });
     }
 
     private String getUrlText(UrlBar urlBar) {
@@ -262,7 +268,7 @@ public class LocationBarLayoutTest {
         mTestLocationBarModel.setSecurityLevel(ConnectionSecurityLevel.SECURE);
         mTestLocationBarModel.mDisplayText = TRIMMED_URL;
         mTestLocationBarModel.mEditingText = VERBOSE_URL;
-        setUrlToPageUrl(locationBar);
+        setUrlToPageUrl();
 
         Assert.assertEquals(TRIMMED_URL, getUrlText(urlBar));
 
@@ -292,7 +298,7 @@ public class LocationBarLayoutTest {
         mTestLocationBarModel.setSecurityLevel(ConnectionSecurityLevel.SECURE);
         mTestLocationBarModel.mDisplayText = GOOGLE_SRP_URL;
         mTestLocationBarModel.mEditingText = GOOGLE_SRP_URL;
-        setUrlToPageUrl(locationBar);
+        setUrlToPageUrl();
 
         onView(withId(R.id.location_bar_status)).check((view, e) -> {
             Assert.assertEquals(iconView.getVisibility(), VISIBLE);
@@ -314,7 +320,7 @@ public class LocationBarLayoutTest {
         mTestLocationBarModel.setSecurityLevel(ConnectionSecurityLevel.SECURE);
         mTestLocationBarModel.mDisplayText = GOOGLE_SRP_URL;
         mTestLocationBarModel.mEditingText = GOOGLE_SRP_URL;
-        setUrlToPageUrl(locationBar);
+        setUrlToPageUrl();
         setUrlBarTextAndFocus("");
 
         onView(withId(R.id.location_bar_status)).check((view, e) -> {
@@ -693,7 +699,7 @@ public class LocationBarLayoutTest {
             String url, boolean incognito, LocationBarLayout locationBar) {
         Tab tab = mActivityTestRule.loadUrlInNewTab(url, incognito);
         setupModelsForCurrentTab();
-        setUrlToPageUrl(locationBar);
+        setUrlToPageUrl();
         TestThreadUtils.runOnUiThreadBlocking(() -> { locationBar.onPrimaryColorChanged(); });
         return tab;
     }

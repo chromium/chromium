@@ -157,6 +157,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                     mAutocompleteCoordinator.updateSuggestionListLayoutDirection();
                 }));
 
+        mLocationBarLayout.getContext().registerComponentCallbacks(mLocationBarMediator);
         mLocationBarLayout.addUrlFocusChangeListener(mAutocompleteCoordinator);
         mLocationBarLayout.addUrlFocusChangeListener(mUrlCoordinator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
@@ -176,6 +177,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mUrlBar = null;
         mUrlCoordinator.destroy();
         mUrlCoordinator = null;
+        mLocationBarLayout.getContext().unregisterComponentCallbacks(mLocationBarMediator);
         mLocationBarLayout.removeUrlFocusChangeListener(mAutocompleteCoordinator);
         mAutocompleteCoordinator.destroy();
         mAutocompleteCoordinator = null;

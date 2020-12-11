@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import static org.mockito.Mockito.doReturn;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 
 import androidx.test.filters.MediumTest;
 
@@ -181,6 +182,24 @@ public class LocationBarTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mLocationBarMediator.performSearchQuery(TEST_QUERY, TEST_PARAMS);
             Assert.assertEquals(TEST_QUERY, mUrlBar.getTextWithoutAutocomplete());
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testOnConfigurationChanged() {
+        startActivityNormally();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mLocationBarMediator.showUrlBarCursorWithoutFocusAnimations();
+            Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
+        });
+
+        Configuration configuration = mActivity.getSavedConfigurationForTesting();
+        configuration.keyboard = Configuration.KEYBOARD_12KEY;
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mLocationBarMediator.onConfigurationChanged(configuration);
+            Assert.assertFalse(mLocationBarMediator.isUrlBarFocused());
         });
     }
 }
