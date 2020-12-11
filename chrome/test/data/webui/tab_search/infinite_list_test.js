@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {InfiniteList} from 'chrome://tab-search/infinite_list.js';
-import {TabSearchItem} from 'chrome://tab-search/tab_search_item.js';
+import {InfiniteList, TabSearchItem} from 'chrome://tab-search/tab_search.js';
 
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';

@@ -74,7 +74,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kTabSearchResources, kTabSearchResourcesSize),
-      /*generated_path=*/std::string(), IDR_TAB_SEARCH_TAB_SEARCH_PAGE_HTML);
+      /*generated_path=*/std::string(), IDR_TAB_SEARCH_TAB_SEARCH_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageRemote, ProfileTabs} from 'chrome://tab-search/tab_search.mojom-webui.js';
-import {TabSearchApiProxy} from 'chrome://tab-search/tab_search_api_proxy.js';
+import {PageCallbackRouter, PageRemote, ProfileTabs, TabSearchApiProxy} from 'chrome://tab-search/tab_search.js';
+
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
 /** @implements {TabSearchApiProxy} */

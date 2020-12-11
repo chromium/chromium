@@ -45,8 +45,7 @@ js_library("tab_search_app_test") {
   deps = [
     ":test_tab_search_api_proxy",
     "..:chai_assert",
-    "//chrome/browser/resources/tab_search:app",
-    "//chrome/browser/resources/tab_search:infinite_list",
+    "//chrome/browser/resources/tab_search:tab_search",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -55,7 +54,7 @@ js_library("tab_search_app_focus_test") {
   deps = [
     ":test_tab_search_api_proxy",
     "..:chai_assert",
-    "//chrome/browser/resources/tab_search:app",
+    "//chrome/browser/resources/tab_search:tab_search",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -63,7 +62,7 @@ js_library("tab_search_app_focus_test") {
 js_library("test_tab_search_api_proxy") {
   deps = [
     "..:test_browser_proxy.m",
-    "//chrome/browser/resources/tab_search:tab_search_api_proxy",
+    "//chrome/browser/resources/tab_search:tab_search",
     "//chrome/browser/ui/webui/tab_search:mojo_bindings_js_library_for_compile",
   ]
 }
@@ -71,7 +70,7 @@ js_library("test_tab_search_api_proxy") {
 js_library("tab_search_item_test") {
   deps = [
     "..:chai_assert",
-    "//chrome/browser/resources/tab_search:tab_search_item",
+    "//chrome/browser/resources/tab_search:tab_search",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

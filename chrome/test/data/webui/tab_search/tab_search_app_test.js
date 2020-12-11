@@ -3,11 +3,7 @@
 // found in the LICENSE file.
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {TabSearchAppElement} from 'chrome://tab-search/app.js';
-import {ProfileTabs, Tab} from 'chrome://tab-search/tab_search.mojom-webui.js';
-import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js';
-import {TabSearchItem} from 'chrome://tab-search/tab_search_item.js';
-import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.js';
+import {ProfileTabs, Tab, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField} from 'chrome://tab-search/tab_search.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/optimize_webui.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
@@ -16,24 +17,63 @@ preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
 preprocess_fuse_manifest = "preprocessed_fuse_manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 
+if (optimize_webui) {
+  build_manifest = "build_manifest.json"
+
+  optimize_webui("build") {
+    host = "tab-search"
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    js_out_files = [ "tab_search.rollup.js" ]
+    js_module_in_files = [ "tab_search.js" ]
+    out_manifest = "$target_gen_dir/$build_manifest"
+
+    excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+      "fuse.js",
+    ]
+
+    deps = [
+      ":preprocess",
+      ":preprocess_mojo",
+      ":preprocess_web_components",
+      "../../../../ui/webui/resources:preprocess",
+    ]
+  }
+}
+
 generate_grd("build_grd") {
-  input_files = [ "tab_search_page.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  resource_path_rewrites = [ "fuse.basic.esm.min.js|fuse.js" ]
-  deps = [
-    ":preprocess",
-    ":preprocess_fuse",
-    ":preprocess_mojo",
-    ":preprocess_web_components",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_fuse_manifest",
-    "$target_gen_dir/$preprocess_mojo_manifest",
-    "$target_gen_dir/$preprocess_web_components_manifest",
-  ]
   grd_prefix = "tab_search"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [ "tab_search.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  resource_path_rewrites = [ "fuse.basic.esm.min.js|fuse.js" ]
+
+  if (optimize_webui) {
+    deps = [
+      ":build",
+      ":preprocess_fuse",
+    ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_fuse_manifest",
+      "$target_gen_dir/$build_manifest",
+    ]
+    resource_path_rewrites += [ "tab_search.rollup.js|tab_search.js" ]
+  } else {
+    deps = [
+      ":preprocess",
+      ":preprocess_fuse",
+      ":preprocess_mojo",
+      ":preprocess_web_components",
+    ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_manifest",
+      "$target_gen_dir/$preprocess_fuse_manifest",
+      "$target_gen_dir/$preprocess_mojo_manifest",
+      "$target_gen_dir/$preprocess_web_components_manifest",
+    ]
+  }
 }
 
 preprocess_if_expr("preprocess") {
@@ -43,6 +83,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "fuzzy_search.js",
     "tab_data.js",
+    "tab_search.js",
     "tab_search_api_proxy.js",
   ]
 }
@@ -106,6 +147,7 @@ js_type_check("closure_compile") {
     ":fuzzy_search",
     ":infinite_list",
     ":tab_data",
+    ":tab_search",
     ":tab_search_api_proxy",
     ":tab_search_item",
     ":tab_search_search_field",
@@ -115,6 +157,7 @@ js_type_check("closure_compile") {
 js_library("app") {
   deps = [
     ":fuzzy_search",
+    ":infinite_list",
     ":tab_data",
     ":tab_search_api_proxy",
     ":tab_search_item",
@@ -144,6 +187,10 @@ js_library("infinite_list") {
 
 js_library("tab_data") {
   deps = []
+}
+
+js_library("tab_search") {
+  deps = [ ":app" ]
 }
 
 js_library("tab_search_api_proxy") {
