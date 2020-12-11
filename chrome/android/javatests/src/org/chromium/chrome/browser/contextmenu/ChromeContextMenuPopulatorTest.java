@@ -73,6 +73,8 @@ public class ChromeContextMenuPopulatorTest {
     @Mock
     private ChromeContextMenuPopulator mPopulator;
 
+    private boolean mSupportsOpenInChromeFromCct = true;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -86,6 +88,8 @@ public class ChromeContextMenuPopulatorTest {
         when(mItemDelegate.supportsSendEmailMessage()).thenReturn(true);
         when(mItemDelegate.supportsSendTextMessage()).thenReturn(true);
         when(mItemDelegate.supportsAddToContacts()).thenReturn(true);
+        when(mItemDelegate.supportsOpenInChromeFromCct())
+                .thenAnswer((mock) -> mSupportsOpenInChromeFromCct);
 
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();
         features.put(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, false);
@@ -169,6 +173,23 @@ public class ChromeContextMenuPopulatorTest {
                 R.id.contextmenu_save_link_as, R.id.contextmenu_share_link,
                 R.id.contextmenu_open_in_chrome};
         checkMenuOptions(expected4);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testShouldShowOpenInChromeMenuItemInContextMenu() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        ContextMenuParams params = new ContextMenuParams(0, 0, PAGE_URL, LINK_URL, LINK_TEXT, "",
+                "", "", null, false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
+
+        // If the delegate returns false from supportsOpenInChromeFromCct() then open_in_chrome item
+        // should not be present.
+        mSupportsOpenInChromeFromCct = false;
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
+        int[] expected = {R.id.contextmenu_copy_link_address, R.id.contextmenu_copy_link_text,
+                R.id.contextmenu_save_link_as, R.id.contextmenu_share_link};
+        checkMenuOptions(expected);
     }
 
     @Test

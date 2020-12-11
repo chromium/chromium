@@ -172,6 +172,20 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.HIDE_OMNIBOX_SUGGESTIONS_FROM_CCT";
 
     /**
+     * Extra that determines whether the 'open in chrome' menu item should be shown in the context
+     * menu. The value is a boolean. Default value is false, meaning the item is shown.
+     */
+    public static final String EXTRA_HIDE_OPEN_IN_CHROME_MENU_ITEM_IN_CONTEXT_MENU =
+            "androidx.browser.customtabs.extra.HIDE_OPEN_IN_CHROME_MENU_ITEM_IN_CONTEXT_MENU";
+
+    /**
+     * Extra that determines whether the 'open in chrome' menu item should be shown in the menu. The
+     * value is a boolean. Default value is false, meaning the item is shown.
+     */
+    public static final String EXTRA_HIDE_OPEN_IN_CHROME_MENU_ITEM =
+            "androidx.browser.customtabs.extra.HIDE_OPEN_IN_CHROME_MENU_ITEM";
+
+    /**
      * Extra that, if set, results in marking visits from cct as hidden. The value is
      * a boolean, and is only considered if the feature kCCTHideVisits is enabled.
      */
@@ -953,5 +967,25 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (!GSAState.isGsaPackageName(clientPackageName)) return false;
         return IntentUtils.safeGetBooleanExtra(
                 mIntent, EXTRA_BLOCK_NEW_NOTIFICATION_REQUESTS_IN_CCT, false);
+    }
+
+    @Override
+    public boolean shouldShowOpenInChromeMenuItemInContextMenu() {
+        // Only 1p apps are allowed to hide visits.
+        String clientPackageName =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(getSession());
+        if (!GSAState.isGsaPackageName(clientPackageName)) return true;
+        return !IntentUtils.safeGetBooleanExtra(
+                mIntent, EXTRA_HIDE_OPEN_IN_CHROME_MENU_ITEM_IN_CONTEXT_MENU, false);
+    }
+
+    @Override
+    public boolean shouldShowOpenInChromeMenuItem() {
+        // Only 1p apps are allowed to hide visits.
+        String clientPackageName =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(getSession());
+        if (!GSAState.isGsaPackageName(clientPackageName)) return true;
+        return !IntentUtils.safeGetBooleanExtra(
+                mIntent, EXTRA_HIDE_OPEN_IN_CHROME_MENU_ITEM, false);
     }
 }
