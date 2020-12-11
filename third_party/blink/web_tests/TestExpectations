@@ -5870,3 +5870,7 @@ crbug.com/1154178 external/wpt/webmessaging/broadcastchannel/basics.html [ Pass 
 
 # DevTools roll
 crbug.com/1024752 http/tests/devtools/sources/inline-styles-scripts-locations.js [ Skip ]
+
+# Sheriff 2020-12-11
+# Flaking on Linux Trusty
+crbug.com/1157849 [ Linux Release ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Pass Timeout ]
