@@ -54,6 +54,15 @@ Polymer({
       type: Object,
       value: {},
     },
+
+    /**
+     * Status of the current transfer.
+     * @private {?nearbyShare.mojom.TransferStatus}
+     */
+    transferStatus_: {
+      type: nearbyShare.mojom.TransferStatus,
+      value: null,
+    }
   },
 
   listeners: {
@@ -141,6 +150,8 @@ Polymer({
    * @param {!nearbyShare.mojom.TransferMetadata} metadata
    */
   onTransferUpdate(shareTarget, metadata) {
+    this.transferStatus_ = metadata.status;
+
     if (metadata.status ===
         nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation) {
       clearTimeout(this.closeTimeoutId_);

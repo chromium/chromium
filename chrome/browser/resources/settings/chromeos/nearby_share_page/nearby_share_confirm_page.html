@@ -1,5 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="../../shared/nearby_page_template.html">
 <link rel="import" href="../../shared/nearby_device.html">
 <link rel="import" href="../../shared/nearby_preview.html">
@@ -7,15 +8,88 @@
 
 <dom-module id="nearby-share-confirm-page">
   <template>
+    <style>
+      #centerContent {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        margin: 0 32px;
+      }
+
+      #processRow {
+        display: flex;
+        flex-grow: 1;
+      }
+
+      #processRowContent {
+        align-self: center;
+        display: flex;
+        flex-grow: 1;
+        margin: 24px 8px;
+      }
+
+      #errorSection {
+        align-items: flex-start;
+        display: flex;
+        flex-direction: row;
+        padding: 8px;
+      }
+
+      #error {
+        align-items: flex-start;
+        display: flex;
+        flex-direction: column;
+        font-size: 12px;
+      }
+
+      #errorTitle {
+        color: var(--google-red-600);
+        font-weight: bold;
+        margin-bottom: 3px;
+      }
+
+      #errorDescription {
+        color: var(--google-grey-refresh-700);
+        line-height: 13px;
+      }
+
+      #errorIcon {
+        fill: var(--google-red-600);
+        flex-shrink: 0;
+        height: 20px;
+        margin-inline-end: 12px;
+        width: 20px;
+      }
+    </style>
     <nearby-page-template title="$i18n{nearbyShareReceiveConfirmPageTitle}"
         action-button-label="$i18n{confirm}"
         action-button-event-name="confirm"
         cancel-button-label="$i18n{cancel}"
-        cancel-button-event-name="reject">
-      <div slot="content">
-        <!-- TODO(vecore): Replace with real ui. -->
-        <div id="shareTargetName">[[shareTarget.name]]</div>
-        <div id="connectionToken">[[connectionToken]]</div>
+        cancel-button-event-name="reject"
+        close-only="[[errorTitle_]]">
+      <div id="centerContent" slot="content">
+        <div id="processRow">
+          <div id="processRowContent">
+            <!-- TODO(vecore): Replace with real ui. -->
+            <div id="shareTargetName">[[shareTarget.name]]</div>
+            <div id="connectionToken">[[connectionToken]]</div>
+          </div>
+        </div>
+
+        <!-- TODO(crbug.com/1149546) factor error section out -->
+        <template is="dom-if" if="[[errorTitle_]]">
+          <div id="errorSection">
+            <iron-icon id="errorIcon" icon="nearby20:info"></iron-icon>
+            <div id="error" role="alert" aria-labelledby="errorTitle"
+                aria-describedby="errorDescription">
+              <div id="errorTitle" aria-hidden="true">[[errorTitle_]]</div>
+              <div id="errorDescription" aria-hidden="true">
+                [[errorDescription_]]
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
     </nearby-page-template>
   </template>
