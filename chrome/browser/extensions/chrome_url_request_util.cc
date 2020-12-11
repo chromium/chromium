@@ -149,6 +149,14 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
   void OnMimeTypeRead(scoped_refptr<base::RefCountedMemory> data,
                       std::string* read_mime_type,
                       bool read_result) {
+    if (!client_) {
+      // At this point, it is possible for |client_| to have disconnected, but
+      // the |receiver_| disconnect either hasn't been received, or is pending
+      // in the task queue. If |client_| is disconnected, there's nothing to do
+      // so wait for the |receiver_| disconnect to destroy us.
+      return;
+    }
+
     auto head = network::mojom::URLResponseHead::New();
     head->request_start = base::TimeTicks::Now();
     head->response_start = base::TimeTicks::Now();
