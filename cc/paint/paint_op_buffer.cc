@@ -4,6 +4,10 @@
 
 #include "cc/paint/paint_op_buffer.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "build/build_config.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
@@ -1482,6 +1486,13 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     // see https://crbug.com/990382), an image provider may not be available, so
     // we should draw nothing.
     if (!params.image_provider)
+      return;
+    // TODO(crbug.com/1157152): We shouldn't need this check, QuickRejectDraw
+    // should have done the job.
+    const SkRect& clip_rect = SkRect::Make(canvas->getDeviceClipBounds());
+    const SkMatrix& ctm = canvas->getTotalMatrix();
+    gfx::Rect local_op_rect = PaintOp::ComputePaintRect(op, clip_rect, ctm);
+    if (local_op_rect.IsEmpty())
       return;
     ImageProvider::ScopedResult result =
         params.image_provider->GetRasterContent(DrawImage(op->image));
