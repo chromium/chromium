@@ -19,8 +19,10 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -103,7 +105,14 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
       : stream_type_(GetParam()),
         http2_response_status_("200"),
         reset_websocket_http2_stream_(false),
-        sequence_number_(0) {}
+        sequence_number_(0) {
+    // Make sure these tests all pass with connection partitioning enabled. The
+    // disabled case is less interesting, and is tested more directly at lower
+    // layers.
+    feature_list_.InitAndEnableFeature(
+        features::kPartitionConnectionsByNetworkIsolationKey);
+  }
+
   ~WebSocketStreamCreateTest() override {
     // Permit any endpoint locks to be released.
     stream_request_.reset();
@@ -294,6 +303,8 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     std::unique_ptr<URLRequest> request = context->CreateRequest(
         GURL("https://www.example.org/"), DEFAULT_PRIORITY, &delegate,
         TRAFFIC_ANNOTATION_FOR_TESTS);
+    // The IsolationInfo has to match for a socket to be reused.
+    request->set_isolation_info(CreateIsolationInfo());
     request->Start();
     EXPECT_TRUE(request->is_pending());
     delegate.RunUntilComplete();
@@ -383,6 +394,8 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
   const HandshakeStreamType stream_type_;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+
   std::unique_ptr<base::OneShotTimer> timer_;
   std::string additional_data_;
   const char* http2_response_status_;
