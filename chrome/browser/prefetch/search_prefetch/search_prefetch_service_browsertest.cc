@@ -40,6 +40,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -616,6 +617,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        BasicPrefetchFunctionality) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -625,6 +627,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   GURL prefetch_url = GetSearchServerQueryURL(search_terms);
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           base::ASCIIToUTF16(search_terms));
@@ -656,6 +661,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        PrefetchThrottled) {
+  base::HistogramTester histogram_tester;
   ThrottleAllContentBrowserClient browser_client;
   auto* old_client = content::SetBrowserClientForTesting(&browser_client);
   auto* search_prefetch_service =
@@ -670,6 +676,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           base::ASCIIToUTF16(search_terms));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kThrottled, 1);
   EXPECT_FALSE(prefetch_status.has_value());
   content::SetBrowserClientForTesting(old_client);
 }
@@ -677,6 +686,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        PrefetchCancelledByThrottle) {
   CancelAllContentBrowserClient browser_client;
+  base::HistogramTester histogram_tester;
   auto* old_client = content::SetBrowserClientForTesting(&browser_client);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
@@ -690,6 +700,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           base::ASCIIToUTF16(search_terms));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kThrottled, 1);
   EXPECT_FALSE(prefetch_status.has_value());
   content::SetBrowserClientForTesting(old_client);
 }
@@ -846,16 +859,26 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        PrefetchRateLimiting) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_1")));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_2")));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kPrefetchStarted, 2);
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_3")));
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kMaxAttemptsReached, 1);
 
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -940,6 +963,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        FetchSameTermsOnlyOnce) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -949,14 +973,21 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   GURL prefetch_url = GetSearchServerQueryURL(search_terms);
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
 
   WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
                            SearchPrefetchStatus::kComplete);
 
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kAttemptedQueryRecently, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest, BadURL) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -966,10 +997,14 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest, BadURL) {
   GURL prefetch_url = GetSearchServerQueryURLWithNoQuery(search_path);
 
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kNotDefaultSearchWithTerms, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        PreloadDisabled) {
+  base::HistogramTester histogram_tester;
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kNetworkPredictionOptions,
       chrome_browser_net::NETWORK_PREDICTION_NEVER);
@@ -982,10 +1017,14 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   GURL prefetch_url = GetSearchServerQueryURL(search_terms);
 
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kPrefetchDisabled, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        BasicPrefetchServed) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -995,6 +1034,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   GURL prefetch_url = GetSearchServerQueryURL(search_terms);
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           base::ASCIIToUTF16(search_terms));
@@ -1012,10 +1054,14 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   EXPECT_FALSE(base::Contains(inner_html, "regular"));
   EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchFinalStatus",
+      SearchPrefetchStatus::kComplete, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        RegularSearchQueryWhenNoPrefetch) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -1030,10 +1076,14 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      SearchPrefetchServingReason::kNoPrefetch, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        NonMatchingPrefetchURL) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -1062,10 +1112,14 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   EXPECT_TRUE(base::Contains(inner_html, "regular"));
   EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      SearchPrefetchServingReason::kNoPrefetch, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        ErrorCausesNoFetch) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -1088,6 +1142,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("other_query")));
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kErrorBackoff, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
@@ -1520,6 +1577,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        NoPrefetchWhenJSDisabled) {
+  base::HistogramTester histogram_tester;
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kWebKitJavascriptEnabled,
                                                false);
   auto* search_prefetch_service =
@@ -1531,10 +1589,15 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   GURL prefetch_url = GetSearchServerQueryURL(search_terms);
 
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kJavascriptDisabled, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        NoPrefetchWhenJSDisabledOnDSE) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -1549,6 +1612,10 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                                       CONTENT_SETTING_BLOCK);
 
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kJavascriptDisabled, 1);
 
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -1558,6 +1625,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        NoServeWhenJSDisabled) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -1586,12 +1654,16 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   ui_test_utils::NavigateToURL(browser(), prefetch_url);
 
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      SearchPrefetchServingReason::kJavascriptDisabled, 1);
   // The prefetch request and the new non-prefetched served request.
   EXPECT_EQ(2u, search_server_request_count());
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        NoServeWhenJSDisabledOnDSE) {
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -1623,6 +1695,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 
   ui_test_utils::NavigateToURL(browser(), prefetch_url);
 
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchServingReason",
+      SearchPrefetchServingReason::kJavascriptDisabled, 1);
   // The prefetch request and the new non-prefetched served request.
   EXPECT_EQ(2u, search_server_request_count());
 }
@@ -1816,6 +1891,8 @@ class SearchPrefetchServiceZeroCacheTimeBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
                        ExpireAfterDuration) {
+  set_should_hang_requests(true);
+  base::HistogramTester histogram_tester;
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
@@ -1837,6 +1914,10 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceZeroCacheTimeBrowserTest,
   WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms), base::nullopt);
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchFinalStatus",
+      SearchPrefetchStatus::kInFlight, 1);
 
   // Prefetch should be gone now.
   EXPECT_FALSE(prefetch_status.has_value());

@@ -681,6 +681,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SearchPrefetch.PrefetchEligibilityReason"
+    enum="SearchPrefetchEligibilityReason" expires_after="M94">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The reason that a search prefetch request from the autocomplete/omnibox
+    suggest pipeline was not eligible to be prefetched (or 'Prefetched' if it
+    was prefetched). Recorded when a prefetch is requested from suggest if the
+    prefetch match type (default match) is allowed by feature policy.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SearchPrefetch.PrefetchFinalStatus"
+    enum="SearchPrefetchFinalStatus" expires_after="M94">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The status of a Search Prefetch request when it is deleted by expiration or
+    by serving the request.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SearchPrefetch.PrefetchServingReason"
+    enum="SearchPrefetchServingReason" expires_after="M94">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The reason that a navigation request could or could not serve a prefetch
+    request. Recorded for all main frame navigations.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchProviderMatches" units="units"
     expires_after="2021-06-06">
   <owner>jdonnelly@chromium.org</owner>

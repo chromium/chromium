@@ -19,6 +19,7 @@ class HttpResponseHeaders;
 class Profile;
 class SearchPrefetchURLLoader;
 
+// Any updates to this class need to be propagated to enums.xml.
 enum class SearchPrefetchStatus {
   // The request has not started yet. This status should ideally never be
   // recorded as Start() should be called on the same stack as creating the
@@ -43,6 +44,7 @@ enum class SearchPrefetchStatus {
   kRequestFailed = 5,
   // The request was cancelled before completion. This is terminal state.
   kRequestCancelled = 6,
+  kMaxValue = kRequestCancelled,
 };
 
 // A class representing a prefetch used by the Search Prefetch Service.

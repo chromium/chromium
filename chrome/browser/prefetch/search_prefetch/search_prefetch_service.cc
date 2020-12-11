@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
@@ -43,6 +44,34 @@ GURL GetPrefetchURLFromMatch(const AutocompleteMatch& match,
                                       nullptr));
 }
 
+struct SearchPrefetchEligibilityReasonRecorder {
+ public:
+  SearchPrefetchEligibilityReasonRecorder() = default;
+  ~SearchPrefetchEligibilityReasonRecorder() {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Omnibox.SearchPrefetch.PrefetchEligibilityReason", reason_);
+  }
+
+  SearchPrefetchEligibilityReason reason_ =
+      SearchPrefetchEligibilityReason::kPrefetchStarted;
+};
+
+struct SearchPrefetchServingReasonRecorder {
+ public:
+  SearchPrefetchServingReasonRecorder() = default;
+  ~SearchPrefetchServingReasonRecorder() {
+    UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchPrefetch.PrefetchServingReason",
+                              reason_);
+  }
+
+  SearchPrefetchServingReason reason_ = SearchPrefetchServingReason::kServed;
+};
+
+void RecordFinalStatus(SearchPrefetchStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Omnibox.SearchPrefetch.PrefetchFinalStatus",
+                            status);
+}
+
 }  // namespace
 
 SearchPrefetchService::SearchPrefetchService(Profile* profile)
@@ -60,12 +89,16 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   if (!SearchPrefetchServicePrefetchingIsEnabled())
     return false;
 
+  SearchPrefetchEligibilityReasonRecorder recorder;
+
   if (!chrome_browser_net::CanPreresolveAndPreconnectUI(profile_->GetPrefs())) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
     return false;
   }
 
   if (!profile_->GetPrefs() ||
       !profile_->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kJavascriptDisabled;
     return false;
   }
 
@@ -74,14 +107,17 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   if (!content_settings ||
       content_settings->GetContentSetting(
           url, url, ContentSettingsType::JAVASCRIPT) == CONTENT_SETTING_BLOCK) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kJavascriptDisabled;
     return false;
   }
 
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   if (!template_url_service ||
-      !template_url_service->GetDefaultSearchProvider())
+      !template_url_service->GetDefaultSearchProvider()) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kSearchEngineNotValid;
     return false;
+  }
 
   // Lazily observe Template URL Service.
   if (!observer_.IsObserving()) {
@@ -105,19 +141,26 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
       url, template_url_service->search_terms_data(), &search_terms);
 
-  if (search_terms.size() == 0)
-    return false;
-
-  if (last_error_time_ticks_ + SearchPrefetchErrorBackoffDuration() >
-      base::TimeTicks::Now()) {
+  if (search_terms.size() == 0) {
+    recorder.reason_ =
+        SearchPrefetchEligibilityReason::kNotDefaultSearchWithTerms;
     return false;
   }
 
-  if (prefetches_.size() >= SearchPrefetchMaxAttemptsPerCachingDuration())
+  if (last_error_time_ticks_ + SearchPrefetchErrorBackoffDuration() >
+      base::TimeTicks::Now()) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kErrorBackoff;
     return false;
+  }
 
   // Don't prefetch the same search terms twice within the expiry duration.
   if (prefetches_.find(search_terms) != prefetches_.end()) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kAttemptedQueryRecently;
+    return false;
+  }
+
+  if (prefetches_.size() >= SearchPrefetchMaxAttemptsPerCachingDuration()) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kMaxAttemptsReached;
     return false;
   }
 
@@ -134,6 +177,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
 
   DCHECK(prefetch_request);
   if (!prefetch_request->StartPrefetchRequest(profile_)) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kThrottled;
     return false;
   }
 
@@ -184,15 +228,20 @@ SearchPrefetchService::GetSearchPrefetchStatusForTesting(
 
 std::unique_ptr<SearchPrefetchURLLoader>
 SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
+  SearchPrefetchServingReasonRecorder recorder;
+
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   if (!template_url_service ||
-      !template_url_service->GetDefaultSearchProvider())
+      !template_url_service->GetDefaultSearchProvider()) {
+    recorder.reason_ = SearchPrefetchServingReason::kSearchEngineNotValid;
     return nullptr;
+  }
 
   // The user may have disabled JS since the prefetch occured.
   if (!profile_->GetPrefs() ||
       !profile_->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
+    recorder.reason_ = SearchPrefetchServingReason::kJavascriptDisabled;
     return nullptr;
   }
 
@@ -201,6 +250,7 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   if (!content_settings ||
       content_settings->GetContentSetting(
           url, url, ContentSettingsType::JAVASCRIPT) == CONTENT_SETTING_BLOCK) {
+    recorder.reason_ = SearchPrefetchServingReason::kJavascriptDisabled;
     return nullptr;
   }
 
@@ -209,12 +259,14 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
       url, template_url_service->search_terms_data(), &search_terms);
 
   if (search_terms.length() == 0) {
+    recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
     return nullptr;
   }
 
   const auto& iter = prefetches_.find(search_terms);
 
   if (iter == prefetches_.end()) {
+    recorder.reason_ = SearchPrefetchServingReason::kNoPrefetch;
     return nullptr;
   }
 
@@ -224,22 +276,32 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   // another.
   if (url::Origin::Create(url) !=
       url::Origin::Create(iter->second->prefetch_url())) {
+    recorder.reason_ =
+        SearchPrefetchServingReason::kPrefetchWasForDifferentOrigin;
+    return nullptr;
+  }
+
+  if (iter->second->current_status() ==
+      SearchPrefetchStatus::kRequestCancelled) {
+    recorder.reason_ = SearchPrefetchServingReason::kRequestWasCancelled;
+    return nullptr;
+  }
+
+  if (iter->second->current_status() == SearchPrefetchStatus::kRequestFailed) {
+    recorder.reason_ = SearchPrefetchServingReason::kRequestFailed;
     return nullptr;
   }
 
   if (iter->second->current_status() != SearchPrefetchStatus::kComplete &&
       iter->second->current_status() !=
           SearchPrefetchStatus::kCanBeServedAndUserClicked) {
+    recorder.reason_ = SearchPrefetchServingReason::kNotServedOtherReason;
     return nullptr;
   }
 
   std::unique_ptr<SearchPrefetchURLLoader> response =
       iter->second->TakeSearchPrefetchURLLoader();
 
-  // TODO(ryansturm): For metrics reporting, the prefetch request data should be
-  // moved to the correct tab helper object, for now, the object can be deleted
-  // entirely. Alternatively, the object can remain here with a new timeout in
-  // a set of currently being served requests.
   DeletePrefetch(search_terms);
 
   return response;
@@ -254,6 +316,8 @@ void SearchPrefetchService::DeletePrefetch(base::string16 search_terms) {
   DCHECK(prefetches_.find(search_terms) != prefetches_.end());
   DCHECK(prefetch_expiry_timers_.find(search_terms) !=
          prefetch_expiry_timers_.end());
+
+  RecordFinalStatus(prefetches_[search_terms]->current_status());
 
   prefetches_.erase(search_terms);
   prefetch_expiry_timers_.erase(search_terms);

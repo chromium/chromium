@@ -66303,6 +66303,42 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="From omnibox"/>
 </enum>
 
+<enum name="SearchPrefetchEligibilityReason">
+  <int value="0" label="Prefetch started"/>
+  <int value="1" label="User disabled prefetch/preconnect"/>
+  <int value="2" label="User disabled Javascript"/>
+  <int value="3" label="Search engine not set"/>
+  <int value="4" label="Navigation URL was not a default search URL"/>
+  <int value="5" label="Recent network error"/>
+  <int value="6" label="Duplicate prefetch request"/>
+  <int value="7" label="Too many recent prefetches"/>
+  <int value="8" label="Throttle prevented the prefetch"/>
+</enum>
+
+<enum name="SearchPrefetchFinalStatus">
+  <int value="0" label="Not started"/>
+  <int value="1" label="In flight"/>
+  <int value="2" label="Headers received (for streaming responses)"/>
+  <int value="3"
+      label="Headers received and user navigated to search terms (for
+             streaming responses)"/>
+  <int value="4" label="Completed the prefetch"/>
+  <int value="5" label="Request failed"/>
+  <int value="6" label="Request cancelled"/>
+</enum>
+
+<enum name="SearchPrefetchServingReason">
+  <int value="0" label="Served a prefetch response"/>
+  <int value="1" label="Search engine not set"/>
+  <int value="2" label="User disabled Javascript"/>
+  <int value="3" label="Navigation URL was not a default search URL"/>
+  <int value="4" label="No prefetch issued for the search terms"/>
+  <int value="5" label="Prefetch was for a different origin"/>
+  <int value="6" label="Prefetch request was cancelled"/>
+  <int value="7" label="Prefetch request failed"/>
+  <int value="8" label="Another reason (unexpected)"/>
+</enum>
+
 <enum name="SearchTemplateURLEvent">
   <summary>
     Events within the TemplateURL system we log, i.e. edge cases.
