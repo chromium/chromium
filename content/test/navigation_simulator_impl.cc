@@ -1310,14 +1310,23 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
       request_ ? request_->commit_params().intended_as_new_entry : false;
   params->method = request_ ? request_->common_params().method : "GET";
 
+  RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
+
   if (failed_navigation) {
     // Note: Error pages must commit in a unique origin. So it is left unset.
     params->url_is_unreachable = true;
   } else {
-    params->origin = origin_.value_or(url::Origin::Create(navigation_url_));
     params->redirects.push_back(navigation_url_);
     params->http_status_code = 200;
     params->should_update_history = true;
+    if (same_document) {
+      params->sandbox_flags = current_rfh->active_sandbox_flags();
+      params->origin = current_rfh->GetLastCommittedOrigin();
+    } else {
+      params->sandbox_flags = request_->SandboxFlagsToCommit();
+      params->origin =
+          origin_.value_or(request_->GetOriginForURLLoaderFactory());
+    }
   }
 
   CHECK(same_document || request_);
