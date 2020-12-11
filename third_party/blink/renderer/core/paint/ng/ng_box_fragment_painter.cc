@@ -1677,19 +1677,7 @@ void NGBoxFragmentPainter::PaintAtomicInlineChild(const NGPaintFragment& child,
 void NGBoxFragmentPainter::PaintTextChild(const NGPaintFragment& paint_fragment,
                                           const PaintInfo& paint_info,
                                           const PhysicalOffset& paint_offset) {
-  // Inline blocks should be painted by PaintAtomicInlineChild.
-  DCHECK(!paint_fragment.PhysicalFragment().IsAtomicInline());
-
-  // Only paint during the foreground/selection phases.
-  if (paint_info.phase != PaintPhase::kForeground &&
-      paint_info.phase != PaintPhase::kSelectionDragImage &&
-      paint_info.phase != PaintPhase::kTextClip &&
-      paint_info.phase != PaintPhase::kMask)
-    return;
-
-  NGTextPainterCursor cursor(paint_fragment);
-  NGTextFragmentPainter<NGTextPainterCursor> text_painter(cursor);
-  text_painter.Paint(paint_info, paint_offset);
+  NOTREACHED();
 }
 
 void NGBoxFragmentPainter::PaintTextItem(const NGInlineCursor& cursor,
@@ -1717,7 +1705,7 @@ void NGBoxFragmentPainter::PaintTextItem(const NGInlineCursor& cursor,
 
   ScopedDisplayItemFragment display_item_fragment(paint_info.context,
                                                   item.FragmentId());
-  NGTextFragmentPainter<NGInlineCursor> text_painter(cursor, parent_offset);
+  NGTextFragmentPainter text_painter(cursor, parent_offset);
   text_painter.Paint(paint_info, paint_offset);
 }
 
