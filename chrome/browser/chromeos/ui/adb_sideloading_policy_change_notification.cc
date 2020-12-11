@@ -42,10 +42,10 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
   bool pinned = false;
   std::vector<message_center::ButtonInfo> notification_actions;
 
-  auto enterprise_display_domain =
+  auto enterprise_manager =
       base::UTF8ToUTF16(g_browser_process->platform_part()
                             ->browser_policy_connector_chromeos()
-                            ->GetEnterpriseDisplayDomain());
+                            ->GetEnterpriseDomainManager());
   base::string16 device_type = ui::GetChromeOSDeviceName();
 
   switch (type) {
@@ -57,7 +57,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           IDS_ADB_SIDELOADING_POLICY_CHANGE_SIDELOADING_DISALLOWED_NOTIFICATION_TITLE);
       text = l10n_util::GetStringFUTF16(
           IDS_ADB_SIDELOADING_POLICY_CHANGE_SIDELOADING_DISALLOWED_NOTIFICATION_MESSAGE,
-          enterprise_display_domain, device_type);
+          enterprise_manager, device_type);
       notification_id = kAdbSideloadingDisallowedNotificationId;
       break;
     case Type::kPowerwashPlanned:
@@ -66,7 +66,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           device_type);
       text = l10n_util::GetStringFUTF16(
           IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_PLANNED_NOTIFICATION_MESSAGE,
-          enterprise_display_domain, device_type);
+          enterprise_manager, device_type);
       notification_id = kAdbSideloadingPowerwashPlannedNotificationId;
       break;
     case Type::kPowerwashOnNextReboot:
@@ -75,7 +75,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
           device_type);
       text = l10n_util::GetStringFUTF16(
           IDS_ADB_SIDELOADING_POLICY_CHANGE_POWERWASH_ON_REBOOT_NOTIFICATION_MESSAGE,
-          enterprise_display_domain, device_type);
+          enterprise_manager, device_type);
       notification_id = kAdbSideloadingPowerwashOnRebootNotificationId;
       pinned = true;
       notification_actions.push_back(
