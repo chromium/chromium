@@ -1462,10 +1462,10 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(0u, dropped_counter.total_main_dropped());
   EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
 
-  // Now skip over a 200 frames (100 skipped frames should be added)
+  // Now skip over a 101 frames (It should be ignored as it more than 100)
   // and submit + present another frame.
-  const uint32_t kSkipFrames = 200;
-  const uint32_t kSkipFramesActual = std::min(kSkipFrames, 100u);
+  const uint32_t kSkipFrames = 101;
+  const uint32_t kSkipFramesActual = 0;
   for (uint32_t i = 0; i < kSkipFrames; ++i)
     IncrementCurrentId();
   SimulatePresentCompositorFrame();
