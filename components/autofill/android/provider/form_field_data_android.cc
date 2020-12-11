@@ -52,13 +52,10 @@ ScopedJavaLocalRef<jobject> FormFieldDataAndroid::GetJavaPeer() {
           ConvertUTF8ToJavaString(env, heuristic_type_.ToString());
     }
     ScopedJavaLocalRef<jstring> jserver_type;
-    if (!server_type_.IsUnknown()) {
-      jserver_type = ConvertUTF8ToJavaString(env, server_type_.ToString());
-    }
+    jserver_type = ConvertUTF8ToJavaString(env, server_type_.ToString());
     ScopedJavaLocalRef<jstring> jcomputed_type;
-    if (!computed_type_.IsUnknown()) {
-      jcomputed_type = ConvertUTF8ToJavaString(env, computed_type_.ToString());
-    }
+    jcomputed_type = ConvertUTF8ToJavaString(env, computed_type_.ToString());
+
     ScopedJavaLocalRef<jobjectArray> jdatalist_values =
         ToJavaArrayOfStrings(env, field_ptr_->datalist_values);
     ScopedJavaLocalRef<jobjectArray> jdatalist_labels =
@@ -120,6 +117,20 @@ void FormFieldDataAndroid::UpdateAutofillTypes(
   heuristic_type_ = heuristic_type;
   server_type_ = server_type;
   computed_type_ = computed_type;
+
+  // Java peer isn't available when this object is instantiated, update to
+  // Java peer if the prediction arrives later.
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null())
+    return;
+
+  ScopedJavaLocalRef<jstring> jserver_type;
+  jserver_type = ConvertUTF8ToJavaString(env, server_type_.ToString());
+  ScopedJavaLocalRef<jstring> jcomputed_type;
+  jcomputed_type = ConvertUTF8ToJavaString(env, computed_type_.ToString());
+
+  Java_FormFieldData_updateFieldTypes(env, obj, jserver_type, jcomputed_type);
 }
 
 }  // namespace autofill

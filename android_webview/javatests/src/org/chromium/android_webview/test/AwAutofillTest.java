@@ -94,6 +94,7 @@ public class AwAutofillTest {
     public static final int AUTOFILL_COMMIT = 4;
     public static final int AUTOFILL_CANCEL = 5;
     public static final int AUTOFILL_SESSION_STARTED = 6;
+    public static final int AUTOFILL_QUERY_DONE = 7;
 
     /**
      * This class only implements the necessary methods of ViewStructure for testing.
@@ -470,6 +471,7 @@ public class AwAutofillTest {
 
     private class TestAutofillManagerWrapper extends AutofillManagerWrapper {
         private boolean mDisabled;
+        private boolean mQuerySucceed;
 
         public TestAutofillManagerWrapper(Context context) {
             super(context);
@@ -484,6 +486,9 @@ public class AwAutofillTest {
             return mDisabled;
         }
 
+        public boolean isQuerySucceed() {
+            return mQuerySucceed;
+        }
         @Override
         public void notifyVirtualViewEntered(View parent, int childId, Rect absBounds) {
             if (DEBUG) Log.i(TAG, "notifyVirtualViewEntered");
@@ -528,6 +533,14 @@ public class AwAutofillTest {
         public void notifyNewSessionStarted() {
             if (DEBUG) Log.i(TAG, "notifyNewSessionStarted");
             mEventQueue.add(AUTOFILL_SESSION_STARTED);
+            mCallbackHelper.notifyCalled();
+        }
+
+        @Override
+        public void onQueryDone(boolean success) {
+            mQuerySucceed = success;
+            if (DEBUG) Log.i(TAG, "onQueryDone " + success);
+            mEventQueue.add(AUTOFILL_QUERY_DONE);
             mCallbackHelper.notifyCalled();
         }
     }
@@ -2133,7 +2146,18 @@ public class AwAutofillTest {
         assertEquals("NO_SERVER_DATA",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
 
-        // TODO(crbug.com/1151542): Complete the test once the prediction update is implemented.
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> AutofillProviderTestHelper
+                                   .simulateMainFrameAutofillServerResponseForTesting(
+                                           mAwContents.getWebContents(),
+                                           new String[] {"text1", "text2"},
+                                           new int[] {/*EMAIL_ADDRESS, USERNAME*/ 9, 86}));
+
+        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_QUERY_DONE});
+        assertTrue(mTestAutofillManagerWrapper.isQuerySucceed());
+
+        // TODO(crbug.com/1151542): Verify the field types once they are sent from service.
     }
 
     private void pollJavascriptResult(String script, String expectedResult) throws Throwable {

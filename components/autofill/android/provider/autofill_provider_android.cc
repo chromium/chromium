@@ -358,6 +358,20 @@ void AutofillProviderAndroid::OnHidePopup(AutofillHandlerProxy* handler) {
 void AutofillProviderAndroid::OnServerPredictionsAvailable(
     AutofillHandlerProxy* handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (handler != handler_.get() || !form_.get())
+    return;
+
+  if (auto* form_structure = handler_->FindCachedFormByRendererId(
+          form_->form().unique_renderer_id)) {
+    form_->UpdateFieldTypes(*form_structure);
+
+    JNIEnv* env = AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+    if (obj.is_null())
+      return;
+
+    Java_AutofillProvider_onQueryDone(env, obj, /*success=*/true);
+  }
 }
 
 void AutofillProviderAndroid::Reset(AutofillHandlerProxy* handler) {

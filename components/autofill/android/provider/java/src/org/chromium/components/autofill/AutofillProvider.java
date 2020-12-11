@@ -709,6 +709,11 @@ public class AutofillProvider {
         forceNotifyFormValues();
     }
 
+    @CalledByNative
+    private void onQueryDone(boolean success) {
+        mAutofillManager.onQueryDone(success);
+    }
+
     private void forceNotifyFormValues() {
         if (mRequest == null) return;
         for (int i = 0; i < mRequest.getFieldCount(); ++i) {

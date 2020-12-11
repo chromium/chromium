@@ -170,6 +170,10 @@ public class AutofillManagerWrapper {
         if (isLoggable()) log("Session starts");
     }
 
+    public void onQueryDone(boolean success) {
+        if (isLoggable()) log("Query " + (success ? "succeed" : "failed"));
+    }
+
     /**
      * Always check isLoggable() before call this method.
      */

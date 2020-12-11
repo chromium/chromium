@@ -144,6 +144,12 @@ public class FormFieldData {
         updateAutofillState(false);
     }
 
+    @CalledByNative
+    private void updateFieldTypes(String serverType, String computedType) {
+        mServerType = serverType;
+        mComputedType = computedType;
+    }
+
     public String getServerType() {
         return mServerType;
     }

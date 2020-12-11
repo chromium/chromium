@@ -146,6 +146,10 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
                              FormStructure** form_structure,
                              AutofillField** autofill_field) WARN_UNUSED_RESULT;
 
+  // Returns nullptr if no cached form structure is found with a matching
+  // |renderer_id|. Runs in logarithmic time.
+  FormStructure* FindCachedFormByRendererId(FormRendererId renderer_id) const;
+
   // Returns the number of forms this Autofill handler is aware of.
   size_t NumFormsDetected() const { return form_structures_.size(); }
 
@@ -259,10 +263,6 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   size_t FindCachedFormsBySignature(
       FormSignature form_signature,
       std::vector<FormStructure*>* form_structures) const;
-
-  // Returns nullptr if no cached form structure is found with a matching
-  // |renderer_id|. Runs in logarithmic time.
-  FormStructure* FindCachedFormByRendererId(FormRendererId renderer_id) const;
 
   // Parses the |form| with the server data retrieved from the |cached_form|
   // (if any). Returns nullptr if the form should not be parsed. Otherwise, adds
