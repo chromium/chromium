@@ -5875,4 +5875,7 @@ crbug.com/1024752 http/tests/devtools/sources/inline-styles-scripts-locations.js
 # Sheriff 2020-12-11
 # Flaking on Linux Trusty
 crbug.com/1157849 [ Linux Release ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Pass Timeout ]
-crbug.com/1157849 [ Mac10.14 ] virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html [ Pass Timeout ]
+crbug.com/1157857 [ Mac10.14 ] virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html [ Pass Timeout ]
+crbug.com/1157861 http/tests/devtools/a11y-axe-core/sources/javascript-breakpoints-a11y-test.js [ Pass Failure ]
+crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Pass Failure ]
+crbug.com/1157861 [ Mac10.13 ] http/tests/devtools/console/paintworklet-console-selector.js [ Pass Failure ]
