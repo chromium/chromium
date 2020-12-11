@@ -222,7 +222,8 @@ class UkmPageLoadMetricsObserver
   base::Optional<net::LoadTimingInfo> main_frame_timing_;
 
   // How the SiteInstance for the committed page was assigned a renderer.
-  content::SiteInstanceProcessAssignment render_process_assignment_;
+  base::Optional<content::SiteInstanceProcessAssignment>
+      render_process_assignment_;
 
   // PAGE_TRANSITION_LINK is the default PageTransition value.
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;

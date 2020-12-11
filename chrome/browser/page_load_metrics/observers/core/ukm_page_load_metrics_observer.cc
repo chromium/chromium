@@ -757,9 +757,6 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
         foreground_duration.value().InMilliseconds());
   }
 
-  builder.SetSiteInstanceRenderProcessAssignment(
-      SiteInstanceRenderProcessAssignmentToInt(render_process_assignment_));
-
   // Convert to the EffectiveConnectionType as used in SystemProfileProto
   // before persisting the metric.
   metrics::SystemProfileProto::Network::EffectiveConnectionType
@@ -803,8 +800,11 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
 void UkmPageLoadMetricsObserver::RecordRendererUsageMetrics() {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
 
-  builder.SetSiteInstanceRenderProcessAssignment(
-      SiteInstanceRenderProcessAssignmentToInt(render_process_assignment_));
+  if (render_process_assignment_) {
+    builder.SetSiteInstanceRenderProcessAssignment(
+        SiteInstanceRenderProcessAssignmentToInt(
+            render_process_assignment_.value()));
+  }
 
   builder.Record(ukm::UkmRecorder::Get());
 }
