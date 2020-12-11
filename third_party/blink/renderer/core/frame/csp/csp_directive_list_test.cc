@@ -137,8 +137,8 @@ TEST_F(CSPDirectiveListTest, IsMatchingNoncePresent) {
     // Report-only
     Member<CSPDirectiveList> directive_list =
         CreateList(test.list, ContentSecurityPolicyType::kReport);
-    Member<SourceListDirective> directive =
-        directive_list->OperativeDirective(test.type);
+    const network::mojom::blink::CSPSourceList* directive =
+        directive_list->OperativeDirective(test.type).source_list;
     EXPECT_EQ(test.expected,
               directive_list->IsMatchingNoncePresent(directive, test.nonce));
     // Empty/null strings are always not present, regardless of the policy.
@@ -147,7 +147,7 @@ TEST_F(CSPDirectiveListTest, IsMatchingNoncePresent) {
 
     // Enforce
     directive_list = CreateList(test.list, ContentSecurityPolicyType::kEnforce);
-    directive = directive_list->OperativeDirective(test.type);
+    directive = directive_list->OperativeDirective(test.type).source_list;
     EXPECT_EQ(test.expected,
               directive_list->IsMatchingNoncePresent(directive, test.nonce));
     // Empty/null strings are always not present, regardless of the policy.
@@ -599,7 +599,7 @@ TEST_F(CSPDirectiveListTest, OperativeDirectiveGivenType) {
   for (auto& test : cases) {
     // With an empty directive list the returned directive should always be
     // null.
-    EXPECT_FALSE(empty->OperativeDirective(test.directive));
+    EXPECT_FALSE(empty->OperativeDirective(test.directive).source_list);
 
     // Add the directive itself as it should be the first one to be returned.
     test.fallback_list.push_front(test.directive);
@@ -611,16 +611,14 @@ TEST_F(CSPDirectiveListTest, OperativeDirectiveGivenType) {
       directive_list = CreateList(directive_string.c_str(),
                                   ContentSecurityPolicyType::kEnforce);
 
-      CSPDirective* operative_directive =
+      CSPOperativeDirective operative_directive =
           directive_list->OperativeDirective(test.directive);
 
       // We should have an actual directive returned here.
-      EXPECT_TRUE(operative_directive);
+      EXPECT_TRUE(operative_directive.source_list);
 
       // The OperativeDirective should be first one in the fallback chain.
-      EXPECT_EQ(test.fallback_list.front(),
-                ContentSecurityPolicy::GetDirectiveType(
-                    operative_directive->GetName()));
+      EXPECT_EQ(test.fallback_list.front(), operative_directive.type);
 
       // Remove the first directive in the fallback chain from the directive
       // list and continue by testing that the next one is returned until we
@@ -643,7 +641,8 @@ TEST_F(CSPDirectiveListTest, OperativeDirectiveGivenType) {
     // the fallback chain that is returned.
     directive_list = CreateList(directive_string.c_str(),
                                 ContentSecurityPolicyType::kEnforce);
-    EXPECT_FALSE(directive_list->OperativeDirective(test.directive));
+    EXPECT_FALSE(
+        directive_list->OperativeDirective(test.directive).source_list);
   }
 }
 

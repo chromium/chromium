@@ -64,14 +64,15 @@ struct CSPSource {
 };
 
 enum CSPHashAlgorithm {
-  SHA256,
-  SHA384,
-  SHA512,
+  None = 0,
+  SHA256 = 1,
+  SHA384 = 2,
+  SHA512 = 4,
 };
 
 struct CSPHashSource {
   CSPHashAlgorithm algorithm;
-  string value;
+  array<uint8> value;
 };
 
 struct CSPSourceList {

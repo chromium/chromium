@@ -1273,25 +1273,16 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "",
       },
       {
-          "'sha256-abc' 'sha256-ABC' 'sha256 'sha256-' 'sha384-abc' "
-          "'sha512-abc' 'sha-abc' 'sha256-*' 'sha-256-cde' 'sha-384-cde' "
-          "'sha-512-cde'",
+          "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD'",
           base::Bind([] {
             auto csp = mojom::CSPSourceList::New();
-            csp->hashes.push_back(mojom::CSPHashSource::New(
-                mojom::CSPHashAlgorithm::SHA256, "abc"));
-            csp->hashes.push_back(mojom::CSPHashSource::New(
-                mojom::CSPHashAlgorithm::SHA256, "ABC"));
-            csp->hashes.push_back(mojom::CSPHashSource::New(
-                mojom::CSPHashAlgorithm::SHA384, "abc"));
-            csp->hashes.push_back(mojom::CSPHashSource::New(
-                mojom::CSPHashAlgorithm::SHA512, "abc"));
-            csp->hashes.push_back(mojom::CSPHashSource::New(
-                mojom::CSPHashAlgorithm::SHA256, "cde"));
-            csp->hashes.push_back(mojom::CSPHashSource::New(
-                mojom::CSPHashAlgorithm::SHA384, "cde"));
-            csp->hashes.push_back(mojom::CSPHashSource::New(
-                mojom::CSPHashAlgorithm::SHA512, "cde"));
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::CSPHashAlgorithm::SHA256,
+                                          std::vector<uint8_t>{'a', 'b', 'c'}));
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::CSPHashAlgorithm::SHA256,
+                                          std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->nonces.push_back("cde");
             return csp;
           }),
           "",
@@ -1423,6 +1414,58 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
 
     if (!test.expected_error.empty())
       EXPECT_EQ(test.expected_error, policies[0]->parsing_errors[0]);
+  }
+}
+
+TEST(ContentSecurityPolicy, ParseHash) {
+  using Algo = mojom::CSPHashAlgorithm;
+  struct TestCase {
+    std::string hash;
+    Algo expected_algorithm;
+    std::vector<uint8_t> expected_hash;
+  } cases[] = {
+      // For this test, we have the following base64 encoding:
+      // abc => YWJj    ABC => QUJD    cd => Y2Q=    abcd => YWJjZA==
+      // We also test base64 without padding.
+      {"'sha256-YWJj'", Algo::SHA256, {'a', 'b', 'c'}},
+      {"'sha256-QUJD'", Algo::SHA256, {'A', 'B', 'C'}},
+      {"'sha256", Algo::None, {}},
+      {"'sha256-'", Algo::None, {}},
+      {"'sha384-YWJj'", Algo::SHA384, {'a', 'b', 'c'}},
+      {"'sha512-YWJjZA'", Algo::SHA512, {'a', 'b', 'c', 'd'}},
+      {"'sha-YWJj'", Algo::None, {}},
+      {"'sha256-*'", Algo::None, {}},
+      {"'sha-256-Y2Q'", Algo::SHA256, {'c', 'd'}},
+      {"'sha-384-Y2Q='", Algo::SHA384, {'c', 'd'}},
+      {"'sha-512-Y2Q='", Algo::SHA512, {'c', 'd'}},
+      // "ABCDE" is not valid base64 and should be ignored.
+      {"'sha256-ABCDE'", Algo::None, {}},
+      {"'sha256--__'", Algo::SHA256, {0xfb, 0xff}},
+      {"'sha256-++/'", Algo::SHA256, {0xfb, 0xef}},
+      // Other invalid hashes should be ignored.
+      {"'sha256-YWJj", Algo::None, {}},
+      {"'sha111-YWJj'", Algo::None, {}},
+      {"'sha256-ABC('", Algo::None, {}},
+  };
+
+  for (auto& test : cases) {
+    scoped_refptr<net::HttpResponseHeaders> headers(
+        new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+    headers->SetHeader("Content-Security-Policy", "script-src " + test.hash);
+    std::vector<mojom::ContentSecurityPolicyPtr> policies;
+    AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
+                                        &policies);
+    const std::vector<mojom::CSPHashSourcePtr>& hashes =
+        policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]->hashes;
+    if (test.expected_algorithm != Algo::None) {
+      EXPECT_EQ(1u, hashes.size()) << test.hash << " should parse to one hash";
+      EXPECT_EQ(test.expected_algorithm, hashes[0]->algorithm)
+          << test.hash << " should have algorithm " << test.expected_algorithm;
+      EXPECT_EQ(test.expected_hash, hashes[0]->value)
+          << test.hash << " has not been base64decoded correctly";
+    } else {
+      EXPECT_TRUE(hashes.empty()) << test.hash << " should be an invalid hash";
+    }
   }
 }
 

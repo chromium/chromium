@@ -38,22 +38,6 @@ class SourceListDirectiveTest : public testing::Test {
     csp->BindToDelegate(context->GetContentSecurityPolicyDelegate());
   }
 
-  ContentSecurityPolicy* SetUpWithOrigin(const String& origin) {
-    KURL secure_url(origin);
-    auto* context = MakeGarbageCollected<NullExecutionContext>();
-    context->GetSecurityContext().SetSecurityOrigin(
-        SecurityOrigin::Create(secure_url));
-    auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-    csp->BindToDelegate(context->GetContentSecurityPolicyDelegate());
-    return csp;
-  }
-
-  bool EqualSources(const Source& a, const Source& b) {
-    return a.scheme == b.scheme && a.host == b.host && a.port == b.port &&
-           a.path == b.path && a.host_wildcard == b.host_wildcard &&
-           a.port_wildcard == b.port_wildcard;
-  }
-
   Persistent<ContentSecurityPolicy> csp;
   Persistent<ExecutionContext> context;
 };
@@ -61,163 +45,242 @@ class SourceListDirectiveTest : public testing::Test {
 TEST_F(SourceListDirectiveTest, BasicMatchingNone) {
   KURL base;
   String sources = "'none'";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
+  ASSERT_TRUE(source_list);
 
-  EXPECT_FALSE(source_list.Allows(KURL(base, "http://example.com/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "https://example.test/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "http://example.com/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "https://example.test/")));
 }
 
 TEST_F(SourceListDirectiveTest, BasicMatchingStrictDynamic) {
   String sources = "'strict-dynamic'";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
 
-  EXPECT_TRUE(source_list.AllowDynamic());
+  EXPECT_TRUE(source_list->allow_dynamic);
 }
 
 TEST_F(SourceListDirectiveTest, BasicMatchingUnsafeHashes) {
   String sources = "'unsafe-hashes'";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
 
-  EXPECT_TRUE(source_list.AllowUnsafeHashes());
+  EXPECT_TRUE(source_list->allow_unsafe_hashes);
 }
 
 TEST_F(SourceListDirectiveTest, BasicMatchingStar) {
   KURL base;
   String sources = "*";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
 
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://example.com/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://example.com/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://example.com/bar")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://foo.example.com/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://foo.example.com/bar")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "ftp://example.com/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://example.com/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "https://example.com/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://example.com/bar")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://foo.example.com/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://foo.example.com/bar")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "ftp://example.com/")));
 
-  EXPECT_FALSE(source_list.Allows(KURL(base, "data:https://example.test/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "blob:https://example.test/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "data:https://example.test/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "blob:https://example.test/")));
   EXPECT_FALSE(
-      source_list.Allows(KURL(base, "filesystem:https://example.test/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "file:///etc/hosts")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "applewebdata://example.test/")));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "filesystem:https://example.test/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "file:///etc/hosts")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "applewebdata://example.test/")));
 }
 
 TEST_F(SourceListDirectiveTest, StarallowsSelf) {
   KURL base;
   String sources = "*";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
 
   // With a protocol of 'file', '*' allows 'file:':
   scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::CreateFromValidTuple("file", "", 0);
   csp->SetupSelf(*origin);
-  EXPECT_TRUE(source_list.Allows(KURL(base, "file:///etc/hosts")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "file:///etc/hosts")));
 
   // The other results are the same as above:
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://example.com/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://example.com/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://example.com/bar")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://foo.example.com/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://foo.example.com/bar")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://example.com/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "https://example.com/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://example.com/bar")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://foo.example.com/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://foo.example.com/bar")));
 
-  EXPECT_FALSE(source_list.Allows(KURL(base, "data:https://example.test/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "blob:https://example.test/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "data:https://example.test/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "blob:https://example.test/")));
   EXPECT_FALSE(
-      source_list.Allows(KURL(base, "filesystem:https://example.test/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "applewebdata://example.test/")));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "filesystem:https://example.test/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "applewebdata://example.test/")));
 }
 
 TEST_F(SourceListDirectiveTest, BasicMatchingSelf) {
   KURL base;
   String sources = "'self'";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
 
-  EXPECT_FALSE(source_list.Allows(KURL(base, "http://example.com/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "https://not-example.com/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://example.test/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "http://example.com/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "https://not-example.com/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "https://example.test/")));
 }
 
 TEST_F(SourceListDirectiveTest, BlobMatchingBlob) {
   KURL base;
   String sources = "blob:";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
 
-  EXPECT_FALSE(source_list.Allows(KURL(base, "https://example.test/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "blob:https://example.test/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "https://example.test/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "blob:https://example.test/")));
 }
 
 TEST_F(SourceListDirectiveTest, BasicMatching) {
   KURL base;
   String sources = "http://example1.com:8000/foo/ https://example2.com/";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
 
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://example1.com:8000/foo/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://example1.com:8000/foo/")));
   EXPECT_TRUE(
-      source_list.Allows(KURL(base, "http://example1.com:8000/foo/bar")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://example2.com/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://example2.com/foo/")));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "http://example1.com:8000/foo/bar")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "https://example2.com/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "https://example2.com/foo/")));
 
-  EXPECT_FALSE(source_list.Allows(KURL(base, "https://not-example.com/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "http://example1.com/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "https://example1.com/foo")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "http://example1.com:9000/foo/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "http://example1.com:8000/FOO/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "https://not-example.com/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "http://example1.com/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "https://example1.com/foo")));
+  EXPECT_FALSE(
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "http://example1.com:9000/foo/")));
+  EXPECT_FALSE(
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "http://example1.com:8000/FOO/")));
 }
 
 TEST_F(SourceListDirectiveTest, WildcardMatching) {
   KURL base;
   String sources =
       "http://example1.com:*/foo/ https://*.example2.com/bar/ http://*.test/";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
 
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://example1.com/foo/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://example1.com:8000/foo/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://example1.com:9000/foo/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://foo.example2.com/bar/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://foo.test/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "http://foo.bar.test/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://example1.com/foo/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://example1.com:8000/foo/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://example1.com:9000/foo/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://foo.test/")));
-  EXPECT_TRUE(source_list.Allows(KURL(base, "https://foo.bar.test/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://example1.com/foo/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://example1.com:8000/foo/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://example1.com:9000/foo/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "https://foo.example2.com/bar/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://foo.test/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "http://foo.bar.test/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "https://example1.com/foo/")));
+  EXPECT_TRUE(
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "https://example1.com:8000/foo/")));
+  EXPECT_TRUE(
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "https://example1.com:9000/foo/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "https://foo.test/")));
+  EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                  KURL(base, "https://foo.bar.test/")));
 
-  EXPECT_FALSE(source_list.Allows(KURL(base, "https://example1.com:8000/foo")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "https://example2.com:8000/bar")));
   EXPECT_FALSE(
-      source_list.Allows(KURL(base, "https://foo.example2.com:8000/bar")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "https://example2.foo.com/bar")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "http://foo.test.bar/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "https://example2.com/bar/")));
-  EXPECT_FALSE(source_list.Allows(KURL(base, "http://test/")));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "https://example1.com:8000/foo")));
+  EXPECT_FALSE(
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "https://example2.com:8000/bar")));
+  EXPECT_FALSE(
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "https://foo.example2.com:8000/bar")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "https://example2.foo.com/bar")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "http://foo.test.bar/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "https://example2.com/bar/")));
+  EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                   KURL(base, "http://test/")));
 }
 
 TEST_F(SourceListDirectiveTest, RedirectMatching) {
   KURL base;
   String sources = "http://example1.com/foo/ http://example2.com/bar/";
-  SourceListDirective source_list("script-src", sources, csp.Get());
+  network::mojom::blink::CSPSourceListPtr source_list =
+      CSPSourceListParse("script-src", sources, csp.Get());
 
   EXPECT_TRUE(
-      source_list.Allows(KURL(base, "http://example1.com/foo/"),
-                         ResourceRequest::RedirectStatus::kFollowedRedirect));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "http://example1.com/foo/"),
+                          ResourceRequest::RedirectStatus::kFollowedRedirect));
   EXPECT_TRUE(
-      source_list.Allows(KURL(base, "http://example1.com/bar/"),
-                         ResourceRequest::RedirectStatus::kFollowedRedirect));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "http://example1.com/bar/"),
+                          ResourceRequest::RedirectStatus::kFollowedRedirect));
   EXPECT_TRUE(
-      source_list.Allows(KURL(base, "http://example2.com/bar/"),
-                         ResourceRequest::RedirectStatus::kFollowedRedirect));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "http://example2.com/bar/"),
+                          ResourceRequest::RedirectStatus::kFollowedRedirect));
   EXPECT_TRUE(
-      source_list.Allows(KURL(base, "http://example2.com/foo/"),
-                         ResourceRequest::RedirectStatus::kFollowedRedirect));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "http://example2.com/foo/"),
+                          ResourceRequest::RedirectStatus::kFollowedRedirect));
   EXPECT_TRUE(
-      source_list.Allows(KURL(base, "https://example1.com/foo/"),
-                         ResourceRequest::RedirectStatus::kFollowedRedirect));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "https://example1.com/foo/"),
+                          ResourceRequest::RedirectStatus::kFollowedRedirect));
   EXPECT_TRUE(
-      source_list.Allows(KURL(base, "https://example1.com/bar/"),
-                         ResourceRequest::RedirectStatus::kFollowedRedirect));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "https://example1.com/bar/"),
+                          ResourceRequest::RedirectStatus::kFollowedRedirect));
 
   EXPECT_FALSE(
-      source_list.Allows(KURL(base, "http://example3.com/foo/"),
-                         ResourceRequest::RedirectStatus::kFollowedRedirect));
+      CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                          KURL(base, "http://example3.com/foo/"),
+                          ResourceRequest::RedirectStatus::kFollowedRedirect));
 }
 
 TEST_F(SourceListDirectiveTest, AllowAllInline) {
@@ -256,24 +319,35 @@ TEST_F(SourceListDirectiveTest, AllowAllInline) {
   };
 
   // Script-src and style-src differently handle presence of 'strict-dynamic'.
-  SourceListDirective script_src("script-src",
-                                 "'strict-dynamic' 'unsafe-inline'", csp.Get());
-  EXPECT_FALSE(script_src.AllowAllInline());
+  network::mojom::blink::CSPSourceListPtr script_src = CSPSourceListParse(
+      "script-src", "'strict-dynamic' 'unsafe-inline'", csp.Get());
+  EXPECT_FALSE(CSPSourceListAllowAllInline(
+      ContentSecurityPolicy::DirectiveType::kScriptSrc, *script_src));
 
-  SourceListDirective style_src("style-src", "'strict-dynamic' 'unsafe-inline'",
-                                csp.Get());
-  EXPECT_TRUE(style_src.AllowAllInline());
+  network::mojom::blink::CSPSourceListPtr style_src = CSPSourceListParse(
+      "style-src", "'strict-dynamic' 'unsafe-inline'", csp.Get());
+  EXPECT_TRUE(CSPSourceListAllowAllInline(
+      ContentSecurityPolicy::DirectiveType::kStyleSrc, *style_src));
 
   for (const auto& test : cases) {
-    SourceListDirective script_src("script-src", test.sources, csp.Get());
-    EXPECT_EQ(script_src.AllowAllInline(), test.expected);
+    network::mojom::blink::CSPSourceListPtr script_src =
+        CSPSourceListParse("script-src", test.sources, csp.Get());
+    EXPECT_EQ(
+        CSPSourceListAllowAllInline(
+            ContentSecurityPolicy::DirectiveType::kScriptSrc, *script_src),
+        test.expected);
 
-    SourceListDirective style_src("style-src", test.sources, csp.Get());
-    EXPECT_EQ(style_src.AllowAllInline(), test.expected);
+    network::mojom::blink::CSPSourceListPtr style_src =
+        CSPSourceListParse("style-src", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListAllowAllInline(
+                  ContentSecurityPolicy::DirectiveType::kStyleSrc, *style_src),
+              test.expected);
 
     // If source list doesn't have a valid type, it must not allow all inline.
-    SourceListDirective img_src("img-src", test.sources, csp.Get());
-    EXPECT_FALSE(img_src.AllowAllInline());
+    network::mojom::blink::CSPSourceListPtr img_src =
+        CSPSourceListParse("img-src", test.sources, csp.Get());
+    EXPECT_FALSE(CSPSourceListAllowAllInline(
+        ContentSecurityPolicy::DirectiveType::kImgSrc, *img_src));
   }
 }
 
@@ -305,14 +379,17 @@ TEST_F(SourceListDirectiveTest, IsNone) {
 
   for (const auto& test : cases) {
     SCOPED_TRACE(test.sources);
-    SourceListDirective script_src("script-src", test.sources, csp.Get());
-    EXPECT_EQ(script_src.IsNone(), test.expected);
+    network::mojom::blink::CSPSourceListPtr script_src =
+        CSPSourceListParse("script-src", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListIsNone(*script_src), test.expected);
 
-    SourceListDirective form_action("form-action", test.sources, csp.Get());
-    EXPECT_EQ(form_action.IsNone(), test.expected);
+    network::mojom::blink::CSPSourceListPtr form_action =
+        CSPSourceListParse("form-action", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListIsNone(*form_action), test.expected);
 
-    SourceListDirective frame_src("frame-src", test.sources, csp.Get());
-    EXPECT_EQ(frame_src.IsNone(), test.expected);
+    network::mojom::blink::CSPSourceListPtr frame_src =
+        CSPSourceListParse("frame-src", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListIsNone(*frame_src), test.expected);
   }
 }
 
@@ -345,14 +422,17 @@ TEST_F(SourceListDirectiveTest, IsSelf) {
 
   for (const auto& test : cases) {
     SCOPED_TRACE(test.sources);
-    SourceListDirective script_src("script-src", test.sources, csp.Get());
-    EXPECT_EQ(script_src.IsSelf(), test.expected);
+    network::mojom::blink::CSPSourceListPtr script_src =
+        CSPSourceListParse("script-src", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListIsSelf(*script_src), test.expected);
 
-    SourceListDirective form_action("form-action", test.sources, csp.Get());
-    EXPECT_EQ(form_action.IsSelf(), test.expected);
+    network::mojom::blink::CSPSourceListPtr form_action =
+        CSPSourceListParse("form-action", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListIsSelf(*form_action), test.expected);
 
-    SourceListDirective frame_src("frame-src", test.sources, csp.Get());
-    EXPECT_EQ(frame_src.IsSelf(), test.expected);
+    network::mojom::blink::CSPSourceListPtr frame_src =
+        CSPSourceListParse("frame-src", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListIsSelf(*frame_src), test.expected);
   }
 }
 
@@ -394,14 +474,17 @@ TEST_F(SourceListDirectiveTest, AllowsURLBasedMatching) {
 
   for (const auto& test : cases) {
     SCOPED_TRACE(test.sources);
-    SourceListDirective script_src("script-src", test.sources, csp.Get());
-    EXPECT_EQ(script_src.AllowsURLBasedMatching(), test.expected);
+    network::mojom::blink::CSPSourceListPtr script_src =
+        CSPSourceListParse("script-src", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListAllowsURLBasedMatching(*script_src), test.expected);
 
-    SourceListDirective form_action("form-action", test.sources, csp.Get());
-    EXPECT_EQ(form_action.AllowsURLBasedMatching(), test.expected);
+    network::mojom::blink::CSPSourceListPtr form_action =
+        CSPSourceListParse("form-action", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListAllowsURLBasedMatching(*form_action), test.expected);
 
-    SourceListDirective frame_src("frame-src", test.sources, csp.Get());
-    EXPECT_EQ(frame_src.AllowsURLBasedMatching(), test.expected);
+    network::mojom::blink::CSPSourceListPtr frame_src =
+        CSPSourceListParse("frame-src", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListAllowsURLBasedMatching(*frame_src), test.expected);
   }
 }
 
@@ -429,15 +512,10 @@ TEST_F(SourceListDirectiveTest, ParseHost) {
   };
 
   for (const auto& test : cases) {
-    String host;
-    bool disposition = false;
-    Vector<UChar> characters;
-    test.sources.AppendTo(characters);
-    const UChar* start = characters.data();
-    const UChar* end = start + characters.size();
-    EXPECT_EQ(test.expected,
-              SourceListDirective::ParseHost(start, end, &host, &disposition))
-        << "SourceListDirective::parseHost fail to parse: " << test.sources;
+    network::mojom::blink::CSPSourceListPtr parsed =
+        CSPSourceListParse("default-src", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListIsNone(*parsed), !test.expected)
+        << "CSPSourceListParse failed to parse: " << test.sources;
   }
 }
 
@@ -447,24 +525,32 @@ TEST_F(SourceListDirectiveTest, AllowHostWildcard) {
   // See crbug.com/682673.
   {
     String sources = "http://*:111";
-    SourceListDirective source_list("default-src", sources, csp.Get());
-    EXPECT_TRUE(source_list.Allows(KURL(base, "http://a.com:111")));
-    EXPECT_FALSE(source_list.Allows(KURL(base, "http://a.com:222")));
+    network::mojom::blink::CSPSourceListPtr source_list =
+        CSPSourceListParse("default-src", sources, csp.Get());
+    EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                    KURL(base, "http://a.com:111")));
+    EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                     KURL(base, "http://a.com:222")));
   }
   // When the host-part is "*", the path must still be checked.
   // See crbug.com/682673.
   {
     String sources = "http://*/welcome.html";
-    SourceListDirective source_list("default-src", sources, csp.Get());
-    EXPECT_TRUE(source_list.Allows(KURL(base, "http://a.com/welcome.html")));
-    EXPECT_FALSE(source_list.Allows(KURL(base, "http://a.com/passwords.txt")));
+    network::mojom::blink::CSPSourceListPtr source_list =
+        CSPSourceListParse("default-src", sources, csp.Get());
+    EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                    KURL(base, "http://a.com/welcome.html")));
+    EXPECT_FALSE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                     KURL(base, "http://a.com/passwords.txt")));
   }
   // When the host-part is "*" and the expression-source is not "*", then every
   // host are allowed. See crbug.com/682673.
   {
     String sources = "http://*";
-    SourceListDirective source_list("default-src", sources, csp.Get());
-    EXPECT_TRUE(source_list.Allows(KURL(base, "http://a.com")));
+    network::mojom::blink::CSPSourceListPtr source_list =
+        CSPSourceListParse("default-src", sources, csp.Get());
+    EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                    KURL(base, "http://a.com")));
   }
 }
 
@@ -473,14 +559,18 @@ TEST_F(SourceListDirectiveTest, AllowHostMixedCase) {
   // Non-wildcard sources should match hosts case-insensitively.
   {
     String sources = "http://ExAmPle.com";
-    SourceListDirective source_list("default-src", sources, csp.Get());
-    EXPECT_TRUE(source_list.Allows(KURL(base, "http://example.com")));
+    network::mojom::blink::CSPSourceListPtr source_list =
+        CSPSourceListParse("default-src", sources, csp.Get());
+    EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                    KURL(base, "http://example.com")));
   }
   // Wildcard sources should match hosts case-insensitively.
   {
     String sources = "http://*.ExAmPle.com";
-    SourceListDirective source_list("default-src", sources, csp.Get());
-    EXPECT_TRUE(source_list.Allows(KURL(base, "http://www.example.com")));
+    network::mojom::blink::CSPSourceListPtr source_list =
+        CSPSourceListParse("default-src", sources, csp.Get());
+    EXPECT_TRUE(CSPSourceListAllows(*source_list, *csp->GetSelfSource(),
+                                    KURL(base, "http://www.example.com")));
   }
 }
 

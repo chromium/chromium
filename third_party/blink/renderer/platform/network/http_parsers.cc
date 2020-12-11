@@ -66,8 +66,11 @@ blink::CSPSourcePtr ConvertToBlink(CSPSourcePtr source) {
 }
 
 blink::CSPHashSourcePtr ConvertToBlink(CSPHashSourcePtr hash) {
-  return blink::CSPHashSource::New(hash->algorithm,
-                                   String::FromUTF8(hash->value));
+  WTF::Vector<uint8_t> hash_value;
+  for (uint8_t el : hash->value)
+    hash_value.push_back(el);
+
+  return blink::CSPHashSource::New(hash->algorithm, hash_value);
 }
 
 blink::CSPSourceListPtr ConvertToBlink(CSPSourceListPtr source_list) {

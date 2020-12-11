@@ -26,7 +26,10 @@ namespace blink {
 class ContentSecurityPolicy;
 enum class ResourceType : uint8_t;
 
-typedef HeapVector<Member<SourceListDirective>> SourceListDirectiveVector;
+struct CSPOperativeDirective {
+  ContentSecurityPolicy::DirectiveType type;
+  const network::mojom::blink::CSPSourceList* source_list;
+};
 
 class CORE_EXPORT CSPDirectiveList final
     : public GarbageCollected<CSPDirectiveList> {
@@ -118,8 +121,8 @@ class CORE_EXPORT CSPDirectiveList final
     return header_type_ == network::mojom::ContentSecurityPolicyType::kReport;
   }
   bool IsActiveForConnections() const {
-    return OperativeDirective(
-        ContentSecurityPolicy::DirectiveType::kConnectSrc);
+    return OperativeDirective(ContentSecurityPolicy::DirectiveType::kConnectSrc)
+        .source_list;
   }
   const Vector<String>& ReportEndpoints() const { return report_endpoints_; }
   bool UseReportingApi() const { return use_reporting_api_; }
@@ -131,7 +134,7 @@ class CORE_EXPORT CSPDirectiveList final
 
   bool ShouldSendCSPHeader(ResourceType) const;
 
-  bool AllowHash(const CSPHashValue& hash_value,
+  bool AllowHash(const network::mojom::blink::CSPHashSource& hash_value,
                  const ContentSecurityPolicy::InlineType inline_type) const;
 
   // Export a subset of the Policy. The primary goal of this method is to make
@@ -193,18 +196,12 @@ class CORE_EXPORT CSPDirectiveList final
   void AddTrustedTypes(const String& name, const String& value);
   void RequireTrustedTypesFor(const String& name, const String& value);
 
-  template <class CSPDirectiveType>
-  void SetCSPDirective(const String& name,
-                       const String& value,
-                       Member<CSPDirectiveType>&,
-                       bool should_parse_wasm_eval = false);
-
   ContentSecurityPolicy::DirectiveType FallbackDirective(
-      const ContentSecurityPolicy::DirectiveType current_directive,
-      const ContentSecurityPolicy::DirectiveType original_directive) const;
+      ContentSecurityPolicy::DirectiveType current_directive,
+      ContentSecurityPolicy::DirectiveType original_directive) const;
   void ReportViolation(
       const String& directive_text,
-      const ContentSecurityPolicy::DirectiveType,
+      ContentSecurityPolicy::DirectiveType,
       const String& console_message,
       const KURL& blocked_url,
       ResourceRequest::RedirectStatus,
@@ -212,13 +209,8 @@ class CORE_EXPORT CSPDirectiveList final
           ContentSecurityPolicy::kURLViolation,
       const String& sample = String(),
       const String& sample_prefix = String()) const;
-  void ReportViolationWithFrame(const String& directive_text,
-                                const ContentSecurityPolicy::DirectiveType,
-                                const String& console_message,
-                                const KURL& blocked_url,
-                                LocalFrame*) const;
   void ReportViolationWithLocation(const String& directive_text,
-                                   const ContentSecurityPolicy::DirectiveType,
+                                   ContentSecurityPolicy::DirectiveType,
                                    const String& console_message,
                                    const KURL& blocked_url,
                                    const String& context_url,
@@ -226,22 +218,28 @@ class CORE_EXPORT CSPDirectiveList final
                                    Element*,
                                    const String& source) const;
   void ReportEvalViolation(const String& directive_text,
-                           const ContentSecurityPolicy::DirectiveType,
+                           ContentSecurityPolicy::DirectiveType,
                            const String& message,
                            const KURL& blocked_url,
                            const ContentSecurityPolicy::ExceptionStatus,
                            const String& content) const;
 
-  bool CheckEval(SourceListDirective*) const;
-  bool CheckWasmEval(SourceListDirective*) const;
-  bool CheckDynamic(SourceListDirective*,
+  bool CheckEval(const network::mojom::blink::CSPSourceList* directive) const;
+  bool CheckWasmEval(
+      const network::mojom::blink::CSPSourceList* directive) const;
+  bool CheckDynamic(const network::mojom::blink::CSPSourceList* directive,
                     ContentSecurityPolicy::DirectiveType) const;
-  bool IsMatchingNoncePresent(SourceListDirective*, const String&) const;
-  bool AreAllMatchingHashesPresent(SourceListDirective*,
-                                   const IntegrityMetadataSet&) const;
-  bool CheckHash(SourceListDirective*, const CSPHashValue&) const;
-  bool CheckUnsafeHashesAllowed(SourceListDirective*) const;
-  bool CheckSource(SourceListDirective*,
+  bool IsMatchingNoncePresent(
+      const network::mojom::blink::CSPSourceList* directive,
+      const String&) const;
+  bool AreAllMatchingHashesPresent(
+      const network::mojom::blink::CSPSourceList* directive,
+      const IntegrityMetadataSet&) const;
+  bool CheckHash(const network::mojom::blink::CSPSourceList* directive,
+                 const network::mojom::blink::CSPHashSource&) const;
+  bool CheckUnsafeHashesAllowed(
+      const network::mojom::blink::CSPSourceList* directive) const;
+  bool CheckSource(const network::mojom::blink::CSPSourceList*,
                    const KURL&,
                    ResourceRequest::RedirectStatus) const;
   bool CheckMediaType(MediaListDirective*,
@@ -252,16 +250,14 @@ class CORE_EXPORT CSPDirectiveList final
     eval_disabled_error_message_ = error_message;
   }
 
-  bool CheckEvalAndReportViolation(SourceListDirective*,
-                                   const String& console_message,
+  bool CheckEvalAndReportViolation(const String& console_message,
                                    ContentSecurityPolicy::ExceptionStatus,
                                    const String& script_content) const;
-  bool CheckWasmEvalAndReportViolation(SourceListDirective*,
-                                       const String& console_message,
+  bool CheckWasmEvalAndReportViolation(const String& console_message,
                                        ContentSecurityPolicy::ExceptionStatus,
                                        const String& script_content) const;
   bool CheckInlineAndReportViolation(
-      SourceListDirective*,
+      CSPOperativeDirective directive,
       const String& console_message,
       Element*,
       const String& source,
@@ -271,9 +267,9 @@ class CORE_EXPORT CSPDirectiveList final
       const String& hash_value,
       ContentSecurityPolicy::DirectiveType effective_type) const;
 
-  bool CheckSourceAndReportViolation(SourceListDirective*,
+  bool CheckSourceAndReportViolation(CSPOperativeDirective directive,
                                      const KURL&,
-                                     const ContentSecurityPolicy::DirectiveType,
+                                     ContentSecurityPolicy::DirectiveType,
                                      const KURL& url_before_redirects,
                                      ResourceRequest::RedirectStatus) const;
   bool CheckMediaTypeAndReportViolation(MediaListDirective*,
@@ -283,10 +279,15 @@ class CORE_EXPORT CSPDirectiveList final
 
   bool DenyIfEnforcingPolicy() const { return IsReportOnly(); }
 
-  // This function returns a SourceListDirective of a given type
-  // or if it is not defined, the fallback SourceListDirective for that type.
-  SourceListDirective* OperativeDirective(
-      const ContentSecurityPolicy::DirectiveType type,
+  // Return the operative type and CSPSourceList for a given directive type,
+  // falling back to general directives according to Content Security Policies
+  // rules. For example, if 'default-src' is defined but 'media-src' is not,
+  // OperativeDirective(DirectiveType::kMediaSrc) will return type
+  // DirectiveType::kDefaultSrc and the corresponding CSPSourceList. If no
+  // operative directive for the given type is defined, this will return
+  // DirectiveType::kUndefined and nullptr.
+  CSPOperativeDirective OperativeDirective(
+      ContentSecurityPolicy::DirectiveType type,
       ContentSecurityPolicy::DirectiveType original_type =
           ContentSecurityPolicy::DirectiveType::kUndefined) const;
 
@@ -296,6 +297,8 @@ class CORE_EXPORT CSPDirectiveList final
   network::mojom::ContentSecurityPolicyType header_type_;
   network::mojom::ContentSecurityPolicySource header_source_;
 
+  HashMap<ContentSecurityPolicy::DirectiveType, String> raw_directives_;
+
   bool has_sandbox_policy_;
 
   bool strict_mixed_content_checking_enforced_;
@@ -303,27 +306,27 @@ class CORE_EXPORT CSPDirectiveList final
   bool upgrade_insecure_requests_;
 
   Member<MediaListDirective> plugin_types_;
-  Member<SourceListDirective> base_uri_;
-  Member<SourceListDirective> child_src_;
-  Member<SourceListDirective> connect_src_;
-  Member<SourceListDirective> default_src_;
-  Member<SourceListDirective> font_src_;
-  Member<SourceListDirective> form_action_;
-  Member<SourceListDirective> frame_ancestors_;
-  Member<SourceListDirective> frame_src_;
-  Member<SourceListDirective> img_src_;
-  Member<SourceListDirective> media_src_;
-  Member<SourceListDirective> manifest_src_;
-  Member<SourceListDirective> object_src_;
-  Member<SourceListDirective> prefetch_src_;
-  Member<SourceListDirective> script_src_;
-  Member<SourceListDirective> script_src_attr_;
-  Member<SourceListDirective> script_src_elem_;
-  Member<SourceListDirective> style_src_;
-  Member<SourceListDirective> style_src_attr_;
-  Member<SourceListDirective> style_src_elem_;
-  Member<SourceListDirective> worker_src_;
-  Member<SourceListDirective> navigate_to_;
+  network::mojom::blink::CSPSourceListPtr base_uri_;
+  network::mojom::blink::CSPSourceListPtr child_src_;
+  network::mojom::blink::CSPSourceListPtr connect_src_;
+  network::mojom::blink::CSPSourceListPtr default_src_;
+  network::mojom::blink::CSPSourceListPtr font_src_;
+  network::mojom::blink::CSPSourceListPtr form_action_;
+  network::mojom::blink::CSPSourceListPtr frame_ancestors_;
+  network::mojom::blink::CSPSourceListPtr frame_src_;
+  network::mojom::blink::CSPSourceListPtr img_src_;
+  network::mojom::blink::CSPSourceListPtr media_src_;
+  network::mojom::blink::CSPSourceListPtr manifest_src_;
+  network::mojom::blink::CSPSourceListPtr object_src_;
+  network::mojom::blink::CSPSourceListPtr prefetch_src_;
+  network::mojom::blink::CSPSourceListPtr script_src_;
+  network::mojom::blink::CSPSourceListPtr script_src_attr_;
+  network::mojom::blink::CSPSourceListPtr script_src_elem_;
+  network::mojom::blink::CSPSourceListPtr style_src_;
+  network::mojom::blink::CSPSourceListPtr style_src_attr_;
+  network::mojom::blink::CSPSourceListPtr style_src_elem_;
+  network::mojom::blink::CSPSourceListPtr worker_src_;
+  network::mojom::blink::CSPSourceListPtr navigate_to_;
   Member<StringListDirective> trusted_types_;
   Member<RequireTrustedTypesForDirective> require_trusted_types_for_;
 

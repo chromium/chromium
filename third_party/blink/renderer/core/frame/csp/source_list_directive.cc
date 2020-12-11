@@ -10,42 +10,25 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace {
+
 struct SupportedPrefixesStruct {
   const char* prefix;
-  blink::ContentSecurityPolicyHashAlgorithm type;
+  network::mojom::blink::CSPHashAlgorithm type;
 };
+
 }  // namespace
 
 namespace blink {
 
-SourceListDirective::SourceListDirective(const String& name,
-                                         const String& value,
-                                         ContentSecurityPolicy* policy)
-    : CSPDirective(name, value, policy),
-      policy_(policy),
-      directive_name_(name),
-      allow_self_(false),
-      allow_star_(false),
-      allow_inline_(false),
-      allow_eval_(false),
-      allow_wasm_eval_(false),
-      allow_dynamic_(false),
-      allow_unsafe_hashes_(false),
-      report_sample_(false),
-      hash_algorithms_used_(0) {
-  Vector<UChar> characters;
-  value.AppendTo(characters);
-  Parse(characters.data(), characters.data() + characters.size());
-}
+namespace {
 
-static bool IsSourceListNone(const UChar* begin, const UChar* end) {
+bool IsSourceListNone(const UChar* begin, const UChar* end) {
   SkipWhile<UChar, IsASCIISpace>(begin, end);
 
   const UChar* position = begin;
@@ -62,303 +45,10 @@ static bool IsSourceListNone(const UChar* begin, const UChar* end) {
   return true;
 }
 
-bool SourceListDirective::Allows(
-    const KURL& url,
-    ResourceRequest::RedirectStatus redirect_status) const {
-  // Wildcards match network schemes ('http', 'https', 'ftp', 'ws', 'wss'), and
-  // the scheme of the protected resource:
-  // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression. Other
-  // schemes, including custom schemes, must be explicitly listed in a source
-  // list.
-  if (allow_star_) {
-    if (url.ProtocolIsInHTTPFamily() || url.ProtocolIs("ftp") ||
-        url.ProtocolIs("ws") || url.ProtocolIs("wss") ||
-        policy_->ProtocolEqualsSelf(url.Protocol()))
-      return true;
-
-    return HasSourceMatchInList(url, redirect_status);
-  }
-
-  if (allow_self_ && policy_->UrlMatchesSelf(url))
-    return true;
-
-  return HasSourceMatchInList(url, redirect_status);
-}
-
-bool SourceListDirective::AllowInline() const {
-  return allow_inline_;
-}
-
-bool SourceListDirective::AllowEval() const {
-  return allow_eval_;
-}
-
-bool SourceListDirective::AllowWasmEval() const {
-  return allow_wasm_eval_;
-}
-
-bool SourceListDirective::AllowDynamic() const {
-  return allow_dynamic_;
-}
-
-bool SourceListDirective::AllowNonce(const String& nonce) const {
-  String nonce_stripped = nonce.StripWhiteSpace();
-  return !nonce_stripped.IsNull() && nonces_.Contains(nonce_stripped);
-}
-
-bool SourceListDirective::AllowHash(const CSPHashValue& hash_value) const {
-  return hashes_.Contains(hash_value);
-}
-
-bool SourceListDirective::AllowUnsafeHashes() const {
-  return allow_unsafe_hashes_;
-}
-
-bool SourceListDirective::AllowReportSample() const {
-  return report_sample_;
-}
-
-bool SourceListDirective::IsNone() const {
-  return !list_.size() && !allow_self_ && !allow_star_ && !allow_inline_ &&
-         !allow_unsafe_hashes_ && !allow_eval_ && !allow_wasm_eval_ &&
-         !allow_dynamic_ && !nonces_.size() && !hashes_.size();
-}
-
-bool SourceListDirective::IsSelf() const {
-  return allow_self_ && !list_.size() && !allow_star_ && !allow_inline_ &&
-         !allow_unsafe_hashes_ && !allow_eval_ && !allow_wasm_eval_ &&
-         !allow_dynamic_ && !nonces_.size() && !hashes_.size();
-}
-
-uint8_t SourceListDirective::HashAlgorithmsUsed() const {
-  return hash_algorithms_used_;
-}
-
-bool SourceListDirective::IsHashOrNoncePresent() const {
-  return !nonces_.IsEmpty() ||
-         hash_algorithms_used_ != kContentSecurityPolicyHashAlgorithmNone;
-}
-
-bool SourceListDirective::AllowsURLBasedMatching() const {
-  return !allow_dynamic_ && (list_.size() || allow_star_ || allow_self_);
-}
-
-// source-list       = *WSP [ source *( 1*WSP source ) *WSP ]
-//                   / *WSP "'none'" *WSP
-//
-void SourceListDirective::Parse(const UChar* begin, const UChar* end) {
-  // We represent 'none' as an empty m_list.
-  if (IsSourceListNone(begin, end))
-    return;
-
-  const UChar* position = begin;
-  while (position < end) {
-    SkipWhile<UChar, IsASCIISpace>(position, end);
-    if (position == end)
-      return;
-
-    const UChar* begin_source = position;
-    SkipWhile<UChar, IsSourceCharacter>(position, end);
-
-    // We need to initialize all strings, since they can't be null in the mojo
-    // struct.
-    String scheme = "";
-    String host = "";
-    String path = "";
-    int port = url::PORT_UNSPECIFIED;
-    bool host_wildcard = false;
-    bool port_wildcard = false;
-
-    if (ParseSource(begin_source, position, &scheme, &host, &port, &path,
-                    &host_wildcard, &port_wildcard)) {
-      // Wildcard hosts and keyword sources ('self', 'unsafe-inline',
-      // etc.) aren't stored in m_list, but as attributes on the source
-      // list itself.
-      if (scheme.IsEmpty() && host.IsEmpty())
-        continue;
-      if (ContentSecurityPolicy::GetDirectiveType(host) !=
-          ContentSecurityPolicy::DirectiveType::kUndefined)
-        policy_->ReportDirectiveAsSourceExpression(directive_name_, host);
-      list_.push_back(network::mojom::blink::CSPSource::New(
-          scheme, host, port, path, host_wildcard, port_wildcard));
-    } else {
-      policy_->ReportInvalidSourceExpression(
-          directive_name_, String(begin_source, static_cast<wtf_size_t>(
-                                                    position - begin_source)));
-    }
-
-    DCHECK(position == end || IsASCIISpace(*position));
-  }
-}
-
-// source            = scheme ":"
-//                   / ( [ scheme "://" ] host [ port ] [ path ] )
-//                   / "'self'"
-bool SourceListDirective::ParseSource(const UChar* begin,
-                                      const UChar* end,
-                                      String* scheme,
-                                      String* host,
-                                      int* port,
-                                      String* path,
-                                      bool* host_wildcard,
-                                      bool* port_wildcard) {
-  if (begin == end)
-    return false;
-
-  StringView token(begin, static_cast<wtf_size_t>(end - begin));
-
-  if (EqualIgnoringASCIICase("'none'", token))
-    return false;
-
-  if (end - begin == 1 && *begin == '*') {
-    AddSourceStar();
-    return true;
-  }
-
-  if (EqualIgnoringASCIICase("'self'", token)) {
-    AddSourceSelf();
-    return true;
-  }
-
-  if (EqualIgnoringASCIICase("'unsafe-inline'", token)) {
-    AddSourceUnsafeInline();
-    return true;
-  }
-
-  if (EqualIgnoringASCIICase("'unsafe-eval'", token)) {
-    AddSourceUnsafeEval();
-    return true;
-  }
-
-  if (EqualIgnoringASCIICase("'unsafe-allow-redirects'", token) &&
-      DirectiveName() == "navigate-to") {
-    AddSourceUnsafeAllowRedirects();
-    return true;
-  }
-
-  if (policy_->SupportsWasmEval() &&
-      EqualIgnoringASCIICase("'wasm-eval'", token)) {
-    AddSourceWasmEval();
-    return true;
-  }
-
-  if (EqualIgnoringASCIICase("'strict-dynamic'", token)) {
-    AddSourceStrictDynamic();
-    return true;
-  }
-
-  if (EqualIgnoringASCIICase("'unsafe-hashes'", token)) {
-    AddSourceUnsafeHashes();
-    return true;
-  }
-
-  if (EqualIgnoringASCIICase("'report-sample'", token)) {
-    AddReportSample();
-    return true;
-  }
-
-  String nonce;
-  if (!ParseNonce(begin, end, &nonce))
-    return false;
-
-  if (!nonce.IsNull()) {
-    AddSourceNonce(nonce);
-    return true;
-  }
-
-  DigestValue hash;
-  ContentSecurityPolicyHashAlgorithm algorithm =
-      kContentSecurityPolicyHashAlgorithmNone;
-  if (!ParseHash(begin, end, &hash, &algorithm))
-    return false;
-
-  if (hash.size() > 0) {
-    AddSourceHash(algorithm, hash);
-    return true;
-  }
-
-  const UChar* position = begin;
-  const UChar* begin_host = begin;
-  const UChar* begin_path = end;
-  const UChar* begin_port = nullptr;
-
-  SkipWhile<UChar, IsNotColonOrSlash>(position, end);
-
-  if (position == end) {
-    // host
-    //     ^
-    return ParseHost(begin_host, position, host, host_wildcard);
-  }
-
-  if (position < end && *position == '/') {
-    // host/path || host/ || /
-    //     ^            ^    ^
-    return ParseHost(begin_host, position, host, host_wildcard) &&
-           ParsePath(position, end, path);
-  }
-
-  if (position < end && *position == ':') {
-    if (end - position == 1) {
-      // scheme:
-      //       ^
-      return ParseScheme(begin, position, scheme);
-    }
-
-    if (position[1] == '/') {
-      // scheme://host || scheme://
-      //       ^                ^
-      if (!ParseScheme(begin, position, scheme) ||
-          !SkipExactly<UChar>(position, end, ':') ||
-          !SkipExactly<UChar>(position, end, '/') ||
-          !SkipExactly<UChar>(position, end, '/'))
-        return false;
-      if (position == end)
-        return false;
-      begin_host = position;
-      SkipWhile<UChar, IsNotColonOrSlash>(position, end);
-    }
-
-    if (position < end && *position == ':') {
-      // host:port || scheme://host:port
-      //     ^                     ^
-      begin_port = position;
-      SkipUntil<UChar>(position, end, '/');
-    }
-  }
-
-  if (position < end && *position == '/') {
-    // scheme://host/path || scheme://host:port/path
-    //              ^                          ^
-    if (position == begin_host)
-      return false;
-    begin_path = position;
-  }
-
-  if (!ParseHost(begin_host, begin_port ? begin_port : begin_path, host,
-                 host_wildcard))
-    return false;
-
-  if (begin_port) {
-    if (!ParsePort(begin_port, begin_path, port, port_wildcard))
-      return false;
-  } else {
-    *port = url::PORT_UNSPECIFIED;
-  }
-
-  if (begin_path != end) {
-    if (!ParsePath(begin_path, end, path))
-      return false;
-  }
-
-  return true;
-}
-
 // nonce-source      = "'nonce-" nonce-value "'"
 // nonce-value        = 1*( ALPHA / DIGIT / "+" / "/" / "=" )
 //
-bool SourceListDirective::ParseNonce(const UChar* begin,
-                                     const UChar* end,
-                                     String* nonce) {
+bool ParseNonce(const UChar* begin, const UChar* end, String* nonce) {
   size_t nonce_length = end - begin;
   StringView prefix("'nonce-");
 
@@ -386,42 +76,39 @@ bool SourceListDirective::ParseNonce(const UChar* begin,
 // hash-algorithm    = "sha1" / "sha256" / "sha384" / "sha512"
 // hash-value        = 1*( ALPHA / DIGIT / "+" / "/" / "=" )
 //
-bool SourceListDirective::ParseHash(
-    const UChar* begin,
-    const UChar* end,
-    DigestValue* hash,
-    ContentSecurityPolicyHashAlgorithm* hash_algorithm) {
+bool ParseHash(const UChar* begin,
+               const UChar* end,
+               Vector<uint8_t>& hash,
+               network::mojom::blink::CSPHashAlgorithm* hash_algorithm) {
   // Any additions or subtractions from this struct should also modify the
   // respective entries in the kAlgorithmMap array in
   // ContentSecurityPolicy::FillInCSPHashValues().
 
   constexpr SupportedPrefixesStruct kSupportedPrefixes[] = {
-      {"'sha256-", kContentSecurityPolicyHashAlgorithmSha256},
-      {"'sha384-", kContentSecurityPolicyHashAlgorithmSha384},
-      {"'sha512-", kContentSecurityPolicyHashAlgorithmSha512},
-      {"'sha-256-", kContentSecurityPolicyHashAlgorithmSha256},
-      {"'sha-384-", kContentSecurityPolicyHashAlgorithmSha384},
-      {"'sha-512-", kContentSecurityPolicyHashAlgorithmSha512}};
-
-  constexpr size_t kSupportedPrefixesLength =
-      sizeof(kSupportedPrefixes) / sizeof(kSupportedPrefixes[0]);
+      {"'sha256-", network::mojom::blink::CSPHashAlgorithm::SHA256},
+      {"'sha384-", network::mojom::blink::CSPHashAlgorithm::SHA384},
+      {"'sha512-", network::mojom::blink::CSPHashAlgorithm::SHA512},
+      {"'sha-256-", network::mojom::blink::CSPHashAlgorithm::SHA256},
+      {"'sha-384-", network::mojom::blink::CSPHashAlgorithm::SHA384},
+      {"'sha-512-", network::mojom::blink::CSPHashAlgorithm::SHA512}};
 
   StringView prefix;
-  *hash_algorithm = kContentSecurityPolicyHashAlgorithmNone;
   size_t hash_length = end - begin;
 
-  for (size_t i = 0; i < kSupportedPrefixesLength; i++) {
-    prefix = kSupportedPrefixes[i].prefix;
+  DCHECK_EQ(*hash_algorithm, network::mojom::blink::CSPHashAlgorithm::None);
+
+  for (auto supported_prefix : kSupportedPrefixes) {
+    prefix = supported_prefix.prefix;
     // TODO(esprehn): Should be StringView(begin, end -
     // begin).startsWith(prefix).
     if (hash_length > prefix.length() &&
         EqualIgnoringASCIICase(prefix, StringView(begin, prefix.length()))) {
-      *hash_algorithm = kSupportedPrefixes[i].type;
+      *hash_algorithm = supported_prefix.type;
       break;
     }
   }
 
-  if (*hash_algorithm == kContentSecurityPolicyHashAlgorithmNone)
+  if (*hash_algorithm == network::mojom::blink::CSPHashAlgorithm::None)
     return true;
 
   const UChar* position = begin + prefix.length();
@@ -440,24 +127,24 @@ bool SourceListDirective::ParseHash(
   if (position + 1 != end || *position != '\'' || position == hash_begin)
     return false;
 
-  Vector<char> hash_vector;
   // We accept base64url-encoded data here by normalizing it to base64.
+  Vector<char> out;
   Base64Decode(NormalizeToBase64(String(
                    hash_begin, static_cast<wtf_size_t>(position - hash_begin))),
-               hash_vector);
-  if (hash_vector.size() > kMaxDigestSize)
+               out);
+  if (out.size() > kMaxDigestSize)
     return false;
-  hash->Append(reinterpret_cast<uint8_t*>(hash_vector.data()),
-               hash_vector.size());
+
+  DCHECK(hash.IsEmpty());
+  for (char el : out)
+    hash.push_back(el);
   return true;
 }
 
 //                     ; <scheme> production from RFC 3986
 // scheme      = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
 //
-bool SourceListDirective::ParseScheme(const UChar* begin,
-                                      const UChar* end,
-                                      String* scheme) {
+bool ParseScheme(const UChar* begin, const UChar* end, String* scheme) {
   DCHECK(begin <= end);
   DCHECK(scheme->IsEmpty());
 
@@ -483,10 +170,10 @@ bool SourceListDirective::ParseScheme(const UChar* begin,
 // host-char         = ALPHA / DIGIT / "-"
 //
 // static
-bool SourceListDirective::ParseHost(const UChar* begin,
-                                    const UChar* end,
-                                    String* host,
-                                    bool* host_wildcard) {
+bool ParseHost(const UChar* begin,
+               const UChar* end,
+               String* host,
+               bool* host_wildcard) {
   DCHECK(begin <= end);
   DCHECK(host->IsEmpty());
   DCHECK(!*host_wildcard);
@@ -528,9 +215,11 @@ bool SourceListDirective::ParseHost(const UChar* begin,
   return true;
 }
 
-bool SourceListDirective::ParsePath(const UChar* begin,
-                                    const UChar* end,
-                                    String* path) {
+bool ParsePath(const UChar* begin,
+               const UChar* end,
+               String* path,
+               ContentSecurityPolicy* policy,
+               const String& directive_name) {
   DCHECK(begin <= end);
   DCHECK(path->IsEmpty());
 
@@ -539,8 +228,8 @@ bool SourceListDirective::ParsePath(const UChar* begin,
   // path/to/file.js?query=string || path/to/file.js#anchor
   //                ^                               ^
   if (position < end) {
-    policy_->ReportInvalidPathCharacter(
-        directive_name_, String(begin, static_cast<wtf_size_t>(end - begin)),
+    policy->ReportInvalidPathCharacter(
+        directive_name, String(begin, static_cast<wtf_size_t>(end - begin)),
         *position);
   }
 
@@ -555,10 +244,10 @@ bool SourceListDirective::ParsePath(const UChar* begin,
 
 // port              = ":" ( 1*DIGIT / "*" )
 //
-bool SourceListDirective::ParsePort(const UChar* begin,
-                                    const UChar* end,
-                                    int* port,
-                                    bool* port_wildcard) {
+bool ParsePort(const UChar* begin,
+               const UChar* end,
+               int* port,
+               bool* port_wildcard) {
   DCHECK(begin <= end);
   DCHECK_EQ(*port, url::PORT_UNSPECIFIED);
   DCHECK(!*port_wildcard);
@@ -587,98 +276,347 @@ bool SourceListDirective::ParsePort(const UChar* begin,
   return ok;
 }
 
-void SourceListDirective::AddSourceSelf() {
-  allow_self_ = true;
-}
+// source            = scheme ":"
+//                   / ( [ scheme "://" ] host [ port ] [ path ] )
+//                   / "'self'"
+bool ParseSourceExpression(const UChar* begin,
+                           const UChar* end,
+                           ContentSecurityPolicy* policy,
+                           const String& directive_name,
+                           network::mojom::blink::CSPSource& parsed_source) {
+  const UChar* position = begin;
+  const UChar* begin_host = begin;
+  const UChar* begin_path = end;
+  const UChar* begin_port = nullptr;
 
-void SourceListDirective::AddSourceStar() {
-  allow_star_ = true;
-}
+  SkipWhile<UChar, IsNotColonOrSlash>(position, end);
 
-void SourceListDirective::AddSourceUnsafeAllowRedirects() {
-  allow_redirects_ = true;
-}
+  if (position == end) {
+    // host
+    //     ^
+    return ParseHost(begin_host, position, &parsed_source.host,
+                     &parsed_source.is_host_wildcard);
+  }
 
-void SourceListDirective::AddSourceUnsafeInline() {
-  allow_inline_ = true;
-}
+  if (position < end && *position == '/') {
+    // host/path || host/ || /
+    //     ^            ^    ^
+    return ParseHost(begin_host, position, &parsed_source.host,
+                     &parsed_source.is_host_wildcard) &&
+           ParsePath(position, end, &parsed_source.path, policy,
+                     directive_name);
+  }
 
-void SourceListDirective::AddSourceUnsafeEval() {
-  allow_eval_ = true;
-}
-
-void SourceListDirective::AddSourceWasmEval() {
-  allow_wasm_eval_ = true;
-}
-
-void SourceListDirective::AddSourceStrictDynamic() {
-  allow_dynamic_ = true;
-}
-
-void SourceListDirective::AddSourceUnsafeHashes() {
-  allow_unsafe_hashes_ = true;
-}
-
-void SourceListDirective::AddReportSample() {
-  report_sample_ = true;
-}
-
-void SourceListDirective::AddSourceNonce(const String& nonce) {
-  nonces_.insert(nonce);
-}
-
-void SourceListDirective::AddSourceHash(
-    const ContentSecurityPolicyHashAlgorithm& algorithm,
-    const DigestValue& hash) {
-  hashes_.insert(CSPHashValue(algorithm, hash));
-  hash_algorithms_used_ |= algorithm;
-}
-
-bool SourceListDirective::HasSourceMatchInList(
-    const KURL& url,
-    ResourceRequest::RedirectStatus redirect_status) const {
-  for (const auto& source : list_) {
-    if (CSPSourceMatches(*source, policy_->GetSelfProtocol(), url,
-                         redirect_status)) {
-      return true;
+  if (position < end && *position == ':') {
+    if (end - position == 1) {
+      // scheme:
+      //       ^
+      return ParseScheme(begin, position, &parsed_source.scheme);
     }
+
+    if (position[1] == '/') {
+      // scheme://host || scheme://
+      //       ^                ^
+      if (!ParseScheme(begin, position, &parsed_source.scheme) ||
+          !SkipExactly<UChar>(position, end, ':') ||
+          !SkipExactly<UChar>(position, end, '/') ||
+          !SkipExactly<UChar>(position, end, '/'))
+        return false;
+      if (position == end)
+        return false;
+      begin_host = position;
+      SkipWhile<UChar, IsNotColonOrSlash>(position, end);
+    }
+
+    if (position < end && *position == ':') {
+      // host:port || scheme://host:port
+      //     ^                     ^
+      begin_port = position;
+      SkipUntil<UChar>(position, end, '/');
+    }
+  }
+
+  if (position < end && *position == '/') {
+    // scheme://host/path || scheme://host:port/path
+    //              ^                          ^
+    if (position == begin_host)
+      return false;
+    begin_path = position;
+  }
+
+  if (!ParseHost(begin_host, begin_port ? begin_port : begin_path,
+                 &parsed_source.host, &parsed_source.is_host_wildcard))
+    return false;
+
+  if (begin_port) {
+    if (!ParsePort(begin_port, begin_path, &parsed_source.port,
+                   &parsed_source.is_port_wildcard))
+      return false;
+  } else {
+    parsed_source.port = url::PORT_UNSPECIFIED;
+  }
+
+  if (begin_path != end) {
+    if (!ParsePath(begin_path, end, &parsed_source.path, policy,
+                   directive_name))
+      return false;
+  }
+
+  return true;
+}
+
+bool ParseSource(const UChar* begin,
+                 const UChar* end,
+                 network::mojom::blink::CSPSourceList& source_list,
+                 ContentSecurityPolicy* policy,
+                 const String& directive_name) {
+  if (begin == end)
+    return false;
+
+  StringView token(begin, static_cast<wtf_size_t>(end - begin));
+
+  if (EqualIgnoringASCIICase("'none'", token))
+    return false;
+
+  if (end - begin == 1 && *begin == '*') {
+    source_list.allow_star = true;
+    return true;
+  }
+
+  if (EqualIgnoringASCIICase("'self'", token)) {
+    source_list.allow_self = true;
+    return true;
+  }
+
+  if (EqualIgnoringASCIICase("'unsafe-inline'", token)) {
+    source_list.allow_inline = true;
+    return true;
+  }
+
+  if (EqualIgnoringASCIICase("'unsafe-eval'", token)) {
+    source_list.allow_eval = true;
+    return true;
+  }
+
+  if (EqualIgnoringASCIICase("'unsafe-allow-redirects'", token)) {
+    source_list.allow_response_redirects = true;
+    return true;
+  }
+
+  if (policy->SupportsWasmEval() &&
+      EqualIgnoringASCIICase("'wasm-eval'", token)) {
+    source_list.allow_wasm_eval = true;
+    return true;
+  }
+
+  if (EqualIgnoringASCIICase("'strict-dynamic'", token)) {
+    source_list.allow_dynamic = true;
+    return true;
+  }
+
+  if (EqualIgnoringASCIICase("'unsafe-hashes'", token)) {
+    source_list.allow_unsafe_hashes = true;
+    return true;
+  }
+
+  if (EqualIgnoringASCIICase("'report-sample'", token)) {
+    source_list.report_sample = true;
+    return true;
+  }
+
+  String nonce;
+  if (!ParseNonce(begin, end, &nonce))
+    return false;
+
+  if (!nonce.IsNull()) {
+    source_list.nonces.push_back(nonce);
+    return true;
+  }
+
+  Vector<uint8_t> hash;
+  network::mojom::blink::CSPHashAlgorithm algorithm =
+      network::mojom::blink::CSPHashAlgorithm::None;
+  if (!ParseHash(begin, end, hash, &algorithm))
+    return false;
+
+  if (hash.size() > 0) {
+    source_list.hashes.push_back(
+        network::mojom::blink::CSPHashSource::New(algorithm, hash));
+    return true;
+  }
+
+  // We must initialize all fields of |source_expression| so that it is always
+  // valid for serialization by mojo, even if scheme, host or path are not
+  // provided.
+  auto source_expression =
+      network::mojom::blink::CSPSource::New("", "", -1, "", false, false);
+  if (ParseSourceExpression(begin, end, policy, directive_name,
+                            *source_expression)) {
+    source_list.sources.push_back(std::move(source_expression));
+    return true;
   }
 
   return false;
 }
 
-bool SourceListDirective::AllowAllInline() const {
-  const ContentSecurityPolicy::DirectiveType& type =
-      ContentSecurityPolicy::GetDirectiveType(directive_name_);
-  if (type != ContentSecurityPolicy::DirectiveType::kDefaultSrc &&
-      !ContentSecurityPolicy::IsScriptDirective(type) &&
-      !ContentSecurityPolicy::IsStyleDirective(type)) {
+// source-list       = *WSP [ source *( 1*WSP source ) *WSP ]
+//                   / *WSP "'none'" *WSP
+//
+network::mojom::blink::CSPSourceListPtr Parse(const UChar* begin,
+                                              const UChar* end,
+                                              ContentSecurityPolicy* policy,
+                                              const String& directive_name) {
+  network::mojom::blink::CSPSourceListPtr source_list =
+      network::mojom::blink::CSPSourceList::New();
+  if (IsSourceListNone(begin, end))
+    return source_list;
+
+  const UChar* position = begin;
+  while (position < end) {
+    SkipWhile<UChar, IsASCIISpace>(position, end);
+    if (position == end)
+      return source_list;
+
+    const UChar* begin_source = position;
+    SkipWhile<UChar, IsSourceCharacter>(position, end);
+
+    if (ParseSource(begin_source, position, *source_list, policy,
+                    directive_name)) {
+      String token(begin_source,
+                   static_cast<wtf_size_t>(position - begin_source));
+      if (ContentSecurityPolicy::GetDirectiveType(token) !=
+          ContentSecurityPolicy::DirectiveType::kUndefined) {
+        policy->ReportDirectiveAsSourceExpression(
+            directive_name,
+            source_list->sources[source_list->sources.size() - 1]->host);
+      }
+    } else {
+      policy->ReportInvalidSourceExpression(
+          directive_name, String(begin_source, static_cast<wtf_size_t>(
+                                                   position - begin_source)));
+    }
+
+    DCHECK(position == end || IsASCIISpace(*position));
+  }
+  return source_list;
+}
+
+bool HasSourceMatchInList(
+    const Vector<network::mojom::blink::CSPSourcePtr>& list,
+    const String& self_protocol,
+    const KURL& url,
+    ResourceRequest::RedirectStatus redirect_status) {
+  for (const auto& source : list) {
+    if (CSPSourceMatches(*source, self_protocol, url, redirect_status)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+network::mojom::blink::CSPSourceListPtr CSPSourceListParse(
+    const String& name,
+    const String& value,
+    ContentSecurityPolicy* policy) {
+  Vector<UChar> characters;
+  value.AppendTo(characters);
+  return Parse(characters.data(), characters.data() + characters.size(), policy,
+               name);
+}
+
+bool CSPSourceListAllows(
+    const network::mojom::blink::CSPSourceList& source_list,
+    const network::mojom::blink::CSPSource& self_source,
+    const KURL& url,
+    ResourceRequest::RedirectStatus redirect_status) {
+  // Wildcards match network schemes ('http', 'https', 'ftp', 'ws', 'wss'), and
+  // the scheme of the protected resource:
+  // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression. Other
+  // schemes, including custom schemes, must be explicitly listed in a source
+  // list.
+  if (source_list.allow_star) {
+    if (url.ProtocolIsInHTTPFamily() || url.ProtocolIs("ftp") ||
+        url.ProtocolIs("ws") || url.ProtocolIs("wss") ||
+        (!url.Protocol().IsEmpty() &&
+         EqualIgnoringASCIICase(url.Protocol(), self_source.scheme)))
+      return true;
+
+    return HasSourceMatchInList(source_list.sources, self_source.scheme, url,
+                                redirect_status);
+  }
+  if (source_list.allow_self &&
+      CSPSourceMatchesAsSelf(self_source, self_source.scheme, url)) {
+    return true;
+  }
+
+  return HasSourceMatchInList(source_list.sources, self_source.scheme, url,
+                              redirect_status);
+}
+
+bool CSPSourceListAllowNonce(
+    const network::mojom::blink::CSPSourceList& source_list,
+    const String& nonce) {
+  String nonce_stripped = nonce.StripWhiteSpace();
+  return !nonce_stripped.IsNull() &&
+         source_list.nonces.Contains(nonce_stripped);
+}
+
+bool CSPSourceListAllowHash(
+    const network::mojom::blink::CSPSourceList& source_list,
+    const network::mojom::blink::CSPHashSource& hash_value) {
+  for (const network::mojom::blink::CSPHashSourcePtr& hash :
+       source_list.hashes) {
+    if (*hash == hash_value)
+      return true;
+  }
+  return false;
+}
+
+bool CSPSourceListIsNone(
+    const network::mojom::blink::CSPSourceList& source_list) {
+  return !source_list.sources.size() && !source_list.allow_self &&
+         !source_list.allow_star && !source_list.allow_inline &&
+         !source_list.allow_unsafe_hashes && !source_list.allow_eval &&
+         !source_list.allow_wasm_eval && !source_list.allow_dynamic &&
+         !source_list.nonces.size() && !source_list.hashes.size();
+}
+
+bool CSPSourceListIsSelf(
+    const network::mojom::blink::CSPSourceList& source_list) {
+  return source_list.allow_self && !source_list.sources.size() &&
+         !source_list.allow_star && !source_list.allow_inline &&
+         !source_list.allow_unsafe_hashes && !source_list.allow_eval &&
+         !source_list.allow_wasm_eval && !source_list.allow_dynamic &&
+         !source_list.nonces.size() && !source_list.hashes.size();
+}
+
+bool CSPSourceListIsHashOrNoncePresent(
+    const network::mojom::blink::CSPSourceList& source_list) {
+  return !source_list.nonces.IsEmpty() || !source_list.hashes.IsEmpty();
+}
+
+bool CSPSourceListAllowsURLBasedMatching(
+    const network::mojom::blink::CSPSourceList& source_list) {
+  return !source_list.allow_dynamic &&
+         (source_list.sources.size() || source_list.allow_star ||
+          source_list.allow_self);
+}
+
+bool CSPSourceListAllowAllInline(
+    ContentSecurityPolicy::DirectiveType directive_type,
+    const network::mojom::blink::CSPSourceList& source_list) {
+  if (directive_type != ContentSecurityPolicy::DirectiveType::kDefaultSrc &&
+      !ContentSecurityPolicy::IsScriptDirective(directive_type) &&
+      !ContentSecurityPolicy::IsStyleDirective(directive_type)) {
     return false;
   }
 
-  return allow_inline_ && !IsHashOrNoncePresent() &&
-         (!ContentSecurityPolicy::IsScriptDirective(type) || !allow_dynamic_);
-}
-
-network::mojom::blink::CSPSourceListPtr
-SourceListDirective::ExposeForNavigationalChecks() const {
-  WTF::Vector<network::mojom::blink::CSPSourcePtr> sources;
-  for (const auto& source : list_)
-    sources.push_back(source.Clone());
-
-  // We do not need nonces and hashes for navigational checks
-  WTF::Vector<WTF::String> nonces;
-  WTF::Vector<network::mojom::blink::CSPHashSourcePtr> hashes;
-
-  return network::mojom::blink::CSPSourceList::New(
-      std::move(sources), std::move(nonces), std::move(hashes), allow_self_,
-      allow_star_, allow_redirects_, allow_inline_, allow_eval_,
-      allow_wasm_eval_, allow_dynamic_, allow_unsafe_hashes_, report_sample_);
-}
-
-void SourceListDirective::Trace(Visitor* visitor) const {
-  visitor->Trace(policy_);
-  CSPDirective::Trace(visitor);
+  return source_list.allow_inline &&
+         !CSPSourceListIsHashOrNoncePresent(source_list) &&
+         (!ContentSecurityPolicy::IsScriptDirective(directive_type) ||
+          !source_list.allow_dynamic);
 }
 
 }  // namespace blink

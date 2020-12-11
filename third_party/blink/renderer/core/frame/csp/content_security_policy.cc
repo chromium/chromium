@@ -452,17 +452,17 @@ Vector<CSPHeaderAndType> ContentSecurityPolicy::Headers() const {
 void ContentSecurityPolicy::FillInCSPHashValues(
     const String& source,
     uint8_t hash_algorithms_used,
-    Vector<CSPHashValue>* csp_hash_values) {
+    Vector<network::mojom::blink::CSPHashSourcePtr>& csp_hash_values) {
   // Any additions or subtractions from this struct should also modify the
   // respective entries in the kSupportedPrefixes array in
   // SourceListDirective::parseHash().
   static const struct {
-    ContentSecurityPolicyHashAlgorithm csp_hash_algorithm;
+    network::mojom::blink::CSPHashAlgorithm csp_hash_algorithm;
     HashAlgorithm algorithm;
   } kAlgorithmMap[] = {
-      {kContentSecurityPolicyHashAlgorithmSha256, kHashAlgorithmSha256},
-      {kContentSecurityPolicyHashAlgorithmSha384, kHashAlgorithmSha384},
-      {kContentSecurityPolicyHashAlgorithmSha512, kHashAlgorithmSha512}};
+      {network::mojom::blink::CSPHashAlgorithm::SHA256, kHashAlgorithmSha256},
+      {network::mojom::blink::CSPHashAlgorithm::SHA384, kHashAlgorithmSha384},
+      {network::mojom::blink::CSPHashAlgorithm::SHA512, kHashAlgorithmSha512}};
 
   // Only bother normalizing the source/computing digests if there are any
   // checks to be done.
@@ -474,13 +474,14 @@ void ContentSecurityPolicy::FillInCSPHashValues(
 
   for (const auto& algorithm_map : kAlgorithmMap) {
     DigestValue digest;
-    if (algorithm_map.csp_hash_algorithm & hash_algorithms_used) {
+    if (static_cast<int32_t>(algorithm_map.csp_hash_algorithm) &
+        hash_algorithms_used) {
       bool digest_success =
           ComputeDigest(algorithm_map.algorithm, utf8_source.data(),
                         utf8_source.size(), digest);
       if (digest_success) {
-        csp_hash_values->push_back(
-            CSPHashValue(algorithm_map.csp_hash_algorithm, digest));
+        csp_hash_values.push_back(network::mojom::blink::CSPHashSource::New(
+            algorithm_map.csp_hash_algorithm, Vector<uint8_t>(digest)));
       }
     }
   }
@@ -488,11 +489,11 @@ void ContentSecurityPolicy::FillInCSPHashValues(
 
 // static
 bool ContentSecurityPolicy::CheckHashAgainstPolicy(
-    Vector<CSPHashValue>& csp_hash_values,
+    Vector<network::mojom::blink::CSPHashSourcePtr>& csp_hash_values,
     const Member<CSPDirectiveList>& policy,
     InlineType inline_type) {
   for (const auto& csp_hash_value : csp_hash_values) {
-    if (policy->AllowHash(csp_hash_value, inline_type))
+    if (policy->AllowHash(*csp_hash_value, inline_type))
       return true;
   }
   return false;
@@ -515,11 +516,11 @@ bool ContentSecurityPolicy::AllowInline(
     return true;
   }
 
-  Vector<CSPHashValue> csp_hash_values;
+  Vector<network::mojom::blink::CSPHashSourcePtr> csp_hash_values;
   FillInCSPHashValues(
       content,
       is_script ? script_hash_algorithms_used_ : style_hash_algorithms_used_,
-      &csp_hash_values);
+      csp_hash_values);
 
   // Step 2. Let result be "Allowed". [spec text]
   bool is_allowed = true;
