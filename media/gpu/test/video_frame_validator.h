@@ -184,7 +184,7 @@ class RawVideoFrameValidator : public VideoFrameValidator {
 };
 
 // Validate by computing PSNR from the frame to be validated and the model frame
-// acquired by |get_model_frame_cb_|. If the PSNR value is equal to or less than
+// acquired by |get_model_frame_cb_|. If the PSNR value is equal to or more than
 // |tolerance_|, the validation on the frame passes.
 class PSNRVideoFrameValidator : public VideoFrameValidator {
  public:
@@ -195,7 +195,7 @@ class PSNRVideoFrameValidator : public VideoFrameValidator {
       std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor = nullptr,
       ValidationMode validation_mode = ValidationMode::kThreshold,
       double tolerance = kDefaultTolerance);
-  const std::map<size_t, double>& GetPSNRValues() { return psnr_; }
+  const std::map<size_t, double>& GetPSNRValues() const { return psnr_; }
   ~PSNRVideoFrameValidator() override;
 
  private:
@@ -220,7 +220,7 @@ class PSNRVideoFrameValidator : public VideoFrameValidator {
 };
 
 // Validate by computing SSIM from the frame to be validated and the model frame
-// acquired by |get_model_frame_cb_|. If the SSIM value is equal to or less than
+// acquired by |get_model_frame_cb_|. If the SSIM value is equal to or more than
 // |tolerance_|, the validation on the frame passes.
 class SSIMVideoFrameValidator : public VideoFrameValidator {
  public:
@@ -231,7 +231,7 @@ class SSIMVideoFrameValidator : public VideoFrameValidator {
       std::unique_ptr<VideoFrameProcessor> corrupt_frame_processor = nullptr,
       ValidationMode validation_mode = ValidationMode::kThreshold,
       double tolerance = kDefaultTolerance);
-  const std::map<size_t, double>& GetSSIMValues() { return ssim_; }
+  const std::map<size_t, double>& GetSSIMValues() const { return ssim_; }
   ~SSIMVideoFrameValidator() override;
 
  private:
