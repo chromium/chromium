@@ -24,29 +24,29 @@
 .controlled-setting-indicator:-webkit-any([controlled-by='recommended'],
     [controlled-by='hasRecommendation']) > div,
     .controlled-setting-indicator[controlled-by='policy'] > div {
-  background-image: url(../images/business.svg);
+  background-image: url(../../../../../ui/webui/resources/images/business.svg);
 }
 
 .controlled-setting-indicator[controlled-by='owner'] > div {
-  background-image: url(../images/account_circle.svg);
+  background-image: url(../../../../../ui/webui/resources/images/account_circle.svg);
 }
 
 .controlled-setting-indicator[controlled-by='extension'] > div {
-  background-image: url(../images/extension.svg);
+  background-image: url(../../../../../ui/webui/resources/images/extension.svg);
 }
 
 <if expr="chromeos">
 .controlled-setting-indicator[controlled-by='shared'] > div {
-  background-image: url(../images/group.svg);
+  background-image: url(../../../../../ui/webui/resources/images/group.svg);
 }
 </if>
 
 .controlled-setting-indicator[controlled-by='child-custodian'] > div {
-  background-image: url(../images/account_child_invert.svg);
+  background-image: url(../../../../../ui/webui/resources/images/account_child_invert.svg);
 }
 
 .controlled-setting-indicator[controlled-by='supervised-user-custodian'] > div {
-  background-image: url(../images/supervisor_account.svg);
+  background-image: url(../../../../../ui/webui/resources/images/supervisor_account.svg);
 }
 
 .controlled-setting-bubble-action {

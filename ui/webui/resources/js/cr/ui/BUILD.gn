@@ -42,7 +42,6 @@ preprocess_if_expr("preprocess_src") {
     "card_slider.js",
     "command.js",
     "context_menu_handler.js",
-    "controlled_indicator.js",
     "dialogs.js",
     "drag_wrapper.js",
     "focus_grid.js",

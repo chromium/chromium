@@ -80,8 +80,6 @@ without changes to the corresponding grd file. -->
       </if>
     </includes>
     <structures>
-      <structure name="IDR_WEBUI_CSS_CONTROLLED_INDICATOR_CSS"
-                 file="css/controlled_indicator.css" type="chrome_html" flattenhtml="true" />
       <structure name="IDR_WEBUI_CSS_MENU_CSS"
                  file="css/menu.css" type="chrome_html"
                  flattenhtml="true" />
