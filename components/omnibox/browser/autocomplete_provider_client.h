@@ -170,7 +170,7 @@ class AutocompleteProviderClient {
                                 const AutocompleteInput* input) = 0;
 
   // Returns whether any browser update is ready.
-  virtual bool IsBrowserUpdateAvailable() const;
+  virtual bool IsIncognitoModeAvailable() const;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_PROVIDER_CLIENT_H_

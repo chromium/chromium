@@ -8,6 +8,6 @@ std::string AutocompleteProviderClient::ProfileUserName() const {
   return "";
 }
 
-bool AutocompleteProviderClient::IsBrowserUpdateAvailable() const {
-  return false;
+bool AutocompleteProviderClient::IsIncognitoModeAvailable() const {
+  return true;
 }

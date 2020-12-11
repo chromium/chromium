@@ -27,6 +27,7 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/query_tiles/tile_service_factory.h"
@@ -466,12 +467,12 @@ bool ChromeAutocompleteProviderClient::IsTabOpenWithURL(
 #endif  // defined(OS_ANDROID)
 }
 
-bool ChromeAutocompleteProviderClient::IsBrowserUpdateAvailable() const {
-#if defined(OS_ANDROID)
-  return false;
-#else
-  return UpgradeDetector::GetInstance()->is_upgrade_available();
-#endif
+bool ChromeAutocompleteProviderClient::IsIncognitoModeAvailable() const {
+  if (profile_->IsGuestSession() || profile_->IsEphemeralGuestProfile()) {
+    return false;
+  }
+  return IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
+         IncognitoModePrefs::DISABLED;
 }
 
 void ChromeAutocompleteProviderClient::OnAutocompleteControllerResultReady(
