@@ -882,8 +882,8 @@ void AutoEnrollmentClientImpl::Start() {
 
   // Drop the previous job and reset state.
   request_job_.reset();
+  hash_dance_time_start_ = base::TimeTicks();
   state_ = AUTO_ENROLLMENT_STATE_PENDING;
-  time_start_ = base::TimeTicks::Now();
   modulus_updates_received_ = 0;
   has_server_state_ = false;
   device_state_available_ = false;
@@ -896,7 +896,9 @@ void AutoEnrollmentClientImpl::Retry() {
 }
 
 void AutoEnrollmentClientImpl::CancelAndDeleteSoon() {
-  if (time_start_.is_null() || !request_job_) {
+  // Check if neither Hash dance request i.e. DeviceAutoEnrollmentRequest nor
+  // DeviceStateRetrievalRequest is in progress.
+  if (!request_job_) {
     // The client isn't running, just delete it.
     delete this;
   } else {
@@ -1092,6 +1094,10 @@ void AutoEnrollmentClientImpl::NextStep() {
 }
 
 void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
+  // Start the Hash dance timer during the first attempt.
+  if (hash_dance_time_start_.is_null())
+    hash_dance_time_start_ = base::TimeTicks::Now();
+
   std::string id_hash = device_identifier_provider_->GetIdHash();
   // Currently AutoEnrollmentClientImpl supports working with hashes that are at
   // least 8 bytes long. If this is reduced, the computation of the remainder
@@ -1328,8 +1334,8 @@ void AutoEnrollmentClientImpl::UpdateBucketDownloadTimingHistograms() {
   static const int kBuckets = 50;
 
   base::TimeTicks now = base::TimeTicks::Now();
-  if (!time_start_.is_null()) {
-    base::TimeDelta delta = now - time_start_;
+  if (!hash_dance_time_start_.is_null()) {
+    base::TimeDelta delta = now - hash_dance_time_start_;
     base::UmaHistogramCustomTimes(kUMAHashDanceProtocolTime + uma_suffix_,
                                   delta, kMin, kMax, kBuckets);
   }
@@ -1356,8 +1362,8 @@ void AutoEnrollmentClientImpl::RecordHashDanceSuccessTimeHistogram() {
   static const int kBuckets = 50;
 
   base::TimeTicks now = base::TimeTicks::Now();
-  if (!time_start_.is_null()) {
-    base::TimeDelta delta = now - time_start_;
+  if (!hash_dance_time_start_.is_null()) {
+    base::TimeDelta delta = now - hash_dance_time_start_;
     base::UmaHistogramCustomTimes(kUMAHashDanceSuccessTime + uma_suffix_, delta,
                                   kMin, kMax, kBuckets);
   }
