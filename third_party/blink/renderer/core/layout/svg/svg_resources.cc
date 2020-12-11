@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
-#include "third_party/blink/renderer/core/svg/svg_pattern_element.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
@@ -52,7 +51,7 @@
 
 namespace blink {
 
-SVGResources::SVGResources() : linked_resource_(nullptr) {}
+SVGResources::SVGResources() = default;
 
 SVGElementResourceClient* SVGResources::GetClient(const LayoutObject& object) {
   return To<SVGElement>(object.GetNode())->GetSVGResourceClient();
@@ -146,8 +145,7 @@ static HashSet<AtomicString>& FillAndStrokeTags() {
 }
 
 bool SVGResources::HasResourceData() const {
-  return clipper_filter_masker_data_ || marker_data_ || fill_stroke_data_ ||
-         linked_resource_;
+  return clipper_filter_masker_data_ || marker_data_ || fill_stroke_data_;
 }
 
 static inline SVGResources& EnsureResources(
@@ -223,16 +221,6 @@ std::unique_ptr<SVGResources> SVGResources::BuildResources(
     }
   }
 
-  if (auto* pattern = DynamicTo<SVGPatternElement>(element)) {
-    const SVGPatternElement* directly_referenced_pattern =
-        pattern->ReferencedElement();
-    if (directly_referenced_pattern) {
-      EnsureResources(resources).SetLinkedResource(
-          DynamicTo<LayoutSVGResourceContainer>(
-              directly_referenced_pattern->GetLayoutObject()));
-    }
-  }
-
   return (!resources || !resources->HasResourceData()) ? nullptr
                                                        : std::move(resources);
 }
@@ -241,15 +229,6 @@ void SVGResources::ResourceDestroyed(LayoutSVGResourceContainer* resource) {
   DCHECK(resource);
   if (!HasResourceData())
     return;
-
-  if (linked_resource_ == resource) {
-    DCHECK(!clipper_filter_masker_data_);
-    DCHECK(!marker_data_);
-    DCHECK(!fill_stroke_data_);
-    linked_resource_->RemoveAllClientsFromCache();
-    linked_resource_ = nullptr;
-    return;
-  }
 
   switch (resource->ResourceType()) {
     case kMaskerResourceType:
@@ -297,14 +276,6 @@ void SVGResources::ResourceDestroyed(LayoutSVGResourceContainer* resource) {
 
 void SVGResources::ClearReferencesTo(LayoutSVGResourceContainer* resource) {
   DCHECK(resource);
-  if (linked_resource_ == resource) {
-    DCHECK(!clipper_filter_masker_data_);
-    DCHECK(!marker_data_);
-    DCHECK(!fill_stroke_data_);
-    linked_resource_ = nullptr;
-    return;
-  }
-
   switch (resource->ResourceType()) {
     case kMaskerResourceType:
       DCHECK(clipper_filter_masker_data_);
@@ -351,14 +322,6 @@ void SVGResources::BuildSetOfResources(
     HashSet<LayoutSVGResourceContainer*>& set) {
   if (!HasResourceData())
     return;
-
-  if (linked_resource_) {
-    DCHECK(!clipper_filter_masker_data_);
-    DCHECK(!marker_data_);
-    DCHECK(!fill_stroke_data_);
-    set.insert(linked_resource_);
-    return;
-  }
 
   if (clipper_filter_masker_data_) {
     if (clipper_filter_masker_data_->clipper)
@@ -464,14 +427,6 @@ void SVGResources::SetStroke(LayoutSVGResourcePaintServer* stroke) {
   fill_stroke_data_->stroke = stroke;
 }
 
-void SVGResources::SetLinkedResource(
-    LayoutSVGResourceContainer* linked_resource) {
-  if (!linked_resource)
-    return;
-
-  linked_resource_ = linked_resource;
-}
-
 #if DCHECK_IS_ON()
 void SVGResources::Dump(const LayoutObject* object) {
   DCHECK(object);
@@ -517,10 +472,6 @@ void SVGResources::Dump(const LayoutObject* object) {
       fprintf(stderr, " |-> Stroke     : %p (node=%p)\n", stroke,
               stroke->GetElement());
   }
-
-  if (linked_resource_)
-    fprintf(stderr, " |-> xlink:href : %p (node=%p)\n", linked_resource_,
-            linked_resource_->GetElement());
 }
 #endif
 

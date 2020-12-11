@@ -24,16 +24,13 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_pattern.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/svg/pattern_attributes.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_transform_list.h"
-#include "third_party/blink/renderer/core/svg/svg_resource.h"
-#include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
@@ -95,7 +92,7 @@ void SVGPatternElement::Trace(Visitor* visitor) const {
   visitor->Trace(pattern_transform_);
   visitor->Trace(pattern_units_);
   visitor->Trace(pattern_content_units_);
-  visitor->Trace(resource_);
+  visitor->Trace(target_id_observer_);
   SVGElement::Trace(visitor);
   SVGURIReference::Trace(visitor);
   SVGTests::Trace(visitor);
@@ -106,28 +103,16 @@ void SVGPatternElement::BuildPendingResource() {
   ClearResourceReferences();
   if (!isConnected())
     return;
-  TreeScope& tree_scope = GetTreeScope();
-  SVGTreeScopeResources& tree_scope_resources =
-      tree_scope.EnsureSVGTreeScopedResources();
-  resource_ = tree_scope_resources.ResourceForId(
-      FragmentIdentifierFromIRIString(HrefString(), tree_scope));
-  if (resource_)
-    resource_->AddClient(EnsureSVGResourceClient());
+  Element* target = ObserveTarget(target_id_observer_, *this);
+  if (auto* pattern = DynamicTo<SVGPatternElement>(target))
+    AddReferenceTo(pattern);
 
   InvalidatePattern(layout_invalidation_reason::kSvgResourceInvalidated);
-  if (auto* layout_object = GetLayoutObject()) {
-    if (!layout_object->Parent())
-      return;
-    SVGResourcesCache::UpdateResources(*layout_object);
-    InvalidateDependentPatterns();
-  }
 }
 
 void SVGPatternElement::ClearResourceReferences() {
-  if (!resource_)
-    return;
-  resource_->RemoveClient(*GetSVGResourceClient());
-  resource_ = nullptr;
+  UnobserveTarget(target_id_observer_);
+  RemoveAllOutgoingReferences();
 }
 
 void SVGPatternElement::CollectStyleForPresentationAttribute(
@@ -265,8 +250,8 @@ static void SetPatternAttributes(const SVGPatternElement& element,
 }
 
 const SVGPatternElement* SVGPatternElement::ReferencedElement() const {
-  return DynamicTo<SVGPatternElement>(resource_ ? resource_->Target()
-                                                : nullptr);
+  return DynamicTo<SVGPatternElement>(
+      TargetElementFromIRIString(HrefString(), GetTreeScope()));
 }
 
 void SVGPatternElement::CollectPatternAttributes(

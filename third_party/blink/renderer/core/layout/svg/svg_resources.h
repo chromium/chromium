@@ -107,11 +107,6 @@ class SVGResources {
     return fill_stroke_data_ ? fill_stroke_data_->stroke : nullptr;
   }
 
-  // Chainable resources - linked through xlink:href
-  LayoutSVGResourceContainer* LinkedResource() const {
-    return linked_resource_;
-  }
-
   void BuildSetOfResources(HashSet<LayoutSVGResourceContainer*>&);
 
   // Methods operating on all cached resources
@@ -133,7 +128,6 @@ class SVGResources {
   void SetMasker(LayoutSVGResourceMasker*);
   void SetFill(LayoutSVGResourcePaintServer*);
   void SetStroke(LayoutSVGResourcePaintServer*);
-  void SetLinkedResource(LayoutSVGResourceContainer*);
 
   // From SVG 1.1 2nd Edition
   // clipper: 'container elements' and 'graphics elements'
@@ -186,7 +180,6 @@ class SVGResources {
   std::unique_ptr<ClipperFilterMaskerData> clipper_filter_masker_data_;
   std::unique_ptr<MarkerData> marker_data_;
   std::unique_ptr<FillStrokeData> fill_stroke_data_;
-  LayoutSVGResourceContainer* linked_resource_;
 };
 
 class SVGElementResourceClient final

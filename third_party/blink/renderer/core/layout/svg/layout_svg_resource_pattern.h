@@ -59,24 +59,20 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   }
 
  private:
+  bool FindCycleFromSelf(SVGResourcesCycleSolver&) const override;
   std::unique_ptr<PatternData> BuildPatternData(
       const FloatRect& object_bounding_box);
   sk_sp<PaintRecord> AsPaintRecord(const FloatSize&,
                                    const AffineTransform&) const;
 
-  const LayoutSVGResourceContainer* ResolveContentElement() const;
-
-  bool should_collect_pattern_attributes_ : 1;
+  mutable bool should_collect_pattern_attributes_ : 1;
   Persistent<PatternAttributesWrapper> attributes_wrapper_;
 
-  PatternAttributes& MutableAttributes() {
-    NOT_DESTROYED();
-    return attributes_wrapper_->Attributes();
-  }
   const PatternAttributes& Attributes() const {
     NOT_DESTROYED();
     return attributes_wrapper_->Attributes();
   }
+  const PatternAttributes& EnsureAttributes() const;
 
   // FIXME: we can almost do away with this per-object map, but not quite: the
   // tile size can be relative to the client bounding box, and it gets captured

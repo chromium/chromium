@@ -35,7 +35,6 @@ namespace blink {
 class PatternAttributes;
 class SVGAnimatedLength;
 class SVGAnimatedTransformList;
-class SVGResource;
 
 class SVGPatternElement final : public SVGElement,
                                 public SVGURIReference,
@@ -110,7 +109,7 @@ class SVGPatternElement final : public SVGElement,
   Member<SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>> pattern_units_;
   Member<SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>
       pattern_content_units_;
-  Member<SVGResource> resource_;
+  Member<IdTargetObserver> target_id_observer_;
 };
 
 }  // namespace blink
