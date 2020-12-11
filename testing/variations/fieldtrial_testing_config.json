@@ -5916,10 +5916,10 @@
                     ]
                 },
                 {
-                    "name": "EnabledStitch",
+                    "name": "EnabledStitchAndTrending",
                     "params": {
                         "base_url": "https://chromeupboarding-pa.googleapis.com",
-                        "experiment_tag": "",
+                        "experiment_tag": "{enableTrending: true}",
                         "image_prefetch_mode": "top",
                         "is_unmetered_network_required": "false",
                         "most_visited_max_rows_normal_screen": "2",
@@ -5929,11 +5929,11 @@
                     "enable_features": [
                         "QueryTiles",
                         "QueryTilesInNTP",
-                        "QueryTilesInOmnibox"
+                        "QueryTilesInOmnibox",
+                        "QueryTilesLocalOrdering"
                     ],
                     "disable_features": [
-                        "QueryTilesEnableQueryEditing",
-                        "QueryTilesLocalOrdering"
+                        "QueryTilesEnableQueryEditing"
                     ]
                 }
             ]
