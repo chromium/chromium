@@ -285,7 +285,7 @@ TEST_F(WindowAnimationsTest, RotateHideNoLeak) {
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(0, NULL));
+      aura::test::CreateTestWindowWithId(0, nullptr));
   ui::Layer* animating_layer = window->layer();
   wm::SetWindowVisibilityAnimationType(window.get(),
                                        WINDOW_VISIBILITY_ANIMATION_TYPE_ROTATE);
@@ -294,6 +294,37 @@ TEST_F(WindowAnimationsTest, RotateHideNoLeak) {
   AnimateOnChildWindowVisibilityChanged(window.get(), false);
 
   animating_layer->GetAnimator()->StopAnimating();
+}
+
+// The rotation animation for hiding a window should not crash with a zero
+// duration.
+TEST_F(WindowAnimationsTest, RotateHideNoCrashZeroDuration) {
+  std::unique_ptr<aura::Window> window(
+      aura::test::CreateTestWindowWithId(0, nullptr));
+  wm::SetWindowVisibilityAnimationType(window.get(),
+                                       WINDOW_VISIBILITY_ANIMATION_TYPE_ROTATE);
+
+  AnimateOnChildWindowVisibilityChanged(window.get(), true);
+  AnimateOnChildWindowVisibilityChanged(window.get(), false);
+}
+
+TEST_F(WindowAnimationsTest, RotateHideCreatesNewLayer) {
+  ui::ScopedAnimationDurationScaleMode scale_mode(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+
+  std::unique_ptr<aura::Window> window(
+      aura::test::CreateTestWindowWithId(0, nullptr));
+  wm::SetWindowVisibilityAnimationType(window.get(),
+                                       WINDOW_VISIBILITY_ANIMATION_TYPE_ROTATE);
+  AnimateOnChildWindowVisibilityChanged(window.get(), true);
+  window->layer()->GetAnimator()->StopAnimating();
+
+  auto* original_layer = window->layer();
+  AnimateOnChildWindowVisibilityChanged(window.get(), false);
+  // The layer should have changed, as the Layer is cloned and detached.
+  EXPECT_NE(original_layer, window->layer());
+  // Need to stop the animation, otherwise there is a leak.
+  original_layer->GetAnimator()->StopAnimating();
 }
 
 // The rotation animation for hiding a window should not crash when terminated

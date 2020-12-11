@@ -102,11 +102,6 @@ class GetCurrentBrowsingContextMediaDialogTest
         base::BindOnce(&GetCurrentBrowsingContextMediaDialogTest::OnDialogDone,
                        base::Unretained(this)));
 
-    // TODO(crbug.com/1154677): Remove this work-around.
-    dialog_.GetHostForTesting()
-        ->GetWidget()
-        ->SetVisibilityChangedAnimationsEnabled(false);
-
     render_process_id_ = web_contents_->GetMainFrame()->GetProcess()->GetID();
     render_frame_id_ = web_contents_->GetMainFrame()->GetRoutingID();
   }
