@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <org.chromium.chrome.browser.signin.PersonalizedSigninPromoView
+        <org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView
             android:id="@+id/signin_promo_view_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
             </FrameLayout>
 
             <include layout="@layout/personalized_signin_promo_view_body"/>
-        </org.chromium.chrome.browser.signin.PersonalizedSigninPromoView>
+        </org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView>
     </FrameLayout>
 
     <TextView
