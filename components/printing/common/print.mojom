@@ -22,6 +22,17 @@ struct PreviewIds {
   int32 ui_id = -1;
 };
 
+// Parameters required to do print preview.
+[EnableIf=enable_print_preview]
+struct RequestPrintPreviewParams {
+  bool is_from_arc = false;
+  bool is_modifiable = false;
+  bool is_pdf = false;
+  bool webnode_only = false;
+  bool has_selection = false;
+  bool selection_only = false;
+};
+
 // Parameters required to print the content of an out-of-process subframe.
 struct PrintFrameContentParams {
   // Physical printable area of the page in pixels according to dpi.

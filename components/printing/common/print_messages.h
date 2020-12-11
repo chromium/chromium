@@ -26,24 +26,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 
-#ifndef INTERNAL_COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_
-#define INTERNAL_COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-struct PrintHostMsg_RequestPrintPreview_Params {
-  PrintHostMsg_RequestPrintPreview_Params();
-  ~PrintHostMsg_RequestPrintPreview_Params();
-  bool is_from_arc;
-  bool is_modifiable;
-  bool is_pdf;
-  bool webnode_only;
-  bool has_selection;
-  bool selection_only;
-};
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-
-#endif  // INTERNAL_COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_
-
 #define IPC_MESSAGE_START PrintMsgStart
 
 IPC_ENUM_TRAITS_MAX_VALUE(printing::mojom::PageOrientation,
@@ -145,7 +127,7 @@ IPC_STRUCT_TRAITS_BEGIN(printing::PageRange)
 IPC_STRUCT_TRAITS_END()
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-IPC_STRUCT_TRAITS_BEGIN(PrintHostMsg_RequestPrintPreview_Params)
+IPC_STRUCT_TRAITS_BEGIN(printing::mojom::RequestPrintPreviewParams)
   IPC_STRUCT_TRAITS_MEMBER(is_from_arc)
   IPC_STRUCT_TRAITS_MEMBER(is_modifiable)
   IPC_STRUCT_TRAITS_MEMBER(is_pdf)
@@ -279,7 +261,7 @@ IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_ScriptedPrint,
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // Asks the browser to do print preview.
 IPC_MESSAGE_ROUTED1(PrintHostMsg_RequestPrintPreview,
-                    PrintHostMsg_RequestPrintPreview_Params /* params */)
+                    printing::mojom::RequestPrintPreviewParams /* params */)
 
 // Notify the browser the about the to-be-rendered print preview document.
 IPC_MESSAGE_ROUTED2(PrintHostMsg_DidStartPreview,

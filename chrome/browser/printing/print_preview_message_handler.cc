@@ -101,7 +101,7 @@ PrintPreviewUI* PrintPreviewMessageHandler::GetPrintPreviewUI(
 
 void PrintPreviewMessageHandler::OnRequestPrintPreview(
     content::RenderFrameHost* render_frame_host,
-    const PrintHostMsg_RequestPrintPreview_Params& params) {
+    const mojom::RequestPrintPreviewParams& params) {
   PrintViewManager* print_view_manager =
       PrintViewManager::FromWebContents(web_contents());
   if (print_view_manager->RejectPrintPreviewRequestIfRestricted(

@@ -15,8 +15,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "printing/mojom/print.mojom-forward.h"
 
-struct PrintHostMsg_RequestPrintPreview_Params;
-
 namespace base {
 class RefCountedMemory;
 }
@@ -59,9 +57,8 @@ class PrintPreviewMessageHandler
   PrintPreviewUI* GetPrintPreviewUI(int preview_ui_id);
 
   // Message handlers.
-  void OnRequestPrintPreview(
-      content::RenderFrameHost* render_frame_host,
-      const PrintHostMsg_RequestPrintPreview_Params& params);
+  void OnRequestPrintPreview(content::RenderFrameHost* render_frame_host,
+                             const mojom::RequestPrintPreviewParams& params);
   void OnDidGetDefaultPageLayout(
       const mojom::PageSizeMargins& page_layout_in_points,
       const gfx::Rect& printable_area_in_points,

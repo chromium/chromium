@@ -30,6 +30,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/printing/common/print.mojom.h"
 #include "components/printing/common/print_messages.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/plugin_service.h"
@@ -73,7 +74,7 @@ class RequestPrintPreviewObserver : public WebContentsObserver {
   }
 
   void OnRequestPrintPreview(
-      const PrintHostMsg_RequestPrintPreview_Params& /* params */) {
+      const printing::mojom::RequestPrintPreviewParams& /* params */) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(quit_closure_));
   }

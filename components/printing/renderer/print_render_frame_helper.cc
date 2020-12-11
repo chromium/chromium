@@ -2404,7 +2404,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
   if (delegate_->ShouldGenerateTaggedPDF())
     snapshotter_ = render_frame()->CreateAXTreeSnapshotter();
 
-  PrintHostMsg_RequestPrintPreview_Params params;
+  mojom::RequestPrintPreviewParams params;
   params.is_from_arc = is_from_arc;
   params.is_modifiable = is_modifiable;
   params.is_pdf = is_pdf;

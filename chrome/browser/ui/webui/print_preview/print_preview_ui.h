@@ -25,8 +25,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-struct PrintHostMsg_RequestPrintPreview_Params;
-
 namespace base {
 class DictionaryValue;
 class FilePath;
@@ -126,9 +124,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
                             int* page_index);
 
   // Set initial settings for PrintPreviewUI.
-  static void SetInitialParams(
-      content::WebContents* print_preview_dialog,
-      const PrintHostMsg_RequestPrintPreview_Params& params);
+  static void SetInitialParams(content::WebContents* print_preview_dialog,
+                               const mojom::RequestPrintPreviewParams& params);
 
   // Determines whether to cancel a print preview request based on the request
   // and UI ids in |ids|.

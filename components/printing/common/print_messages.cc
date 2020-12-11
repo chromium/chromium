@@ -62,17 +62,3 @@ namespace IPC {
 #error "Failed to include header components/printing/common/print_messages.h"
 #endif
 }  // namespace IPC
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-PrintHostMsg_RequestPrintPreview_Params::
-    PrintHostMsg_RequestPrintPreview_Params()
-    : is_from_arc(false),
-      is_modifiable(false),
-      is_pdf(false),
-      webnode_only(false),
-      has_selection(false),
-      selection_only(false) {}
-
-PrintHostMsg_RequestPrintPreview_Params::
-    ~PrintHostMsg_RequestPrintPreview_Params() {}
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)

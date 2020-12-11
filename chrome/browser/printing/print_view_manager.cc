@@ -320,7 +320,7 @@ void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
     web_contents()->ExitFullscreen(true);
 
   dialog_controller->PrintPreview(web_contents());
-  PrintHostMsg_RequestPrintPreview_Params params;
+  mojom::RequestPrintPreviewParams params;
   params.is_modifiable = source_is_modifiable;
   PrintPreviewUI::SetInitialParams(
       dialog_controller->GetPrintPreviewForContents(web_contents()), params);

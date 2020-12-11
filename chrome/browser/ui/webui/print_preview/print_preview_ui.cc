@@ -613,7 +613,7 @@ void PrintPreviewUI::AddPdfPageForNupConversion(
 // static
 void PrintPreviewUI::SetInitialParams(
     content::WebContents* print_preview_dialog,
-    const PrintHostMsg_RequestPrintPreview_Params& params) {
+    const mojom::RequestPrintPreviewParams& params) {
   if (!print_preview_dialog || !print_preview_dialog->GetWebUI())
     return;
   PrintPreviewUI* print_preview_ui = static_cast<PrintPreviewUI*>(
