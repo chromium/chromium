@@ -209,6 +209,19 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 && !mIsFromSigninScreen) {
             mTurnOffSync.setVisible(true);
             findPreference(PREF_ADVANCED_CATEGORY).setVisible(true);
+
+            /**
+             * If MOBILE_IDENTITY_CONSISTENCY is disabled, sync data type states are retained even
+             * if the user toggles 'Sync your Chrome data' off in {@link SyncAndServicesSettings}
+             * page. This leads to an UI error that shows that all data types are enabled to sync
+             * even though sync is shown as turned off in {@link ManageSyncSettings} page.
+             * This state is impossible to reach if MOBILE_IDENTITY_CONSISTENCY is enabled.
+             * TODO(https://crbug.com/1065029): This code will be removed after
+             * MOBILE_IDENTITY_CONSISTENCY has been rolled out and existing users have been migrated
+             */
+            if (!ProfileSyncService.get().isSyncRequested()) {
+                ProfileSyncService.get().setChosenDataTypes(false, new HashSet<>());
+            }
         }
 
         mGoogleActivityControls = findPreference(PREF_GOOGLE_ACTIVITY_CONTROLS);
