@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "base/optional.h"
+#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -36,7 +37,51 @@ class ArcDiskQuotaBridgeFactory
   ~ArcDiskQuotaBridgeFactory() override = default;
 };
 
+constexpr char kAndroidDownloadPath[] = "/storage/emulated/0/Download/";
+constexpr char kAndroidExternalStoragePath[] = "/storage/emulated/0/";
+constexpr char kAndroidDataMediaPath[] = "/data/media/0/";
+
 }  // namespace
+
+// static
+bool ArcDiskQuotaBridge::convertPathForSetProjectId(
+    const base::FilePath& android_path,
+    cryptohome::SetProjectIdAllowedPathType* parent_path_out,
+    base::FilePath* child_path_out) {
+  const base::FilePath kDownloadPath(kAndroidDownloadPath);
+  const base::FilePath kExternalStoragePath(kAndroidExternalStoragePath);
+  const base::FilePath kDataMediaPath(kAndroidDataMediaPath);
+
+  if (android_path.ReferencesParent()) {
+    LOG(ERROR) << "Path contains \"..\" : " << android_path.value();
+    return false;
+  }
+
+  if (kDownloadPath.IsParent(android_path)) {
+    // /storage/emulated/0/Download/* =>
+    //     parent=/home/user/<hash>/Downloads/, child=*
+    *parent_path_out = cryptohome::SetProjectIdAllowedPathType::PATH_DOWNLOADS;
+    *child_path_out = base::FilePath();
+    return kDownloadPath.AppendRelativePath(android_path, child_path_out);
+  } else if (kExternalStoragePath.IsParent(android_path)) {
+    // /storage/emulated/0/* =>
+    //     parent=/home/root/<hash>/android-data/, chile=/data/media/0/*
+    *parent_path_out =
+        cryptohome::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
+    *child_path_out = kDataMediaPath;
+    return kExternalStoragePath.AppendRelativePath(android_path,
+                                                   child_path_out);
+  } else if (kDataMediaPath.IsParent(android_path)) {
+    // /data/media/0/* =>
+    //     parent=/home/root/<hash>/android-data/, child=/data/media/0/*
+    *parent_path_out =
+        cryptohome::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
+    *child_path_out = android_path;
+    return true;
+  } else {
+    return false;
+  }
+}
 
 // static
 ArcDiskQuotaBridge* ArcDiskQuotaBridge::GetForBrowserContext(
@@ -52,6 +97,10 @@ ArcDiskQuotaBridge::ArcDiskQuotaBridge(content::BrowserContext* context,
 
 ArcDiskQuotaBridge::~ArcDiskQuotaBridge() {
   arc_bridge_service_->disk_quota()->SetHost(nullptr);
+}
+
+void ArcDiskQuotaBridge::SetAccountId(const AccountId& account_id) {
+  account_id_ = account_id;
 }
 
 void ArcDiskQuotaBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
@@ -94,6 +143,55 @@ void ArcDiskQuotaBridge::GetCurrentSpaceForGid(
                  std::move(callback).Run(result.value_or(-1LL));
                },
                std::move(callback), gid));
+}
+
+void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
+    uint32_t project_id,
+    GetCurrentSpaceForProjectIdCallback callback) {
+  chromeos::CryptohomeClient::Get()->GetCurrentSpaceForProjectId(
+      project_id, base::BindOnce(
+                      [](GetCurrentSpaceForProjectIdCallback callback,
+                         int project_id, base::Optional<int64_t> result) {
+                        LOG_IF(ERROR, !result.has_value())
+                            << "Failed to retrieve result from "
+                               "GetCurrentSpaceForProjectId for project_id="
+                            << project_id;
+                        std::move(callback).Run(result.value_or(-1LL));
+                      },
+                      std::move(callback), project_id));
+}
+
+void ArcDiskQuotaBridge::SetProjectId(uint32_t project_id,
+                                      const std::string& android_path,
+                                      SetProjectIdCallback callback) {
+  cryptohome::SetProjectIdAllowedPathType parent_path;
+  base::FilePath child_path;
+  if (!convertPathForSetProjectId(base::FilePath(android_path), &parent_path,
+                                  &child_path)) {
+    LOG(ERROR) << "Setting a project ID to path " << android_path
+               << " is not allowed";
+    std::move(callback).Run(false);
+  }
+
+  auto identifier =
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
+
+  chromeos::CryptohomeClient::Get()->SetProjectId(
+      project_id, parent_path, child_path.value(), identifier,
+      base::BindOnce(
+          [](SetProjectIdCallback callback, const int project_id,
+             const cryptohome::SetProjectIdAllowedPathType parent_path,
+             const std::string& child_path,
+             const cryptohome::AccountIdentifier& account_id,
+             base::Optional<bool> result) {
+            LOG_IF(ERROR, !result.has_value())
+                << "Failed to set project ID " << project_id
+                << " to parent_path=" << parent_path
+                << " child_path=" << child_path;
+            std::move(callback).Run(result.value_or(false));
+          },
+          std::move(callback), project_id, parent_path, child_path.value(),
+          identifier));
 }
 
 }  // namespace arc

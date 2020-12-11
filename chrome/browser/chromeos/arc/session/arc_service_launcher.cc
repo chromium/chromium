@@ -189,7 +189,8 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcClipboardBridge::GetForBrowserContext(profile);
   ArcCrashCollectorBridge::GetForBrowserContext(profile);
   ArcDigitalGoodsBridge::GetForBrowserContext(profile);
-  ArcDiskQuotaBridge::GetForBrowserContext(profile);
+  ArcDiskQuotaBridge::GetForBrowserContext(profile)->SetAccountId(
+      multi_user_util::GetAccountIdFromProfile(profile));
   ArcEnterpriseReportingService::GetForBrowserContext(profile);
   ArcFileSystemBridge::GetForBrowserContext(profile);
   ArcFileSystemMounter::GetForBrowserContext(profile);
