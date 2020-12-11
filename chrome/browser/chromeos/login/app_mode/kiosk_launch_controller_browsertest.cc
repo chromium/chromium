@@ -124,55 +124,55 @@ class KioskLaunchControllerTest
 
 IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest, RegularFlow) {
   controller()->Start(kiosk_app_id(), false);
-  ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kCreatingProfile, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), Initialize()).Times(1);
   profile_controls()->OnProfileLoaded(profile());
 
   launch_controls()->InitializeNetwork();
-  ExpectState(AppState::INIT_NETWORK, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInitNetwork, NetworkUIState::kNotShowing);
   EXPECT_CALL(*launcher(), ContinueWithNetworkReady()).Times(1);
   SetOnline(true);
 
   launch_controls()->OnAppInstalling();
 
   launch_controls()->OnAppPrepared();
-  ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstalled, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), LaunchApp()).Times(1);
   FireSplashScreenTimer();
 
   launch_controls()->OnAppLaunched();
-  ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest, AlreadyInstalled) {
   controller()->Start(kiosk_app_id(), false);
-  ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kCreatingProfile, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), Initialize()).Times(1);
   profile_controls()->OnProfileLoaded(profile());
 
   launch_controls()->OnAppPrepared();
-  ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstalled, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), LaunchApp()).Times(1);
   FireSplashScreenTimer();
 
   launch_controls()->OnAppLaunched();
-  ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
                        ConfigureNetworkBeforeProfile) {
   controller()->Start(kiosk_app_id(), false);
-  ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kCreatingProfile, NetworkUIState::kNotShowing);
 
   // User presses the hotkey.
   view_controls()->OnNetworkConfigRequested();
-  ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NEED_TO_SHOW);
+  ExpectState(AppState::kCreatingProfile, NetworkUIState::kNeedToShow);
 
   EXPECT_CALL(*launcher(), Initialize()).Times(1);
   profile_controls()->OnProfileLoaded(profile());
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
   // response now.
   launch_controls()->InitializeNetwork();
 
-  ExpectState(AppState::INIT_NETWORK, NetworkUIState::SHOWING);
+  ExpectState(AppState::kInitNetwork, NetworkUIState::kShowing);
   EXPECT_CALL(*launcher(), RestartLauncher()).Times(1);
   view_controls()->OnNetworkConfigFinished();
 
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
   // network configure ui was shown.
 
   launch_controls()->OnAppLaunched();
-  ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
 }
 
@@ -199,13 +199,13 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
                        ConfigureNetworkDuringInstallation) {
   SetOnline(false);
   controller()->Start(kiosk_app_id(), false);
-  ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kCreatingProfile, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), Initialize()).Times(1);
   profile_controls()->OnProfileLoaded(profile());
 
   launch_controls()->InitializeNetwork();
-  ExpectState(AppState::INIT_NETWORK, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInitNetwork, NetworkUIState::kNotShowing);
   EXPECT_CALL(*launcher(), ContinueWithNetworkReady()).Times(1);
   SetOnline(true);
 
@@ -216,59 +216,59 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
   view_controls()->OnNetworkConfigRequested();
   // Launcher restart causes network to be requested again.
   launch_controls()->InitializeNetwork();
-  ExpectState(AppState::INIT_NETWORK, NetworkUIState::SHOWING);
+  ExpectState(AppState::kInitNetwork, NetworkUIState::kShowing);
 
   EXPECT_CALL(*launcher(), RestartLauncher()).Times(1);
   view_controls()->OnNetworkConfigFinished();
 
   launch_controls()->OnAppInstalling();
-  ExpectState(AppState::INSTALLING_APP, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstallingApp, NetworkUIState::kNotShowing);
 
   launch_controls()->OnAppPrepared();
-  ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstalled, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), LaunchApp()).Times(1);
   FireSplashScreenTimer();
 
   launch_controls()->OnAppLaunched();
-  ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
                        ConnectionLostDuringInstallation) {
   controller()->Start(kiosk_app_id(), false);
-  ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kCreatingProfile, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), Initialize()).Times(1);
   profile_controls()->OnProfileLoaded(profile());
 
   launch_controls()->InitializeNetwork();
-  ExpectState(AppState::INIT_NETWORK, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInitNetwork, NetworkUIState::kNotShowing);
   EXPECT_CALL(*launcher(), ContinueWithNetworkReady()).Times(1);
   SetOnline(true);
 
   launch_controls()->OnAppInstalling();
-  ExpectState(AppState::INSTALLING_APP, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstallingApp, NetworkUIState::kNotShowing);
 
   SetOnline(false);
   launch_controls()->InitializeNetwork();
-  ExpectState(AppState::INIT_NETWORK, NetworkUIState::SHOWING);
+  ExpectState(AppState::kInitNetwork, NetworkUIState::kShowing);
 
   EXPECT_CALL(*launcher(), RestartLauncher()).Times(1);
   view_controls()->OnNetworkConfigFinished();
 
   launch_controls()->OnAppInstalling();
-  ExpectState(AppState::INSTALLING_APP, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstallingApp, NetworkUIState::kNotShowing);
 
   launch_controls()->OnAppPrepared();
-  ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstalled, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), LaunchApp()).Times(1);
   FireSplashScreenTimer();
 
   launch_controls()->OnAppLaunched();
-  ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
 }
 
@@ -328,13 +328,13 @@ class KioskLaunchControllerWithExtensionTest
 
   void RunUntilAppPrepared() {
     controller()->Start(kiosk_app_id(), false);
-    ExpectState(AppState::CREATING_PROFILE, NetworkUIState::NOT_SHOWING);
+    ExpectState(AppState::kCreatingProfile, NetworkUIState::kNotShowing);
 
     EXPECT_CALL(*launcher(), Initialize()).Times(1);
     profile_controls()->OnProfileLoaded(profile());
 
     launch_controls()->InitializeNetwork();
-    ExpectState(AppState::INIT_NETWORK, NetworkUIState::NOT_SHOWING);
+    ExpectState(AppState::kInitNetwork, NetworkUIState::kNotShowing);
     EXPECT_CALL(*launcher(), ContinueWithNetworkReady()).Times(1);
     SetOnline(true);
 
@@ -361,29 +361,29 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithExtensionTest,
                        ExtensionLoadedBeforeAppPrepared) {
   SetExtensionLoaded();
   RunUntilAppPrepared();
-  ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstalled, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), LaunchApp()).Times(1);
   FireSplashScreenTimer();
 
   launch_controls()->OnAppLaunched();
-  ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithExtensionTest,
                        ExtensionLoadedAfterAppPrepared) {
   RunUntilAppPrepared();
-  ExpectState(AppState::INSTALLING_EXTENSIONS, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstallingExtensions, NetworkUIState::kNotShowing);
 
   SetExtensionLoaded();
-  ExpectState(AppState::INSTALLED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kInstalled, NetworkUIState::kNotShowing);
 
   EXPECT_CALL(*launcher(), LaunchApp()).Times(1);
   FireSplashScreenTimer();
 
   launch_controls()->OnAppLaunched();
-  ExpectState(AppState::LAUNCHED, NetworkUIState::NOT_SHOWING);
+  ExpectState(AppState::kLaunched, NetworkUIState::kNotShowing);
   EXPECT_TRUE(session_manager::SessionManager::Get()->IsSessionStarted());
 }
 

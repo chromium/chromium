@@ -211,16 +211,16 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   }
 
   app_launcher_->Initialize();
-  if (network_ui_state_ == NetworkUIState::NEED_TO_SHOW)
+  if (network_ui_state_ == NetworkUIState::kNeedToShow)
     ShowNetworkConfigureUI();
 }
 
 void KioskLaunchController::OnConfigureNetwork() {
   DCHECK(profile_);
-  if (network_ui_state_ == NetworkUIState::SHOWING)
+  if (network_ui_state_ == NetworkUIState::kShowing)
     return;
 
-  network_ui_state_ = NetworkUIState::SHOWING;
+  network_ui_state_ = NetworkUIState::kShowing;
   if (CanConfigureNetwork() && NeedOwnerAuthToConfigureNetwork()) {
     host_->VerifyOwnerForKiosk(
         base::BindOnce(&KioskLaunchController::OnOwnerSigninSuccess,
@@ -296,9 +296,9 @@ void KioskLaunchController::CleanUp() {
 }
 
 void KioskLaunchController::OnTimerFire() {
-  if (app_state_ == AppState::LAUNCHED) {
+  if (app_state_ == AppState::kLaunched) {
     CloseSplashScreen();
-  } else if (app_state_ == AppState::INSTALLED) {
+  } else if (app_state_ == AppState::kInstalled) {
     LaunchApp();
   } else {
     launch_on_install_ = true;
@@ -311,7 +311,7 @@ void KioskLaunchController::CloseSplashScreen() {
 
 void KioskLaunchController::OnAppInstalling() {
   SYSLOG(INFO) << "Kiosk app started installing.";
-  app_state_ = AppState::INSTALLING_APP;
+  app_state_ = AppState::kInstallingApp;
   if (!splash_screen_view_)
     return;
   splash_screen_view_->UpdateAppLaunchState(
@@ -327,10 +327,10 @@ void KioskLaunchController::OnAppPrepared() {
   if (!splash_screen_view_)
     return;
 
-  if (network_ui_state_ != NetworkUIState::NOT_SHOWING)
+  if (network_ui_state_ != NetworkUIState::kNotShowing)
     return;
 
-  app_state_ = AppState::INSTALLING_EXTENSIONS;
+  app_state_ = AppState::kInstallingExtensions;
   extensions::ForceInstalledTracker* tracker =
       GetForceInstalledTracker(profile_);
 
@@ -363,14 +363,14 @@ void KioskLaunchController::InitializeNetwork() {
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::APP_LAUNCH_STATE_PREPARING_NETWORK);
 
-  app_state_ = AppState::INIT_NETWORK;
+  app_state_ = AppState::kInitNetwork;
 
   if (splash_screen_view_->IsNetworkReady())
     OnNetworkStateChanged(true);
 }
 
 void KioskLaunchController::OnNetworkWaitTimedOut() {
-  DCHECK_EQ(network_ui_state_, NetworkUIState::NOT_SHOWING);
+  DCHECK_EQ(network_ui_state_, NetworkUIState::kNotShowing);
 
   auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
   content::GetNetworkConnectionTracker()->GetConnectionType(&connection_type,
@@ -399,7 +399,7 @@ bool KioskLaunchController::IsNetworkReady() const {
 }
 
 bool KioskLaunchController::IsShowingNetworkConfigScreen() const {
-  return network_ui_state_ == NetworkUIState::SHOWING;
+  return network_ui_state_ == NetworkUIState::kShowing;
 }
 
 bool KioskLaunchController::ShouldSkipAppInstallation() const {
@@ -437,7 +437,7 @@ void KioskLaunchController::HandleWebAppInstallFailed() {
   // there is a third-party authorization which causes redirect to url that
   // differs from the install url. We should proceed with launch in such cases,
   // expecting this situation to not happen upon next launch.
-  app_state_ = AppState::INSTALLED;
+  app_state_ = AppState::kInstalled;
 
   SYSLOG(WARNING) << "Failed to obtain app data, trying to launch anyway..";
 
@@ -453,7 +453,7 @@ void KioskLaunchController::HandleWebAppInstallFailed() {
 
 void KioskLaunchController::OnAppLaunched() {
   SYSLOG(INFO) << "Kiosk launch succeeded, wait for app window.";
-  app_state_ = AppState::LAUNCHED;
+  app_state_ = AppState::kLaunched;
   if (splash_screen_view_) {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::APP_LAUNCH_STATE_WAITING_APP_WINDOW);
@@ -498,7 +498,7 @@ void KioskLaunchController::OnOldEncryptionDetected(
 }
 
 void KioskLaunchController::OnForceInstalledExtensionsReady() {
-  app_state_ = AppState::INSTALLED;
+  app_state_ = AppState::kInstalled;
   extensions::ForceInstalledTracker* tracker =
       GetForceInstalledTracker(profile_);
   if (tracker)
@@ -575,53 +575,53 @@ void KioskLaunchController::ShowNetworkConfigureUI() {
   splash_wait_timer_.Stop();
   network_wait_timer_.Stop();
   launch_on_install_ = true;
-  network_ui_state_ = NetworkUIState::SHOWING;
+  network_ui_state_ = NetworkUIState::kShowing;
   splash_screen_view_->ShowNetworkConfigureUI();
 }
 
 void KioskLaunchController::CloseNetworkConfigureScreenIfOnline() {
-  if (network_ui_state_ == NetworkUIState::SHOWING && network_wait_timedout_) {
+  if (network_ui_state_ == NetworkUIState::kShowing && network_wait_timedout_) {
     SYSLOG(INFO) << "We are back online, closing network configure screen.";
     splash_screen_view_->ToggleNetworkConfig(false);
-    network_ui_state_ = NetworkUIState::NOT_SHOWING;
+    network_ui_state_ = NetworkUIState::kNotShowing;
   }
 }
 
 void KioskLaunchController::OnNetworkConfigRequested() {
-  network_ui_state_ = NetworkUIState::NEED_TO_SHOW;
+  network_ui_state_ = NetworkUIState::kNeedToShow;
   switch (app_state_) {
-    case AppState::CREATING_PROFILE:
-    case AppState::INIT_NETWORK:
-    case AppState::INSTALLED:
+    case AppState::kCreatingProfile:
+    case AppState::kInitNetwork:
+    case AppState::kInstalled:
       MaybeShowNetworkConfigureUI();
       break;
-    case AppState::INSTALLING_APP:
-    case AppState::INSTALLING_EXTENSIONS:
+    case AppState::kInstallingApp:
+    case AppState::kInstallingExtensions:
       // When requesting to show network configure UI, we should cancel current
       // installation and restart it as soon as the network is configured.
-      app_state_ = AppState::INIT_NETWORK;
+      app_state_ = AppState::kInitNetwork;
       app_launcher_->RestartLauncher();
       MaybeShowNetworkConfigureUI();
       break;
-    case AppState::LAUNCHED:
+    case AppState::kLaunched:
       // We do nothing since the splash screen is soon to be destroyed.
       break;
   }
 }
 
 void KioskLaunchController::OnNetworkConfigFinished() {
-  network_ui_state_ = NetworkUIState::NOT_SHOWING;
+  network_ui_state_ = NetworkUIState::kNotShowing;
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::APP_LAUNCH_STATE_PREPARING_PROFILE);
-  app_state_ = AppState::INIT_NETWORK;
+  app_state_ = AppState::kInitNetwork;
   app_launcher_->RestartLauncher();
 }
 
 void KioskLaunchController::OnNetworkStateChanged(bool online) {
-  if (app_state_ == AppState::INIT_NETWORK && online) {
+  if (app_state_ == AppState::kInitNetwork && online) {
     // If the network timed out, we should exit network config dialog as soon as
     // we are back online.
-    if (network_ui_state_ == NetworkUIState::NOT_SHOWING ||
+    if (network_ui_state_ == NetworkUIState::kNotShowing ||
         network_wait_timedout_) {
       network_wait_timer_.Stop();
       CloseNetworkConfigureScreenIfOnline();
@@ -629,8 +629,8 @@ void KioskLaunchController::OnNetworkStateChanged(bool online) {
     }
   }
 
-  if ((app_state_ == AppState::INSTALLING_APP ||
-       app_state_ == AppState::INSTALLING_EXTENSIONS) &&
+  if ((app_state_ == AppState::kInstallingApp ||
+       app_state_ == AppState::kInstallingExtensions) &&
       network_required_ && !online) {
     SYSLOG(WARNING)
         << "Connection lost during installation, restarting launcher.";
@@ -642,7 +642,7 @@ void KioskLaunchController::LaunchApp() {
   if (g_block_app_launch_for_testing)
     return;
 
-  DCHECK(app_state_ == AppState::INSTALLED);
+  DCHECK(app_state_ == AppState::kInstalled);
   // We need to change the session state so we are able to create browser
   // windows.
   session_manager::SessionManager::Get()->SetSessionState(

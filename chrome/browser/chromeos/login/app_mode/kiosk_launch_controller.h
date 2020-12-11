@@ -85,11 +85,11 @@ class KioskLaunchController
       std::unique_ptr<KioskAppLauncher> app_launcher);
 
   bool waiting_for_network() const {
-    return app_state_ == AppState::INIT_NETWORK;
+    return app_state_ == AppState::kInitNetwork;
   }
   bool network_wait_timedout() const { return network_wait_timedout_; }
   bool showing_network_dialog() const {
-    return network_ui_state_ == NetworkUIState::SHOWING;
+    return network_ui_state_ == NetworkUIState::kShowing;
   }
 
   void Start(const KioskAppId& kiosk_app_id, bool auto_launch);
@@ -98,19 +98,19 @@ class KioskLaunchController
   friend class KioskLaunchControllerTest;
 
   enum AppState {
-    CREATING_PROFILE,       // Profile is being created.
-    INIT_NETWORK,           // Waiting for the network to initialize.
-    INSTALLING_APP,         // App is being installed.
-    INSTALLING_EXTENSIONS,  // Force-installed extensions are being installed.
-    INSTALLED,  // Everything is installed, waiting for the splash screen timer
-                // to fire.
-    LAUNCHED    // App is being launched.
+    kCreatingProfile = 0,   // Profile is being created.
+    kInitNetwork,           // Waiting for the network to initialize.
+    kInstallingApp,         // App is being installed.
+    kInstallingExtensions,  // Force-installed extensions are being installed.
+    kInstalled,  // Everything is installed, waiting for the splash screen timer
+                 // to fire.
+    kLaunched    // App is being launched.
   };
 
   enum NetworkUIState {
-    NOT_SHOWING,   // Network configure UI is not being shown.
-    NEED_TO_SHOW,  // We need to show the UI as soon as we can.
-    SHOWING        // Network configure UI is being shown.
+    kNotShowing = 0,  // Network configure UI is not being shown.
+    kNeedToShow,      // We need to show the UI as soon as we can.
+    kShowing          // Network configure UI is being shown.
   };
 
   KioskLaunchController();
@@ -168,9 +168,9 @@ class KioskLaunchController
   void LaunchApp();
 
   // Current state of the controller.
-  AppState app_state_ = AppState::CREATING_PROFILE;
+  AppState app_state_ = AppState::kCreatingProfile;
   // Current state of network configure dialog.
-  NetworkUIState network_ui_state_ = NetworkUIState::NOT_SHOWING;
+  NetworkUIState network_ui_state_ = NetworkUIState::kNotShowing;
 
   LoginDisplayHost* const host_;  // Not owned, destructed upon shutdown.
   AppLaunchSplashScreenView* splash_screen_view_ = nullptr;  // Owned by OobeUI.
