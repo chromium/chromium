@@ -21,6 +21,7 @@
   WARN_NOT_CONFIRMED: 3,
   WARN_ALREADY_ASSIGNED_ACTION: 4,
   WARN_UNRECOGNIZED_KEY: 5,
+  WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH: 6,
 };
 
 /**
@@ -174,6 +175,7 @@ Polymer({
       case AssignmentState.WARN_NOT_CONFIRMED:
       case AssignmentState.WARN_ALREADY_ASSIGNED_ACTION:
       case AssignmentState.WARN_UNRECOGNIZED_KEY:
+      case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
         this.$.switchAccessActionAssignmentDialog.close();
         break;
     }
@@ -201,6 +203,12 @@ Polymer({
       }
 
       if (action === this.action) {
+        if (action === SwitchAccessCommand.SELECT &&
+            this.assignments_.length === 1) {
+          this.assignmentState_ =
+              AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH;
+          return;
+        }
         this.assignmentState_ = AssignmentState.WAIT_FOR_CONFIRMATION_REMOVAL;
       } else {
         this.alreadyAssignedAction_ = action;
@@ -339,6 +347,9 @@ Polymer({
       case AssignmentState.WARN_UNRECOGNIZED_KEY:
         return this.i18n(
             'switchAccessActionAssignmentDialogWarnUnrecognizedKeyPrompt');
+      case AssignmentState.WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH:
+        return this.i18n(
+            'switchAccessActionAssignmentDialogWarnCannotRemoveLastSelectSwitch');
       default:
         return '';
     }

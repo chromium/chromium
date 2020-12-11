@@ -525,6 +525,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_CONFIRMATION_PROMPT},
       {"switchAccessActionAssignmentDialogWaitForConfirmationRemovalPrompt",
        IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WAIT_FOR_CONFIRMATION_REMOVAL_PROMPT},
+      {"switchAccessActionAssignmentDialogWarnCannotRemoveLastSelectSwitch",
+       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH},
       {"noSwitchesAssigned", IDS_SETTINGS_NO_SWITCHES_ASSIGNED},
       {"switchAccessActionAssignmentDialogExit",
        IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_EXIT},
