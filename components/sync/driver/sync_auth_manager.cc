@@ -370,7 +370,7 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
 
   // If we're still here, then that means Chrome is still signed in to this
   // account. Keep Sync alive but set an auth error.
-  // TODO(crbug.com/906995): Should we stop Sync in this case?
+  // TODO(crbug.com/1156584): Should we stop Sync in this case?
   DCHECK_EQ(sync_account_.account_info.account_id,
             identity_manager_->GetPrimaryAccountId());
 

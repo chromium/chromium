@@ -371,7 +371,6 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
             .get();
     controllers.push_back(
         std::make_unique<send_tab_to_self::SendTabToSelfModelTypeController>(
-            sync_service,
             /*delegate_for_full_sync_mode=*/
             std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
                 delegate),

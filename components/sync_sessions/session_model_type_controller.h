@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/model_type_controller.h"
-#include "components/sync/driver/sync_service_observer.h"
 
 class PrefService;
 
@@ -22,8 +21,7 @@ class SyncService;
 namespace sync_sessions {
 
 // Overrides LoadModels to check if history sync is allowed by policy.
-class SessionModelTypeController : public syncer::ModelTypeController,
-                                   public syncer::SyncServiceObserver {
+class SessionModelTypeController : public syncer::ModelTypeController {
  public:
   SessionModelTypeController(
       syncer::SyncService* sync_service,
@@ -34,9 +32,6 @@ class SessionModelTypeController : public syncer::ModelTypeController,
 
   // DataTypeController overrides.
   PreconditionState GetPreconditionState() const override;
-
-  // syncer::SyncServiceObserver implementation.
-  void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
   void OnSavingBrowserHistoryPrefChanged();

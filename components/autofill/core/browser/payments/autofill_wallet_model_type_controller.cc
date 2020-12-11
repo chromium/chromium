@@ -13,7 +13,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -34,8 +33,6 @@ AutofillWalletModelTypeController::AutofillWalletModelTypeController(
          type == syncer::AUTOFILL_WALLET_METADATA ||
          type == syncer::AUTOFILL_WALLET_OFFER);
   SubscribeToPrefChanges();
-  // TODO(crbug.com/906995): remove this observing mechanism once all sync
-  // datatypes are stopped by ProfileSyncService, when sync is paused.
   sync_service_->AddObserver(this);
 }
 
@@ -56,8 +53,6 @@ AutofillWalletModelTypeController::AutofillWalletModelTypeController(
          type == syncer::AUTOFILL_WALLET_METADATA ||
          type == syncer::AUTOFILL_WALLET_OFFER);
   SubscribeToPrefChanges();
-  // TODO(crbug.com/906995): remove this observing mechanism once all sync
-  // datatypes are stopped by ProfileSyncService, when sync is paused.
   sync_service_->AddObserver(this);
 }
 
@@ -85,8 +80,6 @@ void AutofillWalletModelTypeController::Stop(
 syncer::DataTypeController::PreconditionState
 AutofillWalletModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  // Not being in a persistent error state implies not being in a web signout
-  // state.
   // TODO(https://crbug.com/819729): Add integration tests for web signout and
   // other persistent auth errors.
   bool preconditions_met =

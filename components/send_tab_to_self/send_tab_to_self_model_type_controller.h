@@ -7,23 +7,15 @@
 
 #include "base/macros.h"
 #include "components/sync/driver/model_type_controller.h"
-#include "components/sync/driver/sync_service_observer.h"
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 namespace send_tab_to_self {
 
 // Controls syncing of SEND_TAB_TO_SELF.
-class SendTabToSelfModelTypeController : public syncer::ModelTypeController,
-                                         public syncer::SyncServiceObserver {
+class SendTabToSelfModelTypeController : public syncer::ModelTypeController {
  public:
-  // The |delegate_for_full_sync_mode| and |sync_service| must not be null.
-  // |delegate_for_transport_mode| can be null. |sync_service| must outlive this
-  // object.
+  // |delegate_for_full_sync_mode| must not be null.
+  // |delegate_for_transport_mode| can be null.
   SendTabToSelfModelTypeController(
-      syncer::SyncService* sync_service,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
@@ -34,15 +26,7 @@ class SendTabToSelfModelTypeController : public syncer::ModelTypeController,
   void Stop(syncer::ShutdownReason shutdown_reason,
             StopCallback callback) override;
 
-  // DataTypeController overrides.
-  PreconditionState GetPreconditionState() const override;
-
-  // syncer::SyncServiceObserver implementation.
-  void OnStateChanged(syncer::SyncService* sync) override;
-
  private:
-  syncer::SyncService* const sync_service_;
-
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfModelTypeController);
 };
 

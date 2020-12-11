@@ -8,33 +8,23 @@
 
 #include "base/feature_list.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/sync/driver/sync_auth_util.h"
-#include "components/sync/driver/sync_service.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace send_tab_to_self {
 
 SendTabToSelfModelTypeController::SendTabToSelfModelTypeController(
-    syncer::SyncService* sync_service,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_transport_mode)
     : ModelTypeController(syncer::SEND_TAB_TO_SELF,
                           std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode)),
-      sync_service_(sync_service) {
+                          std::move(delegate_for_transport_mode)) {
   DCHECK_EQ(base::FeatureList::IsEnabled(
                 send_tab_to_self::kSendTabToSelfWhenSignedIn),
             ShouldRunInTransportOnlyMode());
-  // TODO(crbug.com/906995): Remove this observing mechanism once all sync
-  // datatypes are stopped by ProfileSyncService, when sync is paused.
-  sync_service_->AddObserver(this);
 }
 
-SendTabToSelfModelTypeController::~SendTabToSelfModelTypeController() {
-  sync_service_->RemoveObserver(this);
-}
+SendTabToSelfModelTypeController::~SendTabToSelfModelTypeController() = default;
 
 void SendTabToSelfModelTypeController::Stop(
     syncer::ShutdownReason shutdown_reason,
@@ -53,21 +43,6 @@ void SendTabToSelfModelTypeController::Stop(
       break;
   }
   ModelTypeController::Stop(shutdown_reason, std::move(callback));
-}
-
-syncer::DataTypeController::PreconditionState
-SendTabToSelfModelTypeController::GetPreconditionState() const {
-  DCHECK(CalledOnValidThread());
-  return syncer::IsWebSignout(sync_service_->GetAuthError())
-             ? PreconditionState::kMustStopAndClearData
-             : PreconditionState::kPreconditionsMet;
-}
-
-void SendTabToSelfModelTypeController::OnStateChanged(
-    syncer::SyncService* sync) {
-  DCHECK(CalledOnValidThread());
-  // Most of these calls will be no-ops but SyncService handles that just fine.
-  sync_service_->DataTypePreconditionChanged(type());
 }
 
 }  // namespace send_tab_to_self

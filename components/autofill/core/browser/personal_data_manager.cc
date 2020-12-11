@@ -594,19 +594,14 @@ AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {
     return AutofillSyncSigninState::kSignedOut;
   }
 
-  // Check if the user has turned on sync.
-  if (sync_service_->IsSyncFeatureEnabled()) {
-    // TODO(crbug.com/906995): Remove this once the kStopSyncInPausedState
-    // feature is launched.
-    if (syncer::IsWebSignout(sync_service_->GetAuthError())) {
-      return AutofillSyncSigninState::kSyncPaused;
-    }
-    return AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
-  }
-
   if (sync_service_->GetTransportState() ==
       syncer::SyncService::TransportState::PAUSED) {
     return AutofillSyncSigninState::kSyncPaused;
+  }
+
+  // Check if the user has turned on sync.
+  if (sync_service_->IsSyncFeatureEnabled()) {
+    return AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
   }
 
   // Check if the feature is enabled and if Wallet data types are supported.
