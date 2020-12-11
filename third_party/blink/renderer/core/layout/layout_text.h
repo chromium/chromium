@@ -104,8 +104,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void RemoveTextBox(InlineTextBox*);
 
   bool HasInlineFragments() const final;
-  NGPaintFragment* FirstInlineFragment() const final;
-  void SetFirstInlineFragment(NGPaintFragment*) final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
   void ClearFirstInlineFragmentItemIndex() final;
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
@@ -582,9 +580,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     // Read the LINE BOXES OWNERSHIP section in the class header comment.
     // Valid only when !IsInLayoutNGInlineFormattingContext().
     InlineTextBoxList text_boxes_;
-    // The first fragment of text boxes associated with this object.
-    // Valid only when IsInLayoutNGInlineFormattingContext().
-    NGPaintFragment* first_paint_fragment_;
     // The index of the first fragment item associated with this object in
     // |NGFragmentItems::Items()|. Zero means there are no such item.
     // Valid only when IsInLayoutNGInlineFormattingContext().
@@ -595,15 +590,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 inline InlineTextBoxList& LayoutText::MutableTextBoxes() {
   CHECK(!IsInLayoutNGInlineFormattingContext());
   return text_boxes_;
-}
-
-inline NGPaintFragment* LayoutText::FirstInlineFragment() const {
-  if (!IsInLayoutNGInlineFormattingContext())
-    return nullptr;
-  if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-    return first_paint_fragment_;
-  NOTREACHED();
-  return nullptr;
 }
 
 inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {

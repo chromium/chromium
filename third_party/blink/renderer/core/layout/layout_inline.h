@@ -35,7 +35,6 @@ namespace blink {
 
 class LayoutBlockFlow;
 class NGInlineCursor;
-class NGPaintFragment;
 
 // LayoutInline is the LayoutObject associated with display: inline.
 // This is called an "inline box" in CSS 2.1.
@@ -187,8 +186,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   }
 
   bool HasInlineFragments() const final;
-  NGPaintFragment* FirstInlineFragment() const final;
-  void SetFirstInlineFragment(NGPaintFragment*) final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
   void ClearFirstInlineFragmentItemIndex() final;
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
@@ -454,9 +451,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
     // <i>Hello<br>world.</i> will have two <i> line boxes.
     // Valid only when !IsInLayoutNGInlineFormattingContext().
     LineBoxList line_boxes_;
-    // The first fragment of inline boxes associated with this object.
-    // Valid only when IsInLayoutNGInlineFormattingContext().
-    NGPaintFragment* first_paint_fragment_;
     // The index of the first fragment item associated with this object in
     // |NGFragmentItems::Items()|. Zero means there are no such item.
     // Valid only when IsInLayoutNGInlineFormattingContext().
@@ -467,17 +461,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 inline LineBoxList* LayoutInline::MutableLineBoxes() {
   CHECK(!IsInLayoutNGInlineFormattingContext());
   return &line_boxes_;
-}
-
-inline NGPaintFragment* LayoutInline::FirstInlineFragment() const {
-  if (!IsInLayoutNGInlineFormattingContext())
-    return nullptr;
-  // TODO(yosin): Once we replace all usage of |FirstInlineFragment()| to
-  // |NGInlineCursor|, we should change this to |DCHECK()|.
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-    return nullptr;
-  return first_paint_fragment_;
 }
 
 inline wtf_size_t LayoutInline::FirstInlineFragmentItemIndex() const {

@@ -1167,8 +1167,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void DeleteLineBoxWrapper();
 
   bool HasInlineFragments() const final;
-  NGPaintFragment* FirstInlineFragment() const final;
-  void SetFirstInlineFragment(NGPaintFragment*) final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
   void ClearFirstInlineFragmentItemIndex() final;
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
@@ -2355,10 +2353,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     // The inline box containing this LayoutBox, for atomic inline elements.
     // Valid only when !IsInLayoutNGInlineFormattingContext().
     InlineBox* inline_box_wrapper_;
-    // The first fragment of the inline box containing this LayoutBox, for
-    // atomic inline elements. Valid only when
-    // IsInLayoutNGInlineFormattingContext().
-    NGPaintFragment* first_paint_fragment_;
     // The index of the first fragment item associated with this object in
     // |NGFragmentItems::Items()|. Zero means there are no such item.
     // Valid only when IsInLayoutNGInlineFormattingContext().
@@ -2446,15 +2440,6 @@ inline void LayoutBox::SetInlineBoxWrapper(InlineBox* box_wrapper) {
   }
 
   inline_box_wrapper_ = box_wrapper;
-}
-
-inline NGPaintFragment* LayoutBox::FirstInlineFragment() const {
-  if (!IsInLayoutNGInlineFormattingContext())
-    return nullptr;
-  if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-    return first_paint_fragment_;
-  NOTREACHED();
-  return nullptr;
 }
 
 inline wtf_size_t LayoutBox::FirstInlineFragmentItemIndex() const {

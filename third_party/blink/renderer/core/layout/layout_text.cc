@@ -173,14 +173,10 @@ LayoutText::LayoutText(Node* node, scoped_refptr<StringImpl> str)
 
 LayoutText::~LayoutText() {
 #if DCHECK_IS_ON()
-  if (IsInLayoutNGInlineFormattingContext()) {
-    if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-      DCHECK(!first_paint_fragment_);
-    else
-      DCHECK(!first_fragment_item_index_);
-  } else {
+  if (IsInLayoutNGInlineFormattingContext())
+    DCHECK(!first_fragment_item_index_);
+  else
     text_boxes_.AssertIsEmpty();
-  }
 #endif
 }
 
@@ -252,26 +248,15 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
     } else {
       if (Parent())
         Parent()->DirtyLinesFromChangedChild(this);
-      if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-        if (FirstInlineFragmentItemIndex()) {
-          DetachAbstractInlineTextBoxesIfNeeded();
-          NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
-          ClearFirstInlineFragmentItemIndex();
-        }
-      } else if (NGPaintFragment* first_inline_fragment =
-                     FirstInlineFragment()) {
-        first_inline_fragment->LayoutObjectWillBeDestroyed();
-        SetFirstInlineFragment(nullptr);
+      if (FirstInlineFragmentItemIndex()) {
+        DetachAbstractInlineTextBoxesIfNeeded();
+        NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
+        ClearFirstInlineFragmentItemIndex();
       }
     }
-  } else if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    if (FirstInlineFragmentItemIndex()) {
-      DetachAbstractInlineTextBoxesIfNeeded();
-      ClearFirstInlineFragmentItemIndex();
-    }
-  } else if (NGPaintFragment* first_inline_fragment = FirstInlineFragment()) {
-    // Still do this to clear the global hash map in  NGAbstractInlineTextBox.
-    SetFirstInlineFragment(nullptr);
+  } else if (FirstInlineFragmentItemIndex()) {
+    DetachAbstractInlineTextBoxesIfNeeded();
+    ClearFirstInlineFragmentItemIndex();
   }
   DeleteTextBoxes();
 }
@@ -323,24 +308,11 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
   // NGAbstractInlineTextBox for them.
   DCHECK(has_abstract_inline_text_box_);
   has_abstract_inline_text_box_ = false;
-  if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    for (NGPaintFragment* fragment : NGPaintFragment::InlineFragmentsFor(this))
-      NGAbstractInlineTextBox::WillDestroy(fragment);
-    return;
-  }
   // TODO(yosin): Make sure we call this function within valid containg block
   // of |this|.
   NGInlineCursor cursor;
   for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
     NGAbstractInlineTextBox::WillDestroy(cursor);
-}
-
-void LayoutText::SetFirstInlineFragment(NGPaintFragment* first_fragment) {
-  NOT_DESTROYED();
-  CHECK(IsInLayoutNGInlineFormattingContext());
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
-  DetachAbstractInlineTextBoxesIfNeeded();
-  first_paint_fragment_ = first_fragment;
 }
 
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
@@ -363,22 +335,14 @@ void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
 
 void LayoutText::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
   NOT_DESTROYED();
-  if (IsInLayoutNGInlineFormattingContext()) {
-    if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-      SetFirstInlineFragment(nullptr);
-    } else {
-      ClearFirstInlineFragmentItemIndex();
-    }
-  } else {
+  if (IsInLayoutNGInlineFormattingContext())
+    ClearFirstInlineFragmentItemIndex();
+  else
     DeleteTextBoxes();
-  }
 
   // Because |first_paint_fragment_| and |text_boxes_| are union, when one is
   // deleted, the other should be initialized to nullptr.
-  DCHECK(new_value ? (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()
-                          ? !first_fragment_item_index_
-                          : !first_paint_fragment_)
-                   : !text_boxes_.First());
+  DCHECK(new_value ? !first_fragment_item_index_ : !text_boxes_.First());
 
   // Because there are no inline boxes associated to this text, we should not
   // have abstract inline text boxes too.
@@ -466,12 +430,8 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
 
 bool LayoutText::HasInlineFragments() const {
   NOT_DESTROYED();
-  if (IsInLayoutNGInlineFormattingContext()) {
-    if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-      return first_paint_fragment_;
+  if (IsInLayoutNGInlineFormattingContext())
     return first_fragment_item_index_;
-  }
-
   return FirstTextBox();
 }
 
@@ -2254,12 +2214,7 @@ PhysicalRect LayoutText::PhysicalVisualOverflowRect() const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
     DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
-    if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-      return NGFragmentItem::LocalVisualRectFor(*this);
-
-    if (base::Optional<PhysicalRect> rect =
-            NGPaintFragment::LocalVisualRectFor(*this))
-      return *rect;
+    return NGFragmentItem::LocalVisualRectFor(*this);
   }
 
   if (!FirstTextBox())
@@ -2671,15 +2626,6 @@ void LayoutText::InvalidateDisplayItemClients(
     invalidator.InvalidateDisplayItemClient(*selection_client, reason);
 
   if (IsInLayoutNGInlineFormattingContext()) {
-    if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-      NGInlineCursor cursor;
-      for (cursor.MoveTo(*this); cursor;
-           cursor.MoveToNextForSameLayoutObject()) {
-        invalidator.InvalidateDisplayItemClient(
-            *cursor.Current().GetDisplayItemClient(), reason);
-      }
-      return;
-    }
 #if DCHECK_IS_ON()
     NGInlineCursor cursor;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
@@ -2699,8 +2645,7 @@ const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {
   NOT_DESTROYED();
   if (!IsSelected())
     return nullptr;
-  if (IsInLayoutNGInlineFormattingContext() &&
-      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+  if (IsInLayoutNGInlineFormattingContext()) {
     if (const auto* client = GetSelectionDisplayItemClientMap().at(this))
       return client;
     return GetSelectionDisplayItemClientMap()
@@ -2774,8 +2719,7 @@ void LayoutText::RecalcVisualOverflow() {
   // |RecalcVisualOverflow| for each layer, and the containing |LayoutObject|
   // should recalculate its |NGFragmentItem|s without traversing descendant
   // |LayoutObject|s.
-  if (IsInline() && IsInLayoutNGInlineFormattingContext() &&
-      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
+  if (IsInline() && IsInLayoutNGInlineFormattingContext())
     NOTREACHED();
 
   LayoutObject::RecalcVisualOverflow();

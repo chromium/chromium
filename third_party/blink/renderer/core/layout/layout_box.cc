@@ -96,7 +96,6 @@
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
@@ -435,10 +434,7 @@ void LayoutBox::WillBeDestroyed() {
   ShapeOutsideInfo::RemoveInfo(*this);
 
   if (!DocumentBeingDestroyed()) {
-    if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-      if (NGPaintFragment* first_inline_fragment = FirstInlineFragment())
-        first_inline_fragment->LayoutObjectWillBeDestroyed();
-    } else if (FirstInlineFragmentItemIndex()) {
+    if (FirstInlineFragmentItemIndex()) {
       NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
       ClearFirstInlineFragmentItemIndex();
     }
@@ -534,7 +530,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
             layout_invalidation_reason::kStyleChange);
 
         if (IsInLayoutNGInlineFormattingContext() &&
-            RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled() &&
             FirstInlineFragmentItemIndex()) {
           // Out of flow are not part of |NGFragmentItems|, and that further
           // changes including destruction cannot be tracked. Mark it is moved
@@ -836,8 +831,7 @@ void LayoutBox::LayoutSubtreeRoot() {
 
   // If this box has an associated layout-result, rebuild the spine of the
   // fragment-tree to ensure consistency.
-  if (PhysicalFragmentCount() &&
-      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+  if (PhysicalFragmentCount()) {
     LayoutBlock* cb = ContainingBlock();
     while (NGBlockNode::CanUseNewLayout(*cb) && !cb->NeedsLayout()) {
       // Create and set a new identical results.
@@ -3119,16 +3113,7 @@ bool LayoutBox::HasInlineFragments() const {
   NOT_DESTROYED();
   if (!IsInLayoutNGInlineFormattingContext())
     return inline_box_wrapper_;
-  if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-    return first_paint_fragment_;
   return first_fragment_item_index_;
-}
-
-void LayoutBox::SetFirstInlineFragment(NGPaintFragment* fragment) {
-  NOT_DESTROYED();
-  CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
-  first_paint_fragment_ = fragment;
 }
 
 void LayoutBox::ClearFirstInlineFragmentItemIndex() {
@@ -3148,22 +3133,14 @@ void LayoutBox::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
 
 void LayoutBox::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
   NOT_DESTROYED();
-  if (IsInLayoutNGInlineFormattingContext()) {
-    if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-      SetFirstInlineFragment(nullptr);
-    } else {
-      ClearFirstInlineFragmentItemIndex();
-    }
-  } else {
+  if (IsInLayoutNGInlineFormattingContext())
+    ClearFirstInlineFragmentItemIndex();
+  else
     DeleteLineBoxWrapper();
-  }
 
-  // Because |first_paint_fragment_| and |inline_box_wrapper_| are union, when
-  // one is deleted, the other should be initialized to nullptr.
-  DCHECK(new_value ? (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()
-                          ? !first_fragment_item_index_
-                          : !first_paint_fragment_)
-                   : !inline_box_wrapper_);
+  // Because |first_fragment_item_index_| and |inline_box_wrapper_| are union,
+  // when one is deleted, the other should be initialized to nullptr.
+  DCHECK(new_value ? !first_fragment_item_index_ : !inline_box_wrapper_);
 }
 
 bool LayoutBox::NGPhysicalFragmentList::HasFragmentItems() const {
@@ -3392,9 +3369,6 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
       // We don't regenerate any lineboxes during our "simplified" layout pass.
       // If something needs "simplified" layout within a linebox, (e.g. an
       // atomic-inline) we miss the cache.
-
-      if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-        return nullptr;
 
       // Check if some of line boxes are reusable.
 

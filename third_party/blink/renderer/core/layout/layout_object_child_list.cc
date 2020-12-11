@@ -59,19 +59,12 @@ void InvalidateInlineItems(LayoutObject* object) {
     }
   }
 
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    // This LayoutObject is not technically destroyed, but further access should
-    // be prohibited when moved to different parent as if it were destroyed.
-    if (object->FirstInlineFragmentItemIndex()) {
-      if (auto* text = DynamicTo<LayoutText>(object))
-        text->DetachAbstractInlineTextBoxesIfNeeded();
-      NGFragmentItems::LayoutObjectWillBeMoved(*object);
-    }
-  } else if (NGPaintFragment* fragment = object->FirstInlineFragment()) {
-    // This LayoutObject is not technically destroyed, but further access should
-    // be prohibited when moved to different parent as if it were destroyed.
-    fragment->LayoutObjectWillBeDestroyed();
-    object->SetFirstInlineFragment(nullptr);
+  // This LayoutObject is not technically destroyed, but further access should
+  // be prohibited when moved to different parent as if it were destroyed.
+  if (object->FirstInlineFragmentItemIndex()) {
+    if (auto* text = DynamicTo<LayoutText>(object))
+      text->DetachAbstractInlineTextBoxesIfNeeded();
+    NGFragmentItems::LayoutObjectWillBeMoved(*object);
   }
   object->SetIsInLayoutNGInlineFormattingContext(false);
 }
@@ -131,8 +124,7 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
 
     if (old_child->IsInLayoutNGInlineFormattingContext()) {
       owner->SetChildNeedsCollectInlines();
-      if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-        InvalidateInlineItems(old_child);
+      InvalidateInlineItems(old_child);
     }
   }
 
@@ -188,8 +180,7 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
     return;
   }
 
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled() &&
-      !owner->DocumentBeingDestroyed() &&
+  if (!owner->DocumentBeingDestroyed() &&
       new_child->IsInLayoutNGInlineFormattingContext()) {
     InvalidateInlineItems(new_child);
   }
