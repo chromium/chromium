@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chromeos/components/phonehub/fake_message_sender.h"
+#include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -40,9 +41,8 @@ class DoNotDisturbControllerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    fake_message_sender_ = std::make_unique<FakeMessageSender>();
     controller_ = std::make_unique<DoNotDisturbControllerImpl>(
-        fake_message_sender_.get());
+        &fake_message_sender_, &fake_user_action_recorder_);
     controller_->AddObserver(&fake_observer_);
   }
 
@@ -65,18 +65,22 @@ class DoNotDisturbControllerImplTest : public testing::Test {
   }
 
   bool GetRecentUpdateNotificationModeRequest() {
-    return fake_message_sender_->GetRecentUpdateNotificationModeRequest();
+    return fake_message_sender_.GetRecentUpdateNotificationModeRequest();
   }
 
   size_t GetUpdateNotificationModeRequestCallCount() {
-    return fake_message_sender_->GetUpdateNotificationModeRequestCallCount();
+    return fake_message_sender_.GetUpdateNotificationModeRequestCallCount();
   }
 
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
 
+  FakeUserActionRecorder fake_user_action_recorder_;
+
  private:
   FakeObserver fake_observer_;
-  std::unique_ptr<FakeMessageSender> fake_message_sender_;
+
+  FakeMessageSender fake_message_sender_;
+
   std::unique_ptr<DoNotDisturbControllerImpl> controller_;
 };
 
@@ -127,6 +131,7 @@ TEST_F(DoNotDisturbControllerImplTest, SetInternalStatesWithObservers) {
 
 TEST_F(DoNotDisturbControllerImplTest, RequestNewDoNotDisturbState) {
   RequestNewDoNotDisturbState(/*enabled=*/true);
+  EXPECT_EQ(1u, fake_user_action_recorder_.num_dnd_attempts());
   EXPECT_TRUE(GetRecentUpdateNotificationModeRequest());
   EXPECT_EQ(1u, GetUpdateNotificationModeRequestCallCount());
   // Simulate receiving a response and setting the internal value.
@@ -134,6 +139,7 @@ TEST_F(DoNotDisturbControllerImplTest, RequestNewDoNotDisturbState) {
                           /*can_request_new_dnd_state=*/true);
 
   RequestNewDoNotDisturbState(/*enabled=*/false);
+  EXPECT_EQ(2u, fake_user_action_recorder_.num_dnd_attempts());
   EXPECT_FALSE(GetRecentUpdateNotificationModeRequest());
   EXPECT_EQ(2u, GetUpdateNotificationModeRequestCallCount());
   // Simulate receiving a response and setting the internal value.
@@ -142,6 +148,7 @@ TEST_F(DoNotDisturbControllerImplTest, RequestNewDoNotDisturbState) {
 
   // Requesting for a the same state as the currently set state is a no-op.
   RequestNewDoNotDisturbState(/*enabled=*/false);
+  EXPECT_EQ(2u, fake_user_action_recorder_.num_dnd_attempts());
   EXPECT_FALSE(GetRecentUpdateNotificationModeRequest());
   EXPECT_EQ(2u, GetUpdateNotificationModeRequestCallCount());
 }

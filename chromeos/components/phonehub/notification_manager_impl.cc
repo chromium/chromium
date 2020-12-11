@@ -8,6 +8,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/message_sender.h"
 #include "chromeos/components/phonehub/notification.h"
+#include "chromeos/components/phonehub/user_action_recorder.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -17,8 +18,10 @@ using multidevice_setup::mojom::FeatureState;
 
 NotificationManagerImpl::NotificationManagerImpl(
     MessageSender* message_sender,
+    UserActionRecorder* user_action_recorder,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
     : message_sender_(message_sender),
+      user_action_recorder_(user_action_recorder),
       multidevice_setup_client_(multidevice_setup_client) {
   DCHECK(message_sender_);
   DCHECK(multidevice_setup_client_);
@@ -39,6 +42,7 @@ void NotificationManagerImpl::DismissNotification(int64_t notification_id) {
     return;
   }
 
+  user_action_recorder_->RecordNotificationDismissAttempt();
   RemoveNotificationsInternal(base::flat_set<int64_t>{notification_id});
   message_sender_->SendDismissNotificationRequest(notification_id);
 }
@@ -54,6 +58,7 @@ void NotificationManagerImpl::SendInlineReply(
 
   PA_LOG(INFO) << "Sending inline reply for notification with ID "
                << notification_id << ".";
+  user_action_recorder_->RecordNotificationReplyAttempt();
   message_sender_->SendNotificationInlineReplyRequest(notification_id,
                                                       inline_reply_text);
 }

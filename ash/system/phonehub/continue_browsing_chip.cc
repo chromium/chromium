@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/components/phonehub/user_action_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -40,12 +41,14 @@ constexpr int kTitleMaxLines = 2;
 ContinueBrowsingChip::ContinueBrowsingChip(
     const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
     int index,
-    size_t total_count)
+    size_t total_count,
+    chromeos::phonehub::UserActionRecorder* user_action_recorder)
     : views::Button(base::BindRepeating(&ContinueBrowsingChip::ButtonPressed,
                                         base::Unretained(this))),
       url_(metadata.url),
       index_(index),
-      total_count_(total_count) {
+      total_count_(total_count),
+      user_action_recorder_(user_action_recorder) {
   auto* color_provider = AshColorProvider::Get();
   SetFocusBehavior(FocusBehavior::ALWAYS);
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(
@@ -134,6 +137,7 @@ const char* ContinueBrowsingChip::GetClassName() const {
 void ContinueBrowsingChip::ButtonPressed() {
   PA_LOG(INFO) << "Opening browser tab: " << url_;
   phone_hub_metrics::LogTabContinuationChipClicked(index_);
+  user_action_recorder_->RecordBrowserTabOpened();
 
   NewWindowDelegate::GetInstance()->NewTabWithUrl(
       url_, /*from_user_interaction=*/true);

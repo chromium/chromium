@@ -8,6 +8,7 @@
 
 #include "chromeos/components/phonehub/fake_do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/fake_message_sender.h"
+#include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "chromeos/components/phonehub/find_my_device_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,11 +43,9 @@ class FindMyDeviceControllerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    fake_do_not_disturb_controller_ =
-        std::make_unique<FakeDoNotDisturbController>();
-    fake_message_sender_ = std::make_unique<FakeMessageSender>();
     controller_ = std::make_unique<FindMyDeviceControllerImpl>(
-        fake_do_not_disturb_controller_.get(), fake_message_sender_.get());
+        &fake_do_not_disturb_controller_, &fake_message_sender_,
+        &fake_user_action_recorder_);
     controller_->AddObserver(&fake_observer_);
   }
 
@@ -67,8 +66,9 @@ class FindMyDeviceControllerImplTest : public testing::Test {
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
 
  protected:
-  std::unique_ptr<FakeDoNotDisturbController> fake_do_not_disturb_controller_;
-  std::unique_ptr<FakeMessageSender> fake_message_sender_;
+  FakeDoNotDisturbController fake_do_not_disturb_controller_;
+  FakeMessageSender fake_message_sender_;
+  FakeUserActionRecorder fake_user_action_recorder_;
 
  private:
   std::unique_ptr<FindMyDeviceControllerImpl> controller_;
@@ -81,7 +81,7 @@ TEST_F(FindMyDeviceControllerImplTest, RingingStateChanges) {
 
   // Simulate flipping DoNotDisturb mode to enabled, this should set the
   // FindMyPhone status to kRingingNotAvailable.
-  fake_do_not_disturb_controller_->SetDoNotDisturbStateInternal(
+  fake_do_not_disturb_controller_.SetDoNotDisturbStateInternal(
       /*is_dnd_enabled=*/true, /*can_request_new_dnd_state=*/true);
   EXPECT_EQ(FindMyDeviceController::Status::kRingingNotAvailable,
             GetPhoneRingingStatus());
@@ -94,7 +94,7 @@ TEST_F(FindMyDeviceControllerImplTest, RingingStateChanges) {
 
   // Flip DoNotDisturb back to disabled, expect status to reset back to its
   // previous state.
-  fake_do_not_disturb_controller_->SetDoNotDisturbStateInternal(
+  fake_do_not_disturb_controller_.SetDoNotDisturbStateInternal(
       /*is_dnd_enabled=*/false, /*can_request_new_dnd_state=*/true);
   // Since we previously recorded that the phone should be ringing during
   // DoNotDisturb mode was enabled, we return to that state once DoNotDisturb
@@ -111,32 +111,35 @@ TEST_F(FindMyDeviceControllerImplTest, RingingStateChanges) {
 
 TEST_F(FindMyDeviceControllerImplTest, RequestNewRingStatus) {
   RequestNewPhoneRingingState(/*ringing=*/true);
-  EXPECT_EQ(1u, fake_message_sender_->GetRingDeviceRequestCallCount());
-  EXPECT_TRUE(fake_message_sender_->GetRecentRingDeviceRequest());
+  EXPECT_EQ(1u, fake_user_action_recorder_.num_find_my_device_attempts());
+  EXPECT_EQ(1u, fake_message_sender_.GetRingDeviceRequestCallCount());
+  EXPECT_TRUE(fake_message_sender_.GetRecentRingDeviceRequest());
 
   // Simulate flipping DoNotDisturb mode to enabled, this should set the
   // FindMyPhone status to kRingingNotAvailable and not send any new messages.
-  fake_do_not_disturb_controller_->SetDoNotDisturbStateInternal(
+  fake_do_not_disturb_controller_.SetDoNotDisturbStateInternal(
       /*is_dnd_enabled=*/true, /*can_request_new_dnd_state=*/true);
   EXPECT_EQ(FindMyDeviceController::Status::kRingingNotAvailable,
             GetPhoneRingingStatus());
 
   RequestNewPhoneRingingState(/*ringing=*/false);
-  EXPECT_EQ(1u, fake_message_sender_->GetRingDeviceRequestCallCount());
+  EXPECT_EQ(1u, fake_user_action_recorder_.num_find_my_device_attempts());
+  EXPECT_EQ(1u, fake_message_sender_.GetRingDeviceRequestCallCount());
   // No new messages were sent, expect that the last request was still the
   // previous "true" value.
-  EXPECT_TRUE(fake_message_sender_->GetRecentRingDeviceRequest());
+  EXPECT_TRUE(fake_message_sender_.GetRecentRingDeviceRequest());
 
   // Flip DoNotDisturb mode to disabled, expect that messages are able to be
   // sent again.
-  fake_do_not_disturb_controller_->SetDoNotDisturbStateInternal(
+  fake_do_not_disturb_controller_.SetDoNotDisturbStateInternal(
       /*is_dnd_enabled=*/false, /*can_request_new_dnd_state=*/true);
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOff,
             GetPhoneRingingStatus());
 
   RequestNewPhoneRingingState(/*ringing=*/false);
-  EXPECT_EQ(2u, fake_message_sender_->GetRingDeviceRequestCallCount());
-  EXPECT_FALSE(fake_message_sender_->GetRecentRingDeviceRequest());
+  EXPECT_EQ(2u, fake_user_action_recorder_.num_find_my_device_attempts());
+  EXPECT_EQ(2u, fake_message_sender_.GetRingDeviceRequestCallCount());
+  EXPECT_FALSE(fake_message_sender_.GetRecentRingDeviceRequest());
 }
 
 }  // namespace phonehub

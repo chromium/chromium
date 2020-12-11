@@ -17,6 +17,7 @@ class NotificationManager;
 class OnboardingUiTracker;
 class PhoneModel;
 class TetherController;
+class UserActionRecorder;
 
 // Responsible for the core logic of the Phone Hub feature and exposes
 // interfaces via its public API. This class is intended to be a singleton.
@@ -37,6 +38,7 @@ class PhoneHubManager {
   virtual OnboardingUiTracker* GetOnboardingUiTracker() = 0;
   virtual PhoneModel* GetPhoneModel() = 0;
   virtual TetherController* GetTetherController() = 0;
+  virtual UserActionRecorder* GetUserActionRecorder() = 0;
 
  protected:
   PhoneHubManager() = default;

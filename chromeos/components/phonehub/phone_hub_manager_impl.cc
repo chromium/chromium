@@ -23,6 +23,7 @@
 #include "chromeos/components/phonehub/phone_model.h"
 #include "chromeos/components/phonehub/phone_status_processor.h"
 #include "chromeos/components/phonehub/tether_controller_impl.h"
+#include "chromeos/components/phonehub/user_action_recorder_impl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -36,7 +37,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
     chromeos::secure_channel::SecureChannelClient* secure_channel_client,
     std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider,
     const base::RepeatingClosure& show_multidevice_setup_dialog_callback)
-    : connection_manager_(
+    : user_action_recorder_(std::make_unique<UserActionRecorderImpl>()),
+      connection_manager_(
           std::make_unique<ConnectionManagerImpl>(multidevice_setup_client,
                                                   device_sync_client,
                                                   secure_channel_client)),
@@ -54,14 +56,16 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<CrosStateSender>(message_sender_.get(),
                                             connection_manager_.get(),
                                             multidevice_setup_client)),
-      do_not_disturb_controller_(
-          std::make_unique<DoNotDisturbControllerImpl>(message_sender_.get())),
+      do_not_disturb_controller_(std::make_unique<DoNotDisturbControllerImpl>(
+          message_sender_.get(),
+          user_action_recorder_.get())),
       connection_scheduler_(std::make_unique<ConnectionSchedulerImpl>(
           connection_manager_.get(),
           feature_status_provider_.get())),
       find_my_device_controller_(std::make_unique<FindMyDeviceControllerImpl>(
           do_not_disturb_controller_.get(),
-          message_sender_.get())),
+          message_sender_.get(),
+          user_action_recorder_.get())),
       notification_access_manager_(
           std::make_unique<NotificationAccessManagerImpl>(
               pref_service,
@@ -70,6 +74,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               connection_scheduler_.get())),
       notification_manager_(
           std::make_unique<NotificationManagerImpl>(message_sender_.get(),
+                                                    user_action_recorder_.get(),
                                                     multidevice_setup_client)),
       onboarding_ui_tracker_(std::make_unique<OnboardingUiTrackerImpl>(
           pref_service,
@@ -88,6 +93,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           phone_model_.get())),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(phone_model_.get(),
+                                                 user_action_recorder_.get(),
                                                  multidevice_setup_client)),
       browser_tabs_model_provider_(std::move(browser_tabs_model_provider)),
       browser_tabs_model_controller_(
@@ -139,6 +145,10 @@ TetherController* PhoneHubManagerImpl::GetTetherController() {
   return tether_controller_.get();
 }
 
+UserActionRecorder* PhoneHubManagerImpl::GetUserActionRecorder() {
+  return user_action_recorder_.get();
+}
+
 // These should be destroyed in the opposite order of how these objects are
 // initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {
@@ -159,6 +169,7 @@ void PhoneHubManagerImpl::Shutdown() {
   message_receiver_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
+  user_action_recorder_.reset();
 }
 
 }  // namespace phonehub

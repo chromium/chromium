@@ -10,6 +10,12 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 
+namespace chromeos {
+namespace phonehub {
+class UserActionRecorder;
+}  // namespace phonehub
+}  // namespace chromeos
+
 namespace ash {
 
 // A chip containing a web page info (title, web URL, etc.) that users left off
@@ -19,7 +25,8 @@ class ASH_EXPORT ContinueBrowsingChip : public views::Button {
   ContinueBrowsingChip(
       const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
       int index,
-      size_t total_count);
+      size_t total_count,
+      chromeos::phonehub::UserActionRecorder* user_action_recorder);
 
   ~ContinueBrowsingChip() override;
   ContinueBrowsingChip(ContinueBrowsingChip&) = delete;
@@ -40,6 +47,8 @@ class ASH_EXPORT ContinueBrowsingChip : public views::Button {
 
   // The total number of chips in the parent view.
   size_t total_count_;
+
+  chromeos::phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
 };
 
 }  // namespace ash

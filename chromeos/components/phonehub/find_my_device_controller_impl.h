@@ -12,6 +12,7 @@ namespace chromeos {
 namespace phonehub {
 
 class MessageSender;
+class UserActionRecorder;
 
 // Responsible for sending and receiving updates in regards to the Find My
 // Device feature which involves ringing the user's remote phone.
@@ -19,7 +20,8 @@ class FindMyDeviceControllerImpl : public FindMyDeviceController,
                                    public DoNotDisturbController::Observer {
  public:
   FindMyDeviceControllerImpl(DoNotDisturbController* do_not_disturb_controller,
-                             MessageSender* message_sender);
+                             MessageSender* message_sender,
+                             UserActionRecorder* user_action_recorder);
   ~FindMyDeviceControllerImpl() override;
 
  private:
@@ -41,6 +43,7 @@ class FindMyDeviceControllerImpl : public FindMyDeviceController,
 
   DoNotDisturbController* do_not_disturb_controller_;
   MessageSender* message_sender_;
+  UserActionRecorder* user_action_recorder_;
 };
 
 }  // namespace phonehub

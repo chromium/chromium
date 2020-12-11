@@ -47,5 +47,9 @@ ConnectionScheduler* FakePhoneHubManager::GetConnectionScheduler() {
   return &fake_connection_scheduler_;
 }
 
+UserActionRecorder* FakePhoneHubManager::GetUserActionRecorder() {
+  return &fake_user_action_recorder_;
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

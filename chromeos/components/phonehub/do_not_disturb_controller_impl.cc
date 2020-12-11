@@ -6,13 +6,16 @@
 
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/message_sender.h"
+#include "chromeos/components/phonehub/user_action_recorder.h"
 
 namespace chromeos {
 namespace phonehub {
 
 DoNotDisturbControllerImpl::DoNotDisturbControllerImpl(
-    MessageSender* message_sender)
-    : message_sender_(message_sender) {
+    MessageSender* message_sender,
+    UserActionRecorder* user_action_recorder)
+    : message_sender_(message_sender),
+      user_action_recorder_(user_action_recorder) {
   DCHECK(message_sender_);
 }
 
@@ -51,6 +54,7 @@ void DoNotDisturbControllerImpl::RequestNewDoNotDisturbState(bool enabled) {
     return;
 
   PA_LOG(INFO) << "Attempting to set DND state; new value: " << enabled;
+  user_action_recorder_->RecordDndAttempt();
   message_sender_->SendUpdateNotificationModeRequest(enabled);
 }
 
