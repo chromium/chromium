@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_UI_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_status_view.h"
@@ -32,7 +33,8 @@ namespace ash {
 class ASH_EXPORT PhoneHubUiController
     : public chromeos::phonehub::FeatureStatusProvider::Observer,
       public chromeos::phonehub::OnboardingUiTracker::Observer,
-      public chromeos::phonehub::PhoneModel::Observer {
+      public chromeos::phonehub::PhoneModel::Observer,
+      public SessionObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -90,6 +92,9 @@ class ASH_EXPORT PhoneHubUiController
 
   // chromeos::phonehub::PhoneModel::Observer:
   void OnModelChanged() override;
+
+  // SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   // Updates the current UI state and notifies observers.
   void UpdateUiState(PhoneHubUiController::UiState new_state);

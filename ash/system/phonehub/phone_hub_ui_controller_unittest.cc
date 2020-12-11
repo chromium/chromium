@@ -16,25 +16,40 @@ using FeatureStatus = chromeos::phonehub::FeatureStatus;
 
 namespace ash {
 
-class PhoneHubUiControllerTest : public AshTestBase,
+constexpr char kUser1Email[] = "user1@test.com";
+constexpr char kUser2Email[] = "user2@test.com";
+
+class PhoneHubUiControllerTest : public NoSessionAshTestBase,
                                  public PhoneHubUiController::Observer {
  public:
   PhoneHubUiControllerTest() = default;
 
-  ~PhoneHubUiControllerTest() override { controller_.RemoveObserver(this); }
+  ~PhoneHubUiControllerTest() override { controller_->RemoveObserver(this); }
 
   // AshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    NoSessionAshTestBase::SetUp();
 
-    controller_.AddObserver(this);
+    // Create user 1 session and simulate its login.
+    SimulateUserLogin(kUser1Email);
+    // Create user 2 session.
+    GetSessionControllerClient()->AddUserSession(kUser2Email);
+
+    controller_ = std::make_unique<PhoneHubUiController>();
+    controller_->AddObserver(this);
 
     GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
     GetOnboardingUiTracker()->SetShouldShowOnboardingUi(false);
-    controller_.SetPhoneHubManager(&phone_hub_manager_);
+    controller_->SetPhoneHubManager(&phone_hub_manager_);
 
     CHECK(ui_state_changed_);
     ui_state_changed_ = false;
+  }
+
+  void SetLoggedInUser(bool is_primary) {
+    const std::string& email = is_primary ? kUser1Email : kUser2Email;
+    GetSessionControllerClient()->SwitchActiveUser(
+        AccountId::FromUserEmail(email));
   }
 
   chromeos::phonehub::FakeFeatureStatusProvider* GetFeatureStatusProvider() {
@@ -59,22 +74,22 @@ class PhoneHubUiControllerTest : public AshTestBase,
     ui_state_changed_ = true;
   }
 
-  PhoneHubUiController controller_;
+  std::unique_ptr<PhoneHubUiController> controller_;
   chromeos::phonehub::FakePhoneHubManager phone_hub_manager_;
   bool ui_state_changed_ = false;
 };
 
 TEST_F(PhoneHubUiControllerTest, NotEligibleForFeature) {
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kNotEligibleForFeature);
-  EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_.ui_state());
+  EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_->ui_state());
   EXPECT_TRUE(ui_state_changed_);
-  EXPECT_FALSE(controller_.CreateContentView(/*delegate=*/nullptr).get());
+  EXPECT_FALSE(controller_->CreateContentView(/*delegate=*/nullptr).get());
 }
 
 TEST_F(PhoneHubUiControllerTest, OnboardingNotEligible) {
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kDisabled);
-  EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_.ui_state());
-  EXPECT_FALSE(controller_.CreateContentView(/*delegate=*/nullptr).get());
+  EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_->ui_state());
+  EXPECT_FALSE(controller_->CreateContentView(/*delegate=*/nullptr).get());
 }
 
 TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithoutPhone) {
@@ -85,9 +100,9 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithoutPhone) {
   EXPECT_TRUE(ui_state_changed_);
 
   EXPECT_EQ(PhoneHubUiController::UiState::kOnboardingWithoutPhone,
-            controller_.ui_state());
+            controller_->ui_state());
 
-  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view->GetID());
 }
 
@@ -100,9 +115,9 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithPhone) {
   EXPECT_TRUE(ui_state_changed_);
 
   EXPECT_EQ(PhoneHubUiController::UiState::kOnboardingWithPhone,
-            controller_.ui_state());
+            controller_->ui_state());
 
-  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view->GetID());
 }
 
@@ -110,9 +125,9 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnectingForOnboarding) {
   GetFeatureStatusProvider()->SetStatus(
       FeatureStatus::kPhoneSelectedAndPendingSetup);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
-            controller_.ui_state());
+            controller_->ui_state());
 
-  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kPhoneConnectingView, content_view->GetID());
 }
 
@@ -120,27 +135,27 @@ TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
   GetFeatureStatusProvider()->SetStatus(
       FeatureStatus::kUnavailableBluetoothOff);
   EXPECT_EQ(PhoneHubUiController::UiState::kBluetoothDisabled,
-            controller_.ui_state());
+            controller_->ui_state());
 
-  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kBluetoothDisabledView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneDisconnected) {
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledButDisconnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneDisconnected,
-            controller_.ui_state());
+            controller_->ui_state());
 
-  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnecting);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
-            controller_.ui_state());
+            controller_->ui_state());
 
-  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kPhoneConnectingView, content_view->GetID());
 }
 
@@ -148,16 +163,32 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnected) {
   SetPhoneStatusModel(chromeos::phonehub::CreateFakePhoneStatusModel());
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnected,
-            controller_.ui_state());
+            controller_->ui_state());
 
-  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(kPhoneConnectedView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, UnavailableScreenLocked) {
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kLockOrSuspended);
-  EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_.ui_state());
-  EXPECT_FALSE(controller_.CreateContentView(/*bubble_view=*/nullptr).get());
+  EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_->ui_state());
+  EXPECT_FALSE(controller_->CreateContentView(/*bubble_view=*/nullptr).get());
+}
+
+TEST_F(PhoneHubUiControllerTest, UnavailableSecondaryUser) {
+  // Simulate log in to secondary user.
+  SetLoggedInUser(false /* is_primary */);
+  EXPECT_TRUE(ui_state_changed_);
+  ui_state_changed_ = false;
+  EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_->ui_state());
+  EXPECT_FALSE(controller_->CreateContentView(/*bubble_view=*/nullptr).get());
+
+  // Switch back to primary user.
+  SetLoggedInUser(true /* is_primary */);
+  EXPECT_TRUE(ui_state_changed_);
+  ui_state_changed_ = false;
+  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
+            controller_->ui_state());
 }
 
 TEST_F(PhoneHubUiControllerTest, ConnectedViewDelayed) {
@@ -166,15 +197,15 @@ TEST_F(PhoneHubUiControllerTest, ConnectedViewDelayed) {
   SetPhoneStatusModel(base::nullopt);
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
-            controller_.ui_state());
-  auto content_view = controller_.CreateContentView(/*delegate=*/nullptr);
+            controller_->ui_state());
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(kPhoneConnectingView, content_view->GetID());
 
   // Update the phone status model and expect the connected view to show up.
   SetPhoneStatusModel(chromeos::phonehub::CreateFakePhoneStatusModel());
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnected,
-            controller_.ui_state());
-  auto content_view2 = controller_.CreateContentView(/*delegate=*/nullptr);
+            controller_->ui_state());
+  auto content_view2 = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(kPhoneConnectedView, content_view2->GetID());
 }
 

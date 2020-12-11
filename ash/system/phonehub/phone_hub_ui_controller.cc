@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/phonehub/bluetooth_disabled_view.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_connected_view.h"
@@ -21,9 +23,16 @@ using FeatureStatus = chromeos::phonehub::FeatureStatus;
 
 namespace ash {
 
-PhoneHubUiController::PhoneHubUiController() = default;
+PhoneHubUiController::PhoneHubUiController() {
+  // ash::Shell may not exist in tests.
+  if (ash::Shell::HasInstance())
+    Shell::Get()->session_controller()->AddObserver(this);
+}
 
 PhoneHubUiController::~PhoneHubUiController() {
+  // ash::Shell may not exist in tests.
+  if (ash::Shell::HasInstance())
+    Shell::Get()->session_controller()->RemoveObserver(this);
   CleanUpPhoneHubManager();
 }
 
@@ -109,6 +118,11 @@ void PhoneHubUiController::OnModelChanged() {
   UpdateUiState(GetUiStateFromPhoneHubManager());
 }
 
+void PhoneHubUiController::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  UpdateUiState(GetUiStateFromPhoneHubManager());
+}
+
 void PhoneHubUiController::UpdateUiState(
     PhoneHubUiController::UiState new_state) {
   if (new_state == ui_state_)
@@ -121,7 +135,8 @@ void PhoneHubUiController::UpdateUiState(
 
 PhoneHubUiController::UiState
 PhoneHubUiController::GetUiStateFromPhoneHubManager() {
-  if (!phone_hub_manager_)
+  if (!Shell::Get()->session_controller()->IsUserPrimary() ||
+      !phone_hub_manager_)
     return UiState::kHidden;
 
   auto feature_status =
