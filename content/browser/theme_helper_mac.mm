@@ -127,36 +127,6 @@ SkColor NSColorToSkColor(NSColor* color) {
                                                 alpha:1.]);
 }
 
-SkColor MenuBackgroundColor() {
-  base::scoped_nsobject<NSBitmapImageRep> offscreen_rep(
-      [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:nil
-                                              pixelsWide:1
-                                              pixelsHigh:1
-                                           bitsPerSample:8
-                                         samplesPerPixel:4
-                                                hasAlpha:YES
-                                                isPlanar:NO
-                                          colorSpaceName:NSDeviceRGBColorSpace
-                                             bytesPerRow:4
-                                            bitsPerPixel:32]);
-
-  CGContextRef context = static_cast<CGContextRef>([[NSGraphicsContext
-      graphicsContextWithBitmapImageRep:offscreen_rep] graphicsPort]);
-  CGRect rect = CGRectMake(0, 0, 1, 1);
-  HIThemeMenuDrawInfo draw_info;
-  draw_info.version = 0;
-  draw_info.menuType = kThemeMenuTypePopUp;
-  HIThemeDrawMenuBackground(&rect, &draw_info, context,
-                            kHIThemeOrientationInverted);
-
-  NSUInteger pixel[4];
-  [offscreen_rep getPixel:pixel atX:0 y:0];
-  return NSColorToSkColor([NSColor colorWithDeviceRed:pixel[0] / 255.
-                                                green:pixel[1] / 255.
-                                                 blue:pixel[2] / 255.
-                                                alpha:1.]);
-}
-
 } // namespace
 
 @interface SystemThemeObserver : NSObject {
@@ -329,9 +299,6 @@ void ThemeHelperMac::LoadSystemColorsForCurrentAppearance(
   for (size_t i = 0; i < blink::kMacSystemColorIDCount; ++i) {
     blink::MacSystemColorID color_id = static_cast<blink::MacSystemColorID>(i);
     switch (color_id) {
-      case blink::MacSystemColorID::kAlternateSelectedControl:
-        values[i] = NSColorToSkColor([NSColor alternateSelectedControlColor]);
-        break;
       case blink::MacSystemColorID::kControlAccentBlueColor: {
         NSColor* color =
             [NSColor colorWithCatalogName:@"System"
@@ -354,68 +321,14 @@ void ThemeHelperMac::LoadSystemColorsForCurrentAppearance(
           values[i] = NSColorToSkColor([NSColor keyboardFocusIndicatorColor]);
         }
         break;
-      case blink::MacSystemColorID::kControlBackground:
-        values[i] = NSColorToSkColor([NSColor controlBackgroundColor]);
-        break;
-      case blink::MacSystemColorID::kControlDarkShadow:
-        values[i] = NSColorToSkColor([NSColor controlDarkShadowColor]);
-        break;
-      case blink::MacSystemColorID::kControlHighlight:
-        values[i] = NSColorToSkColor([NSColor controlHighlightColor]);
-        break;
-      case blink::MacSystemColorID::kControlLightHighlight:
-        values[i] = NSColorToSkColor([NSColor controlLightHighlightColor]);
-        break;
-      case blink::MacSystemColorID::kControlShadow:
-        values[i] = NSColorToSkColor([NSColor controlShadowColor]);
-        break;
-      case blink::MacSystemColorID::kControlText:
-        values[i] = NSColorToSkColor([NSColor controlTextColor]);
-        break;
-      case blink::MacSystemColorID::kDisabledControlText:
-        values[i] = NSColorToSkColor([NSColor disabledControlTextColor]);
-        break;
-      case blink::MacSystemColorID::kHeader:
-        values[i] = NSColorToSkColor([NSColor headerColor]);
-        break;
-      case blink::MacSystemColorID::kHighlight:
-        values[i] = NSColorToSkColor([NSColor highlightColor]);
-        break;
       case blink::MacSystemColorID::kKeyboardFocusIndicator:
         values[i] = NSColorToSkColor([NSColor keyboardFocusIndicatorColor]);
-        break;
-      case blink::MacSystemColorID::kMenuBackground:
-        values[i] = MenuBackgroundColor();
-        break;
-      case blink::MacSystemColorID::kScrollBar:
-        values[i] = NSColorToSkColor([NSColor scrollBarColor]);
         break;
       case blink::MacSystemColorID::kSecondarySelectedControl:
         values[i] = NSColorToSkColor([NSColor secondarySelectedControlColor]);
         break;
-      case blink::MacSystemColorID::kSelectedMenuItemText:
-        values[i] = NSColorToSkColor([NSColor selectedMenuItemTextColor]);
-        break;
-      case blink::MacSystemColorID::kSelectedText:
-        values[i] = NSColorToSkColor([NSColor selectedTextColor]);
-        break;
       case blink::MacSystemColorID::kSelectedTextBackground:
         values[i] = NSColorToSkColor([NSColor selectedTextBackgroundColor]);
-        break;
-      case blink::MacSystemColorID::kShadow:
-        values[i] = NSColorToSkColor([NSColor shadowColor]);
-        break;
-      case blink::MacSystemColorID::kText:
-        values[i] = NSColorToSkColor([NSColor textColor]);
-        break;
-      case blink::MacSystemColorID::kWindowBackground:
-        values[i] = NSColorToSkColor([NSColor windowBackgroundColor]);
-        break;
-      case blink::MacSystemColorID::kWindowFrame:
-        values[i] = NSColorToSkColor([NSColor windowFrameColor]);
-        break;
-      case blink::MacSystemColorID::kWindowFrameText:
-        values[i] = NSColorToSkColor([NSColor windowFrameTextColor]);
         break;
       case blink::MacSystemColorID::kCount:
         NOTREACHED();
