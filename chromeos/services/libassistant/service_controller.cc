@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chromeos/services/libassistant/service_controller.h"
 
+#include <memory>
+
+#include "base/check.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 
@@ -15,14 +16,17 @@ namespace libassistant {
 using mojom::ServiceState;
 
 ServiceController::ServiceController(
-    mojo::PendingReceiver<mojom::ServiceController> receiver,
     assistant::AssistantManagerServiceDelegate* delegate,
     assistant_client::PlatformApi* platform_api)
-    : delegate_(delegate),
-      platform_api_(platform_api),
-      receiver_(this, std::move(receiver)) {}
+    : delegate_(delegate), platform_api_(platform_api), receiver_(this) {}
 
 ServiceController::~ServiceController() = default;
+
+void ServiceController::Bind(
+    mojo::PendingReceiver<mojom::ServiceController> receiver) {
+  DCHECK(!receiver_.is_bound());
+  receiver_.Bind(std::move(receiver));
+}
 
 void ServiceController::Start(const std::string& libassistant_config) {
   if (state_ != ServiceState::kStopped)

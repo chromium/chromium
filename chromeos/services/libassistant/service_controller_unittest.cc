@@ -45,9 +45,10 @@ class StateObserverMock : public mojom::StateObserver {
 class ServiceControllerTest : public testing::Test {
  public:
   ServiceControllerTest()
-      : service_controller_(client_.BindNewPipeAndPassReceiver(),
-                            &delegate_,
-                            /*platform_api=*/nullptr) {}
+      : service_controller_(&delegate_,
+                            /*platform_api=*/nullptr) {
+    service_controller_.Bind(client_.BindNewPipeAndPassReceiver());
+  }
 
   mojo::Remote<mojom::ServiceController>& client() { return client_; }
   ServiceController& service_controller() { return service_controller_; }

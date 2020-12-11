@@ -12,8 +12,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
 class PlatformApi;
 }  // namespace assistant_client
 
@@ -39,12 +37,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   LibassistantService& operator=(LibassistantService&) = delete;
   ~LibassistantService() override;
 
-  // Retrieve the |AssistantManager|. The pointer is valid as long as the
-  // |ServiceController| is in state |kStarted| (and this class is not
-  // destroyed).
-  assistant_client::AssistantManager* assistant_manager();
-  assistant_client::AssistantManagerInternal* assistant_manager_internal();
-
  private:
   // mojom::LibassistantService implementation:
   void BindServiceController(
@@ -52,11 +44,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   void BindAudioInputController() override {}
   void BindAudioOutputController() override {}
   void BindInteractionController() override {}
-
-  // Owned by |AssistantManagerServiceImpl| which indirectly owns us.
-  assistant_client::PlatformApi* const platform_api_;
-  // Owned by |AssistantManagerServiceImpl| which indirectly owns us.
-  assistant::AssistantManagerServiceDelegate* const delegate_;
 
   mojo::Receiver<mojom::LibassistantService> receiver_;
   std::unique_ptr<ServiceController> service_controller_;

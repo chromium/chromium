@@ -35,15 +35,18 @@ namespace libassistant {
 
 // Component managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
+// Note: to access the Libassistant objects from //chromeos/services/assistant,
+// use the |LibassistantV1Api| singleton, which will be populated by this class.
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
     : public mojom::ServiceController {
  public:
-  ServiceController(mojo::PendingReceiver<mojom::ServiceController> receiver,
-                    assistant::AssistantManagerServiceDelegate* delegate,
+  ServiceController(assistant::AssistantManagerServiceDelegate* delegate,
                     assistant_client::PlatformApi* platform_api);
   ServiceController(ServiceController&) = delete;
   ServiceController& operator=(ServiceController&) = delete;
   ~ServiceController() override;
+
+  void Bind(mojo::PendingReceiver<mojom::ServiceController> receiver);
 
   // mojom::ServiceController implementation:
   void Start(const std::string& libassistant_config) override;
@@ -61,7 +64,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
 
   mojom::ServiceState state_ = mojom::ServiceState::kStopped;
 
-  // Owned by |AssistantProxy| which owns us.
+  // Owned by |AssistantManagerServiceImpl| which indirectly owns us.
   assistant::AssistantManagerServiceDelegate* const delegate_;
   // Owned by |AssistantManagerServiceImpl| which indirectly owns us.
   assistant_client::PlatformApi* const platform_api_;
