@@ -3104,6 +3104,8 @@ source_set("chromeos") {
       "chromebox_for_meetings/browser/cfm_browser_service.h",
       "chromebox_for_meetings/cfm_chrome_services.cc",
       "chromebox_for_meetings/cfm_chrome_services.h",
+      "chromebox_for_meetings/device_info/device_info_service.cc",
+      "chromebox_for_meetings/device_info/device_info_service.h",
       "chromebox_for_meetings/diagnostics/diagnostics_service.cc",
       "chromebox_for_meetings/diagnostics/diagnostics_service.h",
       "chromebox_for_meetings/logger/cfm_logger_service.cc",
@@ -4129,6 +4131,7 @@ source_set("unit_tests") {
   if (is_cfm) {
     sources += [
       "chromebox_for_meetings/browser/cfm_browser_service_unittest.cc",
+      "chromebox_for_meetings/device_info/device_info_service_unittest.cc",
       "chromebox_for_meetings/diagnostics/diagnostics_service_unittest.cc",
       "chromebox_for_meetings/logger/cfm_logger_service_unittest.cc",
       "chromebox_for_meetings/service_adaptor_unittest.cc",

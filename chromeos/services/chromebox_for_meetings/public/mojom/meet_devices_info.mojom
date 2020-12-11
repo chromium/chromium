@@ -1,0 +1,78 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.cfm.mojom;
+
+// Interface defined by chromium specifically for the ChromeboxForMeetings
+// platform to query relevant device system and policy information.
+interface MeetDevicesInfo {
+  // Adds a DevicePolicyObserver for policy info change events.
+  // Returns unique id which can be used to remove the observer
+  // Note: Initial update using available policy if applicable upon registration
+  AddDeviceSettingsObserver@0(pending_remote<PolicyInfoObserver> observer);
+
+  // Request device policy information
+  // Note: will return nullptr on failure to query policy information
+  GetPolicyInfo@1()=>(PolicyInfo info);
+
+  // Request device system information
+  GetSysInfo@2()=>(SysInfo info);
+};
+
+// Inteface for an observer to monitor device policy changes
+interface PolicyInfoObserver {
+  // Called whenever a devices policy change event is recieved.
+  OnPolicyInfoChange@0(PolicyInfo info);
+};
+
+// Device policy information
+struct PolicyInfo {
+  // PolicyData::Timestamp
+  // Timestamp in milliseconds (javatime)
+  // From DMServer when server issued response (Java time)
+  int64 timestamp_ms@0;
+  // PolicyData::DeviceID
+  string? device_id@1;
+  // PolicyData::ServiceAccountIdentity
+  string? service_account_email_address@2;
+  // PolicyData::GaiaId
+  int64 service_account_gaia_id@3;
+};
+
+// Basic system information
+struct SysInfo {
+  // Current system uptime
+  // Timestamp in milliseconds (javatime)
+  int64 uptime_ms@0;
+  // The name of the hardware
+  string model_name@1;
+  // Number of processors/cores
+  uint64 num_proc@2;
+  // Number of bytes of physical memory
+  uint64 total_memory_bytes@3;
+  // Current amount of available memory
+  uint64 available_memory_bytes@4;
+  // Returns the kernel version
+  string kernel_version@5;
+  // Total root partition disk space
+  // Note Return 0 on failure
+  uint64 root_total_disk_space_bytes@6;
+  // Available root partition disk space
+  // Note Return 0 on failure
+  uint64 root_free_disk_space_bytes@7;
+  // Total stateful partition disk space
+  // Note Return 0 on failure
+  uint64 user_total_disk_space_bytes@8;
+  // Available stateful partition disk space
+  // Note Return 0 on failure
+  uint64 user_free_disk_space_bytes@9;
+  // /etc/lsb-release: CHROMEOS_RELEASE_VERSION
+  string? release_version@10;
+  // /etc/lsb-release: CHROMEOS_RELEASE_BUILD_TYPE
+  string? release_build_type@11;
+  // /etc/lsb-release: CHROMEOS_RELEASE_TRACK
+  string? release_track@12;
+  // /etc/lsb-release: CHROMEOS_RELEASE_CHROME_MILESTONE
+  string? release_milestone@13;
+};
