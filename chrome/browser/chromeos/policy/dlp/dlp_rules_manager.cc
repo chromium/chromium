@@ -212,18 +212,6 @@ DlpRulesManager::Level DlpRulesManager::IsRestrictedComponent(
                                     components_rules_ids);
 }
 
-DlpRulesManager::Level DlpRulesManager::IsRestrictedAnyOfComponents(
-    const GURL& source,
-    const std::vector<Component>& destinations,
-    Restriction restriction) const {
-  Level min_level = Level::kAllow;
-  for (const auto& destination : destinations) {
-    min_level = GetMinLevel(
-        min_level, IsRestrictedComponent(source, destination, restriction));
-  }
-  return min_level;
-}
-
 DlpRulesManager::DlpRulesManager(PrefService* local_state) {
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(

@@ -274,43 +274,6 @@ TEST_F(DlpRulesManagerTest, EmptyUrl_Clipboard) {
           GURL(kUrlStr4), GURL(), DlpRulesManager::Restriction::kClipboard));
 }
 
-TEST_F(DlpRulesManagerTest, IsRestrictedAnyOfComponents_Clipboard) {
-  base::Value rules(base::Value::Type::LIST);
-
-  // First Rule
-  base::Value src_urls(base::Value::Type::LIST);
-  src_urls.Append(kUrlStr1);
-
-  base::Value dst_components(base::Value::Type::LIST);
-  dst_components.Append(dlp::kPluginVm);
-
-  base::Value restrictions(base::Value::Type::LIST);
-  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kClipboardRestriction, dlp::kBlockLevel));
-
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #1", "Block PluginVM", std::move(src_urls),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      std::move(dst_components), std::move(restrictions)));
-
-  UpdatePolicyPref(std::move(rules));
-
-  EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_.IsRestrictedAnyOfComponents(
-                GURL(kUrlStr1),
-                std::vector<DlpRulesManager::Component>{
-                    DlpRulesManager::Component::kPluginVm,
-                    DlpRulesManager::Component::kCrostini},
-                DlpRulesManager::Restriction::kClipboard));
-  EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_.IsRestrictedAnyOfComponents(
-                GURL(kUrlStr1),
-                std::vector<DlpRulesManager::Component>{
-                    DlpRulesManager::Component::kArc,
-                    DlpRulesManager::Component::kCrostini},
-                DlpRulesManager::Restriction::kClipboard));
-}
-
 TEST_F(DlpRulesManagerTest, IsRestricted_MultipleURLs) {
   base::Value rules(base::Value::Type::LIST);
 

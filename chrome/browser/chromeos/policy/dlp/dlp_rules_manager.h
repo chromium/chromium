@@ -108,15 +108,6 @@ class DlpRulesManager : public KeyedService {
                                       const Component& destination,
                                       Restriction restriction) const;
 
-  // Returns the enforcement level for `restriction` given that data comes
-  // from `source` and requested to be shared to `destinations`. ALLOW is
-  // returned if there is not any restriction should be applied on any of the
-  // `destinations`. Requires `restriction` to be clipboard.
-  virtual Level IsRestrictedAnyOfComponents(
-      const GURL& source,
-      const std::vector<Component>& destinations,
-      Restriction restriction) const;
-
  protected:
   friend class DlpRulesManagerFactory;
   friend class DlpRulesManagerTest;
