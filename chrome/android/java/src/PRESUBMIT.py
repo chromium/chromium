@@ -93,7 +93,7 @@ def _CheckAlertDialogBuilder(input_api, output_api):
       BROWSER_ROOT + 'signin/AccountSigninView.java',
       SIGNIN_UI_BROWSER_ROOT + 'ConfirmImportSyncDataDialog.java',
       SIGNIN_UI_BROWSER_ROOT + 'ConfirmManagedSyncDataDialog.java',
-      BROWSER_ROOT + 'signin/ConfirmSyncDataStateMachineDelegate.java',
+      SIGNIN_UI_BROWSER_ROOT + 'ConfirmSyncDataStateMachineDelegate.java',
       BROWSER_ROOT + 'signin/SigninFragmentBase.java',
       BROWSER_ROOT + 'signin/SignOutDialogFragment.java',
       BROWSER_ROOT + 'site_settings/AddExceptionPreference.java',

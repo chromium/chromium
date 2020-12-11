@@ -62,10 +62,8 @@ public class ConfirmImportSyncDataDialog
      *                        hitting cancel).
      * @param oldAccountName  The previous sync account name.
      * @param newAccountName  The potential next sync account name.
-     *
-     * TODO(https://crbug.com/1155123): Change the public to package internal after modularization
      */
-    public static ConfirmImportSyncDataDialog create(
+    static ConfirmImportSyncDataDialog create(
             Listener listener, String oldAccountName, String newAccountName) {
         ConfirmImportSyncDataDialog fragment = new ConfirmImportSyncDataDialog();
         Bundle args = new Bundle();

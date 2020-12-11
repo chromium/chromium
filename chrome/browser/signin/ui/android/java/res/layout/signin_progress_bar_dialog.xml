@@ -16,6 +16,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="@string/sign_in_getting_account_management_policy"
-        android:textSize="16sp"/>
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:text="@string/sign_in_getting_account_management_policy" />
 </LinearLayout>

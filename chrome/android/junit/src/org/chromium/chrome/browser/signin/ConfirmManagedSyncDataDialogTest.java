@@ -24,6 +24,7 @@ import org.robolectric.shadows.ShadowAlertDialog;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.ui.ConfirmManagedSyncDataDialog;
+import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachineDelegate;
 
 /**
  * Tests for {@link ConfirmManagedSyncDataDialog}.

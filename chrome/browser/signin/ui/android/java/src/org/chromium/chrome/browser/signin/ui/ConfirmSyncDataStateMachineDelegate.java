@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -12,10 +12,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.ui.ConfirmImportSyncDataDialog;
-import org.chromium.chrome.browser.signin.ui.ConfirmManagedSyncDataDialog;
 
 /**
  * Class to decouple ConfirmSyncDataStateMachine from UI code and dialog management.
@@ -152,8 +148,9 @@ public class ConfirmSyncDataStateMachineDelegate {
      * Shows progress dialog. Will dismiss other dialogs shown, if any.
      *
      * @param listener The {@link ProgressDialogListener} that will be notified about user actions.
+     * TODO(crbug.com/1155123): Change the method to package private after modularization
      */
-    void showFetchManagementPolicyProgressDialog(ProgressDialogListener listener) {
+    public void showFetchManagementPolicyProgressDialog(ProgressDialogListener listener) {
         dismissAllDialogs();
         showAllowingStateLoss(ProgressDialogFragment.create(listener), PROGRESS_DIALOG_TAG);
     }
@@ -162,8 +159,9 @@ public class ConfirmSyncDataStateMachineDelegate {
      * Shows timeout dialog. Will dismiss other dialogs shown, if any.
      *
      * @param listener The {@link TimeoutDialogListener} that will be notified about user actions.
+     * TODO(crbug.com/1155123): Change the method to package private after modularization
      */
-    void showFetchManagementPolicyTimeoutDialog(TimeoutDialogListener listener) {
+    public void showFetchManagementPolicyTimeoutDialog(TimeoutDialogListener listener) {
         dismissAllDialogs();
         showAllowingStateLoss(TimeoutDialogFragment.create(listener), TIMEOUT_DIALOG_TAG);
     }
@@ -177,8 +175,9 @@ public class ConfirmSyncDataStateMachineDelegate {
      *                        hitting cancel).
      * @param oldAccountName  The previous sync account name.
      * @param newAccountName  The potential next sync account name.
+     * TODO(crbug.com/1155123): Change the method to package private after modularization
      */
-    void showConfirmImportSyncDataDialog(ConfirmImportSyncDataDialog.Listener listener,
+    public void showConfirmImportSyncDataDialog(ConfirmImportSyncDataDialog.Listener listener,
             String oldAccountName, String newAccountName) {
         dismissAllDialogs();
         ConfirmImportSyncDataDialog dialog =
@@ -191,8 +190,9 @@ public class ConfirmSyncDataStateMachineDelegate {
      * (either through sign in or when switching accounts).
      * @param listener Callback for result.
      * @param domain The domain of the managed account.
+     * TODO(crbug.com/1155123): Change the method to package private after modularization
      */
-    void showSignInToManagedAccountDialog(
+    public void showSignInToManagedAccountDialog(
             ConfirmManagedSyncDataDialog.Listener listener, String domain) {
         dismissAllDialogs();
         showAllowingStateLoss(ConfirmManagedSyncDataDialog.create(listener, domain),
