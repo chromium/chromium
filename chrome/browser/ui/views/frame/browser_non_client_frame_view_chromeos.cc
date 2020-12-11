@@ -694,12 +694,13 @@ bool BrowserNonClientFrameViewChromeOS::ShouldShowProfileIndicatorIcon() const {
   return MultiUserWindowManagerHelper::ShouldShowAvatar(
       browser_view()->GetNativeWindow());
 #else
-  NOTIMPLEMENTED() << "Multi-signin support is deprecated in Lacros.";
+  // Multi-signin support is deprecated in Lacros.
   return false;
 #endif
 }
 
 void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
+  // Multi-signin support is deprecated in Lacros, so only do this for ash.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   View* root_view = frame()->GetRootView();
   if (ShouldShowProfileIndicatorIcon()) {
@@ -725,8 +726,6 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
     if (root_view)
       root_view->Layout();
   }
-#else
-  NOTIMPLEMENTED() << "Multi-signin support is deprecated in Lacros.";
 #endif
 }
 
