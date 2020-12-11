@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_THUMBNAILS_BACKGROUND_THUMBNAIL_VIDEO_CAPTURER_H_
 #define CHROME_BROWSER_UI_THUMBNAILS_BACKGROUND_THUMBNAIL_VIDEO_CAPTURER_H_
 
+#include <stdint.h>
+
 #include "base/callback.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/thumbnails/background_thumbnail_capturer.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
@@ -47,8 +50,12 @@ class BackgroundThumbnailVideoCapturer
   ThumbnailCaptureInfo capture_info_;
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer_;
 
+  // Tracked for metrics and tracing
   base::TimeTicks start_time_;
-  bool got_first_frame_ = false;
+  int num_received_frames_ = 0;
+  uint64_t cur_capture_num_ = 0;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 #endif  // CHROME_BROWSER_UI_THUMBNAILS_BACKGROUND_THUMBNAIL_VIDEO_CAPTURER_H_

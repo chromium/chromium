@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/thumbnails/background_thumbnail_video_capturer.h"
 
+#include <stdint.h>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -22,10 +24,15 @@ BackgroundThumbnailVideoCapturer::BackgroundThumbnailVideoCapturer(
   DCHECK(got_frame_callback_);
 }
 
-BackgroundThumbnailVideoCapturer::~BackgroundThumbnailVideoCapturer() = default;
+BackgroundThumbnailVideoCapturer::~BackgroundThumbnailVideoCapturer() {
+  if (video_capturer_)
+    Stop();
+}
 
 void BackgroundThumbnailVideoCapturer::Start(
     const ThumbnailCaptureInfo& capture_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (video_capturer_)
     return;
 
@@ -36,8 +43,18 @@ void BackgroundThumbnailVideoCapturer::Start(
 
   capture_info_ = capture_info;
 
+  {
+    // Assign IDs to each capture session for tracing. IDs are unique
+    // throughout the lifetime of this process. Using a static here is
+    // safe since this is only invoked from the UI thread.
+    static uint64_t capture_num GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+    cur_capture_num_ = ++capture_num;
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "Tab.Preview.VideoCapture",
+                                      TRACE_ID_LOCAL(cur_capture_num_));
+  }
+
   start_time_ = base::TimeTicks::Now();
-  got_first_frame_ = false;
+  num_received_frames_ = 0;
 
   constexpr int kMaxFrameRate = 2;
   video_capturer_ = source_view->CreateVideoCapturer();
@@ -53,15 +70,20 @@ void BackgroundThumbnailVideoCapturer::Start(
 }
 
 void BackgroundThumbnailVideoCapturer::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!video_capturer_)
     return;
 
   video_capturer_->Stop();
   video_capturer_.reset();
 
+  TRACE_EVENT_NESTABLE_ASYNC_END0("ui", "Tab.Preview.VideoCapture",
+                                  TRACE_ID_LOCAL(cur_capture_num_));
   UMA_HISTOGRAM_MEDIUM_TIMES("Tab.Preview.VideoCaptureDuration",
                              base::TimeTicks::Now() - start_time_);
   start_time_ = base::TimeTicks();
+  cur_capture_num_ = 0;
 }
 
 void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
@@ -70,6 +92,8 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
     const gfx::Rect& content_rect,
     mojo::PendingRemote<::viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
         callbacks) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   CHECK(video_capturer_);
   const base::TimeTicks time_of_call = base::TimeTicks::Now();
 
@@ -96,10 +120,13 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
     return;
   }
 
-  if (!got_first_frame_)
+  if (num_received_frames_ == 0)
     UMA_HISTOGRAM_TIMES("Tab.Preview.TimeToFirstUsableFrameAfterStartCapture",
                         time_of_call - start_time_);
-  got_first_frame_ = true;
+  TRACE_EVENT_INSTANT1("ui", "Tab.Preview.VideoCaptureFrameReceived",
+                       TRACE_EVENT_SCOPE_THREAD, "frame_number",
+                       num_received_frames_);
+  ++num_received_frames_;
 
   // The SkBitmap's pixels will be marked as immutable, but the installPixels()
   // API requires a non-const pointer. So, cast away the const.

@@ -16,10 +16,14 @@ class BackgroundThumbnailCapturer {
 
   // Begins capture. The tab's renderer must be alive. The subclass will
   // determine how captured frames are reported to the client.
+  //
+  // This must be called from the browser UI thread
   virtual void Start(const ThumbnailCaptureInfo& capture_info) = 0;
 
   // Ends capture. After this call, the tab no longer needs to be kept
   // alive.
+  //
+  // This must be called from the browser UI thread
   virtual void Stop() = 0;
 };
 
