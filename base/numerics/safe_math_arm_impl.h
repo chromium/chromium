@@ -36,9 +36,10 @@ struct CheckedMulFastAsmOp {
     Promotion presult;
 
     presult = static_cast<Promotion>(x) * static_cast<Promotion>(y);
-    const bool is_valid = IsValueInRangeForNumericType<V>(presult);
+    if (!IsValueInRangeForNumericType<V>(presult))
+      return false;
     *result = static_cast<V>(presult);
-    return is_valid;
+    return true;
   }
 };
 
