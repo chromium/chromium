@@ -254,6 +254,7 @@ class DroppedFrameCounterTest : public testing::Test {
  public:
   DroppedFrameCounterTest() {
     dropped_frame_counter_.set_total_counter(&total_frame_counter_);
+    dropped_frame_counter_.OnFcpReceived();
   }
   ~DroppedFrameCounterTest() override = default;
 
