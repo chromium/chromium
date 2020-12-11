@@ -142,8 +142,8 @@ class BASE_EXPORT FeatureList {
   // a list entry has the format "FeatureName<TrialName" then this
   // initialization will also associate the feature state override with the
   // named field trial, if it exists. If a list entry has the format
-  // "FeatureName:k1/v1/k2/v2", "FeatureName<TrailName:k1/v1/k2/v2" or
-  // "FeatureName<TrailName.GroupName:k1/v1/k2/v2" then this initialization will
+  // "FeatureName:k1/v1/k2/v2", "FeatureName<TrialName:k1/v1/k2/v2" or
+  // "FeatureName<TrialName.GroupName:k1/v1/k2/v2" then this initialization will
   // also associate the feature state override with the named field trial and
   // its params. If the feature params part is provided but trial and/or group
   // isn't, this initialization will also create a synthetic trial, named
