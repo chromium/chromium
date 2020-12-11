@@ -21,5 +21,6 @@ function setupSSLDebuggingInfo() {
   }
 
   $('error-code').addEventListener('click', toggleDebuggingInfo);
+  $('error-code').setAttribute('role', 'button');
   $('error-code').setAttribute('aria-expanded', false);
 }
