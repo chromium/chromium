@@ -30,6 +30,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/url_constants.h"
@@ -287,7 +288,8 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_ROW_TITLE},
       {"nearbyShareEditVisibility", IDS_SETTINGS_NEARBY_SHARE_EDIT_VISIBILITY},
       {"nearbyShareVisibilityDialogTitle",
-       IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_TITLE}};
+       IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_TITLE},
+      {"nearbyShareDescription", IDS_SETTINGS_NEARBY_SHARE_DESCRIPTION}};
 
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
@@ -297,6 +299,8 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       "nearbySharingFeatureFlag",
       base::FeatureList::IsEnabled(features::kNearbySharing));
 
+  html_source->AddString("nearbyShareLearnMoreLink",
+                         base::ASCIIToUTF16(chrome::kNearbyShareLearnMoreURL));
   // To use lottie, the worker-src CSP needs to be updated for the web ui that
   // is using it. Since as of now there are only a couple of webuis using
   // lottie animations, this update has to be performed manually. As the usage

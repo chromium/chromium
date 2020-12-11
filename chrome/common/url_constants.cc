@@ -419,8 +419,12 @@ const char kTabletModeGesturesLearnMoreURL[] =
 const char kWifiSyncLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=wifisync";
 
+// TODO(michaelcheco): Update temporary url.
+const char kNearbyShareLearnMoreURL[] = "https://google.com/";
+
 extern const char kNearbyShareManageContactsURL[] =
     "https://contacts.google.com";
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)

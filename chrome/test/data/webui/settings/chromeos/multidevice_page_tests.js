@@ -407,4 +407,20 @@ suite('Multidevice', function() {
     assertTrue(test_util.isChildVisible(
         multidevicePage, '#nearbySharingToggleButton', false));
   });
+
+  test('Nearby description shown before onboarding is completed', async () => {
+    assertTrue(test_util.isChildVisible(
+        multidevicePage, '#nearbyShareSecondary > settings-localized-link',
+        false));
+
+    multidevicePage.setPrefValue('nearby_sharing.onboarding_complete', true);
+    Polymer.dom.flush();
+
+    assertFalse(test_util.isChildVisible(
+        multidevicePage, '#nearbyShareSecondary > settings-localized-link',
+        false));
+
+    assertEquals(
+        multidevicePage.$$('#nearbyShareSecondary').textContent.trim(), 'Off');
+  });
 });

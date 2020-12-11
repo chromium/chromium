@@ -242,6 +242,9 @@ extern const char kSyncLearnMoreURL[];
 
 extern const char kUpgradeHelpCenterBaseURL[];
 
+// The URL for the "Learn more" link for nearby share.
+extern const char kNearbyShareLearnMoreURL[];
+
 // Help center URL for who the account administrator is.
 extern const char kWhoIsMyAdministratorHelpURL[];
 
