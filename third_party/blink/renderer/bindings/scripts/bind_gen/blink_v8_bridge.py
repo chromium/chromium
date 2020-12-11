@@ -29,8 +29,15 @@ def blink_class_name(idl_definition):
     # is implemented as |class EXTsRGB|, not as |ExtSRgb| nor |ExtsRgb|.
     if isinstance(idl_definition,
                   (web_idl.CallbackFunction, web_idl.CallbackInterface,
-                   web_idl.Enumeration, web_idl.NewUnion)):
+                   web_idl.Enumeration)):
         return "V8{}".format(idl_definition.identifier)
+    elif isinstance(idl_definition, web_idl.NewUnion):
+        # Technically this name is not guaranteed to be unique because
+        # (X or sequence<Y or Z>) and (X or Y or sequence<Z>) have the same
+        # name, but it's highly unlikely to cause a conflict in the actual use
+        # cases.  Plus, we prefer a simple naming rule conformant to the
+        # Chromium coding style.  So, we go with this way.
+        return "V8Union{}".format("Or".join(idl_definition.member_tokens))
     else:
         return idl_definition.identifier
 

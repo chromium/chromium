@@ -141,6 +141,7 @@ class NewUnion(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
         sort_key_identifier = lambda x: x.identifier
 
         self._idl_types = tuple(ir.union_types)
+        self._member_tokens = ir.token
         self._flattened_member_types = tuple(
             sorted(flattened_member_types, key=sort_key_typename))
         self._does_include_nullable_type = does_include_nullable_type
@@ -161,6 +162,11 @@ class NewUnion(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
     def idl_types(self):
         """Returns a list of IdlTypes which this object represents."""
         return self._idl_types
+
+    @property
+    def member_tokens(self):
+        """Returns a list of unique names of union member types."""
+        return self._member_tokens
 
     @property
     def flattened_member_types(self):
