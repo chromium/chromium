@@ -21,12 +21,12 @@ group("resources") {
     public_deps += [
       ":component_extension_resources",
       ":dev_ui_paks",
-      ":gaia_auth_host_resources",
       ":local_ntp_resources",
       ":new_tab_page_resources",
       "bookmarks:bookmarks_resources",
       "commander:commander_resources",
       "downloads:downloads_resources",
+      "gaia_auth_host:resources",
       "history:history_resources",
       "read_later:read_later_resources",
       "settings:settings_resources",
@@ -186,20 +186,6 @@ if (!is_android) {
       "grit/component_extension_resources_map.cc",
       "grit/component_extension_resources_map.h",
       "component_extension_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
-  grit("gaia_auth_host_resources") {
-    source = "gaia_auth_host/gaia_auth_host_resources.grd"
-    deps = [ "//chrome/browser/resources/gaia_auth_host:modulize" ]
-
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/gaia_auth_host_resources.h",
-      "grit/gaia_auth_host_resources_map.cc",
-      "grit/gaia_auth_host_resources_map.h",
-      "gaia_auth_host_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

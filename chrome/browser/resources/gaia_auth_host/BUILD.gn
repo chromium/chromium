@@ -3,10 +3,51 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+
+grd_prefix = "gaia_auth_host"
+generate_grd("build_grd") {
+  out_grd = "$target_gen_dir/resources.grd"
+
+  # Resources are expected to be registered with paths like:
+  # gaia_auth_host/resource_name.js
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/chrome/browser/resources", root_build_dir)
+  input_files = [
+    "gaia_auth_host/authenticator.m.js",
+    "gaia_auth_host/channel.m.js",
+    "gaia_auth_host/post_message_channel.m.js",
+    "gaia_auth_host/saml_handler.m.js",
+    "gaia_auth_host/saml_password_attributes.m.js",
+    "gaia_auth_host/saml_timestamps.m.js",
+    "gaia_auth_host/webview_event_manager.m.js",
+  ]
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [
+    ":build_grd",
+    ":modulize",
+  ]
+  outputs = [
+    "grit/gaia_auth_host_resources.h",
+    "grit/gaia_auth_host_resources_map.cc",
+    "grit/gaia_auth_host_resources_map.h",
+    "gaia_auth_host_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
 
 # Since js2gtest()s don't compile in some scenarios when include_js_tests is
 # false, and since this file may be loaded even when it's false, we need to make

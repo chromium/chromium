@@ -231,7 +231,8 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2030],
   },
-  "chrome/browser/resources/gaia_auth_host/gaia_auth_host_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/gaia_auth_host/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
     "includes": [2080],
   },
   "chrome/browser/resources/invalidations/invalidations_resources.grd": {

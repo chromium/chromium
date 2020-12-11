@@ -53,9 +53,6 @@
 
 namespace {
 
-constexpr char kResourcesGeneratedPath[] =
-    "@out_folder@/gen/chrome/browser/resources/";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AddEduStrings(content::WebUIDataSource* source,
                    const base::string16& username) {
@@ -116,8 +113,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
         content::WebUIDataSource::Create(chrome::kChromeUIChromeSigninHost);
   webui::SetupWebUIDataSource(
       source,
-      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize),
-      kResourcesGeneratedPath, IDR_INLINE_LOGIN_HTML);
+      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize), "",
+      IDR_INLINE_LOGIN_HTML);
 
   // Only add a filter when runing as test.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
