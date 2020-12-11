@@ -304,8 +304,8 @@ class IconAnimationWaiter {
                                                             icon)) {
     removal_watcher_ = std::make_unique<ExtensionRemovalWatcher>(
         browser, extension,
-        base::Bind(&IconAnimationWaiter::OnExtensionRemoved,
-                   weak_factory_.GetWeakPtr()));
+        base::BindOnce(&IconAnimationWaiter::OnExtensionRemoved,
+                       weak_factory_.GetWeakPtr()));
   }
   virtual ~IconAnimationWaiter() = default;
 

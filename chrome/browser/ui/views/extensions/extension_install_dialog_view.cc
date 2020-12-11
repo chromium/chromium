@@ -543,5 +543,5 @@ void ExtensionInstallDialogView::UpdateInstallResultHistogram(bool accepted)
 // static
 ExtensionInstallPrompt::ShowDialogCallback
 ExtensionInstallPrompt::GetDefaultShowDialogCallback() {
-  return base::Bind(&ShowExtensionInstallDialogImpl);
+  return base::BindRepeating(&ShowExtensionInstallDialogImpl);
 }

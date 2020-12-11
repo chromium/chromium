@@ -25,7 +25,7 @@ class RequestFileSystemDialogTest : public DialogBrowserTest {
     RequestFileSystemDialogView::ShowDialog(
         browser()->tab_strip_model()->GetActiveWebContents(),
         "RequestFileSystemDialogTest", "TestVolume", true,
-        base::Bind(&RequestFileSystemDialogTest::DialogCallback));
+        base::BindOnce(&RequestFileSystemDialogTest::DialogCallback));
   }
 
  private:
