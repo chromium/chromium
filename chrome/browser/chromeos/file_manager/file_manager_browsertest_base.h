@@ -215,7 +215,7 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   base::HistogramTester histograms_;
   base::UserActionTester user_actions_;
 
-  bool devtools_code_coverage_ = false;
+  base::FilePath devtools_code_coverage_dir_;
   std::map<content::DevToolsAgentHost*, std::unique_ptr<DevToolsListener>>
       devtools_agent_;
   uint32_t process_id_ = 0;

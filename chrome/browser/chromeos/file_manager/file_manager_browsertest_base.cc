@@ -1545,7 +1545,7 @@ static bool ShouldInspect(content::DevToolsAgentHost* host) {
 }
 
 bool FileManagerBrowserTestBase::ShouldForceDevToolsAgentHostCreation() {
-  return devtools_code_coverage_;
+  return !devtools_code_coverage_dir_.empty();
 }
 
 void FileManagerBrowserTestBase::DevToolsAgentHostCreated(
@@ -1706,8 +1706,10 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kTemporaryHoldingSpace);
   }
 
-  if (command_line->HasSwitch("devtools-code-coverage")) {
-    devtools_code_coverage_ = options.guest_mode != IN_INCOGNITO;
+  if (command_line->HasSwitch("devtools-code-coverage") &&
+      options.guest_mode != IN_INCOGNITO) {
+    devtools_code_coverage_dir_ =
+        command_line->GetSwitchValuePath("devtools-code-coverage");
   }
 
   // This is destroyed in |TearDown()|. We cannot initialize this in the
@@ -1854,7 +1856,7 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
       std::make_unique<NotificationDisplayServiceTester>(profile());
 
   process_id_ = base::GetUniqueIdForProcess().GetUnsafeValue();
-  if (devtools_code_coverage_)
+  if (!devtools_code_coverage_dir_.empty())
     content::DevToolsAgentHost::AddObserver(this);
 
   content::NetworkConnectionChangeSimulator network_change_simulator;
@@ -1907,7 +1909,7 @@ void FileManagerBrowserTestBase::StartTest() {
   LaunchExtension(test_extension_dir, GetTestExtensionManifestName());
   RunTestMessageLoop();
 
-  if (!devtools_code_coverage_)
+  if (devtools_code_coverage_dir_.empty())
     return;
 
   content::DevToolsAgentHost::RemoveObserver(this);
@@ -1915,9 +1917,8 @@ void FileManagerBrowserTestBase::StartTest() {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  base::FilePath store;
-  CHECK(base::PathService::Get(base::DIR_EXE, &store));
-  store = store.AppendASCII("devtools_code_coverage");
+  base::FilePath store =
+      devtools_code_coverage_dir_.AppendASCII("devtools_code_coverage");
   DevToolsListener::SetupCoverageStore(store);
 
   for (auto& agent : devtools_agent_) {
@@ -2034,8 +2035,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "isDevtoolsCoverageActive") {
-    LOG(INFO) << "isDevtoolsCoverageActive: " << devtools_code_coverage_;
-    *output = devtools_code_coverage_ ? "true" : "false";
+    bool devtools_coverage_active = !devtools_code_coverage_dir_.empty();
+    LOG(INFO) << "isDevtoolsCoverageActive: " << devtools_coverage_active;
+    *output = devtools_coverage_active ? "true" : "false";
     return;
   }
 

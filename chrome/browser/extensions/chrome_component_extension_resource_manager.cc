@@ -202,7 +202,9 @@ ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
   if (extension_id == extension_misc::kFilesManagerAppId) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     // Disable $i18n{} template JS string replacement during JS code coverage.
-    if (command_line->HasSwitch("devtools-code-coverage"))
+    base::FilePath devtools_code_coverage_dir_ =
+        command_line->GetSwitchValuePath("devtools-code-coverage");
+    if (!devtools_code_coverage_dir_.empty())
       return nullptr;
   }
 #endif

@@ -172,7 +172,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   CHECK(result->SetString("hostURL", url));
 
   const std::string md5 = base::MD5String(HostString(host, test));
-  std::string coverage = base::StrCat({test, ".", md5, uuid_, ".js.json"});
+  std::string coverage = base::StrCat({test, ".", md5, uuid_, ".cov.json"});
   base::FilePath path = store.AppendASCII("tests").Append(coverage);
 
   CHECK(result->SetList("result", std::move(entries)));
