@@ -123,6 +123,13 @@ void HoldingSpaceItem::Finalize(const GURL& file_system_url) {
   file_system_url_ = file_system_url;
 }
 
+void HoldingSpaceItem::UpdateBackingFile(const base::FilePath& file_path,
+                                         const GURL& file_system_url) {
+  file_path_ = file_path;
+  file_system_url_ = file_system_url;
+  text_ = file_path.BaseName().LossyDisplayName();
+}
+
 HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const base::FilePath& file_path,

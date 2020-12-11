@@ -62,6 +62,7 @@ class HoldingSpacePersistenceDelegate
   void Init() override;
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
 
   // Restores the holding space model from persistent storage.
   void RestoreModelFromPersistence();

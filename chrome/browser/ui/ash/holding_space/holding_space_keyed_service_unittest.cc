@@ -51,6 +51,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/test/async_file_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -119,6 +120,43 @@ class HoldingSpaceModelAttachedWaiter : public HoldingSpaceControllerObserver {
   ScopedObserver<HoldingSpaceController, HoldingSpaceControllerObserver>
       holding_space_controller_observer_{this};
   std::unique_ptr<base::RunLoop> wait_loop_;
+};
+
+class ItemUpdatedWaiter : public HoldingSpaceModelObserver {
+ public:
+  explicit ItemUpdatedWaiter(HoldingSpaceModel* model) {
+    model_observer_.Observe(model);
+  }
+
+  ItemUpdatedWaiter(const ItemUpdatedWaiter&) = delete;
+  ItemUpdatedWaiter& operator=(const ItemUpdatedWaiter&) = delete;
+  ~ItemUpdatedWaiter() override = default;
+
+  void Wait(const HoldingSpaceItem* item) {
+    ASSERT_FALSE(wait_item_);
+    ASSERT_FALSE(wait_loop_);
+
+    wait_item_ = item;
+
+    wait_loop_ = std::make_unique<base::RunLoop>();
+    wait_loop_->Run();
+    wait_loop_.reset();
+
+    wait_item_ = nullptr;
+  }
+
+ private:
+  // HoldingSpaceModelObserver:
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override {
+    if (item == wait_item_)
+      wait_loop_->Quit();
+  }
+
+  const HoldingSpaceItem* wait_item_ = nullptr;
+  std::unique_ptr<base::RunLoop> wait_loop_;
+
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      model_observer_{this};
 };
 
 class ItemsFinalizedWaiter : public HoldingSpaceModelObserver {
@@ -534,6 +572,125 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
     primary_holding_space_model->RemoveItem(holding_space_item->id());
 
     EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                  HoldingSpacePersistenceDelegate::kPersistencePath),
+              persisted_holding_space_items);
+  }
+}
+
+// Verifies that when a file backing a holding space item is moved, the holding
+// space item is updated in place and persistence storage is updated.
+TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
+  // Create a file system mount point.
+  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+      ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
+  ASSERT_TRUE(downloads_mount->IsValid());
+
+  // Cache the holding space model for the primary profile.
+  HoldingSpaceKeyedService* const primary_holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+  HoldingSpaceModel* const primary_holding_space_model =
+      HoldingSpaceController::Get()->model();
+  ASSERT_EQ(primary_holding_space_model,
+            primary_holding_space_service->model_for_testing());
+
+  // Cache the file system context.
+  storage::FileSystemContext* context =
+      file_manager::util::GetFileSystemContextForExtensionId(
+          GetProfile(), file_manager::kFileManagerAppId);
+  ASSERT_TRUE(context);
+
+  base::ListValue persisted_holding_space_items;
+
+  // Verify persistent storage is updated when adding each type of item.
+  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    // Note that each item is being added to a unique parent directory so that
+    // moving the parent directory later will not affect other items.
+    const base::FilePath file_path = downloads_mount->CreateFile(
+        base::FilePath(base::NumberToString(static_cast<int>(type)))
+            .Append("foo.txt"),
+        /*content=*/std::string());
+    const GURL file_system_url = GetFileSystemUrl(GetProfile(), file_path);
+
+    // Create the holding space item.
+    auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+        type, file_path, file_system_url,
+        holding_space_util::ResolveImage(
+            primary_holding_space_service->thumbnail_loader_for_testing(), type,
+            file_path));
+
+    // Add the holding space item to the model and verify persistence.
+    persisted_holding_space_items.Append(holding_space_item->Serialize());
+    primary_holding_space_model->AddItem(std::move(holding_space_item));
+    EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
+                  HoldingSpacePersistenceDelegate::kPersistencePath),
+              persisted_holding_space_items);
+  }
+
+  // Verify persistent storage is updated when moving each type of item and
+  // that the holding space items themselves are updated in place.
+  for (size_t i = 0; i < primary_holding_space_model->items().size(); ++i) {
+    const auto* holding_space_item =
+        primary_holding_space_model->items()[i].get();
+
+    // Rename the file backing the holding space item.
+    base::FilePath file_path = holding_space_item->file_path();
+    base::FilePath new_file_path = file_path.InsertBeforeExtension(" (Moved)");
+    GURL file_path_url = GetFileSystemUrl(GetProfile(), file_path);
+    GURL new_file_path_url = GetFileSystemUrl(GetProfile(), new_file_path);
+    ASSERT_EQ(storage::AsyncFileTestHelper::Move(
+                  context, context->CrackURL(file_path_url),
+                  context->CrackURL(new_file_path_url)),
+              base::File::FILE_OK);
+
+    // File changes must be posted to the UI thread, wait for the update to
+    // reach the holding space model.
+    ItemUpdatedWaiter(primary_holding_space_model).Wait(holding_space_item);
+
+    // Verify that the holding space item has been updated in place.
+    ASSERT_EQ(holding_space_item->file_path(), new_file_path);
+    ASSERT_EQ(holding_space_item->file_system_url(), new_file_path_url);
+    ASSERT_EQ(holding_space_item->text(),
+              new_file_path.BaseName().LossyDisplayName());
+
+    // Verify that persistence has been updated.
+    persisted_holding_space_items.GetList()[i] =
+        holding_space_item->Serialize();
+    ASSERT_EQ(*GetProfile()->GetPrefs()->GetList(
+                  HoldingSpacePersistenceDelegate::kPersistencePath),
+              persisted_holding_space_items);
+
+    // Cache the base name of the file backing the holding space item as it will
+    // not change due to rename of the holding space item's parent directory.
+    base::FilePath base_name = holding_space_item->file_path().BaseName();
+
+    // Rename the file backing the holding space item's parent directory.
+    file_path = new_file_path.DirName();
+    new_file_path = file_path.InsertBeforeExtension(" (Moved)");
+    file_path_url = GetFileSystemUrl(GetProfile(), file_path);
+    new_file_path_url = GetFileSystemUrl(GetProfile(), new_file_path);
+    ASSERT_EQ(storage::AsyncFileTestHelper::Move(
+                  context, context->CrackURL(file_path_url),
+                  context->CrackURL(new_file_path_url)),
+              base::File::FILE_OK);
+
+    // File changes must be posted to the UI thread, wait for the update to
+    // reach the holding space model.
+    ItemUpdatedWaiter(primary_holding_space_model).Wait(holding_space_item);
+
+    // The file backing the holding space item is expected to have re-parented.
+    new_file_path = new_file_path.Append(base_name);
+    new_file_path_url = GetFileSystemUrl(GetProfile(), new_file_path);
+
+    // Verify that the holding space item has been updated in place.
+    ASSERT_EQ(holding_space_item->file_path(), new_file_path);
+    ASSERT_EQ(holding_space_item->file_system_url(), new_file_path_url);
+    ASSERT_EQ(holding_space_item->text(),
+              new_file_path.BaseName().LossyDisplayName());
+
+    // Verify that persistence has been updated.
+    persisted_holding_space_items.GetList()[i] =
+        holding_space_item->Serialize();
+    ASSERT_EQ(*GetProfile()->GetPrefs()->GetList(
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
   }

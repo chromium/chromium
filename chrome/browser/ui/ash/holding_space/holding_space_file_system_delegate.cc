@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -101,8 +102,13 @@ void HoldingSpaceFileSystemDelegate::Init() {
       base::Bind(&HoldingSpaceFileSystemDelegate::OnFilePathChanged,
                  weak_factory_.GetWeakPtr()));
 
-  if (file_manager::VolumeManager::Get(profile()))
-    volume_manager_observer_.Add(file_manager::VolumeManager::Get(profile()));
+  file_change_service_observer_.Observe(
+      chromeos::FileChangeServiceFactory::GetInstance()->GetService(profile()));
+
+  if (file_manager::VolumeManager::Get(profile())) {
+    volume_manager_observer_.Observe(
+        file_manager::VolumeManager::Get(profile()));
+  }
 
   // Schedule a task to clean up items that belong to volumes that haven't been
   // mounted in a reasonable amount of time.
@@ -153,29 +159,25 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemAdded(
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  MaybeRemoveWatch(item->file_path().DirName());
+}
 
-  // Since we were watching the directory containing `item`'s backing file and
-  // not the backing file itself, we only need to remove the associated watch if
-  // there are no other holding space items backed by the same directory.
-  const bool remove_watch = std::none_of(
-      model()->items().begin(), model()->items().end(),
-      [removed_item = item](const auto& item) {
-        return item->IsFinalized() && item->file_path().DirName() ==
-                                          removed_item->file_path().DirName();
-      });
-
-  if (remove_watch)
-    RemoveWatch(item->file_path().DirName());
+void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
+    const HoldingSpaceItem* item) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  AddWatchForParent(item->file_path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AddWatchForParent(item->file_path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
     chromeos::MountError error_code,
     const file_manager::Volume& volume) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   holding_space_util::FilePathsWithValidityRequirements
       file_paths_with_requirements;
   // Check validity of partially initialized items under the volume's mount
@@ -196,6 +198,7 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
 void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
     chromeos::MountError error_code,
     const file_manager::Volume& volume) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Schedule task to remove items under the unmounted file path from the model.
   // During suspend, some volumes get unmounted - for example, drive FS. The
   // file system delegate gets shutdown to avoid removing items from unmounted
@@ -207,6 +210,38 @@ void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
       FROM_HERE,
       base::BindOnce(&HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath,
                      weak_factory_.GetWeakPtr(), volume.mount_path()));
+}
+
+void HoldingSpaceFileSystemDelegate::OnFileMoved(
+    const storage::FileSystemURL& src,
+    const storage::FileSystemURL& dst) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Update backing files for any holding space `item` associated with `src`.
+  bool did_update_backing_file = false;
+  for (auto& item : model()->items()) {
+    base::FilePath new_file_path;
+    if (src.path() == item->file_path()) {
+      // The file backing `item` has moved to `dst`.
+      new_file_path = dst.path();
+    } else if (src.path().IsParent(item->file_path())) {
+      // A parent directory of the file backing `item` has moved to `dst` so
+      // the file backing `item` needs to be re-parented.
+      new_file_path = dst.path();
+      if (!src.path().AppendRelativePath(item->file_path(), &new_file_path))
+        NOTREACHED();
+    }
+    if (!new_file_path.empty()) {
+      model()->UpdateBackingFileForItem(
+          item->id(), new_file_path,
+          holding_space_util::ResolveFileSystemUrl(profile(), new_file_path));
+      did_update_backing_file = true;
+    }
+  }
+  // If a backing file update occurred, it's possible that there are no longer
+  // any holding space items associated with `src`. When that is the case, `src`
+  // no longer needs to be watched.
+  if (did_update_backing_file)
+    MaybeRemoveWatch(src.path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
@@ -228,6 +263,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
 
 void HoldingSpaceFileSystemDelegate::ScheduleFilePathValidityCheck(
     holding_space_util::FilePathWithValidityRequirement requirement) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   pending_file_path_validity_checks_.push_back(std::move(requirement));
   if (file_path_validity_checks_scheduled_)
     return;
@@ -245,6 +281,7 @@ void HoldingSpaceFileSystemDelegate::ScheduleFilePathValidityCheck(
 }
 
 void HoldingSpaceFileSystemDelegate::RunPendingFilePathValidityChecks() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   holding_space_util::FilePathsWithValidityRequirements requirements;
   requirements.swap(pending_file_path_validity_checks_);
 
@@ -259,6 +296,7 @@ void HoldingSpaceFileSystemDelegate::RunPendingFilePathValidityChecks() {
 void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
     std::vector<base::FilePath> valid_paths,
     std::vector<base::FilePath> invalid_paths) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Remove items with invalid paths.
   // When `file_path` is removed, we need to remove any associated items.
   model()->RemoveIf(base::BindRepeating(
@@ -291,9 +329,20 @@ void HoldingSpaceFileSystemDelegate::AddWatchForParent(
                                 file_system_watcher_->GetWeakPtr(), file_path));
 }
 
-void HoldingSpaceFileSystemDelegate::RemoveWatch(
+void HoldingSpaceFileSystemDelegate::MaybeRemoveWatch(
     const base::FilePath& file_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // The watch for `file_path` should only be removed if no holding space items
+  // exist in the model which are backed by files it directly parents.
+  const bool remove_watch = std::none_of(
+      model()->items().begin(), model()->items().end(),
+      [&file_path](const auto& item) {
+        return item->IsFinalized() && item->file_path().DirName() == file_path;
+      });
+
+  if (!remove_watch)
+    return;
+
   file_system_watcher_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemWatcher::RemoveWatch,
                                 file_system_watcher_->GetWeakPtr(), file_path));
@@ -301,6 +350,7 @@ void HoldingSpaceFileSystemDelegate::RemoveWatch(
 
 void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
     const base::FilePath& parent_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   model()->RemoveIf(base::BindRepeating(
       [](const base::FilePath& parent_path, const HoldingSpaceItem* item) {
         return parent_path.IsParent(item->file_path());
@@ -309,6 +359,7 @@ void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
 }
 
 void HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   model()->RemoveIf(base::BindRepeating(
       [](const HoldingSpaceItem* item) { return !item->IsFinalized(); }));
 }

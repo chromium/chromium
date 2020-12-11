@@ -130,6 +130,13 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
 
+void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
+    const HoldingSpaceItem* item) {
+  HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item);
+  if (this->item() == item)
+    label_->SetText(item->text());
+}
+
 void HoldingSpaceItemChipView::OnPinVisiblityChanged(bool pin_visible) {
   if (label_mask_layer_owner_->layer()->bounds() !=
       label_and_pin_button_container_->bounds()) {

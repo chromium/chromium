@@ -82,6 +82,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Used to finalize partially initialized items created by `Deserialize()`.
   void Finalize(const GURL& file_system_url);
 
+  // Updates the file backing the item to `file_path` and `file_system_url`.
+  void UpdateBackingFile(const base::FilePath& file_path,
+                         const GURL& file_system_url);
+
   const std::string& id() const { return id_; }
 
   Type type() const { return type_; }

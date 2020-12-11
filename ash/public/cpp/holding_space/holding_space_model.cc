@@ -65,6 +65,26 @@ void HoldingSpaceModel::FinalizeOrRemoveItem(const std::string& id,
     observer.OnHoldingSpaceItemFinalized(item);
 }
 
+void HoldingSpaceModel::UpdateBackingFileForItem(
+    const std::string& id,
+    const base::FilePath& file_path,
+    const GURL& file_system_url) {
+  auto item_it = std::find_if(
+      items_.begin(), items_.end(),
+      [&id](const std::unique_ptr<HoldingSpaceItem>& item) -> bool {
+        return item->id() == id;
+      });
+  DCHECK(item_it != items_.end());
+
+  HoldingSpaceItem* item = item_it->get();
+  DCHECK(item->IsFinalized());
+
+  item->UpdateBackingFile(file_path, file_system_url);
+
+  for (auto& observer : observers_)
+    observer.OnHoldingSpaceItemUpdated(item);
+}
+
 void HoldingSpaceModel::RemoveIf(Predicate predicate) {
   for (int i = items_.size() - 1; i >= 0; --i) {
     const HoldingSpaceItem* item = items_.at(i).get();

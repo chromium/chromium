@@ -49,6 +49,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   // file system URL. The item will be removed if the file system url is empty.
   void FinalizeOrRemoveItem(const std::string& id, const GURL& file_system_url);
 
+  // Updates the backing file for a single holding space item to the specified
+  // `file_path` and `file_system_url`.
+  void UpdateBackingFileForItem(const std::string& id,
+                                const base::FilePath& file_path,
+                                const GURL& file_system_url);
+
   // Removes all holding space items from the model for which the specified
   // `predicate` returns true.
   using Predicate = base::RepeatingCallback<bool(const HoldingSpaceItem*)>;

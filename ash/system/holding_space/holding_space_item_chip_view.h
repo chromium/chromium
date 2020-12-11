@@ -38,6 +38,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   class LabelMaskLayerOwner;
 
   // HoldingSpaceItemView:
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
   void OnPinVisiblityChanged(bool pin_visible) override;
 
   void UpdateImage();

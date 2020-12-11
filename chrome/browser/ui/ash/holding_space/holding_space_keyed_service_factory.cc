@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_factory.h"
+#include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
@@ -26,6 +27,7 @@ HoldingSpaceKeyedServiceFactory::HoldingSpaceKeyedServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "HoldingSpaceService",
           BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(chromeos::FileChangeServiceFactory::GetInstance());
   DependsOn(file_manager::VolumeManagerFactory::GetInstance());
 }
 

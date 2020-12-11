@@ -110,6 +110,8 @@ HoldingSpaceItemView::HoldingSpaceItemView(
     HoldingSpaceItemViewDelegate* delegate,
     const HoldingSpaceItem* item)
     : delegate_(delegate), item_(item), item_id_(item->id()) {
+  model_observer_.Observe(HoldingSpaceController::Get()->model());
+
   SetProperty(kIsHoldingSpaceItemViewProperty, true);
 
   set_context_menu_controller(delegate_);
@@ -236,6 +238,12 @@ bool HoldingSpaceItemView::OnMousePressed(const ui::MouseEvent& event) {
 
 void HoldingSpaceItemView::OnMouseReleased(const ui::MouseEvent& event) {
   delegate_->OnHoldingSpaceItemViewMouseReleased(this, event);
+}
+
+void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
+    const HoldingSpaceItem* item) {
+  if (item_ == item)
+    GetViewAccessibility().OverrideName(item->text());
 }
 
 void HoldingSpaceItemView::AnimateIn(ui::LayerAnimationObserver* observer) {

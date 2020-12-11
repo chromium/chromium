@@ -66,6 +66,24 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemRemoved(
   });
 }
 
+void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
+    const HoldingSpaceItem* item) {
+  if (is_restoring_persistence())
+    return;
+
+  // Update the `item` in persistent storage.
+  ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
+  auto item_it = std::find_if(
+      update->begin(), update->end(),
+      [&item](const base::Value& persisted_item) {
+        return HoldingSpaceItem::DeserializeId(base::Value::AsDictionaryValue(
+                   persisted_item)) == item->id();
+      });
+
+  DCHECK(item_it != update->end());
+  *item_it = item->Serialize();
+}
+
 void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   DCHECK(model()->items().empty());
 

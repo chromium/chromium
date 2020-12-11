@@ -8,6 +8,9 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -28,7 +31,8 @@ class HoldingSpaceItemViewDelegate;
 // `HoldingSpaceItemScreenCaptureView`. Note that `HoldingSpaceItemView` may
 // temporarily outlive its associated `HoldingSpaceItem` when it is being
 // animated out.
-class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
+class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView,
+                                        public HoldingSpaceModelObserver {
  public:
   METADATA_HEADER(HoldingSpaceItemView);
 
@@ -55,6 +59,9 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
   void OnMouseEvent(ui::MouseEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
+
+  // HoldingSpaceModelObserver:
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
 
   // Invoked to initiate animate in/out of this view. Any animations created
   // will be associated with the specified `observer`.
@@ -106,6 +113,9 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView {
 
   // Whether or not this view is selected.
   bool selected_ = false;
+
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      model_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceItemView> weak_factory_{this};
 };

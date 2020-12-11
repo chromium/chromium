@@ -15,14 +15,17 @@ class HoldingSpaceItem;
 class ASH_PUBLIC_EXPORT HoldingSpaceModelObserver
     : public base::CheckedObserver {
  public:
-  // Called when an item gets added to the holding space model.
-  virtual void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) = 0;
+  // Called when an `item` gets added to the holding space model.
+  virtual void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) {}
 
-  // Called when an item gets removed from the holding space model.
-  virtual void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) = 0;
+  // Called when an `item` gets removed from the holding space model.
+  virtual void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) {}
+
+  // Called when an `item` gets updated within the holding space model.
+  virtual void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) {}
 
   // Called when a partially initialized holding space `item` gets finalized.
-  virtual void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) = 0;
+  virtual void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) {}
 };
 
 }  // namespace ash
