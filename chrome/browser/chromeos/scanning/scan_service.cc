@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -214,6 +215,11 @@ base::FilePath SavePage(const base::FilePath& scan_to_path,
   return scan_to_path.Append(filename);
 }
 
+// Records the histogram for scan job success.
+void RecordScanJobResult(bool success) {
+  base::UmaHistogramBoolean("Scanning.ScanJobSuccessful", success);
+}
+
 }  // namespace
 
 ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
@@ -259,6 +265,7 @@ void ScanService::StartScan(
   const std::string scanner_name = GetScannerName(scanner_id);
   if (scanner_name.empty() || !FilePathSupported(settings->scan_to_path)) {
     std::move(callback).Run(false);
+    RecordScanJobResult(false);
     return;
   }
 
@@ -394,6 +401,7 @@ void ScanService::OnAllPagesSaved(bool success) {
     last_scanned_file_path_.clear();
 
   scan_job_observer_->OnScanComplete(!save_failed_, last_scanned_file_path_);
+  RecordScanJobResult(!save_failed_);
 }
 
 bool ScanService::FilePathSupported(const base::FilePath& file_path) {
