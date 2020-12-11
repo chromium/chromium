@@ -5,6 +5,7 @@
 #include "components/performance_manager/embedder/graph_features_helper.h"
 
 #include "build/build_config.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
@@ -59,12 +60,13 @@ TEST(GraphFeaturesHelperTest, EnableDefault) {
   features.EnableDefault();
   features.ConfigureGraph(&graph);
   EXPECT_EQ(graph_owned_count, graph.GraphOwnedCountForTesting());
-  EXPECT_EQ(2u, graph.GraphRegisteredCountForTesting());
+  EXPECT_EQ(3u, graph.GraphRegisteredCountForTesting());
   EXPECT_EQ(8u, graph.NodeDataDescriberCountForTesting());
   // Ensure the GraphRegistered objects can be queried directly.
   EXPECT_TRUE(
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));
   EXPECT_TRUE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
+  EXPECT_TRUE(PageLiveStateDecorator::GetFromGraph(&graph));
 
   graph.TearDown();
 }

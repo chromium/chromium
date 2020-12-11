@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PAGE_LIVE_STATE_DECORATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PAGE_LIVE_STATE_DECORATOR_H_
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
 
@@ -16,13 +20,16 @@ class WebContents;
 namespace performance_manager {
 
 class PageNode;
+class PageLiveStateObserver;
 
 // Used to record some live state information about the PageNode.
 // All the functions that take a WebContents* as a parameter should only be
 // called from the UI thread, the event will be forwarded to the corresponding
 // PageNode on the Performance Manager's sequence.
-class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
-                               public NodeDataDescriberDefaultImpl {
+class PageLiveStateDecorator
+    : public GraphOwnedDefaultImpl,
+      public GraphRegisteredImpl<PageLiveStateDecorator>,
+      public NodeDataDescriberDefaultImpl {
  public:
   class Data;
 
@@ -77,6 +84,9 @@ class PageLiveStateDecorator::Data {
   Data(const Data& other) = delete;
   Data& operator=(const Data&) = delete;
 
+  void AddObserver(PageLiveStateObserver* observer);
+  void RemoveObserver(PageLiveStateObserver* observer);
+
   virtual bool IsConnectedToUSBDevice() const = 0;
   virtual bool IsConnectedToBluetoothDevice() const = 0;
   virtual bool IsCapturingVideo() const = 0;
@@ -99,6 +109,31 @@ class PageLiveStateDecorator::Data {
   virtual void SetIsCapturingDisplayForTesting(bool value) = 0;
   virtual void SetIsAutoDiscardableForTesting(bool value) = 0;
   virtual void SetWasDiscardedForTesting(bool value) = 0;
+
+ protected:
+  base::ObserverList<PageLiveStateObserver> observers_;
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+class PageLiveStateObserver : public base::CheckedObserver {
+ public:
+  PageLiveStateObserver();
+  ~PageLiveStateObserver() override;
+  PageLiveStateObserver(const PageLiveStateObserver& other) = delete;
+  PageLiveStateObserver& operator=(const PageLiveStateObserver&) = delete;
+
+  virtual void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) = 0;
+  virtual void OnIsConnectedToBluetoothDeviceChanged(
+      const PageNode* page_node) = 0;
+  virtual void OnIsCapturingVideoChanged(const PageNode* page_node) = 0;
+  virtual void OnIsCapturingAudioChanged(const PageNode* page_node) = 0;
+  virtual void OnIsBeingMirroredChanged(const PageNode* page_node) = 0;
+  virtual void OnIsCapturingWindowChanged(const PageNode* page_node) = 0;
+  virtual void OnIsCapturingDisplayChanged(const PageNode* page_node) = 0;
+  virtual void OnIsAutoDiscardableChanged(const PageNode* page_node) = 0;
+  virtual void OnWasDiscardedChanged(const PageNode* page_node) = 0;
 };
 
 }  // namespace performance_manager
