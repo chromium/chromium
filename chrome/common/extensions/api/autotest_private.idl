@@ -323,6 +323,7 @@ namespace autotestPrivate {
     DOMString appId;
     DOMString name;
     DOMString shortName;
+    DOMString publisherId;
     AppType? type;
     AppInstallSource? installSource;
     AppReadiness? readiness;

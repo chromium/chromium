@@ -500,6 +500,7 @@ var defaultTests = [
         // their values change if chrome_branded is true.
         chrome.test.assertTrue(!!chromium.name);
         chrome.test.assertTrue(!!chromium.shortName);
+        chrome.test.assertEq(chromium.publisherId, "");
         chrome.test.assertEq(chromium.additionalSearchTerms, []);
         chrome.test.assertEq(chromium.readiness, 'Ready');
         chrome.test.assertEq(chromium.showInLauncher, true);

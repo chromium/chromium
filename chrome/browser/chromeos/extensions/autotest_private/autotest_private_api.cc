@@ -3057,6 +3057,7 @@ AutotestPrivateGetAllInstalledAppsFunction::Run() {
     app.app_id = update.AppId();
     app.name = update.Name();
     app.short_name = update.ShortName();
+    app.publisher_id = update.PublisherId();
     app.additional_search_terms = update.AdditionalSearchTerms();
     app.type = GetAppType(update.AppType());
     app.install_source = GetAppInstallSource(update.InstallSource());
