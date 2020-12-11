@@ -107,13 +107,13 @@ void NetworkChangeNotifierFuchsia::OnInterfacesEvent(
 
 void NetworkChangeNotifierFuchsia::OnInterfaceAdded(
     fuchsia::net::interfaces::Properties properties) {
+  uint64_t id = properties.id();
   base::Optional<internal::InterfaceProperties> cache_entry =
       internal::InterfaceProperties::VerifyAndCreate(std::move(properties));
   if (!cache_entry) {
     OnWatcherError("OnInterfaceAdded: incomplete interface properties.");
     return;
   }
-  uint64_t id = properties.id();
   if (interface_cache_.find(id) != interface_cache_.end()) {
     OnWatcherError(base::StringPrintf(
         "OnInterfaceAdded: duplicate interface ID %lu.", id));
