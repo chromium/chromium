@@ -1,4 +1,4 @@
-From febbe4508395a83f64e6f5e3cd55052fc8e16e8c Mon Sep 17 00:00:00 2001
+From 81210f660e8b86116e7b512ae25c44c44cb1e1e7 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Mon, 28 Sep 2020 15:51:32 -0400
 Subject: [PATCH 2/3] Command-line flags for class merging and outlining
@@ -8,23 +8,25 @@ Subject: [PATCH 2/3] Command-line flags for class merging and outlining
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-index ea902d508..708961316 100644
+index 47c084e22..a7b1fc0eb 100644
 --- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
 +++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-@@ -234,9 +234,9 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+@@ -236,11 +236,11 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
    public boolean enableFieldAssignmentTracker = true;
    public boolean enableFieldBitAccessAnalysis =
        System.getProperty("com.android.tools.r8.fieldBitAccessAnalysis") != null;
 -  public boolean enableStaticClassMerging = true;
 -  public boolean enableHorizontalClassMerging = true;
--  public boolean enableVerticalClassMerging = true;
 +  public boolean enableStaticClassMerging = System.getProperty("com.android.tools.r8.staticClassMerging") != null;
 +  public boolean enableHorizontalClassMerging = System.getProperty("com.android.tools.r8.horizontalClassMerging") != null;
+   public int horizontalClassMergingMaxGroupSize = 30;
+   public boolean enableHorizontalClassMergingOfKotlinLambdas = true;
+-  public boolean enableVerticalClassMerging = true;
 +  public boolean enableVerticalClassMerging = System.getProperty("com.android.tools.r8.verticalClassMerging") != null;
    public boolean enableArgumentRemoval = true;
    public boolean enableUnusedInterfaceRemoval = true;
    public boolean enableDevirtualization = true;
-@@ -1146,7 +1146,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+@@ -1167,7 +1167,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
      public static final String CLASS_NAME = "com.android.tools.r8.GeneratedOutlineSupport";
      public static final String METHOD_PREFIX = "outline";
  
@@ -34,5 +36,5 @@ index ea902d508..708961316 100644
      public int maxSize = 99;
      public int threshold = 20;
 -- 
-2.29.0.rc1.297.gfa9743e501-goog
+2.29.2.299.gdc1121823c-goog
 

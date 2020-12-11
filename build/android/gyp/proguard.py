@@ -358,7 +358,8 @@ def _OptimizeWithR8(options,
 def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
   cmd = build_utils.JavaCmd(warnings_as_errors) + [
       '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
-      '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning'
+      '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
+      '--check'
   ]
 
   for path in classpath:

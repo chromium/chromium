@@ -1,4 +1,4 @@
-From cac4f22114d62108152db25745a241e84157b2a6 Mon Sep 17 00:00:00 2001
+From eaf26704d9d5143d3cd5a8aa96ebff225bdf6747 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Wed, 21 Oct 2020 10:59:42 -0400
 Subject: [PATCH 3/3] Allow access modification everywhere
@@ -11,10 +11,10 @@ than adding ",allowaccessmodification" to every single -keep rule.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java b/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java
-index b54a0db2d..e02a41ce0 100644
+index bdda13be7..7553cbfa6 100644
 --- a/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java
 +++ b/src/main/java/com/android/tools/r8/shaking/AppInfoWithLiveness.java
-@@ -917,7 +917,7 @@ public class AppInfoWithLiveness extends AppInfoWithClassHierarchy
+@@ -881,7 +881,7 @@ public class AppInfoWithLiveness extends AppInfoWithClassHierarchy
  
    public boolean isAccessModificationAllowed(DexReference reference) {
      assert options().getProguardConfiguration().isAccessModificationAllowed();
@@ -24,5 +24,5 @@ index b54a0db2d..e02a41ce0 100644
  
    public boolean isRepackagingAllowed(DexProgramClass clazz) {
 -- 
-2.29.0.rc1.297.gfa9743e501-goog
+2.29.2.299.gdc1121823c-goog
 
