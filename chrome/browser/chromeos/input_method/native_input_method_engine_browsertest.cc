@@ -155,8 +155,9 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
   }
 
   void SetUpOnMainThread() override {
+    engine_ = std::make_unique<NativeInputMethodEngine>();
     ui::IMEBridge::Get()->SetInputContextHandler(&input_method_);
-    ui::IMEBridge::Get()->SetCurrentEngineHandler(&engine_);
+    ui::IMEBridge::Get()->SetCurrentEngineHandler(engine_.get());
 
     auto observer = std::make_unique<TestObserver>();
     observer_ = observer.get();
@@ -165,14 +166,22 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
     prefs_ = profile_->GetPrefs();
     prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
                 base::DictionaryValue());
-    engine_.Initialize(std::move(observer), /*extension_id=*/"", profile_);
-    engine_.get_assistive_suggester_for_testing()
+    engine_->Initialize(std::move(observer), /*extension_id=*/"", profile_);
+    engine_->get_assistive_suggester_for_testing()
         ->get_emoji_suggester_for_testing()
         ->LoadEmojiMapForTesting(kEmojiData);
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
-  void TearDown() override { engine_.Reset(); }
+  void TearDownOnMainThread() override {
+    // Reset the engine before shutting down the browser because the engine
+    // observes ChromeKeyboardControllerClient, which is tied to the browser
+    // lifetime.
+    engine_.reset();
+    ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+    ui::IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
 
   void SetUpTextInput(TextInputTestHelper& helper) {
     GURL url = ui_test_utils::GetTestUrl(
@@ -201,12 +210,12 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
                         int flags = ui::EF_NONE) {
     KeyProcessingWaiter waiterPressed;
     KeyProcessingWaiter waiterReleased;
-    engine_.ProcessKeyEvent({ui::ET_KEY_PRESSED, code, flags},
-                            waiterPressed.CreateCallback());
-    engine_.ProcessKeyEvent({ui::ET_KEY_RELEASED, code, flags},
-                            waiterReleased.CreateCallback());
+    engine_->ProcessKeyEvent({ui::ET_KEY_PRESSED, code, flags},
+                             waiterPressed.CreateCallback());
+    engine_->ProcessKeyEvent({ui::ET_KEY_RELEASED, code, flags},
+                             waiterReleased.CreateCallback());
     if (need_flush)
-      engine_.FlushForTesting();
+      engine_->FlushForTesting();
 
     waiterPressed.Wait();
     waiterReleased.Wait();
@@ -227,7 +236,7 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
     return browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod();
   }
 
-  NativeInputMethodEngine engine_;
+  std::unique_ptr<NativeInputMethodEngine> engine_;
   Profile* profile_;
   PrefService* prefs_;
   TestObserver* observer_;
@@ -246,9 +255,9 @@ constexpr char kEngineIdVietnameseTelex[] = "vkd_vi_telex";
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                        VietnameseTelex_SimpleTransform) {
-  engine_.Enable(kEngineIdVietnameseTelex);
-  engine_.FlushForTesting();
-  EXPECT_TRUE(engine_.IsConnectedForTesting());
+  engine_->Enable(kEngineIdVietnameseTelex);
+  engine_->FlushForTesting();
+  EXPECT_TRUE(engine_->IsConnectedForTesting());
 
   // Create a fake text field.
   ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
@@ -272,16 +281,16 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, VietnameseTelex_Reset) {
-  engine_.Enable(kEngineIdVietnameseTelex);
-  engine_.FlushForTesting();
-  EXPECT_TRUE(engine_.IsConnectedForTesting());
+  engine_->Enable(kEngineIdVietnameseTelex);
+  engine_->FlushForTesting();
+  EXPECT_TRUE(engine_->IsConnectedForTesting());
 
   // Create a fake text field.
   ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
   SetFocus(&text_input_client);
 
   DispatchKeyPress(ui::VKEY_A, true);
-  engine_.Reset();
+  engine_->Reset();
   DispatchKeyPress(ui::VKEY_S, true);
 
   // Expect to commit 's'.
@@ -297,11 +306,11 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, VietnameseTelex_Reset) {
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SwitchActiveController) {
   // Swap between two controllers.
-  engine_.Enable(kEngineIdVietnameseTelex);
-  engine_.FlushForTesting();
-  engine_.Disable();
-  engine_.Enable(kEngineIdArabic);
-  engine_.FlushForTesting();
+  engine_->Enable(kEngineIdVietnameseTelex);
+  engine_->FlushForTesting();
+  engine_->Disable();
+  engine_->Enable(kEngineIdArabic);
+  engine_->FlushForTesting();
 
   // Create a fake text field.
   ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
@@ -319,16 +328,16 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SwitchActiveController) {
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, NoActiveController) {
-  engine_.Enable(kEngineIdVietnameseTelex);
-  engine_.FlushForTesting();
-  engine_.Disable();
+  engine_->Enable(kEngineIdVietnameseTelex);
+  engine_->FlushForTesting();
+  engine_->Disable();
 
   // Create a fake text field.
   ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
   SetFocus(&text_input_client);
 
   DispatchKeyPress(ui::VKEY_A, true);
-  engine_.Reset();
+  engine_->Reset();
 
   // Expect no changes.
   ASSERT_EQ(text_input_client.composition_history().size(), 0U);
@@ -346,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserEmail) {
       IdentityManagerFactory::GetForProfileIfExists(profile_);
   signin::SetPrimaryAccount(identity_manager, "johnwayne@me.xyz");
 
-  engine_.Enable(kEngineIdUs);
+  engine_->Enable(kEngineIdUs);
 
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
@@ -389,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
       IdentityManagerFactory::GetForProfileIfExists(profile_);
   signin::SetPrimaryAccount(identity_manager, "johnwayne@me.xyz");
 
-  engine_.Enable(kEngineIdUs);
+  engine_->Enable(kEngineIdUs);
 
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
@@ -435,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserName) {
       autofill_profile);
   personal_data_observer.Wait();
 
-  engine_.Enable(kEngineIdUs);
+  engine_->Enable(kEngineIdUs);
 
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
@@ -513,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestEmoji) {
   base::HistogramTester histogram_tester;
-  engine_.Enable(kEngineIdUs);
+  engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
   const base::string16 prefix_text = base::UTF8ToUTF16("happy ");
@@ -546,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
                                     0);
-  engine_.Enable(kEngineIdUs);
+  engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
   const base::string16 prefix_text = base::UTF8ToUTF16("happy ");
@@ -612,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(
   button.id = ui::ime::ButtonId::kLearnMore;
   button.window_type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
 
-  engine_.AssistiveWindowButtonClicked(button);
+  engine_->AssistiveWindowButtonClicked(button);
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "ChromeOS.Settings.SmartInputs.EmojiSuggestions.Open"));
@@ -625,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(
   ui::ime::AssistiveWindowButton button;
   button.id = ui::ime::ButtonId::kSmartInputsSettingLink;
 
-  engine_.AssistiveWindowButtonClicked(button);
+  engine_->AssistiveWindowButtonClicked(button);
 
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(
@@ -653,14 +662,14 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, DestroyProfile) {
-  EXPECT_NE(engine_.GetPrefChangeRegistrarForTesting(), nullptr);
+  EXPECT_NE(engine_->GetPrefChangeRegistrarForTesting(), nullptr);
   profile_->MaybeSendDestroyedNotification();
-  EXPECT_EQ(engine_.GetPrefChangeRegistrarForTesting(), nullptr);
+  EXPECT_EQ(engine_->GetPrefChangeRegistrarForTesting(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                        HighlightsOnAutocorrectThenDismissesHighlight) {
-  engine_.Enable(kEngineIdUs);
+  engine_->Enable(kEngineIdUs);
   ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
   SetFocus(&text_input_client);
   // Input the corrected word.
@@ -678,27 +687,27 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
       },
       false);
 
-  engine_.OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect("typed", "corrected", 0);
 
-  EXPECT_FALSE(engine_.GetAutocorrectRange().is_empty());
+  EXPECT_FALSE(engine_->GetAutocorrectRange().is_empty());
 
   DispatchKeyPress(ui::KeyboardCode::VKEY_A, false);
   DispatchKeyPress(ui::KeyboardCode::VKEY_A, false);
   DispatchKeyPress(ui::KeyboardCode::VKEY_A, false);
 
   // Highlighting should only go away after 4 keypresses.
-  EXPECT_FALSE(engine_.GetAutocorrectRange().is_empty());
+  EXPECT_FALSE(engine_->GetAutocorrectRange().is_empty());
 
   DispatchKeyPress(ui::KeyboardCode::VKEY_A, false);
 
-  EXPECT_TRUE(engine_.GetAutocorrectRange().is_empty());
+  EXPECT_TRUE(engine_->GetAutocorrectRange().is_empty());
 
   SetFocus(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                        ShowsAndHidesAutocorrectUndoWindow) {
-  engine_.Enable(kEngineIdUs);
+  engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
   const base::string16 prefix_text = base::UTF8ToUTF16("corrected ");
@@ -707,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
 
-  engine_.OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect("typed", "corrected", 0);
 
   auto* controller =
       ((input_method::
@@ -727,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
-  engine_.Enable(kEngineIdUs);
+  engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
   const base::string16 corrected_text =
@@ -743,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
                 .surrounding_text,
             corrected_text);
 
-  engine_.OnAutocorrect("typed", "corrected", 6);
+  engine_->OnAutocorrect("typed", "corrected", 6);
 
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
   content::WebContents* tab =
@@ -753,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
 
   helper.WaitForSurroundingTextChanged(corrected_text, gfx::Range(8, 8));
 
-  engine_.get_autocorrect_manager_for_testing()->UndoAutocorrect();
+  engine_->get_autocorrect_manager_for_testing()->UndoAutocorrect();
 
   helper.WaitForSurroundingTextChanged(typed_text);
 
@@ -768,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
 
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                        RevertsAutocorrectWithKeyboard) {
-  engine_.Enable(kEngineIdUs);
+  engine_->Enable(kEngineIdUs);
 
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
@@ -784,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                 .surrounding_text,
             corrected_text);
 
-  engine_.OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect("typed", "corrected", 0);
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -823,19 +832,28 @@ class NativeInputMethodEngineAssistiveOff : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    ui::IMEBridge::Get()->SetCurrentEngineHandler(&engine_);
+    engine_ = std::make_unique<NativeInputMethodEngine>();
+    ui::IMEBridge::Get()->SetCurrentEngineHandler(engine_.get());
 
     auto observer = std::make_unique<TestObserver>();
     observer_ = observer.get();
 
     profile_ = browser()->profile();
-    engine_.Initialize(std::move(observer), "", profile_);
+    engine_->Initialize(std::move(observer), "", profile_);
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
-  void TearDown() override { engine_.Reset(); }
+  void TearDownOnMainThread() override {
+    // Reset the engine before shutting down the browser because the engine
+    // observes ChromeKeyboardControllerClient, which is tied to the browser
+    // lifetime.
+    engine_.reset();
+    ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+    ui::IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
 
-  NativeInputMethodEngine engine_;
+  std::unique_ptr<NativeInputMethodEngine> engine_;
   Profile* profile_;
   TestObserver* observer_;
 
@@ -858,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineAssistiveOff,
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineAssistiveOff,
                        EmojiSuggestionDisabledReasonkFeatureFlagOff) {
   base::HistogramTester histogram_tester;
-  engine_.get_assistive_suggester_for_testing()
+  engine_->get_assistive_suggester_for_testing()
       ->get_emoji_suggester_for_testing()
       ->LoadEmojiMapForTesting(kEmojiData);
 
