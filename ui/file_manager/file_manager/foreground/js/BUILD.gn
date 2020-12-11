@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//ui/webui/resources/js/cr.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 visibility = [
@@ -26,7 +27,10 @@ group("closure_compile") {
 
 js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
-  deps = [ ":thumbnail_loader.m" ]
+  deps = [
+    ":android_app_list_model.m",
+    ":thumbnail_loader.m",
+  ]
 }
 
 js_type_check("closure_compile_module") {
@@ -222,6 +226,14 @@ js_library("mock_thumbnail_loader") {
 
 js_library("android_app_list_model") {
   deps = [ "//ui/webui/resources/js/cr:event_target" ]
+}
+
+js_library("android_app_list_model.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/android_app_list_model.m.js" ]
+
+  deps = [ "//ui/webui/resources/js/cr:event_target.m" ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("app_state_controller") {
@@ -906,5 +918,10 @@ js_test_gen_html("js_test_gen_html") {
 }
 
 js_modulizer("modulize") {
-  input_files = [ "thumbnail_loader.js" ]
+  input_files = [
+    "android_app_list_model.js",
+    "thumbnail_loader.js",
+  ]
+
+  namespace_rewrites = cr_namespace_rewrites
 }
