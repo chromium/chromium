@@ -7,7 +7,9 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 # TODO(crbug.com/1152230): Upstream the Kaleidoscope module code and remove the
 # fallback module.
-if (enable_kaleidoscope) {
+# TODO(tiborg): Make this if(enable_kaleidoscope) once downstream changes have
+# landed.
+if (false) {
   group("module") {
     public_deps =
         [ "//chrome/browser/media/kaleidoscope/internal/resources/module" ]
