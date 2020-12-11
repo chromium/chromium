@@ -13,6 +13,11 @@ namespace webapps {
 // true, otherwise, all tasks will be run and a complete list of errors will be
 // returned.
 struct InstallableParams {
+ public:
+  InstallableParams();
+  ~InstallableParams();
+  InstallableParams(const InstallableParams& other);
+
   // Check whether the current WebContents is eligible to be installed, i.e it:
   //  - is served over HTTPS
   //  - is a top-level frame
@@ -36,6 +41,9 @@ struct InstallableParams {
   // If the manifest is being checked, check the display setting in the manifest
   // is a valid webapp display setting.
   bool check_webapp_manifest_display = true;
+
+  // Whether to fetch the screenshots listed in the manifest.
+  bool fetch_screenshots = false;
 
   // Check whether the site has a service worker controlling the manifest start
   // URL and the current URL.

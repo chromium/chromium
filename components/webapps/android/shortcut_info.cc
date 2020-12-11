@@ -82,6 +82,12 @@ void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
   }
   user_title = short_name;
 
+  description = manifest.description.value_or(base::string16());
+
+  categories.clear();
+  for (const auto& category : manifest.categories)
+    categories.push_back(category);
+
   // Set the url based on the manifest value, if any.
   if (manifest.start_url.is_valid())
     url = manifest.start_url;
@@ -118,6 +124,11 @@ void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
   icon_urls.clear();
   for (const auto& icon : manifest.icons)
     icon_urls.push_back(icon.src.spec());
+
+  // Set the screenshots urls based on the screenshots in the manifest, if any.
+  screenshot_urls.clear();
+  for (const auto& screenshot : manifest.screenshots)
+    screenshot_urls.push_back(screenshot.src);
 
   if (manifest.share_target) {
     share_target = ShareTarget();

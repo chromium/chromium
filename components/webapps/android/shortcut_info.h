@@ -127,6 +127,8 @@ struct ShortcutInfo {
   base::string16 user_title;
   base::string16 name;
   base::string16 short_name;
+  base::string16 description;
+  std::vector<base::string16> categories;
   blink::mojom::DisplayMode display = blink::mojom::DisplayMode::kBrowser;
   device::mojom::ScreenOrientationLockType orientation =
       device::mojom::ScreenOrientationLockType::DEFAULT;
@@ -138,6 +140,7 @@ struct ShortcutInfo {
   GURL splash_image_url;
   GURL best_primary_icon_url;
   std::vector<std::string> icon_urls;
+  std::vector<GURL> screenshot_urls;
   base::Optional<ShareTarget> share_target;
 
   // Both shortcut item related vectors have the same size.

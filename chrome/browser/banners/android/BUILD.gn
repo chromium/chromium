@@ -66,6 +66,7 @@ android_library("javatests") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/android/bottomsheet:java",
     "//components/feature_engagement/public:public_java",
     "//components/infobars/android:java",
     "//components/signin/core/browser/android:java",

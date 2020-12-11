@@ -28,6 +28,8 @@ import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiSelector;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.RootMatchers;
@@ -81,6 +83,7 @@ import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.CppWrappedTestTracker;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -133,6 +136,9 @@ public class AppBannerManagerTest {
 
     private static final String WEB_APP_MANIFEST_WITH_UNSUPPORTED_PLATFORM =
             "/chrome/test/data/banners/manifest_prefer_related_chrome_app.json";
+
+    private static final String WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL =
+            "/chrome/test/data/banners/manifest_bottom_sheet_install.json";
 
     private static final String NATIVE_ICON_PATH = "/chrome/test/data/banners/launcher-icon-4x.png";
 
@@ -215,6 +221,7 @@ public class AppBannerManagerTest {
     private EmbeddedTestServer mTestServer;
     private UiDevice mUiDevice;
     private CppWrappedTestTracker mTracker;
+    private BottomSheetController mBottomSheetController;
 
     @Before
     public void setUp() throws Exception {
@@ -254,6 +261,10 @@ public class AppBannerManagerTest {
         AppBannerManager.setTotalEngagementForTesting(10);
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+
+        mBottomSheetController = mTabbedActivityTestRule.getActivity()
+                                         .getRootUiCoordinatorForTesting()
+                                         .getBottomSheetController();
     }
 
     @After
@@ -307,6 +318,13 @@ public class AppBannerManagerTest {
                         infobars.get(0), Matchers.instanceOf(InstallableAmbientBadgeInfoBar.class));
             });
         }
+    }
+
+    private void waitUntilBottomSheetStatus(ChromeActivityTestRule<? extends ChromeActivity> rule,
+            @BottomSheetController.SheetState int status) {
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mBottomSheetController.getSheetState(), Matchers.is(status));
+        });
     }
 
     private static String getExpectedDialogTitle(Tab tab) throws Exception {
@@ -402,6 +420,14 @@ public class AppBannerManagerTest {
         clickButton(rule.getActivity(), ButtonType.NEGATIVE);
         waitUntilNoDialogsShowing(tab);
         tapAndWaitForModalBanner(tab);
+    }
+
+    private void triggerBottomSheet(
+            ChromeActivityTestRule<? extends ChromeActivity> rule, String url) throws Exception {
+        resetEngagementForUrl(url, 10);
+        rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        navigateToUrlAndWaitForBannerManager(rule, url);
+        waitUntilBottomSheetStatus(rule, BottomSheetController.SheetState.PEEK);
     }
 
     private void clickButton(final ChromeActivity activity, @ButtonType final int buttonType) {
@@ -709,6 +735,54 @@ public class AppBannerManagerTest {
                 WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                         WEB_APP_MANIFEST_WITH_UNSUPPORTED_PLATFORM, "call_stashed_prompt_on_click"),
                 false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AppBanners"})
+    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
+    public void testBottomSheet() throws Exception {
+        triggerBottomSheet(mTabbedActivityTestRule,
+                WebappTestPage.getServiceWorkerUrlWithManifest(
+                        mTestServer, WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL));
+
+        View toolbar = mBottomSheetController.getCurrentSheetContent().getToolbarView();
+        View content = mBottomSheetController.getCurrentSheetContent().getContentView();
+
+        // Expand the bottom sheet via drag handle.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ImageView dragHandle = toolbar.findViewById(R.id.drag_handlebar);
+            TouchCommon.singleClickView(dragHandle);
+        });
+
+        waitUntilBottomSheetStatus(mTabbedActivityTestRule, BottomSheetController.SheetState.HALF);
+
+        TextView appName = toolbar.findViewById(R.id.app_name);
+        TextView appOrigin = toolbar.findViewById(R.id.app_origin);
+        TextView description = content.findViewById(R.id.description);
+        TextView categories = content.findViewById(R.id.categories);
+
+        Assert.assertEquals("PWA Bottom Sheet", appName.getText());
+        Assert.assertTrue(appOrigin.getText().toString().startsWith("http://127.0.0.1:"));
+        Assert.assertEquals("App description", description.getText());
+        Assert.assertEquals("Categories: cats, memes.", categories.getText());
+
+        // Collapse the bottom sheet.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ImageView dragHandle = toolbar.findViewById(R.id.drag_handlebar);
+            TouchCommon.singleClickView(dragHandle);
+        });
+
+        waitUntilBottomSheetStatus(mTabbedActivityTestRule, BottomSheetController.SheetState.PEEK);
+
+        // Dismiss the bottom sheet.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mBottomSheetController.hideContent(
+                    mBottomSheetController.getCurrentSheetContent(), false);
+        });
+
+        waitUntilBottomSheetStatus(
+                mTabbedActivityTestRule, BottomSheetController.SheetState.HIDDEN);
     }
 
     @Test

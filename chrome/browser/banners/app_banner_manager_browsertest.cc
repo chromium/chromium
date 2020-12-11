@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(
 
   installable_manager_->FailNext(base::WrapUnique(new webapps::InstallableData(
       {webapps::MANIFEST_URL_CHANGED}, GURL(), nullptr, GURL(), nullptr, false,
-      GURL(), nullptr, false, false)));
+      GURL(), nullptr, std::map<GURL, SkBitmap>(), false, false)));
 
   // The page should record one failure of MANIFEST_URL_CHANGED, but it should
   // still successfully get to the PENDING_PROMPT state of the pipeline, as it

@@ -166,6 +166,10 @@ class InstallableManager
   // Sets the icon matching |usage| as fetched.
   void SetIconFetched(const IconUsage usage);
 
+  // Returns true if all the screenshots listed in the manifest have been
+  // downloaded.
+  bool IsScreenshotsFetchComplete() const;
+
   // Returns a vector with all errors encountered for the resources requested in
   // |params|, or an empty vector if there is no error.
   std::vector<InstallableStatusCode> GetErrors(const InstallableParams& params);
@@ -232,6 +236,9 @@ class InstallableManager
                      const IconUsage usage,
                      const SkBitmap& bitmap);
 
+  void CheckAndFetchScreenshots();
+  void OnScreenshotFetched(const GURL screenshot_url, const SkBitmap& bitmap);
+
   // content::ServiceWorkerContextObserver overrides
   void OnRegistrationCompleted(const GURL& pattern) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
@@ -250,12 +257,17 @@ class InstallableManager
 
   InstallableTaskQueue task_queue_;
 
-  // Installable properties cached on this object.
+  // Installable properties cached on this object. When adding to this list,
+  // make sure to update Reset().
   std::unique_ptr<EligiblityProperty> eligibility_;
   std::unique_ptr<ManifestProperty> manifest_;
   std::unique_ptr<ValidManifestProperty> valid_manifest_;
   std::unique_ptr<ServiceWorkerProperty> worker_;
   std::map<IconUsage, IconProperty> icons_;
+  std::map<GURL, SkBitmap> screenshots_;
+
+  // The number of screenshots currently being downloaded.
+  int screenshots_downloading_ = 0;
 
   // Owned by the storage partition attached to the content::WebContents which
   // this object is scoped to.

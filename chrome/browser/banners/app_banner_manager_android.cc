@@ -22,10 +22,12 @@
 #include "chrome/browser/android/webapk/webapk_web_manifest_checker.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_params.h"
+#include "chrome/browser/android/webapps/pwa_bottom_sheet_controller.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerInProductHelpControllerProvider_jni.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerManager_jni.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -62,21 +64,6 @@ constexpr char kIphReplacesToolbar[] = "x_iph_replaces_toolbar";
 
 // Whether to ignore the Chrome channel in QueryNativeApp() for testing.
 bool gIgnoreChromeChannelForTesting = false;
-
-// Returns a pointer to the InstallableAmbientBadgeInfoBar if it is currently
-// showing. Otherwise returns nullptr.
-infobars::InfoBar* GetVisibleAmbientBadgeInfoBar(
-    InfoBarService* infobar_service) {
-  for (size_t i = 0; i < infobar_service->infobar_count(); ++i) {
-    infobars::InfoBar* infobar = infobar_service->infobar_at(i);
-    if (infobar->delegate()->GetIdentifier() ==
-        InstallableAmbientBadgeInfoBarDelegate::
-            INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE) {
-      return infobar;
-    }
-  }
-  return nullptr;
-}
 
 bool CanShowAppBanners(TabAndroid* tab) {
   if (!tab)
@@ -183,6 +170,8 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
       webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+  if (base::FeatureList::IsEnabled(chrome::android::kPwaInstallUseBottomSheet))
+    params.fetch_screenshots = true;
 
   return params;
 }
@@ -206,6 +195,7 @@ void AppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
     const webapps::InstallableData& data) {
   if (data.errors.empty())
     WebApkUkmRecorder::RecordWebApkableVisit(data.manifest_url);
+  screenshots_ = data.screenshots;
 
   AppBannerManager::OnDidPerformInstallableWebAppCheck(data);
 }
@@ -216,11 +206,9 @@ void AppBannerManagerAndroid::ResetCurrentPageData() {
   native_app_package_ = "";
 }
 
-void AppBannerManagerAndroid::ShowBannerUi(
+std::unique_ptr<AddToHomescreenParams>
+AppBannerManagerAndroid::CreateAddToHomescreenParams(
     webapps::WebappInstallSource install_source) {
-  content::WebContents* contents = web_contents();
-  DCHECK(contents);
-
   auto a2hs_params = std::make_unique<AddToHomescreenParams>();
   a2hs_params->primary_icon = primary_icon_;
   if (native_app_data_.is_null()) {
@@ -234,6 +222,15 @@ void AppBannerManagerAndroid::ShowBannerUi(
     a2hs_params->native_app_data = native_app_data_;
     a2hs_params->native_app_package_name = native_app_package_;
   }
+  return a2hs_params;
+}
+
+void AppBannerManagerAndroid::ShowBannerUi(
+    webapps::WebappInstallSource install_source) {
+  content::WebContents* contents = web_contents();
+  DCHECK(contents);
+
+  auto a2hs_params = CreateAddToHomescreenParams(install_source);
 
   bool was_shown = AddToHomescreenCoordinator::ShowForAppBanner(
       weak_factory_.GetWeakPtr(), std::move(a2hs_params),
@@ -497,6 +494,17 @@ bool AppBannerManagerAndroid::MaybeShowInProductHelp() const {
   return true;
 }
 
+void AppBannerManagerAndroid::Install() {
+  webapps::WebappInstallSource install_source =
+      webapps::InstallableMetrics::GetInstallSource(
+          web_contents(), webapps::InstallTrigger::AMBIENT_BADGE);
+  auto params = CreateAddToHomescreenParams(install_source);
+  AddToHomescreenInstaller::Install(
+      web_contents(), *params,
+      base::BindRepeating(&AppBannerManagerAndroid::RecordEventForAppBanner,
+                          weak_factory_.GetWeakPtr()));
+}
+
 void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
   if (MaybeShowInProductHelp() &&
       base::GetFieldTrialParamByFeatureAsBool(
@@ -518,13 +526,17 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
 
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(web_contents());
-  if (infobar_service == nullptr)
-    return;
+  bool infobar_visible =
+      infobar_service &&
+      InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
+          infobar_service);
 
-  if (GetVisibleAmbientBadgeInfoBar(infobar_service) == nullptr) {
-    InstallableAmbientBadgeInfoBarDelegate::Create(
-        web_contents(), weak_factory_.GetWeakPtr(), GetAppName(), primary_icon_,
-        has_maskable_primary_icon_, manifest_.start_url);
+  if (!infobar_visible) {
+    PwaBottomSheetController::MaybeCreateAndShow(
+        weak_factory_.GetWeakPtr(), web_contents(), GetAppName(), primary_icon_,
+        has_maskable_primary_icon_, manifest_.start_url, screenshots_,
+        manifest_.description.value_or(base::string16()), manifest_.categories,
+        /* show_expaned= */ false);
   }
 }
 
@@ -535,7 +547,8 @@ void AppBannerManagerAndroid::HideAmbientBadge() {
     return;
 
   infobars::InfoBar* ambient_badge_infobar =
-      GetVisibleAmbientBadgeInfoBar(infobar_service);
+      InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
+          infobar_service);
 
   if (ambient_badge_infobar)
     infobar_service->RemoveInfoBar(ambient_badge_infobar);

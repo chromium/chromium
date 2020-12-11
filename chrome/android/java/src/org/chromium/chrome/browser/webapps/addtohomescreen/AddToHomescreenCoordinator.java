@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.banners.AppBannerManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -54,6 +55,15 @@ public class AddToHomescreenCoordinator {
     public static boolean showForAppMenu(Tab tab, Context activityContext,
             WindowAndroid windowAndroid, ModalDialogManager modalDialogManager,
             WebContents webContents, Bundle menuItemData) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)) {
+            PwaBottomSheetController controller =
+                    PwaBottomSheetControllerProvider.from(windowAndroid);
+            if (controller != null) {
+                controller.requestOrExpandBottomSheetInstaller(webContents);
+                return true;
+            }
+        }
+
         @StringRes
         int titleId = menuItemData.getInt(AppBannerManager.MENU_TITLE_KEY);
         return new AddToHomescreenCoordinator(

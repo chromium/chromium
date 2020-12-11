@@ -190,6 +190,15 @@ class AppBannerManager : public content::WebContentsObserver,
 
   InstallableWebAppCheckResult GetInstallableWebAppCheckResultForTesting();
 
+  // Return the name of the app for this page.
+  virtual base::string16 GetAppName() const;
+
+  // Simple accessors:
+  const blink::Manifest& manifest() { return manifest_; }
+  const SkBitmap& primary_icon() { return primary_icon_; }
+  bool has_maskable_primary_icon() { return has_maskable_primary_icon_; }
+  const GURL& validated_url() { return validated_url_; }
+
  protected:
   explicit AppBannerManager(content::WebContents* web_contents);
   ~AppBannerManager() override;
@@ -205,9 +214,6 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Return a string identifying this app for metrics.
   virtual std::string GetAppIdentifier();
-
-  // Return the name of the app for this page.
-  virtual base::string16 GetAppName() const;
 
   // Return a string describing what type of banner is being created. Used when
   // alerting websites that a banner is about to be created.

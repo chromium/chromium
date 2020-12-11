@@ -3440,6 +3440,8 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/webapps/addtohomescreen/AddToHomescreenCoordinator.java",
     "java/src/org/chromium/chrome/browser/webapps/addtohomescreen/AddToHomescreenInstaller.java",
     "java/src/org/chromium/chrome/browser/webapps/addtohomescreen/AddToHomescreenMediator.java",
+    "java/src/org/chromium/chrome/browser/webapps/addtohomescreen/PwaBottomSheetController.java",
+    "java/src/org/chromium/chrome/browser/webapps/addtohomescreen/PwaBottomSheetControllerProvider.java",
     "java/src/org/chromium/chrome/browser/webauth/AuthenticatorImpl.java",
     "java/src/org/chromium/chrome/browser/webauth/Fido2Helper.java",
   ]

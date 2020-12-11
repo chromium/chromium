@@ -78,7 +78,7 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
     is_webapk_compatible_ = is_webapk_compatible;
   }
 
-  void OnDataAvailable(const ShortcutInfo& info,
+  void OnDataAvailable(const webapps::ShortcutInfo& info,
                        const SkBitmap& primary_icon) override {
     // This should only be called once.
     EXPECT_FALSE(data_available_);
@@ -164,6 +164,7 @@ class TestInstallableManager : public InstallableManager {
          params.valid_primary_icon ? primary_icon_.get() : nullptr,
          params.prefer_maskable_icon, GURL() /* splash_icon_url */,
          nullptr /* splash_icon */,
+         std::map<GURL, SkBitmap>() /* screenshots */,
          params.valid_manifest ? is_installable : false,
          params.has_worker ? is_installable : false});
   }

@@ -320,6 +320,7 @@ void InstallableManager::GetAllErrors(
   params.check_eligibility = true;
   params.valid_manifest = true;
   params.check_webapp_manifest_display = true;
+  params.fetch_screenshots = true;
   params.has_worker = true;
   params.valid_primary_icon = true;
   params.wait_for_worker = false;
@@ -364,6 +365,10 @@ bool InstallableManager::IsMaskableIconFetched(const IconUsage usage) const {
 
 void InstallableManager::SetIconFetched(const IconUsage usage) {
   icons_[usage].fetched = true;
+}
+
+bool InstallableManager::IsScreenshotsFetchComplete() const {
+  return manifest().screenshots.size() == screenshots_.size();
 }
 
 std::vector<InstallableStatusCode> InstallableManager::GetErrors(
@@ -471,6 +476,8 @@ void InstallableManager::Reset(base::Optional<InstallableStatusCode> error) {
   // Prevent any outstanding callbacks to or from this object from being called.
   weak_factory_.InvalidateWeakPtrs();
   icons_.clear();
+  screenshots_.clear();
+  screenshots_downloading_ = 0;
 
   // If we have paused tasks, we are waiting for a service worker.
   if (error)
@@ -522,9 +529,16 @@ void InstallableManager::RunCallback(
     splash_icon = &icons_[IconUsage::kSplash];
 
   InstallableData data = {
-      std::move(errors),   manifest_url(),           &manifest(),
-      primary_icon->url,   primary_icon->icon.get(), has_maskable_primary_icon,
-      splash_icon->url,    splash_icon->icon.get(),  valid_manifest_->is_valid,
+      std::move(errors),
+      manifest_url(),
+      &manifest(),
+      primary_icon->url,
+      primary_icon->icon.get(),
+      has_maskable_primary_icon,
+      splash_icon->url,
+      splash_icon->icon.get(),
+      screenshots_,
+      valid_manifest_->is_valid,
       worker_->has_worker,
   };
 
@@ -569,6 +583,8 @@ void InstallableManager::WorkOnTask() {
   } else if (params.valid_manifest && !valid_manifest_->fetched) {
     CheckManifestValid(params.check_webapp_manifest_display,
                        params.prefer_maskable_icon);
+  } else if (params.fetch_screenshots && !IsScreenshotsFetchComplete()) {
+    CheckAndFetchScreenshots();
   } else if (params.has_worker && !worker_->fetched) {
     CheckServiceWorker();
   } else if (params.valid_splash_icon &&
@@ -837,6 +853,42 @@ void InstallableManager::OnIconFetched(const GURL icon_url,
   }
 
   WorkOnTask();
+}
+
+void InstallableManager::CheckAndFetchScreenshots() {
+  DCHECK(!manifest().IsEmpty());
+
+  screenshots_downloading_ = 0;
+
+  for (const auto& url : manifest().screenshots) {
+    // A screenshot URL that's in the map is already taken care of.
+    if (screenshots_.count(url.src) > 0)
+      continue;
+
+    bool can_download = content::ManifestIconDownloader::Download(
+        GetWebContents(), url.src, /*ideal_splash_image_size_in_px*/ 320,
+        /* minimum_splash_image_size_in_px */ 320,
+        base::BindOnce(&InstallableManager::OnScreenshotFetched,
+                       weak_factory_.GetWeakPtr(), url.src),
+        /*square_only=*/false);
+    if (can_download)
+      ++screenshots_downloading_;
+  }
+
+  if (!screenshots_downloading_)
+    WorkOnTask();
+}
+
+void InstallableManager::OnScreenshotFetched(const GURL screenshot_url,
+                                             const SkBitmap& bitmap) {
+  DCHECK_GT(screenshots_downloading_, 0);
+
+  if (!GetWebContents())
+    return;
+
+  screenshots_[screenshot_url] = bitmap;
+  if (--screenshots_downloading_ == 0)
+    WorkOnTask();
 }
 
 void InstallableManager::OnRegistrationCompleted(const GURL& pattern) {

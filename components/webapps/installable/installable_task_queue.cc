@@ -4,6 +4,7 @@
 
 #include "components/webapps/installable/installable_task_queue.h"
 
+#include <map>
 #include <utility>
 
 namespace webapps {
@@ -75,14 +76,16 @@ void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
     if (task.callback) {
       std::move(task.callback)
           .Run(InstallableData({code}, GURL(), &manifest, GURL(), nullptr,
-                               false, GURL(), nullptr, false, false));
+                               false, GURL(), nullptr,
+                               std::map<GURL, SkBitmap>(), false, false));
     }
   }
   for (InstallableTask& task : paused_tasks) {
     if (task.callback) {
       std::move(task.callback)
           .Run(InstallableData({code}, GURL(), &manifest, GURL(), nullptr,
-                               false, GURL(), nullptr, false, false));
+                               false, GURL(), nullptr,
+                               std::map<GURL, SkBitmap>(), false, false));
     }
   }
 }

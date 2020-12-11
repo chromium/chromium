@@ -19,6 +19,21 @@ InstallableAmbientBadgeInfoBarDelegate::
     ~InstallableAmbientBadgeInfoBarDelegate() = default;
 
 // static
+infobars::InfoBar*
+InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
+    infobars::ContentInfoBarManager* infobar_manager) {
+  for (size_t i = 0; i < infobar_manager->infobar_count(); ++i) {
+    infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
+    if (infobar->delegate()->GetIdentifier() ==
+        InstallableAmbientBadgeInfoBarDelegate::
+            INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE) {
+      return infobar;
+    }
+  }
+  return nullptr;
+}
+
+// static
 void InstallableAmbientBadgeInfoBarDelegate::Create(
     content::WebContents* web_contents,
     base::WeakPtr<Client> weak_client,
@@ -26,13 +41,16 @@ void InstallableAmbientBadgeInfoBarDelegate::Create(
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,
     const GURL& start_url) {
-  webapps::WebappsClient::Get()
-      ->GetInfoBarManagerForWebContents(web_contents)
-      ->AddInfoBar(std::make_unique<InstallableAmbientBadgeInfoBar>(
-          std::unique_ptr<InstallableAmbientBadgeInfoBarDelegate>(
-              new InstallableAmbientBadgeInfoBarDelegate(
-                  weak_client, app_name, primary_icon, is_primary_icon_maskable,
-                  start_url))));
+  auto* infobar_manager =
+      webapps::WebappsClient::Get()->GetInfoBarManagerForWebContents(
+          web_contents);
+  if (infobar_manager == nullptr)
+    return;
+
+  infobar_manager->AddInfoBar(std::make_unique<InstallableAmbientBadgeInfoBar>(
+      base::WrapUnique(new InstallableAmbientBadgeInfoBarDelegate(
+          weak_client, app_name, primary_icon, is_primary_icon_maskable,
+          start_url))));
 }
 
 void InstallableAmbientBadgeInfoBarDelegate::AddToHomescreen() {

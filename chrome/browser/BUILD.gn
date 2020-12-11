@@ -2927,6 +2927,8 @@ static_library("browser") {
       "android/webapps/add_to_homescreen_mediator.h",
       "android/webapps/add_to_homescreen_params.cc",
       "android/webapps/add_to_homescreen_params.h",
+      "android/webapps/pwa_bottom_sheet_controller.cc",
+      "android/webapps/pwa_bottom_sheet_controller.h",
       "android/webapps/webapp_registry.cc",
       "android/webapps/webapp_registry.h",
       "android/webauth/fido2helper_native_android.cc",

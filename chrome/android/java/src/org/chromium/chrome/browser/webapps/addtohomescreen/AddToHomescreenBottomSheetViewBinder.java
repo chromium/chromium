@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,26 +11,25 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Binds an add-to-homescreen {@link PropertyModel} with a {@link AddToHomescreenDialogView}.
+ * Binds an add-to-homescreen {@link PropertyModel} with a {@link PwaInstallBottomSheetContent}.
  */
-class AddToHomescreenViewBinder {
-    static void bind(PropertyModel model, AddToHomescreenDialogView view, PropertyKey propertyKey) {
+class AddToHomescreenBottomSheetViewBinder {
+    static void bind(PropertyModel model, PwaInstallBottomSheetView view, PropertyKey propertyKey) {
         if (propertyKey.equals(AddToHomescreenProperties.TITLE)) {
             view.setTitle(model.get(AddToHomescreenProperties.TITLE));
         } else if (propertyKey.equals(AddToHomescreenProperties.URL)) {
             view.setUrl(model.get(AddToHomescreenProperties.URL));
+        } else if (propertyKey.equals(AddToHomescreenProperties.CATEGORIES)) {
+            view.setCategories(model.get(AddToHomescreenProperties.CATEGORIES));
+        } else if (propertyKey.equals(AddToHomescreenProperties.DESCRIPTION)) {
+            view.setDescription(model.get(AddToHomescreenProperties.DESCRIPTION));
         } else if (propertyKey.equals(AddToHomescreenProperties.ICON)) {
             Pair<Bitmap, Boolean> iconPair = model.get(AddToHomescreenProperties.ICON);
             view.setIcon(iconPair.first, iconPair.second);
-        } else if (propertyKey.equals(AddToHomescreenProperties.TYPE)) {
-            view.setType(model.get(AddToHomescreenProperties.TYPE));
         } else if (propertyKey.equals(AddToHomescreenProperties.CAN_SUBMIT)) {
             view.setCanSubmit(model.get(AddToHomescreenProperties.CAN_SUBMIT));
-        } else if (propertyKey.equals(AddToHomescreenProperties.NATIVE_INSTALL_BUTTON_TEXT)) {
-            view.setNativeInstallButtonText(
-                    model.get(AddToHomescreenProperties.NATIVE_INSTALL_BUTTON_TEXT));
-        } else if (propertyKey.equals(AddToHomescreenProperties.NATIVE_APP_RATING)) {
-            view.setNativeAppRating(model.get(AddToHomescreenProperties.NATIVE_APP_RATING));
+        } else if (propertyKey.equals(AddToHomescreenProperties.CLICK_LISTENER)) {
+            view.setOnClickListener(model.get(AddToHomescreenProperties.CLICK_LISTENER));
         }
     }
 }

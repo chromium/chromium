@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BANNERS_APP_BANNER_MANAGER_ANDROID_H_
 #define CHROME_BROWSER_BANNERS_APP_BANNER_MANAGER_ANDROID_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -82,6 +83,15 @@ class AppBannerManagerAndroid
   void AddToHomescreenFromBadge() override;
   void BadgeDismissed() override;
 
+  // Installs the current app.
+  void Install();
+
+  // Returns the appropriate app name based on whether we have a native/web app.
+  base::string16 GetAppName() const override;
+
+  // Simple accessors:
+  const std::map<GURL, SkBitmap>& screenshots() { return screenshots_; }
+
  protected:
   // AppBannerManager overrides.
   std::string GetAppIdentifier() override;
@@ -130,9 +140,6 @@ class AppBannerManagerAndroid
   // manifest.
   void OnNativeAppIconFetched(const SkBitmap& bitmap);
 
-  // Returns the appropriate app name based on whether we have a native/web app.
-  base::string16 GetAppName() const override;
-
   // Shows the in-product help if possible and returns true when a request to
   // show it was made, but false if conditions (e.g. engagement score) for
   // showing where not deemed adequate.
@@ -145,6 +152,10 @@ class AppBannerManagerAndroid
   void RecordEventForAppBanner(AddToHomescreenInstaller::Event event,
                                const AddToHomescreenParams& a2hs_params);
 
+  // Creates the AddToHomescreenParams for a given install source.
+  std::unique_ptr<AddToHomescreenParams> CreateAddToHomescreenParams(
+      webapps::WebappInstallSource install_source);
+
   // The Java-side AppBannerManager.
   base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
 
@@ -156,6 +167,9 @@ class AppBannerManagerAndroid
 
   // Title to display in the banner for native app.
   base::string16 native_app_title_;
+
+  // The screenshots to show in the install UI.
+  std::map<GURL, SkBitmap> screenshots_;
 
   base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
 

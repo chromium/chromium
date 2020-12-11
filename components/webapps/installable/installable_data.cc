@@ -16,6 +16,7 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
                                  bool has_maskable_primary_icon,
                                  const GURL& splash_icon_url,
                                  const SkBitmap* splash_icon,
+                                 const std::map<GURL, SkBitmap>& screenshots,
                                  bool valid_manifest,
                                  bool has_worker)
     : errors(std::move(errors)),
@@ -26,6 +27,7 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
       has_maskable_primary_icon(has_maskable_primary_icon),
       splash_icon_url(splash_icon_url),
       splash_icon(splash_icon),
+      screenshots(screenshots),
       valid_manifest(valid_manifest),
       has_worker(has_worker) {}
 

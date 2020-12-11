@@ -194,6 +194,8 @@
     <dimen name="find_in_page_popup_height">60dp</dimen>
     <dimen name="find_in_page_popup_margin_end">62dp</dimen>
 
+    <dimen name="webapk_screenshot_margin">20dp</dimen>
+
     <!-- Toolbar dimensions -->
     <dimen name="toolbar_tab_count_text_size_1_digit">12dp</dimen>
     <dimen name="toolbar_tab_count_text_size_2_digit">10dp</dimen>

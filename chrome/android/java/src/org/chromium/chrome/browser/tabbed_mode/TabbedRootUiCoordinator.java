@@ -62,6 +62,8 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewWrapper;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.chrome.browser.webapps.addtohomescreen.PwaBottomSheetController;
+import org.chromium.chrome.browser.webapps.addtohomescreen.PwaBottomSheetControllerFactory;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -86,6 +88,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private AppBannerInProductHelpController mAppBannerInProductHelpController;
+    private PwaBottomSheetController mPwaBottomSheetController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
     private NavigationSheet mNavigationSheet;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
@@ -166,6 +169,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mAppBannerInProductHelpController != null) {
             AppBannerInProductHelpControllerFactory.detach(mAppBannerInProductHelpController);
+        }
+
+        if (mPwaBottomSheetController != null) {
+            PwaBottomSheetControllerFactory.detach(mPwaBottomSheetController);
         }
 
         if (mHistoryNavigationCoordinator != null) {
@@ -266,6 +273,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mIntentMetadataOneshotSupplier.onAvailable(mCallbackController.makeCancelable(
                 (metadata) -> initializeIPH(metadata.getIsIntentWithEffect())));
+
+        // TODO(https://crbug.com/1157955): Investigate switching to per-Activity coordinator that
+        // uses signals from the current Tab to decide when to show the PWA install bottom sheet
+        // rather than relying on unowned user data.
+        mPwaBottomSheetController =
+                PwaBottomSheetControllerFactory.createPwaBottomSheetController(mActivity);
+        PwaBottomSheetControllerFactory.attach(
+                mActivity.getWindowAndroid(), mPwaBottomSheetController);
     }
 
     // Protected class methods

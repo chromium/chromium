@@ -195,6 +195,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kPhotoPickerVideoSupport,
     &kPhotoPickerZoom,
     &kProbabilisticCryptidRenderer,
+    &kPwaInstallUseBottomSheet,
     &kReachedCodeProfiler,
     &kReaderModeInCCT,
     &kReengagementNotification,
@@ -558,6 +559,9 @@ const base::Feature kPhotoPickerZoom{"PhotoPickerZoom",
 
 const base::Feature kProbabilisticCryptidRenderer{
     "ProbabilisticCryptidRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPwaInstallUseBottomSheet{
+    "PwaInstallUseBottomSheet", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kReachedCodeProfiler{"ReachedCodeProfiler",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

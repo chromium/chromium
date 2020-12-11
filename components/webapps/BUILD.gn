@@ -14,6 +14,7 @@ source_set("webapps") {
     "installable/installable_manager.h",
     "installable/installable_metrics.cc",
     "installable/installable_metrics.h",
+    "installable/installable_params.cc",
     "installable/installable_params.h",
     "installable/installable_task_queue.cc",
     "installable/installable_task_queue.h",

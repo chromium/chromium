@@ -905,6 +905,8 @@ chrome_java_resources = [
   "java/res/layout/passwords_progress_dialog.xml",
   "java/res/layout/powered_by_chrome_footer.xml",
   "java/res/layout/preference_text_scale.xml",
+  "java/res/layout/pwa_install_bottom_sheet_content.xml",
+  "java/res/layout/pwa_install_bottom_sheet_toolbar.xml",
   "java/res/layout/radio_button_group_homepage_preference.xml",
   "java/res/layout/radio_button_group_theme_preference.xml",
   "java/res/layout/recent_tabs_group_item.xml",

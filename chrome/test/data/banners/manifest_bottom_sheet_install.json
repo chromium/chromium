@@ -1,0 +1,27 @@
+{
+  "name": "PWA Bottom Sheet",
+  "description": "App description",
+  "categories": ["cats", "memes"],
+  "screenshots": [
+    {
+      "src": "/screenshot1.jpeg",
+      "type": "image/jpeg",
+      "sizes": "728x409"
+    },
+    {
+      "src": "/chonkscreenshot2.jpg",
+      "type": "image/jpeg",
+      "sizes": "551x541"
+    }
+  ],
+  "icons": [
+    {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": ".",
+  "start_url": "manifest_test_page.html",
+  "display": "standalone"
+}

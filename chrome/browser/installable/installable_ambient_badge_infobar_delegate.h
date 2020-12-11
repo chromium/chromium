@@ -15,6 +15,9 @@
 namespace content {
 class WebContents;
 }
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // Delegate for a infobar shown to users when they visit a progressive web app.
 // Tapping the infobar triggers the add to home screen flow.
@@ -34,13 +37,17 @@ class InstallableAmbientBadgeInfoBarDelegate
 
   ~InstallableAmbientBadgeInfoBarDelegate() override;
 
+  // Returns a pointer to the InstallableAmbientBadgeInfoBar if it is currently
+  // showing. Otherwise returns nullptr.
+  static infobars::InfoBar* GetVisibleAmbientBadgeInfoBar(
+      infobars::ContentInfoBarManager* infobar_manager);
+
   // Create and show the infobar.
   static void Create(content::WebContents* web_contents,
                      base::WeakPtr<Client> weak_client,
                      const base::string16& app_name,
                      const SkBitmap& primary_icon,
                      const bool is_primary_icon_maskable,
-
                      const GURL& start_url);
 
   void AddToHomescreen();
