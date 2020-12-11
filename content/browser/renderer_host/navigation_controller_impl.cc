@@ -3679,13 +3679,18 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
           ->IsInactiveAndDisallowReactivation()) {
     return;
   }
-
-  FrameTreeNode* node =
-      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  RenderFrameHostImpl* rfhi =
+      static_cast<RenderFrameHostImpl*>(render_frame_host);
+  FrameTreeNode* node = rfhi->frame_tree_node();
 
   mojom::CommonNavigationParamsPtr common_params =
       CreateCommonNavigationParams();
-  common_params->url = url;
+  // |url| might be empty if LoadPostCommitErrorPage happens before the frame
+  // actually committed (e.g. iframe with "src" set to a slow-responding URL).
+  // We should rewrite the URL to about:blank in this case, as the renderer will
+  // only think a page is an error page if it has a non-empty unreachable URL.
+  DCHECK(!url.is_empty() || !rfhi->has_committed_any_navigation());
+  common_params->url = url.is_empty() ? GURL("about:blank") : url;
   mojom::CommitNavigationParamsPtr commit_params =
       CreateCommitNavigationParams();
 

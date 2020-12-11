@@ -167,6 +167,39 @@ class NavigationControllerBrowserTest
     return form_post_id;
   }
 
+  void LoadDataWithBaseURL(const GURL& base_url,
+                           const std::string& data,
+                           const GURL& history_url,
+                           const std::string& title,
+                           bool use_load_data_as_string_with_base_url) {
+    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
+    TitleWatcher title_watcher(shell()->web_contents(),
+                               base::UTF8ToUTF16(title));
+    if (use_load_data_as_string_with_base_url) {
+#if defined(OS_ANDROID)
+      shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
+#else
+      NOTREACHED();
+#endif
+    } else {
+      shell()->LoadDataWithBaseURL(history_url, data, base_url);
+    }
+    same_tab_observer.Wait();
+    base::string16 actual_title = title_watcher.WaitAndGetTitle();
+    EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
+  }
+
+  // We need to run two versions of these LoadDataWithBaseURL tests, but we
+  // can't subclass and parameterize NavigationControllerBrowserTest because
+  // it's already parameterized for RenderDocument.
+  // TODO(rakina): Once the RenderDocument parameters are removed, change these
+  // to actual parameterized tests instead.
+  void RunLoadDataWithInvalidBaseURL(
+      bool use_load_data_as_string_with_base_url);
+  void RunLoadDataWithBlockedURL(bool use_load_data_as_string_with_base_url);
+  void RunLoadDataWithBlockedURLAndInvalidBaseURL(
+      bool use_load_data_as_string_with_base_url);
+
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
 };
@@ -399,9 +432,13 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(shell()->web_contents()->GetMainFrame()->IsRenderFrameLive());
 }
 
-#if defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataWithInvalidBaseURL) {
+// Tests that navigating with LoadDataWithBaseURL succeeds even when the base
+// URL given is invalid.
+// Note that this is a function that is called from the actual tests below,
+// essentially doing manual parameterization because we can't subclass and add
+// more parameters to the already parameterized NavigationControllerBrowserTest.
+void NavigationControllerBrowserTest::RunLoadDataWithInvalidBaseURL(
+    bool use_load_data_as_string_with_base_url) {
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
   // yet] and GuestView cases [which always hosts guests inside a renderer
@@ -420,18 +457,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   const std::string data = base::StringPrintf(
       "<html><head><title>%s</title></head><body>foo</body></html>",
       title.c_str());
-  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+  LoadDataWithBaseURL(base_url, data, history_url, title,
+                      use_load_data_as_string_with_base_url);
 
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
-
-  TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-  TitleWatcher title_watcher(shell()->web_contents(), base::UTF8ToUTF16(title));
-  shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
-  same_tab_observer.Wait();
-  base::string16 actual_title = title_watcher.WaitAndGetTitle();
-  EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
-
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
   // What the base URL ends up being is really implementation defined, as
   // using an invalid base URL is already undefined behavior.
@@ -449,9 +479,27 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(2, controller.GetEntryCount());
   entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(history_url, contents()->GetMainFrame()->GetLastCommittedURL());
+
+  const GURL push_state_url =
+      GURL("data:text/html;charset=utf-8," + data + "#foo");
+  EXPECT_EQ(
+      use_load_data_as_string_with_base_url ? history_url : push_state_url,
+      contents()->GetMainFrame()->GetLastCommittedURL());
 }
-#endif  // defined(OS_ANDROID)
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataWithInvalidBaseURL) {
+  RunLoadDataWithInvalidBaseURL(
+      false /* use_load_data_as_string_with_base_url */);
+}
+
+#if defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataAsStringWithInvalidBaseURL) {
+  RunLoadDataWithInvalidBaseURL(
+      true /* use_load_data_as_string_with_base_url */);
+}
+#endif
 
 // ContentBrowserClient that blocks normal commits to any URL in
 // VerifyDidCommitParams.
@@ -472,8 +520,11 @@ class BlockAllCommitContentBrowserClient : public TestContentBrowserClient {
 
 // Tests that navigating with LoadDataWithBaseURL succeeds even when the data
 // URL is typically blocked by an embedder.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataWithBlockedURL) {
+// Note that this is a function that is called from the actual tests below,
+// essentially doing manual parameterization because we can't subclass and add
+// more parameters to the already parameterized NavigationControllerBrowserTest.
+void NavigationControllerBrowserTest::RunLoadDataWithBlockedURL(
+    bool use_load_data_as_string_with_base_url) {
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
   // yet] and GuestView cases [which always hosts guests inside a renderer
@@ -486,30 +537,28 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   if (AreAllSitesIsolatedForTesting())
     return;
 
+  BlockAllCommitContentBrowserClient content_browser_client;
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&content_browser_client);
   const GURL base_url = embedded_test_server()->GetURL("/title1.html");
   const GURL history_url("http://historyurl");
   const std::string title = "blocked_url";
   const std::string data = base::StringPrintf(
       "<html><head><title>%s</title></head><body>foo</body></html>",
       title.c_str());
+  LoadDataWithBaseURL(base_url, data, history_url, title,
+                      use_load_data_as_string_with_base_url);
+
   const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
-  BlockAllCommitContentBrowserClient content_browser_client;
-  ContentBrowserClient* old_client =
-      SetBrowserClientForTesting(&content_browser_client);
+  const GURL commit_url = use_load_data_as_string_with_base_url
+                              ? GURL("data:text/html;charset=utf-8,")
+                              : data_url;
 
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
-
-  TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-  TitleWatcher title_watcher(shell()->web_contents(), base::UTF8ToUTF16(title));
-  shell()->LoadDataWithBaseURL(history_url, data, base_url);
-  same_tab_observer.Wait();
-  base::string16 actual_title = title_watcher.WaitAndGetTitle();
-  EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
-
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(commit_url, contents()->GetMainFrame()->GetLastCommittedURL());
   {
     // Make a same-document navigation via history.pushState.
     TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
@@ -522,7 +571,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(2, controller.GetEntryCount());
   entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(commit_url, contents()->GetMainFrame()->GetLastCommittedURL());
   {
     // Go back.
     TestNavigationObserver back_load_observer(shell()->web_contents());
@@ -534,7 +583,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(2, controller.GetEntryCount());
   entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(commit_url, contents()->GetMainFrame()->GetLastCommittedURL());
 
   {
     // Make a same-document navigation via fragment navigation.
@@ -547,15 +596,31 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(2, controller.GetEntryCount());
   entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(commit_url, contents()->GetMainFrame()->GetLastCommittedURL());
 
   SetBrowserClientForTesting(old_client);
 }
 
-// Tests that same-document navigations after a LoadDataWithBaseURL with an
-// invalid base_url won't succeed.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       LoadDataWithBlockedURLAndInvalidBaseURL) {
+                       LoadDataWithBlockedURL) {
+  RunLoadDataWithBlockedURL(false /* use_load_data_as_string_with_base_url */);
+}
+
+#if defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataAsStringWithBlockedURL) {
+  RunLoadDataWithBlockedURL(true /* use_load_data_as_string_with_base_url */);
+}
+#endif
+
+// Tests that same-document navigations after a LoadDataWithBaseURL to a blocked
+// URL and an invalid base_url succeeds.
+// Note that this is a function that is called from the actual tests below,
+// essentially doing manual parameterization because we can't subclass and add
+// more parameters to the already parameterized NavigationControllerBrowserTest.
+void NavigationControllerBrowserTest::
+    RunLoadDataWithBlockedURLAndInvalidBaseURL(
+        bool use_load_data_as_string_with_base_url) {
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
   // yet] and GuestView cases [which always hosts guests inside a renderer
@@ -576,25 +641,21 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "<html><head><title>%s</title></head><body>foo</body></html>",
       title.c_str());
   const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+
   BlockAllCommitContentBrowserClient content_browser_client;
   ContentBrowserClient* old_client =
       SetBrowserClientForTesting(&content_browser_client);
-
-  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
-      shell()->web_contents()->GetController());
-
-  TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-  TitleWatcher title_watcher(shell()->web_contents(), base::UTF8ToUTF16(title));
-  shell()->LoadDataWithBaseURL(history_url, data, base_url);
-  same_tab_observer.Wait();
-  base::string16 actual_title = title_watcher.WaitAndGetTitle();
-  EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
+  LoadDataWithBaseURL(base_url, data, history_url, title,
+                      use_load_data_as_string_with_base_url);
 
   // The navigation succeeds even though the base URL is invalid.
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(1, controller.GetEntryCount());
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(data_url, contents()->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(use_load_data_as_string_with_base_url ? history_url : data_url,
+            contents()->GetMainFrame()->GetLastCommittedURL());
 
   {
     // Make a same-document navigation via history.pushState.
@@ -608,11 +669,26 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(2, controller.GetEntryCount());
   entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(data_url.spec() + "#foo",
+  EXPECT_EQ(use_load_data_as_string_with_base_url ? history_url.spec()
+                                                  : (data_url.spec() + "#foo"),
             contents()->GetMainFrame()->GetLastCommittedURL().spec());
 
   SetBrowserClientForTesting(old_client);
 }
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataWithBlockedURLAndInvalidBaseURL) {
+  RunLoadDataWithBlockedURLAndInvalidBaseURL(
+      false /* use_load_data_as_string_with_base_url */);
+}
+
+#if defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadDataAsStringWithBlockedURLAndInvalidBaseURL) {
+  RunLoadDataWithBlockedURLAndInvalidBaseURL(
+      true /* use_load_data_as_string_with_base_url */);
+}
+#endif
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigateFromLoadDataWithBaseURL) {
@@ -9590,6 +9666,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Verify that the subframe error page did not commit in the error page
   // process.
+  // TODO(crbug.com/1092524): Update the expectation once we have subframe error
+  // page isolation.
   scoped_refptr<SiteInstance> error_site_instance = child->GetSiteInstance();
   EXPECT_EQ(success_site_instance, error_site_instance);
   EXPECT_NE(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
@@ -9677,9 +9755,200 @@ IN_PROC_BROWSER_TEST_P(
 
   // Verify that the subframe error page did not commit in the error page
   // process.
+  // TODO(crbug.com/1092524): Update the expectation once we have subframe error
+  // page isolation.
   scoped_refptr<SiteInstance> error_site_instance = child->GetSiteInstance();
   EXPECT_EQ(success_site_instance, error_site_instance);
   EXPECT_NE(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+}
+
+// Test to verify that LoadPostCommitErrorPage works correctly when done on a
+// popup's main frame without any committed entry.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadPostCommitErrorPageFromPopupWithoutCommittedEntry) {
+  // Navigate to a page.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Open a popup that never finishes loading and never commits any entry.
+  GURL hung_url(embedded_test_server()->GetURL("/hung"));
+  Shell* popup;
+  {
+    ShellAddedObserver new_shell_observer;
+    EXPECT_TRUE(ExecJs(shell(), "var window = window.open('/hung');"));
+    popup = new_shell_observer.GetShell();
+  }
+
+  WebContentsImpl* popup_contents =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  NavigationControllerImpl& controller = popup_contents->GetController();
+  RenderFrameHostImpl* popup_main_frame = popup_contents->GetMainFrame();
+  scoped_refptr<SiteInstance> original_site_instance =
+      popup_main_frame->GetSiteInstance();
+
+  // The last committed URL is the empty URL, as it never committed.
+  EXPECT_EQ(GURL(), popup_main_frame->GetLastCommittedURL());
+  EXPECT_FALSE(popup_main_frame->has_committed_any_navigation());
+
+  // Call LoadPostCommitErrorPage on the popup.
+  std::string error_html = "Error page";
+  TestNavigationObserver error_observer(popup_contents);
+  controller.LoadPostCommitErrorPage(popup_main_frame,
+                                     popup_main_frame->GetLastCommittedURL(),
+                                     error_html, net::ERR_BLOCKED_BY_CLIENT);
+  error_observer.Wait();
+
+  // The post-commit error page committed an error page and sets the last
+  // committed URL to about:blank.
+  popup_main_frame = popup_contents->GetMainFrame();
+  EXPECT_EQ(popup_main_frame->GetLastCommittedURL(), GURL("about:blank"));
+  EXPECT_FALSE(error_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
+  EXPECT_EQ(error_html, EvalJs(popup_main_frame, "document.body.innerHTML"));
+
+  // Verify that the error page committed in the error page process.
+  scoped_refptr<SiteInstance> error_site_instance =
+      popup_main_frame->GetSiteInstance();
+  EXPECT_NE(original_site_instance, error_site_instance);
+  EXPECT_EQ(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+
+  // The URL displayed in the URL bar is about:blank.
+  EXPECT_EQ(GURL("about:blank"), popup_contents->GetVisibleURL());
+  // The opener frame can still access the popup window.
+  EXPECT_EQ(false, EvalJs(shell()->web_contents()->GetMainFrame(),
+                          "!!(window.closed)"));
+}
+
+// Test to verify that LoadPostCommitErrorPage works correctly when done on an
+// iframe without any committed entry.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       LoadPostCommitErrorPageFromFrameWithoutCommittedEntry) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  // Navigate to a page.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Add an iframe that never finishes loading and never commits any entry.
+  GURL hung_url(embedded_test_server()->GetURL("/hung"));
+  {
+    TestNavigationManager hung_nav(contents(), hung_url);
+    EXPECT_TRUE(ExecJs(shell(), R"(
+          var iframe = document.createElement('iframe');
+          iframe.src = '/hung';
+          document.body.appendChild(iframe);
+    )"));
+    EXPECT_TRUE(hung_nav.WaitForRequestStart());
+  }
+
+  RenderFrameHostImpl* child = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0));
+  scoped_refptr<SiteInstance> success_site_instance = child->GetSiteInstance();
+  // The last committed URL is the empty URL, as it never committed.
+  EXPECT_EQ(GURL(), child->GetLastCommittedURL());
+  EXPECT_FALSE(child->has_committed_any_navigation());
+  // The main frame can initially access the iframe's contentDocument.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetMainFrame(),
+                         "!!(iframe.contentDocument)"));
+
+  // Call LoadPostCommitErrorPage on the iframe.
+  std::string error_html = "Error page";
+  TestNavigationObserver error_observer(shell()->web_contents());
+  controller.LoadPostCommitErrorPage(child, child->GetLastCommittedURL(),
+                                     error_html, net::ERR_BLOCKED_BY_CLIENT);
+  error_observer.Wait();
+
+  // The post-commit error page committed an error page and sets the last
+  // committed URL to about:blank.
+  EXPECT_EQ(child->GetLastCommittedURL(), GURL("about:blank"));
+  EXPECT_FALSE(error_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
+  EXPECT_EQ(error_html, EvalJs(child, "document.body.innerHTML"));
+
+  // Verify that the subframe error page did not commit in the error page
+  // process.
+  // TODO(crbug.com/1092524): Update the expectation once we have subframe error
+  // page isolation.
+  scoped_refptr<SiteInstance> error_site_instance = child->GetSiteInstance();
+  EXPECT_EQ(success_site_instance, error_site_instance);
+  EXPECT_NE(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+
+  // Since the iframe is now showing an error page, the main frame can no longer
+  // access its contentDocument.
+  EXPECT_EQ(false, EvalJs(shell()->web_contents()->GetMainFrame(),
+                          "!!(iframe.contentDocument)"));
+}
+
+// Similar to LoadPostCommitErrorPageFromFrameWithoutCommittedEntry, but with
+// the addition of CSP that will block the iframe from navigating to an empty
+// URL (but not about:blank).
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    LoadPostCommitErrorPageFromFrameWithoutCommittedEntryBlockedByCSP) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  // Navigate to a page.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Add frame-src CSP via a new <meta> element that only allows same-origin
+  // iframe.
+  EXPECT_TRUE(ExecJs(shell(),
+                     R"(var meta = document.createElement('meta');
+             meta.httpEquiv = 'Content-Security-Policy';
+             meta.content = "frame-src 'self'";
+             document.getElementsByTagName('head')[0].appendChild(meta);)"));
+
+  // Add an iframe that never finishes loading and never commits any entry.
+  GURL hung_url(embedded_test_server()->GetURL("/hung"));
+  {
+    TestNavigationManager hung_nav(contents(), hung_url);
+    EXPECT_TRUE(ExecJs(shell(), R"(
+          var iframe = document.createElement('iframe');
+          iframe.src = '/hung';
+          document.body.appendChild(iframe);
+    )"));
+    EXPECT_TRUE(hung_nav.WaitForRequestStart());
+  }
+
+  RenderFrameHostImpl* child = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0));
+  scoped_refptr<SiteInstance> success_site_instance = child->GetSiteInstance();
+  // The last committed URL is the empty URL, as it never committed.
+  EXPECT_EQ(GURL(), child->GetLastCommittedURL());
+  EXPECT_FALSE(child->has_committed_any_navigation());
+  // The main frame can initially access the iframe's contentDocument.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetMainFrame(),
+                         "!!(iframe.contentDocument)"));
+
+  // Call LoadPostCommitErrorPage on the iframe.
+  std::string error_html = "Error page";
+  TestNavigationObserver error_observer(shell()->web_contents());
+  controller.LoadPostCommitErrorPage(child, child->GetLastCommittedURL(),
+                                     error_html, net::ERR_BLOCKED_BY_CLIENT);
+  error_observer.Wait();
+
+  // The post-commit error page committed an error page and sets the last
+  // committed URL to about:blank, which is allowed by CSP because it's the same
+  // origin as the main frame (because of origin inheritance). So, the net error
+  // code is still ERR_BLOCKED_BY_CLIENT instead of ERR_BLOCKED_BY_CSP.
+  EXPECT_EQ(child->GetLastCommittedURL(), GURL("about:blank"));
+  EXPECT_FALSE(error_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
+  EXPECT_EQ(error_html, EvalJs(child, "document.body.innerHTML"));
+
+  // Verify that the subframe error page did not commit in the error page
+  // process.
+  // TODO(crbug.com/1092524): Update the expectation once we have subframe error
+  // page isolation.
+  scoped_refptr<SiteInstance> error_site_instance = child->GetSiteInstance();
+  EXPECT_EQ(success_site_instance, error_site_instance);
+  EXPECT_NE(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+
+  // Since the iframe is now showing an error page, the main frame can no longer
+  // access its contentDocument.
+  EXPECT_EQ(false, EvalJs(shell()->web_contents()->GetMainFrame(),
+                          "!!(iframe.contentDocument)"));
 }
 
 using NavigationControllerHistoryInterventionBrowserTest =

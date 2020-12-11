@@ -9062,6 +9062,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories) {
   DCHECK(navigation_client && navigation_request);
+  DCHECK_NE(GURL(), common_params->url);
   navigation_client->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
       has_stale_copy_in_cache, error_code,
@@ -9521,21 +9522,28 @@ bool CalculateURLIsUnreachable(
     const base::Optional<std::string>& data_url_as_string,
     const net::Error& net_error_code,
     bool is_main_frame) {
-  // url_is_unreachable should be true if either the navigation is for an
-  // error page, or this is a navigation to a data: URL where
-  // history_url_for_data_url is saved in  WebNavigationParams' unreachable_url
-  // in the renderer (see crbug.com/522567).
+  // url_is_unreachable should only be true in two cases:
+  // 1) The navigation is for an error page
+  // 2) This is a main frame navigation to a data: URL with a base_url.
+  // In case #2, history_url_for_data_url is saved in WebNavigationParams'
+  // unreachable_url in the renderer and sent back to the browser, unless the
+  // base_url is invalid and data_url_as_string is not used.
+  // See https://crbug.com/522567 and handling of data: URLs in
+  // RenderFrameImpl::CommitNavigation() for more details.
   const bool has_history_url_for_data_url =
       !history_url_for_data_url.is_empty();
+  const bool has_non_empty_data_url_as_string =
+      data_url_as_string.has_value() && !data_url_as_string.value().empty();
   if (has_history_url_for_data_url) {
-    // These DCHECKs follow the handling of data: URLs in
-    // RenderFrameImpl::CommitNavigation.
-    bool should_load_data_url = !base_url_for_data_url.is_empty();
-    should_load_data_url |=
-        data_url_as_string.has_value() && !data_url_as_string.value().empty();
-    DCHECK(should_load_data_url);
+    // history_url_for_data_url must only be set if we originally set
+    // base_url_for_data_url or data_url_as_string.
+    DCHECK(!base_url_for_data_url.is_empty() ||
+           has_non_empty_data_url_as_string);
   }
-  return net_error_code != net::OK || has_history_url_for_data_url;
+  return net_error_code != net::OK || (is_main_frame &&
+                                       (base_url_for_data_url.is_valid() ||
+                                        has_non_empty_data_url_as_string) &&
+                                       has_history_url_for_data_url);
 }
 
 bool ShouldVerify(const std::string& param) {
@@ -9709,7 +9717,8 @@ void RenderFrameHostImpl::
 
   // These DCHECKs ensure that tests will fail if we got here, as
   // DumpWithoutCrashing won't fail tests.
-  // TODO(rakina): Add DCHECK for url_is_unreachable.
+  // TODO(rakina): Add DCHECK for url_is_unreachable once crbug.com/1155478 gets
+  // fixed.
   DCHECK_EQ(request->commit_params().intended_as_new_entry,
             params.intended_as_new_entry);
   DCHECK_EQ(browser_method, params.method);
