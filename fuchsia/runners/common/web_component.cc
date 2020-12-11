@@ -49,9 +49,11 @@ WebComponent::~WebComponent() {
   if (module_context_)
     module_context_->RemoveSelfFromStory();
 
-  // Send process termination details to the client.
-  controller_binding_.events().OnTerminated(termination_exit_code_,
-                                            termination_reason_);
+  if (controller_binding_.is_bound()) {
+    // Send process termination details to the client.
+    controller_binding_.events().OnTerminated(termination_exit_code_,
+                                              termination_reason_);
+  }
 }
 
 void WebComponent::EnableRemoteDebugging() {
