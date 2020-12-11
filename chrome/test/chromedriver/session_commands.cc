@@ -1275,7 +1275,7 @@ Status ExecuteGenerateTestReport(Session* session,
   return Status(kOk);
 }
 
-Status ExecuteSetTimezone(Session* session,
+Status ExecuteSetTimeZone(Session* session,
                           const base::DictionaryValue& params,
                           std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
@@ -1283,12 +1283,12 @@ Status ExecuteSetTimezone(Session* session,
   if (status.IsError())
     return status;
 
-  std::string timezone;
-  if (!params.GetString("timezone", &timezone))
-    return Status(kInvalidArgument, "missing parameter 'timezone'");
+  std::string time_zone;
+  if (!params.GetString("time_zone", &time_zone))
+    return Status(kInvalidArgument, "missing parameter 'time_zone'");
 
   base::DictionaryValue body;
-  body.SetString("timezoneId", timezone);
+  body.SetString("timezoneId", time_zone);
 
   web_view->SendCommandAndGetResult("Emulation.setTimezoneOverride", body,
                                     value);

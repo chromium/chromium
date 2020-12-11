@@ -2694,7 +2694,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEquals('test', report['type']);
     self.assertEquals('test report message', report['body']['message']);
 
-  def testSetTimezone(self):
+  def testSetTimeZone(self):
     defaultTimeZoneScript = '''
        return (new Intl.DateTimeFormat()).resolvedOptions().timeZone;
        ''';
@@ -2705,7 +2705,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
 
     # Test to switch to Taipei
-    self._driver.SetTimezone('Asia/Taipei');
+    self._driver.SetTimeZone('Asia/Taipei');
     timeZone = self._driver.ExecuteScript(defaultTimeZoneScript)
     self.assertEquals('Asia/Taipei', timeZone);
     localHour = self._driver.ExecuteScript(localHourScript)
@@ -2713,7 +2713,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEquals(8, localHour);
 
     # Test to switch to Tokyo
-    self._driver.SetTimezone('Asia/Tokyo');
+    self._driver.SetTimeZone('Asia/Tokyo');
     timeZone = self._driver.ExecuteScript(defaultTimeZoneScript)
     self.assertEquals('Asia/Tokyo', timeZone);
     localHour = self._driver.ExecuteScript(localHourScript)

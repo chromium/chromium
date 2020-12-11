@@ -167,7 +167,7 @@ Status ExecuteGenerateTestReport(Session* session,
                                  const base::DictionaryValue& params,
                                  std::unique_ptr<base::Value>* value);
 
-Status ExecuteSetTimezone(Session* session,
+Status ExecuteSetTimeZone(Session* session,
                           const base::DictionaryValue& params,
                           std::unique_ptr<base::Value>* value);
 

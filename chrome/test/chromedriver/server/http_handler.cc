@@ -884,10 +884,10 @@ HttpHandler::HttpHandler(
               WrapToCommand("QuitAll", base::BindRepeating(&ExecuteQuit, true)),
               &session_thread_map_)),
 
-      // Set Timezone command
-      CommandMapping(kPost, "session/:sessionId/timezone",
-                     WrapToCommand("SetTimezone",
-                                   base::BindRepeating(&ExecuteSetTimezone))),
+      // Set Time Zone command
+      CommandMapping(kPost, "session/:sessionId/time_zone",
+                     WrapToCommand("SetTimeZone",
+                                   base::BindRepeating(&ExecuteSetTimeZone))),
 
       //
       // ChromeDriver specific extension commands.
