@@ -14,12 +14,8 @@ IdTokenRequestCallbackData::IdTokenRequestCallbackData(DoneCallback callback)
     : callback_(std::move(callback)) {}
 IdTokenRequestCallbackData::~IdTokenRequestCallbackData() = default;
 
-bool IdTokenRequestCallbackData::Notify(const std::string& id_token) {
-  if (!callback_) {
-    return false;
-  }
-  std::move(callback_).Run(id_token);
-  return true;
+DoneCallback IdTokenRequestCallbackData::TakeDoneCallback() {
+  return std::move(callback_);
 }
 
 // static

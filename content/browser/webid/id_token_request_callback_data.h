@@ -35,8 +35,7 @@ class CONTENT_EXPORT IdTokenRequestCallbackData
   explicit IdTokenRequestCallbackData(DoneCallback callback);
   ~IdTokenRequestCallbackData() override;
 
-  // Invoke the callback (if it is still valid) passing the provided id_token.
-  bool Notify(const std::string& id_token);
+  DoneCallback TakeDoneCallback();
 
   static void Set(WebContents* web_contents, DoneCallback callback);
   static IdTokenRequestCallbackData* Get(WebContents* web_contents);

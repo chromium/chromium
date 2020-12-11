@@ -281,12 +281,19 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
 // ---- Provider logic -----
 
-void FederatedAuthRequestImpl::ProvideIdToken(const std::string& id_token,
-                                              ProvideIdTokenCallback callback) {
-  WebContents* web_contents =
+void FederatedAuthRequestImpl::ProvideIdToken(
+    const std::string& id_token,
+    ProvideIdTokenCallback idp_callback) {
+  // The ptr below is actually the same as |idp_web_contents_| but because this
+  // is a different instance of |FederatedAuthRequestImpl| for which
+  // |idp_web_contents_| has not been initialized.
+  //
+  // TODO(majidvp): We should have two separate mojo service for request and
+  // response sides would have make this more obvious. http://crbug.com/1141125
+  WebContents* idp_web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host());
-
-  auto* request_callback_data = IdTokenRequestCallbackData::Get(web_contents);
+  auto* request_callback_data =
+      IdTokenRequestCallbackData::Get(idp_web_contents);
 
   // TODO(majidvp): This may happen if the page is not loaded by the browser's
   // WebID machinery. We need a way for IDP logic to detect that and not provide
@@ -294,21 +301,27 @@ void FederatedAuthRequestImpl::ProvideIdToken(const std::string& id_token,
   // to not expose this in JS somehow. Investigate this further.
   // http://crbug.com/1141125
   if (!request_callback_data) {
-    std::move(callback).Run(ProvideIdTokenStatus::kError);
+    std::move(idp_callback).Run(ProvideIdTokenStatus::kError);
     return;
   }
 
-  if (request_callback_data->Notify(id_token)) {
-    std::move(callback).Run(ProvideIdTokenStatus::kSuccess);
-  } else {
-    std::move(callback).Run(ProvideIdTokenStatus::kErrorTooManyResponses);
-  }
+  // After running the RP done callback the IDP sign-in page gets closed and its
+  // web contents cleared in `FederatedAuthRequestImpl::CompleteRequest()`. So
+  // we should not access |idp_web_contents| or any of its associated objects
+  // as it may already be destructed. This is why we first run any logic that
+  // needs to touch the IDP web contents and then run the RP done callback.
 
-  // After calling `Notify` it is safe to remove the callback data.
-  // TODO(majidvp): This is now causing a DHECK. I belive it is because we are
-  // not calling it on the same RunLoop as the one that set it but needs more
-  // investigation.
-  // IdTokenRequestCallbackData::Remove(web_contents);
+  auto rp_done_callback = request_callback_data->TakeDoneCallback();
+  IdTokenRequestCallbackData::Remove(idp_web_contents);
+
+  if (!rp_done_callback) {
+    std::move(idp_callback).Run(ProvideIdTokenStatus::kErrorTooManyResponses);
+    return;
+  }
+  std::move(idp_callback).Run(ProvideIdTokenStatus::kSuccess);
+
+  std::move(rp_done_callback).Run(id_token);
+  // Don't access |idp_web_contents| passed this point.
 }
 
 }  // namespace content
