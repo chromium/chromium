@@ -203,9 +203,6 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   const bool may_schedule_periodic_purge_;
 
   THREAD_CHECKER(thread_checker_);
-  base::WeakPtrFactory<ClientDiscardableSharedMemoryManager> weak_factory_{
-      this};
-
   DISALLOW_COPY_AND_ASSIGN(ClientDiscardableSharedMemoryManager);
 };
 

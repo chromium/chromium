@@ -257,7 +257,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ClientDiscardableSharedMemoryManager::ScheduledPurge,
-                       weak_factory_.GetWeakPtr()),
+                       this),
         kScheduledPurgeInterval);
     is_purge_scheduled_ = true;
   }
@@ -444,7 +444,7 @@ void ClientDiscardableSharedMemoryManager::ScheduledPurge() {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ClientDiscardableSharedMemoryManager::ScheduledPurge,
-                       weak_factory_.GetWeakPtr()),
+                       this),
         kScheduledPurgeInterval);
   }
 }
