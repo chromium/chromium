@@ -8,6 +8,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -62,6 +63,13 @@ base::FilePath StoreSharedFile(const base::FilePath& directory,
   return path;
 }
 
+content::EvalJsResult ReadTextContent(content::WebContents* web_contents,
+                                      const char* id) {
+  const std::string script =
+      base::StringPrintf("document.getElementById('%s').textContent", id);
+  return content::EvalJs(web_contents, script);
+}
+
 }  // namespace
 
 namespace web_app {
@@ -96,7 +104,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareText) {
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareTextFiles) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url());
   const base::FilePath directory = PrepareWebShareDirectory(profile());
@@ -114,16 +122,14 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareText) {
         profile(), std::move(file_paths), std::move(content_types));
   }
 
-  const std::string script = "document.getElementById('records').textContent";
   content::WebContents* const web_contents =
       LaunchAppWithIntent(app_id, std::move(intent));
-  const content::EvalJsResult result = content::EvalJs(web_contents, script);
-  EXPECT_EQ("1,2,3,4,5 6,7,8,9,0", result);
+  EXPECT_EQ("1,2,3,4,5 6,7,8,9,0", ReadTextContent(web_contents, "records"));
 
   RemoveWebShareDirectory(directory);
 }
 
-IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImage) {
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImageWithText) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url());
   const base::FilePath directory = PrepareWebShareDirectory(profile());
@@ -136,14 +142,18 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImage) {
     std::vector<base::FilePath> file_paths({first_svg});
     std::vector<std::string> content_types(1, "image/svg+xml");
     intent = apps_util::CreateShareIntentFromFiles(
-        profile(), std::move(file_paths), std::move(content_types));
+        profile(), std::move(file_paths), std::move(content_types),
+        /*share_text=*/"Euclid https://example.org/",
+        /*share_title=*/"Elements");
   }
 
-  const std::string script = "document.getElementById('graphs').textContent";
   content::WebContents* const web_contents =
       LaunchAppWithIntent(app_id, std::move(intent));
-  const content::EvalJsResult result = content::EvalJs(web_contents, script);
-  EXPECT_EQ("picture", result);
+  EXPECT_EQ("picture", ReadTextContent(web_contents, "graphs"));
+
+  EXPECT_EQ("Elements", ReadTextContent(web_contents, "headline"));
+  EXPECT_EQ("Euclid", ReadTextContent(web_contents, "author"));
+  EXPECT_EQ("https://example.org/", ReadTextContent(web_contents, "link"));
 
   RemoveWebShareDirectory(directory);
 }
@@ -169,11 +179,9 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
         profile(), std::move(file_paths), std::move(content_types));
   }
 
-  const std::string script = "document.getElementById('notes').textContent";
   content::WebContents* const web_contents =
       LaunchAppWithIntent(app_id, std::move(intent));
-  const content::EvalJsResult result = content::EvalJs(web_contents, script);
-  EXPECT_EQ("a b c", result);
+  EXPECT_EQ("a b c", ReadTextContent(web_contents, "notes"));
 
   RemoveWebShareDirectory(directory);
 }

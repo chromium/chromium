@@ -18,6 +18,10 @@ function respondToShare(event) {
     let body = await template.text();
     const formData = await event.request.formData();
 
+    body = body.replace('{{headline}}', formData.get('headline'))
+               .replace('{{author}}', formData.get('author'))
+               .replace('{{link}}', formData.get('link'));
+
     const init = {
       status: 200,
       statusText: 'OK',

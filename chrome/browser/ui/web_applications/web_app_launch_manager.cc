@@ -6,17 +6,11 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -31,6 +25,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/share_target_utils.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
@@ -44,7 +39,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
-#include "chrome/browser/web_share_target/target_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/page_navigator.h"
@@ -52,19 +46,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "extensions/common/constants.h"
-#include "net/base/mime_util.h"
-#include "services/network/public/cpp/resource_request_body.h"
-#include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#endif
 
 namespace web_app {
 
@@ -98,79 +84,6 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   web_app::SetAppPrefsForWebContents(web_contents);
 
   return web_contents;
-}
-
-NavigateParams NavigateParamsForShareTarget(
-    Browser* browser,
-    const apps::ShareTarget& share_target,
-    const apps::mojom::Intent& intent) {
-  NavigateParams nav_params(browser, share_target.action,
-                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::vector<std::string> names;
-  std::vector<std::string> values;
-  std::vector<std::string> filenames;
-  std::vector<std::string> types;
-  std::vector<bool> is_value_file_uris;
-
-  DCHECK(intent.mime_type.has_value());
-  DCHECK(intent.file_urls.has_value());
-
-  const std::string& mime_type = intent.mime_type.value();
-  std::string name;
-  for (const apps::ShareTarget::Files& files : share_target.params.files) {
-    // Filter on MIME types. Chrome OS does not filter on file extensions.
-    // https://w3c.github.io/web-share-target/level-2/#dfn-accepted
-    if (base::ranges::any_of(files.accept, [&mime_type](const auto& criteria) {
-          return !base::StartsWith(criteria, ".") &&
-                 net::MatchesMimeType(criteria, mime_type);
-        })) {
-      name = files.name;
-      break;
-    }
-  }
-  if (name.empty()) {
-    VLOG(1) << "Received unexpected MIME type: " << mime_type;
-  } else {
-    // Files for Web Share intents are created by the browser in
-    // a .WebShare directory, with generated file names and file urls - see
-    // //chrome/browser/webshare/chromeos/sharesheet_client.cc
-    for (const GURL& file_url : intent.file_urls.value()) {
-      storage::FileSystemContext* file_system_context =
-          file_manager::util::GetFileSystemContextForExtensionId(
-              browser->profile(), extension_misc::kFilesManagerAppId);
-      storage::FileSystemURL file_system_url =
-          file_system_context->CrackURL(file_url);
-      if (!file_system_url.is_valid()) {
-        VLOG(1) << "Received unexpected file URL: " << file_url.spec();
-        continue;
-      }
-
-      names.push_back(name);
-      values.push_back(file_system_url.path().AsUTF8Unsafe());
-      filenames.push_back(file_system_url.path().BaseName().AsUTF8Unsafe());
-      types.push_back(mime_type);
-      is_value_file_uris.push_back(true);
-    }
-  }
-
-  const std::string boundary = net::GenerateMimeMultipartBoundary();
-  const std::string header_list = base::StringPrintf(
-      "Content-Type: multipart/form-data; boundary=%s\r\n", boundary.c_str());
-  scoped_refptr<network::ResourceRequestBody> post_data =
-      web_share_target::ComputeMultipartBody(names, values, is_value_file_uris,
-                                             filenames, types, boundary);
-
-  nav_params.post_data = post_data;
-  nav_params.extra_headers = header_list;
-#else
-  // TODO(crbug.com/1153194): Support Web Share Target on Windows.
-  // TODO(crbug.com/1153195): Support Web Share Target on Mac.
-  NOTIMPLEMENTED();
-#endif
-
-  return nav_params;
 }
 
 GURL GetLaunchUrl(WebAppProvider& provider,

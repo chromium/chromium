@@ -4469,6 +4469,8 @@ static_library("ui") {
       "views/extensions/settings_overridden_dialog_view.h",
       "web_applications/app_browser_controller.cc",
       "web_applications/app_browser_controller.h",
+      "web_applications/share_target_utils.cc",
+      "web_applications/share_target_utils.h",
       "web_applications/system_web_app_ui_utils.cc",
       "web_applications/system_web_app_ui_utils.h",
       "web_applications/web_app_browser_controller.cc",

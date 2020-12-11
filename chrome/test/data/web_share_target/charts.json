@@ -20,6 +20,9 @@
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
+      "title": "headline",
+      "text": "author",
+      "url": "link",
       "files": [
         {
           "name": "records",
