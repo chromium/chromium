@@ -724,6 +724,41 @@ class CryptohomeClientImpl : public CryptohomeClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetCurrentSpaceForProjectId(
+      const int project_id,
+      DBusMethodCallback<int64_t> callback) override {
+    dbus::MethodCall method_call(
+        cryptohome::kCryptohomeInterface,
+        cryptohome::kCryptohomeGetCurrentSpaceForProjectId);
+
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(project_id);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CryptohomeClientImpl::OnInt64DBusMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void SetProjectId(const int project_id,
+                    const cryptohome::SetProjectIdAllowedPathType parent_path,
+                    const std::string& child_path,
+                    const cryptohome::AccountIdentifier& account_id,
+                    DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
+                                 cryptohome::kCryptohomeSetProjectId);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(project_id);
+    writer.AppendInt32(parent_path);
+    writer.AppendString(child_path);
+    writer.AppendProtoAsArrayOfBytes(account_id);
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CryptohomeClientImpl::OnBoolMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void GetRsuDeviceId(
       DBusMethodCallback<cryptohome::BaseReply> callback) override {
     cryptohome::GetRsuDeviceIdRequest request;

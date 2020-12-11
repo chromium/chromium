@@ -533,6 +533,17 @@ void FakeCryptohomeClient::GetCurrentSpaceForGid(
     gid_t android_gid,
     DBusMethodCallback<int64_t> callback) {}
 
+void FakeCryptohomeClient::GetCurrentSpaceForProjectId(
+    int project_id,
+    DBusMethodCallback<int64_t> callback) {}
+
+void FakeCryptohomeClient::SetProjectId(
+    const int project_id,
+    const cryptohome::SetProjectIdAllowedPathType parent_path,
+    const std::string& child_path,
+    const cryptohome::AccountIdentifier& account_id,
+    DBusMethodCallback<bool> callback) {}
+
 void FakeCryptohomeClient::CheckHealth(
     const cryptohome::CheckHealthRequest& request,
     DBusMethodCallback<cryptohome::BaseReply> callback) {

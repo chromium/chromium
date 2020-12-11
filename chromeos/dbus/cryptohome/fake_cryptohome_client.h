@@ -161,6 +161,14 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
                              DBusMethodCallback<int64_t> callback) override;
   void GetCurrentSpaceForGid(gid_t android_gid,
                              DBusMethodCallback<int64_t> callback) override;
+  void GetCurrentSpaceForProjectId(
+      int project_id,
+      DBusMethodCallback<int64_t> callback) override;
+  void SetProjectId(const int project_id,
+                    const cryptohome::SetProjectIdAllowedPathType parent_path,
+                    const std::string& child_path,
+                    const cryptohome::AccountIdentifier& account_id,
+                    DBusMethodCallback<bool> callback) override;
   void CheckHealth(const cryptohome::CheckHealthRequest& request,
                    DBusMethodCallback<cryptohome::BaseReply> callback) override;
   void StartFingerprintAuthSession(

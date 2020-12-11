@@ -466,6 +466,22 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   virtual void GetCurrentSpaceForGid(const gid_t android_gid,
                                      DBusMethodCallback<int64_t> callback) = 0;
 
+  // Calls GetCurrentSpaceForProjectId to get the current disk space for a
+  // project ID.
+  virtual void GetCurrentSpaceForProjectId(
+      const int project_id,
+      DBusMethodCallback<int64_t> callback) = 0;
+
+  // Calls SetProjectId to set the project ID to the file/directory pointed by
+  // path. |parent_path|, |child_path| and |account_id| are used for
+  // constructing the target path.
+  virtual void SetProjectId(
+      const int project_id,
+      const cryptohome::SetProjectIdAllowedPathType parent_path,
+      const std::string& child_path,
+      const cryptohome::AccountIdentifier& account_id,
+      DBusMethodCallback<bool> callback) = 0;
+
   // Calls CheckHealth to get current health state.
   virtual void CheckHealth(
       const cryptohome::CheckHealthRequest& request,
