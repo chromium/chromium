@@ -114,7 +114,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
     if (profile && IsURLWhitelistedByPolicy(url_, *profile->GetPrefs())) {
-      DontClassifyForPhishing(NO_CLASSIFY_WHITELISTED_BY_POLICY);
+      DontClassifyForPhishing(NO_CLASSIFY_ALLOWLISTED_BY_POLICY);
     }
 
     // If the tab has a delayed warning, ignore this second verdict. We don't
@@ -164,7 +164,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     NO_CLASSIFY_RESULT_FROM_CACHE = 9,
     DEPRECATED_NO_CLASSIFY_NOT_HTTP_URL = 10,
     NO_CLASSIFY_SCHEME_NOT_SUPPORTED = 11,
-    NO_CLASSIFY_WHITELISTED_BY_POLICY = 12,
+    NO_CLASSIFY_ALLOWLISTED_BY_POLICY = 12,
     CLASSIFY = 13,
     NO_CLASSIFY_HAS_DELAYED_WARNING = 14,
 

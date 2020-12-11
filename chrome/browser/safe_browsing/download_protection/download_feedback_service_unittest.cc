@@ -179,7 +179,7 @@ TEST_F(DownloadFeedbackServiceTest, MaybeStorePingsForDownload) {
     // SAFE will never upload
     EXPECT_FALSE(
         WillStorePings(DownloadCheckResult::SAFE, upload_requested, ok_size));
-    EXPECT_FALSE(WillStorePings(DownloadCheckResult::WHITELISTED_BY_POLICY,
+    EXPECT_FALSE(WillStorePings(DownloadCheckResult::ALLOWLISTED_BY_POLICY,
                                 upload_requested, ok_size));
     // Others will upload if requested.
     EXPECT_EQ(upload_requested, WillStorePings(DownloadCheckResult::UNKNOWN,

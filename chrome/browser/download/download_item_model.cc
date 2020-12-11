@@ -242,7 +242,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
-    case download::DOWNLOAD_DANGER_TYPE_WHITELISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
       // We shouldn't get any of these due to the MightBeMalicious() test above.

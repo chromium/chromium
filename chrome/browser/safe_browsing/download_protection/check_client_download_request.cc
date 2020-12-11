@@ -89,7 +89,7 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
     case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
-    case DownloadCheckResult::WHITELISTED_BY_POLICY:
+    case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
       callback.Run(deep_scan_result);
       return;
   }

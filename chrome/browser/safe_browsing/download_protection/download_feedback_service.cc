@@ -88,9 +88,9 @@ void DownloadFeedbackService::MaybeStorePingsForDownload(
     download::DownloadItem* download,
     const std::string& ping,
     const std::string& response) {
-  // We never upload SAFE or WHITELISTED_BY_POLICY files.
+  // We never upload SAFE or ALLOWLISTED_BY_POLICY files.
   if (result == DownloadCheckResult::SAFE ||
-      result == DownloadCheckResult::WHITELISTED_BY_POLICY) {
+      result == DownloadCheckResult::ALLOWLISTED_BY_POLICY) {
     return;
   }
 

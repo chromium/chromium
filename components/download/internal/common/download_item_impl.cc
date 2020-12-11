@@ -150,8 +150,8 @@ std::string GetDownloadDangerNames(DownloadDangerType type) {
       return "DANGEROUS_HOST";
     case DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
       return "POTENTIALLY_UNWANTED";
-    case DOWNLOAD_DANGER_TYPE_WHITELISTED_BY_POLICY:
-      return "WHITELISTED_BY_POLICY";
+    case DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
+      return "ALLOWLISTED_BY_POLICY";
     default:
       NOTREACHED();
       return "UNKNOWN_DANGER_TYPE";

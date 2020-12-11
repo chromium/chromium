@@ -44,8 +44,8 @@ enum DownloadDangerType {
   // Applications and extensions that modify browser and/or computer settings
   DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED = 8,
 
-  // Download URL whitelisted by enterprise policy.
-  DOWNLOAD_DANGER_TYPE_WHITELISTED_BY_POLICY = 9,
+  // Download URL allowed by enterprise policy.
+  DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY = 9,
 
   // Download is pending a more detailed verdict.
   DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING = 10,

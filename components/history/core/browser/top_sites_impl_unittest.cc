@@ -818,7 +818,7 @@ TEST_F(TopSitesImplTest, BlockingPrepopulated) {
   top_sites()->AddBlockedUrl(prepopulate_url);
   EXPECT_TRUE(top_sites()->HasBlockedUrls());
 
-  // Make sure the blacked prepopulate url isn't returned.
+  // Make sure the blocked prepopulate url isn't returned.
   {
     TopSitesQuerier q;
     q.QueryTopSites(top_sites(), true);

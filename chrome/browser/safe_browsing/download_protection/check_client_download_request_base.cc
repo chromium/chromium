@@ -183,7 +183,7 @@ void CheckClientDownloadRequestBase::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (IsWhitelistedByPolicy()) {
-    FinishRequest(DownloadCheckResult::WHITELISTED_BY_POLICY,
+    FinishRequest(DownloadCheckResult::ALLOWLISTED_BY_POLICY,
                   REASON_WHITELISTED_URL);
     return;
   }

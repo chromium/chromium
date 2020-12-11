@@ -220,7 +220,7 @@ void DownloadProtectionService::CheckDownloadUrl(
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     if (profile &&
         MatchesEnterpriseWhitelist(*profile->GetPrefs(), item->GetUrlChain())) {
-      // We don't return WHITELISTED_BY_POLICY yet, because future deep scanning
+      // We don't return ALLOWLISTED_BY_POLICY yet, because future deep scanning
       // operations may indicate the file is unsafe.
       std::move(callback).Run(DownloadCheckResult::SAFE);
       return;
@@ -260,7 +260,7 @@ void DownloadProtectionService::CheckPPAPIDownloadRequest(
   if (profile &&
       MatchesEnterpriseWhitelist(*profile->GetPrefs(),
                                  {requestor_url, initiating_frame_url})) {
-    std::move(callback).Run(DownloadCheckResult::WHITELISTED_BY_POLICY);
+    std::move(callback).Run(DownloadCheckResult::ALLOWLISTED_BY_POLICY);
     return;
   }
   std::unique_ptr<PPAPIDownloadRequest> request(new PPAPIDownloadRequest(

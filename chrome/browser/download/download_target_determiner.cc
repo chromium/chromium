@@ -809,7 +809,7 @@ DownloadTargetDeterminer::Result
   // danger level of the download depends on the file type.
   if (danger_type_ != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS &&
       danger_type_ != download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT &&
-      danger_type_ != download::DOWNLOAD_DANGER_TYPE_WHITELISTED_BY_POLICY) {
+      danger_type_ != download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY) {
     return CONTINUE;
   }
 

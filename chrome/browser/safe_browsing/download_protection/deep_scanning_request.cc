@@ -115,7 +115,7 @@ EventResult GetEventResult(DownloadCheckResult download_result,
   switch (download_result) {
     case DownloadCheckResult::UNKNOWN:
     case DownloadCheckResult::SAFE:
-    case DownloadCheckResult::WHITELISTED_BY_POLICY:
+    case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
     case DownloadCheckResult::DEEP_SCANNED_SAFE:
       return EventResult::ALLOWED;
 

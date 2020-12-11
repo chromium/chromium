@@ -290,7 +290,7 @@ base::string16 DownloadUIModel::GetWarningText(const base::string16& filename,
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
-    case download::DOWNLOAD_DANGER_TYPE_WHITELISTED_BY_POLICY:
+    case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }

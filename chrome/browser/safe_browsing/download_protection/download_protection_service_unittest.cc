@@ -2702,7 +2702,7 @@ TEST_F(DownloadProtectionServiceTest,
       default_file_path, alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::SyncCheckDoneCallback,
                      base::Unretained(this)));
-  ASSERT_TRUE(IsResult(DownloadCheckResult::WHITELISTED_BY_POLICY));
+  ASSERT_TRUE(IsResult(DownloadCheckResult::ALLOWLISTED_BY_POLICY));
 }
 
 TEST_F(DownloadProtectionServiceTest,
@@ -2801,7 +2801,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadWhitelistedByPolicy) {
   run_loop.Run();
 
   EXPECT_FALSE(HasClientDownloadRequest());
-  EXPECT_TRUE(IsResult(DownloadCheckResult::WHITELISTED_BY_POLICY));
+  EXPECT_TRUE(IsResult(DownloadCheckResult::ALLOWLISTED_BY_POLICY));
 }
 
 TEST_F(DownloadProtectionServiceTest, CheckOffTheRecordDoesNotSendFeedback) {
@@ -3445,7 +3445,7 @@ TEST_F(DownloadProtectionServiceTest,
   // be posted.
   EXPECT_FALSE(has_result_);
   base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(IsResult(DownloadCheckResult::WHITELISTED_BY_POLICY));
+  ASSERT_TRUE(IsResult(DownloadCheckResult::ALLOWLISTED_BY_POLICY));
 }
 
 TEST_F(DownloadProtectionServiceTest,
