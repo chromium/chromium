@@ -180,6 +180,11 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   expected_providers++;
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // LacrosMetricsProvider.
+  expected_providers++;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // AmbientModeMetricsProvider, AssistantServiceMetricsProvider,
   // CrosHealthdMetricsProvider, ChromeOSMetricsProvider,
