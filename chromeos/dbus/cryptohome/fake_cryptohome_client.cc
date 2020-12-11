@@ -192,16 +192,6 @@ bool FakeCryptohomeClient::CallTpmIsOwnedAndBlock(bool* owned) {
   return true;
 }
 
-void FakeCryptohomeClient::TpmIsBeingOwned(DBusMethodCallback<bool> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
-bool FakeCryptohomeClient::CallTpmIsBeingOwnedAndBlock(bool* owning) {
-  *owning = true;
-  return true;
-}
-
 void FakeCryptohomeClient::TpmCanAttemptOwnership(
     VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(

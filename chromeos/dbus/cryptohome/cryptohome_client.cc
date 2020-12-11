@@ -299,21 +299,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
   }
 
   // CryptohomeClient override.
-  void TpmIsBeingOwned(DBusMethodCallback<bool> callback) override {
-    dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
-                                 cryptohome::kCryptohomeTpmIsBeingOwned);
-    CallBoolMethod(&method_call, std::move(callback));
-  }
-
-  // CryptohomeClient override.
-  // TODO(hashimoto): Remove this method. crbug.com/141011
-  bool CallTpmIsBeingOwnedAndBlock(bool* owning) override {
-    dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
-                                 cryptohome::kCryptohomeTpmIsBeingOwned);
-    return CallBoolMethodAndBlock(&method_call, owning);
-  }
-
-  // CryptohomeClient override.
   void TpmCanAttemptOwnership(VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
                                  cryptohome::kCryptohomeTpmCanAttemptOwnership);

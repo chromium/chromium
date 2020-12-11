@@ -231,14 +231,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // TODO(hashimoto): Remove this method. crbug.com/141012
   virtual bool CallTpmIsOwnedAndBlock(bool* owned) = 0;
 
-  // Calls TpmIsBeingOwned method.
-  virtual void TpmIsBeingOwned(DBusMethodCallback<bool> callback) = 0;
-
-  // Calls TpmIsBeingOwned method and returns true when the call succeeds.
-  // This method blocks until the call returns.
-  // TODO(hashimoto): Remove this method. crbug.com/141011
-  virtual bool CallTpmIsBeingOwnedAndBlock(bool* owning) = 0;
-
   // Calls TpmCanAttemptOwnership method.
   // This method tells the service that it is OK to attempt ownership.
   virtual void TpmCanAttemptOwnership(VoidDBusMethodCallback callback) = 0;

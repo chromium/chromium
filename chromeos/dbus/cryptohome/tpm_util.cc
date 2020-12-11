@@ -26,12 +26,6 @@ bool TpmIsOwned() {
   return result;
 }
 
-bool TpmIsBeingOwned() {
-  bool result = false;
-  CryptohomeClient::Get()->CallTpmIsBeingOwnedAndBlock(&result);
-  return result;
-}
-
 bool InstallAttributesGet(const std::string& name, std::string* value) {
   std::vector<uint8_t> buf;
   bool success = false;
