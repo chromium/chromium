@@ -11,8 +11,15 @@ AppWindowBase::AppWindowBase(const ash::ShelfID& shelf_id,
                              views::Widget* widget)
     : shelf_id_(shelf_id), widget_(widget) {}
 
+AppWindowBase::~AppWindowBase() {
+  if (controller_)
+    controller_->RemoveWindow(this);
+}
+
 void AppWindowBase::SetController(AppWindowLauncherItemController* controller) {
   DCHECK(!controller_ || !controller);
+  if (!controller && controller_)
+    controller_->RemoveWindow(this);
   controller_ = controller;
 }
 

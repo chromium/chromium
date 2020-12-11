@@ -67,7 +67,7 @@ AppWindowLauncherItemController::~AppWindowLauncherItemController() {}
 
 void AppWindowLauncherItemController::AddWindow(ui::BaseWindow* app_window) {
   aura::Window* window = app_window->GetNativeWindow();
-  if (window)
+  if (window && !observed_windows_.IsObserving(window))
     observed_windows_.Add(window);
   if (window && window->GetProperty(ash::kHideInShelfKey))
     hidden_windows_.push_front(app_window);
@@ -88,7 +88,7 @@ AppWindowLauncherItemController::GetFromNativeWindow(aura::Window* window,
 void AppWindowLauncherItemController::RemoveWindow(ui::BaseWindow* app_window) {
   DCHECK(app_window);
   aura::Window* window = app_window->GetNativeWindow();
-  if (window)
+  if (window && observed_windows_.IsObserving(window))
     observed_windows_.Remove(window);
   if (app_window == last_active_window_)
     last_active_window_ = nullptr;
@@ -98,12 +98,9 @@ void AppWindowLauncherItemController::RemoveWindow(ui::BaseWindow* app_window) {
   } else {
     iter =
         std::find(hidden_windows_.begin(), hidden_windows_.end(), app_window);
-    if (iter != hidden_windows_.end()) {
-      hidden_windows_.erase(iter);
-    } else {
-      NOTREACHED();
+    if (iter == hidden_windows_.end())
       return;
-    }
+    hidden_windows_.erase(iter);
   }
   UpdateShelfItemIcon();
 }

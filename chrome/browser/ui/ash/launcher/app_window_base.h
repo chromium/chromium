@@ -33,7 +33,7 @@ class AppWindowBase : public ui::BaseWindow {
 
   AppWindowBase(const ash::ShelfID& shelf_id, views::Widget* widget);
 
-  virtual ~AppWindowBase() {}
+  virtual ~AppWindowBase();
 
   void SetController(AppWindowLauncherItemController* controller);
 
