@@ -175,14 +175,15 @@ TEST(RangesTest, ForEachN) {
 }
 
 TEST(RangesTest, Find) {
-  int array[] = {0, 1, 2, 3, 4, 5};
+  constexpr int array[] = {0, 1, 2, 3, 4, 5};
 
-  EXPECT_EQ(array + 6, ranges::find(array + 1, array + 6, 0));
-  EXPECT_EQ(array, ranges::find(array, 0));
+  static_assert(array + 6 == ranges::find(array + 1, array + 6, 0), "");
+  static_assert(array == ranges::find(array, 0), "");
 
-  Int values[] = {{0}, {2}, {4}, {5}};
-  EXPECT_EQ(values, ranges::find(values, values, 0, &Int::value));
-  EXPECT_EQ(ranges::end(values), ranges::find(values, 3, &Int::value));
+  constexpr Int values[] = {{0}, {2}, {4}, {5}};
+  static_assert(values == ranges::find(values, values, 0, &Int::value), "");
+  static_assert(ranges::end(values) == ranges::find(values, 3, &Int::value),
+                "");
 }
 
 TEST(RangesTest, FindIf) {

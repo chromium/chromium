@@ -419,11 +419,12 @@ constexpr auto find(InputIterator first,
                     InputIterator last,
                     const T& value,
                     Proj proj = {}) {
-  // Note: In order to be able to apply `proj` to each element in [first, last)
-  // we are dispatching to std::find_if instead of std::find.
-  return std::find_if(first, last, [&proj, &value](auto&& lhs) {
-    return base::invoke(proj, std::forward<decltype(lhs)>(lhs)) == value;
-  });
+  for (; first != last; ++first) {
+    if (base::invoke(proj, *first) == value)
+      break;
+  }
+
+  return first;
 }
 
 // Let `E(i)` be `bool(invoke(proj, *i) == value)`.
