@@ -474,21 +474,36 @@ static PhysicalOffset ComputeOffsetFromCompositedAncestor(
   return offset;
 }
 
-static bool CanPropagateSubpixelAccumulation(const PaintLayer& layer) {
+PhysicalOffset ComputeSubpixelAccumulation(
+    const PhysicalOffset& offset_from_composited_ancestor,
+    const PaintLayer& layer,
+    IntPoint& snapped_offset_from_composited_ancestor) {
+  snapped_offset_from_composited_ancestor =
+      RoundedIntPoint(offset_from_composited_ancestor);
+  PhysicalOffset subpixel_accumulation =
+      offset_from_composited_ancestor -
+      PhysicalOffset(snapped_offset_from_composited_ancestor);
+  if (subpixel_accumulation.IsZero()) {
+    return subpixel_accumulation;
+  }
   if (layer.GetCompositingReasons() &
       CompositingReason::kPreventingSubpixelAccumulationReasons) {
-    return false;
+    return PhysicalOffset();
   }
   if (layer.GetCompositingReasons() &
       CompositingReason::kActiveTransformAnimation) {
     if (const Element* element =
             To<Element>(layer.GetLayoutObject().GetNode())) {
       DCHECK(element->GetElementAnimations());
-      return element->GetElementAnimations()->IsIdentityOrTranslation();
+      if (element->GetElementAnimations()->IsIdentityOrTranslation())
+        return subpixel_accumulation;
     }
-    return false;
+    return PhysicalOffset();
   }
-  return !layer.Transform() || layer.Transform()->IsIdentityOrTranslation();
+  if (!layer.Transform() || layer.Transform()->IsIdentityOrTranslation()) {
+    return subpixel_accumulation;
+  }
+  return PhysicalOffset();
 }
 
 void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
@@ -511,15 +526,9 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
           &owning_layer_, composited_ancestor,
           local_representative_point_for_fragmentation,
           offset_for_sticky_position);
-  snapped_offset_from_composited_ancestor =
-      RoundedIntPoint(offset_from_composited_ancestor);
-
-  PhysicalOffset subpixel_accumulation;
-  if (CanPropagateSubpixelAccumulation(owning_layer_)) {
-    subpixel_accumulation =
-        offset_from_composited_ancestor -
-        PhysicalOffset(snapped_offset_from_composited_ancestor);
-  }
+  PhysicalOffset subpixel_accumulation = ComputeSubpixelAccumulation(
+      offset_from_composited_ancestor, owning_layer_,
+      snapped_offset_from_composited_ancestor);
 
   // Invalidate the whole layer when subpixel accumulation changes, since
   // the previous subpixel accumulation is baked into the display list.

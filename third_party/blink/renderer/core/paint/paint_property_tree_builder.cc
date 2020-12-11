@@ -464,6 +464,9 @@ static bool NeedsPaintOffsetTranslation(
 
 bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
     const {
+  if (!object_.HasLayer())
+    return true;
+
   if (full_context_.direct_compositing_reasons &
       CompositingReason::kPreventingSubpixelAccumulationReasons) {
     return false;
@@ -476,12 +479,9 @@ bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
     }
     return false;
   }
-  TransformationMatrix matrix;
-  object_.StyleRef().ApplyTransform(
-      matrix, LayoutSize(), ComputedStyle::kExcludeTransformOrigin,
-      ComputedStyle::kIncludeMotionPath,
-      ComputedStyle::kIncludeIndependentTransformProperties);
-  return matrix.IsIdentityOrTranslation();
+
+  const PaintLayer* layer = To<LayoutBoxModelObject>(object_).Layer();
+  return !layer->Transform() || layer->Transform()->IsIdentityOrTranslation();
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
