@@ -21,6 +21,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_surface.h"
 
 namespace viz {
@@ -434,6 +435,9 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     return true;
   });
 
+  bool should_reallocate =
+      result.swap_result == gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS;
+
   DCHECK(!result.gpu_fence);
   const auto& mailbox =
       image ? image->skia_representation()->mailbox() : gpu::Mailbox();
@@ -441,6 +445,9 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
                     /*damage_area=*/base::nullopt, std::move(released_overlays),
                     mailbox);
   PageFlipComplete(image.get());
+
+  if (should_reallocate)
+    RecreateImages();
 }
 
 gfx::Size SkiaOutputDeviceBufferQueue::GetSwapBuffersSize() {
@@ -472,7 +479,6 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
   color_space_ = color_space;
   image_size_ = size;
   overlay_transform_ = transform;
-  FreeAllSurfaces();
 
   if (needs_background_image_ && !background_image_) {
     background_image_ =
@@ -480,16 +486,18 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
     background_image_is_scheduled_ = false;
   }
 
+  return RecreateImages();
+}
+
+bool SkiaOutputDeviceBufferQueue::RecreateImages() {
+  FreeAllSurfaces();
   images_ = presenter_->AllocateImages(color_space_, image_size_,
                                        capabilities_.number_of_buffers);
-  if (images_.empty())
-    return false;
-
   for (auto& image : images_) {
     available_images_.push_back(image.get());
   }
 
-  return true;
+  return !images_.empty();
 }
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(

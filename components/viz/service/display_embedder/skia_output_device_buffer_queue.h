@@ -82,6 +82,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
                            gfx::SwapCompletionResult result);
 
   gfx::Size GetSwapBuffersSize();
+  bool RecreateImages();
 
   std::unique_ptr<OutputPresenter> presenter_;
 
