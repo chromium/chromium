@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class GURL;
 
@@ -29,8 +28,7 @@ class SubresourceFilterProfileContext;
 // Chrome implementation of SubresourceFilterClient. Instances are associated
 // with and owned by ContentSubresourceFilterThrottleManager instances.
 class ChromeSubresourceFilterClient
-    : public content::WebContentsObserver,
-      public subresource_filter::SubresourceFilterClient {
+    : public subresource_filter::SubresourceFilterClient {
  public:
   explicit ChromeSubresourceFilterClient(content::WebContents* web_contents);
   ~ChromeSubresourceFilterClient() override;
@@ -46,10 +44,6 @@ class ChromeSubresourceFilterClient
   // ThrottleManager.
   static ChromeSubresourceFilterClient* FromWebContents(
       content::WebContents* web_contents);
-
-  // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
   // SubresourceFilterClient:
   void ShowNotification() override;
@@ -72,6 +66,8 @@ class ChromeSubresourceFilterClient
  private:
   void ShowUI(const GURL& url);
 
+  content::WebContents* web_contents_;
+
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
 
@@ -81,8 +77,6 @@ class ChromeSubresourceFilterClient
 
   std::unique_ptr<subresource_filter::ProfileInteractionManager>
       profile_interaction_manager_;
-
-  bool ads_violation_triggered_for_last_committed_navigation_ = false;
 
   // Corresponds to a devtools command which triggers filtering on all page
   // loads. We must be careful to ensure this boolean does not persist after the

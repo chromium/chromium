@@ -31,6 +31,7 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 #if defined(OS_ANDROID)
@@ -39,8 +40,8 @@
 
 ChromeSubresourceFilterClient::ChromeSubresourceFilterClient(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
-  DCHECK(web_contents);
+    : web_contents_(web_contents) {
+  DCHECK(web_contents_);
   profile_context_ = SubresourceFilterProfileContextFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   profile_interaction_manager_ =
@@ -78,14 +79,6 @@ ChromeSubresourceFilterClient* ChromeSubresourceFilterClient::FromWebContents(
       throttle_manager->client());
 }
 
-void ChromeSubresourceFilterClient::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame() &&
-      !navigation_handle->IsSameDocument()) {
-    ads_violation_triggered_for_last_committed_navigation_ = false;
-  }
-}
-
 void ChromeSubresourceFilterClient::OnReloadRequested() {
   // TODO(crbug.com/1116095): Once ContentSubresourceFilterThrottleManager knows
   // about ProfileInteractionManager, this method can move entirely into
@@ -95,7 +88,7 @@ void ChromeSubresourceFilterClient::OnReloadRequested() {
 }
 
 void ChromeSubresourceFilterClient::ShowNotification() {
-  const GURL& top_level_url = web_contents()->GetLastCommittedURL();
+  const GURL& top_level_url = web_contents_->GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
           top_level_url)) {
     ShowUI(top_level_url);
@@ -149,46 +142,15 @@ ChromeSubresourceFilterClient::OnPageActivationComputed(
   return effective_activation_level;
 }
 
-// TODO(https://crbug.com/1131969): Consider adding reporting when
-// ads violations are triggered.
 void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
     content::RenderFrameHost* rfh,
     subresource_filter::mojom::AdsViolation triggered_violation) {
-  // Only trigger violations once per navigation. The ads intervention
-  // manager ignores all interventions after recording an intervention
-  // for the intervention duration, however, a page that began a navigation
-  // before the intervention duration and was still alive after the duration
-  // could re-trigger an ads intervention.
-  if (ads_violation_triggered_for_last_committed_navigation_)
-    return;
-
-  // If the feature is disabled, simulate ads interventions as if we were
-  // enforcing on ads: do not record new interventions if we would be enforcing
-  // an intervention on ads already.
-  //
-  // TODO(https://crbug.com/1131971): Add support for enabling ads interventions
-  // separately for different ads violations.
-  const GURL& url = rfh->GetLastCommittedURL();
-  base::Optional<
-      subresource_filter::AdsInterventionManager::LastAdsIntervention>
-      last_intervention =
-          profile_context_->ads_intervention_manager()->GetLastAdsIntervention(
-              url);
-  // TODO(crbug.com/1131971): If a host triggers multiple times on a single
-  // navigate and the durations don't match, we'll use the last duration rather
-  // than the longest. The metadata should probably store the activation with
-  // the longest duration.
-  if (last_intervention &&
-      last_intervention->duration_since <
-          subresource_filter::AdsInterventionManager::GetInterventionDuration(
-              last_intervention->ads_violation)) {
-    return;
-  }
-
-  profile_context_->ads_intervention_manager()
-      ->TriggerAdsInterventionForUrlOnSubsequentLoads(url, triggered_violation);
-
-  ads_violation_triggered_for_last_committed_navigation_ = true;
+  // TODO(crbug.com/1116095): Once ContentSubresourceFilterThrottleManager knows
+  // about ProfileInteractionManager, it can invoke the
+  // ProfileInteractionManager directly and
+  // SubresourceFilterClient::OnAdsViolationTriggered() can be eliminated.
+  profile_interaction_manager_->OnAdsViolationTriggered(rfh,
+                                                        triggered_violation);
 }
 
 const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
@@ -210,7 +172,7 @@ void ChromeSubresourceFilterClient::ToggleForceActivationInCurrentWebContents(
 void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
 #if defined(OS_ANDROID)
   InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents());
+      InfoBarService::FromWebContents(web_contents_);
   subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_service);
 #endif
   // TODO(https://crbug.com/1103176): Plumb the actual frame reference here
@@ -219,7 +181,7 @@ void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
   // comes from a specific frame).
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetMainFrame());
+          web_contents_->GetMainFrame());
   content_settings->OnContentBlocked(ContentSettingsType::ADS);
 
   subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
