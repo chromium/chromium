@@ -25,12 +25,12 @@ namespace dom_distiller {
 
 namespace {
 
-const char* const kBlacklist[] = {"www.reddit.com", "tools.usps.com"};
+const char* const kFilterlist[] = {"www.reddit.com", "tools.usps.com"};
 
 enum RejectionBuckets {
   NOT_ARTICLE = 0,
   MOBILE_FRIENDLY,
-  BLACKLISTED,
+  FILTERED,
   TOO_SHORT,
   NOT_REJECTED,
   REJECTION_BUCKET_BOUNDARY
@@ -66,9 +66,9 @@ bool IsLast(bool is_loaded) {
   return true;
 }
 
-bool IsBlacklisted(const GURL& url) {
-  for (size_t i = 0; i < base::size(kBlacklist); ++i) {
-    if (base::LowerCaseEqualsASCII(url.host(), kBlacklist[i])) {
+bool IsFiltered(const GURL& url) {
+  for (auto* filter : kFilterlist) {
+    if (base::LowerCaseEqualsASCII(url.host(), filter)) {
       return true;
     }
   }
@@ -82,7 +82,7 @@ void DumpDistillability(content::RenderFrame* render_frame,
                         bool distillable,
                         double long_score,
                         bool long_page,
-                        bool blacklisted) {
+                        bool filtered) {
   base::DictionaryValue dict;
   std::string msg;
 
@@ -114,7 +114,7 @@ void DumpDistillability(content::RenderFrame* render_frame,
   dict.SetInteger("distillable", distillable);
   dict.SetDouble("long_score", long_score);
   dict.SetInteger("long_page", long_page);
-  dict.SetInteger("blacklisted", blacklisted);
+  dict.SetInteger("filtered", filtered);
   base::JSONWriter::WriteWithOptions(
       dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &msg);
   msg = "adaboost_classification = " + msg;
@@ -144,11 +144,11 @@ bool IsDistillablePageAdaboost(blink::WebDocument& doc,
   double long_score = long_page->Score(derived) - long_page->GetThreshold();
   bool distillable = score > 0;
   bool long_article = long_score > 0;
-  bool blacklisted = IsBlacklisted(parsed_url);
+  bool filtered = IsFiltered(parsed_url);
 
   if (dump_info) {
     DumpDistillability(render_frame, features, derived, score, distillable,
-                       long_score, long_article, blacklisted);
+                       long_score, long_article, filtered);
   }
 
   if (!features.is_mobile_friendly) {
@@ -189,9 +189,9 @@ bool IsDistillablePageAdaboost(blink::WebDocument& doc,
     } else if (features.is_mobile_friendly) {
       UMA_HISTOGRAM_ENUMERATION("DomDistiller.DistillabilityRejection",
                                 MOBILE_FRIENDLY, REJECTION_BUCKET_BOUNDARY);
-    } else if (blacklisted) {
+    } else if (filtered) {
       UMA_HISTOGRAM_ENUMERATION("DomDistiller.DistillabilityRejection",
-                                BLACKLISTED, REJECTION_BUCKET_BOUNDARY);
+                                FILTERED, REJECTION_BUCKET_BOUNDARY);
     } else if (!long_article) {
       UMA_HISTOGRAM_ENUMERATION("DomDistiller.DistillabilityRejection",
                                 TOO_SHORT, REJECTION_BUCKET_BOUNDARY);
@@ -201,7 +201,7 @@ bool IsDistillablePageAdaboost(blink::WebDocument& doc,
     }
   }
 
-  if (blacklisted) {
+  if (filtered) {
     return false;
   }
   return distillable && long_article;
