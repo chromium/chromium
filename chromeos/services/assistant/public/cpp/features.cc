@@ -44,9 +44,6 @@ const base::Feature kAssistantWaitScheduling{"AssistantWaitScheduling",
 const base::Feature kEnableBetterAssistant{"EnableBetterAssistant",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableBloom{"EnableBloom",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kEnableAmbientAssistant{"EnableAmbientAssistant",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -93,10 +90,6 @@ bool IsBetterAssistantEnabled() {
 
 bool IsBetterOnboardingEnabled() {
   return base::FeatureList::IsEnabled(kAssistantBetterOnboarding);
-}
-
-bool IsBloomEnabled() {
-  return base::FeatureList::IsEnabled(kEnableBloom);
 }
 
 bool IsConversationStartersV2Enabled() {

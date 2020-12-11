@@ -5125,10 +5125,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          chromeos::assistant::features::kEnableMediaSessionIntegration)},
 
-    {"enable-bloom", flag_descriptions::kEnableBloomName,
-     flag_descriptions::kEnableBloomDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::assistant::features::kEnableBloom)},
-
     {"enable-quick-answers", flag_descriptions::kEnableQuickAnswersName,
      flag_descriptions::kEnableQuickAnswersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswers)},
