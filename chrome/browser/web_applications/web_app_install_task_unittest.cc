@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -335,9 +336,9 @@ class WebAppInstallTaskTest : public WebAppTest {
   std::unique_ptr<InstallFinalizer> install_finalizer_;
 
   // Owned by icon_manager_:
-  TestFileUtils* file_utils_ = nullptr;
+  CheckedPtr<TestFileUtils> file_utils_ = nullptr;
   // Owned by install_task_:
-  TestDataRetriever* data_retriever_ = nullptr;
+  CheckedPtr<TestDataRetriever> data_retriever_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ArcAppTest arc_test_;
@@ -348,7 +349,7 @@ class WebAppInstallTaskTest : public WebAppTest {
  private:
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  TestInstallFinalizer* test_install_finalizer_ = nullptr;
+  CheckedPtr<TestInstallFinalizer> test_install_finalizer_ = nullptr;
 };
 
 class WebAppInstallTaskWithRunOnOsLoginTest : public WebAppInstallTaskTest {

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -361,7 +362,7 @@ class SystemWebAppManagerTest : public WebAppTest {
   std::unique_ptr<TestPendingAppManagerImpl> test_pending_app_manager_impl_;
   std::unique_ptr<TestSystemWebAppManager> test_system_web_app_manager_;
   std::unique_ptr<TestWebAppUiManager> test_ui_manager_;
-  TestWebAppUrlLoader* url_loader_ = nullptr;
+  CheckedPtr<TestWebAppUrlLoader> url_loader_ = nullptr;
   std::unique_ptr<TestDataRetrieverFactory> test_data_retriever_factory_;
 
 };

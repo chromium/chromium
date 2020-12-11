@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/predictors/navigation_id.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
@@ -79,8 +80,8 @@ class LoadingPredictorTabHelper
   bool has_local_preconnect_predictions_for_current_navigation_ = false;
 
   // The optimization guide decider to consult for remote predictions.
-  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_ =
-      nullptr;
+  CheckedPtr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_ = nullptr;
 
   // The optimization guide prediction for the current navigation. If set, this
   // will be cleared on |DocumentOnLoadCompletedInMainFrame|.

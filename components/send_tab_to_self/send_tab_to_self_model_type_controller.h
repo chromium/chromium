@@ -6,6 +6,7 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_TYPE_CONTROLLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_service_observer.h"
 
@@ -41,7 +42,7 @@ class SendTabToSelfModelTypeController : public syncer::ModelTypeController,
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
-  syncer::SyncService* const sync_service_;
+  const CheckedPtr<syncer::SyncService> sync_service_;
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfModelTypeController);
 };

@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
@@ -184,7 +185,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
     size_t errors_expected_;
     bool waiting_;
 
-    ErrorConsole* error_console_;
+    CheckedPtr<ErrorConsole> error_console_;
 
     DISALLOW_COPY_AND_ASSIGN(ErrorObserver);
   };
@@ -277,7 +278,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
   GURL test_url_;
 
   // Weak reference to the ErrorConsole.
-  ErrorConsole* error_console_;
+  CheckedPtr<ErrorConsole> error_console_;
 };
 
 // Test to ensure that we are successfully reporting manifest errors as an

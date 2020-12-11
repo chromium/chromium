@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/disk_cache.h"
@@ -146,7 +147,7 @@ class SimpleEntryOperation {
   const int length_;
 
   // Used in get available range operations.
-  int64_t* const out_start_;
+  const CheckedPtr<int64_t> out_start_;
 
   const EntryOperationType type_;
   // Used in the "open or create" operation.

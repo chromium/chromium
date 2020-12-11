@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "extensions/browser/user_script_loader.h"
 
@@ -99,7 +100,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data,
   // Caches callbacks and resumes them when all the scripts are loaded.
   std::vector<base::OnceClosure> pending_scripts_loading_callbacks_;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(WebViewContentScriptManager);
 };

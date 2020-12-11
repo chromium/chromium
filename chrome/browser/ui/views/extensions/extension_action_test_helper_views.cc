@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 
 #include <stddef.h>
@@ -39,7 +40,7 @@ class ExtensionActionTestHelperViews::TestToolbarActionsBarHelper
             new BrowserActionsContainer(browser, main_bar, this, true)) {
     container_parent_.SetSize(gfx::Size(1000, 1000));
     container_parent_.Layout();
-    container_parent_.AddChildView(browser_actions_container_);
+    container_parent_.AddChildView(browser_actions_container_.get());
   }
   TestToolbarActionsBarHelper(const TestToolbarActionsBarHelper&) = delete;
   TestToolbarActionsBarHelper& operator=(const TestToolbarActionsBarHelper&) =
@@ -64,7 +65,7 @@ class ExtensionActionTestHelperViews::TestToolbarActionsBarHelper
 
  private:
   // The created BrowserActionsContainer. Owned by |container_parent_|.
-  BrowserActionsContainer* const browser_actions_container_;
+  const CheckedPtr<BrowserActionsContainer> browser_actions_container_;
 
   // The parent of the BrowserActionsContainer, which directly owns the
   // container as part of the views hierarchy.

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -157,7 +158,7 @@ class LoadingPredictor : public KeyedService,
   }
 
   LoadingPredictorConfig config_;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::unique_ptr<ResourcePrefetchPredictor> resource_prefetch_predictor_;
   std::unique_ptr<LoadingStatsCollector> stats_collector_;
   std::unique_ptr<LoadingDataCollector> loading_data_collector_;

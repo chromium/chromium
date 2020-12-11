@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -62,7 +63,7 @@ class UninstallDialog {
     UninstallDialog* uninstall_dialog() const { return uninstall_dialog_; }
 
    private:
-    UninstallDialog* uninstall_dialog_;
+    CheckedPtr<UninstallDialog> uninstall_dialog_;
 
     DISALLOW_COPY_AND_ASSIGN(UiBase);
   };
@@ -98,7 +99,7 @@ class UninstallDialog {
   // Callback invoked when the icon is loaded.
   void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   const apps::mojom::AppType app_type_;
   const std::string app_id_;
   const std::string app_name_;

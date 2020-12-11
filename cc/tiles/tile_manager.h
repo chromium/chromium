@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
 #include "cc/base/unique_notifier.h"
@@ -438,18 +439,18 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void ScheduleCheckRasterFinishedQueries();
   void CheckRasterFinishedQueries();
 
-  TileManagerClient* client_;
-  base::SequencedTaskRunner* task_runner_;
-  ResourcePool* resource_pool_;
+  CheckedPtr<TileManagerClient> client_;
+  CheckedPtr<base::SequencedTaskRunner> task_runner_;
+  CheckedPtr<ResourcePool> resource_pool_;
   std::unique_ptr<TileTaskManager> tile_task_manager_;
-  RasterBufferProvider* raster_buffer_provider_;
+  CheckedPtr<RasterBufferProvider> raster_buffer_provider_;
   GlobalStateThatImpactsTilePriority global_state_;
   size_t scheduled_raster_task_limit_;
 
   const TileManagerSettings tile_manager_settings_;
   bool use_gpu_rasterization_;
   bool use_oop_rasterization_;
-  RasterQueryQueue* pending_raster_queries_ = nullptr;
+  CheckedPtr<RasterQueryQueue> pending_raster_queries_ = nullptr;
 
   std::unordered_map<Tile::Id, Tile*> tiles_;
 

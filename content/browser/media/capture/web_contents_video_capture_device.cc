@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -208,7 +209,7 @@ class WebContentsVideoCaptureDevice::FrameTracker final
   // Owned by FrameSinkVideoCaptureDevice. This will be valid for the life of
   // FrameTracker because the FrameTracker deleter task will be posted to the UI
   // thread before the MouseCursorOverlayController deleter task.
-  MouseCursorOverlayController* const cursor_controller_;
+  const CheckedPtr<MouseCursorOverlayController> cursor_controller_;
 
   viz::FrameSinkId target_frame_sink_id_;
   gfx::NativeView target_native_view_ = gfx::NativeView();

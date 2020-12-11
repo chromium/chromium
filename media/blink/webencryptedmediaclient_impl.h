@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/blink/key_system_config_selector.h"
@@ -72,7 +73,7 @@ class MEDIA_BLINK_EXPORT WebEncryptedMediaClientImpl
   // Reporter singletons.
   std::unordered_map<std::string, std::unique_ptr<Reporter>> reporters_;
 
-  CdmFactory* cdm_factory_;
+  CheckedPtr<CdmFactory> cdm_factory_;
   KeySystemConfigSelector key_system_config_selector_;
   base::WeakPtrFactory<WebEncryptedMediaClientImpl> weak_factory_{this};
 };

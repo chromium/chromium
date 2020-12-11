@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -124,7 +125,7 @@ class PageRenovatorBrowserTest : public content::ContentBrowserTest {
 
  protected:
   net::EmbeddedTestServer test_server_;
-  content::RenderFrameHost* render_frame_;
+  CheckedPtr<content::RenderFrameHost> render_frame_;
   std::unique_ptr<PageRenovationLoader> page_renovation_loader_;
   std::unique_ptr<PageRenovator> page_renovator_;
 

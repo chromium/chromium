@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_COMMANDS_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/public/browser/page_navigator.h"
@@ -64,7 +65,7 @@ class DownloadCommands {
       DownloadCommandsTest,
       GetLearnMoreURLForInterruptedDownload_ContainsContext);
 
-  DownloadUIModel* model_;
+  CheckedPtr<DownloadUIModel> model_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

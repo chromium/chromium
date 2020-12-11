@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/root_view.h"
 
@@ -86,7 +87,7 @@ class BrowserRootView : public views::internal::RootView {
     DropInfo();
     ~DropInfo();
 
-    DropTarget* target = nullptr;
+    CheckedPtr<DropTarget> target = nullptr;
 
     // Where to drop the url.
     base::Optional<DropIndex> index;
@@ -122,7 +123,7 @@ class BrowserRootView : public views::internal::RootView {
   bool GetPasteAndGoURL(const ui::OSExchangeData& data, GURL* url);
 
   // The BrowserView.
-  BrowserView* browser_view_ = nullptr;
+  CheckedPtr<BrowserView> browser_view_ = nullptr;
 
   // Used to calculate partial offsets in scrolls that occur for a smooth
   // scroll device.

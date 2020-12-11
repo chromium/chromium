@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "base/memory/checked_ptr.h"
 
 #include <memory>
 
@@ -44,7 +45,7 @@ class ContentScriptLoadWaiter : public UserScriptLoader::Observer {
  public:
   ContentScriptLoadWaiter(UserScriptLoader* loader, const HostID& host_id)
       : host_id_(host_id), loader_(loader), scoped_observer_(this) {
-    scoped_observer_.Add(loader_);
+    scoped_observer_.Add(loader_.get());
   }
   ~ContentScriptLoadWaiter() = default;
 
@@ -62,7 +63,7 @@ class ContentScriptLoadWaiter : public UserScriptLoader::Observer {
   void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override {}
 
   const HostID host_id_;
-  UserScriptLoader* const loader_;
+  const CheckedPtr<UserScriptLoader> loader_;
   base::RunLoop run_loop_;
   ScopedObserver<UserScriptLoader, UserScriptLoader::Observer> scoped_observer_;
 
@@ -173,7 +174,7 @@ bool ChromeTestExtensionLoader::WaitForExtensionReady(
 
   content::BrowserContext* context_to_use =
       IncognitoInfo::IsSplitMode(&extension)
-          ? browser_context_
+          ? browser_context_.get()
           : Profile::FromBrowserContext(browser_context_)->GetOriginalProfile();
   ExtensionBackgroundPageWaiter(context_to_use, extension).Wait();
 

@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/install/extension_install_ui.h"
 
 namespace content {
@@ -38,7 +39,7 @@ class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
       const SkBitmap& icon);
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Whether or not to show the default UI after completing the installation.
   bool skip_post_install_ui_;

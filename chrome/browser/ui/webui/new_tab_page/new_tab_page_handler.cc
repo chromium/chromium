@@ -387,8 +387,8 @@ NewTabPageHandler::NewTabPageHandler(
   instant_service_->UpdateNtpTheme();
   OmniboxTabHelper::CreateForWebContents(web_contents);
   OmniboxTabHelper::FromWebContents(web_contents_)->AddObserver(this);
-  promo_service_observer_.Add(promo_service_);
-  one_google_bar_service_observer_.Add(one_google_bar_service_);
+  promo_service_observer_.Add(promo_service_.get());
+  one_google_bar_service_observer_.Add(one_google_bar_service_.get());
   logger_->SetModulesVisible(
       profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
 }

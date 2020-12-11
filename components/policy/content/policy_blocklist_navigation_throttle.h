@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -43,9 +44,9 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
                                  ThrottleCheckResult cancel_result);
   SafeSitesNavigationThrottle safe_sites_navigation_throttle_;
 
-  PolicyBlocklistService* blocklist_service_;
+  CheckedPtr<PolicyBlocklistService> blocklist_service_;
 
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 };
 
 #endif  // COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_

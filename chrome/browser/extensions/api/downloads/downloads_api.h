@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_danger_prompt.h"
@@ -367,7 +368,7 @@ class ExtensionDownloadsEventRouter
   // Used for testing.
   struct DownloadsNotificationSource {
     std::string event_name;
-    Profile* profile;
+    CheckedPtr<Profile> profile;
   };
 
   void CheckForHistoryFilesRemoval();
@@ -384,7 +385,7 @@ class ExtensionDownloadsEventRouter
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   download::AllDownloadItemNotifier notifier_;
   std::set<const extensions::Extension*> shelf_disabling_extensions_;
 

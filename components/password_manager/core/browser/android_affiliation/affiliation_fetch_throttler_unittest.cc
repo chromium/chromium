@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
@@ -52,7 +53,7 @@ class MockAffiliationFetchThrottlerDelegate
   }
 
  private:
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
   bool emulated_return_value_;
   size_t can_send_count_;
   base::TimeTicks last_can_send_time_;

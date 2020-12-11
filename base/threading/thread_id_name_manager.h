@@ -12,6 +12,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
@@ -79,7 +80,7 @@ class BASE_EXPORT ThreadIdNameManager {
   ThreadHandleToInternedNameMap thread_handle_to_interned_name_;
 
   // Treat the main process specially as there is no PlatformThreadHandle.
-  std::string* main_process_name_;
+  CheckedPtr<std::string> main_process_name_;
   PlatformThreadId main_process_id_;
 
   // There's no point using a base::ObserverList behind a lock, so we just use

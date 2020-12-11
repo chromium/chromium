@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_AUTO_DISPLAY_SERVICE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_pref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
@@ -41,7 +42,7 @@ class IntentPickerAutoDisplayService : public KeyedService {
                                 IntentPickerAutoDisplayPref::Platform platform);
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(IntentPickerAutoDisplayService);
 };

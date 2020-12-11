@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -65,7 +66,7 @@ class RenderMessageCompletionCallback {
 
  private:
   scoped_refptr<RenderFrameMessageFilter> filter_;
-  IPC::Message* reply_msg_;
+  CheckedPtr<IPC::Message> reply_msg_;
 };
 
 }  // namespace

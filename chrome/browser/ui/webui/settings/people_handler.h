@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/timer/timer.h"
@@ -210,7 +211,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void InitializeSyncBlocker();
 
   // Weak pointer.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

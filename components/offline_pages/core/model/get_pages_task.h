@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/client_id.h"
 #include "components/offline_pages/core/offline_page_item.h"
@@ -50,7 +51,7 @@ class GetPagesTask : public Task {
 
   void CompleteWithResult(ReadResult result);
 
-  OfflinePageMetadataStore* store_;
+  CheckedPtr<OfflinePageMetadataStore> store_;
   PageCriteria criteria_;
   MultipleOfflinePageItemCallback callback_;
 

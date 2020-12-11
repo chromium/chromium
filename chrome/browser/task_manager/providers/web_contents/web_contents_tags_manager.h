@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
 
 namespace base {
@@ -53,7 +54,7 @@ class WebContentsTagsManager {
   ~WebContentsTagsManager();
 
   // The provider that's currently observing the creation of WebContents.
-  WebContentsTaskProvider* provider_;
+  CheckedPtr<WebContentsTaskProvider> provider_;
 
   // A set of all the WebContentsTags seen so far.
   std::vector<WebContentsTag*> tracked_tags_;

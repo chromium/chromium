@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/eme_constants.h"
 #include "media/blink/media_blink_export.h"
@@ -109,8 +110,8 @@ class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
       const blink::WebMediaKeySystemMediaCapability::EncryptionScheme
           encryption_scheme);
 
-  KeySystems* const key_systems_;
-  MediaPermission* media_permission_;
+  const CheckedPtr<KeySystems> key_systems_;
+  CheckedPtr<MediaPermission> media_permission_;
 
   // A callback used to check whether a media type is supported. Only set in
   // tests. If null the implementation will check the support using MimeUtil.

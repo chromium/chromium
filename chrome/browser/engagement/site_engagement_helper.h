@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "content/public/browser/media_player_id.h"
@@ -76,7 +77,7 @@ class SiteEngagementService::Helper
     virtual void TrackingStopped() {}
 
    private:
-    SiteEngagementService::Helper* helper_;
+    CheckedPtr<SiteEngagementService::Helper> helper_;
     std::unique_ptr<base::OneShotTimer> pause_timer_;
 
     DISALLOW_COPY_AND_ASSIGN(PeriodicTracker);
@@ -167,7 +168,7 @@ class SiteEngagementService::Helper
 
   InputTracker input_tracker_;
   MediaTracker media_tracker_;
-  SiteEngagementService* service_;
+  CheckedPtr<SiteEngagementService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(Helper);
   WEB_CONTENTS_USER_DATA_KEY_DECL();

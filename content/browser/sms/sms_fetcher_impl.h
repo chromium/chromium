@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
@@ -61,11 +62,11 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
 
   // |context_| is safe because all instances of SmsFetcherImpl are owned by
   // the BrowserContext itself.
-  BrowserContext* context_;
+  CheckedPtr<BrowserContext> context_;
 
   // |provider_| is safe because all instances of SmsProvider are owned
   // by the BrowserMainLoop, which outlive instances of this class.
-  SmsProvider* const provider_;
+  const CheckedPtr<SmsProvider> provider_;
 
   SmsQueue subscribers_;
 

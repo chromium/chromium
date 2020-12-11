@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/pickle.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
@@ -385,7 +386,7 @@ class TextfieldFocuser : public views::View {
 
  private:
   bool consume_ = true;
-  views::Textfield* textfield_;
+  CheckedPtr<views::Textfield> textfield_;
 
   DISALLOW_COPY_AND_ASSIGN(TextfieldFocuser);
 };
@@ -468,7 +469,7 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
     input_method_->SetDelegate(
         test::WidgetTest::GetInputMethodDelegateForWidget(widget_));
     View* container = widget_->SetContentsView(std::make_unique<View>());
-    container->AddChildView(textfield_);
+    container->AddChildView(textfield_.get());
     textfield_->SetBoundsRect(params.bounds);
     textfield_->SetID(1);
     test_api_ = std::make_unique<TextfieldTestApi>(textfield_);
@@ -802,17 +803,17 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
   }
 
   // We need widget to populate wrapper class.
-  Widget* widget_ = nullptr;
+  CheckedPtr<Widget> widget_ = nullptr;
 
-  TestTextfield* textfield_ = nullptr;
+  CheckedPtr<TestTextfield> textfield_ = nullptr;
   std::unique_ptr<TextfieldTestApi> test_api_;
-  TextfieldModel* model_ = nullptr;
+  CheckedPtr<TextfieldModel> model_ = nullptr;
 
   // The string from Controller::ContentsChanged callback.
   base::string16 last_contents_;
 
   // For testing input method related behaviors.
-  MockInputMethod* input_method_ = nullptr;
+  CheckedPtr<MockInputMethod> input_method_ = nullptr;
 
   // Indicates how many times OnBeforeUserAction() is called.
   int on_before_user_action_ = 0;

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 
 class Profile;
@@ -45,7 +46,7 @@ class ShowPermissionsDialogHelper {
 
   std::unique_ptr<ExtensionInstallPrompt> prompt_;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   base::Closure on_complete_;
 

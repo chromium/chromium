@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 
 #include "base/containers/contains.h"
 #include "base/macros.h"
@@ -272,7 +273,7 @@ class TestView : public View {
   std::map<ui::Accelerator, int> accelerator_count_map_;
 
   // Native theme.
-  const ui::NativeTheme* native_theme_ = nullptr;
+  CheckedPtr<const ui::NativeTheme> native_theme_ = nullptr;
 
   // Accessibility events
   ax::mojom::Event last_a11y_event_;
@@ -561,7 +562,7 @@ class ScopedTestPaintWidget {
   Widget* operator->() { return widget_; }
 
  private:
-  Widget* widget_;
+  CheckedPtr<Widget> widget_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedTestPaintWidget);
 };
@@ -2199,7 +2200,7 @@ class TestViewWidget {
     params.bounds = gfx::Rect(0, 0, 100, 100);
     widget_.Init(std::move(params));
     View* root = widget_.GetRootView();
-    root->AddChildView(view_);
+    root->AddChildView(view_.get());
     if (show_after_init)
       widget_.Show();
 
@@ -2210,7 +2211,7 @@ class TestViewWidget {
   Widget* widget() { return &widget_; }
 
  private:
-  TestView* view_;
+  CheckedPtr<TestView> view_;
   Widget widget_;
 
   DISALLOW_COPY_AND_ASSIGN(TestViewWidget);
@@ -2441,7 +2442,7 @@ class ToplevelWidgetObserverView : public View {
   Widget* toplevel() { return toplevel_; }
 
  private:
-  Widget* toplevel_ = nullptr;
+  CheckedPtr<Widget> toplevel_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ToplevelWidgetObserverView);
 };
@@ -3863,7 +3864,7 @@ class TestingLayerViewObserver : public ViewObserver {
   }
 
   gfx::Rect last_layer_bounds_;
-  View* view_;
+  CheckedPtr<View> view_;
 
   DISALLOW_COPY_AND_ASSIGN(TestingLayerViewObserver);
 };
@@ -3907,7 +3908,7 @@ class ViewLayerTest : public ViewsTestBase {
   void SchedulePaintOnParent(View* view) { view->SchedulePaintOnParent(); }
 
  private:
-  Widget* widget_ = nullptr;
+  CheckedPtr<Widget> widget_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -5117,7 +5118,7 @@ class TestEventHandler : public ui::EventHandler {
     had_mouse_event_ = true;
   }
 
-  TestView* view_;
+  CheckedPtr<TestView> view_;
   bool had_mouse_event_;
 };
 
@@ -5167,7 +5168,7 @@ class WidgetWithCustomTheme : public Widget {
   const ui::NativeTheme* GetNativeTheme() const override { return theme_; }
 
  private:
-  ui::NativeTheme* theme_;
+  CheckedPtr<ui::NativeTheme> theme_;
 
   DISALLOW_COPY_AND_ASSIGN(WidgetWithCustomTheme);
 };
@@ -5662,14 +5663,14 @@ class ViewObserverTest : public ViewTest, public ViewObserver {
   int child_view_added_times_ = 0;
   int child_view_removed_times_ = 0;
 
-  View* child_view_added_parent_ = nullptr;
-  View* child_view_added_ = nullptr;
-  View* child_view_removed_ = nullptr;
-  View* child_view_removed_parent_ = nullptr;
-  View* view_visibility_changed_ = nullptr;
-  View* view_visibility_changed_starting_ = nullptr;
-  View* view_bounds_changed_ = nullptr;
-  View* view_reordered_ = nullptr;
+  CheckedPtr<View> child_view_added_parent_ = nullptr;
+  CheckedPtr<View> child_view_added_ = nullptr;
+  CheckedPtr<View> child_view_removed_ = nullptr;
+  CheckedPtr<View> child_view_removed_parent_ = nullptr;
+  CheckedPtr<View> view_visibility_changed_ = nullptr;
+  CheckedPtr<View> view_visibility_changed_starting_ = nullptr;
+  CheckedPtr<View> view_bounds_changed_ = nullptr;
+  CheckedPtr<View> view_reordered_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ViewObserverTest);
 };

@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -186,7 +187,8 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     // refactored away and this isn't necessary.
     // https://crbug.com/1012918
     base::WeakPtr<IndexedDBBackingStore> backing_store_;
-    TransactionalLevelDBFactory* const transactional_leveldb_factory_;
+    const CheckedPtr<TransactionalLevelDBFactory>
+        transactional_leveldb_factory_;
     scoped_refptr<TransactionalLevelDBTransaction> transaction_;
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
         external_object_change_map_;
@@ -609,7 +611,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   SEQUENCE_CHECKER(idb_sequence_checker_);
 
   Mode backing_store_mode_;
-  TransactionalLevelDBFactory* const transactional_leveldb_factory_;
+  const CheckedPtr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
   const url::Origin origin_;
   base::FilePath blob_path_;
 
@@ -618,8 +620,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // relevant subsystems.
   // Raw pointers are safe because the bindings are owned by
   // IndexedDBContextImpl.
-  storage::mojom::BlobStorageContext* blob_storage_context_;
-  storage::mojom::NativeFileSystemContext* native_file_system_context_;
+  CheckedPtr<storage::mojom::BlobStorageContext> blob_storage_context_;
+  CheckedPtr<storage::mojom::NativeFileSystemContext>
+      native_file_system_context_;
 
   // Filesystem proxy to use for file operations.  nullptr if in memory.
   std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;

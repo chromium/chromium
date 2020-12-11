@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observer.h"
 #include "ui/aura/client/aura_constants.h"
@@ -127,7 +128,7 @@ class ShadowController::Impl :
   // The shadow's bounds are initialized and it is added to the window's layer.
   void CreateShadowForWindow(aura::Window* window);
 
-  aura::Env* const env_;
+  const CheckedPtr<aura::Env> env_;
   ScopedObserver<aura::Window, aura::WindowObserver> observer_manager_;
 
   std::unique_ptr<ShadowControllerDelegate> delegate_;

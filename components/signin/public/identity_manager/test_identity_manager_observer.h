@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -90,7 +91,7 @@ class TestIdentityManagerObserver : IdentityManager::Observer {
   void StartBatchOfRefreshTokenStateChanges();
   void OnEndBatchOfRefreshTokenStateChanges() override;
 
-  IdentityManager* identity_manager_;
+  CheckedPtr<IdentityManager> identity_manager_;
 
   base::OnceClosure on_primary_account_set_callback_;
   CoreAccountInfo primary_account_from_set_callback_;

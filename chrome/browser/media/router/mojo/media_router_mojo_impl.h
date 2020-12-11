@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -439,7 +440,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   // Receivers for Mojo remotes to |this| held by media route providers.
   mojo::ReceiverSet<mojom::MediaRouter> receivers_;
 
-  content::BrowserContext* const context_;
+  const CheckedPtr<content::BrowserContext> context_;
 
   DesktopMediaPickerController desktop_picker_;
 

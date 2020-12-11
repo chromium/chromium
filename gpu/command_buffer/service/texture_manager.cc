@@ -15,6 +15,7 @@
 #include "base/bits.h"
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -413,7 +414,7 @@ class ScopedResetPixelUnpackBuffer{
   }
 
  private:
-    Buffer* buffer_;
+  CheckedPtr<Buffer> buffer_;
 };
 
 class ScopedMemTrackerChange {
@@ -434,8 +435,8 @@ class ScopedMemTrackerChange {
   }
 
  private:
-  Texture* texture_;
-  MemoryTypeTracker* previous_tracker_;
+  CheckedPtr<Texture> texture_;
+  CheckedPtr<MemoryTypeTracker> previous_tracker_;
   uint32_t previous_size_;
 };
 
@@ -3485,7 +3486,7 @@ void TextureManager::DoTexSubImageRowByRowWorkaround(
       for (GLsizei row = 0; row < args.height; ++row) {
         GLsizei byte_offset = image_byte_offset + row * row_bytes;
         const GLubyte* row_pixels =
-            reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset;
+            reinterpret_cast<const GLubyte*>(args.pixels.get()) + byte_offset;
         glTexSubImage3D(args.target, args.level, args.xoffset,
                         row + args.yoffset, image + args.zoffset, args.width, 1,
                         1, format, args.type, row_pixels);
@@ -3495,7 +3496,7 @@ void TextureManager::DoTexSubImageRowByRowWorkaround(
     for (GLsizei row = 0; row < args.height; ++row) {
       GLsizei byte_offset = row * row_bytes;
       const GLubyte* row_pixels =
-          reinterpret_cast<const GLubyte*>(args.pixels) + byte_offset;
+          reinterpret_cast<const GLubyte*>(args.pixels.get()) + byte_offset;
       glTexSubImage2D(args.target, args.level, args.xoffset, row + args.yoffset,
                       args.width, 1, format, args.type, row_pixels);
     }
@@ -3528,7 +3529,8 @@ void TextureManager::DoTexSubImageLayerByLayerWorkaround(
   // process the texture layer by layer
   GLsizei image_height = unpack_params.image_height;
   GLsizei image_bytes = row_bytes * image_height;
-  const GLubyte* image_pixels = reinterpret_cast<const GLubyte*>(args.pixels);
+  const GLubyte* image_pixels =
+      reinterpret_cast<const GLubyte*>(args.pixels.get());
   for (GLsizei image = 0; image < args.depth - 1; ++image) {
     glTexSubImage3D(args.target, args.level, args.xoffset, args.yoffset,
                     image + args.zoffset, args.width, args.height, 1, format,

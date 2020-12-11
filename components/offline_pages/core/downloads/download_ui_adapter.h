@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
@@ -185,13 +186,13 @@ class DownloadUIAdapter : public OfflineContentProvider,
   void OpenItemByGuid(const std::string& guid);
 
   // A valid offline content aggregator, supplied at construction.
-  OfflineContentAggregator* aggregator_;
+  CheckedPtr<OfflineContentAggregator> aggregator_;
 
   // Always valid, this class is a member of the model.
-  OfflinePageModel* model_;
+  CheckedPtr<OfflinePageModel> model_;
 
   // Always valid, a service.
-  RequestCoordinator* request_coordinator_;
+  CheckedPtr<RequestCoordinator> request_coordinator_;
 
   // May be null if thumbnails are not required.
   std::unique_ptr<VisualsDecoder> visuals_decoder_;

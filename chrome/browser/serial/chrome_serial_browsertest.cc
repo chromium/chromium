@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
@@ -50,7 +51,7 @@ class SerialTest : public InProcessBrowserTest {
 
  private:
   device::FakeSerialPortManager port_manager_;
-  SerialChooserContext* context_;
+  CheckedPtr<SerialChooserContext> context_;
 };
 
 // TODO(crbug/1069695): Flaky on linux-chromeos-chrome.

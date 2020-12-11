@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -80,14 +81,14 @@ class ManagedValueStoreCache : public ValueStoreCache,
 
   // The profile that owns the extension system being used. This is used to
   // get the PolicyService, the EventRouter and the ExtensionService.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // The policy domain. This is used for both updating the schema registry with
   // the list of extensions and for observing the policy updates.
   policy::PolicyDomain policy_domain_;
 
   // The |profile_|'s PolicyService.
-  policy::PolicyService* policy_service_;
+  CheckedPtr<policy::PolicyService> policy_service_;
 
   // Observes extension loading and unloading, and keeps the Profile's
   // PolicyService aware of the current list of extensions.

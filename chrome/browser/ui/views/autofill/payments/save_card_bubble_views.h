@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_view.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
@@ -63,7 +64,7 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
     void OnEnableSync(const AccountInfo& account) override;
 
    private:
-    SaveCardBubbleController* controller_;
+    CheckedPtr<SaveCardBubbleController> controller_;
 
     signin_metrics::AccessPoint access_point_;
 
@@ -95,9 +96,9 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
  private:
   friend class SaveCardBubbleViewsFullFormBrowserTest;
 
-  views::View* footnote_view_ = nullptr;
+  CheckedPtr<views::View> footnote_view_ = nullptr;
 
-  SaveCardBubbleController* controller_;  // Weak reference.
+  CheckedPtr<SaveCardBubbleController> controller_;  // Weak reference.
 
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;

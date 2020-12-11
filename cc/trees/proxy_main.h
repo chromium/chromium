@@ -5,6 +5,7 @@
 #ifndef CC_TREES_PROXY_MAIN_H_
 #define CC_TREES_PROXY_MAIN_H_
 
+#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_host.h"
@@ -118,9 +119,9 @@ class CC_EXPORT ProxyMain : public Proxy {
   void InitializeOnImplThread(CompletionEvent* completion_event);
   void DestroyProxyImplOnImplThread(CompletionEvent* completion_event);
 
-  LayerTreeHost* layer_tree_host_;
+  CheckedPtr<LayerTreeHost> layer_tree_host_;
 
-  TaskRunnerProvider* task_runner_provider_;
+  CheckedPtr<TaskRunnerProvider> task_runner_provider_;
 
   const int layer_tree_host_id_;
 

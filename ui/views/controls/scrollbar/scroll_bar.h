@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/animation/scroll_animator.h"
@@ -247,9 +248,9 @@ class VIEWS_EXPORT ScrollBar : public View,
 
   const bool is_horiz_;
 
-  BaseScrollBarThumb* thumb_ = nullptr;
+  CheckedPtr<BaseScrollBarThumb> thumb_ = nullptr;
 
-  ScrollBarController* controller_ = nullptr;
+  CheckedPtr<ScrollBarController> controller_ = nullptr;
 
   int max_pos_ = 0;
 

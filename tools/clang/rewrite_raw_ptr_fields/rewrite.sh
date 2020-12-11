@@ -51,6 +51,7 @@ time ninja -C $OUT_DIR $GEN_H_TARGETS
 # to ignore. These fields would likely lead to compiler errors if rewritten.
 echo "*** Generating the ignore list ***"
 time tools/clang/scripts/run_tool.py \
+    --target_os=win \
     --tool rewrite_raw_ptr_fields \
     --tool-arg=--exclude-paths=$REWRITER_SRC_DIR/manual-paths-to-ignore.txt \
     --generate-compdb \
@@ -66,6 +67,7 @@ cat ~/scratch/automated-fields-to-ignore.txt \
 # Main rewrite.
 echo "*** Running the main rewrite phase ***"
 time tools/clang/scripts/run_tool.py \
+    --target_os=win \
     --tool rewrite_raw_ptr_fields \
     --tool-arg=--exclude-fields=$HOME/scratch/combined-fields-to-ignore.txt \
     --tool-arg=--exclude-paths=$REWRITER_SRC_DIR/manual-paths-to-ignore.txt \

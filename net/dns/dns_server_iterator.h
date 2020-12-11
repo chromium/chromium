@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/secure_dns_mode.h"
 
@@ -58,11 +59,11 @@ class NET_EXPORT_PRIVATE DnsServerIterator {
   // Servers past their failure limit will only be used once all remaining
   // servers are also past their failure limit.
   int max_failures_;
-  const ResolveContext* resolve_context_;
+  CheckedPtr<const ResolveContext> resolve_context_;
   // The first server index to try when GetNextAttemptIndex() is called.
   size_t next_index_;
 
-  const DnsSession* session_;
+  CheckedPtr<const DnsSession> session_;
 };
 
 // Iterator used to get the next server to try for a DoH transaction.

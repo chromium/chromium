@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -58,10 +59,10 @@ class HostCachePersistenceManager : public net::HostCache::PersistenceDelegate {
   // On initial prefs read, passes the serialized entries to the HostCache.
   void ReadFromDisk();
 
-  net::HostCache* const cache_;
+  const CheckedPtr<net::HostCache> cache_;
 
   PrefChangeRegistrar registrar_;
-  PrefService* const pref_service_;
+  const CheckedPtr<PrefService> pref_service_;
   const std::string pref_name_;
   bool writing_pref_;
 

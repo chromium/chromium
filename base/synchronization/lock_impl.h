@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -180,7 +181,7 @@ class SCOPED_LOCKABLE BasicAutoLockMaybe {
   }
 
  private:
-  LockType* const lock_;
+  const CheckedPtr<LockType> lock_;
   DISALLOW_COPY_AND_ASSIGN(BasicAutoLockMaybe);
 };
 
@@ -210,7 +211,7 @@ class SCOPED_LOCKABLE BasicReleasableAutoLock {
   }
 
  private:
-  LockType* lock_;
+  CheckedPtr<LockType> lock_;
   DISALLOW_COPY_AND_ASSIGN(BasicReleasableAutoLock);
 };
 

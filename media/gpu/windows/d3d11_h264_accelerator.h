@@ -12,6 +12,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "media/base/video_frame.h"
 #include "media/base/win/mf_helpers.h"
@@ -86,8 +87,8 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
   // Record a failure to DVLOG and |media_log_|.
   void RecordFailure(const std::string& reason, HRESULT hr = S_OK) const;
 
-  D3D11VideoDecoderClient* client_;
-  MediaLog* media_log_ = nullptr;
+  CheckedPtr<D3D11VideoDecoderClient> client_;
+  CheckedPtr<MediaLog> media_log_ = nullptr;
 
   ComD3D11VideoDecoder video_decoder_;
   ComD3D11VideoDevice video_device_;
@@ -106,7 +107,7 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
   std::vector<DXVA_Slice_H264_Short> slice_info_;
   size_t current_offset_ = 0;
   size_t bitstream_buffer_size_ = 0;
-  uint8_t* bitstream_buffer_bytes_ = nullptr;
+  CheckedPtr<uint8_t> bitstream_buffer_bytes_ = nullptr;
 
   // This contains the subsamples (clear and encrypted) of the slice data
   // in D3D11_VIDEO_DECODER_BUFFER_BITSTREAM buffer.

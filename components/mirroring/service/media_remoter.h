@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "media/cast/cast_config.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/remoting_common.mojom.h"
@@ -108,15 +109,16 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   // session and fallback to mirroring.
   void OnRemotingDataStreamError();
 
-  Client* const client_;  // Outlives this class.
+  const CheckedPtr<Client> client_;  // Outlives this class.
   const media::mojom::RemotingSinkMetadata sink_metadata_;
-  MessageDispatcher* const message_dispatcher_;  // Outlives this class.
+  const CheckedPtr<MessageDispatcher>
+      message_dispatcher_;  // Outlives this class.
   mojo::Receiver<media::mojom::Remoter> receiver_{this};
   mojo::Remote<media::mojom::RemotingSource> remoting_source_;
   scoped_refptr<media::cast::CastEnvironment> cast_environment_;
   std::unique_ptr<RemotingSender> audio_sender_;
   std::unique_ptr<RemotingSender> video_sender_;
-  media::cast::CastTransport* transport_;  // Outlives this class;
+  CheckedPtr<media::cast::CastTransport> transport_;  // Outlives this class;
   media::cast::FrameSenderConfig audio_config_;
   media::cast::FrameSenderConfig video_config_;
 

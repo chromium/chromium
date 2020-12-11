@@ -268,12 +268,12 @@ Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,
   params.disposition = disposition;
   params.url = url;
   params.window_action = NavigateParams::SHOW_WINDOW;
-  Navigate(&params);
+  browser = Navigate(&params);
 
   if (wait_for_navigation)
     observer.Wait();
 
-  return params.browser;
+  return browser;
 }
 
 namespace {

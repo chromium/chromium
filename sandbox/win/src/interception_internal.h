@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/sandbox_types.h"
 
@@ -31,7 +32,7 @@ struct FunctionInfo {
   size_t record_bytes;  // rounded to sizeof(size_t) bytes
   InterceptionType type;
   InterceptorId id;
-  const void* interceptor_address;
+  CheckedPtr<const void> interceptor_address;
   char function[1];  // placeholder for null terminated name
   // char interceptor[]           // followed by the interceptor function
 };
@@ -49,7 +50,7 @@ struct DllPatchInfo {
 // All interceptions:
 struct SharedMemory {
   int num_intercepted_dlls;
-  void* interceptor_base;
+  CheckedPtr<void> interceptor_base;
   DllPatchInfo dll_list[1];  // placeholder for the list of dlls
 };
 
@@ -62,7 +63,7 @@ struct ThunkData {
 struct DllInterceptionData {
   size_t data_bytes;
   size_t used_bytes;
-  void* base;
+  CheckedPtr<void> base;
   int num_thunks;
 #if defined(_WIN64)
   int dummy;  // Improve alignment.

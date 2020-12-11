@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -28,7 +29,7 @@ class TargetLanguageComboboxModel : public ui::ComboboxModel {
 
  private:
   const int default_index_;
-  TranslateBubbleModel* model_;
+  CheckedPtr<TranslateBubbleModel> model_;
 
   DISALLOW_COPY_AND_ASSIGN(TargetLanguageComboboxModel);
 };

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/strcat.h"
@@ -108,7 +109,7 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
   AudioFocusDelegate::AudioFocusResult sync_result_ =
       AudioFocusDelegate::AudioFocusResult::kSuccess;
 
-  content::MediaSessionImpl* media_session_;
+  CheckedPtr<content::MediaSessionImpl> media_session_;
   const bool async_mode_ = false;
 
   std::list<AudioFocusType> requests_;
@@ -136,7 +137,7 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
     mock_audio_focus_delegate_ = new NiceMock<MockAudioFocusDelegate>(
         media_session_, true /* async_mode */);
     media_session_->SetDelegateForTests(
-        base::WrapUnique(mock_audio_focus_delegate_));
+        base::WrapUnique(mock_audio_focus_delegate_.get()));
     ASSERT_TRUE(media_session_);
   }
 
@@ -265,7 +266,7 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
   void SetAudioFocusDelegateForTests(MockAudioFocusDelegate* delegate) {
     mock_audio_focus_delegate_ = delegate;
     media_session_->SetDelegateForTests(
-        base::WrapUnique(mock_audio_focus_delegate_));
+        base::WrapUnique(mock_audio_focus_delegate_.get()));
   }
 
   bool IsDucking() const { return media_session_->is_ducking_; }
@@ -279,8 +280,8 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  MediaSessionImpl* media_session_;
-  MockAudioFocusDelegate* mock_audio_focus_delegate_;
+  CheckedPtr<MediaSessionImpl> media_session_;
+  CheckedPtr<MockAudioFocusDelegate> mock_audio_focus_delegate_;
   std::unique_ptr<MockMediaSessionServiceImpl> mock_media_session_service_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSessionImplBrowserTest);

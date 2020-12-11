@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 
 class Browser;
@@ -56,7 +57,7 @@ class BrowserCloseManager : public base::RefCounted<BrowserCloseManager> {
 
   // The browser for which we are waiting for a callback to
   // OnBrowserReportCloseable.
-  Browser* current_browser_;
+  CheckedPtr<Browser> current_browser_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserCloseManager);
 };

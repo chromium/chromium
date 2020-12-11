@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -203,7 +204,7 @@ class MockUploadClient : public Storage::UploaderInterface {
 
    private:
     Priority priority_;
-    MockUploadClient* const client_;
+    const CheckedPtr<MockUploadClient> client_;
   };
 
   // Helper class for setting up mock client expectations on empty queue.
@@ -222,12 +223,12 @@ class MockUploadClient : public Storage::UploaderInterface {
 
    private:
     Priority priority_;
-    MockUploadClient* const client_;
+    const CheckedPtr<MockUploadClient> client_;
   };
 
  private:
   base::Optional<uint64_t> generation_id_;
-  LastRecordDigestMap* const last_record_digest_map_;
+  const CheckedPtr<LastRecordDigestMap> last_record_digest_map_;
 
   Sequence test_upload_sequence_;
 };

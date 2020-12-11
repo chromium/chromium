@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -246,7 +247,7 @@ class TestManagementUIHandler : public ManagementUIHandler {
 
  private:
   bool cloud_reporting_extension_exists_ = false;
-  policy::PolicyService* policy_service_ = nullptr;
+  CheckedPtr<policy::PolicyService> policy_service_ = nullptr;
   bool update_required_eol_ = false;
   std::string device_domain = "devicedomain.com";
 };

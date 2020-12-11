@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -618,7 +619,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // ---------------------------------------------------------------------------
 
   // The user browser context associated with this controller.
-  BrowserContext* const browser_context_;
+  const CheckedPtr<BrowserContext> browser_context_;
 
   // List of |NavigationEntry|s for this controller.
   std::vector<std::unique_ptr<NavigationEntryImpl>> entries_;
@@ -630,7 +631,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // This may refer to an item in the entries_ list if the pending_entry_index_
   // != -1, or it may be its own entry that should be deleted. Be careful with
   // the memory management.
-  NavigationEntryImpl* pending_entry_ = nullptr;
+  CheckedPtr<NavigationEntryImpl> pending_entry_ = nullptr;
 
   // This keeps track of the NavigationRequests associated with the pending
   // NavigationEntry. When all of them have been deleted, or have stopped
@@ -659,7 +660,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // The delegate associated with the controller. Possibly null during
   // setup.
-  NavigationControllerDelegate* delegate_;
+  CheckedPtr<NavigationControllerDelegate> delegate_;
 
   // Manages the SSL security UI.
   SSLManager ssl_manager_;

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/background_fetch/background_fetch_job_controller.h"
@@ -214,7 +215,7 @@ class BackgroundFetchDelegateProxy::Core
   // Weak reference to the service worker core thread outer class that owns us.
   base::WeakPtr<BackgroundFetchDelegateProxy> parent_;
 
-  BrowserContext* browser_context_;
+  CheckedPtr<BrowserContext> browser_context_;
 
   base::WeakPtrFactory<Core> weak_ptr_factory_{this};
 

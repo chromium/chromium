@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/views/dropdown_bar_host.h"
 #include "chrome/browser/ui/views/find_bar_view.h"
@@ -150,7 +151,7 @@ class FindBarHost : public DropdownBarHost,
   }
 
   // A pointer back to the owning controller.
-  FindBarController* find_bar_controller_ = nullptr;
+  CheckedPtr<FindBarController> find_bar_controller_ = nullptr;
 
   // The number of audible alerts issued.
   size_t audible_alerts_ = 0;

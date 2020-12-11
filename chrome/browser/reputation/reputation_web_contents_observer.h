@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_REPUTATION_REPUTATION_WEB_CONTENTS_OBSERVER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
@@ -87,7 +88,7 @@ class ReputationWebContentsObserver
       ReputationCheckResult result,
       ukm::SourceId navigation_source_id);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Used to cache the last safety tip info (and associated navigation entry ID)
   // so that Page Info can fetch this information without performing a

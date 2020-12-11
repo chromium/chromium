@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/aura/client/cursor_client_observer.h"
@@ -97,13 +98,13 @@ class VIEWS_EXPORT TooltipController
 
   void DisableTooltipShowDelay() { tooltip_show_delayed_ = false; }
 
-  aura::Window* tooltip_window_;
+  CheckedPtr<aura::Window> tooltip_window_;
   base::string16 tooltip_text_;
   base::string16 tooltip_text_whitespace_trimmed_;
-  const void* tooltip_id_;
+  CheckedPtr<const void> tooltip_id_;
 
   // These fields are for tracking state when the user presses a mouse button.
-  aura::Window* tooltip_window_at_mouse_press_;
+  CheckedPtr<aura::Window> tooltip_window_at_mouse_press_;
   base::string16 tooltip_text_at_mouse_press_;
 
   std::unique_ptr<Tooltip> tooltip_;

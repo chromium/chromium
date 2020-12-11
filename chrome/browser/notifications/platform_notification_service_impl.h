@@ -12,6 +12,7 @@
 #include <unordered_set>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -122,7 +123,7 @@ class PlatformNotificationServiceImpl
 
   // The profile for this instance or NULL if the initial profile has been
   // shutdown already.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Tracks the id of persistent notifications that have been closed
   // programmatically to avoid dispatching close events for them.

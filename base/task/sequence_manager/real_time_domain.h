@@ -6,6 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_REAL_TIME_DOMAIN_H_
 
 #include "base/base_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/task/sequence_manager/time_domain.h"
 
 namespace base {
@@ -31,7 +32,7 @@ class BASE_EXPORT RealTimeDomain : public TimeDomain {
   const char* GetName() const override;
 
  private:
-  const TickClock* tick_clock_ = nullptr;
+  CheckedPtr<const TickClock> tick_clock_ = nullptr;
 };
 
 }  // namespace internal

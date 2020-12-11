@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
+#include "base/memory/checked_ptr.h"
 
 #include <utility>
 
@@ -40,7 +41,7 @@ class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
   }
 
  private:
-  base::string16* search_term_;
+  CheckedPtr<base::string16> search_term_;
 
   DISALLOW_COPY_AND_ASSIGN(TestingTemplateURLServiceClient);
 };

@@ -8,6 +8,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -105,7 +106,7 @@ class NativeIOHostSync {
   }
 
  private:
-  blink::mojom::NativeIOHost* const io_host_;
+  const CheckedPtr<blink::mojom::NativeIOHost> io_host_;
 };
 
 // Synchronous proxies to a wrapped NativeIOFileHost's methods.
@@ -145,7 +146,7 @@ class NativeIOFileHostSync {
   }
 
  private:
-  blink::mojom::NativeIOFileHost* const file_host_;
+  const CheckedPtr<blink::mojom::NativeIOFileHost> file_host_;
 };
 
 const char kExampleOrigin[] = "https://example.com";

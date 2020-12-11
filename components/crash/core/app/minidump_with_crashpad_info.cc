@@ -5,6 +5,7 @@
 #include "components/crash/core/app/minidump_with_crashpad_info.h"
 
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
@@ -39,7 +40,7 @@ class MinidumpUpdater {
                        size_t data_len,
                        FilePosition* position);
 
-  base::File* file_;
+  CheckedPtr<base::File> file_;
   std::vector<MINIDUMP_DIRECTORY> directory_;
 
   DISALLOW_COPY_AND_ASSIGN(MinidumpUpdater);

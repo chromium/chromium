@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -269,7 +270,7 @@ class NET_EXPORT_PRIVATE SimpleIndex
   scoped_refptr<BackendCleanupTracker> cleanup_tracker_;
 
   // The owner of |this| must ensure the |delegate_| outlives |this|.
-  SimpleIndexDelegate* delegate_;
+  CheckedPtr<SimpleIndexDelegate> delegate_;
 
   EntrySet entries_set_;
 

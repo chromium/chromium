@@ -227,7 +227,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
                 [](content::BrowserContext* browser_context) {
                   return browser_context;
                 },
-                base::Unretained(profile_)),
+                base::Unretained(profile_.get())),
             url::Origin::Create(GetLaunchURL()), true /*clear_cookies*/,
             true /*clear_storage*/, true /*clear_cache*/,
             false /*avoid_closing_connections*/, base::DoNothing());

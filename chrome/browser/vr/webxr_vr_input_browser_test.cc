@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
@@ -228,7 +229,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
     return iter->second;
   }
 
-  base::RunLoop* wait_loop_ = nullptr;
+  CheckedPtr<base::RunLoop> wait_loop_ = nullptr;
   unsigned int num_submitted_frames_ = 0;
   unsigned int target_submitted_frames_ = 0;
 };

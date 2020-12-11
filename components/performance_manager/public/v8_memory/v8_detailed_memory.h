@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -268,7 +269,7 @@ class V8DetailedMemoryDecorator
 
   void UpdateProcessMeasurementSchedules() const;
 
-  Graph* graph_ = nullptr;
+  CheckedPtr<Graph> graph_ = nullptr;
 
   std::unique_ptr<MeasurementRequestQueue> measurement_requests_;
 
@@ -471,7 +472,7 @@ class V8DetailedMemoryRequest {
 
   base::TimeDelta min_time_between_requests_;
   MeasurementMode mode_;
-  V8DetailedMemoryDecorator* decorator_ = nullptr;
+  CheckedPtr<V8DetailedMemoryDecorator> decorator_ = nullptr;
   base::ObserverList<V8DetailedMemoryObserver, /*check_empty=*/true> observers_;
 
   // Pointer back to the off-sequence V8DetailedMemoryRequestAnySeq that

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -1287,7 +1288,7 @@ class SimpleSerializer {
       if (!bytes_written)
         return;
 
-      PaintOp* written = reinterpret_cast<PaintOp*>(current_);
+      PaintOp* written = reinterpret_cast<PaintOp*>(current_.get());
       EXPECT_EQ(op->GetType(), written->GetType());
       EXPECT_EQ(bytes_written, written->skip);
 
@@ -1308,7 +1309,7 @@ class SimpleSerializer {
   TestOptionsProvider* options_provider() { return &options_provider_; }
 
  private:
-  char* current_ = nullptr;
+  CheckedPtr<char> current_ = nullptr;
   size_t output_size_ = 0u;
   size_t remaining_ = 0u;
   std::vector<size_t> bytes_written_;
@@ -1394,14 +1395,14 @@ class DeserializerIterator {
                                             &last_bytes_read_, options_);
   }
 
-  const void* input_ = nullptr;
+  CheckedPtr<const void> input_ = nullptr;
   const char* current_ = nullptr;
   size_t input_size_ = 0u;
   size_t remaining_ = 0u;
   size_t last_bytes_read_ = 0u;
   PaintOp::DeserializeOptions options_;
   std::unique_ptr<char, base::AlignedFreeDeleter> data_;
-  PaintOp* deserialized_op_ = nullptr;
+  CheckedPtr<PaintOp> deserialized_op_ = nullptr;
 };
 
 void PushAnnotateOps(PaintOpBuffer* buffer) {

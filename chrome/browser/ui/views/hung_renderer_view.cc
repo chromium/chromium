@@ -94,7 +94,7 @@ void HungPagesTableModel::InitForWebContents(
   }
 
   process_observation_.Observe(render_widget_host_->GetProcess());
-  widget_observation_.Observe(render_widget_host_);
+  widget_observation_.Observe(render_widget_host_.get());
 
   // The world is different.
   if (observer_)

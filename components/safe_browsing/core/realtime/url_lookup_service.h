@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -93,13 +94,13 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
 
   // Unowned object used for getting access token when real time url check with
   // token is enabled.
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
 
   // Unowned object used for checking sync status of the profile.
-  syncer::SyncService* sync_service_;
+  CheckedPtr<syncer::SyncService> sync_service_;
 
   // Unowned object used for getting preference settings.
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   // The token fetcher used for getting access token.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
@@ -110,7 +111,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
 
   // Unowned. For checking whether real-time checks can be enabled in a given
   // location.
-  variations::VariationsService* variations_;
+  CheckedPtr<variations::VariationsService> variations_;
 
   friend class RealTimeUrlLookupServiceTest;
 

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -180,10 +181,10 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void DidReceiveCompositorFrameAck();
 
   // Accessed on main thread only.
-  LayerTreeHost* layer_tree_host_;
-  LayerTreeHostSingleThreadClient* single_thread_client_;
+  CheckedPtr<LayerTreeHost> layer_tree_host_;
+  CheckedPtr<LayerTreeHostSingleThreadClient> single_thread_client_;
 
-  TaskRunnerProvider* task_runner_provider_;
+  CheckedPtr<TaskRunnerProvider> task_runner_provider_;
 
   // Used on the Thread, but checked on main thread during
   // initialization/shutdown.

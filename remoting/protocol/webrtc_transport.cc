@@ -522,7 +522,7 @@ WebrtcTransport::WebrtcTransport(
 
   // Takes ownership of video_encoder_factory_.
   peer_connection_wrapper_.reset(new PeerConnectionWrapper(
-      worker_thread, base::WrapUnique(video_encoder_factory_),
+      worker_thread, base::WrapUnique(video_encoder_factory_.get()),
       std::move(port_allocator), weak_factory_.GetWeakPtr()));
 
   StartRtcEventLogging();

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_USER_MANAGER_UI_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
 
 class SigninCreateProfileHandler;
@@ -29,8 +30,9 @@ class UserManagerUI : public content::WebUIController {
       const base::DictionaryValue& localized_strings);
   void GetLocalizedStrings(base::DictionaryValue* localized_strings);
 
-  SigninCreateProfileHandler* signin_create_profile_handler_ = nullptr;
-  UserManagerScreenHandler* user_manager_screen_handler_ = nullptr;
+  CheckedPtr<SigninCreateProfileHandler> signin_create_profile_handler_ =
+      nullptr;
+  CheckedPtr<UserManagerScreenHandler> user_manager_screen_handler_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(UserManagerUI);
 };

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
@@ -60,7 +61,7 @@ class AutofillPopupRowView : public views::View {
   virtual std::unique_ptr<views::Background> CreateBackground() = 0;
 
  private:
-  AutofillPopupViewNativeViews* popup_view_;
+  CheckedPtr<AutofillPopupViewNativeViews> popup_view_;
   const int line_number_;
   bool is_selected_ = false;
 
@@ -112,12 +113,12 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   bool DoUpdateBoundsAndRedrawPopup() override;
 
   // Controller for this view.
-  AutofillPopupController* controller_ = nullptr;
+  CheckedPtr<AutofillPopupController> controller_ = nullptr;
   std::vector<AutofillPopupRowView*> rows_;
-  views::BoxLayout* layout_ = nullptr;
-  views::ScrollView* scroll_view_ = nullptr;
-  views::View* body_container_ = nullptr;
-  views::View* footer_container_ = nullptr;
+  CheckedPtr<views::BoxLayout> layout_ = nullptr;
+  CheckedPtr<views::ScrollView> scroll_view_ = nullptr;
+  CheckedPtr<views::View> body_container_ = nullptr;
+  CheckedPtr<views::View> footer_container_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillPopupViewNativeViews);
 };

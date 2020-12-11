@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -96,7 +97,7 @@ class BaseDialogContainer : public views::DialogDelegateView {
       close_callback_.Run();
   }
 
-  views::View* dialog_body_;
+  CheckedPtr<views::View> dialog_body_;
   const base::Closure close_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(BaseDialogContainer);

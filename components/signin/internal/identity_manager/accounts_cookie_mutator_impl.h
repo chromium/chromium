@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_helper.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -78,10 +79,10 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
     std::unique_ptr<OAuthMultiloginHelper> helper_;
   };
 
-  SigninClient* signin_client_;
-  ProfileOAuth2TokenService* token_service_;
-  GaiaCookieManagerService* gaia_cookie_manager_service_;
-  AccountTrackerService* account_tracker_service_;
+  CheckedPtr<SigninClient> signin_client_;
+  CheckedPtr<ProfileOAuth2TokenService> token_service_;
+  CheckedPtr<GaiaCookieManagerService> gaia_cookie_manager_service_;
+  CheckedPtr<AccountTrackerService> account_tracker_service_;
 
   DISALLOW_COPY_AND_ASSIGN(AccountsCookieMutatorImpl);
 };

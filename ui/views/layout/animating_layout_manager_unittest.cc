@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -230,9 +231,9 @@ class AnimatingLayoutManagerTest : public testing::Test {
  private:
   ProposedLayout layout1_;
   ProposedLayout layout2_;
-  View* view_;
+  CheckedPtr<View> view_;
   std::vector<TestView*> children_;
-  AnimatingLayoutManager* animating_layout_manager_ = nullptr;
+  CheckedPtr<AnimatingLayoutManager> animating_layout_manager_ = nullptr;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<gfx::AnimationContainerTestApi> container_test_api_;
 };
@@ -2900,7 +2901,7 @@ class AnimationWatcher : public AnimatingLayoutManager::Observer {
   }
 
  private:
-  AnimatingLayoutManager* const layout_manager_;
+  const CheckedPtr<AnimatingLayoutManager> layout_manager_;
   ScopedObserver<AnimatingLayoutManager, AnimatingLayoutManager::Observer>
       observer_{this};
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -2943,7 +2944,7 @@ class AnimatingLayoutManagerAvailableSizeTest
   ImmediateLayoutManager* root_layout() { return root_layout_; }
 
  private:
-  ImmediateLayoutManager* root_layout_;
+  CheckedPtr<ImmediateLayoutManager> root_layout_;
 };
 
 TEST_F(AnimatingLayoutManagerAvailableSizeTest, AvailableSize_LimitsExpansion) {
@@ -3958,7 +3959,7 @@ class AnimatingLayoutManagerFlexRuleTest : public AnimatingLayoutManagerTest {
   static const FlexSpecification kScaleToMinimumSnapToZero;
 
  private:
-  FlexLayout* flex_layout_;
+  CheckedPtr<FlexLayout> flex_layout_;
   FlexRule flex_rule_;
 };
 
@@ -4136,9 +4137,9 @@ class AnimatingLayoutManagerInFlexLayoutTest
   TestView* other_view() { return other_view_; }
 
  private:
-  FlexLayout* root_layout_;
-  FlexLayout* target_layout_;
-  TestView* other_view_;
+  CheckedPtr<FlexLayout> root_layout_;
+  CheckedPtr<FlexLayout> target_layout_;
+  CheckedPtr<TestView> other_view_;
 };
 
 TEST_F(AnimatingLayoutManagerInFlexLayoutTest, NoAnimation) {
@@ -4873,10 +4874,10 @@ class AnimatingLayoutManagerSequenceTest : public ViewsTestBase {
 
   using WidgetAutoclosePtr = std::unique_ptr<Widget, WidgetCloser>;
 
-  AnimatingLayoutManager* layout_manager_ = nullptr;
-  View* child_view_ = nullptr;
-  View* parent_view_ = nullptr;
-  View* layout_view_ = nullptr;
+  CheckedPtr<AnimatingLayoutManager> layout_manager_ = nullptr;
+  CheckedPtr<View> child_view_ = nullptr;
+  CheckedPtr<View> parent_view_ = nullptr;
+  CheckedPtr<View> layout_view_ = nullptr;
   std::unique_ptr<View> parent_view_ptr_;
   std::unique_ptr<View> layout_view_ptr_;
   WidgetAutoclosePtr widget_;

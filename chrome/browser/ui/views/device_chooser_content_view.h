@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "ui/base/models/table_model.h"
@@ -75,11 +76,11 @@ class DeviceChooserContentView : public views::View,
 
   bool adapter_enabled_ = true;
 
-  views::View* table_parent_ = nullptr;
-  views::TableView* table_view_ = nullptr;
-  views::View* no_options_view_ = nullptr;
-  views::View* adapter_off_view_ = nullptr;
-  BluetoothStatusContainer* bluetooth_status_container_ = nullptr;
+  CheckedPtr<views::View> table_parent_ = nullptr;
+  CheckedPtr<views::TableView> table_view_ = nullptr;
+  CheckedPtr<views::View> no_options_view_ = nullptr;
+  CheckedPtr<views::View> adapter_off_view_ = nullptr;
+  CheckedPtr<BluetoothStatusContainer> bluetooth_status_container_ = nullptr;
 
   bool is_initialized_ = false;
 

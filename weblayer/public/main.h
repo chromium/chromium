@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -30,7 +31,7 @@ struct MainParams {
   MainParams(const MainParams& other);
   ~MainParams();
 
-  MainDelegate* delegate;
+  CheckedPtr<MainDelegate> delegate;
 
   // If set, logging will redirect to this file.
   base::FilePath log_filename;

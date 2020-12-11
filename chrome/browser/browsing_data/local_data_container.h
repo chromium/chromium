@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
@@ -148,7 +149,7 @@ class LocalDataContainer {
 
   // A delegate, which must outlive this object. The update callbacks use the
   // delegate to deliver the updated data to the CookieTreeModel.
-  CookiesTreeModel* model_ = nullptr;
+  CheckedPtr<CookiesTreeModel> model_ = nullptr;
 
   // Keeps track of how many batches are expected to start.
   int batches_started_ = 0;

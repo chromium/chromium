@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -240,7 +241,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
                         const std::string& header,
                         const std::string& message) override;
 
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
   mojo::AssociatedRemote<mojom::VizMain> viz_main_;
   const InitParams params_;
 

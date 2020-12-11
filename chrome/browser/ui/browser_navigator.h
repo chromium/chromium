@@ -11,10 +11,11 @@ namespace content {
 class BrowserContext;
 }
 
+class Browser;
 struct NavigateParams;
 
 // Navigates according to the configuration specified in |params|.
-void Navigate(NavigateParams* params);
+Browser* Navigate(NavigateParams* params);
 
 // Returns true if the url is allowed to open in incognito window.
 bool IsURLAllowedInIncognito(const GURL& url,

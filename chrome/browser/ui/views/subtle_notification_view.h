@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
@@ -42,7 +43,7 @@ class SubtleNotificationView : public views::View {
   class InstructionView;
 
   // Text displayed in the bubble, with optional keyboard keys.
-  InstructionView* instruction_view_;
+  CheckedPtr<InstructionView> instruction_view_;
 
   DISALLOW_COPY_AND_ASSIGN(SubtleNotificationView);
 };

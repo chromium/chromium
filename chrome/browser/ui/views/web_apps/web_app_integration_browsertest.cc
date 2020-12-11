@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
@@ -116,7 +117,7 @@ class WebAppIntegrationBrowserTest : public InProcessBrowserTest {
 
  private:
   net::EmbeddedTestServer https_server_;
-  PageActionIconView* pwa_install_view_ = nullptr;
+  CheckedPtr<PageActionIconView> pwa_install_view_ = nullptr;
 };
 
 // Tests that installing a PWA will cause the install icon to be hidden, and

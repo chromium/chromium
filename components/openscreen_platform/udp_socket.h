@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -59,7 +60,7 @@ class UdpSocket final : public openscreen::UdpSocket,
   void SendCallback(int32_t result);
 
   // Note: This can be null, per UdpSocket API header comments.
-  Client* const client_;
+  const CheckedPtr<Client> client_;
 
   // The local endpoint can change as a result of bind calls.
   openscreen::IPEndpoint local_endpoint_;

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "extensions/common/api/bluetooth_private.h"
 
@@ -45,7 +46,7 @@ class BluetoothApiPairingDelegate
   void DispatchPairingEvent(
       const api::bluetooth_private::PairingEvent& pairing_event);
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothApiPairingDelegate);
 };

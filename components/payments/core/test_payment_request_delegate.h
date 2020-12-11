@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
@@ -55,7 +56,7 @@ class TestPaymentRequestDelegate : public PaymentRequestDelegate {
 
  private:
   std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor_;
-  autofill::PersonalDataManager* personal_data_manager_;
+  CheckedPtr<autofill::PersonalDataManager> personal_data_manager_;
   std::string locale_;
   const GURL last_committed_url_;
   autofill::TestAddressNormalizer address_normalizer_;

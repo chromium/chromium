@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -182,11 +183,11 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Gets the current time. This uses the time_factory_ if there is one.
   base::Time TimeNow() const;
 
-  TabRestoreService* const tab_restore_service_;
+  const CheckedPtr<TabRestoreService> tab_restore_service_;
 
-  Observer* observer_;
+  CheckedPtr<Observer> observer_;
 
-  TabRestoreServiceClient* client_;
+  CheckedPtr<TabRestoreServiceClient> client_;
 
   // Set of entries. They are ordered from most to least recent.
   Entries entries_;
@@ -202,7 +203,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // avoid creating historical tabs for them.
   std::set<LiveTabContext*> closing_contexts_;
 
-  TimeFactory* const time_factory_;
+  const CheckedPtr<TimeFactory> time_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(TabRestoreServiceHelper);
 };

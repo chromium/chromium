@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
@@ -391,7 +392,7 @@ class AppBannerManager : public content::WebContentsObserver,
   webapps::InstallableStatusCode TerminationCode() const;
 
   // Fetches the data required to display a banner for the current page.
-  webapps::InstallableManager* manager_;
+  CheckedPtr<webapps::InstallableManager> manager_;
 
   // We do not want to trigger a banner when the manager is attached to
   // a WebContents that is playing video. Banners triggering on a site in the

@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/time/default_clock.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -139,9 +140,9 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   static const char kPermissionDismissalEmbargoKey[];
   static const char kPermissionIgnoreEmbargoKey[];
 
-  HostContentSettingsMap* settings_map_;
+  CheckedPtr<HostContentSettingsMap> settings_map_;
 
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(PermissionDecisionAutoBlocker);
 };

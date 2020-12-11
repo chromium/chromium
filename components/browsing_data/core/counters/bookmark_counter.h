@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
 namespace bookmarks {
@@ -32,7 +33,7 @@ class BookmarkCounter : public browsing_data::BrowsingDataCounter {
   void Count() override;
   void CountBookmarks(const bookmarks::BookmarkModel* bookmark_model);
 
-  bookmarks::BookmarkModel* bookmark_model_;
+  CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
   base::WeakPtrFactory<BookmarkCounter> weak_ptr_factory_{this};
 };
 

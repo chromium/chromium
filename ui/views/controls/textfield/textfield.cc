@@ -777,7 +777,7 @@ gfx::Size Textfield::GetMinimumSize() const {
 void Textfield::SetBorder(std::unique_ptr<Border> b) {
   use_focus_ring_ = false;
   if (focus_ring_) {
-    RemoveChildViewT(focus_ring_);
+    RemoveChildViewT(focus_ring_.get());
     focus_ring_ = nullptr;
   }
   View::SetBorder(std::move(b));

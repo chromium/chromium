@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -97,8 +98,8 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
 
   std::unique_ptr<InstallFinalizer> legacy_finalizer_;
 
-  Profile* const profile_;
-  WebAppIconManager* const icon_manager_;
+  const CheckedPtr<Profile> profile_;
+  const CheckedPtr<WebAppIconManager> icon_manager_;
   bool started_ = false;
 
   base::WeakPtrFactory<WebAppInstallFinalizer> weak_ptr_factory_{this};

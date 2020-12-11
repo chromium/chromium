@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/video_decoder.h"
 
@@ -47,7 +48,7 @@ class MEDIA_EXPORT FallbackVideoDecoder : public VideoDecoder {
 
   std::unique_ptr<media::VideoDecoder> preferred_decoder_;
   std::unique_ptr<media::VideoDecoder> fallback_decoder_;
-  media::VideoDecoder* selected_decoder_ = nullptr;
+  CheckedPtr<media::VideoDecoder> selected_decoder_ = nullptr;
   bool did_fallback_ = false;
 
   base::WeakPtrFactory<FallbackVideoDecoder> weak_factory_{this};

@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -356,7 +357,7 @@ class ServiceWorkerInternalsUI::PartitionObserver
 
  private:
   const int partition_id_;
-  WebUI* const web_ui_;
+  const CheckedPtr<WebUI> web_ui_;
 };
 
 ServiceWorkerInternalsUI::ServiceWorkerInternalsUI(WebUI* web_ui)

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/proxy_delegate.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -73,7 +74,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   mojom::CustomProxyConfigPtr proxy_config_;
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
 
-  net::ProxyResolutionService* proxy_resolution_service_ = nullptr;
+  CheckedPtr<net::ProxyResolutionService> proxy_resolution_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkServiceProxyDelegate);
 };

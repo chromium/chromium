@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -85,7 +86,7 @@ class MediaRouterDesktopTest : public MediaRouterMojoTest {
   std::unique_ptr<DualMediaSinkService> media_sink_service_;
 
   // Owned by |media_sink_service_|.
-  MockCastMediaSinkService* cast_media_sink_service_;
+  CheckedPtr<MockCastMediaSinkService> cast_media_sink_service_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaRouterDesktopTest);
 };

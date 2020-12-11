@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,7 +27,7 @@ struct NativeMenuWin::ItemData {
   std::unique_ptr<NativeMenuWin> submenu;
 
   // We need a pointer back to the containing menu in various circumstances.
-  NativeMenuWin* native_menu_win;
+  CheckedPtr<NativeMenuWin> native_menu_win;
 
   // The index of the item within the menu's model.
   int model_index;

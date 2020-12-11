@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_MAP_DATA_INTERNAL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
@@ -37,7 +38,7 @@ class Map_Data {
     Map_Data* operator->() { return data(); }
 
    private:
-    Buffer* buffer_ = nullptr;
+    CheckedPtr<Buffer> buffer_ = nullptr;
     size_t index_ = 0;
 
     DISALLOW_COPY_AND_ASSIGN(BufferWriter);

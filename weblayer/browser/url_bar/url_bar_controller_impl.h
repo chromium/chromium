@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_URL_BAR_URL_BAR_CONTROLLER_IMPL_H_
 #define WEBLAYER_BROWSER_URL_BAR_URL_BAR_CONTROLLER_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
@@ -50,7 +51,7 @@ class UrlBarControllerImpl : public UrlBarController,
 
  private:
   content::WebContents* GetActiveWebContents() const;
-  BrowserImpl* const browser_;
+  const CheckedPtr<BrowserImpl> browser_;
   std::unique_ptr<LocationBarModelImpl> location_bar_model_;
 };
 

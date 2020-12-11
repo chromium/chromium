@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -211,7 +212,7 @@ class AppBrowserController : public TabStripModelObserver,
   void UpdateThemePack();
 
   const base::Optional<AppId> app_id_;
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
   GURL initial_url_;
 
   scoped_refptr<BrowserThemePack> theme_pack_;

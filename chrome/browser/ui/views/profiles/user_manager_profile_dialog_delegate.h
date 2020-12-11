@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_DELEGATE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/user_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -74,7 +75,7 @@ class UserManagerProfileDialogDelegate
   views::View* GetInitiallyFocusedView() override;
 
   UserManagerProfileDialogHost* host_;  // Not owned.
-  views::WebView* web_view_;  // Owned by the view hierarchy.
+  CheckedPtr<views::WebView> web_view_;  // Owned by the view hierarchy.
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_PROFILE_DIALOG_DELEGATE_H_

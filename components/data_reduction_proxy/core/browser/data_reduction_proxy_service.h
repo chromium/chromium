@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -216,10 +217,10 @@ class DataReductionProxyService
   // Tracks compression statistics to be displayed to the user.
   std::unique_ptr<DataReductionProxyCompressionStats> compression_stats_;
 
-  DataReductionProxySettings* settings_;
+  CheckedPtr<DataReductionProxySettings> settings_;
 
   // A prefs service for storing data.
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 
   std::unique_ptr<DBDataOwner> db_data_owner_;
 
@@ -228,12 +229,12 @@ class DataReductionProxyService
 
   // Must be accessed on UI thread. Guaranteed to be non-null during the
   // lifetime of |this|.
-  network::NetworkQualityTracker* network_quality_tracker_;
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_;
+  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Must be accessed on UI thread. Guaranteed to be non-null during the
   // lifetime of |this|.
-  data_use_measurement::DataUseMeasurement* data_use_measurement_;
+  CheckedPtr<data_use_measurement::DataUseMeasurement> data_use_measurement_;
 
   // Current network quality estimates.
   net::EffectiveConnectionType effective_connection_type_;

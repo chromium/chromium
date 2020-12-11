@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_PRECONNECT_CLIENT_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -58,7 +59,7 @@ class NavigationPredictorPreconnectClient
       content::NavigationHandle* navigation_handle) const;
 
   // Used to get keyed services.
-  content::BrowserContext* const browser_context_;
+  const CheckedPtr<content::BrowserContext> browser_context_;
 
   // Set to true only if preconnects are allowed to local IPs. Defaulted to
   // false. Set to true only for testing.

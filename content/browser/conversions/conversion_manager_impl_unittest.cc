@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -129,7 +130,7 @@ class ConversionManagerImplTest : public testing::Test {
   base::ScopedTempDir dir_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ConversionManagerImpl> conversion_manager_;
-  TestConversionReporter* test_reporter_ = nullptr;
+  CheckedPtr<TestConversionReporter> test_reporter_ = nullptr;
 };
 
 TEST_F(ConversionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {

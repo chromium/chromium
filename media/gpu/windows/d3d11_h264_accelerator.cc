@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_log.h"
@@ -49,7 +50,7 @@ class D3D11H264Picture : public H264Picture {
     picture->set_in_picture_use(true);
   }
 
-  D3D11PictureBuffer* picture;
+  CheckedPtr<D3D11PictureBuffer> picture;
   size_t picture_index_;
 
  protected:

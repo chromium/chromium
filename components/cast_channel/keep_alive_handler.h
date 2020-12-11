@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_CHANNEL_KEEP_ALIVE_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -68,7 +69,7 @@ class KeepAliveHandler {
   bool started_;
 
   // Socket that is managed by the keep-alive object.
-  CastSocket* socket_;
+  CheckedPtr<CastSocket> socket_;
 
   // Logging object.
   scoped_refptr<Logger> logger_;

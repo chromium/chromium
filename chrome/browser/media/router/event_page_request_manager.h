@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -125,7 +126,7 @@ class EventPageRequestManager : public KeyedService {
   // Allows the extension to be monitored for suspend, and woken.
   // This is a reference to a BrowserContext keyed service that outlives this
   // instance.
-  extensions::ProcessManager* extension_process_manager_;
+  CheckedPtr<extensions::ProcessManager> extension_process_manager_;
 
   int wakeup_attempt_count_ = 0;
 

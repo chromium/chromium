@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -51,7 +52,7 @@ class SafeBrowsingTokenFetcher {
               base::Optional<signin::AccessTokenInfo> token_info);
 
   // Reference to the identity manager to fetch from.
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
 
   // The count of requests sent. This is used as an ID for requests.
   int requests_sent_;

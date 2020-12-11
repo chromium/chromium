@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TAB_ICON_VIEW_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "ui/views/controls/button/menu_button.h"
 
@@ -37,7 +38,7 @@ class TabIconView : public views::MenuButton {
   void PaintFavicon(gfx::Canvas* canvas, const gfx::ImageSkia& image);
 
   // Our model.
-  TabIconViewModel* model_;
+  CheckedPtr<TabIconViewModel> model_;
 
   // Whether we should display our light or dark style.
   bool is_light_;

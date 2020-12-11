@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_LOADING_PREDICTOR_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include <memory>
+#include "base/memory/checked_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace content {
@@ -56,8 +57,8 @@ class LoadingPredictorPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
-  predictors::ResourcePrefetchPredictor* predictor_;
-  predictors::LoadingDataCollector* collector_;
+  CheckedPtr<predictors::ResourcePrefetchPredictor> predictor_;
+  CheckedPtr<predictors::LoadingDataCollector> collector_;
   bool record_histogram_preconnectable_;
 
   DISALLOW_COPY_AND_ASSIGN(LoadingPredictorPageLoadMetricsObserver);

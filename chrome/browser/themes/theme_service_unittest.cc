@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -75,8 +76,8 @@ class ThemeScoper {
   }
 
  private:
-  extensions::ExtensionService* extension_service_ = nullptr;
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
+  CheckedPtr<extensions::ExtensionService> extension_service_ = nullptr;
+  CheckedPtr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
   std::string extension_id_;
   base::ScopedTempDir temp_dir_;
 };
@@ -167,7 +168,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
   void WaitForThemeInstall() {
     content::WindowedNotificationObserver theme_change_observer(
         chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-        content::Source<ThemeService>(theme_service_));
+        content::Source<ThemeService>(theme_service_.get()));
     theme_change_observer.Wait();
   }
 
@@ -186,8 +187,8 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 
  protected:
   ui::TestNativeTheme native_theme_;
-  extensions::ExtensionRegistry* registry_ = nullptr;
-  ThemeService* theme_service_ = nullptr;
+  CheckedPtr<extensions::ExtensionRegistry> registry_ = nullptr;
+  CheckedPtr<ThemeService> theme_service_ = nullptr;
 };
 
 // Installs then uninstalls a theme and makes sure that the ThemeService
@@ -267,7 +268,7 @@ TEST_F(ThemeServiceTest, ThemeUpgrade) {
   // 1) Upgrading the current theme should not revert to the default theme.
   content::WindowedNotificationObserver theme_change_observer(
       chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-      content::Source<ThemeService>(theme_service_));
+      content::Source<ThemeService>(theme_service_.get()));
   UpdateUnpackedTheme(scoper2.extension_id());
 
   // The ThemeService should have sent an theme change notification even though

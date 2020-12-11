@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/mru_cache.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
@@ -70,7 +71,8 @@ class PreviewsOptimizationGuide {
 
   // The Optimization Guide Decider to consult for whether an optimization can
   // be applied. Not owned.
-  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_;
+  CheckedPtr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_;
 
   // An in-memory cache of resource loading hints keyed by the URL. This allows
   // us to avoid making too many calls to |optimization_guide_decider_|.
