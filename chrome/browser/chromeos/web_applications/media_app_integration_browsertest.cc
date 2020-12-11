@@ -234,10 +234,10 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
   // includes an Exif rotation.
   constexpr char kAdd270DegreeRotation[] = R"(
     (function() {
-      const realPiexLoad = PiexLoader.load;
-      PiexLoader.load = async (buffer, onFailure) => {
-        const response = await realPiexLoad(buffer, onPiexModuleFailed);
-        response.orientation = 8;
+      const realPiexImage = PiexModule.image;
+      PiexModule.image = (memory, length) => {
+        const response = realPiexImage(memory, length);
+        response.preview.orientation = 8;
         return response;
       };
     })();
