@@ -794,7 +794,8 @@ void ActivityLog::CheckActive(bool use_cached) {
           RendererStartupHelperFactory::GetForBrowserContext(
               host->GetBrowserContext())
               ->GetRenderer(host);
-      renderer->SetActivityLoggingEnabled(is_active_);
+      if (renderer)
+        renderer->SetActivityLoggingEnabled(is_active_);
     }
   }
 }

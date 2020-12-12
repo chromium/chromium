@@ -289,8 +289,9 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
   const std::set<content::RenderProcessHost*>& loaded_process_set =
       extension_process_map_[extension.id()];
   for (content::RenderProcessHost* process : loaded_process_set) {
-    DCHECK(base::Contains(process_mojo_map_, process));
-    GetRenderer(process)->UnloadExtension(extension.id());
+    mojom::Renderer* renderer = GetRenderer(process);
+    if (renderer)
+      renderer->UnloadExtension(extension.id());
   }
 
   // Resets registered origin access lists in the BrowserContext asynchronously.
@@ -317,7 +318,8 @@ RendererStartupHelper::BindNewRendererRemote(
 
 mojom::Renderer* RendererStartupHelper::GetRenderer(
     content::RenderProcessHost* process) {
-  DCHECK(base::Contains(process_mojo_map_, process));
+  if (!base::Contains(process_mojo_map_, process))
+    return nullptr;
   return process_mojo_map_.find(process)->second.get();
 }
 //////////////////////////////////////////////////////////////////////////////
