@@ -491,8 +491,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   // such as tainting from a filter applied to the canvas.
   void SetOriginTaintedByContent();
 
-  ImageDataColorSettings* GetColorSettingsAsImageDataColorSettings() const;
-
   void PutByteArray(const SkPixmap& source,
                     const IntRect& source_rect,
                     const IntPoint& dest_point);

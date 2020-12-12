@@ -1565,21 +1565,11 @@ bool BaseRenderingContext2D::ComputeDirtyRect(
   return true;
 }
 
-ImageDataColorSettings*
-BaseRenderingContext2D::GetColorSettingsAsImageDataColorSettings() const {
-  ImageDataColorSettings* color_settings = ImageDataColorSettings::Create();
-  color_settings->setColorSpace(ColorSpaceAsString());
-  if (PixelFormat() == CanvasPixelFormat::kF16)
-    color_settings->setStorageFormat(kFloat32ArrayStorageFormatName);
-  return color_settings;
-}
-
 ImageData* BaseRenderingContext2D::createImageData(
     ImageData* image_data,
     ExceptionState& exception_state) const {
   ImageData* result = nullptr;
-  ImageDataColorSettings* color_settings =
-      GetColorSettingsAsImageDataColorSettings();
+  ImageDataColorSettings* color_settings = image_data->getColorSettings();
   result = ImageData::Create(image_data->Size(), color_settings);
   if (!result)
     exception_state.ThrowRangeError("Out of memory at ImageData creation");

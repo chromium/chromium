@@ -6,16 +6,11 @@
 
 var xWidth = xHeight = 10;
 
-function checkImageData(canvasColorSettings, imageData) {
+function checkImageData(expectedColorSetting, imageData) {
   var imageDataColorSettings = imageData.getColorSettings();
-  assert_equals(canvasColorSettings.colorSpace, imageDataColorSettings.colorSpace);
-  if (canvasColorSettings.pixelFormat == "uint8") {
-    assert_equals("uint8", imageDataColorSettings.storageFormat);
-    assert_equals(imageData.data.length, 4 * xWidth * xHeight);
-  } else {
-    assert_equals("float32", imageDataColorSettings.storageFormat);
-    assert_equals(imageData.data.length, 4 * xWidth * xHeight);
-  }
+  assert_equals(expectedColorSetting.colorSpace, imageDataColorSettings.colorSpace);
+  assert_equals(expectedColorSetting.storageFormat, imageDataColorSettings.storageFormat);
+  assert_equals(imageData.data.length, 4 * xWidth * xHeight);
 }
 
 function getImageSetting(canvasColorSettings) {
@@ -38,10 +33,10 @@ function runTestCreateImageData(canvasColorSettings) {
   var ctx = aCanvas.getContext('2d', canvasColorSettings);
   var imageSetting = getImageSetting(canvasColorSettings);
   var imageData = ctx.createImageData(xWidth, xHeight, imageSetting);
-  checkImageData(canvasColorSettings, imageData);
+  checkImageData(imageSetting, imageData);
 
   imageData = ctx.createImageData(helperImageData);
-  checkImageData(canvasColorSettings, imageData);
+  checkImageData(helperImageData.getColorSettings(), imageData);
 }
 
 var testScenariosCreateImageData = [
@@ -65,7 +60,7 @@ function runTestGetImageData(canvasColorSettings) {
   var ctx = aCanvas.getContext('2d', canvasColorSettings);
   var imageSetting = getImageSetting(canvasColorSettings);
   var imageData = ctx.getImageData(0, 0, xWidth, xHeight, imageSetting);
-  checkImageData(canvasColorSettings, imageData);
+  checkImageData(imageSetting, imageData);
 }
 
 var testScenariosGetImageData = [
