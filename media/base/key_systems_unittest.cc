@@ -830,10 +830,7 @@ TEST_F(KeySystemsTest, HardwareSecureCodecs) {
       EmeConfigRule::SUPPORTED,
       GetVideoContentTypeConfigRule(kVideoFoo, foovideo_codec(), kExternal));
 
-  // Codec that is supported by hardware secure codec but not otherwise is
-  // treated as NOT_SUPPORTED instead of HW_SECURE_CODECS_REQUIRED. See
-  // KeySystemsImpl::GetContentTypeConfigRule() for details.
-  EXPECT_EQ(EmeConfigRule::NOT_SUPPORTED,
+  EXPECT_EQ(EmeConfigRule::HW_SECURE_CODECS_REQUIRED,
             GetVideoContentTypeConfigRule(kVideoFoo, securefoovideo_codec(),
                                           kExternal));
 }

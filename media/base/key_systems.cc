@@ -103,7 +103,12 @@ EmeCodec ToVideoEmeCodec(VideoCodec codec, VideoCodecProfile profile) {
         return EME_CODEC_NONE;
       }
     case kCodecHEVC:
-      return EME_CODEC_HEVC;
+      // Only handle Main and Main10 profiles for HEVC.
+      if (profile == HEVCPROFILE_MAIN)
+        return EME_CODEC_HEVC_PROFILE_MAIN;
+      if (profile == HEVCPROFILE_MAIN10)
+        return EME_CODEC_HEVC_PROFILE_MAIN10;
+      return EME_CODEC_NONE;
     case kCodecDolbyVision:
       // Only profiles 0, 4, 5, 7, 8, 9 are valid. Profile 0 and 9 are encoded
       // based on AVC while profile 4, 5, 7 and 8 are based on HEVC.
@@ -674,7 +679,8 @@ EmeConfigRule KeySystemsImpl::GetContentTypeConfigRule(
   // SupportedCodecs  | SupportedSecureCodecs  | Result
   //       yes        |         yes            | SUPPORTED
   //       yes        |         no             | HW_SECURE_CODECS_NOT_ALLOWED
-  //       no         |         any            | NOT_SUPPORTED
+  //       no         |         yes            | HW_SECURE_CODECS_REQUIRED
+  //       no         |         no             | NOT_SUPPORTED
   EmeConfigRule support = EmeConfigRule::SUPPORTED;
   for (size_t i = 0; i < codecs.size(); i++) {
     EmeCodec codec =
@@ -688,22 +694,29 @@ EmeConfigRule KeySystemsImpl::GetContentTypeConfigRule(
     // codecs with multiple bits set, e.g. to cover multiple profiles, we check
     // (codec & mask) == codec instead of (codec & mask) != 0 to make sure all
     // bits are set. Same below.
-    if ((codec & key_system_codec_mask & mime_type_codec_mask) != codec) {
+    if ((codec & key_system_codec_mask & mime_type_codec_mask) != codec &&
+        (codec & key_system_hw_secure_codec_mask & mime_type_codec_mask) !=
+            codec) {
       DVLOG(2) << "Container/codec pair (" << container_mime_type << " / "
                << codecs[i] << ") not supported by " << key_system;
       return EmeConfigRule::NOT_SUPPORTED;
     }
 
-    // Check whether the codec supports a hardware-secure mode (any level). The
-    // goal is to prevent mixing of non-hardware-secure codecs with
-    // hardware-secure codecs, since the mode is fixed at CDM creation.
-    //
-    // Because the check for regular codec support is early-exit, we don't have
-    // to consider codecs that are only supported in hardware-secure mode. We
-    // could do so, and make use of HW_SECURE_CODECS_REQUIRED, if it turns out
-    // that hardware-secure-only codecs actually exist and are useful.
-    if ((codec & key_system_hw_secure_codec_mask) != codec)
+    // Check whether the codec supports a hardware-secure mode (any level).
+    if ((codec & key_system_hw_secure_codec_mask) != codec) {
+      DCHECK_EQ(codec & key_system_codec_mask, codec);
+      if (support == EmeConfigRule::HW_SECURE_CODECS_REQUIRED)
+        return EmeConfigRule::NOT_SUPPORTED;
       support = EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED;
+    }
+
+    // Check whether the codec requires a hardware-secure mode (any level).
+    if ((codec & key_system_codec_mask) != codec) {
+      DCHECK_EQ(codec & key_system_hw_secure_codec_mask, codec);
+      if (support == EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED)
+        return EmeConfigRule::NOT_SUPPORTED;
+      support = EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
+    }
   }
 
   return support;

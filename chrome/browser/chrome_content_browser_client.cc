@@ -613,11 +613,13 @@
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "chrome/browser/media/output_protection_impl.h"
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_WIDEVINE)
-#include "chrome/browser/media/widevine_hardware_caps_win.h"
+#if BUILDFLAG(ENABLE_WIDEVINE)
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
+#if defined(OS_WIN) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#include "chrome/browser/media/widevine_hardware_caps.h"
 #endif
-#endif
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
@@ -4128,8 +4130,8 @@ void ChromeContentBrowserClient::GetHardwareSecureDecryptionCaps(
     const std::string& key_system,
     base::flat_set<media::VideoCodec>* video_codecs,
     base::flat_set<media::EncryptionScheme>* encryption_schemes) {
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_LIBRARY_CDMS) && \
-    BUILDFLAG(ENABLE_WIDEVINE)
+#if (defined(OS_WIN) || BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)) && \
+    BUILDFLAG(ENABLE_LIBRARY_CDMS) && BUILDFLAG(ENABLE_WIDEVINE)
   if (key_system == kWidevineKeySystem) {
     GetWidevineHardwareCaps(video_codecs, encryption_schemes);
   }

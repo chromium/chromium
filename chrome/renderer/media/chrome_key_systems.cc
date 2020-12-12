@@ -177,6 +177,14 @@ static SupportedCodecs GetSupportedCodecs(
         supported_codecs |= media::EME_CODEC_AVC1;
         break;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+      case media::VideoCodec::kCodecHEVC:
+        if (is_secure) {
+          supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN;
+          supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
+        }
+        break;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
       default:
         DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec);
         break;
@@ -252,9 +260,14 @@ static void AddWidevine(
                                    capability->supports_vp9_profile2,
                                    /*is_secure=*/false);
   const auto& encryption_schemes = capability->encryption_schemes;
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  const bool hw_supports_vp9_profile2 = true;
+#else
   // TODO(xhwang): Investigate whether hardware VP9 profile 2 is supported.
+  const bool hw_supports_vp9_profile2 = false;
+#endif
   auto hw_secure_codecs = GetSupportedCodecs(capability->hw_secure_video_codecs,
-                                             /*supports_vp9_profile2=*/false,
+                                             hw_supports_vp9_profile2,
                                              /*is_secure=*/true);
   const auto& hw_secure_encryption_schemes =
       capability->hw_secure_encryption_schemes;

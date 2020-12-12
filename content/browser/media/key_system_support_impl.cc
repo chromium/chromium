@@ -20,6 +20,7 @@
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -85,10 +86,15 @@ void GetHardwareSecureDecryptionCaps(
   DCHECK(video_codecs->empty());
   DCHECK(encryption_schemes->empty());
 
+  // We use the USE_CHROMEOS_PROTECTED_MEDIA build flag on Chrome OS to control
+  // when HW secure decryption is enabled, so disable the feature flag in that
+  // case.
+#if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
     DVLOG(1) << "Hardware secure decryption disabled";
     return;
   }
+#endif
 
   // Secure codecs override takes precedence over other checks.
   if (IsHardwareSecureCodecsOverriddenFromCommandLine(video_codecs,

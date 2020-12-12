@@ -25,6 +25,7 @@ import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//media/gpu/args.gni")
 import("//net/features.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -5796,10 +5797,16 @@ static_library("browser") {
       }
       if (is_win) {
         sources += [
+          "media/widevine_hardware_caps.h",
           "media/widevine_hardware_caps_win.cc",
-          "media/widevine_hardware_caps_win.h",
         ]
         libs += [ "d3d11.lib" ]
+      }
+      if (use_chromeos_protected_media) {
+        sources += [
+          "media/widevine_hardware_caps.h",
+          "media/widevine_hardware_caps_chromeos.cc",
+        ]
       }
     }
 

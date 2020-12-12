@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_WIDEVINE_HARDWARE_CAPS_WIN_H_
-#define CHROME_BROWSER_MEDIA_WIDEVINE_HARDWARE_CAPS_WIN_H_
+#ifndef CHROME_BROWSER_MEDIA_WIDEVINE_HARDWARE_CAPS_H_
+#define CHROME_BROWSER_MEDIA_WIDEVINE_HARDWARE_CAPS_H_
 
 #include "base/containers/flat_set.h"
 #include "media/base/video_codecs.h"
@@ -18,4 +18,4 @@ void GetWidevineHardwareCaps(
     base::flat_set<media::VideoCodec>* video_codecs,
     base::flat_set<media::EncryptionScheme>* encryption_schemes);
 
-#endif  // CHROME_BROWSER_MEDIA_WIDEVINE_HARDWARE_CAPS_WIN_H_
+#endif  // CHROME_BROWSER_MEDIA_WIDEVINE_HARDWARE_CAPS_H_
