@@ -14,6 +14,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -91,6 +92,12 @@ int AppMenuModelAdapter::GetCommandIdForHistograms(int command_id) {
 base::TimeTicks AppMenuModelAdapter::GetClosingEventTime() {
   DCHECK(menu_runner_);
   return menu_runner_->closing_event_time();
+}
+
+views::Widget* AppMenuModelAdapter::GetSubmenuWidget() {
+  if (root_ && root_->GetSubmenu())
+    return root_->GetSubmenu()->GetWidget();
+  return nullptr;
 }
 
 void AppMenuModelAdapter::ExecuteCommand(int id, int mouse_event_flags) {

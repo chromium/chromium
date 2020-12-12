@@ -54,7 +54,10 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
 
   base::TimeTicks GetClosingEventTime();
 
-  // Overridden from views::MenuModelAdapter:
+  // Gets the widget associated with the submenu. May return nullptr.
+  views::Widget* GetSubmenuWidget();
+
+  // views::MenuModelAdapter:
   void ExecuteCommand(int id, int mouse_event_flags) override;
   void OnMenuClosed(views::MenuItemView* menu) override;
 

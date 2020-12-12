@@ -31,6 +31,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_settings.h"
+#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -803,6 +804,17 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
 void RootWindowController::HideContextMenu() {
   if (root_window_menu_model_adapter_)
     root_window_menu_model_adapter_->Cancel();
+}
+
+void RootWindowController::HideContextMenuNoAnimation() {
+  if (!IsContextMenuShown())
+    return;
+
+  views::Widget* submenu_widget =
+      root_window_menu_model_adapter_->GetSubmenuWidget();
+  DCHECK(submenu_widget);
+  ScopedAnimationDisabler disable(submenu_widget->GetNativeWindow());
+  root_window_menu_model_adapter_->Cancel();
 }
 
 bool RootWindowController::IsContextMenuShown() const {

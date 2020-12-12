@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -212,6 +213,9 @@ metrics_util::ReportCallback DeskActivationAnimation::GetReportCallback()
 }
 
 void DeskActivationAnimation::PrepareDeskForScreenshot(int index) {
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers())
+    root_window_controller->HideContextMenuNoAnimation();
+
   // The order here matters. Overview must end before ending tablet split view
   // before switching desks. (If clamshell split view is active on one or more
   // displays, then it simply will end when we end overview.) That's because
@@ -281,6 +285,9 @@ void DeskRemovalAnimation::OnStartingDeskScreenshotTakenInternal(
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   split_view_controller->EndSplitView(
       SplitViewController::EndReason::kDesksChange);
+
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers())
+    root_window_controller->HideContextMenuNoAnimation();
 
   // At the end of phase (1), we activate the target desk (i.e. the desk that
   // will be activated after the active desk `desk_to_remove_index_` is
