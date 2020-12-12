@@ -33,8 +33,7 @@ PointScanLayer::PointScanLayer(AccessibilityLayerDelegate* delegate)
     : AccessibilityLayer(delegate) {
   aura::Window* root_window =
       Shell::GetRootWindowForDisplayId(GetPrimaryDisplay().id());
-  CreateOrUpdateLayer(root_window, "PointScanning", gfx::Rect(),
-                      /*stack_at_top=*/true);
+  CreateOrUpdateLayer(root_window, "PointScanning", gfx::Rect());
   SetOpacity(1.0);
   bounds_ = GetPrimaryDisplay().bounds();
   layer()->SetBounds(bounds_);

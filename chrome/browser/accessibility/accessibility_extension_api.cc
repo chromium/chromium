@@ -149,23 +149,6 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
         NOTREACHED();
     }
 
-    if (focus_ring_info.stacking_order) {
-      switch (focus_ring_info.stacking_order) {
-        case accessibility_private::
-            FOCUS_RING_STACKING_ORDER_ABOVEACCESSIBILITYBUBBLES:
-          focus_ring->stacking_order =
-              ash::FocusRingStackingOrder::ABOVE_ACCESSIBILITY_BUBBLES;
-          break;
-        case accessibility_private::
-            FOCUS_RING_STACKING_ORDER_BELOWACCESSIBILITYBUBBLES:
-          focus_ring->stacking_order =
-              ash::FocusRingStackingOrder::BELOW_ACCESSIBILITY_BUBBLES;
-          break;
-        default:
-          NOTREACHED();
-      }
-    }
-
     if (focus_ring_info.background_color &&
         !extensions::image_util::ParseHexColorString(
             *(focus_ring_info.background_color),

@@ -198,22 +198,12 @@ chrome.accessibilityPrivate.FocusType = {
 };
 
 /**
- * @enum {string}
- */
-chrome.accessibilityPrivate.FocusRingStackingOrder = {
-  ABOVE_ACCESSIBILITY_BUBBLES: 'aboveAccessibilityBubbles',
-  BELOW_ACCESSIBILITY_BUBBLES: 'belowAccessibilityBubbles',
-};
-
-/**
  * @typedef {{
  *   rects: !Array<!chrome.accessibilityPrivate.ScreenRect>,
  *   type: !chrome.accessibilityPrivate.FocusType,
  *   color: string,
  *   secondaryColor: (string|undefined),
  *   backgroundColor: (string|undefined),
- *   stackingOrder:
- * (!chrome.accessibilityPrivate.FocusRingStackingOrder|undefined),
  *   id: (string|undefined)
  * }}
  */
