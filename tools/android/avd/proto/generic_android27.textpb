@@ -1,0 +1,25 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-27 AVD.
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "ENIPc1mAlnolpqdZrJ0XtZMcBL6-6-POlF58Pv29LKsC"
+  dest_path: ".emulator_sdk"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-27/google_apis/x86"
+  version: "zFuuM-mI-LC1s9o2ONK2_OiC1i1Hj1LD_dESrZQNZjIC"
+  dest_path: ".emulator_sdk"
+}
+system_image_name: "system-images;android-27;google_apis;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-27/google_apis/x86"
+  version: "hbA16tc600yzZRe9shT849n3WGTQm5RSchGFf2FS33MC"
+  dest_path: ".android"
+}
+avd_name: "android_27_google_apis_x86"
