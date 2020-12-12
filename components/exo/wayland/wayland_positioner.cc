@@ -299,7 +299,7 @@ void WaylandPositioner::SetGravity(uint32_t gravity) {
   gravity_y_ = decompose.second;
 }
 
-WaylandPositioner::Result WaylandPositioner::CalculatePosition(
+WaylandPositioner::Result WaylandPositioner::CalculateBounds(
     const gfx::Rect& work_area,
     bool flip_x,
     bool flip_y) const {
@@ -359,9 +359,10 @@ WaylandPositioner::Result WaylandPositioner::CalculatePosition(
           {work_area.y(), work_area.bottom()},
           {anchor_rect_.y(), anchor_rect_.bottom()}, size_.height(), offset_y,
           anchor_y, gravity_y, adjustments_y);
-  return {{x.first.start, y.first.start},
-          {x.first.end - x.first.start, y.first.end - y.first.start},
-          x.second.flip ? !flip_x : flip_x,
+  gfx::Point origin(x.first.start, y.first.start);
+  gfx::Size size(std::max(1, x.first.end - x.first.start),
+                 std::max(1, y.first.end - y.first.start));
+  return {origin, size, x.second.flip ? !flip_x : flip_x,
           y.second.flip ? !flip_y : flip_y};
 }
 

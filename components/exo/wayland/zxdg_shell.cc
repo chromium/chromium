@@ -557,7 +557,7 @@ void xdg_surface_v6_get_popup(wl_client* client,
   // Try layout using parent's flip state.
   WaylandPositioner* positioner =
       GetUserDataAs<WaylandPositioner>(positioner_resource);
-  WaylandPositioner::Result position = positioner->CalculatePosition(
+  WaylandPositioner::Result position = positioner->CalculateBounds(
       work_area, parent_data->shell_surface->x_flipped(),
       parent_data->shell_surface->y_flipped());
 

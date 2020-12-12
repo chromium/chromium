@@ -58,7 +58,7 @@ class WaylandPositionerTest : public testing::Test {
     }
 
     WaylandPositioner::Result Solve() const {
-      return positioner.CalculatePosition(work_area, flip_x, flip_y);
+      return positioner.CalculateBounds(work_area, flip_x, flip_y);
     }
 
     gfx::Rect SolveToRect() const {
@@ -363,6 +363,27 @@ TEST_F(WaylandPositionerTest, PreventsSlidingThatOccludesAnchorRect) {
                 .SetAdjustment(~XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_NONE)
                 .SolveToRect(),
             gfx::Rect(1, 1, 4, 4));
+}
+
+// Make sure that the size should never be an empty even if the constraints
+// resulted in empty size.
+TEST_F(WaylandPositionerTest, ResizableShouldNotBeEmpty) {
+  EXPECT_EQ(TestCaseBuilder(WaylandPositioner::Version::STABLE)
+                .SetSize(3, 3)
+                .SetGravity(XDG_POSITIONER_GRAVITY_BOTTOM)
+                .SetAnchor(XDG_POSITIONER_ANCHOR_BOTTOM)
+                .SetAdjustment(~XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_NONE)
+                .SetAnchorRect(1, -10, 4, 4)
+                .SolveToRect(),
+            gfx::Rect(2, 0, 3, 1));
+  EXPECT_EQ(TestCaseBuilder(WaylandPositioner::Version::STABLE)
+                .SetSize(3, 3)
+                .SetGravity(XDG_POSITIONER_GRAVITY_RIGHT)
+                .SetAnchor(XDG_POSITIONER_ANCHOR_RIGHT)
+                .SetAdjustment(~XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_NONE)
+                .SetAnchorRect(-10, 2, 4, 4)
+                .SolveToRect(),
+            gfx::Rect(0, 2, 1, 3));
 }
 
 }  // namespace

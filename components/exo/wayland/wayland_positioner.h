@@ -35,10 +35,10 @@ class WaylandPositioner {
 
   WaylandPositioner(Version v) : version_(v) {}
 
-  // Calculate and return position from current state.
-  Result CalculatePosition(const gfx::Rect& work_area,
-                           bool flip_x,
-                           bool flip_y) const;
+  // Calculate and return bounds from current state.
+  Result CalculateBounds(const gfx::Rect& work_area,
+                         bool flip_x,
+                         bool flip_y) const;
 
   void SetSize(gfx::Size size) { size_ = std::move(size); }
 
