@@ -16,7 +16,7 @@ void NativeFileSystemTabHelper::DidFinishNavigation(
   if (!navigation->IsInMainFrame() || !navigation->HasCommitted())
     return;
 
-  auto src_origin = url::Origin::Create(navigation->GetPreviousURL());
+  auto src_origin = url::Origin::Create(navigation->GetPreviousMainFrameURL());
   auto dest_origin = url::Origin::Create(navigation->GetURL());
 
   if (src_origin == dest_origin)

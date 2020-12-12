@@ -266,7 +266,7 @@ class CONTENT_EXPORT NavigationHandle {
 
   // The previous main frame URL that the user was on. This may be empty if
   // there was no last committed entry.
-  virtual const GURL& GetPreviousURL() = 0;
+  virtual const GURL& GetPreviousMainFrameURL() = 0;
 
   // Returns the remote address of the socket which fetched this resource.
   virtual net::IPEndPoint GetSocketAddress() = 0;

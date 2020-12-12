@@ -1059,14 +1059,14 @@ bool NavigationControllerImpl::RendererDidNavigate(
       entries_[last_committed_entry_index_] =
           std::move(entry_replaced_by_post_commit_error_);
     }
-    details->previous_url = GetLastCommittedEntry()->GetURL();
+    details->previous_main_frame_url = GetLastCommittedEntry()->GetURL();
     details->previous_entry_index = GetLastCommittedEntryIndex();
     if (pending_entry_ &&
         pending_entry_->GetIsOverridingUserAgent() !=
             GetLastCommittedEntry()->GetIsOverridingUserAgent())
       overriding_user_agent_changed = true;
   } else {
-    details->previous_url = GURL();
+    details->previous_main_frame_url = GURL();
     details->previous_entry_index = -1;
   }
 

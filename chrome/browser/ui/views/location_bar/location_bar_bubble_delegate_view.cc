@@ -146,7 +146,7 @@ void LocationBarBubbleDelegateView::DidFinishNavigation(
   }
 
   // Close dialog when navigating to a different domain.
-  if (!url::IsSameOriginWith(navigation_handle->GetPreviousURL(),
+  if (!url::IsSameOriginWith(navigation_handle->GetPreviousMainFrameURL(),
                              navigation_handle->GetURL())) {
     CloseBubble();
   }

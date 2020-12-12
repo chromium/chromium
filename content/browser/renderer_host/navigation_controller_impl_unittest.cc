@@ -261,7 +261,7 @@ class LoadCommittedDetailsObserver : public WebContentsObserver {
         did_replace_entry_(false) {}
 
   NavigationType navigation_type() { return navigation_type_; }
-  const GURL& previous_url() { return previous_url_; }
+  const GURL& previous_main_frame_url() { return previous_main_frame_url_; }
   ReloadType reload_type() { return reload_type_; }
   bool is_same_document() { return is_same_document_; }
   bool is_main_frame() { return is_main_frame_; }
@@ -275,7 +275,7 @@ class LoadCommittedDetailsObserver : public WebContentsObserver {
 
     navigation_type_ =
         NavigationRequest::From(navigation_handle)->navigation_type();
-    previous_url_ = navigation_handle->GetPreviousURL();
+    previous_main_frame_url_ = navigation_handle->GetPreviousMainFrameURL();
     reload_type_ = navigation_handle->GetReloadType();
     is_same_document_ = navigation_handle->IsSameDocument();
     is_main_frame_ = navigation_handle->IsInMainFrame();
@@ -284,7 +284,7 @@ class LoadCommittedDetailsObserver : public WebContentsObserver {
   }
 
   NavigationType navigation_type_;
-  GURL previous_url_;
+  GURL previous_main_frame_url_;
   ReloadType reload_type_;
   bool is_same_document_;
   bool is_main_frame_;
@@ -1880,7 +1880,7 @@ TEST_F(NavigationControllerTest, NewSubframe) {
   NavigationSimulator::NavigateAndCommitFromDocument(url2, subframe);
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
-  EXPECT_EQ(url1, observer.previous_url());
+  EXPECT_EQ(url1, observer.previous_main_frame_url());
   EXPECT_FALSE(observer.is_same_document());
   EXPECT_FALSE(observer.is_main_frame());
 

@@ -288,7 +288,7 @@ class CONTENT_EXPORT NavigationRequest
   bool HasSubframeNavigationEntryCommitted() override;
   bool DidReplaceEntry() override;
   bool ShouldUpdateHistory() override;
-  const GURL& GetPreviousURL() override;
+  const GURL& GetPreviousMainFrameURL() override;
   net::IPEndPoint GetSocketAddress() override;
   const net::HttpRequestHeaders& GetRequestHeaders() override;
   void RemoveRequestHeader(const std::string& header_name) override;
@@ -526,10 +526,11 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationEntry is current.
   // |did_replace_entry| is true if the committed entry has replaced the
   // existing one. A non-user initiated redirect causes such replacement.
+
   void DidCommitNavigation(const mojom::DidCommitProvisionalLoadParams& params,
                            bool navigation_entry_committed,
                            bool did_replace_entry,
-                           const GURL& previous_url,
+                           const GURL& previous_main_frame_url,
                            NavigationType navigation_type);
 
   NavigationType navigation_type() const {
@@ -1305,7 +1306,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // The previous main frame URL that the user was on. This may be empty if
   // there was no last committed entry.
-  GURL previous_url_;
+  GURL previous_main_frame_url_;
 
   // The type of navigation that just occurred. Note that not all types of
   // navigations in the enum are valid here, since some of them don't actually

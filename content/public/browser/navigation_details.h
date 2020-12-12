@@ -36,7 +36,7 @@ struct CONTENT_EXPORT LoadCommittedDetails {
 
   // The previous main frame URL that the user was on. This may be empty if
   // there was no last committed entry.
-  GURL previous_url;
+  GURL previous_main_frame_url;
 
   // True if the committed entry has replaced the exisiting one.
   // A non-user initiated redirect causes such replacement.

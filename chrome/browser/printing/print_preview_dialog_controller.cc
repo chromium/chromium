@@ -427,7 +427,7 @@ void PrintPreviewDialogController::OnPreviewDialogNavigated(
   if (!waiting_for_new_preview_page_ &&
       ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_RELOAD) &&
       details.type == content::NAVIGATION_TYPE_EXISTING_PAGE &&
-      IsPrintPreviewURL(details.previous_url)) {
+      IsPrintPreviewURL(details.previous_main_frame_url)) {
     return;
   }
 

@@ -4244,7 +4244,7 @@ void NavigationRequest::DidCommitNavigation(
     const mojom::DidCommitProvisionalLoadParams& params,
     bool navigation_entry_committed,
     bool did_replace_entry,
-    const GURL& previous_url,
+    const GURL& previous_main_frame_url,
     NavigationType navigation_type) {
   common_params_->url = params.url;
   did_replace_entry_ = did_replace_entry;
@@ -4256,10 +4256,10 @@ void NavigationRequest::DidCommitNavigation(
   // would lead to lots of visits to a particular page, which impacts the
   // visit count.
   if (should_update_history_ && IsSameDocument() && !HasUserGesture() &&
-      params.url == previous_url) {
+      params.url == previous_main_frame_url) {
     should_update_history_ = false;
   }
-  previous_url_ = previous_url;
+  previous_main_frame_url_ = previous_main_frame_url;
   navigation_type_ = navigation_type;
 
   // If an error page reloads, net_error_code might be 200 but we still want to
@@ -4914,9 +4914,9 @@ bool NavigationRequest::ShouldUpdateHistory() {
   return should_update_history_;
 }
 
-const GURL& NavigationRequest::GetPreviousURL() {
+const GURL& NavigationRequest::GetPreviousMainFrameURL() {
   DCHECK(state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE);
-  return previous_url_;
+  return previous_main_frame_url_;
 }
 
 bool NavigationRequest::WasStartedFromContextMenu() {

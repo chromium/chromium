@@ -212,8 +212,9 @@ void ActiveTabPermissionGranter::DidFinishNavigation(
   // we should use WebContents::GetLastCommittedURL().
   content::NavigationEntry* navigation_entry =
       web_contents()->GetController().GetVisibleEntry();
-  if (navigation_entry && navigation_entry->GetURL().GetOrigin() ==
-                              navigation_handle->GetPreviousURL().GetOrigin()) {
+  if (navigation_entry &&
+      navigation_entry->GetURL().GetOrigin() ==
+          navigation_handle->GetPreviousMainFrameURL().GetOrigin()) {
     return;
   }
 

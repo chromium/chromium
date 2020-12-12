@@ -2053,7 +2053,8 @@ void OmniboxViewViews::DidFinishNavigation(
   // is to avoid frequent eliding/uneliding within single-page apps that do
   // frequent fragment navigations.
   if (navigation->IsErrorPage() || !navigation->IsSameDocument() ||
-      !navigation->GetPreviousURL().EqualsIgnoringRef(navigation->GetURL())) {
+      !navigation->GetPreviousMainFrameURL().EqualsIgnoringRef(
+          navigation->GetURL())) {
     ResetToHideOnInteraction();
   }
 }

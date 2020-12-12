@@ -129,7 +129,8 @@ void IntentPickerTabHelper::DidFinishNavigation(
   // follow up CL.
   if (navigation_handle->IsInMainFrame() && navigation_handle->HasCommitted() &&
       (!navigation_handle->IsSameDocument() ||
-       navigation_handle->GetURL() != navigation_handle->GetPreviousURL()) &&
+       navigation_handle->GetURL() !=
+           navigation_handle->GetPreviousMainFrameURL()) &&
       navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
     apps::MaybeShowIntentPicker(navigation_handle);
   }

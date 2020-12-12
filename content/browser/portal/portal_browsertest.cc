@@ -1625,9 +1625,9 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalHistoryWithActivation) {
   // We have an additional navigation entry in the portal host's contents, so
   // that we test that we're retaining more than just the last committed entry
   // of the portal host.
-  GURL previous_url(
+  GURL previous_main_frame_url(
       embedded_test_server()->GetURL("portal.test", "/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), previous_url));
+  EXPECT_TRUE(NavigateToURL(shell(), previous_main_frame_url));
 
   GURL main_url(embedded_test_server()->GetURL("portal.test", "/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1661,7 +1661,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalHistoryWithActivation) {
 
   ASSERT_EQ(3, activated_controller.GetEntryCount());
   ASSERT_EQ(2, activated_controller.GetLastCommittedEntryIndex());
-  EXPECT_EQ(previous_url, activated_controller.GetEntryAtIndex(0)->GetURL());
+  EXPECT_EQ(previous_main_frame_url,
+            activated_controller.GetEntryAtIndex(0)->GetURL());
   EXPECT_EQ(main_url, activated_controller.GetEntryAtIndex(1)->GetURL());
   EXPECT_EQ(portal_url, activated_controller.GetEntryAtIndex(2)->GetURL());
 }

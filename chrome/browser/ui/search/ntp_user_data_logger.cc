@@ -631,7 +631,7 @@ NTPUserDataLogger::NTPUserDataLogger(content::WebContents* contents)
 // content::WebContentsObserver override
 void NTPUserDataLogger::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
-  NavigatedFromURLToURL(load_details.previous_url,
+  NavigatedFromURLToURL(load_details.previous_main_frame_url,
                         load_details.entry->GetURL());
 }
 

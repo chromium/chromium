@@ -287,7 +287,7 @@ void TestingOmniboxView::NavigateAndExpectElided(
   content::MockNavigationHandle navigation;
   navigation.set_is_same_document(is_same_document);
   navigation.set_url(url);
-  navigation.set_previous_url(previous_url);
+  navigation.set_previous_main_frame_url(previous_url);
   DidStartNavigation(&navigation);
   location_bar_model_->set_url(url);
   location_bar_model_->set_url_for_display(base::ASCIIToUTF16(url.spec()));
@@ -307,7 +307,7 @@ void TestingOmniboxView::NavigateAndExpectUnelided(
   content::MockNavigationHandle navigation;
   navigation.set_is_same_document(is_same_document);
   navigation.set_url(GURL(url));
-  navigation.set_previous_url(previous_url);
+  navigation.set_previous_main_frame_url(previous_url);
   DidStartNavigation(&navigation);
   location_bar_model_->set_url(GURL(url));
   location_bar_model_->set_url_for_display(url);

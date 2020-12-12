@@ -411,9 +411,9 @@ void Navigator::DidNavigate(
   if (details.type != NAVIGATION_TYPE_NAV_IGNORE && delegate_) {
     DCHECK_EQ(!render_frame_host->GetParent(),
               did_navigate ? details.is_main_frame : false);
-    navigation_request->DidCommitNavigation(params, did_navigate,
-                                            details.did_replace_entry,
-                                            details.previous_url, details.type);
+    navigation_request->DidCommitNavigation(
+        params, did_navigate, details.did_replace_entry,
+        details.previous_main_frame_url, details.type);
     navigation_request.reset();
   }
 

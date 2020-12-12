@@ -51,7 +51,8 @@ void BackGestureContextualNudgeDelegate::DidFinishNavigation(
   if (navigation_handle->HasCommitted() &&
       (navigation_handle->IsInMainFrame() ||
        navigation_handle->HasSubframeNavigationEntryCommitted()) &&
-      (navigation_handle->GetURL() != navigation_handle->GetPreviousURL())) {
+      (navigation_handle->GetURL() !=
+       navigation_handle->GetPreviousMainFrameURL())) {
     controller_->NavigationEntryChanged(window_);
   }
 }

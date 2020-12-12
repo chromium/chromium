@@ -32,7 +32,8 @@ void CrOSActionRecorderTabTracker::DidFinishNavigation(
     return;
   }
 
-  const std::string& previous_url = navigation_handle->GetPreviousURL().spec();
+  const std::string& previous_url =
+      navigation_handle->GetPreviousMainFrameURL().spec();
   const std::string& url = web_contents()->GetURL().spec();
 
   // Only record when navigates to a new url.

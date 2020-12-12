@@ -483,7 +483,8 @@ void WebContentsViewAura::AsyncDropNavigationObserver::DidFinishNavigation(
   // navigated subframe is the intended drop target. Err on the side of security
   // and disallow the drop if any navigation commits to a different url.
   if (navigation_handle->HasCommitted() &&
-      (navigation_handle->GetURL() != navigation_handle->GetPreviousURL())) {
+      (navigation_handle->GetURL() !=
+       navigation_handle->GetPreviousMainFrameURL())) {
     drop_allowed_ = false;
   }
 }

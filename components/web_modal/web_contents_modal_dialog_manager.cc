@@ -134,7 +134,8 @@ void WebContentsModalDialogManager::DidFinishNavigation(
 
   // Close constrained windows if necessary.
   if (!net::registry_controlled_domains::SameDomainOrHost(
-          navigation_handle->GetPreviousURL(), navigation_handle->GetURL(),
+          navigation_handle->GetPreviousMainFrameURL(),
+          navigation_handle->GetURL(),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES))
     CloseAllDialogs();
 }
