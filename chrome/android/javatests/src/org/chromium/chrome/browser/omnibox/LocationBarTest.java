@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,14 +27,18 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -57,6 +62,12 @@ public class LocationBarTest {
 
     @Mock
     TemplateUrlService mTemplateUrlService;
+    @Mock
+    private TemplateUrl mGoogleSearchEngine;
+    @Mock
+    private TemplateUrl mNonGoogleSearchEngine;
+    @Mock
+    private LocaleManager mLocaleManager;
 
     ChromeTabbedActivity mActivity;
     UrlBar mUrlBar;
@@ -66,6 +77,13 @@ public class LocationBarTest {
     @Before
     public void setUp() throws InterruptedException {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        LocaleManager.setInstanceForTest(mLocaleManager);
+    }
+
+    @After
+    public void tearDown() {
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
+        LocaleManager.setInstanceForTest(null);
     }
 
     private void startActivityNormally() {
@@ -201,5 +219,34 @@ public class LocationBarTest {
             mLocationBarMediator.onConfigurationChanged(configuration);
             Assert.assertFalse(mLocationBarMediator.isUrlBarFocused());
         });
+    }
+
+    @Test
+    @MediumTest
+    public void testTemplateUrlServiceChange() throws InterruptedException {
+        doReturn(false).when(mLocaleManager).needToCheckForSearchEnginePromo();
+        doReturn(mGoogleSearchEngine).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        startActivityNormally();
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mLocationBarMediator.onTemplateURLServiceChanged());
+
+        mActivityTestRule.typeInOmnibox("", true);
+        Assert.assertEquals(R.drawable.ic_logo_googleg_20dp,
+                mLocationBarMediator.getStatusCoordinatorForTesting()
+                        .getSecurityIconResourceIdForTesting());
+
+        doReturn(mNonGoogleSearchEngine)
+                .when(mTemplateUrlService)
+                .getDefaultSearchEngineTemplateUrl();
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mLocationBarMediator.onTemplateURLServiceChanged());
+
+        mActivityTestRule.typeInOmnibox("", true);
+        Assert.assertEquals(R.drawable.ic_search,
+                mLocationBarMediator.getStatusCoordinatorForTesting()
+                        .getSecurityIconResourceIdForTesting());
     }
 }

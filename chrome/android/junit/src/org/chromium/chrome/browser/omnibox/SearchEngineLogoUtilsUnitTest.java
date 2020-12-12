@@ -33,7 +33,6 @@ import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils.Delegate;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -71,8 +70,6 @@ public class SearchEngineLogoUtilsUnitTest {
         mBitmap = Shadow.newInstanceOf(Bitmap.class);
         shadowOf(mBitmap).appendDescription("test");
 
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-
         SearchEngineLogoUtils.resetCacheForTesting();
         SearchEngineLogoUtils.setDelegateForTesting(mDelegate);
         SearchEngineLogoUtils.setFaviconHelperForTesting(mFaviconHelper);
@@ -99,8 +96,8 @@ public class SearchEngineLogoUtilsUnitTest {
 
     @Test
     public void getSearchEngineLogoFavicon() {
-        SearchEngineLogoUtils.getSearchEngineLogoFavicon(
-                Mockito.mock(Profile.class), Mockito.mock(Resources.class), mCallback);
+        SearchEngineLogoUtils.getSearchEngineLogoFavicon(Mockito.mock(Profile.class),
+                Mockito.mock(Resources.class), mCallback, mTemplateUrlService);
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         assertNotNull(faviconCallback);
         faviconCallback.onFaviconAvailable(mBitmap, LOGO_URL);
@@ -114,13 +111,13 @@ public class SearchEngineLogoUtilsUnitTest {
 
     @Test
     public void getSearchEngineLogoFavicon_faviconCached() {
-        SearchEngineLogoUtils.getSearchEngineLogoFavicon(
-                Mockito.mock(Profile.class), Mockito.mock(Resources.class), mCallback);
+        SearchEngineLogoUtils.getSearchEngineLogoFavicon(Mockito.mock(Profile.class),
+                Mockito.mock(Resources.class), mCallback, mTemplateUrlService);
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         assertNotNull(faviconCallback);
         faviconCallback.onFaviconAvailable(mBitmap, LOGO_URL);
-        SearchEngineLogoUtils.getSearchEngineLogoFavicon(
-                Mockito.mock(Profile.class), Mockito.mock(Resources.class), mCallback);
+        SearchEngineLogoUtils.getSearchEngineLogoFavicon(Mockito.mock(Profile.class),
+                Mockito.mock(Resources.class), mCallback, mTemplateUrlService);
         assertEquals(2,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
                         SearchEngineLogoUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
@@ -135,8 +132,8 @@ public class SearchEngineLogoUtilsUnitTest {
     @Test
     public void getSearchEngineLogoFavicon_nullUrl() {
         doReturn(null).when(mTemplateUrlService).getUrlForSearchQuery(any());
-        SearchEngineLogoUtils.getSearchEngineLogoFavicon(
-                Mockito.mock(Profile.class), Mockito.mock(Resources.class), mCallback);
+        SearchEngineLogoUtils.getSearchEngineLogoFavicon(Mockito.mock(Profile.class),
+                Mockito.mock(Resources.class), mCallback, mTemplateUrlService);
         verify(mCallback).onResult(null);
         assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
@@ -152,8 +149,8 @@ public class SearchEngineLogoUtilsUnitTest {
                      any(), any(), anyInt(), mCallbackCaptor.capture()))
                 .thenReturn(false);
 
-        SearchEngineLogoUtils.getSearchEngineLogoFavicon(
-                Mockito.mock(Profile.class), Mockito.mock(Resources.class), mCallback);
+        SearchEngineLogoUtils.getSearchEngineLogoFavicon(Mockito.mock(Profile.class),
+                Mockito.mock(Resources.class), mCallback, mTemplateUrlService);
         verify(mCallback).onResult(null);
         assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(EVENTS_HISTOGRAM,
@@ -165,8 +162,8 @@ public class SearchEngineLogoUtilsUnitTest {
 
     @Test
     public void getSearchEngineLogoFavicon_returnedBitmapNull() {
-        SearchEngineLogoUtils.getSearchEngineLogoFavicon(
-                Mockito.mock(Profile.class), Mockito.mock(Resources.class), mCallback);
+        SearchEngineLogoUtils.getSearchEngineLogoFavicon(Mockito.mock(Profile.class),
+                Mockito.mock(Resources.class), mCallback, mTemplateUrlService);
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         assertNotNull(faviconCallback);
         faviconCallback.onFaviconAvailable(null, LOGO_URL);

@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -121,6 +122,10 @@ public class LocationBarMediatorTest {
     private KeyEvent mKeyEvent;
     @Mock
     private KeyEvent.DispatcherState mKeyDispatcherState;
+    @Mock
+    private TemplateUrl mGoogleSearchEngine;
+    @Mock
+    private TemplateUrl mNonGoogleSearchEngine;
 
     @Captor
     private ArgumentCaptor<Runnable> mRunnableCaptor;
@@ -489,6 +494,49 @@ public class LocationBarMediatorTest {
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_9, mKeyEvent));
 
         verify(mLocationBarLayout).handleUrlFocusAnimation(true);
+    }
+
+    @Test
+    public void testTemplateUrlServiceChanged() {
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(mNonGoogleSearchEngine)
+                .when(mTemplateUrlService)
+                .getDefaultSearchEngineTemplateUrl();
+        mMediator.onFinishNativeInitialization();
+        mMediator.registerTemplateUrlObserver();
+
+        verify(mLocationBarLayout)
+                .updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                                                      mLocationBarDataProvider.isIncognito()),
+                        false, SearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
+
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(mGoogleSearchEngine).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
+        mMediator.onTemplateURLServiceChanged();
+
+        verify(mLocationBarLayout)
+                .updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                                                      mLocationBarDataProvider.isIncognito()),
+                        true, SearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
+
+        // Calling onTemplateURLServiceChanged with the exact same data shouldn't trigger any calls.
+        mMediator.onTemplateURLServiceChanged();
+
+        verify(mLocationBarLayout, times(1))
+                .updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                                                      mLocationBarDataProvider.isIncognito()),
+                        true, SearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
+
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(mNonGoogleSearchEngine)
+                .when(mTemplateUrlService)
+                .getDefaultSearchEngineTemplateUrl();
+        mMediator.onTemplateURLServiceChanged();
+
+        verify(mLocationBarLayout, times(2))
+                .updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                                                      mLocationBarDataProvider.isIncognito()),
+                        false, SearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {

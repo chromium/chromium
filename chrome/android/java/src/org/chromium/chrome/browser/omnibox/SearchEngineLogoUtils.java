@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -21,10 +20,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserStartupController;
 
 import java.lang.annotation.Retention;
@@ -156,14 +155,6 @@ public class SearchEngineLogoUtils {
         return sDelegate.shouldShowSearchLoupeEverywhere(isOffTheRecord);
     }
 
-    /**
-     * @return True if the given url is the same domain as the DSE.
-     */
-    public static boolean doesUrlMatchDefaultSearchEngine(String url) {
-        if (TextUtils.isEmpty(url)) return false;
-        return UrlUtilities.sameDomainOrHost(url, getSearchLogoUrl(), false);
-    }
-
     /** @return Whether the status icon should be hidden when the LocationBar is unfocused. */
     public static boolean currentlyOnNTP(LocationBarDataProvider locationBarDataProvider) {
         return locationBarDataProvider != null
@@ -171,12 +162,12 @@ public class SearchEngineLogoUtils {
     }
 
     /**
-     * @return The search URL of the current DSE or null if one cannot be found.
+     * @param templateUrlService The TemplateUrlService to use to derive the logo url.
+     * Returns the search URL of the current DSE or null if one cannot be found.
      */
     @Nullable
-    public static String getSearchLogoUrl() {
-        String logoUrlWithPath =
-                TemplateUrlServiceFactory.get().getUrlForSearchQuery(DUMMY_URL_QUERY);
+    public static String getSearchLogoUrl(TemplateUrlService templateUrlService) {
+        String logoUrlWithPath = templateUrlService.getUrlForSearchQuery(DUMMY_URL_QUERY);
         if (logoUrlWithPath == null || !UrlUtilities.isHttpOrHttps(logoUrlWithPath)) {
             return logoUrlWithPath;
         }
@@ -223,12 +214,12 @@ public class SearchEngineLogoUtils {
      * @param resources Provides access to Android resources.
      * @param callback How the bitmap will be returned to the caller.
      */
-    public static void getSearchEngineLogoFavicon(
-            Profile profile, Resources resources, Callback<Bitmap> callback) {
+    public static void getSearchEngineLogoFavicon(Profile profile, Resources resources,
+            Callback<Bitmap> callback, TemplateUrlService templateUrlService) {
         recordEvent(Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
         if (sFaviconHelper == null) sFaviconHelper = new FaviconHelper();
 
-        String logoUrl = getSearchLogoUrl();
+        String logoUrl = getSearchLogoUrl(templateUrlService);
         if (logoUrl == null) {
             callback.onResult(null);
             recordEvent(Events.FETCH_FAILED_NULL_URL);
@@ -237,7 +228,7 @@ public class SearchEngineLogoUtils {
 
         // Return a cached copy if it's available.
         if (sCachedComposedBackground != null
-                && sCachedComposedBackgroundLogoUrl.equals(getSearchLogoUrl())) {
+                && sCachedComposedBackgroundLogoUrl.equals(getSearchLogoUrl(templateUrlService))) {
             callback.onResult(sCachedComposedBackground);
             recordEvent(Events.FETCH_SUCCESS_CACHE_HIT);
             return;

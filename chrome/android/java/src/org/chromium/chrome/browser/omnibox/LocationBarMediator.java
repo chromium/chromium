@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
@@ -42,7 +43,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
@@ -59,7 +62,7 @@ import java.util.List;
 class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDelegate,
                                      VoiceRecognitionHandler.Delegate,
                                      AssistantVoiceSearchService.Observer, UrlBarDelegate,
-                                     OnKeyListener, ComponentCallbacks {
+                                     OnKeyListener, ComponentCallbacks, TemplateUrlServiceObserver {
     private final LocationBarLayout mLocationBarLayout;
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
     private final LocationBarDataProvider mLocationBarDataProvider;
@@ -76,6 +79,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private final LocaleManager mLocaleManager;
     private final List<Runnable> mDeferredNativeRunnables = new ArrayList<>();
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
+    private TemplateUrl mSearchEngine;
 
     private boolean mNativeInitialized;
 
@@ -127,6 +131,10 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
         mDeferredNativeRunnables.clear();
+        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+        if (templateUrlService != null) {
+            templateUrlService.removeObserver(this);
+        }
     }
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
@@ -135,6 +143,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     /*package */ void onFinishNativeInitialization() {
         mNativeInitialized = true;
+        mTemplateUrlServiceSupplier.get().runWhenLoaded(this::registerTemplateUrlObserver);
         mOmniboxPrerender = new OmniboxPrerender();
         Context context = mLocationBarLayout.getContext();
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(context,
@@ -320,6 +329,19 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     /* package */ void updateButtonVisibility() {
         mLocationBarLayout.updateButtonVisibility();
+    }
+
+    /* package */ StatusCoordinator getStatusCoordinatorForTesting() {
+        return mStatusCoordinator;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    /* package */ void registerTemplateUrlObserver() {
+        final TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+        templateUrlService.addObserver(this);
+
+        // Force an update once to populate initial data.
+        onTemplateURLServiceChanged();
     }
 
     // Private methods
@@ -564,4 +586,23 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public void onLowMemory() {}
+
+    // TemplateUrlServiceObserver implementation.
+
+    @Override
+    public void onTemplateURLServiceChanged() {
+        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+        TemplateUrl searchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
+        if ((mSearchEngine == null && searchEngine == null)
+                || (mSearchEngine != null && mSearchEngine.equals(searchEngine))) {
+            return;
+        }
+
+        mSearchEngine = searchEngine;
+        mLocationBarLayout.updateSearchEngineStatusIcon(
+                SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito()),
+                templateUrlService.isDefaultSearchEngineGoogle(),
+                SearchEngineLogoUtils.getSearchLogoUrl(templateUrlService));
+    }
 }

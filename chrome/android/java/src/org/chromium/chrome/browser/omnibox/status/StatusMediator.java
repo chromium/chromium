@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -39,8 +40,8 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     class StatusMediatorDelegate {
         /** @see {@link SearchEngineLogoUtils#getSearchEngineLogoFavicon} */
         void getSearchEngineLogoFavicon(Resources res, Callback<Bitmap> callback) {
-            SearchEngineLogoUtils.getSearchEngineLogoFavicon(
-                    Profile.getLastUsedRegularProfile(), res, callback);
+            SearchEngineLogoUtils.getSearchEngineLogoFavicon(Profile.getLastUsedRegularProfile(),
+                    res, callback, TemplateUrlServiceFactory.get());
         }
 
         /** @see {@link SearchEngineLogoUtils#shouldShowSearchEngineLogo} */

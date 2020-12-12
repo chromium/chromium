@@ -46,9 +46,6 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
@@ -98,8 +95,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
 
     private OneshotSupplier<AssistantVoiceSearchService> mAssistantVoiceSearchServiceSupplier;
 
-    private TemplateUrlServiceObserver mTemplateUrlObserver;
-
     public LocationBarLayout(Context context, AttributeSet attrs) {
         this(context, attrs, R.layout.location_bar);
 
@@ -127,11 +122,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         if (mAutocompleteCoordinator != null) {
             // Don't call destroy() on mAutocompleteCoordinator since we don't own it.
             mAutocompleteCoordinator = null;
-        }
-
-        if (mTemplateUrlObserver != null) {
-            TemplateUrlServiceFactory.get().removeObserver(mTemplateUrlObserver);
-            mTemplateUrlObserver = null;
         }
 
         mUrlCoordinator = null;
@@ -193,7 +183,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
      *  Signals to LocationBarLayout that's it safe to call code that requires native to be loaded.
      */
     public void onFinishNativeInitialization() {
-        TemplateUrlServiceFactory.get().runWhenLoaded(this::registerTemplateUrlObserver);
         mNativeInitialized = true;
 
         updateMicButtonState();
@@ -467,37 +456,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
     @CallSuper
     protected void setUrlFocusChangeFraction(float fraction) {
         mUrlFocusChangeFraction = fraction;
-    }
-
-    private void registerTemplateUrlObserver() {
-        final TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
-        assert mTemplateUrlObserver == null;
-        mTemplateUrlObserver = new TemplateUrlServiceObserver() {
-            private TemplateUrl mSearchEngine =
-                    templateUrlService.getDefaultSearchEngineTemplateUrl();
-
-            @Override
-            public void onTemplateURLServiceChanged() {
-                TemplateUrl searchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
-                if ((mSearchEngine == null && searchEngine == null)
-                        || (mSearchEngine != null && mSearchEngine.equals(searchEngine))) {
-                    return;
-                }
-
-                mSearchEngine = searchEngine;
-                updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                                                     mLocationBarDataProvider.isIncognito()),
-                        TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle(),
-                        SearchEngineLogoUtils.getSearchLogoUrl());
-            }
-        };
-        templateUrlService.addObserver(mTemplateUrlObserver);
-
-        // Force an update once to populate initial data.
-        updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                                             mLocationBarDataProvider.isIncognito()),
-                TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle(),
-                SearchEngineLogoUtils.getSearchLogoUrl());
     }
 
     /**
