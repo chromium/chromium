@@ -651,6 +651,7 @@ TEST_F(AccessibilityTest, TestSelectionActionHandling) {
     action_data.selection_start_index.char_index = sel_action.start_char_index;
     action_data.selection_end_index.page_index = sel_action.end_page_index;
     action_data.selection_end_index.char_index = sel_action.end_char_index;
+    action_data.target_rect = {{0, 0}, {0, 0}};
 
     engine->HandleAccessibilityAction(action_data);
     Selection actual_selection;
@@ -666,6 +667,66 @@ TEST_F(AccessibilityTest, TestSelectionActionHandling) {
               expected_selection.end_page_index);
     EXPECT_EQ(actual_selection.end_char_index,
               expected_selection.end_char_index);
+  }
+}
+
+// Tests if PP_PDF_SET_SELECTION updates scroll offsets if the selection is not
+// in the current visible rect.
+TEST_F(AccessibilityTest, TestSetSelectionAndScroll) {
+  struct Selection {
+    uint32_t start_page_index;
+    uint32_t start_char_index;
+    uint32_t end_page_index;
+    uint32_t end_char_index;
+  };
+
+  struct TestCase {
+    Selection action;
+    Selection expected_result;
+    gfx::Vector2d scroll_offset;
+  };
+
+  static constexpr TestCase kTestCases[] = {
+      {{0, 15, 0, 15}, {0, 15, 0, 15}, {0, 0}},
+      {{1, 15, 1, 15}, {1, 15, 1, 15}, {28, 517}},
+  };
+
+  ScrollEnabledTestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  engine->PluginSizeUpdated({400, 400});
+
+  int index = 0;
+  for (const auto& test_case : kTestCases) {
+    PP_PdfAccessibilityActionData action_data;
+    action_data.action = PP_PdfAccessibilityAction::PP_PDF_SET_SELECTION;
+    const Selection& sel_action = test_case.action;
+    action_data.selection_start_index.page_index = sel_action.start_page_index;
+    action_data.selection_start_index.char_index = sel_action.start_char_index;
+    action_data.selection_end_index.page_index = sel_action.end_page_index;
+    action_data.selection_end_index.char_index = sel_action.end_char_index;
+    gfx::RectF char_bounds = engine->GetCharBounds(sel_action.start_page_index,
+                                                   sel_action.start_char_index);
+    action_data.target_rect = {{char_bounds.x(), char_bounds.y() + 400 * index},
+                               {char_bounds.width(), char_bounds.height()}};
+
+    engine->HandleAccessibilityAction(action_data);
+    Selection actual_selection;
+    engine->GetSelection(
+        &actual_selection.start_page_index, &actual_selection.start_char_index,
+        &actual_selection.end_page_index, &actual_selection.end_char_index);
+    const Selection& expected_selection = test_case.expected_result;
+    EXPECT_EQ(actual_selection.start_page_index,
+              expected_selection.start_page_index);
+    EXPECT_EQ(actual_selection.start_char_index,
+              expected_selection.start_char_index);
+    EXPECT_EQ(actual_selection.end_page_index,
+              expected_selection.end_page_index);
+    EXPECT_EQ(actual_selection.end_char_index,
+              expected_selection.end_char_index);
+    EXPECT_EQ(test_case.scroll_offset, client.GetScrollRequestDelta());
+    index++;
   }
 }
 
