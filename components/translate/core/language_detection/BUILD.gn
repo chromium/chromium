@@ -18,6 +18,8 @@ static_library("chinese_script_classifier") {
 
 static_library("language_detection") {
   sources = [
+    "language_detection_model.cc",
+    "language_detection_model.h",
     "language_detection_util.cc",
     "language_detection_util.h",
   ]
@@ -37,6 +39,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "chinese_script_classifier_test.cc",
+    "language_detection_model_unittest.cc",
     "language_detection_util_unittest.cc",
   ]
   deps = [

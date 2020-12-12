@@ -13,6 +13,7 @@
 #include "base/json/string_escape.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
@@ -22,6 +23,7 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/common/translate_util.h"
+#include "components/translate/core/language_detection/language_detection_model.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
@@ -58,6 +60,14 @@ const int kTranslateStatusCheckDelayMs = 400;
 
 // Language name passed to the Translate element for it to detect the language.
 const char kAutoDetectionLanguage[] = "auto";
+
+// Returns the language detection model that is shared across the RenderFrames
+// in the renderer.
+translate::LanguageDetectionModel& GetLanguageDetectionModel() {
+  static base::NoDestructor<translate::LanguageDetectionModel> instance;
+  return *instance;
+}
+
 }  // namespace
 
 namespace translate {
@@ -100,22 +110,40 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
       WebLanguageDetectionDetails::CollectLanguageDetectionDetails(document);
   std::string content_language = web_detection_details.content_language.Utf8();
   std::string html_lang = web_detection_details.html_language.Utf8();
-  std::string cld_language;
-  bool is_cld_reliable;
-  std::string language = DeterminePageLanguage(
-      content_language, html_lang, contents, &cld_language, &is_cld_reliable);
+  std::string model_detected_language;
+  bool is_model_reliable;
+
+  std::string language;
+  if (translate::IsTFLiteLanguageDetectionEnabled()) {
+    translate::LanguageDetectionModel& language_detection_model =
+        GetLanguageDetectionModel();
+    bool is_available = language_detection_model.IsAvailable();
+    language = is_available ? language_detection_model.DeterminePageLanguage(
+                                  content_language, html_lang, contents,
+                                  &model_detected_language, &is_model_reliable)
+                            : translate::kUnknownLanguageCode;
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "LanguageDetection.TFLiteModel.WasModelAvailableForDetection",
+        is_available);
+  } else {
+    language =
+        DeterminePageLanguage(content_language, html_lang, contents,
+                              &model_detected_language, &is_model_reliable);
+  }
 
   if (language.empty())
     return;
 
   language_determined_time_ = base::TimeTicks::Now();
 
+  // TODO(crbug.com/1157983): Update the language detection details struct to be
+  // model agnostic.
   LanguageDetectionDetails details;
   details.time = base::Time::Now();
   details.url = web_detection_details.url;
   details.content_language = content_language;
-  details.cld_language = cld_language;
-  details.is_cld_reliable = is_cld_reliable;
+  details.cld_language = model_detected_language;
+  details.is_cld_reliable = is_model_reliable;
   details.has_notranslate = web_detection_details.has_no_translate_meta;
   details.html_root_language = html_lang;
   details.adopted_language = language;

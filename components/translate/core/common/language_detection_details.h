@@ -13,6 +13,8 @@
 
 namespace translate {
 
+// TODO(crbug.com/1157983): Update the language detection details struct to be
+// model agnostic.
 struct LanguageDetectionDetails {
   LanguageDetectionDetails();
   LanguageDetectionDetails(const LanguageDetectionDetails& other);
