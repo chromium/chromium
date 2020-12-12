@@ -12,28 +12,6 @@ namespace {
 
 constexpr uint32_t kMPEG1StartCodeMask = 0xffe00000;
 
-// Map that determines which bitrate_index & channel_mode combinations
-// are allowed.
-// Derived from: http://mpgedit.org/mpgedit/mpeg_format/MP3Format.html
-constexpr bool kIsAllowed[17][4] = {
-    {true, true, true, true},     // free
-    {true, false, false, false},  // 32
-    {true, false, false, false},  // 48
-    {true, false, false, false},  // 56
-    {true, true, true, true},     // 64
-    {true, false, false, false},  // 80
-    {true, true, true, true},     // 96
-    {true, true, true, true},     // 112
-    {true, true, true, true},     // 128
-    {true, true, true, true},     // 160
-    {true, true, true, true},     // 192
-    {false, true, true, true},    // 224
-    {false, true, true, true},    // 256
-    {false, true, true, true},    // 320
-    {false, true, true, true},    // 384
-    {false, false, false, false}  // bad
-};
-
 // Maps version and layer information in the frame header
 // into an index for the |kBitrateMap|.
 // Derived from: http://mpgedit.org/mpgedit/mpeg_format/MP3Format.html
@@ -125,15 +103,8 @@ bool MPEG1AudioStreamParser::ParseHeader(MediaLog* media_log,
     return false;
   }
 
-  if (layer == kLayer2 && !kIsAllowed[bitrate_index][channel_mode]) {
-    if (media_log) {
-      LIMITED_MEDIA_LOG(DEBUG, media_log, *media_log_limit, 5)
-          << "Invalid MP3 (bitrate_index, channel_mode)"
-          << " combination :" << std::hex << " bitrate_index " << bitrate_index
-          << " channel_mode " << channel_mode;
-    }
-    return false;
-  }
+  // Note: For MPEG2 we don't check if a given bitrate or channel layout is
+  // allowed per spec since all tested decoders don't seem to care.
 
   int bitrate = kBitrateMap[bitrate_index][kVersionLayerMap[version][layer]];
 
