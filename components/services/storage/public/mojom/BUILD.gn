@@ -22,6 +22,7 @@ mojom("mojom") {
   public_deps = [
     "//components/services/storage/public/mojom/filesystem",
     "//mojo/public/mojom/base",
+    "//services/network/public/mojom",
     "//third_party/blink/public/mojom:mojom_core",
     "//third_party/blink/public/mojom:mojom_modules",
     "//third_party/blink/public/mojom:mojom_platform",
