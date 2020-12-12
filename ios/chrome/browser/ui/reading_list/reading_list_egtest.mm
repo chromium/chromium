@@ -1026,6 +1026,10 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests that the VC can be dismissed by swiping down.
 - (void)testSwipeDownDismiss {
+  // TODO(crbug.com/1129589): Test disabled on iOS14 iPhones.
+  if (base::ios::IsRunningOnIOS14OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
+  }
   if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
   }
