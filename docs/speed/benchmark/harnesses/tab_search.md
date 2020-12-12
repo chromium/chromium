@@ -19,6 +19,7 @@ in different stories representing different scenarios
 * tab_search:top50:loading:2020 - Test CUJs with 50 open tabs, before all tabs are loaded
 * tab_search:top100:loading:2020 - Test CUJs with 100 open tabs, before all tabs are loaded
 * tab_search:close_and_open:2020 - Test open, close and reopen Tab Search UI
+* tab_search:scroll_up_and_down:2020 - Test srolling down, up and down 100 tabs, before all tabs are loaded
 
 
 For more information please see this [doc](https://docs.google.com/document/d/1-1ijT7wt05hlBZmSKjX_DaTCzVqpxbfTM1y-j7kYHlc).
@@ -41,7 +42,7 @@ tools/perf/run_benchmark run tab_search --browser-executable=out/Default/chrome 
 
 There are 3 ways to add metrics to the benchmarking code
 
-1. Add UMA metrics to your code and include them in the [benchmark definition](../../../../tools/perf/benchmark/tab_search.py). The listed UMA metrics will show up on the result page automatically.
+1. Add UMA metrics to your code and include them in the [benchmark definition](../../../../tools/perf/benchmarks/tab_search.py). The listed UMA metrics will show up on the result page automatically.
 2. Add C++ trace with name starts with "webui_metric:". Make sure your trace has category "browser" or add other categories that you use to the benchmark definition. For example:
    ```c++
    void Foo::DoWork() {
@@ -49,12 +50,21 @@ There are 3 ways to add metrics to the benchmarking code
      ...
    }
    ```
-3. Add Javascript performance.mark() with names end with ":benchmark_begin" and ":benchmark_end". Time between performance.mark('YOUR_METRIC_NAME:benchmark_begin') and performance.mark('YOUR_METRIC_NAME:benchmark') will show up as YOUR_METRIC_NAME on the result page. For example:
+3. Add Javascript performance.mark() with names end with ":benchmark_begin" and ":benchmark_end". Time between performance.mark('<YOUR_METRIC_NAME>:benchmark_begin') and performance.mark('<YOUR_METRIC_NAME>:benchmark') will show up as YOUR_METRIC_NAME on the result page. For example:
    ```javascript
    function calc() {
      performance.mark('calc_time:benchmark_begin');
      ...
      performance.mark('calc_time:benchmark_end');
+   }
+   ```
+   You can also emit metric value directly using performance.mark('<YOUR_METRIC_NAME>:<YOUR_METRIC_VALUE>:benchmark_value'). In the case multiple values needs to be measured asynchronously it's better to do the following instead:
+   ```javascript
+   const startTime = performance.now();
+   for (const url of urls) {
+     fetch(url).then(() => {
+       performance.mark(`fetch_time:${performance.now() - startTime}:benchmark_value`);
+     });
    }
    ```
 

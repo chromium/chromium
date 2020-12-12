@@ -15,6 +15,7 @@ class TabSearchStorySet(story.StorySet):
       tab_search_story.TabSearchStoryTop50Loading,
       tab_search_story.TabSearchStoryTop100Loading,
       tab_search_story.TabSearchStoryCloseAndOpen,
+      tab_search_story.TabSearchStoryScrollUpAndDown,
   ]
 
   def __init__(self):

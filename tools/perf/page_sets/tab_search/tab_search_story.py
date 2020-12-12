@@ -145,6 +145,20 @@ class TabSearchStory(page.Page):
     action_runner.tab.browser.ExecuteBrowserCommand('openTabSearch')
     action_runner.Wait(5)
 
+  def ScrollUpAndDown(self, action_runner):
+    action_runner.Wait(1)
+    self.StartMeasuringFrameTime(action_runner,
+                                 'frame_time_on_first_scroll_down')
+    action_runner.ScrollElement(element_function=SCROLL_ELEMENT_FUNCTION)
+    self.StartMeasuringFrameTime(action_runner, 'frame_time_on_first_scroll_up')
+    action_runner.ScrollElement(element_function=SCROLL_ELEMENT_FUNCTION,
+                                direction='up')
+    self.StartMeasuringFrameTime(action_runner,
+                                 'frame_time_on_second_scroll_down')
+    action_runner.ScrollElement(element_function=SCROLL_ELEMENT_FUNCTION)
+    self.StopMeasuringFrameTime(action_runner)
+    action_runner.Wait(1)
+
   def StartMeasuringFrameTime(self, action_runner, name):
     action_runner.ExecuteJavaScript(MEASURE_FRAME_TIME_SCRIPT)
     action_runner.ExecuteJavaScript(START_MEASURING_FRAME_TIME % name)
@@ -205,6 +219,16 @@ class TabSearchStoryCloseAndOpen(TabSearchStory):
     self.CloseAndOpen(action_runner)
 
 
+class TabSearchStoryScrollUpAndDown(TabSearchStory):
+  NAME = 'tab_search:scroll_up_and_down:2020'
+  URL_LIST = TOP_URL[:50] * 2
+  URL = 'https://' + URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+  def InteractWithPage(self, action_runner):
+    self.ScrollUpAndDown(action_runner)
+
+
 SCROLL_ELEMENT_FUNCTION = '''
 document.querySelector('tab-search-app').shadowRoot.getElementById('tabsList')
 .shadowRoot.getElementById('container')
@@ -212,21 +236,32 @@ document.querySelector('tab-search-app').shadowRoot.getElementById('tabsList')
 
 MEASURE_FRAME_TIME_SCRIPT = '''
 window.__webui_startMeasuringFrameTime = function(name) {
-  if (!window.__webui_onRequestAnimationFrame) {
-    window.__webui_onRequestAnimationFrame = function() {
-      performance.mark(name + ':benchmark_end');
-      if (window.__webui_onRequestAnimationFrame) {
-        requestAnimationFrame(window.__webui_onRequestAnimationFrame);
-        performance.mark(name + ':benchmark_begin')
-      }
-    }
-    performance.mark(name + ':benchmark_begin')
-    requestAnimationFrame(window.__webui_onRequestAnimationFrame);
+  if (window.__webui_onRequestAnimationFrame) {
+    window.__webui_stopMeasuringFrameTime();
   }
+  window.__webui_onRequestAnimationFrame = function() {
+    const now = performance.now();
+    if (window.__webui_lastAnimationFrameTime) {
+      performance.mark(
+          `${name}:${now - window.__webui_lastAnimationFrameTime}:benchmark_value`);
+    }
+    window.__webui_lastAnimationFrameTime = now;
+    if (window.__webui_onRequestAnimationFrame) {
+      window.__webui_lastRequestId = requestAnimationFrame(
+          window.__webui_onRequestAnimationFrame);
+    }
+  }
+  window.__webui_lastRequestId = requestAnimationFrame(
+      window.__webui_onRequestAnimationFrame);
 }
 
 window.__webui_stopMeasuringFrameTime = function() {
+  if (window.__webui_lastRequestId) {
+    cancelAnimationFrame(window.__webui_lastRequestId);
+  }
+  window.__webui_lastRequestId = null;
   window.__webui_onRequestAnimationFrame = null;
+  window.__webui_lastAnimationFrameTime = null;
 }
 '''
 
