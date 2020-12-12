@@ -23,6 +23,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -156,6 +157,12 @@ HoldingSpaceItemView::HoldingSpaceItemView(
   layer()->Add(selected_layer_owner_->layer());
 
   // Ink drop.
+  // Note that `ink_drop_container_` is added to the view hierarchy to parent
+  // any created ink drop layers. This will allow ink drop layers to animate
+  // in/out with the layer for this view as well as fix a crash in which ink
+  // drop layers were attempted to be reordered during destruction of this view.
+  ink_drop_container_ =
+      AddChildView(std::make_unique<views::InkDropContainerView>());
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetInkDropVisibleOpacity(
       AshColorProvider::Get()->GetRippleAttributes().inkdrop_opacity);
@@ -178,6 +185,14 @@ HoldingSpaceItemView* HoldingSpaceItemView::Cast(views::View* view) {
 // static
 bool HoldingSpaceItemView::IsInstance(views::View* view) {
   return view->GetProperty(kIsHoldingSpaceItemViewProperty);
+}
+
+void HoldingSpaceItemView::AddLayerBeneathView(ui::Layer* layer) {
+  ink_drop_container_->AddInkDropLayer(layer);
+}
+
+void HoldingSpaceItemView::RemoveLayerBeneathView(ui::Layer* layer) {
+  ink_drop_container_->RemoveInkDropLayer(layer);
 }
 
 SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {
@@ -289,6 +304,7 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
   DCHECK(!pin_);
 
   pin_ = parent->AddChildView(std::make_unique<views::ToggleImageButton>());
+  pin_->SetID(kHoldingSpaceItemPinButtonId);
   pin_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   pin_->SetVisible(false);
 

@@ -19,6 +19,7 @@ class LayerAnimationObserver;
 }  // namespace ui
 
 namespace views {
+class InkDropContainerView;
 class ToggleImageButton;
 }  // namespace views
 
@@ -49,6 +50,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView,
   static bool IsInstance(views::View* view);
 
   // views::InkDropHostView:
+  void AddLayerBeneathView(ui::Layer* layer) override;
+  void RemoveLayerBeneathView(ui::Layer* layer) override;
   SkColor GetInkDropBaseColor() const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -105,7 +108,9 @@ class ASH_EXPORT HoldingSpaceItemView : public views::InkDropHostView,
   // destroyed if this view is in the process of animating out.
   const std::string item_id_;
 
-  views::ToggleImageButton* pin_ = nullptr;  // Owned by view hierarchy.
+  // Owned by view hierarchy.
+  views::InkDropContainerView* ink_drop_container_ = nullptr;
+  views::ToggleImageButton* pin_ = nullptr;
 
   // Owners for the layers used to paint focused and selected states.
   std::unique_ptr<ui::LayerOwner> selected_layer_owner_;

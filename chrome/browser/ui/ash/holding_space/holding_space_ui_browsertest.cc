@@ -6,12 +6,14 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +45,14 @@ void FlushMessageLoop() {
   base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                    run_loop.QuitClosure());
   run_loop.Run();
+}
+
+// Performs a click on `view`.
+void Click(const views::View* view) {
+  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
 }
 
 // Performs a double click on `view`.
@@ -86,6 +96,13 @@ void MouseDrag(const views::View* from, const views::View* to) {
   event_generator.PressLeftButton();
   event_generator.MoveMouseTo(to->GetBoundsInScreen().CenterPoint());
   event_generator.ReleaseLeftButton();
+}
+
+// Moves mouse to `view` over `count` number of events.
+void MoveMouseTo(const views::View* view, size_t count = 1u) {
+  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint(), count);
 }
 
 // Performs a press and release of the specified `key_code` with `flags`.
@@ -182,6 +199,53 @@ class DropTargetView : public views::WidgetDelegateView {
   }
 
   base::FilePath copied_file_path_;
+};
+
+// ViewDrawnWaiter -------------------------------------------------------------
+
+class ViewDrawnWaiter : public views::ViewObserver {
+ public:
+  ViewDrawnWaiter() = default;
+  ViewDrawnWaiter(const ViewDrawnWaiter&) = delete;
+  ViewDrawnWaiter& operator=(const ViewDrawnWaiter&) = delete;
+  ~ViewDrawnWaiter() override = default;
+
+  void Wait(views::View* view) {
+    if (IsDrawn(view))
+      return;
+
+    DCHECK(!wait_loop_);
+    DCHECK(!view_observer_.IsObserving());
+
+    view_observer_.Observe(view);
+
+    wait_loop_ = std::make_unique<base::RunLoop>();
+    wait_loop_->Run();
+    wait_loop_.reset();
+
+    view_observer_.Reset();
+  }
+
+ private:
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* view,
+                               views::View* starting_view) override {
+    if (IsDrawn(view))
+      wait_loop_->Quit();
+  }
+
+  void OnViewBoundsChanged(views::View* view) override {
+    if (IsDrawn(view))
+      wait_loop_->Quit();
+  }
+
+  bool IsDrawn(views::View* view) {
+    return view->IsDrawn() && !view->size().IsEmpty();
+  }
+
+  std::unique_ptr<base::RunLoop> wait_loop_;
+  base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
+      this};
 };
 
 // HoldingSpaceUiBrowserTest ---------------------------------------------------
@@ -374,6 +438,41 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
     testing::Mock::VerifyAndClearExpectations(&mock);
     activation_client->DeactivateWindow(activation_client->GetActiveWindow());
   }
+}
+
+// Verifies that unpinning a pinned holding space item works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, UnpinItem) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Add enough pinned items for there to be multiple rows in the section.
+  constexpr size_t kNumPinnedItems = 3u;
+  for (size_t i = 0; i < kNumPinnedItems; ++i)
+    AddPinnedFile();
+
+  Show();
+  ASSERT_TRUE(IsShowing());
+
+  std::vector<views::View*> pinned_file_chips = GetPinnedFileChips();
+  ASSERT_EQ(kNumPinnedItems, pinned_file_chips.size());
+
+  // Operate on the last `pinned_file_chip` as there was an easy to reproduce
+  // bug in which unpinning a chip *not* in the top row resulted in a crash on
+  // destruction due to its ink drop layer attempting to be reordered.
+  views::View* pinned_file_chip = pinned_file_chips.back();
+
+  // The pin button is only visible after mousing over the `pinned_file_chip`,
+  // so move the mouse and wait for the pin button to be drawn. Note that the
+  // mouse is moved over multiple events to ensure that the appropriate mouse
+  // enter event is also generated.
+  MoveMouseTo(pinned_file_chip, /*count=*/10);
+  auto* pin_btn = pinned_file_chip->GetViewByID(kHoldingSpaceItemPinButtonId);
+  ViewDrawnWaiter().Wait(pin_btn);
+
+  Click(pin_btn);
+
+  pinned_file_chips = GetPinnedFileChips();
+  ASSERT_EQ(kNumPinnedItems - 1, pinned_file_chips.size());
 }
 
 // Base class for holding space UI browser tests that test previews.
