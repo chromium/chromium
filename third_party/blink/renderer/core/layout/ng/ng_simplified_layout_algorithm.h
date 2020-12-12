@@ -52,7 +52,9 @@ class CORE_EXPORT NGSimplifiedLayoutAlgorithm
 
  private:
   void AddChildFragment(const NGLink& old_fragment,
-                        const NGPhysicalContainerFragment& new_fragment);
+                        const NGPhysicalContainerFragment& new_fragment,
+                        const NGMarginStrut* margin_strut = nullptr,
+                        bool is_self_collapsing = false);
 
   const NGLayoutResult& previous_result_;
   NGBoxStrut border_scrollbar_padding_;
