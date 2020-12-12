@@ -92,6 +92,9 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve : public AnimationCurve {
   static void SetAnimationDurationForTesting(base::TimeDelta duration);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ScrollOffsetAnimationCurveTest, ImpulseUpdateTarget);
+  FRIEND_TEST_ALL_PREFIXES(ScrollOffsetAnimationCurveTest,
+                           ImpulseUpdateTargetSwitchDirections);
   friend class ScrollOffsetAnimationCurveFactory;
   enum class AnimationType { kLinear, kEaseInOut, kImpulse };
 

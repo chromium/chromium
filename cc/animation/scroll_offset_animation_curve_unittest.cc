@@ -21,6 +21,8 @@ namespace {
 // This is the value of the default Impulse bezier curve when t = 0.5
 constexpr double halfway_through_default_impulse_curve = 0.874246;
 
+}  // namespace
+
 TEST(ScrollOffsetAnimationCurveTest, DeltaBasedDuration) {
   gfx::ScrollOffset target_value(100.f, 200.f);
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
@@ -208,8 +210,8 @@ TEST(ScrollOffsetAnimationCurveTest, ImpulseUpdateTarget) {
   gfx::Vector2dF new_delta =
       new_target_value.DeltaFrom(distance_halfway_through_initial_animation);
   base::TimeDelta updated_segment_duration =
-      ScrollOffsetAnimationCurve::ImpulseSegmentDuration(new_delta,
-                                                         base::TimeDelta());
+      curve->EaseInOutBoundedSegmentDuration(new_delta, base::TimeDelta(),
+                                             base::TimeDelta());
 
   base::TimeDelta overall_duration = time_of_update + updated_segment_duration;
   EXPECT_NEAR(overall_duration.InSecondsF(), curve->Duration().InSecondsF(),
@@ -257,25 +259,26 @@ TEST(ScrollOffsetAnimationCurveTest, ImpulseUpdateTargetSwitchDirections) {
   curve->UpdateTarget(base::TimeDelta::FromSecondsD(initial_duration / 2),
                       updated_target);
 
-  double updated_duration =
-      ScrollOffsetAnimationCurve::ImpulseSegmentDuration(
-          gfx::Vector2dF(updated_initial_value.x(), updated_initial_value.y()),
-          base::TimeDelta())
-          .InSecondsF();
-
   EXPECT_NEAR(
       initial_target_value.y() * halfway_through_default_impulse_curve,
       curve->GetValue(base::TimeDelta::FromSecondsD(initial_duration / 2.0))
           .y(),
       0.01f);
 
-  EXPECT_NEAR(
-      updated_initial_value.y() * (1.0 - halfway_through_default_impulse_curve),
-      curve
-          ->GetValue(base::TimeDelta::FromSecondsD(initial_duration / 2.0 +
-                                                   updated_duration / 2.0))
-          .y(),
-      0.01f);
+  // Once the impulse style curve is updated, it turns to an ease-in ease-out
+  // type curve.
+  double updated_duration = curve
+                                ->EaseInOutBoundedSegmentDuration(
+                                    gfx::Vector2dF(updated_initial_value.x(),
+                                                   updated_initial_value.y()),
+                                    base::TimeDelta(), base::TimeDelta())
+                                .InSecondsF();
+  EXPECT_NEAR(updated_initial_value.y() * 0.5,
+              curve
+                  ->GetValue(base::TimeDelta::FromSecondsD(
+                      initial_duration / 2.0 + updated_duration / 2.0))
+                  .y(),
+              0.01f);
   EXPECT_NEAR(0.0,
               curve
                   ->GetValue(base::TimeDelta::FromSecondsD(
@@ -453,5 +456,4 @@ TEST(ScrollOffsetAnimationCurveTest, UpdateTargetZeroLastSegmentDuration) {
   EXPECT_NEAR(expected_duration, curve->Duration().InSecondsF(), 0.0002f);
 }
 
-}  // namespace
 }  // namespace cc
