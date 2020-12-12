@@ -99,9 +99,12 @@ Polymer({
    */
   computeFilter_() {
     const formattedFilter = this.filter.trim().toLowerCase();
-    return formattedFilter ?
-        i => i.name.toLowerCase().includes(formattedFilter) :
-        null;
+    if (!formattedFilter) {
+      return null;
+    }
+
+    return i => [i.name, i.id].some(
+               s => s.toLowerCase().includes(formattedFilter));
   },
 
   /** @private */
