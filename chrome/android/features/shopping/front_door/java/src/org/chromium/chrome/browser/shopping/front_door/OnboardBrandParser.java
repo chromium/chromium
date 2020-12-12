@@ -73,11 +73,15 @@ public class OnboardBrandParser {
                         continue;
                     }
 
-                    JSONArray representativeImageUrlJson =
-                            brand.getJSONArray(BRAND_REPRESENTATIVE_IMAGES_KEY);
-                    List<String> representativeImageUrls =
-                            convertJSONArrayToListString(representativeImageUrlJson);
-                    if (representativeImageUrls.size() != 3) {
+                    List<String> representativeImageUrls = null;
+                    if (brand.has(BRAND_REPRESENTATIVE_IMAGES_KEY)) {
+                        JSONArray representativeImageUrlJson =
+                                brand.getJSONArray(BRAND_REPRESENTATIVE_IMAGES_KEY);
+                        representativeImageUrls =
+                                convertJSONArrayToListString(representativeImageUrlJson);
+                    }
+
+                    if (representativeImageUrls == null || representativeImageUrls.size() != 3) {
                         Log.e("Meil_brand_parser", "representativeImageUrls not equal to 3");
                         continue;
                     }

@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
@@ -111,11 +112,13 @@ public class ShoppingFeedFetcher {
         JSONObject jsonRequestObject = new JSONObject();
         try {
             jsonRequestObject.put("categoryIds", new JSONArray(categoryKeys));
-            // String country =
-            // ContextUtils.getApplicationContext().getResources().getConfiguration().
-            //     locale.getCountry().toLowerCase();
-            String country = countryCodeProvider.getCountryCode().toLowerCase();
-            country = !country.equals(Locale.JAPAN.toString().toLowerCase()) ? "us" : country;
+            String country = ContextUtils.getApplicationContext()
+                                     .getResources()
+                                     .getConfiguration()
+                                     .locale.getCountry()
+                                     .toLowerCase();
+            Log.e("Meil_ShoppingFeedFetcher", "Country code: " + country);
+            country = !country.equals(Locale.JAPAN.getCountry().toLowerCase()) ? "us" : country;
             jsonRequestObject.put("studyRegion", country);
         } catch (JSONException e) {
             Log.e("Meil",
