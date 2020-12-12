@@ -5,6 +5,8 @@
 
 import logging
 
+import validate_tag_consistency
+
 from typ import expectations_parser
 from unexpected_passes import data_types
 
@@ -100,3 +102,125 @@ def FilterOutUnusedExpectations(test_expectation_map):
   logging.debug('Found %d empty tests: %s', len(empty_tests), empty_tests)
 
   return unused_expectations
+
+
+def SplitExpectationsByStaleness(test_expectation_map):
+  """Separates |test_expectation_map| based on expectation staleness.
+
+  Args:
+    test_expectation_map: A dict in the format returned by
+        CreateTestExpectationMap() with any unused expectations already filtered
+        out.
+
+  Returns:
+    Three dicts (stale_dict, semi_stale_dict, active_dict). All three combined
+    contain the information of |test_expectation_map| in the same format.
+    |stale_dict| contains entries for expectations that are no longer being
+    helpful, |semi_stale_dict| contains entries for expectations that might be
+    removable or modifiable, but have at least one failed test run.
+    |active_dict| contains entries for expectations that are preventing failures
+    on all builders they're active on, and thus shouldn't be removed.
+  """
+  FULL_PASS = 1
+  NEVER_PASS = 2
+  PARTIAL_PASS = 3
+
+  stale_dict = {}
+  semi_stale_dict = {}
+  active_dict = {}
+  for test_name, expectation_map in test_expectation_map.iteritems():
+    for expectation, builder_map in expectation_map.iteritems():
+      # A temporary map to hold data so we can later determine whether an
+      # expectation is stale, semi-stale, or active.
+      tmp_map = {
+          FULL_PASS: {},
+          NEVER_PASS: {},
+          PARTIAL_PASS: {},
+      }
+
+      for builder_name, step_map in builder_map.iteritems():
+        fully_passed = {}
+        partially_passed = {}
+        never_passed = {}
+
+        for step_name, stats in step_map.iteritems():
+          if stats.passed_builds == stats.total_builds:
+            assert step_name not in fully_passed
+            fully_passed[step_name] = stats
+          elif stats.failed_builds == stats.total_builds:
+            assert step_name not in never_passed
+            never_passed[step_name] = stats
+          else:
+            assert step_name not in partially_passed
+            partially_passed[step_name] = stats
+
+        if fully_passed:
+          tmp_map[FULL_PASS][builder_name] = fully_passed
+        if never_passed:
+          tmp_map[NEVER_PASS][builder_name] = never_passed
+        if partially_passed:
+          tmp_map[PARTIAL_PASS][builder_name] = partially_passed
+
+      def _CopyPassesIntoBuilderMap(builder_map, pass_types):
+        for pt in pass_types:
+          for builder, steps in tmp_map[pt].iteritems():
+            builder_map.setdefault(builder, {}).update(steps)
+
+      # Handle the case of a stale expectation.
+      if not (tmp_map[NEVER_PASS] or tmp_map[PARTIAL_PASS]):
+        builder_map = stale_dict.setdefault(test_name,
+                                            {}).setdefault(expectation, {})
+        _CopyPassesIntoBuilderMap(builder_map, [FULL_PASS])
+      # Handle the case of an active expectation.
+      elif not tmp_map[FULL_PASS]:
+        builder_map = active_dict.setdefault(test_name,
+                                             {}).setdefault(expectation, {})
+        _CopyPassesIntoBuilderMap(builder_map, [NEVER_PASS, PARTIAL_PASS])
+      # Handle the case of a semi-stale expectation.
+      else:
+        # TODO(crbug.com/998329): Sort by pass percentage so it's easier to find
+        # problematic builders without highlighting.
+        builder_map = semi_stale_dict.setdefault(test_name, {}).setdefault(
+            expectation, {})
+        _CopyPassesIntoBuilderMap(builder_map,
+                                  [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
+  return stale_dict, semi_stale_dict, active_dict
+
+
+def RemoveExpectationsFromFile(expectations, expectation_file):
+  """Removes lines corresponding to |expectations| from |expectation_file|.
+
+  Args:
+    expectations: A list of data_types.Expectations to remove.
+    expectation_file: A filepath pointing to an expectation file to remove lines
+        from.
+  """
+  header = validate_tag_consistency.TAG_HEADER
+
+  with open(expectation_file) as f:
+    input_contents = f.read()
+
+  output_contents = ''
+  for line in input_contents.splitlines(True):
+    # Auto-add any comments or empty lines
+    stripped_line = line.strip()
+    if not stripped_line or stripped_line.startswith('#'):
+      output_contents += line
+      continue
+
+    single_line_content = header + line
+    list_parser = expectations_parser.TaggedTestListParser(single_line_content)
+    assert len(list_parser.expectations) == 1
+
+    typ_expectation = list_parser.expectations[0]
+    current_expectation = data_types.Expectation(typ_expectation.test,
+                                                 typ_expectation.tags,
+                                                 typ_expectation.raw_results)
+
+    # Add any lines containing expectations that don't match any of the given
+    # expectations to remove.
+    if not any([e for e in expectations if e == current_expectation]):
+      output_contents += line
+
+  with open(expectation_file, 'w') as f:
+    f.write(output_contents)

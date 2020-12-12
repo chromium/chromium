@@ -137,7 +137,9 @@ SECTION_UNUSED = ('Unused Expectations (Indicative Of The Configuration No '
                   'Longer Being Tested Or Tags Changing)')
 
 
-def OutputResults(test_expectation_map,
+def OutputResults(stale_dict,
+                  semi_stale_dict,
+                  active_dict,
                   unmatched_results,
                   unused_expectations,
                   output_format,
@@ -145,8 +147,15 @@ def OutputResults(test_expectation_map,
   """Outputs script results to |file_handle|.
 
   Args:
-    test_expectation_map: A map in the format returned by
-        expectations.CreateTestExpectationMap()
+    stale_dict: A map in the format returned by
+        expectations.CreateTestExpectationMap() containing all the stale
+        expectations.
+    semi_stale_dict: A map in the format returned by
+        expectations.CreateTestExpectationMap() containing all the semi-stale
+        expectations.
+    active_dict: A map in the format returned by
+        expectations.CreateTestExpectationMap() containing all the active
+        expectations.
     ummatched_results: Any unmatched results found while filling
         |test_expectation_map|, as returned by
         queries.FillExpectationMapFor[Ci|Try]Builders().
@@ -158,8 +167,9 @@ def OutputResults(test_expectation_map,
         specified, a suitable default will be used.
   """
   logging.info('Outputting results in format %s', output_format)
-  stale_dict, semi_stale_dict, active_dict =\
-      _ConvertTestExpectationMapToStringDicts(test_expectation_map)
+  stale_str_dict = _ConvertTestExpectationMapToStringDict(stale_dict)
+  semi_stale_str_dict = _ConvertTestExpectationMapToStringDict(semi_stale_dict)
+  active_str_dict = _ConvertTestExpectationMapToStringDict(active_dict)
   unmatched_results_str_dict = _ConvertUnmatchedResultsToStringDict(
       unmatched_results)
   unused_expectations_str_list = _ConvertUnusedExpectationsToStringList(
@@ -169,13 +179,13 @@ def OutputResults(test_expectation_map,
     file_handle = file_handle or sys.stdout
     if stale_dict:
       file_handle.write(SECTION_STALE + '\n')
-      _RecursivePrintToFile(stale_dict, 0, file_handle)
+      _RecursivePrintToFile(stale_str_dict, 0, file_handle)
     if semi_stale_dict:
       file_handle.write(SECTION_SEMI_STALE + '\n')
-      _RecursivePrintToFile(semi_stale_dict, 0, file_handle)
+      _RecursivePrintToFile(semi_stale_str_dict, 0, file_handle)
     if active_dict:
       file_handle.write(SECTION_ACTIVE + '\n')
-      _RecursivePrintToFile(active_dict, 0, file_handle)
+      _RecursivePrintToFile(active_str_dict, 0, file_handle)
 
     if unused_expectations_str_list:
       file_handle.write('\n' + SECTION_UNUSED + '\n')
@@ -193,13 +203,13 @@ def OutputResults(test_expectation_map,
     file_handle.write(HTML_HEADER)
     if stale_dict:
       file_handle.write('<h1>' + SECTION_STALE + '</h1>\n')
-      _RecursiveHtmlToFile(stale_dict, file_handle)
+      _RecursiveHtmlToFile(stale_str_dict, file_handle)
     if semi_stale_dict:
       file_handle.write('<h1>' + SECTION_SEMI_STALE + '</h1>\n')
-      _RecursiveHtmlToFile(semi_stale_dict, file_handle)
+      _RecursiveHtmlToFile(semi_stale_str_dict, file_handle)
     if active_dict:
       file_handle.write('<h1>' + SECTION_ACTIVE + '</h1>\n')
-      _RecursiveHtmlToFile(active_dict, file_handle)
+      _RecursiveHtmlToFile(active_str_dict, file_handle)
 
     if unused_expectations_str_list:
       file_handle.write('\n<h1>' + SECTION_UNUSED + "</h1>\n")
@@ -290,18 +300,16 @@ def _LinkifyString(s):
   return s
 
 
-def _ConvertTestExpectationMapToStringDicts(test_expectation_map):
-  """Converts |test_expectation_map| to dicts of strings for reporting.
+def _ConvertTestExpectationMapToStringDict(test_expectation_map):
+  """Converts |test_expectation_map| to a dict of strings for reporting.
 
   Args:
     test_expectation_map: A dict in the format output by
         expectations.CreateTestExpectationMap()
 
   Returns:
-    Three dictionaries stale_dict, semi_stale_dict, and active_dict. All three
-    combined contain the information of |test_expectation_map| in the following
-    format:
-
+    A string dictionary representation of |test_expectation_map| in the
+    following format:
     {
       test_name: {
         expectation_summary: {
@@ -321,28 +329,17 @@ def _ConvertTestExpectationMapToStringDicts(test_expectation_map):
         }
       }
     }
-
-    |stale_dict| contains entries for expectations that are no longer being
-    helpful, |semi_stale_dict| contains entries for expectations that might be
-    removable or modifiable, but have at least one failed test run.
-    |active_dict| contains entries for expectations that are preventing failures
-    on all builders they're active on, and thus shouldn't be removed.
   """
-  stale_dict = {}
-  semi_stale_dict = {}
-  active_dict = {}
+  output_dict = {}
   for test_name, expectation_map in test_expectation_map.iteritems():
+    output_dict[test_name] = {}
+
     for expectation, builder_map in expectation_map.iteritems():
       expectation_str = _FormatExpectation(expectation)
-      # A temporary map to hold data so we can later determine whether an
-      # expectation is stale, semi-stale, or active.
-      tmp_map = {
-          FULL_PASS: {},
-          NEVER_PASS: {},
-          PARTIAL_PASS: {},
-      }
+      output_dict[test_name][expectation_str] = {}
 
       for builder_name, step_map in builder_map.iteritems():
+        output_dict[test_name][expectation_str][builder_name] = {}
         fully_passed = []
         partially_passed = {}
         never_passed = []
@@ -356,39 +353,18 @@ def _ConvertTestExpectationMapToStringDicts(test_expectation_map):
             assert step_name not in partially_passed
             partially_passed[step_name] = stats
 
+        output_builder_map =\
+            output_dict[test_name][expectation_str][builder_name]
         if fully_passed:
-          tmp_map[FULL_PASS][builder_name] = fully_passed
-        if never_passed:
-          tmp_map[NEVER_PASS][builder_name] = never_passed
+          output_builder_map[FULL_PASS] = fully_passed
         if partially_passed:
-          tmp_map[PARTIAL_PASS][builder_name] = {}
+          output_builder_map[PARTIAL_PASS] = {}
           for step_name, stats in partially_passed.iteritems():
             s = _AddStatsToStr(step_name, stats)
-            tmp_map[PARTIAL_PASS][builder_name][s] = list(stats.failure_links)
-
-      def _CopyPassesIntoDict(d, pass_types):
-        for pt in pass_types:
-          for builder, steps in tmp_map[pt].iteritems():
-            d.setdefault(builder, {})[pt] = steps
-
-      # Handle the case of a stale expectation.
-      if not (tmp_map[NEVER_PASS] or tmp_map[PARTIAL_PASS]):
-        builder_map = stale_dict.setdefault(test_name,
-                                            {}).setdefault(expectation_str, {})
-        _CopyPassesIntoDict(builder_map, [FULL_PASS])
-      # Handle the case of an active expectation.
-      elif not tmp_map[FULL_PASS]:
-        builder_map = active_dict.setdefault(test_name, {}).setdefault(
-            expectation_str, {})
-        _CopyPassesIntoDict(builder_map, [NEVER_PASS, PARTIAL_PASS])
-      # Handle the case of a semi-stale expectation.
-      else:
-        # TODO(crbug.com/998329): Sort by pass percentage so it's easier to find
-        # problematic builders without highlighting.
-        builder_map = semi_stale_dict.setdefault(test_name, {}).setdefault(
-            expectation_str, {})
-        _CopyPassesIntoDict(builder_map, [FULL_PASS, NEVER_PASS, PARTIAL_PASS])
-  return stale_dict, semi_stale_dict, active_dict
+            output_builder_map[PARTIAL_PASS][s] = list(stats.failure_links)
+        if never_passed:
+          output_builder_map[NEVER_PASS] = never_passed
+  return output_dict
 
 
 def _ConvertUnmatchedResultsToStringDict(unmatched_results):

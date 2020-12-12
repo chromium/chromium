@@ -8,8 +8,11 @@ import unittest
 
 from pyfakefs import fake_filesystem_unittest
 
+import validate_tag_consistency
+
 from unexpected_passes import data_types
 from unexpected_passes import expectations
+from unexpected_passes import unittest_utils as uu
 
 FAKE_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win linux ]
@@ -118,6 +121,253 @@ class FilterOutUnusedExpectationsUnittest(unittest.TestCase):
     self.assertEqual(unused_expectations,
                      [data_types.Expectation('foo/test', ['win'], ['Failure'])])
     self.assertEqual(expectation_map, {})
+
+
+class SplitExpectationsByStalenessUnittest(unittest.TestCase):
+  def testEmptyInput(self):
+    """Tests that nothing blows up with empty input."""
+    stale_dict, semi_stale_dict, active_dict =\
+        expectations.SplitExpectationsByStaleness({})
+    self.assertEqual(stale_dict, {})
+    self.assertEqual(semi_stale_dict, {})
+    self.assertEqual(active_dict, {})
+
+  def testStaleExpectations(self):
+    """Tests output when only stale expectations are provided."""
+    expectation_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], ['Failure']): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(1, 0),
+                    'step2': uu.CreateStatsWithPassFails(2, 0),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(3, 0),
+                    'step2': uu.CreateStatsWithPassFails(4, 0)
+                },
+            },
+            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(5, 0),
+                    'step2': uu.CreateStatsWithPassFails(6, 0),
+                },
+            },
+        },
+        'bar': {
+            data_types.Expectation('bar', ['win'], ['Failure']): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(7, 0),
+                },
+            },
+        },
+    }
+    expected_stale_dict = copy.deepcopy(expectation_map)
+    stale_dict, semi_stale_dict, active_dict =\
+        expectations.SplitExpectationsByStaleness(expectation_map)
+    self.assertEqual(stale_dict, expected_stale_dict)
+    self.assertEqual(semi_stale_dict, {})
+    self.assertEqual(active_dict, {})
+
+  def testActiveExpectations(self):
+    """Tests output when only active expectations are provided."""
+    expectation_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], ['Failure']): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(0, 1),
+                    'step2': uu.CreateStatsWithPassFails(0, 2),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(0, 3),
+                    'step2': uu.CreateStatsWithPassFails(0, 4)
+                },
+            },
+            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(0, 5),
+                    'step2': uu.CreateStatsWithPassFails(0, 6),
+                },
+            },
+        },
+        'bar': {
+            data_types.Expectation('bar', ['win'], ['Failure']): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(0, 7),
+                },
+            },
+        },
+    }
+    expected_active_dict = copy.deepcopy(expectation_map)
+    stale_dict, semi_stale_dict, active_dict =\
+        expectations.SplitExpectationsByStaleness(expectation_map)
+    self.assertEqual(stale_dict, {})
+    self.assertEqual(semi_stale_dict, {})
+    self.assertEqual(active_dict, expected_active_dict)
+
+  def testSemiStaleExpectations(self):
+    """Tests output when only semi-stale expectations are provided."""
+    expectation_map = {
+        'foo': {
+            data_types.Expectation('foo', ['win'], ['Failure']): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(1, 0),
+                    'step2': uu.CreateStatsWithPassFails(2, 2),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(3, 0),
+                    'step2': uu.CreateStatsWithPassFails(0, 4)
+                },
+            },
+            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(5, 0),
+                    'step2': uu.CreateStatsWithPassFails(6, 6),
+                },
+            },
+        },
+        'bar': {
+            data_types.Expectation('bar', ['win'], ['Failure']): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(7, 0),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(0, 8),
+                },
+            },
+        },
+    }
+    expected_semi_stale_dict = copy.deepcopy(expectation_map)
+    stale_dict, semi_stale_dict, active_dict =\
+        expectations.SplitExpectationsByStaleness(expectation_map)
+    self.assertEqual(stale_dict, {})
+    self.assertEqual(semi_stale_dict, expected_semi_stale_dict)
+    self.assertEqual(active_dict, {})
+
+  def testAllExpectations(self):
+    """Tests output when all three types of expectations are provided."""
+    expectation_map = {
+        'foo': {
+            data_types.Expectation('foo', ['stale'], 'Failure'): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(1, 0),
+                    'step2': uu.CreateStatsWithPassFails(2, 0),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(3, 0),
+                    'step2': uu.CreateStatsWithPassFails(4, 0)
+                },
+            },
+            data_types.Expectation('foo', ['semistale'], 'Failure'): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(1, 0),
+                    'step2': uu.CreateStatsWithPassFails(2, 2),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(3, 0),
+                    'step2': uu.CreateStatsWithPassFails(0, 4)
+                },
+            },
+            data_types.Expectation('foo', ['active'], 'Failure'): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(1, 1),
+                    'step2': uu.CreateStatsWithPassFails(2, 2),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(3, 3),
+                    'step2': uu.CreateStatsWithPassFails(0, 4)
+                },
+            },
+        },
+    }
+    expected_stale = {
+        'foo': {
+            data_types.Expectation('foo', ['stale'], 'Failure'): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(1, 0),
+                    'step2': uu.CreateStatsWithPassFails(2, 0),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(3, 0),
+                    'step2': uu.CreateStatsWithPassFails(4, 0)
+                },
+            },
+        },
+    }
+    expected_semi_stale = {
+        'foo': {
+            data_types.Expectation('foo', ['semistale'], 'Failure'): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(1, 0),
+                    'step2': uu.CreateStatsWithPassFails(2, 2),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(3, 0),
+                    'step2': uu.CreateStatsWithPassFails(0, 4)
+                },
+            },
+        },
+    }
+    expected_active = {
+        'foo': {
+            data_types.Expectation('foo', ['active'], 'Failure'): {
+                'foo_builder': {
+                    'step1': uu.CreateStatsWithPassFails(1, 1),
+                    'step2': uu.CreateStatsWithPassFails(2, 2),
+                },
+                'bar_builder': {
+                    'step1': uu.CreateStatsWithPassFails(3, 3),
+                    'step2': uu.CreateStatsWithPassFails(0, 4)
+                },
+            },
+        },
+    }
+
+    stale_dict, semi_stale_dict, active_dict =\
+        expectations.SplitExpectationsByStaleness(expectation_map)
+    self.assertEqual(stale_dict, expected_stale)
+    self.assertEqual(semi_stale_dict, expected_semi_stale)
+    self.assertEqual(active_dict, expected_active)
+
+
+class RemoveExpectationsFromFileUnittest(fake_filesystem_unittest.TestCase):
+  def setUp(self):
+    self.setUpPyfakefs()
+    with tempfile.NamedTemporaryFile(delete=False) as f:
+      self.filename = f.name
+
+  def testExpectationRemoval(self):
+    """Tests that expectations are properly removed from a file."""
+    contents = validate_tag_consistency.TAG_HEADER + """
+
+# This is a test comment
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+[ linux ] bar/test [ RetryOnFailure ]
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['win'], ['Failure']),
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+    ]
+
+    expected_contents = validate_tag_consistency.TAG_HEADER + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    expectations.RemoveExpectationsFromFile(stale_expectations, self.filename)
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
 
 
 if __name__ == '__main__':

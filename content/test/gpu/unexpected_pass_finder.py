@@ -97,6 +97,11 @@ def ParseArgs():
                       ],
                       default='html',
                       help='How to output script results.')
+  parser.add_argument('--remove-stale-expectations',
+                      action='store_true',
+                      default=False,
+                      help='Automatically remove any expectations that are '
+                      'determined to be stale from the expectation file.')
   parser.add_argument('-v',
                       '--verbose',
                       action='count',
@@ -119,6 +124,10 @@ def ParseArgs():
         os.path.dirname(__file__), 'gpu_tests', 'test_expectations',
         '%s_expectations.txt' %
         SUITE_TO_EXPECTATIONS_MAP.get(args.suite, args.suite))
+
+  if args.remove_stale_expectations and not args.expectation_file:
+    raise argparse.ArgumentError('--remove-stale-expectations',
+                                 'Can only be used with expectation files')
 
   return args
 
@@ -167,8 +176,20 @@ def main():
                                                args.project, args.num_samples))
   unused_expectations = expectations.FilterOutUnusedExpectations(
       test_expectation_map)
-  result_output.OutputResults(test_expectation_map, unmatched,
+  stale, semi_stale, active = expectations.SplitExpectationsByStaleness(
+      test_expectation_map)
+  result_output.OutputResults(stale, semi_stale, active, unmatched,
                               unused_expectations, args.output_format)
+
+  if args.remove_stale_expectations:
+    stale_expectations = []
+    for _, expectation_map in stale.iteritems():
+      stale_expectations.extend(expectation_map.keys())
+    stale_expectations.extend(unused_expectations)
+    expectations.RemoveExpectationsFromFile(stale_expectations,
+                                            args.expectation_file)
+    print('Stale expectations removed from %s. Stale comments, etc. may still '
+          'need to be removed.' % args.expectation_file)
 
 
 if __name__ == '__main__':

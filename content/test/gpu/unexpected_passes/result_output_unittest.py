@@ -9,7 +9,9 @@ import unittest
 from pyfakefs import fake_filesystem_unittest
 
 from unexpected_passes import data_types
+from unexpected_passes import expectations
 from unexpected_passes import result_output
+from unexpected_passes import unittest_utils as uu
 
 
 def CreateTextOutputPermutations(text, inputs):
@@ -82,11 +84,11 @@ class ConvertUnmatchedResultsToStringDictUnittest(unittest.TestCase):
     self.assertEqual(output, expected_output)
 
 
-class ConvertTestExpectationMapToStringDictsUnittest(unittest.TestCase):
+class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
   def testEmptyMap(self):
     """Tests that providing an empty map is a no-op."""
-    self.assertEqual(result_output._ConvertTestExpectationMapToStringDicts({}),
-                     ({}, {}, {}))
+    self.assertEqual(result_output._ConvertTestExpectationMapToStringDict({}),
+                     {})
 
   def testSemiStaleMap(self):
     """Tests that everything functions when regular data is provided."""
@@ -95,27 +97,27 @@ class ConvertTestExpectationMapToStringDictsUnittest(unittest.TestCase):
             data_types.Expectation('foo', ['win', 'intel'], ['RetryOnFailure']):
             {
                 'builder': {
-                    'all_pass': _CreateStatsWithPassFails(2, 0),
-                    'all_fail': _CreateStatsWithPassFails(0, 2),
-                    'some_pass': _CreateStatsWithPassFails(1, 1),
+                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
+                    'all_fail': uu.CreateStatsWithPassFails(0, 2),
+                    'some_pass': uu.CreateStatsWithPassFails(1, 1),
                 },
             },
             data_types.Expectation('foo', ['linux', 'intel'], [
                                        'RetryOnFailure'
                                    ]): {
                 'builder': {
-                    'all_pass': _CreateStatsWithPassFails(2, 0),
+                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
                 }
             },
             data_types.Expectation('foo', ['mac', 'intel'], ['RetryOnFailure']):
             {
                 'builder': {
-                    'all_fail': _CreateStatsWithPassFails(0, 2),
+                    'all_fail': uu.CreateStatsWithPassFails(0, 2),
                 }
             },
         },
     }
-    expected_semi_stale = {
+    expected_ouput = {
         'foo': {
             '"RetryOnFailure" expectation on "win intel"': {
                 'builder': {
@@ -132,10 +134,6 @@ class ConvertTestExpectationMapToStringDictsUnittest(unittest.TestCase):
                     },
                 },
             },
-        },
-    }
-    expected_stale = {
-        'foo': {
             '"RetryOnFailure" expectation on "intel linux"': {
                 'builder': {
                     'Fully passed in the following': [
@@ -143,10 +141,6 @@ class ConvertTestExpectationMapToStringDictsUnittest(unittest.TestCase):
                     ],
                 },
             },
-        },
-    }
-    expected_active = {
-        'foo': {
             '"RetryOnFailure" expectation on "mac intel"': {
                 'builder': {
                     'Never passed in the following': [
@@ -157,12 +151,9 @@ class ConvertTestExpectationMapToStringDictsUnittest(unittest.TestCase):
         },
     }
 
-    stale_dict, semi_stale_dict, active_dict =\
-        result_output._ConvertTestExpectationMapToStringDicts(
+    str_dict = result_output._ConvertTestExpectationMapToStringDict(
         expectation_map)
-    self.assertEqual(semi_stale_dict, expected_semi_stale)
-    self.assertEqual(stale_dict, expected_stale)
-    self.assertEqual(active_dict, expected_active)
+    self.assertEqual(str_dict, expected_ouput)
 
 
 class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
@@ -383,15 +374,27 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
   def testOutputResultsUnsupportedFormat(self):
     """Tests that passing in an unsupported format is an error."""
     with self.assertRaises(RuntimeError):
-      result_output.OutputResults({}, {}, [], 'asdf')
+      result_output.OutputResults({}, {}, {}, {}, [], 'asdf')
 
   def testOutputResultsSmoketest(self):
     """Test that nothing blows up when outputting."""
     expectation_map = {
         'foo': {
             data_types.Expectation('foo', ['win', 'intel'], 'RetryOnFailure'): {
-                'builder': {
-                    'all_pass': _CreateStatsWithPassFails(2, 0),
+                'stale': {
+                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
+                },
+            },
+            data_types.Expectation('foo', ['linux'], 'Failure'): {
+                'semi_stale': {
+                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
+                    'some_pass': uu.CreateStatsWithPassFails(1, 1),
+                    'none_pass': uu.CreateStatsWithPassFails(0, 2),
+                },
+            },
+            data_types.Expectation('foo', ['mac'], 'Failure'): {
+                'active': {
+                    'none_pass': uu.CreateStatsWithPassFails(0, 2),
                 },
             },
         },
@@ -406,34 +409,30 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
         data_types.Expectation('foo', ['linux'], 'RetryOnFailure')
     ]
 
-    result_output.OutputResults(expectation_map, {}, [], 'print',
+    stale, semi_stale, active = expectations.SplitExpectationsByStaleness(
+        expectation_map)
+
+    result_output.OutputResults(stale, semi_stale, active, {}, [], 'print',
                                 self._file_handle)
-    result_output.OutputResults(expectation_map, unmatched_results, [], 'print',
+    result_output.OutputResults(stale, semi_stale, active, unmatched_results,
+                                [], 'print', self._file_handle)
+    result_output.OutputResults(stale, semi_stale, active, {},
+                                unmatched_expectations, 'print',
                                 self._file_handle)
-    result_output.OutputResults(expectation_map, {}, unmatched_expectations,
-                                'print', self._file_handle)
-    result_output.OutputResults(expectation_map, unmatched_results,
+    result_output.OutputResults(stale, semi_stale, active, unmatched_results,
                                 unmatched_expectations, 'print',
                                 self._file_handle)
 
-    result_output.OutputResults(expectation_map, {}, [], 'html',
+    result_output.OutputResults(stale, semi_stale, active, {}, [], 'html',
                                 self._file_handle)
-    result_output.OutputResults(expectation_map, unmatched_results, [], 'html',
-                                self._file_handle)
-    result_output.OutputResults(expectation_map, {}, unmatched_expectations,
-                                'html', self._file_handle)
-    result_output.OutputResults(expectation_map, unmatched_results,
+    result_output.OutputResults(stale, semi_stale, active, unmatched_results,
+                                [], 'html', self._file_handle)
+    result_output.OutputResults(stale, semi_stale, active, {},
                                 unmatched_expectations, 'html',
                                 self._file_handle)
-
-
-def _CreateStatsWithPassFails(passes, fails):
-  stats = data_types.BuildStats()
-  for _ in xrange(passes):
-    stats.AddPassedBuild()
-  for i in xrange(fails):
-    stats.AddFailedBuild('build_id%d' % i)
-  return stats
+    result_output.OutputResults(stale, semi_stale, active, unmatched_results,
+                                unmatched_expectations, 'html',
+                                self._file_handle)
 
 
 def _Dedent(s):
