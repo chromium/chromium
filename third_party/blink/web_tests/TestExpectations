@@ -5920,3 +5920,7 @@ crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesyste
 crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Pass Failure ]
 crbug.com/626703 [ Mac ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html [ Pass Failure ]
 crbug.com/626703 [ Win ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html [ Pass Failure ]
+crbug.com/626703 [ Mac ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=h2 [ Pass Failure ]
+crbug.com/626703 [ Win ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=h2 [ Pass Failure ]
+crbug.com/626703 [ Mac ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=https [ Pass Failure ]
+crbug.com/626703 [ Win ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=https [ Pass Failure ]
