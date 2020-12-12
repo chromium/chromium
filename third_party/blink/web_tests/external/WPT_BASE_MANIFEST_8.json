@@ -223944,7 +223944,7 @@
       []
      ],
      "idlharness.https_include=(Document_Window)-expected.txt": [
-      "c63c38a0762c032f7485882cd4a9ebbf5b8666c5",
+      "ba85bbd26a30b4f7f0e874c22db0dd6f45957a57",
       []
      ],
      "idlharness.https_include=HTML._-expected.txt": [
@@ -237894,69 +237894,69 @@
    "origin-isolation": {
     "1-iframe": {
      "parent-yes-child-no-port.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child-no-same.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child-no-subdomain.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child-yes-port.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child-yes-same.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child-yes-subdomain.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ]
     },
     "2-iframes": {
      "parent-yes-child1-no-subdomain-child2-no-subdomain.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child1-no-subdomain-child2-no-subdomain2.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child1-no-subdomain-child2-yes-subdomain.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child1-no-subdomain-child2-yes-subdomain2.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child1-no-subdomain-child2-yes-subdomainport.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child1-yes-subdomain-child2-no-port.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child1-yes-subdomain-child2-no-subdomain.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child1-yes-subdomain-child2-yes-subdomain.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child1-yes-subdomain-child2-yes-subdomain2.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-child1-yes-subdomain-child2-yes-subdomainport.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ]
     },
@@ -237969,15 +237969,15 @@
      []
     ],
     "README.md": [
-     "693ab4048c0736b4d3072e25d2874228263bda3b",
+     "7446ff2495d6ac03d38335817364a6ead115d61e",
      []
     ],
     "about-blank.https.sub.html.headers": [
-     "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+     "79a20f30fc0f486014c8b93edef7483605101504",
      []
     ],
     "document-domain.sub.https.html.headers": [
-     "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+     "79a20f30fc0f486014c8b93edef7483605101504",
      []
     ],
     "getter-special-cases": {
@@ -237986,23 +237986,23 @@
       []
      ],
      "csp-sandbox-yes.https.html.headers": [
-      "3fd1539d4aec261080c0f4a1cea1fd98c3ae9196",
+      "a52bf509006a3b9a5518f4f0679b05d7cff12b42",
       []
      ],
      "data-to-javascript-yes.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "data-url-yes.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "javascript-url-yes.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "removed-iframe.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "resources": {
@@ -238015,7 +238015,7 @@
        []
       ],
       "helpers.mjs": [
-       "d1e3cc17a13e28873ad84f2ad8c9a1cba8cdc9ed",
+       "6cc2ed6b697956b859ade3e0c0956c804cc5f8a4",
        []
       ],
       "javascript-url-test.mjs": [
@@ -238032,60 +238032,60 @@
       ]
      },
      "sandboxed-iframe-yes.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "sandboxed-same-origin-iframe-yes.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ]
     },
     "going-back.sub.https.html.headers": [
-     "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+     "79a20f30fc0f486014c8b93edef7483605101504",
      []
     ],
     "iframe-navigation": {
      "parent-yes-1-no-same-2-no-port.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "parent-yes-1-no-same-2-no-subdomain.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ]
     },
     "insecure-http.sub.html.headers": [
-     "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+     "79a20f30fc0f486014c8b93edef7483605101504",
      []
     ],
     "popups": {
      "opener-yes-openee-no-port.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "opener-yes-openee-no-same.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "opener-yes-openee-no-subdomain.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "opener-yes-openee-yes-port.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "opener-yes-openee-yes-same.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "opener-yes-openee-yes-subdomain.sub.https.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ]
     },
     "removing-iframes.sub.https.html.headers": [
-     "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+     "79a20f30fc0f486014c8b93edef7483605101504",
      []
     ],
     "resources": {
@@ -238098,7 +238098,7 @@
       []
      ],
      "crashy-popup.sub.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "frame.html": [
@@ -238106,11 +238106,11 @@
       []
      ],
      "frame.html.headers": [
-      "ea3f6b335c7620acf59f546fd48484bf624ccb38",
+      "79a20f30fc0f486014c8b93edef7483605101504",
       []
      ],
      "helpers.mjs": [
-      "43cfffd5f26f0a3bd89367d5ec544a07e4b62a37",
+      "02ba405c60190019b909ca84bb05c3370b912855",
       []
      ],
      "helpers.mjs.headers": [
@@ -238118,7 +238118,7 @@
       []
      ],
      "send-header-page-script.mjs": [
-      "fe3dc6a8e0943ed1176aa05a088ce91ab0a03708",
+      "515987f3f20de655f4d1bab87850e7a625fd1faa",
       []
      ],
      "send-header-page-script.mjs.headers": [
@@ -238126,7 +238126,7 @@
       []
      ],
      "send-origin-isolation-header.py": [
-      "fe3234b6501ed0aa6c74458f0c53d765d0cd85f3",
+      "8acf989f964d9964007fa84771843525580fc5fc",
       []
      ]
     }
@@ -348397,7 +348397,7 @@
          ]
         ],
         "canvas-createPutGetImageData-colorManaged.html": [
-         "b58d78ffafc36a4afcd57ceba0cc1d1e0d312513",
+         "c2d0294f9fd2710f7f4628d860f0ffdf5cf8bd4f",
          [
           null,
           {}
@@ -348432,7 +348432,7 @@
          ]
         ],
         "imageData-colorManagedBehavior.html": [
-         "c82bf4cc74b9b8c3c33084b9e631f925f7f17f9b",
+         "ff7c1437b502da323cba0c7dead62afb1df18d21",
          [
           null,
           {}
@@ -371295,7 +371295,7 @@
         ]
        ],
        "selection.html": [
-        "e216d953cef5ba81067b6e046c8f7ed197c0488c",
+        "04ab7298e35ae5191a7f9d9df2fdb46faf477889",
         [
          null,
          {
@@ -391271,7 +391271,7 @@
       ]
      ],
      "removed-iframe.sub.https.html": [
-      "d7ad4903ab9bfb2d07858f688238967f7817d90e",
+      "8a29076e56111444a7f8d83b8d0e413291de4e51",
       [
        null,
        {}
