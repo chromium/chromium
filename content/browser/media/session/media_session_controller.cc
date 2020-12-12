@@ -52,16 +52,15 @@ void MediaSessionController::OnSuspend(int player_id) {
   DCHECK_EQ(player_id_, player_id);
   // TODO(crbug.com/953645): Set triggered_by_user to true ONLY if that action
   // was actually triggered by user as this will activate the frame.
-  web_contents_->media_web_contents_observer()
-      ->GetMediaPlayerRemote(id_)
-      ->RequestPause(/*triggered_by_user=*/true);
+  id_.render_frame_host->Send(new MediaPlayerDelegateMsg_Pause(
+      id_.render_frame_host->GetRoutingID(), id_.delegate_id,
+      true /* triggered_by_user */));
 }
 
 void MediaSessionController::OnResume(int player_id) {
   DCHECK_EQ(player_id_, player_id);
-  web_contents_->media_web_contents_observer()
-      ->GetMediaPlayerRemote(id_)
-      ->RequestPlay();
+  id_.render_frame_host->Send(new MediaPlayerDelegateMsg_Play(
+      id_.render_frame_host->GetRoutingID(), id_.delegate_id));
 }
 
 void MediaSessionController::OnSeekForward(int player_id,

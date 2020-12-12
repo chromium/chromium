@@ -42,7 +42,6 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
-#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -1336,7 +1335,9 @@ void HTMLMediaElement::StartPlayerLoad() {
   // via the MediaPlayer and MediaPlayerObserver mojo interfaces.
   DCHECK(media_player_receiver_set_.empty());
   mojo::PendingRemote<media::mojom::blink::MediaPlayer> media_player_remote;
-  BindMediaPlayerReceiver(media_player_remote.InitWithNewPipeAndPassReceiver());
+  media_player_receiver_set_.Add(
+      media_player_remote.InitWithNewPipeAndPassReceiver(),
+      GetDocument().GetTaskRunner(TaskType::kInternalMedia));
 
   GetMediaPlayerHostRemote().OnMediaPlayerAdded(
       std::move(media_player_remote), web_media_player_->GetDelegateId());
@@ -4113,13 +4114,6 @@ bool HTMLMediaElement::IsInteractiveContent() const {
   return FastHasAttribute(html_names::kControlsAttr);
 }
 
-void HTMLMediaElement::BindMediaPlayerReceiver(
-    mojo::PendingReceiver<media::mojom::blink::MediaPlayer> receiver) {
-  media_player_receiver_set_.Add(
-      std::move(receiver),
-      GetDocument().GetTaskRunner(TaskType::kInternalMedia));
-}
-
 void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(audio_source_node_);
   visitor->Trace(played_time_ranges_);
@@ -4376,12 +4370,13 @@ bool HTMLMediaElement::WasAutoplayInitiated() {
   return autoplay_policy_->WasAutoplayInitiated();
 }
 
-void HTMLMediaElement::ResumePlayback() {
-  RequestPlay();
+void HTMLMediaElement::RequestPlay() {
+  autoplay_policy_->EnsureAutoplayInitiatedSet();
+  PlayInternal();
 }
 
-void HTMLMediaElement::PausePlayback() {
-  RequestPause(false);
+void HTMLMediaElement::RequestPause() {
+  PauseInternal();
 }
 
 void HTMLMediaElement::DidPlayerMutedStatusChange(bool muted) {
@@ -4461,22 +4456,6 @@ void HTMLMediaElement::SetMediaPlayerObserver(
   media_player_observer_remote_.Bind(
       std::move(observer),
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
-}
-
-void HTMLMediaElement::RequestPlay() {
-  autoplay_policy_->EnsureAutoplayInitiatedSet();
-  PlayInternal();
-}
-
-void HTMLMediaElement::RequestPause(bool triggered_by_user) {
-  if (triggered_by_user) {
-    LocalFrame* frame = GetDocument().GetFrame();
-    if (frame) {
-      LocalFrame::NotifyUserActivation(
-          frame, mojom::blink::UserActivationNotificationType::kInteraction);
-    }
-  }
-  PauseInternal();
 }
 
 void HTMLMediaElement::RequestSeekForward(base::TimeDelta seek_time) {

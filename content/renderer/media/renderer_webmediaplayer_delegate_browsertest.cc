@@ -42,6 +42,8 @@ class MockWebMediaPlayerDelegateObserver
   MOCK_METHOD0(OnFrameClosed, void());
   MOCK_METHOD0(OnFrameShown, void());
   MOCK_METHOD0(OnIdleTimeout, void());
+  MOCK_METHOD0(OnPlay, void());
+  MOCK_METHOD0(OnPause, void());
   MOCK_METHOD1(OnVolumeMultiplierUpdate, void(double));
   MOCK_METHOD1(OnBecamePersistentVideo, void(bool));
   MOCK_METHOD0(OnPictureInPictureModeEnded, void());
@@ -70,6 +72,15 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
 
  protected:
   IPC::TestSink& test_sink() { return render_thread_->sink(); }
+
+  void CallOnMediaDelegatePlay(int delegate_id) {
+    delegate_manager_->OnMediaDelegatePlay(delegate_id);
+  }
+
+  void CallOnMediaDelegatePause(int delegate_id) {
+    delegate_manager_->OnMediaDelegatePause(delegate_id,
+                                            true /* triggered_by_user */);
+  }
 
   void SetIsLowEndDeviceForTesting() {
     delegate_manager_->SetIdleCleanupParamsForTesting(
@@ -176,6 +187,15 @@ TEST_F(RendererWebMediaPlayerDelegateTest, DeliversObserverNotifications) {
 
   EXPECT_CALL(observer_1_, OnFrameShown());
   delegate_manager_->WasShown();
+
+  EXPECT_CALL(observer_1_, OnPause());
+  MediaPlayerDelegateMsg_Pause pause_msg(0, delegate_id,
+                                         true /* triggered_by_user */);
+  delegate_manager_->OnMessageReceived(pause_msg);
+
+  EXPECT_CALL(observer_1_, OnPlay());
+  MediaPlayerDelegateMsg_Play play_msg(0, delegate_id);
+  delegate_manager_->OnMessageReceived(play_msg);
 
   const double kTestMultiplier = 0.5;
   EXPECT_CALL(observer_1_, OnVolumeMultiplierUpdate(kTestMultiplier));

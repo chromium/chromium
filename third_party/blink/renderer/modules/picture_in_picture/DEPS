@@ -1,5 +1,4 @@
 include_rules = [
-    "+media/mojo/mojom/media_player.mojom-blink.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/event_modules.h",
     "+third_party/blink/renderer/modules/event_target_modules.h",

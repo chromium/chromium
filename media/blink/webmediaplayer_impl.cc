@@ -716,7 +716,7 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(blink::DisplayType display_type) {
       // Resumes playback if it was paused when hidden.
       if (paused_when_hidden_) {
         paused_when_hidden_ = false;
-        client_->ResumePlayback();
+        OnPlay();
       }
       break;
   }
@@ -2556,7 +2556,7 @@ void WebMediaPlayerImpl::OnFrameShown() {
 
   if (paused_when_hidden_) {
     paused_when_hidden_ = false;
-    client_->ResumePlayback();  // Calls UpdatePlayState() so return afterwards.
+    OnPlay();  // Calls UpdatePlayState() so return afterwards.
     return;
   }
 
@@ -2576,6 +2576,14 @@ void WebMediaPlayerImpl::OnIdleTimeout() {
   }
 
   UpdatePlayState();
+}
+
+void WebMediaPlayerImpl::OnPlay() {
+  client_->RequestPlay();
+}
+
+void WebMediaPlayerImpl::OnPause() {
+  client_->RequestPause();
 }
 
 void WebMediaPlayerImpl::OnSetAudioSink(const std::string& sink_id) {
@@ -2647,10 +2655,10 @@ void WebMediaPlayerImpl::OnRemotePlayStateChange(MediaStatus::State state) {
 
   if (state == MediaStatus::State::PLAYING && Paused()) {
     DVLOG(1) << __func__ << " requesting PLAY.";
-    client_->ResumePlayback();
+    client_->RequestPlay();
   } else if (state == MediaStatus::State::PAUSED && !Paused()) {
     DVLOG(1) << __func__ << " requesting PAUSE.";
-    client_->PausePlayback();
+    client_->RequestPause();
   }
 }
 #endif  // defined(OS_ANDROID)
@@ -3361,8 +3369,7 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
 
   // Idle timeout chosen arbitrarily.
   background_pause_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(5),
-                                client_,
-                                &blink::WebMediaPlayerClient::ResumePlayback);
+                                this, &WebMediaPlayerImpl::OnPause);
 }
 
 void WebMediaPlayerImpl::CreateWatchTimeReporter() {
@@ -3637,10 +3644,9 @@ void WebMediaPlayerImpl::PauseVideoIfNeeded() {
       seeking_ || paused_)
     return;
 
-  // client_->PausePlayback() will get |paused_when_hidden_| set to
-  // false and UpdatePlayState() called, so set the flag to true after and then
-  // return.
-  client_->PausePlayback();
+  // OnPause() will set |paused_when_hidden_| to false and call
+  // UpdatePlayState(), so set the flag to true after and then return.
+  OnPause();
   paused_when_hidden_ = true;
 }
 

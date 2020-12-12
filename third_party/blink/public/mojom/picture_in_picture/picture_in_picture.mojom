@@ -4,7 +4,6 @@
 
 module blink.mojom;
 
-import "media/mojo/mojom/media_player.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -47,19 +46,13 @@ interface PictureInPictureService {
   // Picture-in-Picture session is already running, it will be closed.
   // player_id: WebMediaPlayer id used to control playback via the
   //            Picture-in-Picture window.
-  // player_remote: MediaPlayer remote to communicate with the renderer side.
   // surface_id: SurfaceId to be shown in the Picture-in-Picture window.
   // natural_size: Size of the video frames.
   // show_play_pause_button: Whether a play/pause control should be offered in
   //                         the Picture-in-Picture window.
   // observer: Observer to be associated with the session.
-  //
-  // TODO: Now that we are passing |player_remote|, it should be possible to get
-  // rid of |player_id| once the few remaining uses of it in the browser process
-  // get migrated to not requiring a MediaPlayerId for identification purposes.
   StartSession(
       uint32 player_id,
-      pending_remote<media.mojom.MediaPlayer> player_remote,
       viz.mojom.SurfaceId? surface_id,
       gfx.mojom.Size natural_size,
       bool show_play_pause_button,

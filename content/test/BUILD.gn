@@ -1050,6 +1050,7 @@ test("content_browsertests") {
     "../browser/manifest/manifest_browsertest.cc",
     "../browser/media/encrypted_media_browsertest.cc",
     "../browser/media/fullscreen_video_detection_browsertest.cc",
+    "../browser/media/media_autoplay_browsertest.cc",
     "../browser/media/media_browsertest.cc",
     "../browser/media/media_browsertest.h",
     "../browser/media/media_canplaytype_browsertest.cc",

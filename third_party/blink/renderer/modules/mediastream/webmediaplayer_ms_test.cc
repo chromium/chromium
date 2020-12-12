@@ -583,8 +583,8 @@ class WebMediaPlayerMSTest
   void MediaRemotingStarted(
       const WebString& remote_device_friendly_name) override {}
   void MediaRemotingStopped(int error_code) override {}
-  void ResumePlayback() override {}
-  void PausePlayback() override {}
+  void RequestPlay() override {}
+  void RequestPause() override {}
   void DidPlayerMutedStatusChange(bool muted) override {}
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
@@ -1326,6 +1326,11 @@ TEST_P(WebMediaPlayerMSTest, HiddenPlayerTests) {
   // Hidden status should not affect playback.
   delegate_.set_hidden(true);
   player_->Play();
+  EXPECT_FALSE(player_->Paused());
+
+  // A pause delivered via the delegate should not pause the video since these
+  // calls are currently ignored.
+  player_->OnPause();
   EXPECT_FALSE(player_->Paused());
 
   // A hidden player should start still be playing upon shown.
