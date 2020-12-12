@@ -2597,6 +2597,11 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
   }
 
   context_.current.paint_offset += context_.repeating_paint_offset_adjustment;
+
+  context_.current.additional_offset_to_layout_shift_root_delta +=
+      context_.pending_additional_offset_to_layout_shift_root_delta;
+  context_.pending_additional_offset_to_layout_shift_root_delta =
+      PhysicalOffset();
 }
 
 void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
@@ -2829,13 +2834,15 @@ void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
     PaintPropertyTreeBuilderFragmentContext& context) {
   if (const auto* properties = fragment.PaintProperties()) {
     if (const auto* translation = properties->PaintOffsetTranslation()) {
-      auto* containing_block_context = &context.current;
-      if (object_.StyleRef().GetPosition() == EPosition::kAbsolute)
-        containing_block_context = &context.absolute_position;
-      else if (object_.StyleRef().GetPosition() == EPosition::kFixed)
-        containing_block_context = &context.fixed_position;
-      containing_block_context->additional_offset_to_layout_shift_root_delta -=
-          PhysicalOffset::FromFloatSizeRound(translation->Translation2D());
+      // If there is a paint offset translation, it only causes a net change
+      // in additional_offset_to_layout_shift_root_delta by the amount the
+      // paint offset translation changed from the prior frame. To implement
+      // this, we record a negative offset here, and then re-add it in
+      // UpdatePaintOffsetTranslation. The net effect is that the value
+      // of additional_offset_to_layout_shift_root_delta is the difference
+      // between the old and new paint offset translation.
+      context.pending_additional_offset_to_layout_shift_root_delta =
+          -PhysicalOffset::FromFloatSizeRound(translation->Translation2D());
     }
   }
 

@@ -556,4 +556,24 @@ TEST_F(LayoutShiftTrackerTest,
   EXPECT_EQ(LayoutSize(100, 100), onscreen->Size());
 }
 
+TEST_F(LayoutShiftTrackerTest, NestedFixedPos) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=parent style="position: fixed; top: 0; left: -100%; width: 100%">
+      <div id=target style="position: fixed; top: 0; width: 100%; height: 100%;
+                            left: 0"></div>
+    </div>
+    <div style="height: 5000px"></div>
+  </div>
+  )HTML");
+
+  auto* target = To<LayoutBox>(GetLayoutObjectByElementId("target"));
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+
+  // Test that repaint of #target does not record a layout shift.
+  target->SetNeedsPaintPropertyUpdate();
+  target->SetSubtreeShouldDoFullPaintInvalidation();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+}
+
 }  // namespace blink
