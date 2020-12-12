@@ -31,6 +31,7 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"NetworkDiagnosticsHttpFirewall", IDS_NETWORK_DIAGNOSTICS_HTTP_FIREWALL},
     {"NetworkDiagnosticsHttpsFirewall", IDS_NETWORK_DIAGNOSTICS_HTTPS_FIREWALL},
     {"NetworkDiagnosticsHttpsLatency", IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY},
+    {"NetworkDiagnosticsCaptivePortal", IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL},
     {"NetworkDiagnosticsPassed", IDS_NETWORK_DIAGNOSTICS_PASSED},
     {"NetworkDiagnosticsFailed", IDS_NETWORK_DIAGNOSTICS_FAILED},
     {"NetworkDiagnosticsNotRun", IDS_NETWORK_DIAGNOSTICS_NOT_RUN},
@@ -86,6 +87,18 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
      IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_PROBLEM_HIGH_LATENCY},
     {"HttpsLatencyProblem_VeryHighLatency",
      IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_PROBLEM_VERY_HIGH_LATENCY},
+    {"CaptivePortalProblem_NoActiveNetworks",
+     IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_NO_ACTIVE_NETWORKS},
+    {"CaptivePortalProblem_UnknownPortalState",
+     IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_UNKNOWN_PORTAL_STATE},
+    {"CaptivePortalProblem_PortalSuspected",
+     IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_PORTAL_SUSPECTED},
+    {"CaptivePortalProblem_Portal",
+     IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_PORTAL},
+    {"CaptivePortalProblem_ProxyAuthRequired",
+     IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_PROXY_AUTH_REQUIRED},
+    {"CaptivePortalProblem_NoInternet",
+     IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_NO_INTERNET},
 };
 
 struct WebUiResource {

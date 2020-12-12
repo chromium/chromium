@@ -72,6 +72,16 @@ Polymer({
             ]
           },
           {
+            group: RoutineGroup.PORTAL,
+            routines: [
+              {
+                name: 'NetworkDiagnosticsCaptivePortal',
+                type: RoutineType.CAPTIVE_PORTAL,
+                func: () => this.networkDiagnostics_.captivePortal(),
+              },
+            ]
+          },
+          {
             group: RoutineGroup.GATEWAY,
             routines: [
               {
@@ -429,6 +439,32 @@ Polymer({
             case diagnosticsMojom.HttpsLatencyProblem.kVeryHighLatency:
               problemStrings.push(
                   getString('HttpsLatencyProblem_VeryHighLatency'));
+              break;
+          }
+
+        case RoutineType.CAPTIVE_PORTAL:
+          switch (problem) {
+            case diagnosticsMojom.CaptivePortalProblem.kNoActiveNetworks:
+              problemStrings.push(
+                  getString('CaptivePortalProblem_NoActiveNetworks'));
+              break;
+            case diagnosticsMojom.CaptivePortalProblem.kUnknownPortalState:
+              problemStrings.push(
+                  getString('CaptivePortalProblem_UnknownPortalState'));
+              break;
+            case diagnosticsMojom.CaptivePortalProblem.kPortalSuspected:
+              problemStrings.push(
+                  getString('CaptivePortalProblem_PortalSuspected'));
+              break;
+            case diagnosticsMojom.CaptivePortalProblem.kPortal:
+              problemStrings.push(getString('CaptivePortalProblem_Portal'));
+              break;
+            case diagnosticsMojom.CaptivePortalProblem.kProxyAuthRequired:
+              problemStrings.push(
+                  getString('CaptivePortalProblem_ProxyAuthRequired'));
+              break;
+            case diagnosticsMojom.CaptivePortalProblem.kNoInternet:
+              problemStrings.push(getString('CaptivePortalProblem_NoInternet'));
               break;
           }
       }

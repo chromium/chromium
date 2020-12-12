@@ -827,6 +827,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY" desc="Label for Network diagnostics `HTTPS Latency` test. This test ensures that the device's https requests have an acceptable amount of latency">
         HTTPS Latency
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL" desc="Label for Network diagnostics `Captive Portal` test. This test ensures that the device's internet connection is not gated by a captive portal">
+        Captive Portal
+      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_PASSED" desc="Label shown when a Network diagnostics routine passed">
         Passed
       </message>
@@ -925,6 +928,24 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_PROBLEM_VERY_HIGH_LATENCY" desc="Error message shown when HTTPS requests have a very high latency">
         Very high HTTPS latency
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_NO_ACTIVE_NETWORKS" desc="Error message shown when the device is not actively connected to a network">
+        No active networks
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_UNKNOWN_PORTAL_STATE" desc="Error message shown when the network portal state is not available">
+        Unknown portal state
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_PORTAL_SUSPECTED" desc="Error message shown when a network portal is suspected, but cannot be fully confirmed">
+        Portal suspected
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_PORTAL" desc="Error message shown when a network portal is detected">
+        Portal detected
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_PROXY_AUTH_REQUIRED" desc="Error message shown when a network portal requires authentication">
+        Proxy authentication required
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_NO_INTERNET" desc="Error message shown when no network portal is detected, but there is no internet connection">
+        No internet
       </message>
     </messages>
   </release>

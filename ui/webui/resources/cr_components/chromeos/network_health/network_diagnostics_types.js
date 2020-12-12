@@ -54,6 +54,7 @@
   HTTP_FIREWALL: 7,
   HTTPS_FIREWALL: 8,
   HTTPS_LATENCY: 9,
+  CAPTIVE_PORTAL: 10,
 };
 
 /**
@@ -63,9 +64,10 @@
 /* #export */ const RoutineGroup = {
   CONNECTION: 0,
   WIFI: 1,
-  GATEWAY: 2,
-  FIREWALL: 3,
-  DNS: 4,
+  PORTAL: 2,
+  GATEWAY: 3,
+  FIREWALL: 4,
+  DNS: 5,
 };
 
 /* #export */ const Icons = {
