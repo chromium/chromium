@@ -34,7 +34,6 @@ export const State = {
   MULTI_FPS: 'multi-fps',
   NO_RESOLUTION_SETTINGS: 'no-resolution-settings',
   PLAYING_RESULT_VIDEO: 'playing-result-video',
-  PREVIEW_VERTICAL_DOCK: 'preview-vertical-dock',
   PRINT_PERFORMANCE_LOGS: 'print-performance-logs',
   // Starts/Ends when start/stop event of MediaRecorder is triggered.
   RECORDING: 'recording',
@@ -49,7 +48,6 @@ export const State = {
   SCAN_BARCODE: 'scan-barcode',
   SHOULD_HANDLE_INTENT_RESULT: 'should-handle-intent-result',
   SHOW_METADATA: 'show-metadata',
-  SQUARE_PREVIEW: 'square-preview',
   SCREEN_OFF_AUTO: 'screen-off-auto',
   STREAMING: 'streaming',
   SUSPEND: 'suspend',
@@ -61,11 +59,6 @@ export const State = {
   TIMER_10SEC: '_10sec',
   TIMER_3SEC: '_3sec',
   TIMER: 'timer',
-  W_LETTERBOX_L: 'w-letterbox-l',
-  W_LETTERBOX_M: 'w-letterbox-m',
-  W_LETTERBOX_S: 'w-letterbox-s',
-  W_LETTERBOX: 'w-letterbox',
-  W_LETTERBOX_XL: 'w-letterbox-xl',
 };
 
 /**

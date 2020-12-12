@@ -118,7 +118,7 @@ body.tab-navigation .circle input:focus::after {
 }
 
 .left-stripe {
-  left: 40px;
+  left:  var(--left-line);
   opacity: 1;
   position: absolute;
   transform: translateX(-50%);
@@ -134,7 +134,7 @@ body.taking.video .left-stripe {
 
 .right-stripe {
   position: absolute;
-  right: 56px;
+  right:  var(--right-line);
   transform: translateX(50%);
 }
 
@@ -184,7 +184,7 @@ body.review-result #shutters-group {
 }
 
 body.should-handle-intent-result #shutters-group {
-  bottom: calc(var(--modes-bottom) + (var(--shutter-size) / 2));
+  bottom: calc((var(--bottom-line) * 2) + 8px + (var(--shutter-size) / 2));
 }
 
 body.tablet-landscape .actions-group {
@@ -192,13 +192,19 @@ body.tablet-landscape .actions-group {
 }
 
 #modes-group {
-  bottom: var(--modes-bottom);
-  flex-direction: column;
-  height: var(--modes-height);
-  justify-content: flex-start;
-  overflow: scroll;
-  padding: 0 8px;
+  --fade-padding: 16px;
+
+  -webkit-mask-image: linear-gradient(to left,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 1) var(--fade-padding) calc(100% - var(--fade-padding)),
+    rgba(0, 0, 0, 0) 100%);
+  left: calc(var(--left-line) * 2);
+  overflow: auto;
+  padding: 5px 0;
   pointer-events: auto;
+  right: calc(var(--right-line) * 2);
+  text-align: center;
+  white-space: nowrap;
 }
 
 body:not(.streaming) #modes-group,
@@ -207,10 +213,16 @@ body.taking:not(.video) #shutters-group {
   opacity: 0.38;
 }
 
-#modes-group.scrollable {
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,1) var(--modes-gradient-padding) calc(100% - var(--modes-gradient-padding)), rgba(0,0,0,0) 100%);
-  height: calc(var(--modes-height) - var(--modes-gradient-padding) * 2);
-  padding: var(--modes-gradient-padding) 8px;
+#modes-group::-webkit-scrollbar-thumb {
+  background: gray;
+  border-radius: 3px/50%;
+  height: auto;
+  width: auto;
+}
+
+#modes-group::-webkit-scrollbar {
+  height: 5px;
+  width: auto;
 }
 
 body.taking.video #gallery-enter,
@@ -220,11 +232,6 @@ body.taking.video #modes-group {
 
 body.should-handle-intent-result #modes-group {
   display: none;
-}
-
-.preview-content {
-  height: 0; /* Calculate at runtime. */
-  width: 0; /* Calculate at runtime. */
 }
 
 #play-result-video {
@@ -263,9 +270,18 @@ body.playing-result-video #play-result-video {
   background-image: url(/images/camera_intent_result_cancel.svg);
 }
 
-.mode-item {
-  flex: 0 0 var(--mode-item-height);
+#modes-group .mode-item {
+  --focus-ring-gap: 7px;
+  --focus-ring-border: 2px;
+
+  display: inline-block;
+  font-size: 0; /* Remove space between inline-block. */
+  margin: calc(var(--focus-ring-gap) + var(--focus-ring-border)) 12px;
   position: relative;
+}
+
+#modes-group .mode-item.hide {
+  display: none;
 }
 
 div.mode-item>span {
@@ -274,20 +290,14 @@ div.mode-item>span {
   display: inline-block;
   font-size: 14px;
   font-weight: 500;
-  line-height: 32px;
-  margin: 8px 0;
-  padding: 0 12px;
+  line-height: 16px;
+  padding: 8px 12px;
   position: relative;
-  text-shadow: 0 2px 3px rgba(32, 33, 36, 0.3);
   z-index: 0;
 }
 
 #modes-group.hide {
   visibility: hidden;
-}
-
-.mode-item.hide {
-  display: none;
 }
 
 .mode-item>input {
@@ -303,19 +313,22 @@ body.tab-navigation .mode-item>input:focus::after {
 
 .mode-item>input:checked + span {
   background: white;
+  box-shadow: 0 2px 3px rgba(32, 33, 36, 0.3);
   color: black;
   text-shadow: none;
 }
 
 body.tab-navigation .mode-item>input:focus + span::after {
-  border: 2px solid rgba(37, 129, 223, 0.7);
+  --negative-size: calc(0px - var(--focus-ring-gap));
+
+  border: var(--focus-ring-border) solid rgba(37, 129, 223, 0.7);
   border-radius: 23px/50%;
-  bottom: -7px;
+  bottom: var(--negative-size);
   content: '';
-  left: -7px;
+  left: var(--negative-size);
   position: absolute;
-  right: -7px;
-  top: -7px;
+  right: var(--negative-size);
+  top: var(--negative-size);
 }
 
 button.shutter {
@@ -721,72 +734,49 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
   opacity: 0;
 }
 
-#view-camera,
-#preview-wrapper {
+#view-camera {
+  --big-icon: 48px;
+  --bottom-line: 40px;
+  --left-line: 40px;
+  --right-line: 56px;
+  --small-icon: 40px;
+  --shutter-vertical-center: calc((var(--bottom-line) * 2) + 204px);
+
   align-items: center;
   display: flex;
   justify-content: center;
   overflow: hidden;
 }
 
-#view-camera {
-  --big-icon: 48px;
-  --bottom-line: 40px;
-  --mode-item-height: 48px;
-  --modes-bottom: calc((var(--bottom-line) + (var(--big-icon) / 2)) + 24px);
-  --modes-gradient-padding: 16px;
-  --modes-height: calc(var(--mode-item-height) * 3);
-  --small-icon: 40px;
-  --shutter-vertical-center: calc((var(--modes-bottom) + var(--modes-height)) + 52px);
-}
-
 body.max-wnd #view-camera {
   --bottom-line: 56px;
 }
 
-body.w-letterbox.w-letterbox-xl #view-camera {
+#preview-box {
+  align-items: center;
+  bottom: calc(var(--bottom-line) * 2);
+  display: flex;
   justify-content: center;
-}
-
-body:not(.w-letterbox) #view-camera {
-  flex-direction: column;
-  justify-content: center;
-}
-
-body:not(.w-letterbox).preview-vertical-dock #view-camera {
-  justify-content: flex-end;
-}
-
-#preview-wrapper,
-.preview-content {
-  flex-shrink: 0;
+  left: calc(var(--left-line) * 2);
   pointer-events: none;
-  position: relative;
+  position: absolute;
+  right: calc(var(--right-line) * 2);
+  top: 0;
 }
 
-body.w-letterbox.w-letterbox-s #preview-wrapper {
-  margin-left: auto;  /* csschecker-disable-line left-right */
-  margin-right: 0; /* csschecker-disable-line left-right */
-}
-
-body.w-letterbox.w-letterbox-l #preview-wrapper {
-  margin-left: 72px;  /* csschecker-disable-line left-right */
-  margin-right: auto;  /* csschecker-disable-line left-right */
-}
-
-body:not(.w-letterbox).preview-vertical-dock #preview-wrapper {
-  bottom: calc((var(--bottom-line) + (var(--big-icon) / 2)) + 12px);
-}
-
-body.square-preview #preview-wrapper {
+#preview-viewport {
   height: 0; /* Calculate at runtime. */
+  overflow: hidden;
+  position: relative;
   width: 0; /* Calculate at runtime. */
 }
 
-body.square-preview .preview-content {
+.preview-content {
+  height: 0; /* Calculate at runtime. */
   left: 0; /* Calculate at runtime. */
-  position: absolute;
+  position: relative;
   top: 0; /* Calculate at runtime. */
+  width: 0; /* Calculate at runtime. */
 }
 
 body.streaming .preview-content {

@@ -12,6 +12,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
+// TODO(b/174811949): Hide behind ChromeOS build flag.
+#include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,13 +29,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
-
-namespace {
-
-constexpr int kDefaultWindowWidth = 864;
-constexpr int kDefaultWindowHeight = 486;
-
-}  // namespace
 
 // static
 void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
@@ -62,7 +57,7 @@ bool ChromeCameraAppUIDelegate::CameraAppDialog::CanMaximizeDialog() const {
 
 void ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogSize(
     gfx::Size* size) const {
-  size->SetSize(kDefaultWindowWidth, kDefaultWindowHeight);
+  size->SetSize(kChromeCameraAppDefaultWidth, kChromeCameraAppDefaultHeight);
 }
 
 void ChromeCameraAppUIDelegate::CameraAppDialog::RequestMediaAccessPermission(

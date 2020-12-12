@@ -10,6 +10,12 @@ import {
 } from './type.js';
 import {WaitableEvent} from './waitable_event.js';
 
+// Default window size when using 4x3 camera preview.
+export const DEFAULT_PREVIEW_4X3_WINDOW_SIZE = [788, 570];
+
+// Default window size when using 16x9 camera preview.
+export const DEFAULT_PREVIEW_16X9_WINDOW_SIZE = [788, 460];
+
 /**
  * Class which is used to coordinate the setup of window between Tast side and
  * CCA side. Note that the methods in this class are all marked with "async"

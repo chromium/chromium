@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-unused-vars
-import {AppWindow} from './app_window.js';
+import {
+  AppWindow,  // eslint-disable-line no-unused-vars
+  DEFAULT_PREVIEW_16X9_WINDOW_SIZE,
+} from './app_window.js';
 import {
   BackgroundOps,  // eslint-disable-line no-unused-vars
   ForegroundOps,  // eslint-disable-line no-unused-vars
@@ -21,13 +23,25 @@ import {
  * Fixed minimum width of the window inner-bounds in pixels.
  * @type {number}
  */
-const MIN_WIDTH = 864;
+const MIN_WIDTH = 505;
 
 /**
- * Initial apsect ratio of the window inner-bounds.
+ * Fixed minimum height of the window inner-bounds in pixels.
  * @type {number}
  */
-const INITIAL_ASPECT_RATIO = 1.7777777777;
+const MIN_HEIGHT = 460;
+
+/**
+ * Default width of inner-bounds in pixels.
+ * @type {number}
+ */
+const DEFAULT_WIDTH = DEFAULT_PREVIEW_16X9_WINDOW_SIZE[0];
+
+/**
+ * Default height of inner-bounds in pixels.
+ * @type {number}
+ */
+const DEFAULT_HEIGHT = DEFAULT_PREVIEW_16X9_WINDOW_SIZE[1];
 
 /**
  * Top bar color of the window.
@@ -178,10 +192,6 @@ class CCAWindow {
 
     this.state_ = WindowState.LAUNCHING;
 
-    // The height will be later calculated to match video aspect ratio once the
-    // stream is available.
-    const initialHeight = Math.round(MIN_WIDTH / INITIAL_ASPECT_RATIO);
-
     const windowId =
         this.intent_ !== null ? `main-${this.intent_.intentId}` : 'main';
     const windowUrl = 'views/main.html' +
@@ -193,11 +203,12 @@ class CCAWindow {
           frame: {color: TOPBAR_COLOR},
           hidden: true,  // Will be shown from main.js once loaded.
           innerBounds: {
-            width: MIN_WIDTH,
-            height: initialHeight,
+            width: DEFAULT_WIDTH,
+            height: DEFAULT_HEIGHT,
+            minHeight: MIN_HEIGHT,
             minWidth: MIN_WIDTH,
-            left: Math.round((window.screen.availWidth - MIN_WIDTH) / 2),
-            top: Math.round((window.screen.availHeight - initialHeight) / 2),
+            left: Math.round((window.screen.availWidth - DEFAULT_WIDTH) / 2),
+            top: Math.round((window.screen.availHeight - DEFAULT_HEIGHT) / 2),
           },
         },
         (appWindow) => {

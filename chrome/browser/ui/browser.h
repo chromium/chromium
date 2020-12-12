@@ -247,9 +247,6 @@ class Browser : public TabStripModelObserver,
     // programmatically created.
     bool user_gesture;
 
-    // True if the app is resizeable.
-    bool can_resize;
-
     // Whether this browser was created specifically for dragged tab(s).
     bool in_tab_dragging = false;
 
@@ -656,9 +653,6 @@ class Browser : public TabStripModelObserver,
     return type_ == TYPE_APP || type_ == TYPE_DEVTOOLS ||
            type_ == TYPE_APP_POPUP;
   }
-
-  // True if the browser is resizeable.
-  bool can_resize() const { return create_params_.can_resize; }
 
   // True when the mouse cursor is locked.
   bool IsMouseLocked() const;

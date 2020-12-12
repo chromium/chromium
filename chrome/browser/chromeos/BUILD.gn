@@ -2887,6 +2887,7 @@ source_set("chromeos") {
     "vm_starting_observer.h",
     "web_applications/camera_system_web_app_info.cc",
     "web_applications/camera_system_web_app_info.h",
+    "web_applications/chrome_camera_app_ui_constants.h",
     "web_applications/chrome_camera_app_ui_delegate.cc",
     "web_applications/chrome_camera_app_ui_delegate.h",
     "web_applications/chrome_help_app_ui_delegate.cc",

@@ -24,17 +24,6 @@ class CameraAppIntegrationTest : public SystemWebAppIntegrationTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1129340): Remove this test after CCA supports responsive UI.
-// Test that the window of Camera App is not resizeable.
-IN_PROC_BROWSER_TEST_P(CameraAppIntegrationTest, WindowNotResizeable) {
-  WaitForTestSystemAppInstall();
-  Browser* browser;
-  LaunchApp(web_app::SystemAppType::CAMERA, &browser);
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser);
-  EXPECT_FALSE(browser_view->CanResize());
-}
-
 IN_PROC_BROWSER_TEST_P(CameraAppIntegrationTest, MainUrlNavigation) {
   WaitForTestSystemAppInstall();
 

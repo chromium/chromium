@@ -104,8 +104,7 @@ GURL GetLaunchUrl(WebAppProvider& provider,
 
 Browser* CreateWebApplicationWindow(Profile* profile,
                                     const std::string& app_id,
-                                    WindowOpenDisposition disposition,
-                                    bool can_resize) {
+                                    WindowOpenDisposition disposition) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
   gfx::Rect initial_bounds;
   Browser::CreateParams browser_params =
@@ -117,7 +116,6 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                 app_name, /*trusted_source=*/true, initial_bounds, profile,
                 /*user_gesture=*/true);
   browser_params.initial_show_state = DetermineWindowShowState();
-  browser_params.can_resize = can_resize;
   return Browser::Create(browser_params);
 }
 

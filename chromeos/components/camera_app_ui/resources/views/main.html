@@ -25,55 +25,58 @@
   </head>
   <body class="sound mirror mic _3x3 view-splash">
     <div id="view-camera">
-      <div id="preview-wrapper">
-        <img id="review-photo-result" class="preview-content"
-          aria-hidden="true">
-        <video id="review-video-result" class="preview-content"></video>
-        <div class="buttons circle centered-overlay">
-          <button id="play-result-video" tabindex="0"
-            i18n-label="play_result_video_button"></button>
+      <div id="preview-box">
+        <div id="preview-viewport">
+          <img id="review-photo-result" class="preview-content"
+            aria-hidden="true">
+          <video id="review-video-result" class="preview-content"></video>
+          <div class="buttons circle centered-overlay">
+            <button id="play-result-video" tabindex="0"
+              i18n-label="play_result_video_button"></button>
+          </div>
+          <video id="preview-video" class="preview-content"></video>
+          <div id="preview-metadata">
+            <div id="preview-info" class="metadata-row mode-on">
+              <span class="metadata-category">Info</span>
+              <div id="preview-resolution" class="metadata-value"></div>
+              <div id="preview-device-name" class="metadata-value"></div>
+            </div>
+            <div id="preview-stat" class="metadata-row mode-on">
+              <span class="metadata-category">Stat</span>
+              <div id="preview-fps" class="metadata-value"></div>
+            </div>
+            <div id="preview-af" class="metadata-row">
+              <span class="metadata-category">AF</span>
+              <div id="preview-focus-distance" class="metadata-value"></div>
+              <div id="preview-af-state" class="metadata-value"></div>
+            </div>
+            <div id="preview-ae" class="metadata-row">
+              <span class="metadata-category">AE</span>
+              <div id="preview-sensitivity" class="metadata-value"></div>
+              <div id="preview-exposure-time" class="metadata-value"></div>
+              <div id="preview-frame-duration" class="metadata-value"></div>
+              <div id="preview-ae-antibanding-mode" class="metadata-value">
+              </div>
+              <div id="preview-ae-state" class="metadata-value"></div>
+            </div>
+            <div id="preview-awb" class="metadata-row">
+              <span class="metadata-category">AWB</span>
+              <div id="preview-wb-gain-red" class="metadata-value"></div>
+              <div id="preview-wb-gain-blue" class="metadata-value"></div>
+              <div id="preview-awb-state" class="metadata-value"></div>
+            </div>
+          </div>
+          <div id="preview-grid">
+            <div id="preview-grid-horizontal"></div>
+            <div id="preview-grid-vertical"></div>
+          </div>
+          <div id="preview-focus">
+            <object id="preview-focus-aim" type="image/svg+xml"
+                    data="/images/camera_focus_aim.svg"
+                    tabindex="-1" hidden></object>
+          </div>
+          <div id="camera-mode" class="centered-overlay"></div>
         </div>
-        <video id="preview-video" class="preview-content"></video>
-        <div id="preview-metadata">
-          <div id="preview-info" class="metadata-row mode-on">
-            <span class="metadata-category">Info</span>
-            <div id="preview-resolution" class="metadata-value"></div>
-            <div id="preview-device-name" class="metadata-value"></div>
-          </div>
-          <div id="preview-stat" class="metadata-row mode-on">
-            <span class="metadata-category">Stat</span>
-            <div id="preview-fps" class="metadata-value"></div>
-          </div>
-          <div id="preview-af" class="metadata-row">
-            <span class="metadata-category">AF</span>
-            <div id="preview-focus-distance" class="metadata-value"></div>
-            <div id="preview-af-state" class="metadata-value"></div>
-          </div>
-          <div id="preview-ae" class="metadata-row">
-            <span class="metadata-category">AE</span>
-            <div id="preview-sensitivity" class="metadata-value"></div>
-            <div id="preview-exposure-time" class="metadata-value"></div>
-            <div id="preview-frame-duration" class="metadata-value"></div>
-            <div id="preview-ae-antibanding-mode" class="metadata-value"></div>
-            <div id="preview-ae-state" class="metadata-value"></div>
-          </div>
-          <div id="preview-awb" class="metadata-row">
-            <span class="metadata-category">AWB</span>
-            <div id="preview-wb-gain-red" class="metadata-value"></div>
-            <div id="preview-wb-gain-blue" class="metadata-value"></div>
-            <div id="preview-awb-state" class="metadata-value"></div>
-          </div>
-        </div>
-        <div id="preview-grid">
-          <div id="preview-grid-horizontal"></div>
-          <div id="preview-grid-vertical"></div>
-        </div>
-        <div id="preview-focus">
-          <object id="preview-focus-aim" type="image/svg+xml"
-                  data="/images/camera_focus_aim.svg"
-                  tabindex="-1" hidden></object>
-        </div>
-        <div class="centered-overlay" id="camera-mode"></div>
       </div>
       <div id="video-snapshot-holder" class="buttons right-stripe circle">
         <button id="video-snapshot" tabindex="0"
@@ -97,7 +100,7 @@
           <div class="two-bars"></div>
         </button>
       </div>
-      <div id="modes-group" class="buttons right-stripe hide">
+      <div id="modes-group" class="buttons bottom-stripe hide">
         <div class="mode-item">
           <input type="radio" name="mode"
                data-mode="video" tabindex="0"
@@ -169,13 +172,13 @@
         <button id="open-settings" tabindex="0"
                 i18n-label="settings_button" aria-haspopup="true"></button>
       </div>
-      <div class="top-stripe horizontal-center-stripe" id="record-time" hidden>
+      <div id="record-time" class="top-stripe horizontal-center-stripe" hidden>
         <div class="icon"></div>
-        <div i18n-content="record_video_paused_msg" id="paused-msg"></div>
+        <div id="paused-msg" i18n-content="record_video_paused_msg"></div>
         <div id="record-time-msg"></div>
       </div>
       <div class="top-stripe right-stripe buttons">
-        <input type="checkbox" id="toggle-mic" tabindex="0"
+        <input id="toggle-mic" type="checkbox" tabindex="0"
                i18n-label="toggle_mic_button" data-state="mic"
                data-key="toggleMic" checked>
       </div>
@@ -189,12 +192,12 @@
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div i18n-content="settings_button"></div>
         </div>
-        <button class="menu-item" id="settings-gridtype" tabindex="0"
+        <button id="settings-gridtype" class="menu-item" tabindex="0"
                 aria-describedby="gridtype-desc">
           <div class="icon"></div>
           <div>
             <div i18n-content="grid_type_button"></div>
-            <div class="description" id="gridtype-desc" aria-hidden="true">
+            <div id="gridtype-desc" class="description" aria-hidden="true">
               <span i18n-content="label_grid_3x3" i18n-aria="aria_grid_3x3"></span>
               <span i18n-content="label_grid_4x4" i18n-aria="aria_grid_4x4"></span>
               <span i18n-content="label_grid_golden"></span>
@@ -202,35 +205,35 @@
           </div>
           <div class="icon end"></div>
         </button>
-        <button class="menu-item" id="settings-timerdur" tabindex="0"
+        <button id="settings-timerdur" class="menu-item" tabindex="0"
                 aria-describedby="timerdur-desc">
           <div class="icon"></div>
           <div>
             <div i18n-content="timer_duration_button"></div>
-            <div class="description" id="timerdur-desc" aria-hidden="true">
+            <div id="timerdur-desc" class="description" aria-hidden="true">
               <span i18n-content="label_timer_3s"></span>
               <span i18n-content="label_timer_10s"></span>
             </div>
           </div>
           <div class="icon end"></div>
         </button>
-        <button class="menu-item" id="settings-resolution" tabindex="0">
+        <button id="settings-resolution" class="menu-item" tabindex="0">
           <div class="icon"></div>
           <div i18n-content="camera_resolution_button">
           </div>
           <div class="icon end"></div>
         </button>
-        <button class="menu-item" id="settings-expert" tabindex="0">
+        <button id="settings-expert" class="menu-item" tabindex="0">
           <div class="icon"></div>
           <div i18n-content="expert_mode_button">
           </div>
           <div class="icon end"></div>
         </button>
-        <button class="menu-item" id="settings-feedback" tabindex="0">
+        <button id="settings-feedback" class="menu-item" tabindex="0">
           <div class="icon"></div>
           <div i18n-content="feedback_button"></div>
         </button>
-        <button class="menu-item" id="settings-help" tabindex="0">
+        <button id="settings-help" class="menu-item" tabindex="0">
           <div class="icon"></div>
           <div i18n-content="help_button"></div>
         </button>
@@ -243,17 +246,17 @@
           <div i18n-content="grid_type_button"></div>
         </div>
         <label class="menu-item circle">
-          <input class="icon" id="grid-3x3" type="radio" tabindex="0"
+          <input id="grid-3x3" class="icon" type="radio" tabindex="0"
                  name="gridtype" data-state="_3x3" data-key="toggle3x3" checked>
           <span i18n-content="label_grid_3x3" i18n-aria="aria_grid_3x3"></span>
         </label>
         <label class="menu-item circle">
-          <input class="icon" id="grid-4x4" type="radio" tabindex="0"
+          <input id="grid-4x4" class="icon" type="radio" tabindex="0"
                  name="gridtype" data-state="_4x4" data-key="toggle4x4">
           <span i18n-content="label_grid_4x4" i18n-aria="aria_grid_4x4"></span>
         </label>
         <label class="menu-item circle">
-          <input class="icon" id="grid-golden" type="radio" tabindex="0"
+          <input id="grid-golden" class="icon" type="radio" tabindex="0"
                  name="gridtype" data-state="golden" data-key="toggleGolden">
           <span i18n-content="label_grid_golden"></span>
         </label>
@@ -266,13 +269,13 @@
           <div i18n-content="timer_duration_button"></div>
         </div>
         <label class="menu-item circle">
-          <input class="icon" id="timer-3s" type="radio" tabindex="0"
+          <input id="timer-3s" class="icon" type="radio" tabindex="0"
                  name="timerdur" data-state="_3sec" data-key="toggle3sec"
                  checked>
           <span i18n-content="label_timer_3s"></span>
         </label>
         <label class="menu-item circle">
-          <input class="icon" id="timer-10s" type="radio" tabindex="0"
+          <input id="timer-10s" class="icon" type="radio" tabindex="0"
                  name="timerdur" data-state="_10sec" data-key="toggle10sec">
           <span i18n-content="label_timer_10s"></span>
         </label>
@@ -286,24 +289,24 @@
         </div>
         <div id="builtin-photo-header" class="menu-item"
           i18n-content="label_switch_take_photo_button"></div>
-        <button class="menu-item resol-item photo-item"
-                id="settings-front-photores" tabindex="0"
+        <button id="settings-front-photores"
+                class="menu-item resol-item photo-item" tabindex="0"
                 aria-describedby="front-photores-desc">
           <div>
             <div i18n-content="label_front_camera"></div>
-            <div class="description" id="front-photores-desc"
+            <div id="front-photores-desc" class="description"
                  aria-hidden="true">
               <span></span>
             </div>
           </div>
           <div class="icon end"></div>
         </button>
-        <button class="menu-item resol-item photo-item"
-                id="settings-back-photores" tabindex="0"
+        <button id="settings-back-photores"
+                class="menu-item resol-item photo-item" tabindex="0"
                 aria-describedby="back-photores-desc">
           <div>
             <div i18n-content="label_back_camera"></div>
-            <div class="description" id="back-photores-desc" aria-hidden="true">
+            <div id="back-photores-desc" class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
@@ -311,23 +314,24 @@
         </button>
         <div id="builtin-video-header" class="menu-item"
           i18n-content="label_switch_record_video_button"></div>
-        <button class="menu-item resol-item video-item"
-                id="settings-front-videores" tabindex="0"
+        <button id="settings-front-videores"
+                class="menu-item resol-item video-item" tabindex="0"
                 aria-describedby="front-videores-desc">
           <div>
             <div i18n-content="label_front_camera"></div>
-            <div class="description" id="front-videores-desc" aria-hidden="true">
+            <div id="front-videores-desc" class="description"
+                 aria-hidden="true">
               <span></span>
             </div>
           </div>
           <div class="icon end"></div>
         </button>
-        <button class="menu-item resol-item video-item"
-                id="settings-back-videores" tabindex="0"
+        <button id="settings-back-videores"
+                class="menu-item resol-item video-item" tabindex="0"
                 aria-describedby="back-videores-desc">
           <div>
             <div i18n-content="label_back_camera"></div>
-            <div class="description" id="back-videores-desc" aria-hidden="true">
+            <div id="back-videores-desc" class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
@@ -358,32 +362,32 @@
           <div i18n-content="expert_mode_button"></div>
         </div>
         <label class="menu-item">
-          <input class="icon" id="expert-show-metadata" type="checkbox"
+          <input id="expert-show-metadata" class="icon" type="checkbox"
                  tabindex="0" data-state="show-metadata"
                  data-key="showMetadata">
           <span i18n-content="expert_preview_metadata"></span>
         </label>
         <label class="menu-item">
-          <input class="icon" id="expert-save-metadata" type="checkbox"
+          <input id="expert-save-metadata" class="icon" type="checkbox"
                  tabindex="0" data-state="save-metadata"
                  data-key="saveMetadata">
           <span i18n-content="expert_save_metadata"></span>
         </label>
         <label class="menu-item">
-          <input class="icon" id="expert-print-performance-logs" type="checkbox"
+          <input id="expert-print-performance-logs" class="icon" type="checkbox"
                  tabindex="0" data-state="print-performance-logs"
                  data-key="printPerformanceLogs">
           <span i18n-content="expert_print_performance_logs"></span>
         </label>
         <label class="menu-item">
-          <input class="icon" id="expert-scan-barcode" type="checkbox"
+          <input id="expert-scan-barcode" class="icon" type="checkbox"
                  tabindex="0" data-state="scan-barcode"
                  data-key="scanBarcode">
           <span i18n-content="expert_scan_barcode"></span>
         </label>
       </div>
     </div>
-    <div class="centered-overlay" id="spinner"></div>
+    <div id="spinner" class="centered-overlay"></div>
     <div id="view-splash"></div>
     <div id="view-warning">
       <div id="error-msg" aria-live="polite"></div>
@@ -399,7 +403,7 @@
         </div>
       </div>
     </div>
-    <div class="centered-overlay" id="toast" aria-live="polite"></div>
+    <div id="toast" class="centered-overlay" aria-live="polite"></div>
     <div class="barcode-chip-container">
       <div class="barcode-chip-url">
         <a target="_blank"></a>

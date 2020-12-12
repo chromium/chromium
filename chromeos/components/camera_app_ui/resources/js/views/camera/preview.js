@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 import * as barcodeChip from '../../barcode_chip.js';
-import {browserProxy} from '../../browser_proxy/browser_proxy.js';
 import * as dom from '../../dom.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import * as util from '../../util.js';
-import {windowController} from '../../window_controller/window_controller.js';
 
 /**
  * Creates a controller for the video preview of Camera view.
@@ -67,13 +65,6 @@ export class Preview {
      * @private
      */
     this.focus_ = null;
-
-    /**
-     * Timeout for resizing the window.
-     * @type {?number}
-     * @private
-     */
-    this.resizeWindowTimeout_ = null;
 
     /**
      * @type {?BarcodeScanner}
@@ -447,37 +438,10 @@ export class Preview {
 
   /**
    * Handles resizing the window for preview's aspect ratio changes.
-   * @param {number=} aspectRatio Aspect ratio changed.
-   * @return {!Promise}
    * @private
    */
-  onWindowResize_(aspectRatio) {
-    if (this.resizeWindowTimeout_) {
-      clearTimeout(this.resizeWindowTimeout_);
-      this.resizeWindowTimeout_ = null;
-    }
+  onWindowResize_() {
     nav.onWindowResized();
-
-    // Resize window for changed preview's aspect ratio or restore window size
-    // by the last known window's aspect ratio.
-    return new Promise((resolve) => {
-             if (aspectRatio) {
-               resolve();
-             } else {
-               this.resizeWindowTimeout_ = setTimeout(() => {
-                 this.resizeWindowTimeout_ = null;
-                 resolve();
-               }, 500);  // Delay further resizing for smooth UX.
-             }
-           })
-        .then(() => {
-          // Resize window by aspect ratio only if it's not maximized or
-          // fullscreen.
-          if (windowController.isFullscreenOrMaximized()) {
-            return;
-          }
-          return browserProxy.fitWindow();
-        });
   }
 
   /**
@@ -487,8 +451,7 @@ export class Preview {
    */
   async onIntrinsicSizeChanged_() {
     if (this.video_.videoWidth && this.video_.videoHeight) {
-      await this.onWindowResize_(
-          this.video_.videoWidth / this.video_.videoHeight);
+      this.onWindowResize_();
     }
     this.cancelFocus_();
   }

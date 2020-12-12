@@ -10,6 +10,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+// TODO(b/174811949): Hide behind ChromeOS build flag.
+#include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
@@ -104,7 +106,9 @@ constexpr gfx::Rect TERMINAL_DEFAULT_BOUNDS(gfx::Point(64, 64),
 constexpr gfx::Size TERMINAL_SETTINGS_DEFAULT_SIZE(768, 512);
 constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
 // The height of camera app window includes the top bar height which is 32.
-constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(864, 486 + 32);
+constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(kChromeCameraAppDefaultWidth,
+                                               kChromeCameraAppDefaultHeight +
+                                                   32);
 }  // namespace
 
 // static

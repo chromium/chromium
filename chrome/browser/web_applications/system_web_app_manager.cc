@@ -19,6 +19,8 @@
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+// TODO(b/174811949): Hide behind ChromeOS build flag.
+#include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
@@ -136,6 +138,9 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     // TODO(b/172343409): Remove this log when the camera app is fully migrated
     // to SWA.
     CAMERA_LOG(EVENT) << "Install the camera app as SWA";
+    // Minimum height +32 for top bar height.
+    infos.at(SystemAppType::CAMERA).minimum_window_size = {
+        kChromeCameraAppMinimumWidth, kChromeCameraAppMinimumHeight + 32};
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::DIAGNOSTICS)) {

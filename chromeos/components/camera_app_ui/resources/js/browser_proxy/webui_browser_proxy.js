@@ -159,11 +159,6 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
-  fitWindow() {
-    // TODO(crbug.com/980846): Remove the method once we migrate to SWA.
-  }
-
-  /** @override */
   openFeedback() {
     ChromeHelper.getInstance().openFeedbackDialog(
         this.getI18nMessage('feedback_description_placeholder'));

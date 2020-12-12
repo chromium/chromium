@@ -38,8 +38,7 @@ content::WebContents* OpenApplication(Profile* profile,
 // delaying activating and showing it.
 Browser* CreateApplicationWindow(Profile* profile,
                                  const apps::AppLaunchParams& params,
-                                 const GURL& url,
-                                 bool can_resize = true);
+                                 const GURL& url);
 
 // Navigate application window to application url, but do not show it yet.
 content::WebContents* NavigateApplicationWindow(

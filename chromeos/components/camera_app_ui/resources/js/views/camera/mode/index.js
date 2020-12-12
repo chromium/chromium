@@ -260,16 +260,11 @@ export class Modes {
         dom.get(`.mode-item>input[data-mode=${mode}]`, HTMLInputElement);
     element.checked = true;
     const wrapper = assertInstanceof(element.parentElement, HTMLDivElement);
-    let scrollTop = wrapper.offsetTop - this.modesGroup_.offsetHeight / 2 +
-        wrapper.offsetHeight / 2;
-    // Make photo mode scroll slightly upper so that the third mode item falls
-    // in blur area: crbug.com/988869
-    if (mode === Mode.PHOTO) {
-      scrollTop -= 16;
-    }
+    const scrollLeft = wrapper.offsetLeft -
+        (this.modesGroup_.offsetWidth - wrapper.offsetWidth) / 2;
     this.modesGroup_.scrollTo({
-      left: 0,
-      top: scrollTop,
+      left: scrollLeft,
+      top: 0,
       behavior: 'smooth',
     });
   }
@@ -356,7 +351,6 @@ export class Modes {
           !supportedModes.includes(
               /** @type {!Mode} */ (radio.dataset['mode'])));
     });
-    this.modesGroup_.classList.toggle('scrollable', supportedModes.length > 3);
     this.modesGroup_.classList.remove('hide');
   }
 

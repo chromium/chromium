@@ -113,12 +113,6 @@ export class BrowserProxy {
   shouldAddFakeHistory() {}
 
   /**
-   * @return {!Promise}
-   * @abstract
-   */
-  async fitWindow() {}
-
-  /**
    * @abstract
    */
   openFeedback() {}

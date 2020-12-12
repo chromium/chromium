@@ -413,6 +413,14 @@ export class Camera extends View {
   }
 
   /**
+   * @return {number}
+   */
+  getPreviewAspectRatio() {
+    const {videoWidth, videoHeight} = this.preview_.video;
+    return videoWidth / videoHeight;
+  }
+
+  /**
    * @override
    */
   async handleResultPhoto({resolution, blob, isVideoSnapshot}, name) {

@@ -552,7 +552,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
           std::make_unique<AccessibilityModeObserver>(this)) {
   SetShowIcon(::ShouldShowWindowIcon(browser_.get()));
   SetHasWindowSizeControls(!chrome::IsRunningInForcedAppMode());
-  SetCanResize(browser_->can_resize());
 
   browser_->tab_strip_model()->AddObserver(this);
   immersive_mode_controller_ = chrome::CreateImmersiveModeController();

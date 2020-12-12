@@ -227,11 +227,8 @@ Browser* LaunchSystemWebApp(Profile* profile,
   content::WebContents* web_contents = nullptr;
 
   if (!browser) {
-    // TODO(crbug.com/1129340): Remove these lines and make CCA resizeable after
-    // CCA supports responsive UI.
-    bool can_resize = app_type != SystemAppType::CAMERA;
     browser = CreateWebApplicationWindow(profile_for_launch, params->app_id,
-                                         params->disposition, can_resize);
+                                         params->disposition);
   }
 
   // Navigate application window to application's |url| if necessary.

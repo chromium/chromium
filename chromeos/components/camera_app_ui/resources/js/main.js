@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-unused-vars
-import {AppWindow} from './app_window.js';
+import {
+  AppWindow,  // eslint-disable-line no-unused-vars
+  DEFAULT_PREVIEW_16X9_WINDOW_SIZE,
+  DEFAULT_PREVIEW_4X3_WINDOW_SIZE,
+} from './app_window.js';
 import {
   BackgroundOps,  // eslint-disable-line no-unused-vars
   createFakeBackgroundOps,
@@ -216,7 +219,6 @@ export class App {
     }
 
     const showWindow = (async () => {
-      await browserProxy.fitWindow();
       windowController.enable();
       this.backgroundOps_.notifyActivation();
       // For intent only requiring open camera with specific mode without
@@ -249,6 +251,15 @@ export class App {
     const startCamera = (async () => {
       await cameraResourceInitialized.wait();
       const isSuccess = await this.cameraView_.start();
+
+      if (isSuccess) {
+        const aspectRatio = this.cameraView_.getPreviewAspectRatio();
+        if (Math.abs(4 / 3 - aspectRatio) < Math.abs(16 / 9 - aspectRatio)) {
+          window.resizeTo(...DEFAULT_PREVIEW_4X3_WINDOW_SIZE);
+        } else {
+          window.resizeTo(...DEFAULT_PREVIEW_16X9_WINDOW_SIZE);
+        }
+      }
 
       nav.close(ViewName.SPLASH);
       nav.open(ViewName.CAMERA);

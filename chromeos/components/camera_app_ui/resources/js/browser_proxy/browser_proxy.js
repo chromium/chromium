@@ -5,7 +5,7 @@
 import {promisify} from '../chrome_util.js';
 import {ChromeDirectoryEntry} from '../models/chrome_file_system_entry.js';
 import {getMaybeLazyDirectory} from '../models/lazy_directory_entry.js';
-import {Resolution, UntrustedOrigin} from '../type.js';
+import {UntrustedOrigin} from '../type.js';
 
 // eslint-disable-next-line no-unused-vars
 import {BrowserProxy} from './browser_proxy_interface.js';
@@ -153,52 +153,6 @@ class ChromeAppBrowserProxy {
   /** @override */
   shouldAddFakeHistory() {
     return true;
-  }
-
-  /** @override */
-  async fitWindow() {
-    const appWindow = chrome.app.window.current();
-
-    /**
-     * Get a preferred window size which can fit in current screen.
-     * @return {!Resolution} Preferred window size.
-     */
-    const getPreferredWindowSize = () => {
-      const inner = appWindow.innerBounds;
-      const outer = appWindow.outerBounds;
-
-      const predefinedWidth = inner.minWidth;
-      const availableWidth = screen.availWidth;
-
-      const topBarHeight = outer.height - inner.height;
-      const fixedRatioMaxWidth =
-          Math.floor((screen.availHeight - topBarHeight) * 16 / 9);
-
-      let preferredWidth =
-          Math.min(predefinedWidth, availableWidth, fixedRatioMaxWidth);
-      preferredWidth -= preferredWidth % 16;
-      const preferredHeight = preferredWidth * 9 / 16;
-
-      return new Resolution(preferredWidth, preferredHeight);
-    };
-
-    const {width, height} = getPreferredWindowSize();
-
-    return new Promise((resolve) => {
-      const inner = appWindow.innerBounds;
-      if (inner.width === width && inner.height === height) {
-        resolve();
-        return;
-      }
-
-      const listener = () => {
-        appWindow.onBoundsChanged.removeListener(listener);
-        resolve();
-      };
-      appWindow.onBoundsChanged.addListener(listener);
-
-      Object.assign(inner, {width, height, minWidth: width, minHeight: height});
-    });
   }
 
   /** @override */
