@@ -514,5 +514,23 @@ Polymer({
                   labelTemplate, this.numUnreachable_);
             });
   },
+
+  /**
+   * @param {string} selectedVisibility
+   * @return {string}
+   * @private
+   */
+  getVisibilityDescription_(selectedVisibility) {
+    switch (visibilityStringToValue(selectedVisibility)) {
+      case nearbyShare.mojom.Visibility.kAllContacts:
+        return this.i18n('nearbyShareContactVisibilityOwnAll');
+      case nearbyShare.mojom.Visibility.kSelectedContacts:
+        return this.i18n('nearbyShareContactVisibilityOwnSome');
+      case nearbyShare.mojom.Visibility.kNoOne:
+        return this.i18nAdvanced('nearbyShareContactVisibilityOwnNone');
+      default:
+        return '';
+    }
+  },
 });
 })();

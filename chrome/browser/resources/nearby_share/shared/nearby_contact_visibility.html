@@ -164,6 +164,12 @@
         display: flex;
       }
 
+      #explanation {
+        display: flex;
+        font-size: 11px;
+        margin-block-end: 8px;
+      }
+
       .padded-icon {
         margin-inline-end: 16px;
         margin-inline-start: 12px;
@@ -201,7 +207,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        width: 400px;
+        width: 390px;
       }
 
       .contact-toggle {
@@ -338,49 +344,9 @@
               if="[[showExplanationState_(selectedVisibility,
                   contactsState)]]">
             <div id="explanation">
-
-              <div class="explanation-section">
-                <iron-icon icon="nearby20:radar" class="padded-icon grey-icon">
-                </iron-icon>
-                <div class="viz-description-section">
-                  <div class="cr-title-text">
-                    $i18n{nearbyShareContactVisibilityOthersTitle}
-                  </div>
-                  <div class="cr-secondary-text">
-                    $i18n{nearbyShareContactVisibilityOthers}
-                  </div>
-                </div>
+              <div class="cr-secondary-text"
+                  inner-h-t-m-l="[[getVisibilityDescription_(selectedVisibility)]]">
               </div>
-
-              <div class="explanation-section">
-                <iron-icon icon="nearby20:visibility"
-                    class="padded-icon grey-icon">
-                </iron-icon>
-                <div class="viz-description-section">
-                  <div class="cr-title-text">
-                    $i18n{nearbyShareContactVisibilityOwnTitle}
-                  </div>
-                  <template is="dom-if"
-                      if="[[isVisibility_(selectedVisibility,'all')]]">
-                    <div class="cr-secondary-text">
-                      $i18n{nearbyShareContactVisibilityOwnAll}
-                    </div>
-                  </template>
-                  <template is="dom-if"
-                      if="[[isVisibility_(selectedVisibility,'some')]]">
-                    <div class="cr-secondary-text">
-                      $i18n{nearbyShareContactVisibilityOwnSome}
-                    </div>
-                  </template>
-                  <template is="dom-if"
-                      if="[[isVisibility_(selectedVisibility,'none')]]">
-                    <div class="cr-secondary-text">
-                      $i18n{nearbyShareContactVisibilityOwnNone}
-                    </div>
-                  </template>
-                </div>
-              </div>
-
             </div>
           </template>
 
