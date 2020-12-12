@@ -475,6 +475,8 @@ public class EditorDialog
             checkbox.setId(R.id.payments_edit_checkbox);
             checkbox.setText(fieldModel.getLabel());
             checkbox.setChecked(fieldModel.isChecked());
+            checkbox.setMinimumHeight(mContext.getResources().getDimensionPixelSize(
+                    R.dimen.editor_dialog_checkbox_min_height));
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
