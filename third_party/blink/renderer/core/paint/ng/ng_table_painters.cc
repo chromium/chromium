@@ -642,17 +642,8 @@ void NGTableCellPainter::PaintBoxDecorationBackground(
                            DisplayItem::kBoxDecorationBackground, visual_rect);
 
   PhysicalRect paint_rect(paint_offset, fragment_.Size());
-
-  const NGPaintFragment* paint_fragment =
-      To<LayoutNGTableCell>(fragment_.GetLayoutObject())->PaintFragment();
-  if (paint_fragment) {
-    NGBoxFragmentPainter(*paint_fragment)
-        .PaintBoxDecorationBackgroundWithRectImpl(paint_info, paint_rect,
-                                                  box_decoration_data);
-  } else {
-    NGBoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
-        paint_info, paint_rect, box_decoration_data);
-  }
+  NGBoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
+      paint_info, paint_rect, box_decoration_data);
 }
 
 // Inspired by TableCellPainter::PaintBackground.
