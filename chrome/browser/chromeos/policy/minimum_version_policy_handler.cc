@@ -71,10 +71,10 @@ void OpenEnterpriseInfoPage() {
   SystemTrayClient::Get()->ShowEnterpriseInfo();
 }
 
-std::string GetEnterpriseDomainName() {
+std::string GetEnterpriseManager() {
   return g_browser_process->platform_part()
       ->browser_policy_connector_chromeos()
-      ->GetEnterpriseDisplayDomain();
+      ->GetEnterpriseDomainManager();
 }
 
 BuildState* GetBuildState() {
@@ -491,7 +491,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
 
   NotificationType type = NotificationType::kNoConnection;
   base::OnceClosure button_click_callback;
-  std::string domain_name = GetEnterpriseDomainName();
+  std::string manager = GetEnterpriseManager();
   base::string16 device_type = ui::GetChromeOSDeviceName();
   auto close_callback =
       base::BindOnce(&MinimumVersionPolicyHandler::StopObservingNetwork,
@@ -513,7 +513,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
     NOTREACHED();
     return;
   }
-  notification_handler_->Show(type, warning, domain_name, device_type,
+  notification_handler_->Show(type, warning, manager, device_type,
                               std::move(button_click_callback),
                               std::move(close_callback));
 

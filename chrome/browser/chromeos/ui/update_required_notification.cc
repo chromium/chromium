@@ -57,7 +57,7 @@ base::string16 GetTitle(NotificationType type,
 }
 
 base::string16 GetMessage(NotificationType type,
-                          const std::string& domain_name,
+                          const std::string& manager,
                           int days_remaining,
                           const base::string16& device_type) {
   // |days_remaining| could be zero if we are very close to the deadline, like
@@ -68,16 +68,16 @@ base::string16 GetMessage(NotificationType type,
     case NotificationType::kNoConnection:
       return MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(IDS_UPDATE_REQUIRED_NO_NETWORK_MESSAGE),
-          days_remaining, base::UTF8ToUTF16(domain_name));
+          days_remaining, base::UTF8ToUTF16(manager));
     case NotificationType::kMeteredConnection:
       return MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_UPDATE_REQUIRED_METERED_NETWORK_MESSAGE),
-          days_remaining, base::UTF8ToUTF16(domain_name));
+          days_remaining, base::UTF8ToUTF16(manager));
     case NotificationType::kEolReached:
       return MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(IDS_UPDATE_REQUIRED_EOL_MESSAGE),
-          days_remaining, base::UTF8ToUTF16(domain_name), device_type);
+          days_remaining, base::UTF8ToUTF16(manager), device_type);
   }
 }
 
@@ -118,7 +118,7 @@ UpdateRequiredNotification::~UpdateRequiredNotification() = default;
 
 void UpdateRequiredNotification::Show(NotificationType type,
                                       base::TimeDelta warning_time,
-                                      const std::string& domain_name,
+                                      const std::string& manager,
                                       const base::string16& device_type,
                                       base::OnceClosure button_click_callback,
                                       base::OnceClosure close_callback) {
@@ -127,8 +127,7 @@ void UpdateRequiredNotification::Show(NotificationType type,
   notification_close_callback_ = std::move(close_callback);
 
   base::string16 title = GetTitle(type, days_remaining, device_type);
-  base::string16 body =
-      GetMessage(type, domain_name, days_remaining, device_type);
+  base::string16 body = GetMessage(type, manager, days_remaining, device_type);
   base::string16 button = GetButtonText(type);
   if (title.empty() || body.empty() || button.empty()) {
     NOTREACHED();

@@ -3104,15 +3104,15 @@
       =1 {Update <ph name="DEVICE_TYPE">{1}<ex>Chromebook</ex></ph> within 1 week}
       other {Update <ph name="DEVICE_TYPE">{1}<ex>Chromebook</ex></ph> within {NUM_WEEKS} weeks}}
   </message>
-  <message name="IDS_UPDATE_REQUIRED_NO_NETWORK_MESSAGE" desc="The body text of the notification dialog informing the user that the device is not connected to the internet and an update is required before the deadline which is within one or more days.">
+  <message name="IDS_UPDATE_REQUIRED_NO_NETWORK_MESSAGE" desc="The body text of the notification dialog informing the user that the device is not connected to the internet and an update is required before the deadline which is within one or more days. MANAGER can be a domain or an email address.">
     {NUM_DAYS, plural,
-      =1 {<ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to download an update today. The update will download automatically when you connect to the internet.}
-      other {<ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to download an update before the deadline. The update will download automatically when you connect to the internet.}}
+      =1 {<ph name="MANAGER">{1}<ex>example.com</ex></ph> requires you to download an update today. The update will download automatically when you connect to the internet.}
+      other {<ph name="MANAGER">{1}<ex>example.com</ex></ph> requires you to download an update before the deadline. The update will download automatically when you connect to the internet.}}
   </message>
-  <message name="IDS_UPDATE_REQUIRED_METERED_NETWORK_MESSAGE" desc="The body text of the notification dialog informing the user that the device is connected to a metered network and an update is required before the deadline which is within one or more days.">
+  <message name="IDS_UPDATE_REQUIRED_METERED_NETWORK_MESSAGE" desc="The body text of the notification dialog informing the user that the device is connected to a metered network and an update is required before the deadline which is within one or more days. MANAGER can be a domain or an email address.">
     {NUM_DAYS, plural,
-      =1 {<ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}
-      other {<ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}
+      =1 {<ph name="MANAGER">{1}<ex>example.com</ex></ph> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}
+      other {<ph name="MANAGER">{1}<ex>example.com</ex></ph> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}
   </message>
   <message name="IDS_UPDATE_REQUIRED_EOL_TITLE_DAYS" desc="The title of the notification dialog informing the user that the device has reached end of life and should be returned before the deadline.">
     {NUM_DAYS, plural,
@@ -3124,10 +3124,10 @@
       =1 {Return <ph name="DEVICE_TYPE">{1}<ex>Chromebook</ex></ph> within {NUM_WEEKS} week}
       other {Return <ph name="DEVICE_TYPE">{1}<ex>Chromebook</ex></ph> within {NUM_WEEKS} weeks}}
   </message>
-  <message name="IDS_UPDATE_REQUIRED_EOL_MESSAGE" desc="The body text of the notification dialog informing the user that the device has reached end of life and should be returned before the deadline which is within one or more days.">
+  <message name="IDS_UPDATE_REQUIRED_EOL_MESSAGE" desc="The body text of the notification dialog informing the user that the device has reached end of life and should be returned before the deadline which is within one or more days. MANAGER can be a domain or an email address.">
     {NUM_DAYS, plural,
-      =1 {<ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">{2}<ex>Chromebook</ex></ph> today.}
-      other {<ph name="DOMAIN">{1}<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">{2}<ex>Chromebook</ex></ph> before the deadline.}}
+      =1 {<ph name="MANAGER">{1}<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">{2}<ex>Chromebook</ex></ph> today.}
+      other {<ph name="MANAGER">{1}<ex>example.com</ex></ph> requires you to back up your data and return this <ph name="DEVICE_TYPE">{2}<ex>Chromebook</ex></ph> before the deadline.}}
   </message>
   <message name="IDS_UPDATE_REQUIRED_EOL_SEE_DETAILS" desc="The button text of the notification dialog which can be clicked to view return instructions from the admin on the settings page.">
     See Details
