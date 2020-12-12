@@ -330,9 +330,6 @@ public class ChromeBrowserInitializer {
             startChromeBrowserProcessesSync();
             tasks.start(true);
         }
-
-        ChromeStartupDelegate startupDelegate = AppHooks.get().createChromeStartupDelegate();
-        startupDelegate.init();
     }
 
     private void startChromeBrowserProcessesAsync(boolean startGpuProcess,
@@ -434,6 +431,9 @@ public class ChromeBrowserInitializer {
         ChromeCachedFlags.getInstance().cacheMinimalBrowserFlags();
 
         ModuleUtil.recordStartupTime();
+
+        ChromeStartupDelegate startupDelegate = AppHooks.get().createChromeStartupDelegate();
+        startupDelegate.init();
     }
 
     private ActivityStateListener createActivityStateListener() {
