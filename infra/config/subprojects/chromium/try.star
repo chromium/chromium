@@ -1292,6 +1292,7 @@ try_.chromium_mac_builder(
 try_.chromium_mac_builder(
     name = "mac-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_master,
     use_clang_coverage = True,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
