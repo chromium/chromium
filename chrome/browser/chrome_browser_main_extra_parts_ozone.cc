@@ -31,7 +31,10 @@ void ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization() {
 }
 
 void ChromeBrowserMainExtraPartsOzone::PostMainMessageLoopStart() {
-  auto shutdown_cb = base::BindOnce(&chrome::SessionEnding);
+  auto shutdown_cb = base::BindOnce([](){
+    // Force a crash so that a crash report is generated.
+    LOG(FATAL) << "Wayland protocol error.";
+  });
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
     ui::OzonePlatform::GetInstance()->PostMainMessageLoopStart(
