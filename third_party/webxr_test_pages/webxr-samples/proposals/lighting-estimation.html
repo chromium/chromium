@@ -72,6 +72,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           console.error('This browser does not support WebGL2');
           return;
         }
+        ctx.gl.getExtension('EXT_sRGB');
+        ctx.gl.getExtension('OES_texture_half_float');
 
         // Create a Three.js renderer
         ctx.renderer = new THREE.WebGLRenderer({
@@ -86,6 +88,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         // to accept a webgl texture.
         ctx.cubeTarget = new THREE.WebGLCubeRenderTarget(16);
         ctx.threeEnvMap = ctx.cubeTarget.texture;
+        ctx.scene.environment = ctx.threeEnvMap;
         let rendererProps = ctx.renderer.properties.get(ctx.threeEnvMap);
         rendererProps.__webglInit = true;
 
@@ -95,7 +98,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         // Add a sphere
         ctx.geometry = new THREE.SphereGeometry(0.2, 32, 32);
-        ctx.material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, metalness: 0.0, roughness: 0.0 });
+        ctx.material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, metalness: 1.0, roughness: 0.0 });
         ctx.sphere = new THREE.Mesh(ctx.geometry, ctx.material);
         ctx.scene.add(ctx.sphere);
         ctx.sphere.position.z = -1;
@@ -103,10 +106,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         // Set up light source
         ctx.light_probe = new THREE.LightProbe();
-        ctx.light_probe.intensity = 1;
+        ctx.light_probe.intensity = 0;
         ctx.scene.add(ctx.light_probe);
 
         ctx.directional_light = new THREE.DirectionalLight();
+        ctx.directional_light.intensity = 0;
         ctx.scene.add(ctx.directional_light);
 
         ctx.xrButton = new XRDeviceButton({
@@ -149,7 +153,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function onReceivedLightProbe(ctx, lightProbe) {
         ctx.xrLightProbe = lightProbe;
-        lightProbe.addEventListener('onreflectionchange', () => onReflectionChanged(ctx));
+        setInterval(()=>onReflectionChanged(ctx),1000);
+        // ctx.xrLightProbe.addEventListener('reflectionchange', () => onReflectionChanged(ctx));
       }
 
       function onReflectionChanged(ctx) {
@@ -196,6 +201,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           if (estimate) {
             ctx.light_probe.sh.fromArray(estimate.sphericalHarmonicsCoefficients);
+            ctx.light_probe.intensity = 1;
+
             const intensityScalar =
               Math.max(1.0,
               Math.max(estimate.primaryLightIntensity.x,
