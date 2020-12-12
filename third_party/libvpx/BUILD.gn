@@ -311,7 +311,7 @@ static_library("libvpx") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
-  
+
   # As "nasm" does not embed the required LC_BUILD_VERSION section in object
   # files, it is not possible to build optimised version of the code if the
   # target is iOS under "catalyst" environment. This version is not shipped,
