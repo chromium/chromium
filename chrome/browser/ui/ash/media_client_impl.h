@@ -29,6 +29,8 @@ class MediaClientImpl : public ash::MediaClient,
   // Tests can provide a mock mojo interface for the ash controller.
   void InitForTesting(ash::MediaController* controller);
 
+  void OnPrimaryUserSessionStarted(Profile* primary_prifle);
+
   // Returns a pointer to the singleton MediaClient, or nullptr if none exists.
   static MediaClientImpl* Get();
 
