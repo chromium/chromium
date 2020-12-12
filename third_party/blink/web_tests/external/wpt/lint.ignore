@@ -71,10 +71,6 @@ AHEM COPY: fonts/Ahem.ttf
 # None of these are actually Ahem
 AHEM COPY: fonts/ahem-extra/AHEM_*.TTF
 
-# https://github.com/web-platform-tests/wpt/issues/8615
-AHEM COPY: css/vendor-imports/mozilla/mozilla-central-reftests/*/Ahem.ttf
-CSS-COLLIDING-SUPPORT-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/*/ahem.css
-
 ## Test exclusions ##
 
 # Intentional use of CRLF

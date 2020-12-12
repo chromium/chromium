@@ -5052,7 +5052,7 @@ crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/height-dist
 crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/tentative/position-sticky-container.html [ Pass ]
 
 crbug.com/1157330 virtual/layout_ng_table/external/wpt/css/css-tables/height-distribution/computing-row-measure-0.html [ Failure ]
-crbug.com/1157626 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [  Failure ]
+crbug.com/1157626 virtual/layout_ng_table/external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [ Failure ]
 
 # Works in main table patch, needs percentage sizing fix.
 crbug.com/958381 virtual/layout_ng_table/external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children.html [ Failure ]
