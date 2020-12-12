@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/secure_channel/nearby_connection_broker_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder.h"
 #include "chromeos/components/multidevice/logging/logging.h"
@@ -196,6 +197,9 @@ void NearbyConnectionBrokerImpl::OnSendPayloadResult(
     Status status) {
   bool success = status == Status::kSuccess;
   std::move(callback).Run(success);
+
+  base::UmaHistogramBoolean(
+      "MultiDevice.SecureChannel.Nearby.SendMessageResult", success);
 
   if (success)
     return;
