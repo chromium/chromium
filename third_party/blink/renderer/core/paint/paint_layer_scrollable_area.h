@@ -390,7 +390,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void DidChangeGlobalRootScroller() override;
 
-  void UpdateAfterStyleChange(const ComputedStyle*);
+  void UpdateAfterStyleChange(const ComputedStyle* old_style);
   void UpdateAfterOverflowRecalc();
 
   bool HasScrollbar() const {

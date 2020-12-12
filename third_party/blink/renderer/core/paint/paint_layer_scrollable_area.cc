@@ -1356,6 +1356,9 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
       previous_vertical_scrollbar_on_left_ = vertical_scrollbar_on_left;
     }
   }
+
+  if (!old_style || old_style->UsedColorScheme() != UsedColorScheme())
+    SetScrollControlsNeedFullPaintInvalidation();
 }
 
 void PaintLayerScrollableArea::UpdateAfterOverflowRecalc() {

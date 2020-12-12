@@ -8451,22 +8451,9 @@ void Document::SetShowBeforeUnloadDialog(bool show_dialog) {
 }
 
 void Document::ColorSchemeChanged() {
-  InvalidateScrollbars();
   UpdateForcedColors();
   GetStyleEngine().ColorSchemeChanged();
   MediaQueryAffectingValueChanged(MediaValueChange::kOther);
-}
-
-void Document::InvalidateScrollbars() {
-  if (PaintLayerScrollableArea* scrollable_area =
-          GetLayoutView()->GetScrollableArea()) {
-    if (auto* horizontal_scrollbar = scrollable_area->HorizontalScrollbar()) {
-      horizontal_scrollbar->SetNeedsPaintInvalidation(kAllParts);
-    }
-    if (auto* vertical_scrollbar = scrollable_area->VerticalScrollbar()) {
-      vertical_scrollbar->SetNeedsPaintInvalidation(kAllParts);
-    }
-  }
 }
 
 void Document::VisionDeficiencyChanged() {

@@ -1731,8 +1731,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void PropagateStyleToViewport();
 
-  void InvalidateScrollbars();
-
   void UpdateUseShadowTreesIfNeeded();
   void EvaluateMediaQueryListIfNeeded();
 
