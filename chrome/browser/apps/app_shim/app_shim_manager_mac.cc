@@ -613,13 +613,9 @@ void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
   // Otherwise, only launch if there are no open windows.
   if (!do_launch) {
     bool had_windows = delegate_->ShowAppWindows(profile, app_id);
-    if (profile_state) {
-      for (auto* browser : profile_state->browsers) {
-        had_windows = true;
-        if (auto* window = browser->window())
-          window->Show();
-      }
-    }
+    if (profile_state)
+      had_windows |= !profile_state->browsers.empty();
+
     if (!had_windows)
       do_launch = true;
   }
