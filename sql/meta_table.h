@@ -76,16 +76,18 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   void SetVersionNumber(int version);
   int GetVersionNumber();
 
-  // The compatible version number is the lowest version of the code that this
-  // database can be read by. If there are minor changes or additions, old
-  // versions of the code can still work with the database without failing.
+  // The compatible version number is the lowest current version embedded in
+  // Chrome code that can still use this database. This is usually the same as
+  // the current version. In some limited cases, such as adding a column without
+  // a NOT NULL constraint, the SQL queries embedded in older code can still
+  // execute successfully.
   //
   // For example, if an optional column is added to a table in version 3, the
   // new code will set the version to 3, and the compatible version to 2, since
   // the code expecting version 2 databases can still read and write the table.
   //
   // Rule of thumb: check the version number when you're upgrading, but check
-  // the compatible version number to see if you can read the file at all. If
+  // the compatible version number to see if you can use the file at all. If
   // it's larger than you code is expecting, fail.
   //
   // The compatible version number will be 0 if there is no previously set
