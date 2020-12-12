@@ -5,6 +5,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/optimization_guide_features.h"
@@ -38,4 +39,19 @@ OptimizationGuideKeyedServiceFactory::~OptimizationGuideKeyedServiceFactory() =
 KeyedService* OptimizationGuideKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new OptimizationGuideKeyedService(context);
+}
+
+content::BrowserContext*
+OptimizationGuideKeyedServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+}
+
+bool OptimizationGuideKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return optimization_guide::features::IsOptimizationHintsEnabled();
+}
+
+bool OptimizationGuideKeyedServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }

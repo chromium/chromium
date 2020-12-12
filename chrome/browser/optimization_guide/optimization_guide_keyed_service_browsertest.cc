@@ -618,6 +618,42 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
+IN_PROC_BROWSER_TEST_F(
+    OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
+    IncognitoCanStillReadFromComponentHints) {
+  // Instantiate off the record Optimization Guide Service.
+  OptimizationGuideKeyedServiceFactory::GetForProfile(
+      browser()->profile()->GetPrimaryOTRProfile())
+      ->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
+
+  // Wait until initialization logic finishes running and component pushed to
+  // both incognito and regular browsers.
+  PushHintsComponentAndWaitForCompletion();
+  base::RunLoop().RunUntilIdle();
+
+  // Set up incognito browser and incognito OptimizationGuideKeyedService
+  // consumer.
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  auto otr_consumer =
+      std::make_unique<OptimizationGuideConsumerWebContentsObserver>(
+          otr_browser->tab_strip_model()->GetActiveWebContents());
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  otr_consumer->set_callback(base::BindOnce(
+      [](base::RunLoop* run_loop,
+         optimization_guide::OptimizationGuideDecision decision,
+         const optimization_guide::OptimizationMetadata& metadata) {
+        // Should still get decision in incognito.
+        EXPECT_EQ(decision,
+                  optimization_guide::OptimizationGuideDecision::kTrue);
+        run_loop->Quit();
+      },
+      run_loop.get()));
+
+  // Navigate to a URL that has a hint from a component.
+  ui_test_utils::NavigateToURL(otr_browser, url_with_hints());
+  run_loop->Run();
+}
+
 class OptimizationGuideKeyedServiceCommandLineOverridesTest
     : public OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest {
  public:

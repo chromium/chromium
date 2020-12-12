@@ -645,6 +645,107 @@ IN_PROC_BROWSER_TEST_F(
       1);
 }
 
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(IncognitoCanStillRead)) {
+  SetResponseType(PredictionModelsFetcherRemoteResponseType::
+                      kSuccessfulWithModelsAndFeatures);
+  base::HistogramTester histogram_tester;
+
+  // Register with regular profile.
+  RegisterWithKeyedService();
+
+  // Wait until model has been fetched via regular profile.
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", 1);
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
+
+  // Set up incognito browser.
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+
+  // Register with off the record profile.
+  OptimizationGuideKeyedServiceFactory::GetForProfile(
+      browser()->profile()->GetPrimaryOTRProfile())
+      ->RegisterOptimizationTargets(
+          {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
+  // Set up an OptimizationGuideKeyedService consumer.
+  auto otr_consumer =
+      std::make_unique<OptimizationGuideConsumerWebContentsObserver>(
+          otr_browser->tab_strip_model()->GetActiveWebContents());
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  otr_consumer->set_callback(base::BindOnce(
+      [](base::RunLoop* run_loop,
+         optimization_guide::OptimizationGuideDecision decision) {
+        // We should have the model on the client so we have everything to make
+        // a decision.
+        EXPECT_NE(decision,
+                  optimization_guide::OptimizationGuideDecision::kUnknown);
+        run_loop->Quit();
+      },
+      run_loop.get()));
+
+  // Navigate to a URL with a host model feature in incognito.
+  ui_test_utils::NavigateToURL(otr_browser, https_url_with_content());
+  run_loop->Run();
+
+  // The store should still be able to be read.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionManager.HasHostModelFeaturesForHost", true,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PredictionManagerBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(IncognitoDoesntFetchModels)) {
+  SetResponseType(PredictionModelsFetcherRemoteResponseType::
+                      kSuccessfulWithModelsAndFeatures);
+  base::HistogramTester histogram_tester;
+
+  // Set up incognito browser.
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+
+  // Register with off the record profile.
+  OptimizationGuideKeyedServiceFactory::GetForProfile(
+      browser()->profile()->GetPrimaryOTRProfile())
+      ->RegisterOptimizationTargets(
+          {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
+  // Wait until logic finishes running.
+  base::RunLoop().RunUntilIdle();
+
+  // Ensure that GetModelsRequest did not go out.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelFetcher.GetModelsRequest.HostCount", 0);
+
+  // Set up an OptimizationGuideKeyedService consumer.
+  auto otr_consumer =
+      std::make_unique<OptimizationGuideConsumerWebContentsObserver>(
+          otr_browser->tab_strip_model()->GetActiveWebContents());
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  otr_consumer->set_callback(base::BindOnce(
+      [](base::RunLoop* run_loop,
+         optimization_guide::OptimizationGuideDecision decision) {
+        run_loop->Quit();
+      },
+      run_loop.get()));
+
+  // Navigate to a URL that would normally have a model had we not been in
+  // incognito.
+  ui_test_utils::NavigateToURL(otr_browser, https_url_with_content());
+  run_loop->Run();
+
+  // The model should not be available on the client.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.TargetDecision.PainfulPageLoad",
+      OptimizationTargetDecision::kModelNotAvailableOnClient, 1);
+}
+
 class PredictionManagerBrowserSameOriginTest
     : public PredictionManagerBrowserTest {
  public:

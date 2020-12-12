@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
@@ -96,37 +97,51 @@ OptimizationGuideKeyedService::OptimizationGuideKeyedService(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!browser_context_->IsOffTheRecord());
+  Initialize();
 }
 
 OptimizationGuideKeyedService::~OptimizationGuideKeyedService() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void OptimizationGuideKeyedService::Initialize(
-    optimization_guide::OptimizationGuideService* optimization_guide_service,
-    leveldb_proto::ProtoDatabaseProvider* database_provider,
-    const base::FilePath& profile_path) {
+void OptimizationGuideKeyedService::Initialize() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(optimization_guide_service);
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
-  top_host_provider_ = GetTopHostProviderIfUserPermitted(browser_context_);
-  bool optimization_guide_fetching_enabled = top_host_provider_ != nullptr;
-  UMA_HISTOGRAM_BOOLEAN("OptimizationGuide.RemoteFetchingEnabled",
-                        optimization_guide_fetching_enabled);
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "SyntheticOptimizationGuideRemoteFetching",
-      optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+
+  // Regardless of whether the profile is off the record or not, we initialize
+  // the Optimization Guide with the database associated with the original
+  // profile.
+  auto* proto_db_provider = content::BrowserContext::GetDefaultStoragePartition(
+                                profile->GetOriginalProfile())
+                                ->GetProtoDatabaseProvider();
+  base::FilePath profile_path = profile->GetOriginalProfile()->GetPath();
+
+  // We should not be fetching anything from the remote Optimization Guide
+  // Service, only instantiate a URLLoaderFactory and TopHostProvider if the
+  // profile is a regular profile.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+  if (!profile->IsOffTheRecord()) {
+    url_loader_factory =
+        content::BrowserContext::GetDefaultStoragePartition(profile)
+            ->GetURLLoaderFactoryForBrowserProcess();
+
+    top_host_provider_ = GetTopHostProviderIfUserPermitted(browser_context_);
+    bool optimization_guide_fetching_enabled = top_host_provider_ != nullptr;
+    UMA_HISTOGRAM_BOOLEAN("OptimizationGuide.RemoteFetchingEnabled",
+                          optimization_guide_fetching_enabled);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "SyntheticOptimizationGuideRemoteFetching",
+        optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
+  }
+
   hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
-      pre_initialized_optimization_types_, optimization_guide_service, profile,
-      profile_path, profile->GetPrefs(), database_provider,
-      top_host_provider_.get(), url_loader_factory);
+      pre_initialized_optimization_types_,
+      g_browser_process->optimization_guide_service(), profile, profile_path,
+      profile->GetPrefs(), proto_db_provider, top_host_provider_.get(),
+      url_loader_factory);
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
-      pre_initialized_optimization_targets_, profile_path, database_provider,
+      pre_initialized_optimization_targets_, profile_path, proto_db_provider,
       top_host_provider_.get(), url_loader_factory, profile->GetPrefs(),
       profile);
 }

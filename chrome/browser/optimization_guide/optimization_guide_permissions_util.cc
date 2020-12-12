@@ -54,13 +54,13 @@ bool IsUserConsentedToAnonymousDataCollectionAndAllowedToFetchFromRemoteService(
 }  // namespace
 
 bool IsUserPermittedToFetchFromRemoteOptimizationGuide(Profile* profile) {
+  if (profile->IsOffTheRecord())
+    return false;
+
   if (optimization_guide::switches::
           ShouldOverrideCheckingUserPermissionsToFetchHintsForTesting()) {
     return true;
   }
-
-  if (profile->IsOffTheRecord())
-    return false;
 
   if (!optimization_guide::features::IsRemoteFetchingEnabled())
     return false;
