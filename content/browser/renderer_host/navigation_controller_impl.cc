@@ -2948,9 +2948,13 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
 
   if (new_item->item_sequence_number() != old_item->item_sequence_number()) {
     // Same document loads happen if the previous item has the same document
-    // sequence number but different item sequence number.
-    if (new_item->document_sequence_number() ==
-        old_item->document_sequence_number())
+    // sequence number but different item sequence number. If the current
+    // document is an error page, though, we should always treat it as a
+    // different-document navigation so that we'll attempt to load the document
+    // for |new_item| (and not stay in the current error page).
+    if (!frame->current_frame_host()->is_error_page() &&
+        new_item->document_sequence_number() ==
+            old_item->document_sequence_number())
       return HistoryNavigationAction::kSameDocument;
 
     // Otherwise, if both item and document sequence numbers differ, this

@@ -8404,6 +8404,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
+  // 1) Navigate to a page with an iframe.
   GURL start_url(embedded_test_server()->GetURL(
       "/navigation_controller/page_with_iframe_simple.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
@@ -8411,44 +8412,231 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
+  GURL original_child_url = root->child_at(0)->current_url();
 
-  // pushState to a URL that will be blocked by XFO if loaded from scratch.
+  // 2) pushState to a URL that will be blocked by XFO if loaded from scratch.
+  GURL x_frame_options_deny_url =
+      embedded_test_server()->GetURL("/x-frame-options-deny.html");
   {
     FrameNavigateParamsCapturer capturer(root->child_at(0));
     std::string pushStateToXfo =
         "history.pushState({}, '', '/x-frame-options-deny.html')";
     EXPECT_TRUE(ExecuteScript(root->child_at(0), pushStateToXfo));
     capturer.Wait();
+    EXPECT_EQ(x_frame_options_deny_url, root->child_at(0)->current_url());
     EXPECT_TRUE(capturer.is_same_document());
   }
 
-  // Navigate the main frame to another page.
+  // 3) Navigate the main frame to another page.
   GURL new_url(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), new_url));
 
-  // Go back, causing the subframe to be blocked by XFO.
+  // 4) Go back, causing the subframe to be blocked by XFO.
   {
     TestNavigationObserver observer(shell()->web_contents());
     controller.GoBack();
     observer.Wait();
-    GURL x_frame_options_deny_url =
-        embedded_test_server()->GetURL("/x-frame-options-deny.html");
+    EXPECT_EQ(start_url, root->current_url());
     EXPECT_EQ(x_frame_options_deny_url, root->child_at(0)->current_url());
     EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE, observer.last_net_error_code());
     EXPECT_FALSE(observer.last_navigation_succeeded());
   }
 
-  // Go back again.  This would have been same-document if the prior navigation
-  // had succeeded.
+  // 5) Go back again.  This would have been same-document if the prior
+  // navigation had succeeded, but we did a cross-document navigation instead
+  // because the previous page is an error page.
   {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
     TestNavigationObserver observer(shell()->web_contents());
     controller.GoBack();
+    capturer.Wait();
     observer.Wait();
+    EXPECT_FALSE(capturer.is_same_document());
+    EXPECT_EQ(start_url, root->current_url());
+    EXPECT_EQ(original_child_url, root->child_at(0)->current_url());
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    EXPECT_EQ(net::OK, observer.last_net_error_code());
+  }
+
+  // 6) Go forward two steps. This would load the page from step 3.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(ExecJs(root, "history.go(2)"));
+    capturer.Wait();
+    EXPECT_EQ(new_url, root->current_url());
+    EXPECT_FALSE(capturer.is_same_document());
+  }
+
+  // 7) Go back two steps. This would load the page from step 1, with the iframe
+  // loaded to the original URL from step 1.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(ExecJs(root, "history.go(-2)"));
+    capturer.Wait();
+    EXPECT_EQ(start_url, root->current_url());
+    EXPECT_EQ(original_child_url, root->child_at(0)->current_url());
+    EXPECT_FALSE(capturer.is_same_document());
+  }
+
+  // 8) Go forward one step. This would do a same document navigation, with the
+  // iframe still loaded to the original URL from step 1, but the URL is updated
+  // to the XFO URL.
+  {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    TestNavigationObserver observer(shell()->web_contents());
+    controller.GoForward();
+    capturer.Wait();
+    observer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+    EXPECT_EQ(start_url, root->current_url());
+    EXPECT_EQ(x_frame_options_deny_url, root->child_at(0)->current_url());
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    EXPECT_EQ(net::OK, observer.last_net_error_code());
   }
 
   // Check that the renderer is still alive.
   EXPECT_TRUE(ExecuteScript(root->child_at(0), "console.log('Success');"));
+}
+
+// Similar to BackSameDocumentAfterBlockedSubframe but does the navigation on a
+// main frame instead (and does a 404 instead of XFO error).
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       BackSameDocumentAfter404MainFrame) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  // 1) Navigate to |start_url|.
+  GURL start_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  // 2) pushState to a URL that will 404 & result in Chrome's error page if
+  // loaded from scratch.
+  GURL error_url = embedded_test_server()->GetURL("/empty404.html");
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(
+        ExecuteScript(root, "history.pushState({}, '', '/empty404.html')"));
+    capturer.Wait();
+    EXPECT_EQ(error_url, root->current_url());
+    EXPECT_TRUE(capturer.is_same_document());
+  }
+
+  // 3) Navigate the main frame to another page.
+  GURL new_url(embedded_test_server()->GetURL("/title2.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), new_url));
+
+  // 4) Go back. This will 404 so we will show an error page.
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    controller.GoBack();
+    observer.Wait();
+    EXPECT_EQ(error_url, root->current_url());
+    EXPECT_EQ(net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+              observer.last_net_error_code());
+    EXPECT_FALSE(observer.last_navigation_succeeded());
+  }
+
+  // 5) Go back again.  This would have been same-document if the prior
+  // navigation had succeeded, but we did a cross-document navigation instead
+  // because the previous page is an error page.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    TestNavigationObserver observer(shell()->web_contents());
+    controller.GoBack();
+    capturer.Wait();
+    observer.Wait();
+    EXPECT_EQ(start_url, root->current_url());
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    EXPECT_EQ(net::OK, observer.last_net_error_code());
+    EXPECT_FALSE(capturer.is_same_document());
+  }
+
+  // Check that the renderer is still alive.
+  EXPECT_TRUE(ExecuteScript(root, "console.log('Success');"));
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       HistoryAPIHistoryNavigation) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  // 1) Navigate to |start_url|.
+  GURL start_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  const int64_t start_dsn = controller.GetLastCommittedEntry()
+                                ->GetFrameEntry(root)
+                                ->document_sequence_number();
+
+  // 2) pushState a different-document URL. This will be classified as a
+  // same-document navigation and will keep the previous Document Sequence
+  // Number.
+  GURL push_state_url(embedded_test_server()->GetURL("/title2.html"));
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(
+        ExecuteScript(root, "history.pushState({}, '', '/title2.html')"));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+    EXPECT_EQ(start_dsn, controller.GetLastCommittedEntry()
+                             ->GetFrameEntry(root)
+                             ->document_sequence_number());
+  }
+
+  // 3) Navigate to another page. This will be classified as a cross-document
+  // navigation and will change the Document Sequence Number.
+  GURL end_url(embedded_test_server()->GetURL("/title3.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), end_url));
+  EXPECT_NE(start_dsn, controller.GetLastCommittedEntry()
+                           ->GetFrameEntry(root)
+                           ->document_sequence_number());
+
+  // 4) Go back. This will load the URL from pushState. This will be classified
+  // as a cross-document history navigation, and will use the Document Sequence
+  // Number from the FrameNavigationEntry.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    TestNavigationObserver observer(shell()->web_contents());
+    controller.GoBack();
+    capturer.Wait();
+    observer.Wait();
+    EXPECT_FALSE(capturer.is_same_document());
+    EXPECT_EQ(push_state_url, root->current_url());
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    EXPECT_EQ(start_dsn, controller.GetLastCommittedEntry()
+                             ->GetFrameEntry(root)
+                             ->document_sequence_number());
+    // Set a variable in this document.
+    EXPECT_TRUE(ExecJs(shell(), "var foo = 42;"));
+  }
+
+  // 5) Go back. This will load the starting URL but it's still on the same
+  // document as the one loaded in the last navigation, due to the
+  // FrameNavigationEntry having the same Document Sequence Number as the
+  // previous FrameNavigationEntry.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    TestNavigationObserver observer(shell()->web_contents());
+    controller.GoBack();
+    capturer.Wait();
+    observer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+    EXPECT_EQ(start_url, root->current_url());
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    EXPECT_EQ(start_dsn, controller.GetLastCommittedEntry()
+                             ->GetFrameEntry(root)
+                             ->document_sequence_number());
+    // The variable set in the document at step 4 can be accessed because we did
+    // a same-document navigation.
+    EXPECT_EQ(42, EvalJs(shell(), "foo"));
+  }
 }
 
 // If the main frame does a load, it should not be reported as a subframe
@@ -8866,7 +9054,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        EmptyBody404CommitsErrorPage) {
   NavigationControllerImpl& controller =
       static_cast<NavigationControllerImpl&>(contents()->GetController());
-  GURL url(embedded_test_server()->GetURL("/404.html"));
+  GURL url(embedded_test_server()->GetURL("/empty404.html"));
 
   {
     // Go to a non-existent page resulting in a 404 with an empty body.
@@ -8949,25 +9137,20 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 
 // Verify that navigating to a page with status 404 but a non-empty body won't
 // result in an error page.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NonEmpty404BodyDoesNotCommitErrorPage) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "/404.html");
-  ASSERT_TRUE(embedded_test_server()->Start());
   NavigationControllerImpl& controller =
       static_cast<NavigationControllerImpl&>(contents()->GetController());
 
   // Go to a non-existent page with a non-empty body.
-  GURL url(embedded_test_server()->GetURL("/404.html"));
+  GURL url(embedded_test_server()->GetURL("/page404.html"));
   TestNavigationObserver observer(contents());
-  shell()->LoadURL(url);
-  response.WaitForRequest();
-  response.Send(net::HTTP_NOT_FOUND, "text/html", "<html></html>");
-  response.Done();
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   observer.WaitForNavigationFinished();
 
   // The navigation succeeds and commits the response body.
   EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_EQ(net::OK, observer.last_net_error_code());
   EXPECT_EQ(PAGE_TYPE_NORMAL,
             controller.GetLastCommittedEntry()->GetPageType());
 }

@@ -8821,6 +8821,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   dom_content_loaded_ = false;
 
+  is_error_page_ = (navigation_request->GetNetErrorCode() != net::OK);
+
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
 
@@ -9758,11 +9760,10 @@ void RenderFrameHostImpl::
 
   // These DCHECKs ensure that tests will fail if we got here, as
   // DumpWithoutCrashing won't fail tests.
-  // TODO(rakina): Add DCHECK for url_is_unreachable once crbug.com/1155478 gets
-  // fixed.
   DCHECK_EQ(request->commit_params().intended_as_new_entry,
             params.intended_as_new_entry);
   DCHECK_EQ(browser_method, params.method);
+  DCHECK_EQ(browser_url_is_unreachable, params.url_is_unreachable);
   DCHECK_EQ(browser_post_id, params.post_id);
   DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
   DCHECK(base_url_expectations_match);
