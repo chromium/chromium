@@ -8,9 +8,13 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
+class CertDbInitializer;
+class Profile;
+
 class CertDbInitializerFactory : public BrowserContextKeyedServiceFactory {
  public:
   static CertDbInitializerFactory* GetInstance();
+  static CertDbInitializer* GetForProfileIfExists(Profile* profile);
 
  private:
   friend class base::NoDestructor<CertDbInitializerFactory>;

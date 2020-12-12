@@ -15,6 +15,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
@@ -23,7 +24,7 @@
 
 namespace {
 
-void InitializeCertDbOnWorkerThread(bool should_load_chaps,
+bool InitializeCertDbOnWorkerThread(bool should_load_chaps,
                                     base::FilePath software_nss_db_path) {
   crypto::EnsureNSSInit();
 
@@ -41,7 +42,7 @@ void InitializeCertDbOnWorkerThread(bool should_load_chaps,
     // success/failure.
     if (!crypto::LoadChaps()) {
       LOG(ERROR) << "Failed to load chaps.";
-      return;
+      return false;
     }
   }
 
@@ -52,10 +53,10 @@ void InitializeCertDbOnWorkerThread(bool should_load_chaps,
                                         /*description=*/"cert_db");
   if (!slot) {
     LOG(ERROR) << "Failed to open user certificate database";
-    return;
+    return false;
   }
 
-  return;
+  return true;
 }
 
 }  // namespace
@@ -101,10 +102,13 @@ CertDbInitializerImpl::CertDbInitializerImpl(Profile* profile)
 
 CertDbInitializerImpl::~CertDbInitializerImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // In case the initialization didn't finish, notify waiting observers.
+  OnCertDbInitializationFinished(false);
 }
 
 void CertDbInitializerImpl::Start(signin::IdentityManager* identity_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   DCHECK(identity_manager);
   // TODO(crbug.com/1148300): This is temporary. Until ~2021
   // `Profile::IsMainProfile()` method can return a false negative response if
@@ -122,6 +126,18 @@ void CertDbInitializerImpl::Start(signin::IdentityManager* identity_manager) {
   WaitForCertDbReady();
 }
 
+base::CallbackListSubscription CertDbInitializerImpl::WaitUntilReady(
+    ReadyCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_ready_.has_value()) {
+    std::move(callback).Run(is_ready_.value());
+    return {};
+  }
+
+  return callbacks_.Add(std::move(callback));
+}
+
 void CertDbInitializerImpl::OnRefreshTokensLoaded() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   identity_manager_observer_.reset();
@@ -132,6 +148,7 @@ void CertDbInitializerImpl::WaitForCertDbReady() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!profile_->IsMainProfile()) {
+    OnCertDbInitializationFinished(false);
     return;
   }
 
@@ -148,14 +165,23 @@ void CertDbInitializerImpl::OnCertDbInfoReceived(
 
   if (!cert_db_info) {
     LOG(WARNING) << "Certificate database is not accesible";
+    OnCertDbInitializationFinished(false);
     return;
   }
 
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&InitializeCertDbOnWorkerThread,
                      cert_db_info->should_load_chaps,
-                     base::FilePath(cert_db_info->software_nss_db_path)));
+                     base::FilePath(cert_db_info->software_nss_db_path)),
+      base::BindOnce(&CertDbInitializerImpl::OnCertDbInitializationFinished,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void CertDbInitializerImpl::OnCertDbInitializationFinished(bool is_success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  callbacks_.Notify(is_success);
+  is_ready_ = is_success;
 }

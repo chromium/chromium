@@ -97,6 +97,11 @@
 #include "extensions/common/constants.h"
 #endif
 
+#if BUILDFLAG(IS_LACROS)
+#include "chrome/browser/lacros/cert_db_initializer_factory.h"
+#include "chrome/browser/lacros/client_cert_store_lacros.h"
+#endif
+
 namespace {
 
 bool* g_discard_domain_reliability_uploads_for_testing = nullptr;
@@ -575,18 +580,24 @@ ProfileNetworkContextService::CreateClientCertStore() {
       base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                           kCryptoModulePasswordClientAuth));
 #elif defined(USE_NSS_CERTS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile_->IsMainProfile()) {
+  std::unique_ptr<net::ClientCertStore> store =
+      std::make_unique<net::ClientCertStoreNSS>(
+          base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
+                              kCryptoModulePasswordClientAuth));
+#if BUILDFLAG(IS_LACROS)
+  CertDbInitializer* cert_db_initializer =
+      CertDbInitializerFactory::GetForProfileIfExists(profile_);
+  if (!cert_db_initializer || !profile_->IsMainProfile()) {
     // TODO(crbug.com/1148298): return some cert store for secondary profiles in
     // Lacros-Chrome.
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  return std::make_unique<net::ClientCertStoreNSS>(
-      base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
-                          kCryptoModulePasswordClientAuth));
+  store = std::make_unique<ClientCertStoreLacros>(cert_db_initializer,
+                                                  std::move(store));
+#endif  // BUILDFLAG(IS_LACROS)
+
+  return store;
 #elif defined(OS_WIN)
   return std::make_unique<net::ClientCertStoreWin>();
 #elif defined(OS_MAC)

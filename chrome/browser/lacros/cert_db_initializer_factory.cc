@@ -10,12 +10,20 @@
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
+class CertDbInitializer;
 class Profile;
 
 // static
 CertDbInitializerFactory* CertDbInitializerFactory::GetInstance() {
   static base::NoDestructor<CertDbInitializerFactory> factory;
   return factory.get();
+}
+
+// static
+CertDbInitializer* CertDbInitializerFactory::GetForProfileIfExists(
+    Profile* profile) {
+  return static_cast<CertDbInitializerImpl*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
 
 CertDbInitializerFactory::CertDbInitializerFactory()

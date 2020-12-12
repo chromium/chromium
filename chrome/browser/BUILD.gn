@@ -4580,6 +4580,8 @@ static_library("browser") {
       "lacros/cert_db_initializer_factory.h",
       "lacros/cert_db_initializer_impl.cc",
       "lacros/cert_db_initializer_impl.h",
+      "lacros/client_cert_store_lacros.cc",
+      "lacros/client_cert_store_lacros.h",
       "lacros/feedback_util.cc",
       "lacros/feedback_util.h",
       "lacros/immersive_context_lacros.cc",
