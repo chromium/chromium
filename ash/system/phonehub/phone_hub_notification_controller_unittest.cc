@@ -308,7 +308,13 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
   EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
 
   feature_status_provider_->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
+  feature_status_provider_->SetStatus(
       chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
+  feature_status_provider_->SetStatus(
+      chromeos::phonehub::FeatureStatus::kUnavailableBluetoothOff);
+  feature_status_provider_->SetStatus(
+      chromeos::phonehub::FeatureStatus::kLockOrSuspended);
   feature_status_provider_->SetStatus(
       chromeos::phonehub::FeatureStatus::kEnabledAndConnected);
 
@@ -321,9 +327,9 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(message_center::LOW_PRIORITY, cros_notification->priority());
 
-  // Disconnect due to screen lock.
+  // Disable the feature..
   feature_status_provider_->SetStatus(
-      chromeos::phonehub::FeatureStatus::kLockOrSuspended);
+      chromeos::phonehub::FeatureStatus::kDisabled);
   notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
   ASSERT_FALSE(FindNotification(kCrOSNotificationId0));
 
