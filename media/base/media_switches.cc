@@ -192,6 +192,11 @@ const char kOverrideHardwareSecureCodecsForTesting[] =
 const char kEnableLiveCaptionPrefForTesting[] =
     "enable-live-caption-pref-for-testing";
 
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+// Enables playback of clear (unencrypted) HEVC content for testing purposes.
+const char kEnableClearHevcForTesting[] = "enable-clear-hevc-for-testing";
+#endif
+
 namespace autoplay {
 
 // Autoplay policy that requires a document user activation.

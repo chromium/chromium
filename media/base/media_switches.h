@@ -86,6 +86,10 @@ MEDIA_EXPORT extern const char kOverrideEnabledCdmInterfaceVersion[];
 MEDIA_EXPORT extern const char kOverrideHardwareSecureCodecsForTesting[];
 MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
 
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+MEDIA_EXPORT extern const char kEnableClearHevcForTesting[];
+#endif
+
 namespace autoplay {
 
 MEDIA_EXPORT extern const char kDocumentUserActivationRequiredPolicy[];

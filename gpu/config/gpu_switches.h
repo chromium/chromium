@@ -6,7 +6,6 @@
 #define GPU_CONFIG_GPU_SWITCHES_H_
 
 #include "gpu/gpu_export.h"
-#include "media/media_buildflags.h"
 
 namespace switches {
 
@@ -35,9 +34,6 @@ GPU_EXPORT extern const char kWebViewDrawFunctorUsesVulkan[];
 GPU_EXPORT extern const char kEnableVulkanProtectedMemory[];
 GPU_EXPORT extern const char kEnforceVulkanProtectedMemory[];
 GPU_EXPORT extern const char kDisableVulkanFallbackToGLForTesting[];
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-GPU_EXPORT extern const char kEnableClearHevcForTesting[];
-#endif
 
 }  // namespace switches
 

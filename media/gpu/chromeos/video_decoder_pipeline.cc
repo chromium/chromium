@@ -218,7 +218,8 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
   }
 #endif  // !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
-  needs_bitstream_conversion_ = (config.codec() == kCodecH264);
+  needs_bitstream_conversion_ =
+      (config.codec() == kCodecH264) || (config.codec() == kCodecHEVC);
 
   decoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoDecoderPipeline::InitializeTask,
