@@ -71,7 +71,8 @@ void DeleteSkObject(SharedContextState* context_state, sk_sp<T> sk_object) {
 
 }  // namespace
 
-GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
+GrContextOptions GetDefaultGrContextOptions(GrContextType type,
+                                            const GpuPreferences& gpu_prefs) {
   // If you make any changes to the GrContext::Options here that could affect
   // text rendering, make sure to match the capabilities initialized in
   // GetCapabilities and ensuring these are also used by the
@@ -92,6 +93,11 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
   options.fSuppressMipmapSupport =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableMipmapGeneration);
+
+  options.fAllowPathMaskCaching = false;
+  // TODO(penghuang) : Use this consistently for swiftshader vulkan backend.
+  options.fSharpenMipmappedTextures =
+      gpu_prefs.use_vulkan != VulkanImplementationName::kSwiftshader;
 
   return options;
 }

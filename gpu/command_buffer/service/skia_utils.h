@@ -46,7 +46,7 @@ class SharedContextState;
 
 // Returns default GrContextOptions.
 GPU_GLES2_EXPORT GrContextOptions
-GetDefaultGrContextOptions(GrContextType type);
+GetDefaultGrContextOptions(GrContextType type, const GpuPreferences& gpu_prefs);
 
 // Returns internal gl format of texture for Skia
 GPU_GLES2_EXPORT GLuint

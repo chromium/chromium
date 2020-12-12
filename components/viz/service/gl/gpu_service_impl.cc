@@ -349,8 +349,8 @@ GpuServiceImpl::GpuServiceImpl(
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  GrContextOptions context_options =
-      GetDefaultGrContextOptions(gpu_preferences_.gr_context_type);
+  GrContextOptions context_options = GetDefaultGrContextOptions(
+      gpu_preferences_.gr_context_type, gpu_preferences_);
   if (gpu_preferences_.force_max_texture_size) {
     context_options.fMaxTextureSizeOverride =
         gpu_preferences_.force_max_texture_size;

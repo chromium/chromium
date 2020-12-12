@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS can detect same-origin iframe events in parent
-PASS can detect same-origin iframe events in subframe
-Harness: the test ran to completion.
-
