@@ -8,42 +8,13 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 
 namespace gpu {
-
-class VulkanSurfaceX11::ExposeEventForwarder : public ui::XEventDispatcher {
- public:
-  explicit ExposeEventForwarder(VulkanSurfaceX11* surface) : surface_(surface) {
-    if (auto* event_source = ui::X11EventSource::GetInstance()) {
-      x11::Connection::Get()->ChangeWindowAttributes(
-          x11::ChangeWindowAttributesRequest{
-              .window = static_cast<x11::Window>(surface_->window_),
-              .event_mask = x11::EventMask::Exposure});
-      event_source->AddXEventDispatcher(this);
-    }
-  }
-
-  ~ExposeEventForwarder() override {
-    if (auto* event_source = ui::X11EventSource::GetInstance())
-      event_source->RemoveXEventDispatcher(this);
-  }
-
-  // ui::XEventDispatcher:
-  bool DispatchXEvent(x11::Event* xevent) override {
-    if (!surface_->CanDispatchXEvent(xevent))
-      return false;
-    surface_->ForwardXExposeEvent(xevent);
-    return true;
-  }
-
- private:
-  VulkanSurfaceX11* const surface_;
-  DISALLOW_COPY_AND_ASSIGN(ExposeEventForwarder);
-};
 
 // static
 std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
@@ -99,13 +70,21 @@ VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
                     false /* use_protected_memory */),
       parent_window_(parent_window),
       window_(window),
-      expose_event_forwarder_(std::make_unique<ExposeEventForwarder>(this)) {}
+      event_selector_(std::make_unique<ui::XScopedEventSelector>(
+          window,
+          x11::EventMask::Exposure)) {
+  if (auto* event_source = ui::X11EventSource::GetInstance())
+    event_source->AddXEventObserver(this);
+}
 
-VulkanSurfaceX11::~VulkanSurfaceX11() = default;
+VulkanSurfaceX11::~VulkanSurfaceX11() {
+  if (auto* event_source = ui::X11EventSource::GetInstance())
+    event_source->RemoveXEventObserver(this);
+}
 
 void VulkanSurfaceX11::Destroy() {
   VulkanSurface::Destroy();
-  expose_event_forwarder_.reset();
+  event_selector_.reset();
   if (window_ != x11::Window::None) {
     auto* connection = x11::Connection::Get();
     connection->DestroyWindow({window_});
@@ -125,13 +104,12 @@ bool VulkanSurfaceX11::Reshape(const gfx::Size& size,
   return VulkanSurface::Reshape(size, pre_transform);
 }
 
-bool VulkanSurfaceX11::CanDispatchXEvent(const x11::Event* x11_event) {
-  auto* expose = x11_event->As<x11::ExposeEvent>();
-  return expose && expose->window == window_;
-}
+void VulkanSurfaceX11::OnEvent(const x11::Event& event) {
+  auto* expose = event.As<x11::ExposeEvent>();
+  if (!expose || expose->window != window_)
+    return;
 
-void VulkanSurfaceX11::ForwardXExposeEvent(const x11::Event* event) {
-  auto forwarded_event = *event->As<x11::ExposeEvent>();
+  x11::ExposeEvent forwarded_event = *expose;
   forwarded_event.window = parent_window_;
   x11::SendEvent(forwarded_event, parent_window_, x11::EventMask::Exposure);
   x11::Connection::Get()->Flush();

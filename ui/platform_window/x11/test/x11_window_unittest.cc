@@ -123,7 +123,7 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
 
  private:
   // X11PropertyChangeWaiter:
-  bool ShouldKeepOnWaiting(x11::Event* event) override {
+  bool ShouldKeepOnWaiting() override {
     std::vector<x11::Atom> hints;
     if (GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &hints))
       return base::Contains(hints, gfx::GetAtom(hint_)) != wait_till_set_;

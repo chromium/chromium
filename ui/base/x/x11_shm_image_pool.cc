@@ -120,13 +120,13 @@ XShmImagePool::XShmImagePool(x11::Connection* connection,
       enable_multibuffering_(enable_multibuffering),
       frame_states_(frames_pending) {
   if (enable_multibuffering_)
-    X11EventSource::GetInstance()->AddXEventDispatcher(this);
+    X11EventSource::GetInstance()->AddXEventObserver(this);
 }
 
 XShmImagePool::~XShmImagePool() {
   Cleanup();
   if (enable_multibuffering_)
-    X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+    X11EventSource::GetInstance()->RemoveXEventObserver(this);
 }
 
 bool XShmImagePool::Resize(const gfx::Size& pixel_size) {
@@ -277,16 +277,13 @@ void XShmImagePool::DispatchShmCompletionEvent(
   }
 }
 
-bool XShmImagePool::DispatchXEvent(x11::Event* xev) {
+void XShmImagePool::OnEvent(const x11::Event& xev) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(enable_multibuffering_);
 
-  auto* completion = xev->As<x11::Shm::CompletionEvent>();
-  if (!completion || completion->drawable.value != drawable_.value)
-    return false;
-
-  DispatchShmCompletionEvent(*completion);
-  return true;
+  auto* completion = xev.As<x11::Shm::CompletionEvent>();
+  if (completion && completion->drawable.value == drawable_.value)
+    DispatchShmCompletionEvent(*completion);
 }
 
 void XShmImagePool::Cleanup() {

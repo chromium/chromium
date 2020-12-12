@@ -152,17 +152,16 @@ bool NativeViewGLSurfaceEGLX11GLES2::Resize(const gfx::Size& size,
   return true;
 }
 
-bool NativeViewGLSurfaceEGLX11GLES2::DispatchXEvent(x11::Event* x11_event) {
-  auto* expose = x11_event->As<x11::ExposeEvent>();
+void NativeViewGLSurfaceEGLX11GLES2::OnEvent(const x11::Event& x11_event) {
+  auto* expose = x11_event.As<x11::ExposeEvent>();
   auto window = static_cast<x11::Window>(window_);
   if (!expose || expose->window != window)
-    return false;
+    return;
 
   auto expose_copy = *expose;
   expose_copy.window = parent_window_;
   x11::SendEvent(expose_copy, parent_window_, x11::EventMask::Exposure);
   x11::Connection::Get()->Flush();
-  return true;
 }
 
 NativeViewGLSurfaceEGLX11GLES2::~NativeViewGLSurfaceEGLX11GLES2() {

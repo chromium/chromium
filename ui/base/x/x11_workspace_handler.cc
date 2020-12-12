@@ -31,7 +31,7 @@ X11WorkspaceHandler::X11WorkspaceHandler(Delegate* delegate)
     : x_root_window_(ui::GetX11RootWindow()), delegate_(delegate) {
   DCHECK(delegate_);
   if (ui::X11EventSource::HasInstance())
-    ui::X11EventSource::GetInstance()->AddXEventDispatcher(this);
+    ui::X11EventSource::GetInstance()->AddXEventObserver(this);
 
   x_root_window_events_ = std::make_unique<ui::XScopedEventSelector>(
       x_root_window_, x11::EventMask::PropertyChange);
@@ -39,7 +39,7 @@ X11WorkspaceHandler::X11WorkspaceHandler(Delegate* delegate)
 
 X11WorkspaceHandler::~X11WorkspaceHandler() {
   if (ui::X11EventSource::HasInstance())
-    ui::X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+    ui::X11EventSource::GetInstance()->RemoveXEventObserver(this);
 }
 
 std::string X11WorkspaceHandler::GetCurrentWorkspace() {
@@ -48,16 +48,13 @@ std::string X11WorkspaceHandler::GetCurrentWorkspace() {
   return workspace_;
 }
 
-bool X11WorkspaceHandler::DispatchXEvent(x11::Event* xev) {
-  auto* prop = xev->As<x11::PropertyNotifyEvent>();
+void X11WorkspaceHandler::OnEvent(const x11::Event& xev) {
+  auto* prop = xev.As<x11::PropertyNotifyEvent>();
   if (prop && prop->window == x_root_window_ &&
       prop->atom == gfx::GetAtom("_NET_CURRENT_DESKTOP")) {
     GetWorkspace().OnResponse(base::BindOnce(
         &X11WorkspaceHandler::OnWorkspaceResponse, weak_factory_.GetWeakPtr()));
-    return true;
   }
-
-  return false;
 }
 
 void X11WorkspaceHandler::OnWorkspaceResponse(

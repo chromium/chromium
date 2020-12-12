@@ -104,10 +104,10 @@ class GL_EXPORT NativeViewGLSurfaceGLX : public GLSurfaceGLX {
   virtual void UnregisterEvents() = 0;
 
   // Forwards Expose event to child window.
-  void ForwardExposeEvent(x11::Event* xevent);
+  void ForwardExposeEvent(const x11::Event& xevent);
 
   // Checks if event is Expose for child window.
-  bool CanHandleEvent(x11::Event* xevent);
+  bool CanHandleEvent(const x11::Event& xevent);
 
   gfx::AcceleratedWidget window() const {
     return static_cast<gfx::AcceleratedWidget>(window_);

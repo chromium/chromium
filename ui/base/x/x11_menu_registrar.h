@@ -21,14 +21,14 @@ class XScopedEventSelector;
 // A singleton that owns global objects related to the desktop and listens for
 // X11 events on the X11 root window. Destroys itself when the browser
 // shuts down.
-class X11MenuRegistrar : public ui::XEventDispatcher {
+class X11MenuRegistrar : public ui::XEventObserver {
  public:
   // Returns the singleton handler.  Creates one if one has not
   // already been created.
   static X11MenuRegistrar* Get();
 
-  // ui::XEventDispatcher
-  bool DispatchXEvent(x11::Event* event) override;
+  // ui::XEventObserver
+  void OnEvent(const x11::Event& event) override;
 
  private:
   X11MenuRegistrar();

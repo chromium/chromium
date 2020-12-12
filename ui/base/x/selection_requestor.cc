@@ -50,10 +50,10 @@ std::vector<uint8_t> CombineData(
 }  // namespace
 
 SelectionRequestor::SelectionRequestor(x11::Window x_window,
-                                       XEventDispatcher* dispatcher)
+                                       XEventObserver* observer)
     : x_window_(x_window),
       x_property_(x11::Atom::None),
-      dispatcher_(dispatcher),
+      observer_(observer),
       current_request_index_(0u) {
   x_property_ = gfx::GetAtom(kChromeSelection);
 }
@@ -154,13 +154,14 @@ void SelectionRequestor::OnSelectionNotify(
   }
 }
 
-bool SelectionRequestor::CanDispatchPropertyEvent(const x11::Event& event) {
-  const auto* prop = event.As<x11::PropertyNotifyEvent>();
-  return prop->window == x_window_ && prop->atom == x_property_ &&
-         prop->state == x11::Property::NewValue;
+bool SelectionRequestor::CanDispatchPropertyEvent(
+    const x11::PropertyNotifyEvent& prop) {
+  return prop.window == x_window_ && prop.atom == x_property_ &&
+         prop.state == x11::Property::NewValue;
 }
 
-void SelectionRequestor::OnPropertyEvent(const x11::Event& event) {
+void SelectionRequestor::OnPropertyEvent(
+    const x11::PropertyNotifyEvent& event) {
   Request* request = GetCurrentRequest();
   if (!request || !request->data_sent_incrementally)
     return;
@@ -261,7 +262,7 @@ void SelectionRequestor::BlockTillSelectionNotifyForRequest(Request* request) {
       if (!conn->events().empty()) {
         x11::Event event = std::move(events.front());
         events.pop_front();
-        dispatcher_->DispatchXEvent(&event);
+        observer_->OnEvent(event);
       }
     }
   }

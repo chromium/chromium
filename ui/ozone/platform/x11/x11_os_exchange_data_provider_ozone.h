@@ -13,7 +13,7 @@ namespace ui {
 
 // OSExchangeDataProvider implementation for Ozone/X11.
 class X11OSExchangeDataProviderOzone : public XOSExchangeDataProvider,
-                                       public XEventDispatcher {
+                                       public XEventObserver {
  public:
   X11OSExchangeDataProviderOzone(x11::Window x_window,
                                  const SelectionFormatMap& selection);
@@ -27,8 +27,8 @@ class X11OSExchangeDataProviderOzone : public XOSExchangeDataProvider,
   // OSExchangeDataProvider:
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
 
-  // XEventDispatcher:
-  bool DispatchXEvent(x11::Event* xev) override;
+  // XEventObserver:
+  void OnEvent(const x11::Event& xev) override;
 };
 
 }  // namespace ui

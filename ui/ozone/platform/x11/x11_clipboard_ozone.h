@@ -26,7 +26,7 @@ namespace ui {
 // text/plain.  Otherwise GetAvailableMimeTypes and RequestClipboardData call
 // the appropriate X11 functions and invoke callbacks when the associated events
 // are received.
-class X11ClipboardOzone : public PlatformClipboard, public XEventDispatcher {
+class X11ClipboardOzone : public PlatformClipboard, public XEventObserver {
  public:
   X11ClipboardOzone();
   ~X11ClipboardOzone() override;
@@ -52,12 +52,12 @@ class X11ClipboardOzone : public PlatformClipboard, public XEventDispatcher {
  private:
   struct SelectionState;
 
-  // XEventDispatcher:
-  bool DispatchXEvent(x11::Event* xev) override;
+  // XEventObserver:
+  void OnEvent(const x11::Event& xev) override;
 
-  bool OnSelectionRequest(const x11::SelectionRequestEvent& event);
-  bool OnSelectionNotify(const x11::SelectionNotifyEvent& event);
-  bool OnSetSelectionOwnerNotify(
+  void OnSelectionRequest(const x11::SelectionRequestEvent& event);
+  void OnSelectionNotify(const x11::SelectionNotifyEvent& event);
+  void OnSetSelectionOwnerNotify(
       const x11::XFixes::SelectionNotifyEvent& event);
 
   // Returns an X atom for a clipboard buffer type.

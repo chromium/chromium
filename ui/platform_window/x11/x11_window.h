@@ -38,8 +38,9 @@ class X11_WINDOW_EXPORT XEventDelegate {
 
   // TODO(crbug.com/990756): We need to implement/reuse ozone interface for
   // these.
-  virtual void OnXWindowSelectionEvent(x11::Event* xev) = 0;
-  virtual void OnXWindowDragDropEvent(x11::Event* xev) = 0;
+  virtual void OnXWindowSelectionEvent(
+      const x11::SelectionNotifyEvent& xev) = 0;
+  virtual void OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) = 0;
 };
 
 // PlatformWindow implementation for X11.
@@ -47,7 +48,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
                                     public WmMoveResizeHandler,
                                     public XWindow,
                                     public PlatformEventDispatcher,
-                                    public XEventDispatcher,
+                                    public XEventObserver,
                                     public WorkspaceExtension,
                                     public X11Extension,
                                     public WmDragHandler,
@@ -128,8 +129,8 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   void SetOverrideRedirect(bool override_redirect) override;
   void SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) override;
 
-  // ui::XEventDispatcher:
-  bool DispatchXEvent(x11::Event* event) override;
+  // ui::XEventObserver:
+  void OnEvent(const x11::Event& event) override;
 
  protected:
   PlatformWindowDelegate* platform_window_delegate() const {
@@ -149,8 +150,8 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   void OnXWindowIsActiveChanged(bool active) override;
   void OnXWindowWorkspaceChanged() override;
   void OnXWindowLostPointerGrab() override;
-  void OnXWindowSelectionEvent(x11::Event* xev) override;
-  void OnXWindowDragDropEvent(x11::Event* xev) override;
+  void OnXWindowSelectionEvent(const x11::SelectionNotifyEvent& xev) override;
+  void OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) override;
   base::Optional<gfx::Size> GetMinimumSizeForXWindow() override;
   base::Optional<gfx::Size> GetMaximumSizeForXWindow() override;
   void GetWindowMaskForXWindow(const gfx::Size& size,

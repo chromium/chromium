@@ -15,7 +15,7 @@ namespace ui {
 // OSExchangeDataProvider implementation for x11 linux.
 class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderX11
     : public XOSExchangeDataProvider,
-      public XEventDispatcher {
+      public XEventObserver {
  public:
   // |x_window| is the window the cursor is over, and |selection| is the set of
   // data being offered.
@@ -35,8 +35,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderX11
   // OSExchangeDataProvider:
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
 
-  // XEventDispatcher:
-  bool DispatchXEvent(x11::Event* xev) override;
+  // XEventObserver:
+  void OnEvent(const x11::Event& xev) override;
 
   void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;
   DataTransferEndpoint* GetSource() const override;

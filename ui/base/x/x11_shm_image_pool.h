@@ -26,7 +26,7 @@ namespace ui {
 
 // Creates XImages backed by shared memory that will be shared with the X11
 // server for processing.
-class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public XEventDispatcher {
+class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public XEventObserver {
  public:
   XShmImagePool(x11::Connection* connection,
                 x11::Drawable drawable,
@@ -77,8 +77,8 @@ class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public XEventDispatcher {
     x11::Shm::Seg shmseg{};
   };
 
-  // XEventDispatcher:
-  bool DispatchXEvent(x11::Event* xev) override;
+  // XEventObserver:
+  void OnEvent(const x11::Event& xev) override;
 
   void Cleanup();
 

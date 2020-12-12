@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(UI_BASE_X) PropertyCache : public XEventObserver {
   };
 
   // ui::XEventObserver:
-  void WillProcessXEvent(x11::Event* xev) override;
+  void OnEvent(const x11::Event& xev) override;
 
   void FetchProperty(x11::Atom property, PropertyValue* value);
 

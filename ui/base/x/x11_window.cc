@@ -1092,7 +1092,7 @@ void XWindow::WmMoveResize(int hittest, const gfx::Point& location) const {
   DoWMMoveResize(connection_, x_root_window_, xwindow_, location, direction);
 }
 
-void XWindow::ProcessEvent(x11::Event* xev) {
+void XWindow::OnEvent(const x11::Event& xev) {
   // We can lose track of the window's position when the window is reparented.
   // When the parent window is moved, we won't get an event, so the window's
   // position relative to the root window will get out-of-sync.  We can re-sync
@@ -1100,8 +1100,8 @@ void XWindow::ProcessEvent(x11::Event* xev) {
   // ButtonRelease, MotionNotify) which include the pointer location both
   // relative to this window and relative to the root window, so we can
   // calculate this window's position from that information.
-  gfx::Point window_point = EventLocationFromXEvent(*xev);
-  gfx::Point root_point = EventSystemLocationFromXEvent(*xev);
+  gfx::Point window_point = EventLocationFromXEvent(xev);
+  gfx::Point root_point = EventSystemLocationFromXEvent(xev);
   if (!window_point.IsOrigin() && !root_point.IsOrigin()) {
     gfx::Point window_origin = gfx::Point() + (root_point - window_point);
     if (bounds_in_pixels_.origin() != window_origin) {
@@ -1112,20 +1112,20 @@ void XWindow::ProcessEvent(x11::Event* xev) {
 
   // May want to factor CheckXEventForConsistency(xev); into a common location
   // since it is called here.
-  if (auto* crossing = xev->As<x11::CrossingEvent>()) {
+  if (auto* crossing = xev.As<x11::CrossingEvent>()) {
     bool focus = crossing->same_screen_focus & CROSSING_FLAG_FOCUS;
     OnCrossingEvent(crossing->opcode == x11::CrossingEvent::EnterNotify, focus,
                     crossing->mode, crossing->detail);
-  } else if (auto* expose = xev->As<x11::ExposeEvent>()) {
+  } else if (auto* expose = xev.As<x11::ExposeEvent>()) {
     gfx::Rect damage_rect_in_pixels(expose->x, expose->y, expose->width,
                                     expose->height);
     OnXWindowDamageEvent(damage_rect_in_pixels);
-  } else if (auto* focus = xev->As<x11::FocusEvent>()) {
+  } else if (auto* focus = xev.As<x11::FocusEvent>()) {
     OnFocusEvent(focus->opcode == x11::FocusEvent::In, focus->mode,
                  focus->detail);
-  } else if (auto* configure = xev->As<x11::ConfigureNotifyEvent>()) {
+  } else if (auto* configure = xev.As<x11::ConfigureNotifyEvent>()) {
     OnConfigureEvent(*configure);
-  } else if (auto* crossing = xev->As<x11::Input::CrossingEvent>()) {
+  } else if (auto* crossing = xev.As<x11::Input::CrossingEvent>()) {
     TouchFactory* factory = TouchFactory::GetInstance();
     if (factory->ShouldProcessCrossingEvent(*crossing)) {
       auto mode = XI2ModeToXMode(crossing->mode);
@@ -1145,15 +1145,15 @@ void XWindow::ProcessEvent(x11::Event* xev) {
           break;
       }
     }
-  } else if (xev->As<x11::MapNotifyEvent>()) {
+  } else if (xev.As<x11::MapNotifyEvent>()) {
     OnWindowMapped();
-  } else if (xev->As<x11::UnmapNotifyEvent>()) {
+  } else if (xev.As<x11::UnmapNotifyEvent>()) {
     window_mapped_in_server_ = false;
     has_pointer_ = false;
     has_pointer_grab_ = false;
     has_pointer_focus_ = false;
     has_window_focus_ = false;
-  } else if (auto* client = xev->As<x11::ClientMessageEvent>()) {
+  } else if (auto* client = xev.As<x11::ClientMessageEvent>()) {
     x11::Atom message_type = client->type;
     if (message_type == gfx::GetAtom("WM_PROTOCOLS")) {
       x11::Atom protocol = static_cast<x11::Atom>(client->data.data32[0]);
@@ -1173,9 +1173,9 @@ void XWindow::ProcessEvent(x11::Event* xev) {
         pending_counter_value_is_extended_ = client->data.data32[4] != 0;
       }
     } else {
-      OnXWindowDragDropEvent(xev);
+      OnXWindowDragDropEvent(*client);
     }
-  } else if (auto* property = xev->As<x11::PropertyNotifyEvent>()) {
+  } else if (auto* property = xev.As<x11::PropertyNotifyEvent>()) {
     x11::Atom changed_atom = property->atom;
     if (changed_atom == gfx::GetAtom("_NET_WM_STATE"))
       OnWMStateUpdated();
@@ -1183,8 +1183,8 @@ void XWindow::ProcessEvent(x11::Event* xev) {
       OnFrameExtentsUpdated();
     else if (changed_atom == gfx::GetAtom("_NET_WM_DESKTOP"))
       OnWorkspaceUpdated();
-  } else if (auto* selection = xev->As<x11::SelectionNotifyEvent>()) {
-    OnXWindowSelectionEvent(xev);
+  } else if (auto* selection = xev.As<x11::SelectionNotifyEvent>()) {
+    OnXWindowSelectionEvent(*selection);
   }
 }
 

@@ -49,7 +49,7 @@ class MinimizeWaiter : public ui::X11PropertyChangeWaiter {
 
  private:
   // ui::X11PropertyChangeWaiter:
-  bool ShouldKeepOnWaiting(x11::Event* event) override {
+  bool ShouldKeepOnWaiting() override {
     std::vector<x11::Atom> wm_states;
     if (ui::GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &wm_states)) {
       return !base::Contains(wm_states, gfx::GetAtom("_NET_WM_STATE_HIDDEN"));
@@ -75,7 +75,7 @@ class StackingClientListWaiter : public ui::X11PropertyChangeWaiter {
   void Wait() override {
     // StackingClientListWaiter may be created after
     // _NET_CLIENT_LIST_STACKING already contains |expected_windows|.
-    if (!ShouldKeepOnWaiting(nullptr))
+    if (!ShouldKeepOnWaiting())
       return;
 
     ui::X11PropertyChangeWaiter::Wait();
@@ -83,7 +83,7 @@ class StackingClientListWaiter : public ui::X11PropertyChangeWaiter {
 
  private:
   // ui::X11PropertyChangeWaiter:
-  bool ShouldKeepOnWaiting(x11::Event* event) override {
+  bool ShouldKeepOnWaiting() override {
     std::vector<x11::Window> stack;
     ui::GetXWindowStack(ui::GetX11RootWindow(), &stack);
     return !std::all_of(

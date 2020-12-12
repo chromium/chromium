@@ -6,6 +6,8 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_SCREEN_X11_H_
 
 #include <memory>
+#include <set>
+#include <string>
 #include <vector>
 
 #include "base/scoped_observer.h"
@@ -22,7 +24,7 @@ class DesktopScreenX11Test;
 
 // Screen implementation that talks to XRandR
 class VIEWS_EXPORT DesktopScreenX11 : public display::Screen,
-                                      public ui::XEventDispatcher,
+                                      public ui::XEventObserver,
                                       public ui::XDisplayManager::Delegate,
                                       public DeviceScaleFactorObserver {
  public:
@@ -53,8 +55,8 @@ class VIEWS_EXPORT DesktopScreenX11 : public display::Screen,
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;
 
-  // ui::XEventDispatcher:
-  bool DispatchXEvent(x11::Event* event) override;
+  // ui::XEventObserver:
+  void OnEvent(const x11::Event& event) override;
 
   // DeviceScaleFactorObserver:
   void OnDeviceScaleFactorChanged() override;
@@ -77,9 +79,9 @@ class VIEWS_EXPORT DesktopScreenX11 : public display::Screen,
                  &LinuxUI::RemoveDeviceScaleFactorObserver>
       display_scale_factor_observer_{this};
   ScopedObserver<ui::X11EventSource,
-                 XEventDispatcher,
-                 &ui::X11EventSource::AddXEventDispatcher,
-                 &ui::X11EventSource::RemoveXEventDispatcher>
+                 XEventObserver,
+                 &ui::X11EventSource::AddXEventObserver,
+                 &ui::X11EventSource::RemoveXEventObserver>
       event_source_observer_{this};
 };
 

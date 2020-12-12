@@ -216,7 +216,7 @@ bool X11Window::IsVisible() const {
 
 void X11Window::PrepareForShutdown() {
   DCHECK(X11EventSource::HasInstance());
-  X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+  X11EventSource::GetInstance()->RemoveXEventObserver(this);
   X11EventSource::GetInstance()->RemovePlatformEventDispatcher(this);
 }
 
@@ -542,18 +542,16 @@ bool X11Window::HandleAsAtkEvent(x11::Event* x11_event, bool transient) {
 #endif
 }
 
-bool X11Window::DispatchXEvent(x11::Event* xev) {
-  auto* prop = xev->As<x11::PropertyNotifyEvent>();
+void X11Window::OnEvent(const x11::Event& xev) {
+  auto* prop = xev.As<x11::PropertyNotifyEvent>();
   auto* target_current_context = drag_drop_client_->target_current_context();
   if (prop && target_current_context &&
       prop->window == target_current_context->source_window()) {
-    return target_current_context->DispatchPropertyNotifyEvent(*prop);
+    target_current_context->DispatchPropertyNotifyEvent(*prop);
   }
 
-  if (!XWindow::IsTargetedBy(*xev))
-    return false;
-  XWindow::ProcessEvent(xev);
-  return true;
+  if (XWindow::IsTargetedBy(xev))
+    XWindow::OnEvent(xev);
 }
 
 bool X11Window::CanDispatchEvent(const PlatformEvent& xev) {
@@ -593,7 +591,7 @@ void X11Window::DispatchUiEvent(ui::Event* event, x11::Event* xev) {
 
   // Process X11-specific bits
   if (XWindow::IsTargetedBy(*xev))
-    XWindow::ProcessEvent(xev);
+    XWindow::OnEvent(*xev);
 
   // If |event| is a located event (mouse, touch, etc) and another X11 window
   // is set as the current located events grabber, the |event| must be
@@ -648,7 +646,7 @@ void X11Window::OnXWindowCreated() {
   X11WindowManager::GetInstance()->AddWindow(this);
 
   DCHECK(X11EventSource::HasInstance());
-  X11EventSource::GetInstance()->AddXEventDispatcher(this);
+  X11EventSource::GetInstance()->AddXEventObserver(this);
   X11EventSource::GetInstance()->AddPlatformEventDispatcher(this);
 
   x11_window_move_client_ =
@@ -745,18 +743,18 @@ void X11Window::OnXWindowLostPointerGrab() {
     x11_extension_delegate_->OnLostMouseGrab();
 }
 
-void X11Window::OnXWindowSelectionEvent(x11::Event* xev) {
+void X11Window::OnXWindowSelectionEvent(const x11::SelectionNotifyEvent& xev) {
   if (x_event_delegate_)
     x_event_delegate_->OnXWindowSelectionEvent(xev);
   DCHECK(drag_drop_client_);
-  drag_drop_client_->OnSelectionNotify(*xev->As<x11::SelectionNotifyEvent>());
+  drag_drop_client_->OnSelectionNotify(xev);
 }
 
-void X11Window::OnXWindowDragDropEvent(x11::Event* xev) {
+void X11Window::OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) {
   if (x_event_delegate_)
     x_event_delegate_->OnXWindowDragDropEvent(xev);
   DCHECK(drag_drop_client_);
-  drag_drop_client_->HandleXdndEvent(*xev->As<x11::ClientMessageEvent>());
+  drag_drop_client_->HandleXdndEvent(xev);
 }
 
 base::Optional<gfx::Size> X11Window::GetMinimumSizeForXWindow() {

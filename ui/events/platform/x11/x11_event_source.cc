@@ -248,32 +248,12 @@ X11EventSource::GetRootCursorLocationFromCurrentEvent() const {
   return base::nullopt;
 }
 
-void X11EventSource::AddXEventDispatcher(XEventDispatcher* dispatcher) {
-  dispatchers_xevent_.AddObserver(dispatcher);
-}
-
-void X11EventSource::RemoveXEventDispatcher(XEventDispatcher* dispatcher) {
-  dispatchers_xevent_.RemoveObserver(dispatcher);
-}
-
 void X11EventSource::AddXEventObserver(XEventObserver* observer) {
-  CHECK(observer);
   observers_.AddObserver(observer);
 }
 
 void X11EventSource::RemoveXEventObserver(XEventObserver* observer) {
-  CHECK(observer);
   observers_.RemoveObserver(observer);
-}
-
-void X11EventSource::DispatchXEventToXEventDispatchers(x11::Event* xevent) {
-  for (auto& observer : observers_)
-    observer.WillProcessXEvent(xevent);
-
-  for (XEventDispatcher& dispatcher : dispatchers_xevent_) {
-    if (dispatcher.DispatchXEvent(xevent))
-      break;
-  }
 }
 
 void X11EventSource::ProcessXEvent(x11::Event* xevent) {
@@ -294,8 +274,9 @@ void X11EventSource::ProcessXEvent(x11::Event* xevent) {
     DispatchEvent(translated_event.get());
   } else {
     // Only if we can't translate XEvent into ui::Event, try to dispatch XEvent
-    // directly to XEventDispatchers.
-    DispatchXEventToXEventDispatchers(xevent);
+    // directly to XEventObservers.
+    for (XEventObserver& observer : observers_)
+      observer.OnEvent(*xevent);
   }
 }
 

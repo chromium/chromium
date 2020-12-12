@@ -809,16 +809,16 @@ NativeViewGLSurfaceGLX::~NativeViewGLSurfaceGLX() {
   Destroy();
 }
 
-void NativeViewGLSurfaceGLX::ForwardExposeEvent(x11::Event* event) {
-  auto forwarded_event = *event->As<x11::ExposeEvent>();
+void NativeViewGLSurfaceGLX::ForwardExposeEvent(const x11::Event& event) {
+  auto forwarded_event = *event.As<x11::ExposeEvent>();
   auto window = static_cast<x11::Window>(parent_window_);
   forwarded_event.window = window;
   x11::SendEvent(forwarded_event, window, x11::EventMask::Exposure);
   x11::Connection::Get()->Flush();
 }
 
-bool NativeViewGLSurfaceGLX::CanHandleEvent(x11::Event* x11_event) {
-  auto* expose = x11_event->As<x11::ExposeEvent>();
+bool NativeViewGLSurfaceGLX::CanHandleEvent(const x11::Event& x11_event) {
+  auto* expose = x11_event.As<x11::ExposeEvent>();
   return expose && expose->window == static_cast<x11::Window>(window_);
 }
 

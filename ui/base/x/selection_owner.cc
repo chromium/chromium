@@ -117,8 +117,8 @@ void SelectionOwner::ClearSelectionOwner() {
   format_map_ = SelectionFormatMap();
 }
 
-void SelectionOwner::OnSelectionRequest(const x11::Event& x11_event) {
-  auto& request = *x11_event.As<x11::SelectionRequestEvent>();
+void SelectionOwner::OnSelectionRequest(
+    const x11::SelectionRequestEvent& request) {
   auto requestor = request.requestor;
   x11::Atom requested_target = request.target;
   x11::Atom requested_property = request.property;
@@ -163,19 +163,20 @@ void SelectionOwner::OnSelectionRequest(const x11::Event& x11_event) {
   x11::SendEvent(reply, requestor, x11::EventMask::NoEvent);
 }
 
-void SelectionOwner::OnSelectionClear(const x11::Event& event) {
+void SelectionOwner::OnSelectionClear(const x11::SelectionClearEvent& event) {
   DLOG(ERROR) << "SelectionClear";
 
   // TODO(erg): If we receive a SelectionClear event while we're handling data,
   // we need to delay clearing.
 }
 
-bool SelectionOwner::CanDispatchPropertyEvent(const x11::Event& event) {
-  return event.As<x11::PropertyNotifyEvent>()->state == x11::Property::Delete &&
+bool SelectionOwner::CanDispatchPropertyEvent(
+    const x11::PropertyNotifyEvent& event) {
+  return event.state == x11::Property::Delete &&
          FindIncrementalTransferForEvent(event) != incremental_transfers_.end();
 }
 
-void SelectionOwner::OnPropertyEvent(const x11::Event& event) {
+void SelectionOwner::OnPropertyEvent(const x11::PropertyNotifyEvent& event) {
   auto it = FindIncrementalTransferForEvent(event);
   if (it == incremental_transfers_.end())
     return;
@@ -295,11 +296,11 @@ void SelectionOwner::CompleteIncrementalTransfer(
 }
 
 std::vector<SelectionOwner::IncrementalTransfer>::iterator
-SelectionOwner::FindIncrementalTransferForEvent(const x11::Event& event) {
+SelectionOwner::FindIncrementalTransferForEvent(
+    const x11::PropertyNotifyEvent& prop) {
   for (auto it = incremental_transfers_.begin();
        it != incremental_transfers_.end(); ++it) {
-    const auto* prop = event.As<x11::PropertyNotifyEvent>();
-    if (it->window == prop->window && it->property == prop->atom)
+    if (it->window == prop.window && it->property == prop.atom)
       return it;
   }
   return incremental_transfers_.end();

@@ -25,20 +25,18 @@ void GLSurfaceGLXX11::RegisterEvents() {
             .window = static_cast<x11::Window>(window()),
             .event_mask = x11::EventMask::Exposure});
 
-    X11EventSource::GetInstance()->AddXEventDispatcher(this);
+    X11EventSource::GetInstance()->AddXEventObserver(this);
   }
 }
 
 void GLSurfaceGLXX11::UnregisterEvents() {
   if (X11EventSource::HasInstance())
-    X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+    X11EventSource::GetInstance()->RemoveXEventObserver(this);
 }
 
-bool GLSurfaceGLXX11::DispatchXEvent(x11::Event* event) {
-  if (!CanHandleEvent(event))
-    return false;
-  ForwardExposeEvent(event);
-  return true;
+void GLSurfaceGLXX11::OnEvent(const x11::Event& event) {
+  if (CanHandleEvent(event))
+    ForwardExposeEvent(event);
 }
 
 }  // namespace gl

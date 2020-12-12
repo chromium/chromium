@@ -19,7 +19,7 @@
 #include "ui/gfx/x/event.h"
 
 namespace ui {
-class XEventDispatcher;
+class XEventObserver;
 class SelectionData;
 
 // Requests and later receives data from the X11 server through the selection
@@ -31,7 +31,7 @@ class SelectionData;
 // implement per-component fast-paths.
 class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
  public:
-  SelectionRequestor(x11::Window xwindow, XEventDispatcher* dispatcher);
+  SelectionRequestor(x11::Window xwindow, XEventObserver* observer);
   ~SelectionRequestor();
 
   // Does the work of requesting |target| from |selection|, spinning up the
@@ -61,9 +61,9 @@ class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
 
   // Returns true if SelectionOwner can process the XChangeProperty event,
   // |event|.
-  bool CanDispatchPropertyEvent(const x11::Event& event);
+  bool CanDispatchPropertyEvent(const x11::PropertyNotifyEvent& event);
 
-  void OnPropertyEvent(const x11::Event& event);
+  void OnPropertyEvent(const x11::PropertyNotifyEvent& event);
 
  private:
   friend class SelectionRequestorTest;
@@ -123,12 +123,12 @@ class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
   // the selection.
   x11::Atom x_property_;
 
-  // Dispatcher which handles SelectionNotify and SelectionRequest for
+  // Observer which handles SelectionNotify and SelectionRequest for
   // |selection_name_|. PerformBlockingConvertSelection() calls the
-  // dispatcher directly if PerformBlockingConvertSelection() is called after
+  // observer directly if PerformBlockingConvertSelection() is called after
   // the PlatformEventSource is destroyed.
   // Not owned.
-  XEventDispatcher* dispatcher_;
+  XEventObserver* observer_;
 
   // In progress requests. Requests are added to the list at the start of
   // PerformBlockingConvertSelection() and are removed and destroyed right

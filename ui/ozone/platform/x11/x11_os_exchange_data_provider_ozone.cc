@@ -20,12 +20,12 @@ X11OSExchangeDataProviderOzone::X11OSExchangeDataProviderOzone(
 
 X11OSExchangeDataProviderOzone::X11OSExchangeDataProviderOzone() {
   DCHECK(own_window());
-  X11EventSource::GetInstance()->AddXEventDispatcher(this);
+  X11EventSource::GetInstance()->AddXEventObserver(this);
 }
 
 X11OSExchangeDataProviderOzone::~X11OSExchangeDataProviderOzone() {
   if (own_window())
-    X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+    X11EventSource::GetInstance()->RemoveXEventObserver(this);
 }
 
 std::unique_ptr<OSExchangeDataProvider> X11OSExchangeDataProviderOzone::Clone()
@@ -36,13 +36,10 @@ std::unique_ptr<OSExchangeDataProvider> X11OSExchangeDataProviderOzone::Clone()
   return std::move(ret);
 }
 
-bool X11OSExchangeDataProviderOzone::DispatchXEvent(x11::Event* xev) {
-  auto* selection_request = xev->As<x11::SelectionRequestEvent>();
-  if (selection_request && selection_request->owner == x_window()) {
-    selection_owner().OnSelectionRequest(*xev);
-    return true;
-  }
-  return false;
+void X11OSExchangeDataProviderOzone::OnEvent(const x11::Event& xev) {
+  auto* selection_request = xev.As<x11::SelectionRequestEvent>();
+  if (selection_request && selection_request->owner == x_window())
+    selection_owner().OnSelectionRequest(*selection_request);
 }
 
 }  // namespace ui

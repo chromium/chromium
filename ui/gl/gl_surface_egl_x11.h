@@ -20,7 +20,7 @@ namespace gl {
 
 // Encapsulates an EGL surface bound to a view using the X Window System.
 class GL_EXPORT NativeViewGLSurfaceEGLX11 : public NativeViewGLSurfaceEGL,
-                                            public ui::XEventDispatcher {
+                                            public ui::XEventObserver {
  public:
   explicit NativeViewGLSurfaceEGLX11(x11::Window window);
   NativeViewGLSurfaceEGLX11(const NativeViewGLSurfaceEGLX11& other) = delete;
@@ -41,8 +41,8 @@ class GL_EXPORT NativeViewGLSurfaceEGLX11 : public NativeViewGLSurfaceEGL,
   // NativeViewGLSurfaceEGL overrides:
   std::unique_ptr<gfx::VSyncProvider> CreateVsyncProviderInternal() override;
 
-  // XEventDispatcher:
-  bool DispatchXEvent(x11::Event* xev) override;
+  // XEventObserver:
+  void OnEvent(const x11::Event& xev) override;
 
   std::vector<x11::Window> children_;
 

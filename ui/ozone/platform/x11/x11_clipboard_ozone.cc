@@ -91,7 +91,7 @@ X11ClipboardOzone::X11ClipboardOzone()
   using_xfixes_ = true;
 
   // Register to receive standard X11 events.
-  X11EventSource::GetInstance()->AddXEventDispatcher(this);
+  X11EventSource::GetInstance()->AddXEventObserver(this);
 
   for (auto atom : {atom_clipboard_, x11::Atom::PRIMARY}) {
     // Register the selection state.
@@ -105,29 +105,31 @@ X11ClipboardOzone::X11ClipboardOzone()
 }
 
 X11ClipboardOzone::~X11ClipboardOzone() {
-  X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+  X11EventSource::GetInstance()->RemoveXEventObserver(this);
 }
 
-bool X11ClipboardOzone::DispatchXEvent(x11::Event* xev) {
-  if (auto* request = xev->As<x11::SelectionRequestEvent>())
-    return request->owner == x_window_ && OnSelectionRequest(*request);
-  if (auto* notify = xev->As<x11::SelectionNotifyEvent>())
-    return notify->requestor == x_window_ && OnSelectionNotify(*notify);
-  if (auto* notify = xev->As<x11::XFixes::SelectionNotifyEvent>())
-    return notify->window == x_window_ && OnSetSelectionOwnerNotify(*notify);
-
-  return false;
+void X11ClipboardOzone::OnEvent(const x11::Event& xev) {
+  if (auto* request = xev.As<x11::SelectionRequestEvent>()) {
+    if (request->owner == x_window_)
+      OnSelectionRequest(*request);
+  } else if (auto* notify = xev.As<x11::SelectionNotifyEvent>()) {
+    if (notify->requestor == x_window_)
+      OnSelectionNotify(*notify);
+  } else if (auto* notify = xev.As<x11::XFixes::SelectionNotifyEvent>()) {
+    if (notify->window == x_window_)
+      OnSetSelectionOwnerNotify(*notify);
+  }
 }
 
 // We are the clipboard owner, and a remote peer has requested either:
 // TARGETS: List of mime types that we support for the clipboard.
 // TIMESTAMP: Time when we took ownership of the clipboard.
 // <mime-type>: Mime type to receive clipboard as.
-bool X11ClipboardOzone::OnSelectionRequest(
+void X11ClipboardOzone::OnSelectionRequest(
     const x11::SelectionRequestEvent& event) {
   // The property must be set.
   if (event.property == x11::Atom::None)
-    return false;
+    return;
 
   // target=TARGETS.
   auto& selection_state =
@@ -185,13 +187,12 @@ bool X11ClipboardOzone::OnSelectionRequest(
   };
   x11::SendEvent(selection_event, selection_event.requestor,
                  x11::EventMask::NoEvent);
-  return true;
 }
 
 // A remote peer owns the clipboard.  This event is received in response to
 // our request for TARGETS (GetAvailableMimeTypes), or a specific mime type
 // (RequestClipboardData).
-bool X11ClipboardOzone::OnSelectionNotify(
+void X11ClipboardOzone::OnSelectionNotify(
     const x11::SelectionNotifyEvent& event) {
   // GetAvailableMimeTypes.
   auto selection = static_cast<x11::Atom>(event.selection);
@@ -217,8 +218,6 @@ bool X11ClipboardOzone::OnSelectionNotify(
       selection_state.data_mime_type = kMimeTypeText;
       ReadRemoteClipboard(selection);
     }
-
-    return true;
   }
 
   // RequestClipboardData.
@@ -240,20 +239,16 @@ bool X11ClipboardOzone::OnSelectionNotify(
       std::move(selection_state.request_clipboard_data_callback)
           .Run(selection_state.data);
     }
-    return true;
   } else if (static_cast<x11::Atom>(event.property) == x11::Atom::None &&
              selection_state.request_clipboard_data_callback) {
     // If the remote peer could not send data in the format we requested,
     // or failed for any reason, we will send empty data.
     std::move(selection_state.request_clipboard_data_callback)
         .Run(selection_state.data);
-    return true;
   }
-
-  return false;
 }
 
-bool X11ClipboardOzone::OnSetSelectionOwnerNotify(
+void X11ClipboardOzone::OnSetSelectionOwnerNotify(
     const x11::XFixes::SelectionNotifyEvent& event) {
   // Reset state and fetch remote clipboard if there is a new remote owner.
   x11::Atom selection = event.selection;
@@ -268,8 +263,6 @@ bool X11ClipboardOzone::OnSetSelectionOwnerNotify(
   // Increase the sequence number if the callback is set.
   if (update_sequence_cb_)
     update_sequence_cb_.Run(BufferForSelectionAtom(selection));
-
-  return true;
 }
 
 x11::Atom X11ClipboardOzone::SelectionAtomForBuffer(

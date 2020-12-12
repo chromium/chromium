@@ -4,6 +4,7 @@
 
 #include "ui/gl/gl_surface_egl_x11.h"
 
+#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
@@ -64,7 +65,7 @@ bool NativeViewGLSurfaceEGLX11::Initialize(GLSurfaceFormat format) {
 
   if (ui::X11EventSource::HasInstance()) {
     dispatcher_set_ = true;
-    ui::X11EventSource::GetInstance()->AddXEventDispatcher(this);
+    ui::X11EventSource::GetInstance()->AddXEventObserver(this);
   }
   return true;
 }
@@ -72,7 +73,7 @@ bool NativeViewGLSurfaceEGLX11::Initialize(GLSurfaceFormat format) {
 void NativeViewGLSurfaceEGLX11::Destroy() {
   NativeViewGLSurfaceEGL::Destroy();
   if (dispatcher_set_ && ui::X11EventSource::HasInstance())
-    ui::X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+    ui::X11EventSource::GetInstance()->RemoveXEventObserver(this);
 }
 
 gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
@@ -109,21 +110,18 @@ NativeViewGLSurfaceEGLX11::CreateVsyncProviderInternal() {
   return std::make_unique<XrandrIntervalOnlyVSyncProvider>();
 }
 
-bool NativeViewGLSurfaceEGLX11::DispatchXEvent(x11::Event* x11_event) {
+void NativeViewGLSurfaceEGLX11::OnEvent(const x11::Event& x11_event) {
   // When ANGLE is used for EGL, it creates an X11 child window. Expose events
   // from this window need to be forwarded to this class.
-  auto* expose = x11_event->As<x11::ExposeEvent>();
-  bool can_dispatch = expose && std::find(children_.begin(), children_.end(),
-                                          expose->window) != children_.end();
-  if (!can_dispatch)
-    return false;
+  auto* expose = x11_event.As<x11::ExposeEvent>();
+  if (!expose || !base::Contains(children_, expose->window))
+    return;
 
   auto expose_copy = *expose;
   auto window = static_cast<x11::Window>(window_);
   expose_copy.window = window;
   x11::SendEvent(expose_copy, window, x11::EventMask::Exposure);
   x11::Connection::Get()->Flush();
-  return true;
 }
 
 }  // namespace gl

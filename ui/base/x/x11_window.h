@@ -118,7 +118,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XWindow {
   bool IsTransientWindowTargetedBy(const x11::Event& x11_event) const;
   void SetTransientWindow(x11::Window window);
   void WmMoveResize(int hittest, const gfx::Point& location) const;
-  void ProcessEvent(x11::Event* xev);
+  void OnEvent(const x11::Event& xev);
 
   void SetSize(const gfx::Size& size_in_pixels);
   void SetBounds(const gfx::Rect& requested_bounds);
@@ -252,8 +252,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XWindow {
   virtual void OnXWindowWorkspaceChanged() = 0;
   virtual void OnXWindowLostPointerGrab() = 0;
   virtual void OnXWindowLostCapture() = 0;
-  virtual void OnXWindowSelectionEvent(x11::Event* xev) = 0;
-  virtual void OnXWindowDragDropEvent(x11::Event* xev) = 0;
+  virtual void OnXWindowSelectionEvent(
+      const x11::SelectionNotifyEvent& xev) = 0;
+  virtual void OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) = 0;
   virtual base::Optional<gfx::Size> GetMinimumSizeForXWindow() = 0;
   virtual base::Optional<gfx::Size> GetMaximumSizeForXWindow() = 0;
   virtual void GetWindowMaskForXWindow(const gfx::Size& size,

@@ -53,14 +53,14 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
   void ClearSelectionOwner();
 
   // It is our owner's responsibility to plumb X11 events on |xwindow_| to us.
-  void OnSelectionRequest(const x11::Event& event);
-  void OnSelectionClear(const x11::Event& event);
+  void OnSelectionRequest(const x11::SelectionRequestEvent& event);
+  void OnSelectionClear(const x11::SelectionClearEvent& event);
 
   // Returns true if SelectionOwner can process the XPropertyEvent event,
   // |event|.
-  bool CanDispatchPropertyEvent(const x11::Event& event);
+  bool CanDispatchPropertyEvent(const x11::PropertyNotifyEvent& event);
 
-  void OnPropertyEvent(const x11::Event& event);
+  void OnPropertyEvent(const x11::PropertyNotifyEvent& event);
 
  private:
   // Holds state related to an incremental data transfer.
@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
   // Returns the incremental data transfer, if any, which was waiting for
   // |event|.
   std::vector<IncrementalTransfer>::iterator FindIncrementalTransferForEvent(
-      const x11::Event& event);
+      const x11::PropertyNotifyEvent& event);
 
   // Our X11 state.
   x11::Window x_window_;

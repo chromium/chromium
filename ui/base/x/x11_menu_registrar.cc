@@ -34,7 +34,7 @@ X11MenuRegistrar* X11MenuRegistrar::Get() {
 
 X11MenuRegistrar::X11MenuRegistrar() {
   if (ui::X11EventSource::HasInstance())
-    ui::X11EventSource::GetInstance()->AddXEventDispatcher(this);
+    ui::X11EventSource::GetInstance()->AddXEventObserver(this);
 
   x_root_window_events_ = std::make_unique<ui::XScopedEventSelector>(
       ui::GetX11RootWindow(),
@@ -43,15 +43,14 @@ X11MenuRegistrar::X11MenuRegistrar() {
 
 X11MenuRegistrar::~X11MenuRegistrar() {
   if (ui::X11EventSource::HasInstance())
-    ui::X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+    ui::X11EventSource::GetInstance()->RemoveXEventObserver(this);
 }
 
-bool X11MenuRegistrar::DispatchXEvent(x11::Event* xev) {
-  if (auto* create = xev->As<x11::CreateNotifyEvent>())
+void X11MenuRegistrar::OnEvent(const x11::Event& xev) {
+  if (auto* create = xev.As<x11::CreateNotifyEvent>())
     OnWindowCreatedOrDestroyed(true, create->window);
-  else if (auto* destroy = xev->As<x11::DestroyNotifyEvent>())
+  else if (auto* destroy = xev.As<x11::DestroyNotifyEvent>())
     OnWindowCreatedOrDestroyed(false, destroy->window);
-  return false;
 }
 
 void X11MenuRegistrar::OnWindowCreatedOrDestroyed(bool created,

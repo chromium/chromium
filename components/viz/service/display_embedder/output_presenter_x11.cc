@@ -365,7 +365,7 @@ constexpr size_t kMaxPendingFrames = 2;
 
 }  // namespace
 
-class OutputPresenterX11::OnX11 : public ui::XEventDispatcher {
+class OutputPresenterX11::OnX11 : public ui::XEventObserver {
  public:
   explicit OnX11(x11::Window window);
   ~OnX11() override;
@@ -377,8 +377,8 @@ class OutputPresenterX11::OnX11 : public ui::XEventDispatcher {
                      BufferPresentedCallback presentation_callback);
 
  private:
-  // ui::XEventDispatcher implementations:
-  bool DispatchXEvent(x11::Event* event) final;
+  // ui::XEventObserver implementations:
+  void OnEvent(const x11::Event& event) final;
 
   bool OnCompleteNotifyEvent(const x11::Present::CompleteNotifyEvent* event);
   bool OnIdleNotifyEvent(const x11::Present::IdleNotifyEvent* event);
@@ -416,14 +416,14 @@ OutputPresenterX11::OnX11::~OnX11() {
   present->SelectInput({static_cast<x11::Present::Event>(event_id_), window_,
                         x11::Present::EventMask::NoEvent});
 
-  event_source_->RemoveXEventDispatcher(this);
+  event_source_->RemoveXEventObserver(this);
 }
 
 void OutputPresenterX11::OnX11::Initialize() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* connection = x11::Connection::Get();
   event_source_ = std::make_unique<ui::X11EventSource>(connection);
-  event_source_->AddXEventDispatcher(this);
+  event_source_->AddXEventObserver(this);
 
   auto* present = &connection->present();
   event_id_ = connection->GenerateId<uint32_t>();
@@ -460,16 +460,14 @@ void OutputPresenterX11::OnX11::PostSubBuffer(
   presentation_callbacks_.push_back(std::move(presentation_callback));
 }
 
-bool OutputPresenterX11::OnX11::DispatchXEvent(x11::Event* event) {
+void OutputPresenterX11::OnX11::OnEvent(const x11::Event& event) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (event->window() != window_)
-    return false;
-  if (auto* e = event->As<x11::Present::CompleteNotifyEvent>()) {
-    return OnCompleteNotifyEvent(e);
-  } else if (auto* e = event->As<x11::Present::IdleNotifyEvent>()) {
-    return OnIdleNotifyEvent(e);
-  }
-  return false;
+  if (event.window() != window_)
+    return;
+  if (auto* e = event.As<x11::Present::CompleteNotifyEvent>())
+    OnCompleteNotifyEvent(e);
+  else if (auto* e = event.As<x11::Present::IdleNotifyEvent>())
+    OnIdleNotifyEvent(e);
 }
 
 bool OutputPresenterX11::OnX11::OnCompleteNotifyEvent(

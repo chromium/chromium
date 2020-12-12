@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager
 
   void Init();
   bool IsXrandrAvailable() const;
-  bool ProcessEvent(x11::Event* xev);
+  void OnEvent(const x11::Event& xev);
   void UpdateDisplayList();
   void DispatchDelayedDisplayListUpdate();
   display::Display GetPrimaryDisplay() const;

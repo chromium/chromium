@@ -45,8 +45,8 @@ const x11::GetPropertyResponse& PropertyCache::GetProperty(x11::Atom atom) {
   return it->second.response.value();
 }
 
-void PropertyCache::WillProcessXEvent(x11::Event* xev) {
-  auto* prop = xev->As<x11::PropertyNotifyEvent>();
+void PropertyCache::OnEvent(const x11::Event& xev) {
+  auto* prop = xev.As<x11::PropertyNotifyEvent>();
   if (!prop)
     return;
   if (prop->window != window_)

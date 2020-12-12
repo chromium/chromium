@@ -26,27 +26,13 @@ namespace ui {
 
 class X11HotplugEventHandler;
 class XScopedEventSelector;
-class PlatformEventDispatcher;
 
-// The XEventDispatcher interface is used by classes wanting to receive
-// x11::Events directly
-class EVENTS_EXPORT XEventDispatcher {
- public:
-  // Sends x11::Event to XEventDispatcher for handling. Returns true if the
-  // x11::Event was dispatched, otherwise false. After the first
-  // XEventDispatcher returns true x11::Event dispatching stops.
-  virtual bool DispatchXEvent(x11::Event* xevent) = 0;
-
- protected:
-  virtual ~XEventDispatcher() = default;
-};
-
-// XEventObserver can be installed on a X11EventSource, and it
-// receives all events that are dispatched to the dispatchers.
+// The XEventObserver interface is used by classes wanting to receive
+// x11::Events directly.  For input events (mouse, keyboard, touch), a
+// PlatformEventObserver should be used instead.
 class EVENTS_EXPORT XEventObserver {
  public:
-  // Called before the dispatchers receive the event.
-  virtual void WillProcessXEvent(x11::Event* event) {}
+  virtual void OnEvent(const x11::Event& xevent) = 0;
 
  protected:
   virtual ~XEventObserver() = default;
@@ -72,8 +58,8 @@ class X11EventWatcher {
 
 // PlatformEventSource implementation for X11, both Ozone and non-Ozone.
 // Receives X11 events from X11EventWatcher and sends them to registered
-// {Platform,X}EventDispatchers. Handles receiving, pre-process, translation
-// and post-processing of XEvents.
+// PlatformEventDispatchers/XEventObservers. Handles receiving, pre-process,
+// translation and post-processing of x11::Events.
 class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
                                      public x11::Connection::Delegate {
  public:
@@ -104,23 +90,10 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   // |last_seen_server_time_| with this value.
   x11::Time GetCurrentServerTime();
 
-  // Adds a x11::Event dispatcher to the x11::Event dispatcher list.
-  // Also calls XEventDispatcher::GetPlatformEventDispatcher
-  // to explicitly add this |dispatcher| to a list of PlatformEventDispatchers
-  // in case if XEventDispatcher has a PlatformEventDispatcher. Thus,
-  // there is no need to separately add self to the list of
-  // PlatformEventDispatchers. This is needed because XEventDispatchers are
-  // tested if they can receive an x11::Event based on a x11::Window target. If
-  // so, the translated x11::Event into a PlatformEvent is sent to that
-  // PlatformEventDispatcher.
-  void AddXEventDispatcher(XEventDispatcher* dispatcher);
-
-  // Removes an x11::Event dispatcher from the x11::Event dispatcher list.
-  // Also explicitly removes an XEventDispatcher from a PlatformEventDispatcher
-  // list if the XEventDispatcher has a PlatformEventDispatcher.
-  void RemoveXEventDispatcher(XEventDispatcher* dispatcher);
-
+  // Adds a x11::Event observer to the x11::Event observer list.
   void AddXEventObserver(XEventObserver* observer);
+
+  // Removes an x11::Event observer from the x11::Event observer list.
   void RemoveXEventObserver(XEventObserver* observer);
 
   // x11::Connection::Delegate:
@@ -133,9 +106,6 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
 
  private:
   void ProcessXEvent(x11::Event* xevent);
-
-  // Sends XEvent to registered XEventDispatchers.
-  void DispatchXEventToXEventDispatchers(x11::Event* xevent);
 
   // PlatformEventSource:
   void StopCurrentEventStream() override;
@@ -161,9 +131,7 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
 
   std::unique_ptr<X11HotplugEventHandler> hotplug_event_handler_;
 
-  // Keep track of all XEventDispatcher to send XEvents directly to.
-  base::ObserverList<XEventDispatcher>::Unchecked dispatchers_xevent_;
-
+  // Keep track of all XEventObserver to send XEvents directly to.
   base::ObserverList<XEventObserver>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(X11EventSource);

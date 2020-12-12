@@ -40,8 +40,8 @@ class GL_EXPORT NativeViewGLSurfaceEGLX11GLES2
   }
 
  private:
-  // XEventDispatcher:
-  bool DispatchXEvent(x11::Event* xev) override;
+  // XEventObserver:
+  void OnEvent(const x11::Event& xev) override;
 
   x11::Window parent_window_;
 

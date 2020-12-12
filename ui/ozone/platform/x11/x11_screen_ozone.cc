@@ -44,14 +44,14 @@ X11ScreenOzone::X11ScreenOzone()
 X11ScreenOzone::~X11ScreenOzone() {
   if (x11_display_manager_->IsXrandrAvailable() &&
       X11EventSource::HasInstance()) {
-    X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
+    X11EventSource::GetInstance()->RemoveXEventObserver(this);
   }
 }
 
 void X11ScreenOzone::Init() {
   if (x11_display_manager_->IsXrandrAvailable() &&
       X11EventSource::HasInstance()) {
-    X11EventSource::GetInstance()->AddXEventDispatcher(this);
+    X11EventSource::GetInstance()->AddXEventObserver(this);
   }
   x11_display_manager_->Init();
 }
@@ -154,8 +154,8 @@ base::Value X11ScreenOzone::GetGpuExtraInfoAsListValue(
                                      gpu_extra_info.rgba_visual);
 }
 
-bool X11ScreenOzone::DispatchXEvent(x11::Event* xev) {
-  return x11_display_manager_->ProcessEvent(xev);
+void X11ScreenOzone::OnEvent(const x11::Event& xev) {
+  x11_display_manager_->OnEvent(xev);
 }
 
 gfx::Point X11ScreenOzone::GetCursorLocation() const {

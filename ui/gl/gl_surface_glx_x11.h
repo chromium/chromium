@@ -17,7 +17,7 @@ namespace gl {
 // X11 specific implementation of GLX surface. Registers as a
 // PlatformEventDispatcher to handle XEvents.
 class GL_EXPORT GLSurfaceGLXX11 : public NativeViewGLSurfaceGLX,
-                                  public ui::XEventDispatcher {
+                                  public ui::XEventObserver {
  public:
   explicit GLSurfaceGLXX11(gfx::AcceleratedWidget window);
 
@@ -28,8 +28,8 @@ class GL_EXPORT GLSurfaceGLXX11 : public NativeViewGLSurfaceGLX,
   void RegisterEvents() override;
   void UnregisterEvents() override;
 
-  // XEventDispatcher:
-  bool DispatchXEvent(x11::Event* event) override;
+  // XEventObserver:
+  void OnEvent(const x11::Event& event) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GLSurfaceGLXX11);

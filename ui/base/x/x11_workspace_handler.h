@@ -19,7 +19,7 @@ class XScopedEventSelector;
 
 // Listens for global workspace changes and notifies observers.
 class COMPONENT_EXPORT(UI_BASE_X) X11WorkspaceHandler
-    : public ui::XEventDispatcher {
+    : public ui::XEventObserver {
  public:
   class Delegate {
    public:
@@ -39,8 +39,8 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WorkspaceHandler
   std::string GetCurrentWorkspace();
 
  private:
-  // ui::XEventDispatcher
-  bool DispatchXEvent(x11::Event* event) override;
+  // ui::XEventObserver
+  void OnEvent(const x11::Event& event) override;
 
   void OnWorkspaceResponse(x11::GetPropertyResponse response);
 

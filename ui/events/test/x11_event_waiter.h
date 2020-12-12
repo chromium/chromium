@@ -23,7 +23,7 @@ class XEventWaiter : public ui::XEventObserver {
   ~XEventWaiter() override;
 
   // ui::XEventObserver:
-  void WillProcessXEvent(x11::Event* xev) override;
+  void OnEvent(const x11::Event& xev) override;
 
   // Returns atom that indidates that the XEvent is marker event.
   static x11::Atom MarkerEventAtom();

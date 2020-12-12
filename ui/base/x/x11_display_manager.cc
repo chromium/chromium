@@ -62,15 +62,12 @@ void XDisplayManager::RemoveObserver(display::DisplayObserver* observer) {
   change_notifier_.RemoveObserver(observer);
 }
 
-bool XDisplayManager::ProcessEvent(x11::Event* xev) {
-  DCHECK(xev);
-  auto* prop = xev->As<x11::PropertyNotifyEvent>();
-  if (xev->As<x11::RandR::NotifyEvent>() ||
+void XDisplayManager::OnEvent(const x11::Event& xev) {
+  auto* prop = xev.As<x11::PropertyNotifyEvent>();
+  if (xev.As<x11::RandR::NotifyEvent>() ||
       (prop && prop->atom == gfx::GetAtom("_NET_WORKAREA"))) {
     DispatchDelayedDisplayListUpdate();
-    return true;
   }
-  return false;
 }
 
 void XDisplayManager::SetDisplayList(std::vector<display::Display> displays) {

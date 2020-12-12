@@ -42,15 +42,15 @@ void X11PropertyChangeWaiter::Wait() {
   run_loop.Run();
 }
 
-bool X11PropertyChangeWaiter::ShouldKeepOnWaiting(x11::Event* event) {
+bool X11PropertyChangeWaiter::ShouldKeepOnWaiting() {
   // Stop waiting once we get a property change.
   return true;
 }
 
-void X11PropertyChangeWaiter::WillProcessXEvent(x11::Event* x11_event) {
-  auto* prop = x11_event->As<x11::PropertyNotifyEvent>();
+void X11PropertyChangeWaiter::OnEvent(const x11::Event& x11_event) {
+  auto* prop = x11_event.As<x11::PropertyNotifyEvent>();
   if (!wait_ || !prop || prop->window != x_window_ ||
-      prop->atom != gfx::GetAtom(property_) || ShouldKeepOnWaiting(x11_event)) {
+      prop->atom != gfx::GetAtom(property_) || ShouldKeepOnWaiting()) {
     return;
   }
 

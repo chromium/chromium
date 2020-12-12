@@ -28,13 +28,13 @@ class X11PropertyChangeWaiter : public XEventObserver {
 
  protected:
   // Returns whether the run loop can exit.
-  virtual bool ShouldKeepOnWaiting(x11::Event* event);
+  virtual bool ShouldKeepOnWaiting();
 
   x11::Window xwindow() const { return x_window_; }
 
  private:
   // XEventObserver:
-  void WillProcessXEvent(x11::Event* event) override;
+  void OnEvent(const x11::Event& event) override;
 
   x11::Window x_window_;
   const char* property_;
