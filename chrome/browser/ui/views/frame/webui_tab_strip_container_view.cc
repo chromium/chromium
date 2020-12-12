@@ -456,8 +456,9 @@ WebUITabStripContainerView::WebUITabStripContainerView(
       top_container_(top_container),
       tab_contents_container_(tab_contents_container),
       auto_closer_(std::make_unique<AutoCloser>(
-          base::Bind(&WebUITabStripContainerView::CloseForEventOutsideTabStrip,
-                     base::Unretained(this)),
+          base::BindRepeating(
+              &WebUITabStripContainerView::CloseForEventOutsideTabStrip,
+              base::Unretained(this)),
           browser_view->top_container(),
           tab_contents_container,
           omnibox)),

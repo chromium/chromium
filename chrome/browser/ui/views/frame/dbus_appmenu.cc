@@ -265,8 +265,8 @@ void DbusAppmenu::Initialize(DbusMenu::InitializedCallback callback) {
   pref_change_registrar_.Init(browser_->profile()->GetPrefs());
   pref_change_registrar_.Add(
       bookmarks::prefs::kShowBookmarkBar,
-      base::Bind(&DbusAppmenu::OnBookmarkBarVisibilityChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&DbusAppmenu::OnBookmarkBarVisibilityChanged,
+                          base::Unretained(this)));
 
   top_sites_ = TopSitesFactory::GetForProfile(profile_);
   if (top_sites_) {

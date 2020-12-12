@@ -36,8 +36,9 @@ BrowserWindowPropertyManager::BrowserWindowPropertyManager(
   // relaunch icon when the version changes (e.g on initial icon creation).
   profile_pref_registrar_.Add(
       prefs::kProfileIconVersion,
-      base::Bind(&BrowserWindowPropertyManager::OnProfileIconVersionChange,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &BrowserWindowPropertyManager::OnProfileIconVersionChange,
+          base::Unretained(this)));
 }
 
 BrowserWindowPropertyManager::~BrowserWindowPropertyManager() {
