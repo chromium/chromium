@@ -108,9 +108,8 @@ void AwRenderViewHostExt::SetWillSuppressErrorPage(bool suppress) {
 void AwRenderViewHostExt::SmoothScroll(int target_x,
                                        int target_y,
                                        base::TimeDelta duration) {
-  web_contents()->GetMainFrame()->Send(
-      new AwViewMsg_SmoothScroll(web_contents()->GetMainFrame()->GetRoutingID(),
-                                 target_x, target_y, duration));
+  if (local_main_frame_remote_)
+    local_main_frame_remote_->SmoothScroll(target_x, target_y, duration);
 }
 
 void AwRenderViewHostExt::RenderFrameCreated(

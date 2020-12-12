@@ -20,12 +20,6 @@
 // RenderView messages
 // These are messages sent from the browser to the renderer process.
 
-// Tells blink to smooth scroll to the specified location within |duration_ms|.
-IPC_MESSAGE_ROUTED3(AwViewMsg_SmoothScroll,
-                    int /* target_x */,
-                    int /* target_y */,
-                    base::TimeDelta /* duration */)
-
 //-----------------------------------------------------------------------------
 // RenderView messages
 // These are messages sent from the renderer to the browser process.

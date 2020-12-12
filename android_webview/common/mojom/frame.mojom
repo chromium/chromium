@@ -5,6 +5,7 @@
 module android_webview.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -104,6 +105,11 @@ interface LocalMainFrame {
   // method whenever we want to guarantee that page's scale will be recalculated
   // by Blink.
   ResetScrollAndScaleState();
+
+  // Tells Blink to smooth scroll to the specified location within |duration|
+  // miliseconds.
+  SmoothScroll(
+      int32 target_x, int32 target_y, mojo_base.mojom.TimeDelta duration);
 };
 
 // Similar to blink::mojom::FrameHost. Implemented in Browser, this
