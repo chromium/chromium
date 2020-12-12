@@ -268,6 +268,17 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
        TargetEmbeddingType::kInterstitial},
       {"google.com-google.com-google.com", "google.com",
        TargetEmbeddingType::kInterstitial},
+
+      // Ignore end-of-domain embeddings when they're also cross-TLD matches.
+      {"google.com.mx", "", TargetEmbeddingType::kNone},
+
+      // For a small set of high-value domains that are also common words (see
+      // kDomainsPermittedInEndEmbeddings), we block all embeddings except those
+      // at the very end of the domain (e.g. foo-{domain.com}). Ensure this
+      // works for domains on the list, but not for others.
+      {"office.com-foo.com", "office.com", TargetEmbeddingType::kInterstitial},
+      {"example-office.com", "", TargetEmbeddingType::kNone},
+      {"example-google.com", "google.com", TargetEmbeddingType::kInterstitial},
   };
 
   for (auto& test_case : kTestCases) {
