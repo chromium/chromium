@@ -2309,6 +2309,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool should_replace_current_entry,
       const NavigationGesture& gesture,
       const std::vector<GURL>& redirects,
+      const GURL& original_request_url,
       const blink::PageState& page_state,
       bool is_same_document,
       bool is_same_document_history_api_navigation);
@@ -2670,7 +2671,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   GURL last_successful_url_;
 
   // The http method of the last committed navigation.
-  std::string last_http_method_;
+  std::string last_http_method_ = "GET";
 
   // The http status code of the last committed navigation.
   int last_http_status_code_ = 0;
@@ -3111,6 +3112,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Whether the currently committed document is a result of webview's
   // loadDataWithBaseURL API or not.
   bool is_loaded_from_load_data_with_base_url_ = false;
+
+  // Whether the currently committed document is a result of webview's
+  // loadDataWithBaseURL API and the renderer has a non-empty unreachable URL.
+  // See NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL for more
+  // details.
+  bool is_loaded_from_load_data_with_base_url_and_unreachable_url_ = false;
 
   // The last reported character encoding, not canonicalized.
   std::string last_reported_encoding_;

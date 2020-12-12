@@ -903,10 +903,13 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
     bool should_replace_current_entry,
     const std::string& method,
     const NavigationGesture& gesture,
+    bool is_overriding_user_agent,
     const std::vector<GURL>& redirects,
+    const GURL& original_url,
     const blink::PageState& page_state,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info) {
+    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+    int http_response_code) {
   // TODO(clamy): Improve the *NavigationParams and *CommitParams to avoid
   // copying so many parameters here.
   mojom::CommonNavigationParamsPtr common_params =
@@ -932,10 +935,10 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           base::TimeTicks::Now() /* input_start */);
   mojom::CommitNavigationParamsPtr commit_params =
       mojom::CommitNavigationParams::New(
-          origin, false /* is_overriding_user_agent */, redirects,
+          origin, is_overriding_user_agent, redirects,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(),
-          std::string() /* redirect_response */, url /* original_url */,
+          std::string() /* redirect_response */, original_url,
           method /* original_method */, false /* can_load_local_resources */,
           page_state, 0 /* nav_entry_id*/,
           base::flat_map<std::string, bool>() /* subframe_unique_names */,
@@ -963,8 +966,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */,
           std::vector<std::string>() /* forced_content_security_policies */,
-          nullptr /* old_page_info */, 200 /* http_response_code */
-      );
+          nullptr /* old_page_info */, http_response_code);
   mojom::BeginNavigationParamsPtr begin_params =
       mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -4504,6 +4506,35 @@ bool NavigationRequest::IsLoadDataWithBaseURL(
     const mojom::CommonNavigationParams& common_params) {
   return IsLoadDataWithBaseURL(common_params.url,
                                common_params.base_url_for_data_url);
+}
+
+// static
+bool NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
+    bool is_main_frame,
+    const mojom::CommonNavigationParams& common_params,
+    const base::Optional<std::string>& data_url_as_string) {
+  if (!is_main_frame || !IsLoadDataWithBaseURL(common_params))
+    return false;
+
+  // On main frame loadDataURLWithBaseURL navigations, history_url_for_data_url
+  // is saved in WebNavigationParams' unreachable_url in the renderer and sent
+  // back to the browser, unless the base_url is invalid and data_url_as_string
+  // is not used. See https://crbug.com/522567 and handling of data: URLs in
+  // RenderFrameImpl::CommitNavigation() for more details.
+  const bool has_history_url_for_data_url =
+      !common_params.history_url_for_data_url.is_empty();
+  const bool has_non_empty_data_url_as_string =
+      data_url_as_string.has_value() && !data_url_as_string.value().empty();
+  if (has_history_url_for_data_url) {
+    // history_url_for_data_url must only be set if we originally set
+    // base_url_for_data_url or data_url_as_string.
+    DCHECK(!common_params.base_url_for_data_url.is_empty() ||
+           has_non_empty_data_url_as_string);
+  }
+
+  return (common_params.base_url_for_data_url.is_valid() ||
+          has_non_empty_data_url_as_string) &&
+         has_history_url_for_data_url;
 }
 
 url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {

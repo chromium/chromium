@@ -221,7 +221,7 @@ void TestRenderFrameHost::SendNavigate(int nav_entry_id,
                                        bool did_create_new_entry,
                                        const GURL& url) {
   SendNavigateWithParameters(nav_entry_id, did_create_new_entry, url,
-                             ui::PAGE_TRANSITION_LINK, 200);
+                             ui::PAGE_TRANSITION_LINK, 0);
 }
 
 void TestRenderFrameHost::SendNavigateWithTransition(
@@ -230,7 +230,7 @@ void TestRenderFrameHost::SendNavigateWithTransition(
     const GURL& url,
     ui::PageTransition transition) {
   SendNavigateWithParameters(nav_entry_id, did_create_new_entry, url,
-                             transition, 200);
+                             transition, 0);
 }
 
 void TestRenderFrameHost::SendNavigateWithParameters(
@@ -276,6 +276,7 @@ void TestRenderFrameHost::SendNavigateWithParamsAndInterfaceParams(
   if (was_within_same_document) {
     auto same_doc_params = mojom::DidCommitSameDocumentNavigationParams::New();
     same_doc_params->is_history_api_navigation = false;
+    params->http_status_code = last_http_status_code();
     DidCommitSameDocumentNavigation(std::move(params),
                                     std::move(same_doc_params));
   } else {
@@ -514,6 +515,7 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
   params->http_status_code = response_code;
   params->history_list_was_cleared = simulate_history_list_was_cleared_;
   params->original_request_url = url;
+  params->post_id = -1;
 
   // Simulate Blink assigning an item and document sequence number to the
   // navigation.

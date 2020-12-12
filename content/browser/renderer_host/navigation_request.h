@@ -216,10 +216,13 @@ class CONTENT_EXPORT NavigationRequest
       bool should_replace_current_entry,
       const std::string& method,
       const NavigationGesture& gesture,
+      bool is_overriding_user_agent,
       const std::vector<GURL>& redirects,
+      const GURL& original_url,
       const blink::PageState& page_state,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-      std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info);
+      std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+      int http_response_code);
 
   static NavigationRequest* From(NavigationHandle* handle);
 
@@ -702,6 +705,15 @@ class CONTENT_EXPORT NavigationRequest
   // navigation.
   static bool IsLoadDataWithBaseURL(
       const mojom::CommonNavigationParams& common_params);
+
+  // Returns true if the params represent a WebView loadDataWithBaseUrl
+  // navigation that has a non-empty unreachable URL in the renderer. See
+  // https://crbug.com/522567 and handling of data: URLs in
+  // RenderFrameImpl::CommitNavigation() for more details.
+  static bool IsLoadDataWithBaseURLAndUnreachableURL(
+      bool is_main_frame,
+      const mojom::CommonNavigationParams& common_params,
+      const base::Optional<std::string>& data_url_as_string);
 
   // Will calculate an *approximation* of the origin that this NavigationRequest
   // will commit.  (An "approximation", because sandboxing is not taken into

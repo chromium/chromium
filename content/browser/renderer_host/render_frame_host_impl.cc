@@ -8170,6 +8170,11 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
 #endif  // !defined(OS_ANDROID)
 }
 
+bool IsInitialEmptyCommit(const GURL& url, bool has_committed_real_load) {
+  return url.SchemeIs(url::kAboutScheme) && url != GURL(url::kAboutSrcdocURL) &&
+         !has_committed_real_load;
+}
+
 std::unique_ptr<NavigationRequest>
 RenderFrameHostImpl::CreateNavigationRequestForCommit(
     const GURL& url,
@@ -8179,9 +8184,19 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     bool should_replace_current_entry,
     const NavigationGesture& gesture,
     const std::vector<GURL>& redirects,
+    const GURL& original_request_url,
     const blink::PageState& page_state,
     bool is_same_document,
     bool is_same_document_history_api_navigation) {
+  // This function must only be called when there are no NavigationRequests for
+  // a navigation can be found at DidCommit time, which can only happen in two
+  // cases:
+  // 1) This was a renderer-initiated navigation to the initial empty
+  // document.
+  // 2) This was a renderer-initiated same-document navigation.
+  DCHECK(
+      IsInitialEmptyCommit(url, frame_tree_node_->has_committed_real_load()) ||
+      is_same_document);
   DCHECK(!is_same_document_history_api_navigation || is_same_document);
 
   net::IsolationInfo isolation_info = ComputeIsolationInfoInternal(
@@ -8205,6 +8220,7 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     // history navigations.
     web_bundle_navigation_info = web_bundle_handle_->navigation_info()->Clone();
   }
+
   std::string method = "GET";
   if (is_same_document && !is_same_document_history_api_navigation) {
     // Preserve the HTTP method used by the last navigation if this is a
@@ -8213,11 +8229,23 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     // https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps
     method = last_http_method_;
   }
+
+  // HTTP status code:
+  // - For same-document navigations, we should retain the HTTP status code from
+  // the last committed navigation.
+  // - For initial about:blank navigation, the HTTP status code is 0.
+  int http_status_code = is_same_document ? last_http_status_code_ : 0;
+
+  // Same-document navigation should retain is_overriding_user_agent from the
+  // last committed navigation.
+  bool is_overriding_user_agent = is_same_document && is_overriding_user_agent_;
+
   return NavigationRequest::CreateForCommit(
       frame_tree_node_, this, is_same_document, url, origin, isolation_info,
       std::move(referrer), transition, should_replace_current_entry, method,
-      gesture, redirects, page_state, std::move(coep_reporter),
-      std::move(web_bundle_navigation_info));
+      gesture, is_overriding_user_agent, redirects, original_request_url,
+      page_state, std::move(coep_reporter),
+      std::move(web_bundle_navigation_info), http_status_code);
 }
 
 void RenderFrameHostImpl::BeforeUnloadTimeout() {
@@ -8604,10 +8632,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     base::debug::DumpWithoutCrashing();
   }
 
-  bool is_initial_empty_commit = params->url.SchemeIs(url::kAboutScheme) &&
-                                 params->url != GURL(url::kAboutSrcdocURL) &&
-                                 !frame_tree_node_->has_committed_real_load();
-
   // A matching NavigationRequest should have been found, unless in a few very
   // specific cases:
   // 1) This was a renderer-initiated navigation to the initial empty
@@ -8618,6 +8642,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // TODO(https://crbug.com/1131832): Make these navigation go through a
   // separate path that does not send
   // FrameHostMsg_DidCommitProvisionalLoad_Params at all.
+  const bool is_initial_empty_commit = IsInitialEmptyCommit(
+      params->url, frame_tree_node_->has_committed_real_load());
   if (!navigation_request && !is_initial_empty_commit &&
       !is_same_document_navigation) {
     LogCannotCommitUrlCrashKeys(params->url, is_same_document_navigation,
@@ -8632,11 +8658,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   if (!ValidateDidCommitParams(navigation_request.get(), params.get(),
                                is_same_document_navigation)) {
     return false;
-  }
-
-  if (navigation_request) {
-    VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
-        navigation_request.get(), *params, same_document_params.Clone());
   }
 
   // TODO(clamy): We should stop having a special case for same-document
@@ -8671,8 +8692,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     navigation_request = CreateNavigationRequestForCommit(
         params->url, params->origin, params->referrer.Clone(),
         params->transition, params->should_replace_current_entry,
-        params->gesture, params->redirects, params->page_state,
-        is_same_document_navigation,
+        params->gesture, params->redirects, params->original_request_url,
+        params->page_state, is_same_document_navigation,
         same_document_params &&
             same_document_params->is_history_api_navigation);
   }
@@ -8681,6 +8702,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   DCHECK(navigation_request->IsNavigationStarted());
   VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
       navigation_request.get(), *params);
+  VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
+      navigation_request.get(), *params, same_document_params.Clone());
 
   // Update the page transition. For subframe navigations, the renderer process
   // only gives the correct page transition at commit time.
@@ -8914,6 +8937,15 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   is_loaded_from_load_data_with_base_url_ =
       NavigationRequest::IsLoadDataWithBaseURL(
           navigation_request->common_params());
+
+  base::Optional<std::string> data_url_as_string;
+#if defined(OS_ANDROID)
+  data_url_as_string = navigation_request->commit_params().data_url_as_string;
+#endif
+  is_loaded_from_load_data_with_base_url_and_unreachable_url_ =
+      NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
+          frame_tree_node_->IsMainFrame(), navigation_request->common_params(),
+          data_url_as_string);
 
   RecordWebPlatformSecurityMetrics(this, navigation_request);
 
@@ -9560,33 +9592,28 @@ bool DoBaseURLExpectationsMatch(const GURL& renderer_base_url,
 }
 
 bool CalculateURLIsUnreachable(
-    const GURL& history_url_for_data_url,
-    const GURL& base_url_for_data_url,
-    const base::Optional<std::string>& data_url_as_string,
-    const net::Error& net_error_code,
-    bool is_main_frame) {
+    NavigationRequest* request,
+    bool is_loaded_from_load_data_with_base_url_and_unreachable_url) {
   // url_is_unreachable should only be true in two cases:
   // 1) The navigation is for an error page
-  // 2) This is a main frame navigation to a data: URL with a base_url.
-  // In case #2, history_url_for_data_url is saved in WebNavigationParams'
-  // unreachable_url in the renderer and sent back to the browser, unless the
-  // base_url is invalid and data_url_as_string is not used.
-  // See https://crbug.com/522567 and handling of data: URLs in
-  // RenderFrameImpl::CommitNavigation() for more details.
-  const bool has_history_url_for_data_url =
-      !history_url_for_data_url.is_empty();
-  const bool has_non_empty_data_url_as_string =
-      data_url_as_string.has_value() && !data_url_as_string.value().empty();
-  if (has_history_url_for_data_url) {
-    // history_url_for_data_url must only be set if we originally set
-    // base_url_for_data_url or data_url_as_string.
-    DCHECK(!base_url_for_data_url.is_empty() ||
-           has_non_empty_data_url_as_string);
-  }
-  return net_error_code != net::OK || (is_main_frame &&
-                                       (base_url_for_data_url.is_valid() ||
-                                        has_non_empty_data_url_as_string) &&
-                                       has_history_url_for_data_url);
+  if (request->GetNetErrorCode() != net::OK)
+    return true;
+  // 2) This is a main frame navigation to a data: URL document with a base_url
+  // (either an initial load or a same-document navigation).
+  // For same-document navigations, we can know this by checking the value
+  // of |is_loaded_from_load_data_with_base_url_and_unreachable_url|, which was
+  // set when the document was initially loaded.
+  if (request->IsSameDocument())
+    return is_loaded_from_load_data_with_base_url_and_unreachable_url;
+
+  // For cross-document navigations, we can know by checking
+  // NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL().
+  base::Optional<std::string> data_url_as_string;
+#if defined(OS_ANDROID)
+  data_url_as_string = request->commit_params().data_url_as_string;
+#endif
+  return NavigationRequest::IsLoadDataWithBaseURLAndUnreachableURL(
+      request->IsInMainFrame(), request->common_params(), data_url_as_string);
 }
 
 int CalculateHTTPStatusCode(NavigationRequest* request,
@@ -9641,15 +9668,10 @@ void RenderFrameHostImpl::
   // - http_status_code
   // - should_update_history
   // TODO(crbug.com/1131832): Verify more params.
-  base::Optional<std::string> data_url_as_string;
-#if defined(OS_ANDROID)
-  data_url_as_string = request->commit_params().data_url_as_string;
-#endif
   const GURL& browser_base_url = request->common_params().base_url_for_data_url;
+
   const bool browser_url_is_unreachable = CalculateURLIsUnreachable(
-      request->common_params().history_url_for_data_url, browser_base_url,
-      data_url_as_string, request->GetNetErrorCode(),
-      frame_tree_node_->IsMainFrame());
+      request, is_loaded_from_load_data_with_base_url_and_unreachable_url_);
 
   const bool base_url_expectations_match =
       DoBaseURLExpectationsMatch(params.base_url, request->GetNetErrorCode());
