@@ -138,6 +138,8 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "ui/display/display_switches.h"
@@ -10839,6 +10841,138 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(nullptr, first_child->render_manager()->speculative_frame_host());
 }
 
+class SitePerProcessBrowserTestWithLeakDetector
+    : public SitePerProcessBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SitePerProcessBrowserTest::SetUpCommandLine(command_line);
+    // Using the LeakDetector requires exposing GC.
+    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
+                       CloseWebContentsWithSpeculativeRenderFrameHost) {
+  const GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+
+  // Open a popup in B. This is to prevent any fast shutdown shenanigans that
+  // might otherwise happen when the speculative RFH is discarded later.
+  Shell* new_shell =
+      OpenPopup(web_contents(),
+                embedded_test_server()->GetURL("b.com", "/title1.html"), "");
+  ASSERT_TRUE(new_shell);
+
+  mojo::Remote<blink::mojom::LeakDetector> leak_detector_remote;
+  new_shell->web_contents()->GetMainFrame()->GetProcess()->BindReceiver(
+      leak_detector_remote.BindNewPipeAndPassReceiver());
+  blink::mojom::LeakDetectorAsyncWaiter leak_detector(
+      leak_detector_remote.get());
+
+  // One live document is expected from the newly opened popup.
+  {
+    blink::mojom::LeakDetectionResultPtr result;
+    leak_detector.PerformLeakDetection(&result);
+    EXPECT_EQ(1u, result->number_of_live_documents);
+    // Note: the number of live frames includes remote frames.
+    EXPECT_EQ(2u, result->number_of_live_frames);
+  }
+
+  // Start a navigation to B, but don't let it commit. This should associate a
+  // speculative RFH with the main frame.
+  const GURL url2(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  TestNavigationManager nav_manager(web_contents(), url2);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url2));
+  ASSERT_TRUE(nav_manager.WaitForResponse());
+
+  // Speculative RFH should be created in B, increasing the number of live
+  // documents and frames.
+  {
+    blink::mojom::LeakDetectionResultPtr result;
+    leak_detector.PerformLeakDetection(&result);
+    EXPECT_EQ(2u, result->number_of_live_documents);
+    // Note: the number of live frames includes remote frames.
+    EXPECT_EQ(3u, result->number_of_live_frames);
+  }
+
+  // Close the WebContents associated with the speculative RFH.
+  shell()->Close();
+  // Synchronize with the renderer.
+  EXPECT_TRUE(ExecJs(new_shell, ""));
+
+  // The resources associated with the speculative RFH should be freed now.
+  {
+    blink::mojom::LeakDetectionResultPtr result;
+    leak_detector.PerformLeakDetection(&result);
+    EXPECT_EQ(1u, result->number_of_live_documents);
+    // Note: the number of live frames includes remote frames.
+    EXPECT_EQ(2u, result->number_of_live_frames);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithLeakDetector,
+                       DetachFrameWithSpeculativeRenderFrameHost) {
+  const GURL url1(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+
+  // Open a popup in B. This is to prevent any fast shutdown shenanigans that
+  // might otherwise happen when the speculative RFH is discarded later.
+  Shell* new_shell =
+      OpenPopup(web_contents(),
+                embedded_test_server()->GetURL("b.com", "/title1.html"), "");
+  ASSERT_TRUE(new_shell);
+
+  mojo::Remote<blink::mojom::LeakDetector> leak_detector_remote;
+  new_shell->web_contents()->GetMainFrame()->GetProcess()->BindReceiver(
+      leak_detector_remote.BindNewPipeAndPassReceiver());
+  blink::mojom::LeakDetectorAsyncWaiter leak_detector(
+      leak_detector_remote.get());
+
+  // One live document is expected from the newly opened popup.
+  {
+    blink::mojom::LeakDetectionResultPtr result;
+    leak_detector.PerformLeakDetection(&result);
+    EXPECT_EQ(1u, result->number_of_live_documents);
+    // Note: the number of live frames includes remote frames.
+    EXPECT_EQ(3u, result->number_of_live_frames);
+  }
+
+  // Start a navigation to B in the iframe, but don't let it commit. This should
+  // associate a speculative RFH with the child frame.
+  const GURL url2(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  TestNavigationManager nav_manager(web_contents(), url2);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
+      web_contents()->GetFrameTree()->root()->current_frame_host()->child_at(0),
+      url2));
+  ASSERT_TRUE(nav_manager.WaitForResponse());
+
+  // Speculative RFH should be created in B, increasing the number of live
+  // documents and frames.
+  {
+    blink::mojom::LeakDetectionResultPtr result;
+    leak_detector.PerformLeakDetection(&result);
+    EXPECT_EQ(2u, result->number_of_live_documents);
+    // Note: the number of live frames includes remote frames.
+    EXPECT_EQ(4u, result->number_of_live_frames);
+  }
+
+  // Detach the <iframe> associated with the speculative RFH.
+  EXPECT_TRUE(
+      ExecJs(web_contents(), "document.querySelector('iframe').remove()"));
+  // Synchronize with the renderer.
+  EXPECT_TRUE(ExecJs(new_shell, ""));
+
+  // The resources associated with the speculative RFH should be freed now.
+  {
+    blink::mojom::LeakDetectionResultPtr result;
+    leak_detector.PerformLeakDetection(&result);
+    EXPECT_EQ(1u, result->number_of_live_documents);
+    // Note: the number of live frames includes remote frames.
+    EXPECT_EQ(2u, result->number_of_live_frames);
+  }
+}
+
 #if defined(OS_ANDROID)
 
 namespace {
@@ -16476,4 +16610,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          TouchSelectionControllerClientAndroidSiteIsolationTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 #endif  // OS_ANDROID
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessBrowserTestWithLeakDetector,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+
 }  // namespace content
