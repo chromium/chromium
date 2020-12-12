@@ -20,8 +20,4 @@ extern const NSTimeInterval kInfobarBannerDefaultPresentationDurationInSeconds;
 // banner will be presented for.
 extern const NSTimeInterval kInfobarBannerLongPresentationDurationInSeconds;
 
-// The overlap from the bottom of the omnibox NamedGuide for which the banner
-// should be laid out.
-extern const CGFloat kInfobarBannerOverlapWithOmnibox;
-
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_INFOBAR_CONSTANTS_H_

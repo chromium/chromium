@@ -74,7 +74,7 @@
   UIView* owningView = omniboxGuide.owningView;
   CGRect omniboxFrame = [owningView convertRect:omniboxGuide.layoutFrame
                                          toView:owningView.window];
-  return CGRectGetMaxY(omniboxFrame) - kInfobarBannerOverlapWithOmnibox;
+  return CGRectGetMaxY(omniboxFrame);
 }
 
 - (UIView*)bannerView {
