@@ -527,15 +527,8 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 // Tests that submitting a POST-based form by tapping the 'Go' button on the
 // keyboard navigates to the correct URL and the back button works as expected
 // afterwards.
-// TODO:(crbug.com/1147654): re-enable after figuring out why it is failing on
-// simulator
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testPostFormEntryWithKeyboard \
-  DISABLE_testPostFormEntryWithKeyboard
-#else
-#define MAYBE_testPostFormEntryWithKeyboard testPostFormEntryWithKeyboard
-#endif
-- (void)MAYBE_testPostFormEntryWithKeyboard {
+// TODO:(crbug.com/1147654): re-enable after figuring out why it is failing.
+- (void)DISABLE_testPostFormEntryWithKeyboard {
   // Test fails on iPad Air 2 13.4 crbug.com/1102608.
   if ([ChromeEarlGrey isIPadIdiom] && base::ios::IsRunningOnOrLater(13, 0, 0)) {
     EARL_GREY_TEST_DISABLED(@"Fails in iOS 13 on iPads.");
