@@ -388,7 +388,7 @@ static_library("opus") {
   ]
   public_configs = [ ":opus_config" ]
 
-  if (!is_debug && (current_cpu == "arm" || current_cpu == "arm64")) {
+  if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
 
     # TODO(crbug.com/621335) Rework this so that we don't have the confusion
