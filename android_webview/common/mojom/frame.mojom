@@ -95,6 +95,11 @@ interface LocalMainFrame {
   // Requests for the renderer to determine if the document contains any image
   // elements.
   DocumentHasImage() => (bool has_images);
+
+  // Resets Blink WebView scrolling and scale state. We need to call this
+  // method whenever we want to guarantee that page's scale will be recalculated
+  // by Blink.
+  ResetScrollAndScaleState();
 };
 
 // Similar to blink::mojom::FrameHost. Implemented in Browser, this

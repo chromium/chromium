@@ -48,8 +48,6 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   void FocusedElementChanged(const blink::WebElement& element) override;
   void OnDestruct() override;
 
-  void OnResetScrollAndScaleState();
-
   void OnSetInitialPageScale(double page_scale_factor);
 
   void OnSmoothScroll(int target_x, int target_y, base::TimeDelta duration);
@@ -60,6 +58,7 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   void HitTest(const gfx::PointF& touch_center,
                const gfx::SizeF& touch_area) override;
   void DocumentHasImage(DocumentHasImageCallback callback) override;
+  void ResetScrollAndScaleState() override;
 
   void BindLocalMainFrame(
       mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver);

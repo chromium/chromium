@@ -240,8 +240,6 @@ void AwRenderFrameExt::DidCommitProvisionalLoad(
 bool AwRenderFrameExt::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(AwRenderFrameExt, message)
-    IPC_MESSAGE_HANDLER(AwViewMsg_ResetScrollAndScaleState,
-                        OnResetScrollAndScaleState)
     IPC_MESSAGE_HANDLER(AwViewMsg_SetInitialPageScale, OnSetInitialPageScale)
     IPC_MESSAGE_HANDLER(AwViewMsg_SmoothScroll, OnSmoothScroll)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -300,14 +298,6 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
   GetFrameHost()->UpdateHitTestData(std::move(data));
 }
 
-void AwRenderFrameExt::OnResetScrollAndScaleState() {
-  blink::WebView* webview = GetWebView();
-  if (!webview)
-    return;
-
-  webview->ResetScrollAndScaleState();
-}
-
 void AwRenderFrameExt::OnSetInitialPageScale(double page_scale_factor) {
   blink::WebView* webview = GetWebView();
   if (!webview)
@@ -360,6 +350,14 @@ void AwRenderFrameExt::OnSmoothScroll(int target_x,
     return;
 
   webview->SmoothScroll(target_x, target_y, duration);
+}
+
+void AwRenderFrameExt::ResetScrollAndScaleState() {
+  blink::WebView* webview = GetWebView();
+  if (!webview)
+    return;
+
+  webview->ResetScrollAndScaleState();
 }
 
 blink::WebView* AwRenderFrameExt::GetWebView() {

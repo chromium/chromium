@@ -82,8 +82,8 @@ void AwRenderViewHostExt::SetTextZoomFactor(float factor) {
 
 void AwRenderViewHostExt::ResetScrollAndScaleState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web_contents()->GetMainFrame()->Send(new AwViewMsg_ResetScrollAndScaleState(
-      web_contents()->GetMainFrame()->GetRoutingID()));
+  if (local_main_frame_remote_)
+    local_main_frame_remote_->ResetScrollAndScaleState();
 }
 
 void AwRenderViewHostExt::SetInitialPageScale(double page_scale_factor) {
