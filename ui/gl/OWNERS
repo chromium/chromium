@@ -10,6 +10,3 @@ per-file *surface_control*=khushalsagar@chromium.org
 
 # For Windows Direct Composition and Swap Chain
 magchen@chromium.org
-
-# COMPONENT: Internals>GPU>Internals
-# TEAM: graphics-dev@chromium.org

@@ -4,4 +4,3 @@ per-file *android*=qinmin@chromium.org
 per-file *lacros*=file://chromeos/LACROS_OWNERS
 
 per-file *win*=robliao@chromium.org
-# COMPONENT: Internals>PlatformIntegration
