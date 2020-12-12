@@ -37,6 +37,7 @@ class SelectionForUndoStep final {
   Position Base() const { return base_; }
   Position Extent() const { return extent_; }
   bool IsBaseFirst() const { return is_base_first_; }
+  Element* RootEditableElement() const { return root_editable_element_.Get(); }
 
   SelectionInDOMTree AsSelection() const;
 
@@ -61,9 +62,12 @@ class SelectionForUndoStep final {
   Position base_;
   Position extent_;
   TextAffinity affinity_ = TextAffinity::kDownstream;
-  // Note: We should compute |is_base_first_| as construction otherwise we
+  // Note: We should compute |is_base_first_| at construction otherwise we
   // fail "backward and forward delete" case in "undo-delete-boundary.html".
   bool is_base_first_ = true;
+  // Since |base_| and |extent_| can be disconnected from document, we have to
+  // calculate the root editable element at construction time
+  Member<Element> root_editable_element_;
 };
 
 // Builds |SelectionForUndoStep| object with disconnected position. You should

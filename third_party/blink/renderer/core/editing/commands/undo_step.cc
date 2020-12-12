@@ -27,10 +27,6 @@ UndoStep::UndoStep(Document* document,
     : document_(document),
       starting_selection_(starting_selection),
       ending_selection_(ending_selection),
-      starting_root_editable_element_(
-          RootEditableElementOf(starting_selection.Base())),
-      ending_root_editable_element_(
-          RootEditableElementOf(ending_selection.Base())),
       input_type_(input_type),
       sequence_number_(++g_current_sequence_number) {}
 
@@ -131,12 +127,10 @@ void UndoStep::Append(UndoStep* undo_step) {
 
 void UndoStep::SetStartingSelection(const SelectionForUndoStep& selection) {
   starting_selection_ = selection;
-  starting_root_editable_element_ = RootEditableElementOf(selection.Base());
 }
 
 void UndoStep::SetEndingSelection(const SelectionForUndoStep& selection) {
   ending_selection_ = selection;
-  ending_root_editable_element_ = RootEditableElementOf(selection.Base());
 }
 
 void UndoStep::Trace(Visitor* visitor) const {
@@ -144,8 +138,6 @@ void UndoStep::Trace(Visitor* visitor) const {
   visitor->Trace(starting_selection_);
   visitor->Trace(ending_selection_);
   visitor->Trace(commands_);
-  visitor->Trace(starting_root_editable_element_);
-  visitor->Trace(ending_root_editable_element_);
 }
 
 }  // namespace blink
