@@ -36,7 +36,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_restrictions.h"
@@ -710,16 +709,20 @@ void RenderThreadImpl::Init() {
   DCHECK(parsed_num_raster_threads) << string_value;
   DCHECK_GT(num_raster_threads, 0);
 
-  {
-    base::PlatformThreadHandle background_worker_handle;
-    categorized_worker_pool_->Start(num_raster_threads,
-                                    &background_worker_handle);
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    int32_t ns_tid = background_worker_handle.platform_handle();
-    render_message_filter()->SetThreadPriority(
-        ns_tid, base::ThreadPriority::BACKGROUND);
+  categorized_worker_pool_->SetBackgroundingCallback(
+      main_thread_scheduler_->DefaultTaskRunner(),
+      base::BindOnce(
+          [](base::WeakPtr<RenderThreadImpl> render_thread,
+             base::PlatformThreadId thread_id) {
+            if (!render_thread)
+              return;
+            render_thread->render_message_filter()->SetThreadPriority(
+                thread_id, base::ThreadPriority::BACKGROUND);
+          },
+          weak_factory_.GetWeakPtr()));
 #endif
-  }
+  categorized_worker_pool_->Start(num_raster_threads);
 
   discardable_memory_allocator_ = CreateDiscardableMemoryAllocator();
 

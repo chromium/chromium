@@ -13,12 +13,15 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "cc/raster/task_category.h"
 #include "cc/raster/task_graph_runner.h"
 #include "cc/raster/task_graph_work_queue.h"
 #include "content/common/content_export.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace content {
 
@@ -55,11 +58,8 @@ class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
   void FlushForTesting();
 
   // Spawn |num_threads| normal threads and 1 background thread and start
-  // running work on the worker threads. A PlatformThreadHandle to the
-  // background worker is returned via |background_worker_handle| if not
-  // nullptr. The handle remains valid until shutdown.
-  void Start(int num_normal_threads,
-             base::PlatformThreadHandle* background_worker_handle = nullptr);
+  // running work on the worker threads.
+  void Start(int num_normal_threads);
 
   // Finish running all the posted tasks (and nested task posted by those tasks)
   // of all the associated task runners.
@@ -71,6 +71,12 @@ class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
 
   // Create a new sequenced task graph runner.
   scoped_refptr<base::SequencedTaskRunner> CreateSequencedTaskRunner();
+
+  // Runs the callback on the specified task-runner once the background worker
+  // thread is initialized.
+  void SetBackgroundingCallback(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      base::OnceCallback<void(base::PlatformThreadId)> callback);
 
  protected:
   ~CategorizedWorkerPool() override;
@@ -150,6 +156,9 @@ class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
   base::ConditionVariable has_namespaces_with_finished_running_tasks_cv_;
   // Set during shutdown. Tells Run() to return when no more tasks are pending.
   bool shutdown_ GUARDED_BY(lock_);
+
+  base::OnceCallback<void(base::PlatformThreadId)> backgrounding_callback_;
+  scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
 };
 
 }  // namespace content
