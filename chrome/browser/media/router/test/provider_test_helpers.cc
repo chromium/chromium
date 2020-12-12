@@ -66,9 +66,10 @@ TestDialURLFetcher::~TestDialURLFetcher() = default;
 void TestDialURLFetcher::Start(const GURL& url,
                                const std::string& method,
                                const base::Optional<std::string>& post_data,
-                               int max_retries) {
+                               int max_retries,
+                               bool set_origin_header) {
   DoStart(url, method, post_data, max_retries);
-  DialURLFetcher::Start(url, method, post_data, max_retries);
+  DialURLFetcher::Start(url, method, post_data, max_retries, set_origin_header);
 }
 
 void TestDialURLFetcher::StartDownload() {

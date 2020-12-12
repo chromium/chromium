@@ -46,7 +46,7 @@ class DialURLFetcher {
   virtual ~DialURLFetcher();
 
   // Starts a HTTP GET request.
-  void Get(const GURL& url);
+  void Get(const GURL& url, bool set_origin_header = true);
 
   // Starts a HTTP DELETE request.
   void Delete(const GURL& url);
@@ -76,10 +76,12 @@ class DialURLFetcher {
   // |post_data|: optional request body (may be empty).
   // |max_retries|: the maximum number of times to retry the request, not
   // counting the initial request.
+  // |set_origin_header|: whether to set an Origin: header on the request.
   virtual void Start(const GURL& url,
                      const std::string& method,
                      const base::Optional<std::string>& post_data,
-                     int max_retries);
+                     int max_retries,
+                     bool set_origin_header);
 
   // Starts the download on |loader_|.
   virtual void StartDownload();
