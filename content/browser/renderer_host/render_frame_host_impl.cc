@@ -9589,6 +9589,26 @@ bool CalculateURLIsUnreachable(
                                        has_history_url_for_data_url);
 }
 
+int CalculateHTTPStatusCode(NavigationRequest* request,
+                            int last_http_status_code,
+                            bool url_is_unreachable) {
+  // Same-document navigations should retain the HTTP status code from the last
+  // committed navigation.
+  if (request->IsSameDocument())
+    return last_http_status_code;
+  // Navigations that are served from the back/forward cache will always have
+  // the HTTP status code set to 200.
+  if (request->IsServedFromBackForwardCache())
+    return 200;
+  // The HTTP status code is not set if this is for an error page, or if we
+  // never received any HTTP response for the navigation.
+  const int request_response_code = request->commit_params().http_response_code;
+  if (url_is_unreachable || request_response_code == -1)
+    return 0;
+  // Otherwise, return the status code from |request|.
+  return request_response_code;
+}
+
 bool ShouldVerify(const std::string& param) {
 #if DCHECK_IS_ON()
   return true;
@@ -9618,6 +9638,8 @@ void RenderFrameHostImpl::
   // - base_url
   // - post_id
   // - is_overriding_user_agent
+  // - http_status_code
+  // - should_update_history
   // TODO(crbug.com/1131832): Verify more params.
   base::Optional<std::string> data_url_as_string;
 #if defined(OS_ANDROID)
@@ -9635,6 +9657,7 @@ void RenderFrameHostImpl::
   const bool is_same_document_navigation = !!same_document_params;
   const bool is_same_document_history_api_navigation =
       same_document_params && same_document_params->is_history_api_navigation;
+  DCHECK_EQ(is_same_document_navigation, request->IsSameDocument());
 
   const int64_t browser_post_id =
       CalculatePostID(params.method, request->common_params().post_data,
@@ -9649,6 +9672,16 @@ void RenderFrameHostImpl::
                                   : (request->IsOverridingUserAgent() &&
                                      frame_tree_node_->IsMainFrame());
 
+  const int browser_http_status_code = CalculateHTTPStatusCode(
+      request, last_http_status_code_, browser_url_is_unreachable);
+
+  // Note that this follows the calculation of should_update_history in
+  // RenderFrameImpl::MakeDidCommitProvisionalLoadParams().
+  // TODO(https://crbug.com/1158101): Reconsider how we calculate
+  // should_update_history.
+  const bool browser_should_update_history =
+      !browser_url_is_unreachable && browser_http_status_code != 404;
+
   if ((!ShouldVerify("intended_as_new_entry") ||
        request->commit_params().intended_as_new_entry ==
            params.intended_as_new_entry) &&
@@ -9658,7 +9691,11 @@ void RenderFrameHostImpl::
       (!ShouldVerify("base_url") || base_url_expectations_match) &&
       (!ShouldVerify("post_id") || browser_post_id == params.post_id) &&
       (!ShouldVerify("is_overriding_user_agent") ||
-       browser_is_overriding_user_agent == params.is_overriding_user_agent)) {
+       browser_is_overriding_user_agent == params.is_overriding_user_agent) &&
+      (!ShouldVerify("http_status_code") ||
+       browser_http_status_code == params.http_status_code) &&
+      (!ShouldVerify("should_update_history") ||
+       browser_should_update_history == params.should_update_history)) {
     return;
   }
 
@@ -9700,6 +9737,16 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_override_ua,
                         params.is_overriding_user_agent);
 
+  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, browser_code,
+                          browser_http_status_code);
+  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, renderer_code,
+                          params.http_status_code);
+
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, browser_suh,
+                        browser_should_update_history);
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_suh,
+                        params.should_update_history);
+
   SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_same_document,
                         is_same_document_navigation);
   SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_same_doc_history,
@@ -9736,6 +9783,9 @@ void RenderFrameHostImpl::
                         params.url.IsAboutBlank());
   SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, nav_url_srcdoc,
                         params.url.IsAboutSrcdoc());
+  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, nav_url_blocked,
+                        params.url == kBlockedURL);
+
   SCOPED_CRASH_KEY_STRING256(VerifyDidCommit, last_committed_url,
                              GetLastCommittedURL().spec());
   SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, last_url_blank,
@@ -9766,6 +9816,8 @@ void RenderFrameHostImpl::
   DCHECK_EQ(browser_url_is_unreachable, params.url_is_unreachable);
   DCHECK_EQ(browser_post_id, params.post_id);
   DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
+  DCHECK_EQ(browser_http_status_code, params.http_status_code);
+  DCHECK_EQ(browser_should_update_history, params.should_update_history);
   DCHECK(base_url_expectations_match);
   base::debug::DumpWithoutCrashing();
 }

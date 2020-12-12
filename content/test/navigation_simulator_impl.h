@@ -227,7 +227,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // based on internal NavigationSimulator state and given parameters.
   mojom::DidCommitProvisionalLoadParamsPtr BuildDidCommitProvisionalLoadParams(
       bool same_document,
-      bool failed_navigation);
+      bool failed_navigation,
+      int last_http_status_code);
 
   // Simulate the UnloadACK in the old RenderFrameHost if it was unloaded at the
   // commit time.

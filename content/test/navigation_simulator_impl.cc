@@ -606,7 +606,8 @@ void NavigationSimulatorImpl::Commit() {
   }
 
   auto params = BuildDidCommitProvisionalLoadParams(
-      same_document_ /* same_document */, false /* failed_navigation */);
+      same_document_ /* same_document */, false /* failed_navigation */,
+      render_frame_host_->last_http_status_code());
   render_frame_host_->SimulateCommitProcessed(
       request_, std::move(params),
       std::move(browser_interface_broker_receiver_), same_document_);
@@ -750,7 +751,8 @@ void NavigationSimulatorImpl::CommitErrorPage() {
     drop_unload_ack_ = true;
 
   auto params = BuildDidCommitProvisionalLoadParams(
-      false /* same_document */, true /* failed_navigation */);
+      false /* same_document */, true /* failed_navigation */,
+      render_frame_host_->last_http_status_code());
   render_frame_host_->SimulateCommitProcessed(
       request_, std::move(params),
       std::move(browser_interface_broker_receiver_), false /* same_document */);
@@ -777,7 +779,8 @@ void NavigationSimulatorImpl::CommitSameDocument() {
   }
 
   auto params = BuildDidCommitProvisionalLoadParams(
-      true /* same_document */, false /* failed_navigation */);
+      true /* same_document */, false /* failed_navigation */,
+      render_frame_host_->last_http_status_code());
 
   browser_interface_broker_receiver_.reset();
 
@@ -1289,7 +1292,8 @@ void NavigationSimulatorImpl::set_history_list_was_cleared(
 mojom::DidCommitProvisionalLoadParamsPtr
 NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
     bool same_document,
-    bool failed_navigation) {
+    bool failed_navigation,
+    int last_http_status_code) {
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->url = navigation_url_;
   params->original_request_url = original_url_;
@@ -1317,7 +1321,6 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
     params->url_is_unreachable = true;
   } else {
     params->redirects.push_back(navigation_url_);
-    params->http_status_code = 200;
     params->should_update_history = true;
     if (same_document) {
       params->sandbox_flags = current_rfh->active_sandbox_flags();
@@ -1327,6 +1330,18 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
       params->origin =
           origin_.value_or(request_->GetOriginForURLLoaderFactory());
     }
+  }
+
+  if (same_document) {
+    // Same document navigations always retain the last HTTP status code.
+    params->http_status_code = last_http_status_code;
+  } else if (request_ && request_->commit_params().http_response_code != -1) {
+    // If we have a valid HTTP response code in |request_|, use it.
+    params->http_status_code = request_->commit_params().http_response_code;
+  } else {
+    // Otherwise, unit tests will never issue real network requests and thus
+    // will never receive any HTTP response.
+    params->http_status_code = 0;
   }
 
   CHECK(same_document || request_);

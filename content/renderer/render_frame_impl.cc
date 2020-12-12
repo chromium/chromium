@@ -4926,6 +4926,9 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     params->base_url = frame_document.BaseURL();
 
   GetRedirectChain(document_loader, &params->redirects);
+
+  // TODO(https://crbug.com/1158101): Reconsider how we calculate
+  // should_update_history.
   params->should_update_history =
       !document_loader->HasUnreachableURL() && response.HttpStatusCode() != 404;
 
