@@ -9709,7 +9709,6 @@ namespace CSS
     getter onwheel
     getter opener
     getter origin
-    getter originIsolated
     getter outerHeight
     getter outerWidth
     getter pageXOffset

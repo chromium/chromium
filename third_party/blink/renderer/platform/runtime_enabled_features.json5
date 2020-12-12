@@ -1399,7 +1399,7 @@
     {
       name: "OriginIsolationHeader",
       origin_trial_feature_name: "OriginIsolationHeader",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "OriginPolicy",
