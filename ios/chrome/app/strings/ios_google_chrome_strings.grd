@@ -193,6 +193,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chrome?
       </message>
+      <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
+        When you were signed out of Chrome, your bookmarks, history, passwords and other settings were cleared from this device. Your synced Chrome data is still saved to your Google account.
+      </message>
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chrome uses Face ID to ensure authorized access to your passwords.
       </message>
@@ -360,6 +363,9 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_UNABLE_INFO" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="The device is not able to update to the newest version.">
         Chrome is out of date. If no update is available in the <ph name="BEGIN_LINK">BEGIN_LINK</ph>App Store<ph name="END_LINK">END_LINK</ph>, it's possible that your device doesn't support new versions of Chrome anymore.
+      </message>
+      <message name="IDS_IOS_SETTINGS_SIGNIN_DISABLED_POPOVER_TEXT" desc="This text is shown when sign-in is disabled by policy and the user taps on the info pop-over of the 'Sign in to Chrome' button in the settings. [iOS only]">
+        Your organization requires you to stay signed out of Chrome.
       </message>
       <message name="IDS_IOS_PASSWORD_CHECK_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
         Chrome can't check your passwords
