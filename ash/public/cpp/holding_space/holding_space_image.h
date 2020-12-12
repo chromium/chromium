@@ -51,6 +51,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
 
   // Mutable to allow const access from `AddImageSkiaChangedCallback()`.
   mutable CallbackList callback_list_;
+
+  base::WeakPtrFactory<HoldingSpaceImage> weak_factory_{this};
 };
 
 }  // namespace ash

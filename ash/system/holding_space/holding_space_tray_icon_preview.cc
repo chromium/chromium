@@ -67,7 +67,8 @@ void SetUpAnimation(ui::ScopedLayerAnimationSettings* animation_settings) {
 
 class ContentsImageSource : public gfx::ImageSkiaSource {
  public:
-  explicit ContentsImageSource(const HoldingSpaceItem* item) : item_(item) {}
+  explicit ContentsImageSource(gfx::ImageSkia item_image)
+      : item_image_(item_image) {}
   ContentsImageSource(const ContentsImageSource&) = delete;
   ContentsImageSource& operator=(const ContentsImageSource&) = delete;
   ~ContentsImageSource() override = default;
@@ -75,7 +76,7 @@ class ContentsImageSource : public gfx::ImageSkiaSource {
  private:
   // gfx::ImageSkiaSource:
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
-    gfx::ImageSkia image = item_->image().image_skia();
+    gfx::ImageSkia image = item_image_;
 
     // Crop to square (if necessary).
     gfx::Size square_size = image.size();
@@ -105,7 +106,7 @@ class ContentsImageSource : public gfx::ImageSkiaSource {
     return gfx::ImageSkiaRep(canvas.GetBitmap(), scale);
   }
 
-  const HoldingSpaceItem* item_;
+  const gfx::ImageSkia item_image_;
 };
 
 // ContentsImage ---------------------------------------------------------------
@@ -114,8 +115,9 @@ class ContentsImage : public gfx::ImageSkia {
  public:
   ContentsImage(const HoldingSpaceItem* item,
                 base::RepeatingClosure image_invalidated_closure)
-      : gfx::ImageSkia(std::make_unique<ContentsImageSource>(item),
-                       GetPreviewSize()),
+      : gfx::ImageSkia(
+            std::make_unique<ContentsImageSource>(item->image().image_skia()),
+            GetPreviewSize()),
         image_invalidated_closure_(image_invalidated_closure) {
     image_subscription_ = item->image().AddImageSkiaChangedCallback(
         base::BindRepeating(&ContentsImage::OnHoldingSpaceItemImageChanged,

@@ -17,7 +17,7 @@ namespace ash {
 
 class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
  public:
-  ImageSkiaSource(HoldingSpaceImage* owner,
+  ImageSkiaSource(const base::WeakPtr<HoldingSpaceImage>& owner,
                   const gfx::ImageSkia& placeholder,
                   AsyncBitmapResolver async_bitmap_resolver)
       : owner_(owner),
@@ -48,11 +48,12 @@ class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
   void CacheImageForScale(float scale, const SkBitmap* bitmap) {
     if (bitmap) {
       cache_[scale].AddRepresentation(gfx::ImageSkiaRep(*bitmap, scale));
-      owner_->NotifyUpdated(scale);
+      if (owner_)
+        owner_->NotifyUpdated(scale);
     }
   }
 
-  HoldingSpaceImage* const owner_;
+  const base::WeakPtr<HoldingSpaceImage> owner_;
   const gfx::ImageSkia placeholder_;
   AsyncBitmapResolver async_bitmap_resolver_;
   std::map<float, gfx::ImageSkia> cache_;
@@ -62,12 +63,14 @@ class HoldingSpaceImage::ImageSkiaSource : public gfx::ImageSkiaSource {
 
 // HoldingSpaceImage -----------------------------------------------------------
 
-HoldingSpaceImage::HoldingSpaceImage(const gfx::ImageSkia& placeholder,
-                                     AsyncBitmapResolver async_bitmap_resolver)
-    : image_skia_(std::make_unique<ImageSkiaSource>(/*owner=*/this,
-                                                    placeholder,
-                                                    async_bitmap_resolver),
-                  placeholder.size()) {}
+HoldingSpaceImage::HoldingSpaceImage(
+    const gfx::ImageSkia& placeholder,
+    AsyncBitmapResolver async_bitmap_resolver) {
+  image_skia_ = gfx::ImageSkia(
+      std::make_unique<ImageSkiaSource>(/*owner=*/weak_factory_.GetWeakPtr(),
+                                        placeholder, async_bitmap_resolver),
+      placeholder.size());
+}
 
 HoldingSpaceImage::~HoldingSpaceImage() = default;
 
