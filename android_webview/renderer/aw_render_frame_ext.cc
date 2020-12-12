@@ -240,7 +240,6 @@ void AwRenderFrameExt::DidCommitProvisionalLoad(
 bool AwRenderFrameExt::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(AwRenderFrameExt, message)
-    IPC_MESSAGE_HANDLER(AwViewMsg_SetInitialPageScale, OnSetInitialPageScale)
     IPC_MESSAGE_HANDLER(AwViewMsg_SmoothScroll, OnSmoothScroll)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -298,20 +297,20 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
   GetFrameHost()->UpdateHitTestData(std::move(data));
 }
 
-void AwRenderFrameExt::OnSetInitialPageScale(double page_scale_factor) {
-  blink::WebView* webview = GetWebView();
-  if (!webview)
-    return;
-
-  webview->SetInitialPageScaleOverride(page_scale_factor);
-}
-
 void AwRenderFrameExt::SetBackgroundColor(SkColor c) {
   blink::WebView* webview = GetWebView();
   if (!webview)
     return;
 
   webview->SetBaseBackgroundColor(c);
+}
+
+void AwRenderFrameExt::SetInitialPageScale(double page_scale_factor) {
+  blink::WebView* webview = GetWebView();
+  if (!webview)
+    return;
+
+  webview->SetInitialPageScaleOverride(page_scale_factor);
 }
 
 void AwRenderFrameExt::SetTextZoomFactor(float zoom_factor) {

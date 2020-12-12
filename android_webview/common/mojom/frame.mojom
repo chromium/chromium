@@ -81,6 +81,10 @@ interface LocalMainFrame {
   // Sets the base background color for this view.
   SetBackgroundColor(skia.mojom.SkColor color);
 
+  // Sets the initial page scale. This overrides initial scale set by
+  // the meta viewport tag.
+  SetInitialPageScale(double page_scale_factor);
+
   // Sets the zoom factor for text only. Used in layout modes other than
   // Text Autosizing.
   SetTextZoomFactor(float zoom_factor);

@@ -20,11 +20,6 @@
 // RenderView messages
 // These are messages sent from the browser to the renderer process.
 
-// Sets the initial page scale. This overrides initial scale set by
-// the meta viewport tag.
-IPC_MESSAGE_ROUTED1(AwViewMsg_SetInitialPageScale,
-                    double /* page_scale_factor */)
-
 // Tells blink to smooth scroll to the specified location within |duration_ms|.
 IPC_MESSAGE_ROUTED3(AwViewMsg_SmoothScroll,
                     int /* target_x */,

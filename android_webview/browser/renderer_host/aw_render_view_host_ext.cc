@@ -88,8 +88,8 @@ void AwRenderViewHostExt::ResetScrollAndScaleState() {
 
 void AwRenderViewHostExt::SetInitialPageScale(double page_scale_factor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web_contents()->GetMainFrame()->Send(new AwViewMsg_SetInitialPageScale(
-      web_contents()->GetMainFrame()->GetRoutingID(), page_scale_factor));
+  if (local_main_frame_remote_)
+    local_main_frame_remote_->SetInitialPageScale(page_scale_factor);
 }
 
 void AwRenderViewHostExt::SetBackgroundColor(SkColor c) {
