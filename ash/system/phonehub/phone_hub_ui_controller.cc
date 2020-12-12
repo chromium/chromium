@@ -147,6 +147,8 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
   bool should_show_onboarding_ui = tracker->ShouldShowOnboardingUi();
 
   switch (feature_status) {
+    case FeatureStatus::kPhoneSelectedAndPendingSetup:
+      FALLTHROUGH;
     case FeatureStatus::kNotEligibleForFeature:
       return UiState::kHidden;
     case FeatureStatus::kEligiblePhoneButNotSetUp:
@@ -155,8 +157,6 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
     case FeatureStatus::kDisabled:
       return should_show_onboarding_ui ? UiState::kOnboardingWithoutPhone
                                        : UiState::kHidden;
-    case FeatureStatus::kPhoneSelectedAndPendingSetup:
-      return UiState::kPhoneConnecting;
     case FeatureStatus::kUnavailableBluetoothOff:
       return UiState::kBluetoothDisabled;
     case FeatureStatus::kEnabledButDisconnected:

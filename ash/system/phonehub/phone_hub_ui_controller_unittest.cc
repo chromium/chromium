@@ -121,14 +121,10 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithPhone) {
   EXPECT_EQ(PhoneHubViewID::kOnboardingView, content_view->GetID());
 }
 
-TEST_F(PhoneHubUiControllerTest, PhoneConnectingForOnboarding) {
+TEST_F(PhoneHubUiControllerTest, PhoneSelectedAndPendingSetup) {
   GetFeatureStatusProvider()->SetStatus(
       FeatureStatus::kPhoneSelectedAndPendingSetup);
-  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
-            controller_->ui_state());
-
-  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
-  EXPECT_EQ(PhoneHubViewID::kPhoneConnectingView, content_view->GetID());
+  EXPECT_EQ(PhoneHubUiController::UiState::kHidden, controller_->ui_state());
 }
 
 TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
