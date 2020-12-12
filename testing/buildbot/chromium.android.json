@@ -23109,7 +23109,9 @@
         },
         "name": "cronet_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_file": "${ISOLATED_OUTDIR}/sizes/test_results.json",
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -23863,7 +23865,9 @@
         },
         "name": "cronet_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_file": "${ISOLATED_OUTDIR}/sizes/test_results.json",
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -23899,7 +23903,9 @@
         },
         "name": "cronet_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_file": "${ISOLATED_OUTDIR}/sizes/test_results.json",
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -25005,7 +25011,9 @@
         },
         "name": "cronet_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_file": "${ISOLATED_OUTDIR}/sizes/test_results.json",
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -25041,7 +25049,9 @@
         },
         "name": "cronet_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "result_file": "${ISOLATED_OUTDIR}/sizes/test_results.json",
+          "result_format": "single"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,

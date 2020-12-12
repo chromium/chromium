@@ -1199,12 +1199,12 @@
             },
           ],
         },
-        # TODO(crbug.com/1139149): Enable resultdb after it can support
-        # cronet_sizes.
         'resultdb': {
-          'enable': False,
-        }
+          'enable': True,
+          'result_format': 'single',
+          'result_file': '${ISOLATED_OUTDIR}/sizes/test_results.json'
         },
+      },
     },
 
     'desktop_chromium_isolated_scripts': {
