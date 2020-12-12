@@ -454,7 +454,7 @@ const LogSeverity LOGGING_0 = LOGGING_ERROR;
 
 // The VLOG macros log with negative verbosities.
 #define VLOG_STREAM(verbose_level) \
-  ::logging::LogMessage(__FILE__, __LINE__, -verbose_level).stream()
+  ::logging::LogMessage(__FILE__, __LINE__, -(verbose_level)).stream()
 
 #define VLOG(verbose_level) \
   LAZY_STREAM(VLOG_STREAM(verbose_level), VLOG_IS_ON(verbose_level))
@@ -465,11 +465,11 @@ const LogSeverity LOGGING_0 = LOGGING_ERROR;
 
 #if defined (OS_WIN)
 #define VPLOG_STREAM(verbose_level) \
-  ::logging::Win32ErrorLogMessage(__FILE__, __LINE__, -verbose_level, \
+  ::logging::Win32ErrorLogMessage(__FILE__, __LINE__, -(verbose_level), \
     ::logging::GetLastSystemErrorCode()).stream()
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #define VPLOG_STREAM(verbose_level) \
-  ::logging::ErrnoLogMessage(__FILE__, __LINE__, -verbose_level, \
+  ::logging::ErrnoLogMessage(__FILE__, __LINE__, -(verbose_level), \
     ::logging::GetLastSystemErrorCode()).stream()
 #endif
 
