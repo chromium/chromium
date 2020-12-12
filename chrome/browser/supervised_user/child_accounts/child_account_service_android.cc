@@ -35,15 +35,17 @@ void JNI_ChildAccountService_ListenForChildStatusReceived(
                      ScopedJavaGlobalRef<jobject>(callback), true));
 }
 
-void ReauthenticateChildAccount(content::WebContents* web_contents,
-                                const std::string& email,
-                                const base::Callback<void(bool)>& callback) {
+void ReauthenticateChildAccount(
+    content::WebContents* web_contents,
+    const std::string& email,
+    const base::RepeatingCallback<void(bool)>& callback) {
   ui::WindowAndroid* window_android =
       web_contents->GetNativeView()->GetWindowAndroid();
 
   // Make a copy of the callback which can be passed as a pointer through
   // to Java.
-  auto callback_copy = std::make_unique<base::Callback<void(bool)>>(callback);
+  auto callback_copy =
+      std::make_unique<base::RepeatingCallback<void(bool)>>(callback);
 
   JNIEnv* env = AttachCurrentThread();
   Java_ChildAccountService_reauthenticateChildAccount(
@@ -56,8 +58,8 @@ void JNI_ChildAccountService_OnReauthenticationResult(
     jlong jcallbackPtr,
     jboolean result) {
   // Cast the pointer value back to a Callback and take ownership of it.
-  std::unique_ptr<base::Callback<void(bool)>> callback(
-      reinterpret_cast<base::Callback<void(bool)>*>(jcallbackPtr));
+  std::unique_ptr<base::RepeatingCallback<void(bool)>> callback(
+      reinterpret_cast<base::RepeatingCallback<void(bool)>*>(jcallbackPtr));
 
   callback->Run(result);
 }

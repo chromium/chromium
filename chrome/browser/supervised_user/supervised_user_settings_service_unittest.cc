@@ -123,9 +123,10 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   void SetUp() override {
     TestingPrefStore* pref_store = new TestingPrefStore;
     settings_service_.Init(pref_store);
-    user_settings_subscription_ = settings_service_.SubscribeForSettingsChange(
-        base::Bind(&SupervisedUserSettingsServiceTest::OnNewSettingsAvailable,
-                   base::Unretained(this)));
+    user_settings_subscription_ =
+        settings_service_.SubscribeForSettingsChange(base::BindRepeating(
+            &SupervisedUserSettingsServiceTest::OnNewSettingsAvailable,
+            base::Unretained(this)));
     pref_store->SetInitializationCompleted();
     ASSERT_FALSE(settings_);
     settings_service_.SetActive(true);

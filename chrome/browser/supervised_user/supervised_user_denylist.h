@@ -41,14 +41,14 @@ class SupervisedUserDenylist {
   // entries. |done_callback| will be run after reading finishes (successfully
   // or not), but not if the SupervisedUserDenylist is destroyed before that.
   void ReadFromFile(const base::FilePath& path,
-                    const base::Closure& done_callback);
+                    const base::RepeatingClosure& done_callback);
 
   bool HasURL(const GURL& url) const;
 
   size_t GetEntryCount() const;
 
  private:
-  void OnReadFromFileCompleted(const base::Closure& done_callback,
+  void OnReadFromFileCompleted(const base::RepeatingClosure& done_callback,
                                std::unique_ptr<std::vector<Hash>> host_hashes);
 
   std::vector<Hash> host_hashes_;

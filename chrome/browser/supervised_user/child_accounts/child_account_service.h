@@ -64,7 +64,7 @@ class ChildAccountService : public KeyedService,
   // (see IsGoogleAuthenticated()). Can send a notification even if the
   // authentication state has not changed.
   base::CallbackListSubscription ObserveGoogleAuthState(
-      const base::Callback<void()>& callback);
+      const base::RepeatingCallback<void()>& callback);
 
  private:
   friend class ChildAccountServiceFactory;

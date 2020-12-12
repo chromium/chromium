@@ -54,8 +54,8 @@ class SupervisedUserSiteList
     // Copy and assign are allowed.
   };
 
-  using LoadedCallback =
-      base::Callback<void(const scoped_refptr<SupervisedUserSiteList>&)>;
+  using LoadedCallback = base::RepeatingCallback<void(
+      const scoped_refptr<SupervisedUserSiteList>&)>;
 
   // Asynchronously loads the site list from |file| and calls |callback| with
   // the newly created object.

@@ -69,8 +69,8 @@ SupervisedUserPrefStore::SupervisedUserPrefStore(
     SupervisedUserSettingsService* supervised_user_settings_service) {
   user_settings_subscription_ =
       supervised_user_settings_service->SubscribeForSettingsChange(
-          base::Bind(&SupervisedUserPrefStore::OnNewSettingsAvailable,
-                     base::Unretained(this)));
+          base::BindRepeating(&SupervisedUserPrefStore::OnNewSettingsAvailable,
+                              base::Unretained(this)));
 
   // The SupervisedUserSettingsService must be created before the PrefStore, and
   // it will notify the PrefStore to destroy both subscriptions when it is shut

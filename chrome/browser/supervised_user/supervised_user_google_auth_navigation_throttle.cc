@@ -81,9 +81,9 @@ SupervisedUserGoogleAuthNavigationThrottle::WillStartOrRedirectRequest() {
   if (result.action() == content::NavigationThrottle::DEFER) {
     google_auth_state_subscription_ =
         child_account_service_->ObserveGoogleAuthState(
-            base::Bind(&SupervisedUserGoogleAuthNavigationThrottle::
-                           OnGoogleAuthStateChanged,
-                       base::Unretained(this)));
+            base::BindRepeating(&SupervisedUserGoogleAuthNavigationThrottle::
+                                    OnGoogleAuthStateChanged,
+                                base::Unretained(this)));
   }
 
   return result;
@@ -147,9 +147,9 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
 
     ReauthenticateChildAccount(
         web_contents, account_info.email,
-        base::Bind(&SupervisedUserGoogleAuthNavigationThrottle::
-                       OnReauthenticationResult,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(&SupervisedUserGoogleAuthNavigationThrottle::
+                                OnReauthenticationResult,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
   return content::NavigationThrottle::DEFER;
 #else

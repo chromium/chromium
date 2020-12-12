@@ -145,7 +145,7 @@ ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() {
 }
 
 base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
-    const base::Callback<void()>& callback) {
+    const base::RepeatingCallback<void()>& callback) {
   return google_auth_state_observers_.Add(callback);
 }
 

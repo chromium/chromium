@@ -69,8 +69,9 @@ size_t SupervisedUserDenylist::GetEntryCount() const {
   return host_hashes_.size();
 }
 
-void SupervisedUserDenylist::ReadFromFile(const base::FilePath& path,
-                                          const base::Closure& done_callback) {
+void SupervisedUserDenylist::ReadFromFile(
+    const base::FilePath& path,
+    const base::RepeatingClosure& done_callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -81,7 +82,7 @@ void SupervisedUserDenylist::ReadFromFile(const base::FilePath& path,
 }
 
 void SupervisedUserDenylist::OnReadFromFileCompleted(
-    const base::Closure& done_callback,
+    const base::RepeatingClosure& done_callback,
     std::unique_ptr<std::vector<Hash>> host_hashes) {
   host_hashes_.swap(*host_hashes);
   LOG_IF(WARNING, host_hashes_.empty()) << "Got empty denylist";

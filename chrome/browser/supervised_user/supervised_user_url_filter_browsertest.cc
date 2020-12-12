@@ -52,26 +52,6 @@ using content::WebContents;
 
 namespace {
 
-class InterstitialPageObserver : public content::WebContentsObserver {
- public:
-  InterstitialPageObserver(WebContents* web_contents,
-                           const base::Closure& callback)
-      : content::WebContentsObserver(web_contents), callback_(callback) {}
-  ~InterstitialPageObserver() override {}
-
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    // With committed interstitials, DidAttachInterstitialPage is not called, so
-    // call the callback from here if there was an error.
-    if (navigation_handle->IsErrorPage()) {
-      callback_.Run();
-    }
-  }
-
- private:
-  base::Closure callback_;
-};
-
 // Tests filtering for supervised users.
 class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
  public:

@@ -58,11 +58,11 @@ class SupervisedUserSettingsService : public KeyedService,
   // user settings. If the dictionary is NULL, it means that the service is
   // inactive, i.e. the user is not supervised.
   using SettingsCallbackType = void(const base::DictionaryValue*);
-  using SettingsCallback = base::Callback<SettingsCallbackType>;
+  using SettingsCallback = base::RepeatingCallback<SettingsCallbackType>;
   using SettingsCallbackList = base::CallbackList<SettingsCallbackType>;
 
   using ShutdownCallbackType = void();
-  using ShutdownCallback = base::Callback<ShutdownCallbackType>;
+  using ShutdownCallback = base::RepeatingCallback<ShutdownCallbackType>;
   using ShutdownCallbackList = base::CallbackList<ShutdownCallbackType>;
 
   SupervisedUserSettingsService();

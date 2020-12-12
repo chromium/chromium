@@ -158,8 +158,8 @@ void SupervisedUserService::Init() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kSupervisedUserId,
-      base::Bind(&SupervisedUserService::OnSupervisedUserIdChanged,
-          base::Unretained(this)));
+      base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
+                          base::Unretained(this)));
 
   SetActive(IsChild());
 }
@@ -687,9 +687,9 @@ void SupervisedUserService::OnDenylistFileChecked(const base::FilePath& path,
 
 void SupervisedUserService::LoadDenylistFromFile(const base::FilePath& path) {
   DCHECK(denylist_state_ == DenylistLoadState::LOAD_STARTED);
-  denylist_.ReadFromFile(path,
-                         base::Bind(&SupervisedUserService::OnDenylistLoaded,
-                                    base::Unretained(this)));
+  denylist_.ReadFromFile(
+      path, base::BindRepeating(&SupervisedUserService::OnDenylistLoaded,
+                                base::Unretained(this)));
 }
 
 void SupervisedUserService::OnDenylistDownloadDone(
