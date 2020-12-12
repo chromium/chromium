@@ -6,6 +6,7 @@
 
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
@@ -100,6 +101,10 @@ constexpr gfx::ShadowValue kRegionAffordanceCircleShadow2(
     kRegionAffordanceCircleShadow2Blur,
     SkColorSetARGB(38, 0, 0, 0));
 
+// Values of the focus ring draw around the region or affordance circles.
+constexpr int kFocusRingStrokeWidthDp = 2;
+constexpr int kFocusRingSpacingDp = 2;
+
 // When updating the capture region, request a repaint on the region and inset
 // such that the border, affordance circles and affordance circle shadows are
 // all repainted as well.
@@ -140,6 +145,11 @@ constexpr base::TimeDelta kCaptureBarOnReleaseOpacityChangeDuration =
 // hovering over the capture bar, drop the opacity to this value to make the
 // region easier to see.
 constexpr float kCaptureBarOverlapOpacity = 0.1;
+
+// If the user is using keyboard only and they are on the selecting region
+// phase, they can create default region which is centered and sized to this
+// value times the root window's width and height.
+constexpr float kRegionDefaultRatio = 0.12f;
 
 // Mouse cursor warping is disabled when the capture source is a custom region.
 // Sets the mouse warp status to |enable| and return the original value.
@@ -248,6 +258,21 @@ ui::mojom::CursorType GetCursorTypeForFineTunePosition(
     default:
       return ui::mojom::CursorType::kCell;
   }
+}
+
+int GetArrowKeyPressChange(bool is_shift_down) {
+  return is_shift_down ? capture_mode::kShiftArrowKeyboardRegionChangeDp
+                       : capture_mode::kArrowKeyboardRegionChangeDp;
+}
+
+// Clips |out_bounds| to fit |rect|. Similar to
+// gfx::Rect::AdjustToFit() but does not shift the output rect to maintain the
+// rect size.
+void ClipRectToFit(gfx::Rect* out_bounds, const gfx::Rect& rect) {
+  out_bounds->SetByBounds(std::max(rect.x(), out_bounds->x()),
+                          std::max(rect.y(), out_bounds->y()),
+                          std::min(rect.right(), out_bounds->right()),
+                          std::min(rect.bottom(), out_bounds->bottom()));
 }
 
 }  // namespace
@@ -521,17 +546,82 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
   if (event->type() != ui::ET_KEY_PRESSED)
     return;
 
-  if (event->key_code() == ui::VKEY_ESCAPE) {
-    event->StopPropagation();
-    controller_->Stop();  // |this| is destroyed here.
-    return;
-  }
+  ui::KeyboardCode key_code = event->key_code();
+  switch (key_code) {
+    case ui::VKEY_ESCAPE:
+      event->StopPropagation();
+      controller_->Stop();  // |this| is destroyed here.
+      return;
 
-  if (event->key_code() == ui::VKEY_RETURN) {
-    event->StopPropagation();
-    if (!IsInCountDownAnimation())
-      controller_->PerformCapture();  // |this| is destroyed here.
-    return;
+    case ui::VKEY_RETURN:
+      event->StopPropagation();
+      if (!IsInCountDownAnimation())
+        controller_->PerformCapture();  // |this| is destroyed here.
+      return;
+
+    case ui::VKEY_SPACE:
+      event->StopPropagation();
+      event->SetHandled();
+      if (controller_->source() == CaptureModeSource::kRegion)
+        SelectDefaultRegion();
+      return;
+
+    case ui::VKEY_TAB: {
+      // Eat tab events always to prevent application windows from getting them.
+      event->StopPropagation();
+      event->SetHandled();
+
+      if (!is_selecting_region_ &&
+          controller_->source() == CaptureModeSource::kRegion) {
+        // Update the position to the next one in |tabbing_order| and then
+        // schedule a paint to repaint the focus. |kNone| means nothing has
+        // keyboard focus, and arrow keys will have no effect.
+        // TODO(richui|sammiequon): Once the capture bar and button are
+        // focusable, create a class which handles tabbing for all of capture
+        // session.
+        static const std::vector<FineTunePosition> tabbing_order = {
+            FineTunePosition::kNone,        FineTunePosition::kCenter,
+            FineTunePosition::kTopLeft,     FineTunePosition::kTopCenter,
+            FineTunePosition::kTopRight,    FineTunePosition::kRightCenter,
+            FineTunePosition::kBottomRight, FineTunePosition::kBottomCenter,
+            FineTunePosition::kBottomLeft,  FineTunePosition::kLeftCenter};
+        auto it = std::find(tabbing_order.begin(), tabbing_order.end(),
+                            focused_fine_tune_position_);
+        DCHECK(it != tabbing_order.end());
+        int index = it - tabbing_order.begin();
+        const int array_size = int{tabbing_order.size()};
+        // Adding |array_size| ensures if |index| starts at 0 and decrements we
+        // wrap around and get n-1 as expected. For example, -1 % 5 returns -1,
+        // but what we want is 4.
+        index = ((index + array_size + (event->IsShiftDown() ? -1 : 1)) %
+                 array_size);
+        focused_fine_tune_position_ = tabbing_order[index];
+
+        RepaintRegion();
+      }
+      return;
+    }
+
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN: {
+      event->StopPropagation();
+      event->SetHandled();
+      UpdateRegionVertically(/*up=*/key_code == ui::VKEY_UP,
+                             event->IsShiftDown());
+      return;
+    }
+
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT: {
+      event->StopPropagation();
+      event->SetHandled();
+      UpdateRegionHorizontally(/*left=*/key_code == ui::VKEY_LEFT,
+                               event->IsShiftDown());
+      return;
+    }
+
+    default:
+      return;
   }
 }
 
@@ -674,11 +764,38 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   border_flags.setLooper(gfx::CreateShadowDrawLooper({kRegionOutlineShadow}));
   canvas->DrawRect(gfx::RectF(region), border_flags);
 
-  if (is_selecting_region_)
-    return;
+  // Draws the focus ring if the region or one of the affordance circles
+  // currently has focus.
+  auto maybe_draw_focus_ring = [&canvas, &region](FineTunePosition position) {
+    if (position == FineTunePosition::kNone)
+      return;
 
-  if (capture_mode_util::ShouldHideDragAffordance(fine_tune_position_))
+    cc::PaintFlags focus_ring_flags;
+    focus_ring_flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kFocusRingColor));
+    focus_ring_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    focus_ring_flags.setStrokeWidth(kFocusRingStrokeWidthDp);
+
+    if (position == FineTunePosition::kCenter) {
+      gfx::RectF focus_rect(region);
+      focus_rect.Inset(
+          gfx::InsetsF(-kFocusRingSpacingDp - kFocusRingStrokeWidthDp / 2));
+      canvas->DrawRect(focus_rect, focus_ring_flags);
+      return;
+    }
+
+    const int radius = kAffordanceCircleRadiusDp + kFocusRingSpacingDp +
+                       kFocusRingStrokeWidthDp / 2;
+    canvas->DrawCircle(
+        capture_mode_util::GetLocationForFineTunePosition(region, position),
+        radius, focus_ring_flags);
+  };
+
+  if (is_selecting_region_ ||
+      capture_mode_util::ShouldHideDragAffordance(fine_tune_position_)) {
+    maybe_draw_focus_ring(focused_fine_tune_position_);
     return;
+  }
 
   // Draw the drag affordance circles.
   cc::PaintFlags circle_flags;
@@ -700,6 +817,8 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   draw_circle(region.bottom_center());
   draw_circle(region.bottom_left());
   draw_circle(region.left_center());
+
+  maybe_draw_focus_ring(focused_fine_tune_position_);
 }
 
 void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
@@ -884,11 +1003,8 @@ void CaptureModeSession::OnLocatedEventPressed(
 
   // In order to hide the drag affordance circles on click, we need to repaint
   // the capture region.
-  if (capture_mode_util::ShouldHideDragAffordance(fine_tune_position_)) {
-    gfx::Rect damage_region = controller_->user_capture_region();
-    damage_region.Inset(gfx::Insets(-kDamageInsetDp));
-    layer()->SchedulePaint(damage_region);
-  }
+  if (capture_mode_util::ShouldHideDragAffordance(fine_tune_position_))
+    RepaintRegion();
 
   if (fine_tune_position_ != FineTunePosition::kCenter &&
       fine_tune_position_ != FineTunePosition::kNone) {
@@ -958,9 +1074,7 @@ void CaptureModeSession::OnLocatedEventReleased(
   EndSelection(is_event_on_capture_bar, region_intersects_capture_bar);
 
   // Do a repaint to show the affordance circles.
-  gfx::Rect damage_region = controller_->user_capture_region();
-  damage_region.Inset(gfx::Insets(-kDamageInsetDp));
-  layer()->SchedulePaint(damage_region);
+  RepaintRegion();
 
   if (!is_selecting_region_)
     return;
@@ -1428,6 +1542,101 @@ void CaptureModeSession::EndSelection(bool is_event_on_capture_bar,
 
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   CloseMagnifierGlass();
+}
+
+void CaptureModeSession::RepaintRegion() {
+  gfx::Rect damage_region = controller_->user_capture_region();
+  damage_region.Inset(gfx::Insets(-kDamageInsetDp));
+  layer()->SchedulePaint(damage_region);
+}
+
+void CaptureModeSession::SelectDefaultRegion() {
+  is_selecting_region_ = false;
+
+  // Default is centered in the root, and its width and height are
+  // |kRegionDefaultRatio| size of the root.
+  gfx::Rect default_capture_region = current_root_->bounds();
+  default_capture_region.ClampToCenteredSize(gfx::ScaleToCeiledSize(
+      default_capture_region.size(), kRegionDefaultRatio));
+  UpdateCaptureRegion(default_capture_region, /*is_resizing=*/false);
+}
+
+void CaptureModeSession::UpdateRegionHorizontally(bool left,
+                                                  bool is_shift_down) {
+  if (focused_fine_tune_position_ == FineTunePosition::kNone ||
+      focused_fine_tune_position_ == FineTunePosition::kTopCenter ||
+      focused_fine_tune_position_ == FineTunePosition::kBottomCenter) {
+    return;
+  }
+
+  const int change = GetArrowKeyPressChange(is_shift_down);
+  gfx::Rect new_capture_region = controller_->user_capture_region();
+
+  if (focused_fine_tune_position_ == FineTunePosition::kCenter) {
+    new_capture_region.Offset(left ? -change : change, 0);
+    new_capture_region.AdjustToFit(current_root_->bounds());
+  } else {
+    const gfx::Point location =
+        capture_mode_util::GetLocationForFineTunePosition(
+            new_capture_region, focused_fine_tune_position_);
+    // If an affordance circle on the left side of the capture region is
+    // focused, left presses will enlarge the existing region and right presses
+    // will shrink the existing region. If it is on the right side, right
+    // presses will enlarge and left presses will shrink.
+    const bool affordance_on_left = location.x() == new_capture_region.x();
+    const bool shrink = affordance_on_left ^ left;
+
+    if (shrink && new_capture_region.width() < change)
+      return;
+
+    const int inset = shrink ? change : -change;
+    gfx::Insets insets(0, affordance_on_left ? inset : 0, 0,
+                       affordance_on_left ? 0 : inset);
+    new_capture_region.Inset(insets);
+    ClipRectToFit(&new_capture_region, current_root_->bounds());
+  }
+
+  UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false);
+}
+
+void CaptureModeSession::UpdateRegionVertically(bool up, bool is_shift_down) {
+  if (focused_fine_tune_position_ == FineTunePosition::kNone ||
+      focused_fine_tune_position_ == FineTunePosition::kLeftCenter ||
+      focused_fine_tune_position_ == FineTunePosition::kRightCenter) {
+    return;
+  }
+
+  const int change = GetArrowKeyPressChange(is_shift_down);
+  gfx::Rect new_capture_region = controller_->user_capture_region();
+
+  // TODO(sammiequon): The below is similar to UpdateRegionHorizontally() except
+  // we are acting on the y-axis. Investigate if we can remove the duplication.
+  if (focused_fine_tune_position_ == FineTunePosition::kCenter) {
+    new_capture_region.Offset(0, up ? -change : change);
+    new_capture_region.AdjustToFit(current_root_->bounds());
+  } else {
+    const gfx::Point location =
+        capture_mode_util::GetLocationForFineTunePosition(
+            new_capture_region, focused_fine_tune_position_);
+    // If an affordance circle on the top side of the capture region is
+    // focused, up presses will enlarge the existing region and down presses
+    // will shrink the existing region. If it is on the bottom side, down
+    // presses will enlarge and up presses will shrink.
+    const bool affordance_on_top = location.y() == new_capture_region.y();
+    const bool shrink = affordance_on_top ^ up;
+
+    if (shrink && new_capture_region.height() < change)
+      return;
+
+    const int inset = shrink ? change : -change;
+    gfx::Insets insets(affordance_on_top ? inset : 0, 0,
+                       affordance_on_top ? 0 : inset, 0);
+    new_capture_region.Inset(insets);
+
+    ClipRectToFit(&new_capture_region, current_root_->bounds());
+  }
+
+  UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false);
 }
 
 }  // namespace ash

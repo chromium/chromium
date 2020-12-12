@@ -6,6 +6,7 @@
 
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -71,9 +72,11 @@ void ClickOnView(const views::View* view,
 }
 
 void SendKey(ui::KeyboardCode key_code,
-             ui::test::EventGenerator* event_generator) {
-  event_generator->PressKey(key_code, /*flags=*/0);
-  event_generator->ReleaseKey(key_code, /*flags=*/0);
+             ui::test::EventGenerator* event_generator,
+             bool shift_down = false) {
+  int flags = shift_down ? ui::EF_SHIFT_DOWN : 0;
+  event_generator->PressKey(key_code, flags);
+  event_generator->ReleaseKey(key_code, flags);
 }
 
 // Moves the mouse and updates the cursor's display manually to imitate what a
@@ -1943,6 +1946,68 @@ TEST_F(CaptureModeTest, ReenterOnSmallerDisplay) {
   MoveMouseToAndUpdateCursorDisplay(gfx::Point(1500, 300), event_generator);
   StartImageRegionCapture();
   EXPECT_EQ(gfx::Rect(600, 400), controller->user_capture_region());
+}
+
+// Tests that functionality to create and adjust a region with keyboard
+// shortcuts works as intended.
+TEST_F(CaptureModeTest, SelectRegionWithKeyboard) {
+  auto* controller = StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+  ASSERT_TRUE(controller->user_capture_region().IsEmpty());
+
+  // Test that hitting space will create a default region.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  gfx::Rect capture_region = controller->user_capture_region();
+  EXPECT_FALSE(capture_region.IsEmpty());
+
+  // Test that hitting an arrow key will do nothing as nothing is focused
+  // initially.
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(capture_region, controller->user_capture_region());
+
+  const int arrow_shift = capture_mode::kArrowKeyboardRegionChangeDp;
+
+  // Hit tab so that the whole region is focused. Arrow keys should shift the
+  // whole region.
+  SendKey(ui::VKEY_TAB, event_generator);
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(capture_region.origin() + gfx::Vector2d(arrow_shift, 0),
+            controller->user_capture_region().origin());
+  EXPECT_EQ(capture_region.size(), controller->user_capture_region().size());
+  SendKey(ui::VKEY_RIGHT, event_generator, /*shift_down=*/true);
+  EXPECT_EQ(
+      capture_region.origin() +
+          gfx::Vector2d(
+              arrow_shift + capture_mode::kShiftArrowKeyboardRegionChangeDp, 0),
+      controller->user_capture_region().origin());
+  EXPECT_EQ(capture_region.size(), controller->user_capture_region().size());
+
+  // Hit tab so that the top left affordance circle is focused. Left and up keys
+  // should enlarge the region, right and bottom keys should shrink the region.
+  capture_region = controller->user_capture_region();
+  SendKey(ui::VKEY_TAB, event_generator);
+  SendKey(ui::VKEY_LEFT, event_generator);
+  SendKey(ui::VKEY_UP, event_generator);
+  EXPECT_EQ(capture_region.size() + gfx::Size(arrow_shift, arrow_shift),
+            controller->user_capture_region().size());
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  SendKey(ui::VKEY_DOWN, event_generator);
+  EXPECT_EQ(capture_region.size(), controller->user_capture_region().size());
+
+  // Tab until we focus the bottom right affordance circle. Left and up keys
+  // should shrink the region, right and bottom keys should enlarge the region.
+  SendKey(ui::VKEY_TAB, event_generator);
+  SendKey(ui::VKEY_TAB, event_generator);
+  SendKey(ui::VKEY_TAB, event_generator);
+  SendKey(ui::VKEY_TAB, event_generator);
+
+  SendKey(ui::VKEY_LEFT, event_generator);
+  SendKey(ui::VKEY_UP, event_generator);
+  EXPECT_EQ(capture_region.size() - gfx::Size(arrow_shift, arrow_shift),
+            controller->user_capture_region().size());
+  SendKey(ui::VKEY_RIGHT, event_generator);
+  SendKey(ui::VKEY_DOWN, event_generator);
+  EXPECT_EQ(capture_region.size(), controller->user_capture_region().size());
 }
 
 // A test class that uses a mock time task environment.

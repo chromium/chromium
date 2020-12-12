@@ -27,6 +27,10 @@ constexpr SkColor kInkDropBaseColor = SK_ColorWHITE;
 // CaptureModeBarView.
 constexpr int kBetweenChildSpacing = 16;
 
+// The amount the capture region changes when using the arrow keys to adjust it.
+constexpr int kArrowKeyboardRegionChangeDp = 1;
+constexpr int kShiftArrowKeyboardRegionChangeDp = 10;
+
 }  // namespace capture_mode
 
 }  // namespace ash

@@ -217,6 +217,19 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void EndSelection(bool is_event_on_capture_bar,
                     bool region_intersects_capture_bar);
 
+  // Schedules a paint on the region and enough inset around it so that the
+  // shadow, affordance circles, etc. are all repainted.
+  void RepaintRegion();
+
+  // Selects a default region that is centered and whose size is a ratio of the
+  // root window bounds. Called when the space key is pressed.
+  void SelectDefaultRegion();
+
+  // Updates the region either horizontally or vertically. Called when the arrow
+  // keys are pressed.
+  void UpdateRegionHorizontally(bool left, bool is_shift_down);
+  void UpdateRegionVertically(bool up, bool is_shift_down);
+
   CaptureModeController* const controller_;
 
   // The current root window on which the capture session is active, which may
@@ -286,6 +299,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // True if at any point during the lifetime of |this|, the capture source
   // changed. Used for metrics collection.
   bool capture_source_changed_ = false;
+
+  // The current focused fine tune position. This changes as user tabs while a
+  // in capture region mode.
+  FineTunePosition focused_fine_tune_position_ = FineTunePosition::kNone;
 };
 
 }  // namespace ash
