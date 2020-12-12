@@ -46,10 +46,6 @@ KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
   }
 
   CertDbInitializerImpl* result = new CertDbInitializerImpl(profile);
-  // TODO(crbug.com/1145946): Enable certificate database initialization when
-  // the policy stack is ready (expected to happen before Feb 2021).
-  if (/* DISABLES CODE */ (false)) {
-    result->Start(IdentityManagerFactory::GetForProfile(profile));
-  }
+  result->Start(IdentityManagerFactory::GetForProfile(profile));
   return result;
 }
