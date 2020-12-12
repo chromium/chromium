@@ -11074,7 +11074,7 @@ namespace CSS
     getter onwheel
     getter opener
     getter origin
-    getter originIsolated
+    getter originAgentCluster
     getter originPolicyIds
     getter outerHeight
     getter outerWidth

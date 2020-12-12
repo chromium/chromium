@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 963 tests; 954 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 963 tests; 952 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -205,7 +205,7 @@ PASS Window interface: attribute parent
 PASS Window interface: attribute frameElement
 PASS Window interface: operation open(optional USVString, optional DOMString, optional DOMString)
 PASS Window interface: attribute navigator
-PASS Window interface: attribute originIsolated
+FAIL Window interface: attribute originIsolated assert_own_property: The global object must have a property "originIsolated" expected property "originIsolated" missing
 PASS Window interface: operation alert()
 PASS Window interface: operation alert(DOMString)
 PASS Window interface: operation confirm(optional DOMString)
@@ -350,7 +350,7 @@ PASS Window interface: window must inherit property "frameElement" with the prop
 PASS Window interface: window must inherit property "open(optional USVString, optional DOMString, optional DOMString)" with the proper type
 PASS Window interface: calling open(optional USVString, optional DOMString, optional DOMString) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "navigator" with the proper type
-PASS Window interface: window must inherit property "originIsolated" with the proper type
+FAIL Window interface: window must inherit property "originIsolated" with the proper type assert_own_property: expected property "originIsolated" missing
 PASS Window interface: window must inherit property "alert()" with the proper type
 PASS Window interface: window must inherit property "alert(DOMString)" with the proper type
 PASS Window interface: calling alert(DOMString) on window with too few arguments must throw TypeError

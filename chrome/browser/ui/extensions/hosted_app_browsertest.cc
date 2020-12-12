@@ -1863,7 +1863,7 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
           const std::string headers = base::StringPrintf(
               "HTTP/1.1 200 OK\n%s"
               "Content-Type: text/html\n",
-              (isolate ? "Origin-Isolation: ?1\n" : ""));
+              (isolate ? "Origin-Agent-Cluster: ?1\n" : ""));
           if (params->url_request.url.host() == main_origin_url.host()) {
             const std::string body = base::StringPrintf(
                 "<html><body>\n"

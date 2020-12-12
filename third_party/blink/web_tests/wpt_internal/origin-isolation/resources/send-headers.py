@@ -1,5 +1,5 @@
 def main(request, response):
-    """Send a response with the Origin-Isolation and Origin-Trial headers, in
+    """Send a response with the Origin-Agent-Cluster and Origin-Trial headers, in
     the order specified by the "headerOrder" query parameter, which can be
     either "oiot" or "otoi" (see ../README.md).
 
@@ -13,9 +13,9 @@ def main(request, response):
     header_order = request.GET.first(b"headerOrder")
     if header_order == b"otoi":
         response.headers.set(b"Origin-Trial", token)
-        response.headers.set(b"Origin-Isolation", b"?1")
+        response.headers.set(b"Origin-Agent-Cluster", b"?1")
     elif header_order == b"oiot":
-        response.headers.set(b"Origin-Isolation", b"?1")
+        response.headers.set(b"Origin-Agent-Cluster", b"?1")
         response.headers.set(b"Origin-Trial", token)
     else:
         raise AssertionError("Invalid headerOrder")

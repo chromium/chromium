@@ -65,7 +65,7 @@ class OriginIsolationBrowserTest : public InProcessBrowserTest {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
       response->set_content_type("text/html");
-      response->AddCustomHeader("Origin-Isolation", "?1");
+      response->AddCustomHeader("Origin-Agent-Cluster", "?1");
       response->set_content("isolate me!");
       return std::move(response);
     }
