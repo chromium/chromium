@@ -64,10 +64,12 @@ const BrowserAccessibility* GetTextContainerForPlainTextField(
   // ---- Generic container  (optional, only occurs in some controls)
   // ------ Static text   <-- (optional, does not exist if field is empty)
   // -------- Inline text box children (can be multiple)
+  // ------ Line Break (optional,  a placeholder break element if the text data
+  //                    ends with '\n' or '\r')
   // This method will return the lowest generic container.
   const BrowserAccessibility* child = text_field.InternalGetFirstChild();
   DCHECK_EQ(child->GetRole(), ax::mojom::Role::kGenericContainer);
-  DCHECK_LE(child->InternalChildCount(), 1u);
+  DCHECK_LE(child->InternalChildCount(), 2u);
   if (child->InternalChildCount() == 1) {
     const BrowserAccessibility* grand_child = child->InternalGetFirstChild();
     if (grand_child->GetRole() == ax::mojom::Role::kGenericContainer) {

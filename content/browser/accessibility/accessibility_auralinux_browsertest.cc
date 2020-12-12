@@ -2157,4 +2157,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   }
 }
 
+// Tests if it does not DCHECK when textarea has a placeholder break element.
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestGetTextContainerFromTextArea) {
+  std::string content = std::string("<textarea style=\"height:100px;\">hello") +
+                        std::string("\n") + std::string("</textarea>");
+  LoadInitialAccessibilityTreeFromHtml(content);
+
+  AtkText* atk_text = FindNode(ATK_ROLE_ENTRY);
+  AtkTextRectangle atk_rect;
+  // atk_text_get_range_extents() calls GetTextContainerForPlainTextField() and
+  // DCHECK on checking children counts.
+  atk_text_get_range_extents(atk_text, 0, 7, AtkCoordType::ATK_XY_SCREEN,
+                             &atk_rect);
+  g_object_unref(atk_text);
+}
+
 }  // namespace content
