@@ -280,7 +280,6 @@ source_set("ios_web_navigation_unittests") {
     "navigation/nscoder_util_unittest.mm",
     "navigation/session_storage_builder_unittest.mm",
     "navigation/wk_back_forward_list_item_holder_unittest.mm",
-    "navigation/wk_based_navigation_manager_impl_unittest.mm",
     "navigation/wk_navigation_action_policy_util_unittest.mm",
     "navigation/wk_navigation_action_util_unittest.mm",
     "navigation/wk_navigation_util_unittest.mm",
