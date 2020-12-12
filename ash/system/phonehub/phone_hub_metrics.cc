@@ -73,5 +73,10 @@ void LogNotificationCount(int count) {
   base::UmaHistogramCounts100("Ash.PhoneHub.NotificationCount", count);
 }
 
+void LogNotificationInteraction(NotificationInteraction interaction) {
+  base::UmaHistogramEnumeration("PhoneHub.NotificationInteraction",
+                                interaction);
+}
+
 }  // namespace phone_hub_metrics
 }  // namespace ash

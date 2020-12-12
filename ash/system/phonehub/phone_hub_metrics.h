@@ -42,6 +42,16 @@ enum class QuickAction {
   kMaxValue = kToggleLocatePhoneOff
 };
 
+// Enumeration of possible interactions with a PhoneHub notification. Keep in
+// sync with corresponding enum in tools/metrics/histograms/enums.xml. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class NotificationInteraction {
+  kInlineReply = 0,
+  kDismiss = 1,
+  kMaxValue = kDismiss,
+};
+
 // Logs an |event| occurring for the given |interstitial_screen|.
 void LogInterstitialScreenEvent(Screen screen, InterstitialScreenEvent event);
 
@@ -65,6 +75,9 @@ void LogQuickActionClick(QuickAction quick_action);
 
 // Logs the number of PhoneHub notifications after one is added or removed.
 void LogNotificationCount(int count);
+
+// Logs a given |interaction| with a PhoneHub notification.
+void LogNotificationInteraction(NotificationInteraction interaction);
 
 }  // namespace phone_hub_metrics
 }  // namespace ash

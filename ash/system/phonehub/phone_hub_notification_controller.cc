@@ -34,6 +34,8 @@
 
 namespace ash {
 
+using phone_hub_metrics::NotificationInteraction;
+
 namespace {
 const char kNotifierId[] = "chrome://phonehub";
 const char kNotifierIdSeparator[] = "-";
@@ -323,6 +325,8 @@ void PhoneHubNotificationController::DismissNotification(
     int64_t notification_id) {
   CHECK(manager_);
   manager_->DismissNotification(notification_id);
+  phone_hub_metrics::LogNotificationInteraction(
+      NotificationInteraction::kDismiss);
 }
 
 void PhoneHubNotificationController::SendInlineReply(
@@ -330,6 +334,8 @@ void PhoneHubNotificationController::SendInlineReply(
     const base::string16& inline_reply_text) {
   CHECK(manager_);
   manager_->SendInlineReply(notification_id, inline_reply_text);
+  phone_hub_metrics::LogNotificationInteraction(
+      NotificationInteraction::kInlineReply);
 }
 
 void PhoneHubNotificationController::LogNotificationCount() {

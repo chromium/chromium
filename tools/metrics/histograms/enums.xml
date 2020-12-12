@@ -58323,6 +58323,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="14" label="Show notification access setup response"/>
 </enum>
 
+<enum name="PhoneHubNotificationInteraction">
+  <int value="0" label="User sent an inline reply from notification"/>
+  <int value="1" label="User dismissed notification"/>
+</enum>
+
 <enum name="PhoneHubQuickAction">
   <int value="0" label="Toggle Hotspot On"/>
   <int value="1" label="Toggle Hotspot Off"/>
