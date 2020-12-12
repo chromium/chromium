@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/mac/net/network.h"
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
@@ -193,6 +194,7 @@ using DownloadToFileCompleteCallback =
 
 @implementation CRUUpdaterNetworkDownloadDelegate {
   base::FilePath _filePath;
+  bool _moveTempFileSuccessful;
   DownloadToFileCompleteCallback _downloadToFileCompleteCallback;
 }
 
@@ -207,6 +209,7 @@ using DownloadToFileCompleteCallback =
           initWithResponseStartedCallback:std::move(responseStartedCallback)
                          progressCallback:progressCallback]) {
     _filePath = filePath;
+    _moveTempFileSuccessful = false;
     _downloadToFileCompleteCallback = std::move(downloadToFileCompleteCallback);
   }
   return self;
@@ -230,12 +233,11 @@ using DownloadToFileCompleteCallback =
 
   const base::FilePath tempPath =
       base::mac::NSStringToFilePath([location path]);
-  base::File::Error fileError;
-  if (!base::ReplaceFile(tempPath, _filePath, &fileError)) {
-    DLOG(ERROR)
+  _moveTempFileSuccessful = base::Move(tempPath, _filePath);
+  if (!_moveTempFileSuccessful) {
+    DPLOG(ERROR)
         << "Failed to move the downloaded file from the temporary location: "
-        << tempPath << "to: " << _filePath
-        << " Error: " << base::File::ErrorToString(fileError);
+        << tempPath << " to: " << _filePath;
   }
 }
 
@@ -246,18 +248,19 @@ using DownloadToFileCompleteCallback =
     didCompleteWithError:(NSError*)error {
   [super URLSession:session task:task didCompleteWithError:error];
 
+  // TODO(crbug.com/1157996): Add handling for NSError.
+
   NSHTTPURLResponse* response = (NSHTTPURLResponse*)task.response;
-  NSURL* destination = base::mac::FilePathToNSURL(_filePath);
-  NSString* filePath = [destination path];
-  NSDictionary<NSFileAttributeKey, id>* attributes =
-      [[NSFileManager defaultManager] attributesOfItemAtPath:filePath
-                                                       error:nil];
-  NSNumber* fileSizeAttribute = attributes[NSFileSize];
-  int64_t fileSize = [fileSizeAttribute integerValue];
-  NSInteger statusCode = response.statusCode == 200 ? 0 : response.statusCode;
+  NSInteger result = response.statusCode == 200 ? 0 : response.statusCode;
+
+  if (!_moveTempFileSuccessful) {
+    DLOG(ERROR) << "File not moved. Original status code: "
+                << response.statusCode;
+    result = updater::kErrorFailedToMoveDownloadedFile;
+  }
   _callbackRunner->PostTask(
       FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
-                                statusCode, fileSize));
+                                result, [task countOfBytesReceived]));
 }
 
 @end

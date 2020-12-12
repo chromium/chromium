@@ -207,6 +207,9 @@ constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 constexpr int kUninstallPingReasonUninstalled = 0;
 constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 
+// The file downloaded to a temporary location could not be moved.
+constexpr int kErrorFailedToMoveDownloadedFile = 5;
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_CONSTANTS_H_

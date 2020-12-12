@@ -26,6 +26,7 @@ source_set("network_fetcher_sources") {
 
   deps = [
     "//base",
+    "//chrome/updater:base",
     "//components/crash/core/common:crash_key_lib",
     "//components/update_client",
     "//net",
