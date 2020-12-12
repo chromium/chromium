@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/core/browser/translate_client.h"
@@ -28,7 +28,7 @@ namespace weblayer {
 
 class TranslateClientImpl
     : public translate::TranslateClient,
-      public translate::ContentTranslateDriver::Observer,
+      public translate::TranslateDriver::LanguageDetectionObserver,
       public content::WebContentsObserver,
       public content::WebContentsUserData<TranslateClientImpl> {
  public:
@@ -66,7 +66,7 @@ class TranslateClientImpl
   void ShowReportLanguageDetectionErrorUI(const GURL& report_url) override;
   bool IsAutofillAssistantRunning() const override;
 
-  // ContentTranslateDriver::Observer implementation.
+  // TranslateDriver::LanguageDetectionObserver implementation.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
@@ -87,9 +87,12 @@ class TranslateClientImpl
   // Whether to trigger a manual translation when ready.
   bool manual_translate_on_ready_ = false;
 
-  ScopedObserver<translate::ContentTranslateDriver,
-                 translate::ContentTranslateDriver::Observer>
-      observer_{this};
+  base::ScopedObservation<
+      translate::TranslateDriver,
+      translate::TranslateDriver::LanguageDetectionObserver,
+      &translate::TranslateDriver::AddLanguageDetectionObserver,
+      &translate::TranslateDriver::RemoveLanguageDetectionObserver>
+      observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

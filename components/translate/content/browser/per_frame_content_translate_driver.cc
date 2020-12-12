@@ -363,7 +363,7 @@ void PerFrameContentTranslateDriver::OnPageLanguageDetermined(
     translate_manager()->InitiateTranslation(details.adopted_language);
   }
 
-  for (auto& observer : observer_list())
+  for (auto& observer : language_detection_observers())
     observer.OnLanguageDetermined(details);
 }
 

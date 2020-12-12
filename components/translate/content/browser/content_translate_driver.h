@@ -40,8 +40,7 @@ class ContentTranslateDriver : public TranslateDriver,
                                public translate::mojom::ContentTranslateDriver,
                                public content::WebContentsObserver {
  public:
-  // The observer for the ContentTranslateDriver.
-  class Observer {
+  class TranslationObserver : public base::CheckedObserver {
    public:
     // Handles when the value of IsPageTranslated is changed.
     virtual void OnIsPageTranslatedChanged(content::WebContents* source) {}
@@ -49,18 +48,11 @@ class ContentTranslateDriver : public TranslateDriver,
     // Handles when the value of translate_enabled is changed.
     virtual void OnTranslateEnabledChanged(content::WebContents* source) {}
 
-    // Called when the page language has been determined.
-    virtual void OnLanguageDetermined(
-        const translate::LanguageDetectionDetails& details) {}
-
     // Called when the page has been translated.
     virtual void OnPageTranslated(const std::string& original_lang,
                                   const std::string& translated_lang,
                                   translate::TranslateErrors::Type error_type) {
     }
-
-   protected:
-    virtual ~Observer() {}
   };
 
   ContentTranslateDriver(
@@ -68,9 +60,9 @@ class ContentTranslateDriver : public TranslateDriver,
       language::UrlLanguageHistogram* url_language_histogram);
   ~ContentTranslateDriver() override;
 
-  // Adds or Removes observers.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  // Adds or removes observers.
+  void AddTranslationObserver(TranslationObserver* observer);
+  void RemoveTranslationObserver(TranslationObserver* observer);
 
   // Number of attempts before waiting for a page to be fully reloaded.
   void set_translate_max_reload_attempts(int attempts) {
@@ -123,8 +115,9 @@ class ContentTranslateDriver : public TranslateDriver,
       bool page_level_translation_critiera_met) override;
 
  protected:
-  const base::ObserverList<Observer, true>::Unchecked& observer_list() const {
-    return observer_list_;
+  const base::ObserverList<TranslationObserver, true>& translation_observers()
+      const {
+    return translation_observers_;
   }
 
   TranslateManager* translate_manager() const { return translate_manager_; }
@@ -143,7 +136,7 @@ class ContentTranslateDriver : public TranslateDriver,
 
   TranslateManager* translate_manager_;
 
-  base::ObserverList<Observer, true>::Unchecked observer_list_;
+  base::ObserverList<TranslationObserver, true> translation_observers_;
 
   // Max number of attempts before checking if a page has been reloaded.
   int max_reload_check_attempts_;

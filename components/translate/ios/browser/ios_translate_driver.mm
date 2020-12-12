@@ -98,6 +98,9 @@ void IOSTranslateDriver::OnLanguageDetermined(
 
   if (web_state_)
     translate_manager_->InitiateTranslation(details.adopted_language);
+
+  for (auto& observer : language_detection_observers())
+    observer.OnLanguageDetermined(details);
 }
 
 void IOSTranslateDriver::IOSLanguageDetectionTabHelperWasDestroyed(

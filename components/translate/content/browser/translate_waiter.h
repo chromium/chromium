@@ -11,13 +11,15 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "components/translate/content/browser/content_translate_driver.h"
+#include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace translate {
 
 // A helper class that allows test to block until certain translate events have
-// been received from a ContentTranslateDriver.
-class TranslateWaiter : ContentTranslateDriver::Observer {
+// been received from a TranslateDriver.
+class TranslateWaiter : TranslateDriver::LanguageDetectionObserver,
+                        ContentTranslateDriver::TranslationObserver {
  public:
   enum class WaitEvent {
     kLanguageDetermined,
@@ -33,8 +35,10 @@ class TranslateWaiter : ContentTranslateDriver::Observer {
   // returns immediately if one has already been observed.
   void Wait();
 
-  // ContentTranslateDriver::Observer:
+  // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(const LanguageDetectionDetails& details) override;
+
+  // ContentTranslateDriver::TranslationObserver:
   void OnPageTranslated(const std::string& original_lang,
                         const std::string& translated_lang,
                         TranslateErrors::Type error_type) override;
@@ -42,9 +46,16 @@ class TranslateWaiter : ContentTranslateDriver::Observer {
 
  private:
   WaitEvent wait_event_;
+  base::ScopedObservation<TranslateDriver,
+                          TranslateDriver::LanguageDetectionObserver,
+                          &TranslateDriver::AddLanguageDetectionObserver,
+                          &TranslateDriver::RemoveLanguageDetectionObserver>
+      scoped_language_detection_observation_{this};
   base::ScopedObservation<ContentTranslateDriver,
-                          ContentTranslateDriver::Observer>
-      scoped_observation_{this};
+                          ContentTranslateDriver::TranslationObserver,
+                          &ContentTranslateDriver::AddTranslationObserver,
+                          &ContentTranslateDriver::RemoveTranslationObserver>
+      scoped_translation_observation_{this};
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(TranslateWaiter);

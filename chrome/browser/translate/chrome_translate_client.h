@@ -42,7 +42,7 @@ enum class ShowTranslateBubbleResult;
 
 class ChromeTranslateClient
     : public translate::TranslateClient,
-      public translate::ContentTranslateDriver::Observer,
+      public translate::TranslateDriver::LanguageDetectionObserver,
       public content::WebContentsObserver,
       public content::WebContentsUserData<ChromeTranslateClient>,
       public autofill_assistant::RuntimeObserver {
@@ -108,7 +108,7 @@ class ChromeTranslateClient
   void ShowReportLanguageDetectionErrorUI(const GURL& report_url) override;
   bool IsAutofillAssistantRunning() const override;
 
-  // ContentTranslateDriver::Observer implementation.
+  // TranslateDriver::LanguageDetectionObserver implementation.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 

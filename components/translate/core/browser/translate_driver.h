@@ -6,17 +6,39 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_DRIVER_H_
 
 #include <string>
+
+#include "base/observer_list.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
 namespace translate {
 
+struct LanguageDetectionDetails;
+
 // Interface that allows Translate core code to interact with its driver (i.e.,
 // obtain information from it and give information to it). A concrete
 // implementation must be provided by the driver.
 class TranslateDriver {
  public:
+  class LanguageDetectionObserver : public base::CheckedObserver {
+   public:
+    // Called when the page language has been detected.
+    virtual void OnLanguageDetermined(
+        const translate::LanguageDetectionDetails& details) {}
+  };
+
+  TranslateDriver();
+  TranslateDriver(TranslateDriver&&) = delete;
+  TranslateDriver& operator=(TranslateDriver&&) = delete;
+  TranslateDriver(const TranslateDriver&) = delete;
+  TranslateDriver& operator=(const TranslateDriver&) = delete;
+  virtual ~TranslateDriver();
+
+  // Adds or removes observers.
+  void AddLanguageDetectionObserver(LanguageDetectionObserver* observer);
+  void RemoveLanguageDetectionObserver(LanguageDetectionObserver* observer);
+
   // Returns true if the current page was navigated through a link.
   virtual bool IsLinkNavigation() = 0;
 
@@ -56,6 +78,16 @@ class TranslateDriver {
 
   // Opens |url| in a new tab.
   virtual void OpenUrlInNewTab(const GURL& url) = 0;
+
+ protected:
+  const base::ObserverList<LanguageDetectionObserver, true>&
+  language_detection_observers() const {
+    return language_detection_observers_;
+  }
+
+ private:
+  base::ObserverList<LanguageDetectionObserver, true>
+      language_detection_observers_;
 };
 
 }  // namespace translate

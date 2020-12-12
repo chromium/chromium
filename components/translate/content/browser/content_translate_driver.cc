@@ -67,14 +67,16 @@ ContentTranslateDriver::ContentTranslateDriver(
   DCHECK(navigation_controller_);
 }
 
-ContentTranslateDriver::~ContentTranslateDriver() {}
+ContentTranslateDriver::~ContentTranslateDriver() = default;
 
-void ContentTranslateDriver::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
+void ContentTranslateDriver::AddTranslationObserver(
+    TranslationObserver* observer) {
+  translation_observers_.AddObserver(observer);
 }
 
-void ContentTranslateDriver::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
+void ContentTranslateDriver::RemoveTranslationObserver(
+    TranslationObserver* observer) {
+  translation_observers_.RemoveObserver(observer);
 }
 
 void ContentTranslateDriver::InitiateTranslation(const std::string& page_lang,
@@ -114,13 +116,13 @@ bool ContentTranslateDriver::IsLinkNavigation() {
 
 void ContentTranslateDriver::OnTranslateEnabledChanged() {
   content::WebContents* web_contents = navigation_controller_->GetWebContents();
-  for (auto& observer : observer_list_)
+  for (auto& observer : translation_observers_)
     observer.OnTranslateEnabledChanged(web_contents);
 }
 
 void ContentTranslateDriver::OnIsPageTranslatedChanged() {
   content::WebContents* web_contents = navigation_controller_->GetWebContents();
-  for (auto& observer : observer_list_)
+  for (auto& observer : translation_observers_)
     observer.OnIsPageTranslatedChanged(web_contents);
 }
 
@@ -315,7 +317,7 @@ void ContentTranslateDriver::RegisterPage(
       SetPageLanguageInNavigation(details.adopted_language, entry);
   }
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : language_detection_observers())
     observer.OnLanguageDetermined(details);
 }
 
@@ -334,7 +336,7 @@ void ContentTranslateDriver::OnPageTranslated(
 
   translate_manager_->PageTranslated(
       original_lang, translated_lang, error_type);
-  for (auto& observer : observer_list_)
+  for (auto& observer : translation_observers_)
     observer.OnPageTranslated(original_lang, translated_lang, error_type);
 }
 

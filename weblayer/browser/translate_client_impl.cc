@@ -59,7 +59,7 @@ TranslateClientImpl::TranslateClientImpl(content::WebContents* web_contents)
           TranslateRankerFactory::GetForBrowserContext(
               web_contents->GetBrowserContext()),
           /*language_model=*/nullptr)) {
-  observer_.Add(&translate_driver_);
+  observation_.Observe(&translate_driver_);
   translate_driver_.set_translate_manager(translate_manager_.get());
 }
 

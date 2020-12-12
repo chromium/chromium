@@ -9,7 +9,8 @@ namespace translate {
 TranslateWaiter::TranslateWaiter(ContentTranslateDriver* translate_driver,
                                  WaitEvent wait_event)
     : wait_event_(wait_event) {
-  scoped_observation_.Observe(translate_driver);
+  scoped_translation_observation_.Observe(translate_driver);
+  scoped_language_detection_observation_.Observe(translate_driver);
 }
 
 TranslateWaiter::~TranslateWaiter() = default;
@@ -18,13 +19,14 @@ void TranslateWaiter::Wait() {
   run_loop_.Run();
 }
 
-// ContentTranslateDriver::Observer:
+// TranslateDriver::LanguageDetectionObserver:
 void TranslateWaiter::OnLanguageDetermined(
     const LanguageDetectionDetails& details) {
   if (wait_event_ == WaitEvent::kLanguageDetermined)
     run_loop_.Quit();
 }
 
+// ContentTranslateDriver::TranslationObserver:
 void TranslateWaiter::OnPageTranslated(const std::string& original_lang,
                                        const std::string& translated_lang,
                                        TranslateErrors::Type error_type) {

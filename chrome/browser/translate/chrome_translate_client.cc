@@ -109,11 +109,11 @@ ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
           web_contents->GetBrowserContext())
           ->GetPrimaryModel());
   if (translate_driver_) {
-    translate_driver_->AddObserver(this);
+    translate_driver_->AddLanguageDetectionObserver(this);
     translate_driver_->set_translate_manager(translate_manager_.get());
   }
   if (per_frame_translate_driver_) {
-    per_frame_translate_driver_->AddObserver(this);
+    per_frame_translate_driver_->AddLanguageDetectionObserver(this);
     per_frame_translate_driver_->set_translate_manager(
         translate_manager_.get());
   }
@@ -126,11 +126,11 @@ ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
 
 ChromeTranslateClient::~ChromeTranslateClient() {
   if (translate_driver_) {
-    translate_driver_->RemoveObserver(this);
+    translate_driver_->RemoveLanguageDetectionObserver(this);
     translate_driver_->set_translate_manager(nullptr);
   }
   if (per_frame_translate_driver_) {
-    per_frame_translate_driver_->RemoveObserver(this);
+    per_frame_translate_driver_->RemoveLanguageDetectionObserver(this);
     per_frame_translate_driver_->set_translate_manager(nullptr);
   }
 }
@@ -361,15 +361,15 @@ void ChromeTranslateClient::WebContentsDestroyed() {
   }
 }
 
-// ContentTranslateDriver::Observer implementation.
+// TranslateDriver::LanguageDetectionObserver implementation.
 
 void ChromeTranslateClient::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   translate::TranslateBrowserMetrics::ReportLanguageDetectionContentLength(
       details.contents.size());
 
-  // TODO(268984): Remove translate notifications and have the clients be
-  // ContentTranslateDriver::Observer directly instead.
+  // TODO(268984): Remove language detection notifications and have the
+  // clients be TranslateDriver::LanguageDetectionObserver directly instead.
   content::NotificationService::current()->Notify(
       chrome::NOTIFICATION_TAB_LANGUAGE_DETERMINED,
       content::Source<content::WebContents>(web_contents()),

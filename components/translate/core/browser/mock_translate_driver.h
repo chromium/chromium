@@ -24,8 +24,6 @@ class MockTranslateDriver : public TranslateDriver {
 
   void Reset();
 
-  virtual ~MockTranslateDriver() {}
-
   // TranslateDriver:
   void OnIsPageTranslatedChanged() override;
   void OnTranslateEnabledChanged() override;
@@ -65,8 +63,6 @@ class MockTranslateDriver : public TranslateDriver {
   bool translate_page_is_called_;
   LanguageState language_state_;
   GURL last_committed_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTranslateDriver);
 };
 
 }  // namespace testing

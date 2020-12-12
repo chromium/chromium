@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/tabs.h"
-#include "components/translate/content/browser/content_translate_driver.h"
+#include "components/translate/core/browser/translate_driver.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/api/execute_code_function.h"
@@ -203,7 +203,7 @@ class TabsUngroupFunction : public ExtensionFunction {
 class TabsDetectLanguageFunction
     : public ExtensionFunction,
       public content::WebContentsObserver,
-      public translate::ContentTranslateDriver::Observer {
+      public translate::TranslateDriver::LanguageDetectionObserver {
  private:
   ~TabsDetectLanguageFunction() override {}
   ResponseAction Run() override;
@@ -213,7 +213,7 @@ class TabsDetectLanguageFunction
       const content::LoadCommittedDetails& load_details) override;
   void WebContentsDestroyed() override;
 
-  // translate::ContentTranslateDriver::Observer:
+  // translate::TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 

@@ -16,6 +16,7 @@ static_library("browser") {
     "translate_client.h",
     "translate_download_manager.cc",
     "translate_download_manager.h",
+    "translate_driver.cc",
     "translate_driver.h",
     "translate_error_details.h",
     "translate_event_details.cc",
