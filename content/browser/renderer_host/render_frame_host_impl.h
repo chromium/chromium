@@ -166,10 +166,6 @@
 #include "media/mojo/mojom/remoting.mojom-forward.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/common/pepper_plugin.mojom.h"
-#endif
-
 class GURL;
 
 namespace blink {
@@ -215,7 +211,6 @@ class KeepAliveHandleFactory;
 class MediaInterfaceProxy;
 class NavigationEntryImpl;
 class NavigationRequest;
-class PepperPluginInstance;
 class PermissionServiceContext;
 class Portal;
 class PrefetchedSignedExchangeCache;
@@ -264,9 +259,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public network::CSPContext,
       public blink::mojom::LocalMainFrameHost,
       public ui::AXActionHandlerBase,
-#if BUILDFLAG(ENABLE_PLUGINS)
-      public mojom::PepperHost,
-#endif  //  BUILDFLAG(ENABLE_PLUGINS)
       public network::mojom::CookieAccessObserver {
  public:
   using AXTreeSnapshotCallback =
@@ -1871,10 +1863,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return accessibility_fatal_error_count_;
   }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  void PepperInstanceClosed(int32_t instance_id);
-#endif
-
  protected:
   friend class RenderFrameHostFactory;
 
@@ -2151,15 +2139,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // network::mojom::CookieAccessObserver
   void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
                  observer) override;
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // mojom::PepperHost overrides:
-  void InstanceCreated(
-      int32_t instance_id,
-      mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> instance,
-      mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost> host)
-      override;
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   // Resets any waiting state of this RenderFrameHost that is no longer
   // relevant.
@@ -3050,11 +3029,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   mojo::AssociatedReceiver<mojom::DomAutomationControllerHost>
       dom_automation_controller_receiver_{this};
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  mojo::AssociatedReceiver<mojom::PepperHost> pepper_host_receiver_{this};
-  std::map<int32_t, std::unique_ptr<PepperPluginInstance>> pepper_instance_map_;
-#endif
 
   std::unique_ptr<KeepAliveHandleFactory> keep_alive_handle_factory_;
   base::TimeDelta keep_alive_timeout_;
