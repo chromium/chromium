@@ -65,6 +65,12 @@ Polymer({
       value: () => loadTimeData.getString('nearbyShareManageContactsUrl')
     },
 
+    /** @private {boolean} */
+    inHighVisibility_: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -76,6 +82,12 @@ Polymer({
       ]),
     },
   },
+
+  /** @private {?nearbyShare.mojom.ReceiveManagerInterface} */
+  receiveManager_: null,
+
+  /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
+  receiveObserver_: null,
 
   attached() {
     // TODO(b/166779043): Check whether the Account Manager is enabled and fall
@@ -91,6 +103,9 @@ Polymer({
           this.profileName_ = accounts[0].fullName;
           this.profileLabel_ = accounts[0].email;
         });
+    this.receiveManager_ = nearby_share.getReceiveManager();
+    this.receiveObserver_ = nearby_share.observeReceiveManager(
+        /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
   },
 
   /**
@@ -172,6 +187,32 @@ Polymer({
   },
 
   /**
+   * Mojo callback when high visibility changes.
+   * @param {boolean} inHighVisibility
+   */
+  onHighVisibilityChanged(inHighVisibility) {
+    this.inHighVisibility_ = inHighVisibility;
+  },
+
+  /**
+   * Mojo callback when transfer status changes.
+   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @param {!nearbyShare.mojom.TransferMetadata} metadata
+   */
+  onTransferUpdate(shareTarget, metadata) {
+    // Note: Intentionally left empty.
+  },
+
+  /** @private */
+  onInHighVisibilityToggledByUser_() {
+    if (this.inHighVisibility_) {
+      this.receiveManager_.registerForegroundReceiveSurface();
+    } else {
+      this.receiveManager_.unregisterForegroundReceiveSurface();
+    }
+  },
+
+  /**
    * @param {boolean} state boolean state that determines which string to show
    * @param {string} onstr string to show when state is true
    * @param {string} offstr string to show when state is false
@@ -229,6 +270,16 @@ Polymer({
       default:
         return '';  // Make closure happy.
     }
+  },
+
+  /**
+   * @param {boolean} inHighVisibility
+   */
+  getHighVisibilityToggleText_(inHighVisibility) {
+    // TODO(crbug.com/1154830): Add logic to show how much time the user
+    // actually has left.
+    return inHighVisibility ? this.i18n('nearbyShareHighVisibilityOn', 5) :
+                              this.i18nAdvanced('nearbyShareHighVisibilityOff');
   },
 
   /**

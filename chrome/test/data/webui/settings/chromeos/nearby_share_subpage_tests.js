@@ -214,6 +214,27 @@ suite('NearbyShare', function() {
     dialog.$$('.action-button').click();
   });
 
+  test('toggle high visibility from UI', function() {
+    subpage.$$('#highVisibilityToggle').click();
+    Polymer.dom.flush();
+    assertTrue(fakeReceiveManager.getInHighVisibilityForTest());
+
+    subpage.$$('#highVisibilityToggle').click();
+    Polymer.dom.flush();
+    assertFalse(fakeReceiveManager.getInHighVisibilityForTest());
+  });
+
+  test('high visibility UI updates from high visibility changes', function() {
+    const highVisibilityToggle = subpage.$$('#highVisibilityToggle');
+    assertFalse(highVisibilityToggle.checked);
+
+    fakeReceiveManager.setInHighVisibilityForTest(true);
+    assertTrue(highVisibilityToggle.checked);
+
+    fakeReceiveManager.setInHighVisibilityForTest(false);
+    assertFalse(highVisibilityToggle.checked);
+  });
+
   test('GAIA email, account manager enabled', async () => {
     await accountManagerBrowserProxy.whenCalled('getAccounts');
     Polymer.dom.flush();

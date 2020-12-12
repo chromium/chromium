@@ -289,7 +289,15 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareEditVisibility", IDS_SETTINGS_NEARBY_SHARE_EDIT_VISIBILITY},
       {"nearbyShareVisibilityDialogTitle",
        IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_TITLE},
-      {"nearbyShareDescription", IDS_SETTINGS_NEARBY_SHARE_DESCRIPTION}};
+      {"nearbyShareDescription", IDS_SETTINGS_NEARBY_SHARE_DESCRIPTION},
+      {"nearbyShareHighVisibilityTitle",
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_TITLE},
+      {"nearbyShareHighVisibilityOn",
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_ON},
+      {"nearbyShareHighVisibilityOff",
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF},
+      {"nearbyShareHighVisibilityTooltip",
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_TOOLTIP}};
 
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 

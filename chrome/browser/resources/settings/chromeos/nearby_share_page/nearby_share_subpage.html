@@ -16,6 +16,7 @@
 <link rel="import" href="nearby_share_device_name_dialog.html">
 <link rel="import" href="nearby_share_data_usage_dialog.html">
 <link rel="import" href="nearby_share_receive_dialog.html">
+<link rel="import" href="nearby_share_receive_manager.html">
 <link rel="import" href="types.html">
 
 <dom-module id="settings-nearby-share-subpage">
@@ -39,6 +40,24 @@
         color: var(--google-grey-600);
         font-size: 13px;
         line-height: 20px;
+      }
+
+      #highVisibilityContainer {
+        border-top: none;
+        padding: 0 var(--cr-section-padding) 0 60px;
+      }
+
+      .separator {
+        margin: 0;
+      }
+
+      #highVisibilityHelpIcon {
+        margin-inline-end: var(--cr-section-padding);
+      }
+
+      #highVisibilityContainer cr-toggle {
+        margin-inline-start: var(--cr-section-padding);
+        padding-inline-end: var(--cr-section-padding);
       }
     </style>
     <div id="toggleRow" class="cr-row first" on-click="onEnableTap_" actionable>
@@ -96,6 +115,41 @@
           aria-description="[[getVisibilityDescription_(settings.visibility)]]">
         $i18n{nearbyShareEditVisibility}
       </cr-button>
+    </div>
+    <div id="highVisibilityContainer" class="settings-box two-line">
+      <div class="start">
+        <div id="highVisibilityTitle"
+            role="heading" aria-hidden="true">
+          $i18n{nearbyShareHighVisibilityTitle}
+        </div>
+        <div id="highVisibilitySubtitle"
+            class="secondary" aria-hidden="true">
+          <!-- TODO(vecore) add correct help link -->
+          <settings-localized-link id="highVisibilityOff"
+              localized-string="[[getHighVisibilityToggleText_(inHighVisibility_)]]"
+              link-url="https://google.com">
+          </settings-localized-link>
+        </div>
+      </div>
+      <iron-icon tabindex="0" id="highVisibilityHelpIcon"
+          icon="cr:help-outline"
+          aria-labelledby="highVisibilityTitle tooltip">
+      </iron-icon>
+      <paper-tooltip id="tooltip"
+          for="highVisibilityHelpIcon"
+          position="bottom"
+          aria-hidden="true"
+          fit-to-visible-bounds>
+        $i18n{nearbyShareHighVisibilityTooltip}
+      </paper-tooltip>
+      <div class="separator"></div>
+      <cr-toggle
+          id="highVisibilityToggle"
+          checked="{{inHighVisibility_}}"
+          aria-labelledby="highVisibilityTitle"
+          aria-describedby="highVisibilitySubtitle"
+          on-change="onInHighVisibilityToggledByUser_">
+      </cr-toggle>
     </div>
     <template is="dom-if" if="[[showVisibilityDialog_]]" restamp>
       <nearby-share-contact-visibility-dialog settings="{{settings}}"

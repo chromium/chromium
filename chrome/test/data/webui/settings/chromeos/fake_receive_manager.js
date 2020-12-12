@@ -110,6 +110,23 @@ cr.define('nearby_share', function() {
       this.methodCalled('reject', shareTargetId);
       return {success: this.nextResult_};
     }
+
+    /**
+     * @return {boolean}
+     */
+    getInHighVisibilityForTest() {
+      return this.inHighVisibility_;
+    }
+
+    /**
+     * @param {boolean} inHighVisibility
+     */
+    setInHighVisibilityForTest(inHighVisibility) {
+      this.inHighVisibility_ = inHighVisibility;
+      if (this.observer_) {
+        this.observer_.onHighVisibilityChanged(inHighVisibility);
+      }
+    }
   }
 
   // #cr_define_end
