@@ -100294,6 +100294,19 @@
         {}
        ]
       ],
+      "abspos-016.html": [
+       "dc520b972b41e6289a82c41dd7db6b76077da341",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "auto-margins-001.html": [
        "9e89ab6ca7f5220ea030aa537bcb3b64f156043d",
        [
@@ -199832,6 +199845,10 @@
         "b98ca0ba0a03c580ac339e4a3653539cfa8edc71",
         []
        ],
+       "200x200-green.png": [
+        "1dcc392a6ef71e55302c40d41a547cf3f75a8f24",
+        []
+       ],
        "20x50-green.png": [
         "f7f6e67feee0079f21791cf050baffd87b67f8ab",
         []
@@ -222850,7 +222867,7 @@
          []
         ],
         "drawing-images-to-the-canvas.yaml": [
-         "e71f46f61e2fe999981a04120ba2b17b5c5ff2cc",
+         "133807fb285da0e897d84b688da39281d5b67bfc",
          []
         ],
         "drawing-rectangles-to-the-canvas.yaml": [
@@ -345583,6 +345600,13 @@
        ],
        "2d.drawImage.negativesource.html": [
         "bc14864eec6a959950bb4446fe5ff7fb372b4006",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.drawImage.nonexistent.html": [
+        "a1d8badb069b7ee0a00c153b018926d158d3ba4d",
         [
          null,
          {}
