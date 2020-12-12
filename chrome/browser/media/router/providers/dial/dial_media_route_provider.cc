@@ -685,7 +685,7 @@ std::vector<url::Origin> DialMediaRouteProvider::GetOrigins(
     const std::string& app_name) {
   static const base::NoDestructor<
       base::flat_map<std::string, std::vector<url::Origin>>>
-      origin_white_list(
+      origin_allowlist(
           {{"YouTube",
             {CreateOrigin("https://tv.youtube.com"),
              CreateOrigin("https://tv-green-qa.youtube.com"),
@@ -701,8 +701,8 @@ std::vector<url::Origin> DialMediaRouteProvider::GetOrigins(
            {"Dailymotion", {CreateOrigin("https://www.dailymotion.com")}},
            {"com.dailymotion", {CreateOrigin("https://www.dailymotion.com")}}});
 
-  auto origins_it = origin_white_list->find(app_name);
-  if (origins_it == origin_white_list->end())
+  auto origins_it = origin_allowlist->find(app_name);
+  if (origins_it == origin_allowlist->end())
     return std::vector<url::Origin>();
 
   return origins_it->second;
