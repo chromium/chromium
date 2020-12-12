@@ -1,5 +1,5 @@
 <style include="signin-dialog-shared">
-  :host {
+  #customizeDialog {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -80,8 +80,7 @@
   }
 
   #lineSeparator {
-    border-top: 1px solid var(--google-grey-refresh-100);
-    margin: 0;
+    border-top: 1px solid var(--cr-separator-color);
   }
 
   #pickThemeContainer {
@@ -118,32 +117,35 @@
   }
 </style>
 
-<div id="header">
-  <div id="headerText">[[initialProfileName_]]</div>
-  <div id="avatarContainer">
-    <img id="avatar" alt="" src="[[pictureUrl_]]">
-    <div class="work-badge" id="badge" hidden="[[!isManaged_]]">
-      <iron-icon class="icon" icon="cr:domain"></iron-icon>
+<div role="dialog" id="customizeDialog" aria-labelledby="headerText"
+    aria-describedby="pickThemeTitle">
+  <div id="header">
+    <div id="headerText">[[initialProfileName_]]</div>
+    <div id="avatarContainer">
+      <img id="avatar" alt="" src="[[pictureUrl_]]">
+      <div class="work-badge" id="badge" hidden="[[!isManaged_]]">
+        <iron-icon class="icon" icon="cr:domain"></iron-icon>
+      </div>
     </div>
   </div>
+
+  <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
+    auto-validate required spellcheck="false">
+  </cr-input>
+
+  <div id="lineSeparator"></div>
+
+  <div id="pickThemeContainer">
+    <div id="pickThemeTitle">$i18n{profileCustomizationPickThemeTitle}</div>
+    <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
+    </cr-customize-themes>
+  </div>
+
+  <div class="action-container">
+    <cr-button id="doneButton" class="action-button"
+        disabled="[[isDoneButtonDisabled_(profileName_)]]"
+        on-click="onDoneCustomizationClicked_" autofocus>
+      $i18n{profileCustomizationDoneLabel}
+    </cr-button>
+  <div>
 </div>
-
-<cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
-  auto-validate required spellcheck="false">
-</cr-input>
-
-<hr id="lineSeparator">
-
-<div id="pickThemeContainer">
-  <div id="pickThemeTitle">$i18n{profileCustomizationPickThemeTitle}</div>
-  <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
-  </cr-customize-themes>
-</div>
-
-<div class="action-container">
-  <cr-button id="doneButton" class="action-button"
-      disabled="[[isDoneButtonDisabled_(profileName_)]]"
-      on-click="onDoneCustomizationClicked_" autofocus>
-    $i18n{profileCustomizationDoneLabel}
-  </cr-button>
-<div>

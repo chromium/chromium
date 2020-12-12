@@ -54,6 +54,7 @@ ProfileCustomizationBubbleView::ProfileCustomizationBubbleView(
                                        ->GetWebUI()
                                        ->GetController()
                                        ->GetAs<ProfileCustomizationUI>();
+  SetInitiallyFocusedView(web_view.get());
   DCHECK(web_ui);
   web_ui->Initialize(
       base::BindOnce(&ProfileCustomizationBubbleView::OnDoneButtonClicked,
