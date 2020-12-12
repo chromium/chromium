@@ -48,8 +48,6 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   void FocusedElementChanged(const blink::WebElement& element) override;
   void OnDestruct() override;
 
-  void OnSetTextZoomFactor(float zoom_factor);
-
   void OnResetScrollAndScaleState();
 
   void OnSetInitialPageScale(double page_scale_factor);
@@ -58,6 +56,7 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
 
   // mojom::LocalMainFrame overrides:
   void SetBackgroundColor(SkColor c) override;
+  void SetTextZoomFactor(float zoom_factor) override;
   void HitTest(const gfx::PointF& touch_center,
                const gfx::SizeF& touch_area) override;
   void DocumentHasImage(DocumentHasImageCallback callback) override;

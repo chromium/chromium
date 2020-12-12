@@ -81,6 +81,10 @@ interface LocalMainFrame {
   // Sets the base background color for this view.
   SetBackgroundColor(skia.mojom.SkColor color);
 
+  // Sets the zoom factor for text only. Used in layout modes other than
+  // Text Autosizing.
+  SetTextZoomFactor(float zoom_factor);
+
   // Do hit test at the given webview coordinate. "Webview" coordinates are
   // physical pixel values with the 0,0 at the top left of the current displayed
   // view (ie 0,0 is not the top left of the page if the page is scrolled).

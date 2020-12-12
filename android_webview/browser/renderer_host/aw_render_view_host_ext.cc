@@ -76,8 +76,8 @@ const mojom::HitTestData& AwRenderViewHostExt::GetLastHitTestData() const {
 
 void AwRenderViewHostExt::SetTextZoomFactor(float factor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web_contents()->GetMainFrame()->Send(new AwViewMsg_SetTextZoomFactor(
-      web_contents()->GetMainFrame()->GetRoutingID(), factor));
+  if (local_main_frame_remote_)
+    local_main_frame_remote_->SetTextZoomFactor(factor);
 }
 
 void AwRenderViewHostExt::ResetScrollAndScaleState() {

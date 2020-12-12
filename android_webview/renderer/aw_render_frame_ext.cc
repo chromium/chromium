@@ -240,7 +240,6 @@ void AwRenderFrameExt::DidCommitProvisionalLoad(
 bool AwRenderFrameExt::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(AwRenderFrameExt, message)
-    IPC_MESSAGE_HANDLER(AwViewMsg_SetTextZoomFactor, OnSetTextZoomFactor)
     IPC_MESSAGE_HANDLER(AwViewMsg_ResetScrollAndScaleState,
                         OnResetScrollAndScaleState)
     IPC_MESSAGE_HANDLER(AwViewMsg_SetInitialPageScale, OnSetInitialPageScale)
@@ -301,21 +300,6 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
   GetFrameHost()->UpdateHitTestData(std::move(data));
 }
 
-void AwRenderFrameExt::OnSetTextZoomFactor(float zoom_factor) {
-  // TODO(crbug.com/1085428): This will need to be set on every local root
-  // when site isolation is used in android webview.
-  DCHECK(render_frame()->IsMainFrame());
-
-  blink::WebView* webview = GetWebView();
-  if (!webview)
-    return;
-
-  // Hide selection and autofill popups.
-  webview->CancelPagePopup();
-
-  render_frame()->GetWebFrame()->FrameWidget()->SetTextZoomFactor(zoom_factor);
-}
-
 void AwRenderFrameExt::OnResetScrollAndScaleState() {
   blink::WebView* webview = GetWebView();
   if (!webview)
@@ -338,6 +322,21 @@ void AwRenderFrameExt::SetBackgroundColor(SkColor c) {
     return;
 
   webview->SetBaseBackgroundColor(c);
+}
+
+void AwRenderFrameExt::SetTextZoomFactor(float zoom_factor) {
+  // TODO(crbug.com/1085428): This will need to be set on every local root
+  // when site isolation is used in android webview.
+  DCHECK(render_frame()->IsMainFrame());
+
+  blink::WebView* webview = GetWebView();
+  if (!webview)
+    return;
+
+  // Hide selection and autofill popups.
+  webview->CancelPagePopup();
+
+  render_frame()->GetWebFrame()->FrameWidget()->SetTextZoomFactor(zoom_factor);
 }
 
 void AwRenderFrameExt::DocumentHasImage(DocumentHasImageCallback callback) {

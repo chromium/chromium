@@ -20,11 +20,6 @@
 // RenderView messages
 // These are messages sent from the browser to the renderer process.
 
-// Sets the zoom factor for text only. Used in layout modes other than
-// Text Autosizing.
-IPC_MESSAGE_ROUTED1(AwViewMsg_SetTextZoomFactor,
-                    float /* zoom_factor */)
-
 // Resets WebKit WebView scrolling and scale state. We need to send this
 // message whenever we want to guarantee that page's scale will be
 // recalculated by WebKit.
