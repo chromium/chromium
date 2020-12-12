@@ -61,23 +61,28 @@ Polymer({
    * @param {?nearbyShare.mojom.TransferStatus} newStatus
    */
   onTransferStatusChanged_(newStatus) {
-    // TODO(cclem) review this mapping, add missing statuses, make sure the
-    // strings still make sense in the context of the receive page
     switch (newStatus) {
       case nearbyShare.mojom.TransferStatus.kTimedOut:
         this.errorTitle_ = this.i18n('nearbyShareErrorTimeOut');
-        this.errorDescription_ = this.i18n('nearbyShareErrorNoResponse');
+        this.errorDescription_ = this.i18n('nearbyShareErrorTryAgain');
         break;
       case nearbyShare.mojom.TransferStatus.kUnsupportedAttachmentType:
-        this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+        this.errorTitle_ = this.i18n('nearbyShareErrorCantReceive');
         this.errorDescription_ =
             this.i18n('nearbyShareErrorUnsupportedFileType');
         break;
-      case nearbyShare.mojom.TransferStatus.kMediaUnavailable:
       case nearbyShare.mojom.TransferStatus.kNotEnoughSpace:
+        this.errorTitle_ = this.i18n('nearbyShareErrorCantReceive');
+        this.errorDescription_ = this.i18n('nearbyShareErrorNotEnoughSpace');
+        break;
+      case nearbyShare.mojom.TransferStatus.kCancelled:
+        this.errorTitle_ = this.i18n('nearbyShareErrorCantReceive');
+        this.errorDescription_ = this.i18n('nearbyShareErrorCancelled');
+        break;
       case nearbyShare.mojom.TransferStatus.kFailed:
+      case nearbyShare.mojom.TransferStatus.kMediaUnavailable:
       case nearbyShare.mojom.TransferStatus.kAwaitingRemoteAcceptanceFailed:
-        this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+        this.errorTitle_ = this.i18n('nearbyShareErrorCantReceive');
         this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
         break;
       default:

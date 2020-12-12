@@ -122,6 +122,12 @@
   <message name="IDS_NEARBY_DEFAULT_DEVICE_NAME" desc="The default device name used unless a user explicitly sets the device name during onboarding or in settings. Displayed to other users during sharing.">
     <ph name="GIVEN_NAME">$1<ex>Josh</ex></ph>'s <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
   </message>
+  <message name="IDS_NEARBY_ERROR_CANCELLED" desc="Notify the receiver that the sender cancelled the file share.">
+    The device sharing with you cancelled the transfer
+  </message>
+  <message name="IDS_NEARBY_ERROR_CANT_RECEIVE" desc="Notify user that the file wasn't able to be received. Generic title text for displaying errors to the user. To be shown next to more specific error text.">
+    Can't receive
+  </message>
   <message name="IDS_NEARBY_ERROR_CANT_SHARE" desc="Notify user that the file wasn't able to be shared. Generic title text for displaying errors to the user. To be shown next to more specific error text.">
     Can't share
   </message>
@@ -139,6 +145,9 @@
   </message>
   <message name="IDS_NEARBY_ERROR_TIME_OUT" desc="Notify user that the file share failed because something didn't happen in time, e.g. the receiver neither accepted nor declined the share. Generic title text to be shown next to more specific error text describing the situation.">
     Time out
+  </message>
+  <message name="IDS_NEARBY_ERROR_TRY_AGAIN" desc="Generic suggestion to try again. Used as a subtitle underneath an error message when more details about the error are not available.">
+    Please try again
   </message>
   <message name="IDS_NEARBY_ERROR_UNSUPPORTED_FILE_TYPE" desc="Notify user that the file chosen can't be shared because of its type, e.g. missing file extension.">
     Unsupported file type
