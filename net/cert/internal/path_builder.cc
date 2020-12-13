@@ -546,7 +546,7 @@ bool CertPathIter::GetNextPath(ParsedCertificateList* out_certs,
     }
 
     switch (next_issuer_.trust.type) {
-      // If the trust for this issuer is "known" (either becuase it is
+      // If the trust for this issuer is "known" (either because it is
       // distrusted, or because it is trusted) then stop building and return the
       // path.
       case CertificateTrustType::DISTRUSTED:

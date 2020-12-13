@@ -129,7 +129,7 @@ void BindCacheStorageOnUIThread(
 // Owned by EmbeddedWorkerInstance.
 //
 // TODO(https://crbug.com/1138155): Remove this because we no longer need
-// proxying the notifications becuase there's no thread hopping thanks to
+// proxying the notifications because there's no thread hopping thanks to
 // ServiceWorkerOnUI.
 class EmbeddedWorkerInstance::DevToolsProxy {
  public:

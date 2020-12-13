@@ -645,7 +645,7 @@ void NaClIPCAdapter::SaveOpenResourceMessage(
     ppapi::proxy::SerializedHandle orig_sh;
 
     // These CHECKs could fail if the renderer sends this process a malformed
-    // message, but that's OK becuase in general the renderer can cause the NaCl
+    // message, but that's OK because in general the renderer can cause the NaCl
     // loader process to exit.
     CHECK(IPC::ReadParam(&orig_msg, &iter, &token_lo));
     CHECK(IPC::ReadParam(&orig_msg, &iter, &token_hi));

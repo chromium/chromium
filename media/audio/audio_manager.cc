@@ -92,7 +92,7 @@ AudioManager::AudioManager(std::unique_ptr<AudioThread> audio_thread)
     LOG(WARNING) << "Multiple instances of AudioManager detected";
   }
   // We always override |g_last_created| irrespective of whether it is already
-  // set or not becuase it represents the last created instance.
+  // set or not because it represents the last created instance.
   g_last_created = this;
 }
 

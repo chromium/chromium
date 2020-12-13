@@ -1224,7 +1224,7 @@ TEST_F(NoteTakingHelperTest,
   EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
-  // No-op, becuase the preferred app state is not changing.
+  // No-op, because the preferred app state is not changing.
   EXPECT_FALSE(helper()->SetPreferredAppEnabledOnLockScreen(profile(), true));
   EXPECT_TRUE(observer.preferred_app_updates().empty());
 

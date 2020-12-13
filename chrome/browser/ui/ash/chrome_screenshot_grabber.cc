@@ -468,7 +468,7 @@ void ChromeScreenshotGrabber::DecodeScreenshotFileForPreview(
     return;
   }
 
-  // Decode the image in sandboxed process becuase decode image_data comes from
+  // Decode the image in sandboxed process because decode image_data comes from
   // external storage.
   data_decoder::DecodeImageIsolated(
       std::vector<uint8_t>(image_data.begin(), image_data.end()),

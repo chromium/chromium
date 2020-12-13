@@ -53,7 +53,7 @@ void ArcAppShortcutsMenuBuilder::BuildMenu(
     std::unique_ptr<ui::SimpleMenuModel> menu_model,
     GetMenuModelCallback callback) {
   DCHECK(!arc_app_shortcuts_request_);
-  // Using base::Unretained(this) here is safe becuase |this| owns
+  // Using base::Unretained(this) here is safe because |this| owns
   // |arc_app_shortcuts_request_|. When |this| is deleted,
   // |arc_app_shortcuts_request_| is also deleted, and once that happens,
   // |arc_app_shortcuts_request_| will never run the callback.

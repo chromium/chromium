@@ -1697,7 +1697,7 @@ TEST_F(LayerTreeImplTest, HitTestingTouchHandlerRegionsForLayerThatIsNotDrawn) {
   // Hit testing for a point outside the test layer should return null pointer.
   // We also implicitly check that the updated screen space transform of a layer
   // that is not in drawn render surface layer list (test_layer) is used during
-  // hit testing (becuase the point is inside test_layer with respect to the old
+  // hit testing (because the point is inside test_layer with respect to the old
   // screen space transform).
   gfx::PointF test_point(24.f, 24.f);
   test_layer->SetOffsetToTransformParent(gfx::Vector2dF(25.f, 25.f));

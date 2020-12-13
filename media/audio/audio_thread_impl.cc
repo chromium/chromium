@@ -55,7 +55,7 @@ void AudioThreadImpl::Stop() {
 
   // Note that on MACOSX, we can still have tasks posted on the |task_runner_|,
   // since it is the main thread task runner and we do not stop the main thread.
-  // But this is fine becuase none of those tasks will actually run.
+  // But this is fine because none of those tasks will actually run.
   thread_.Stop();
 }
 
