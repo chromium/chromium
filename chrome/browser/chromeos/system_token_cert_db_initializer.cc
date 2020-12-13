@@ -38,6 +38,12 @@ constexpr base::TimeDelta kInitialRequestDelay =
     base::TimeDelta::FromMilliseconds(100);
 constexpr base::TimeDelta kMaxRequestDelay = base::TimeDelta::FromMinutes(5);
 
+#if BUILDFLAG(SYSTEM_SLOT_SOFTWARE_FALLBACK)
+constexpr bool kIsSystemSlotSoftwareFallbackAllowed = true;
+#else
+constexpr bool kIsSystemSlotSoftwareFallbackAllowed = false;
+#endif
+
 // Called on UI Thread when the system slot has been retrieved.
 void GotSystemSlotOnUIThread(
     base::OnceCallback<void(crypto::ScopedPK11Slot)> callback_ui_thread,
@@ -83,15 +89,6 @@ bool ShallAttemptTpmOwnership() {
 #endif
 }
 
-// Checks if the build flag system_slot_software_fallback is enabled.
-bool IsSystemSlotSoftwareFallbackEnabled() {
-#if BUILDFLAG(SYSTEM_SLOT_SOFTWARE_FALLBACK)
-  return true;
-#else
-  return false;
-#endif
-}
-
 // Calculates the delay before running next attempt to get the TPM state
 // (enabled/disabled), if |last_delay| was the last or initial delay.
 base::TimeDelta GetNextRequestDelay(base::TimeDelta last_delay) {
@@ -110,7 +107,9 @@ constexpr base::TimeDelta
     SystemTokenCertDBInitializer::kMaxCertDbRetrievalDelay;
 
 SystemTokenCertDBInitializer::SystemTokenCertDBInitializer()
-    : tpm_request_delay_(kInitialRequestDelay) {
+    : tpm_request_delay_(kInitialRequestDelay),
+      is_system_slot_software_fallback_allowed_(
+          kIsSystemSlotSoftwareFallbackAllowed) {
   // Only start loading the system token once cryptohome is available and only
   // if the TPM is ready (available && owned && not being owned).
   CryptohomeClient::Get()->WaitForServiceToBeAvailable(
@@ -237,7 +236,7 @@ void SystemTokenCertDBInitializer::OnGetTpmNonsensitiveStatus(
   // allowed. Note that we don't fall back to software solution as long as TPM
   // is enabled.
   if (reply.is_owned() ||
-      (!reply.is_enabled() && IsSystemSlotSoftwareFallbackEnabled())) {
+      (!reply.is_enabled() && is_system_slot_software_fallback_allowed_)) {
     VLOG_IF(1, !reply.is_owned())
         << "Initializing database when TPM is not owned.";
     MaybeStartInitializingDatabase();

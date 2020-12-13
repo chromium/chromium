@@ -139,6 +139,85 @@ TEST_F(SystemTokenCertDbInitializerTest, GetSystemTokenCertDbSuccess) {
 
 // Tests that the system token certificate database will be returned
 // successfully by SystemTokenCertDbInitializer if it was available in less than
+// 5 minutes after being requested, and the system slot uses software fallback
+// when it's allowed and TPM is disabled.
+TEST_F(SystemTokenCertDbInitializerTest,
+       GetSystemTokenCertDbSuccessSoftwareFallback) {
+  TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_nonsensitive_status_reply()
+      ->set_is_enabled(false);
+  TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_nonsensitive_status_reply()
+      ->set_is_owned(false);
+  system_token_cert_db_initializer()
+      ->set_is_system_slot_software_fallback_allowed(true);
+
+  GetSystemTokenCertDbCallbackWrapper get_system_token_cert_db_callback_wrapper;
+  system_token_cert_db_initializer()->GetSystemTokenCertDb(
+      get_system_token_cert_db_callback_wrapper.GetCallback());
+  EXPECT_FALSE(get_system_token_cert_db_callback_wrapper.IsCallbackCalled());
+
+  // Check that after 1 minute, SystemTokenCertDBInitializer is still waiting
+  // for the system token slot to be initialized and the DB retrieval hasn't
+  // timed out yet.
+  const auto kOneMinuteDelay = base::TimeDelta::FromMinutes(1);
+  EXPECT_LT(kOneMinuteDelay,
+            SystemTokenCertDBInitializer::kMaxCertDbRetrievalDelay);
+
+  task_environment()->FastForwardBy(kOneMinuteDelay);
+  EXPECT_FALSE(get_system_token_cert_db_callback_wrapper.IsCallbackCalled());
+
+  EXPECT_TRUE(InitializeTestSystemSlot());
+  get_system_token_cert_db_callback_wrapper.Wait();
+
+  EXPECT_TRUE(get_system_token_cert_db_callback_wrapper.IsCallbackCalled());
+  EXPECT_TRUE(
+      get_system_token_cert_db_callback_wrapper.IsDbRetrievalSucceeded());
+}
+
+// Tests that the system token certificate database will be not returned
+// successfully by SystemTokenCertDbInitializer if TPM is disabled and system
+// slot software fallback is not allowed.
+TEST_F(SystemTokenCertDbInitializerTest,
+       GetSystemTokenCertDbFailureDisabledTPM) {
+  TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_nonsensitive_status_reply()
+      ->set_is_enabled(false);
+  TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_nonsensitive_status_reply()
+      ->set_is_owned(false);
+  system_token_cert_db_initializer()
+      ->set_is_system_slot_software_fallback_allowed(false);
+
+  GetSystemTokenCertDbCallbackWrapper get_system_token_cert_db_callback_wrapper;
+  system_token_cert_db_initializer()->GetSystemTokenCertDb(
+      get_system_token_cert_db_callback_wrapper.GetCallback());
+  EXPECT_FALSE(get_system_token_cert_db_callback_wrapper.IsCallbackCalled());
+
+  // Check that after 1 minute, SystemTokenCertDBInitializer is still waiting
+  // for the system token slot to be initialized and the DB retrieval hasn't
+  // timed out yet.
+  const auto kOneMinuteDelay = base::TimeDelta::FromMinutes(1);
+  EXPECT_LT(kOneMinuteDelay,
+            SystemTokenCertDBInitializer::kMaxCertDbRetrievalDelay);
+
+  task_environment()->FastForwardBy(kOneMinuteDelay);
+  EXPECT_FALSE(get_system_token_cert_db_callback_wrapper.IsCallbackCalled());
+
+  EXPECT_TRUE(InitializeTestSystemSlot());
+  get_system_token_cert_db_callback_wrapper.Wait();
+
+  EXPECT_TRUE(get_system_token_cert_db_callback_wrapper.IsCallbackCalled());
+  EXPECT_FALSE(
+      get_system_token_cert_db_callback_wrapper.IsDbRetrievalSucceeded());
+}
+
+// Tests that the system token certificate database will be returned
+// successfully by SystemTokenCertDbInitializer if it was available in less than
 // 5 minutes after being requested even if the slot was available after more
 // than 5 minutes from the initialization of SystemTokenCertDbInitializer.
 TEST_F(SystemTokenCertDbInitializerTest,

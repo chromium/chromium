@@ -83,6 +83,12 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   // Removes |observer| as SystemTokenCertDBObserver.
   void RemoveObserver(SystemTokenCertDBObserver* observer);
 
+  // Sets if the software fallback for system slot is allowed; useful for
+  // testing.
+  void set_is_system_slot_software_fallback_allowed(bool is_allowed) {
+    is_system_slot_software_fallback_allowed_ = is_allowed;
+  }
+
  private:
   // Called once the cryptohome service is available.
   void OnCryptohomeAvailable(bool available);
@@ -139,6 +145,9 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   // The current request delay before the next attempt to retrieve the TPM
   // state. Will be adapted after each attempt.
   base::TimeDelta tpm_request_delay_;
+
+  // The flag that determines if the system slot can use software fallback.
+  bool is_system_slot_software_fallback_allowed_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
