@@ -61,8 +61,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/tpm/tpm_token_loader.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -1161,17 +1161,21 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 class WebviewClientCertsTokenLoadingLoginTest
     : public WebviewClientCertsLoginTestBase {
  public:
-  WebviewClientCertsTokenLoadingLoginTest()
-      : cryptohome_client_(new FakeCryptohomeClient) {
-    cryptohome_client_->set_tpm_is_ready(false);
+  WebviewClientCertsTokenLoadingLoginTest() {
+    // At very early stage, the system slot is being initialized becuase fake
+    // tpm manager tells the TPM is owned by default. So, it has to be overriden
+    // here instead of in the test body or `SetUpOnMainThread()`.
+    TpmManagerClient::InitializeFake();
+    TpmManagerClient::Get()
+        ->GetTestInterface()
+        ->mutable_nonsensitive_status_reply()
+        ->set_is_owned(false);
   }
 
   WebviewClientCertsTokenLoadingLoginTest(
       const WebviewClientCertsTokenLoadingLoginTest&) = delete;
   WebviewClientCertsTokenLoadingLoginTest& operator=(
       const WebviewClientCertsTokenLoadingLoginTest&) = delete;
-
-  FakeCryptohomeClient* cryptohome_client() { return cryptohome_client_; }
 
   // Prepares a testing system slot (without injecting it as an already
   // initialized yet) and imports a client certificate into it.
@@ -1229,9 +1233,6 @@ class WebviewClientCertsTokenLoadingLoginTest
     test_system_slot_nss_db_.reset();
   }
 
-  // Owned by the CryptohomeClient singleton.
-  FakeCryptohomeClient* cryptohome_client_;
-
   std::unique_ptr<crypto::ScopedTestNSSDB> test_system_slot_nss_db_;
 };
 
@@ -1278,7 +1279,10 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
 
   // Report the TPM as ready, triggering the system token initialization by
   // SystemTokenCertDBInitializer.
-  cryptohome_client()->set_tpm_is_ready(true);
+  TpmManagerClient::Get()
+      ->GetTestInterface()
+      ->mutable_nonsensitive_status_reply()
+      ->set_is_owned(true);
   TpmManagerClient::Get()->GetTestInterface()->EmitOwnershipTakenSignal();
 
   const std::string https_reply_content =

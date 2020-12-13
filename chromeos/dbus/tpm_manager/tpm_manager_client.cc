@@ -219,7 +219,10 @@ void TpmManagerClient::Initialize(dbus::Bus* bus) {
 
 // static
 void TpmManagerClient::InitializeFake() {
-  new FakeTpmManagerClient();
+  // Do not create a new instance if it was initialized early in a browser test
+  // (for early setup calls dependent on TpmManagerClient).
+  if (!FakeTpmManagerClient::Get())
+    new FakeTpmManagerClient();
 }
 
 // static

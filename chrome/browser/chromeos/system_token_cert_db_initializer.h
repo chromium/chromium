@@ -95,18 +95,13 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   // schedules the initialization step retry attempt after a timeout.
   void RetryCheckTpmLater();
 
-  // This is a callback for the GetTpmNonsensitiveStatus() query. It is only
-  // called when the build flag system_slot_software_fallback is enabled. If the
-  // build flag is enabled and TPM is disabled, we skip the cryptohome
-  // TpmIsReady() check during initialization, otherwise we continue the normal
-  // flow with TpmIsReady() and its callback.
-  void OnGetTpmStatus(
+  // This is a callback for the GetTpmNonsensitiveStatus() query. 2 main
+  // operations are performed:
+  // 1. Initializes the database if TPM is owned or software fallback is
+  // enabled.
+  // 2. Triggers TPM ownership process if necessary.
+  void OnGetTpmNonsensitiveStatus(
       const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply);
-
-  // This is a callback for the cryptohome TpmIsReady query. Note that this is
-  // not a listener which would be called once TPM becomes ready if it was not
-  // ready on startup - that event is observed by `OnOwnershipTakenSignal()`.
-  void OnGotTpmIsReady(base::Optional<bool> tpm_is_ready);
 
   // Starts loading the system slot and initializing the corresponding NSS cert
   // database, unless it was already started before.
