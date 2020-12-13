@@ -83,8 +83,8 @@ interface IndexedDBControl {
   GetConnectionCount(url.mojom.Origin origin) => (uint64 connection_count);
 
   // Called by chrome://indexeddb-internals to download all of the indexeddb
-  // data for a particular origin.  This creates a zip file at |zip_path|
-  // using the temporary direction |temp_path| which needs to be cleaned up
+  // data for a particular origin.  This creates a zip file at `zip_path`
+  // using the temporary directory `temp_path` which needs to be cleaned up
   // after the user downloads the file.
   DownloadOriginData(url.mojom.Origin origin) => (
       bool success,
