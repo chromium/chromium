@@ -234845,7 +234845,7 @@
      []
     ],
     "serial.idl": [
-     "7bca747757345934b076b5f447cf6274483ecbd5",
+     "8612f6f0a2c488b65a3df71e781d975d00481f04",
      []
     ],
     "server-timing.idl": [
@@ -242456,14 +242456,6 @@
     }
    },
    "serial": {
-    "idlharness.https.any-expected.txt": [
-     "6389f9ba3a6b3f8fa7ea946c41f9dc436e9a4cf2",
-     []
-    ],
-    "idlharness.https.any.worker-expected.txt": [
-     "8f66297e1e734e803e91a1d14938cbf98e74c8e1",
-     []
-    ],
     "resources": {
      "automation.js": [
       "98f67fb6282ceb866b63a3eb9bfa19d0dc0f1b2d",
