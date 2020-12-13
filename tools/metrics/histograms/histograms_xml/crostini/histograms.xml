@@ -21,6 +21,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="CrostiniState">
+  <variant name="CreateContainer" summary="creating container"/>
+  <variant name="CreateDiskImage" summary="creating disk image"/>
+  <variant name="FetchSshKeys" summary="fetching SSH keys"/>
+  <variant name="InstallImageLoader" summary="installing component or DLC"/>
+  <variant name="MountContainer" summary="creating SSHFS mounts"/>
+  <variant name="SetupContainer" summary="setting up container for use"/>
+  <variant name="Start" summary="initial"/>
+  <variant name="StartContainer" summary="starting container"/>
+  <variant name="StartLxd" summary="starting LXD"/>
+  <variant name="StartTerminaVm" summary="starting VM"/>
+</variants>
+
 <histogram name="Crostini.AppLaunch" enum="CrostiniAppLaunchAppType"
     expires_after="2021-01-31">
   <owner>clumptini@google.com</owner>
@@ -238,6 +251,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Crostini.InvalidStateTransition" enum="CrostiniInstallerState"
+    expires_after="2021-04-04">
+  <owner>clumptini@google.com</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Emitted when an invalid request to transition states during the Crostini
+    restarter flow is received. For example, when a container start signal is
+    received when the restarter is still waiting for the vm to finish launching.
+    The value is the state the restarter should have been in for the transition
+    to be legal (in this example StartContainer).
+  </summary>
+</histogram>
+
 <histogram name="Crostini.RecoverySource" enum="CrostiniUISurface"
     expires_after="2021-01-31">
   <owner>clumptini@google.com</owner>
@@ -266,6 +292,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The result of a single run of CrostiniRestarter. This is recorded any time
     the crostini restart flow is triggered except during the initial install.
   </summary>
+</histogram>
+
+<histogram name="Crostini.RestarterTimeInState.{state}" units="ms"
+    expires_after="2021-05-16">
+  <owner>clumptini@google.com</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Base histogram for measuring how much time the restarter flow spends in the
+    {state} state. Used to set timeouts. Note that this since this is for any
+    restarter run (no-op relaunch, installation, etc) the results are expected
+    to be multi-modal.
+  </summary>
+  <token key="state" variants="CrostiniState"/>
 </histogram>
 
 <histogram name="Crostini.Restore" enum="CrostiniImportContainerResult"

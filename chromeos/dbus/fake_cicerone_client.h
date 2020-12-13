@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/cicerone_client.h"
 
 namespace chromeos {
@@ -283,9 +284,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   void set_lxd_container_os_release(vm_tools::cicerone::OsRelease os_release) {
     lxd_container_os_release_ = std::move(os_release);
   }
-  void set_send_container_started_signal(bool send) {
-    send_container_started_signal_ = send;
-  }
   void set_apply_ansible_playbook_response(
       const vm_tools::cicerone::ApplyAnsiblePlaybookResponse&
           apply_ansible_playbook_response) {
@@ -320,6 +318,30 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   void set_get_vsh_session_response(
       vm_tools::cicerone::GetVshSessionResponse get_vsh_session_response) {
     get_vsh_session_response_ = std::move(get_vsh_session_response);
+  }
+
+  void set_send_container_starting_signal_delay(base::TimeDelta delay) {
+    send_container_starting_signal_delay_ = delay;
+  }
+  void set_send_container_started_signal_delay(base::TimeDelta delay) {
+    send_container_started_signal_delay_ = delay;
+  }
+  void set_send_start_lxd_response_delay(base::TimeDelta delay) {
+    send_start_lxd_response_delay_ = delay;
+  }
+  void set_send_create_lxd_container_response_delay(base::TimeDelta delay) {
+    send_create_lxd_container_response_delay_ = delay;
+  }
+  void set_send_notify_lxd_container_created_signal_delay(
+      base::TimeDelta delay) {
+    send_notify_lxd_container_created_signal_delay_ = delay;
+  }
+  void set_send_set_up_lxd_container_user_response_delay(
+      base::TimeDelta delay) {
+    send_set_up_lxd_container_user_response_delay_ = delay;
+  }
+  void set_send_start_lxd_container_response_delay(base::TimeDelta delay) {
+    send_start_lxd_container_response_delay_ = delay;
   }
 
   // Returns true if the method has been invoked at least once, false otherwise.
@@ -381,7 +403,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   bool is_file_watch_triggered_signal_connected_ = true;
 
   std::string last_container_username_;
-  bool send_container_started_signal_ = true;
 
   bool configure_for_arc_sideload_called_ = false;
 
@@ -431,6 +452,14 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   vm_tools::cicerone::AddFileWatchResponse add_file_watch_response_;
   vm_tools::cicerone::RemoveFileWatchResponse remove_file_watch_response_;
   vm_tools::cicerone::GetVshSessionResponse get_vsh_session_response_;
+
+  base::TimeDelta send_container_starting_signal_delay_;
+  base::TimeDelta send_container_started_signal_delay_;
+  base::TimeDelta send_start_lxd_response_delay_;
+  base::TimeDelta send_create_lxd_container_response_delay_;
+  base::TimeDelta send_notify_lxd_container_created_signal_delay_;
+  base::TimeDelta send_set_up_lxd_container_user_response_delay_;
+  base::TimeDelta send_start_lxd_container_response_delay_;
 
   vm_tools::cicerone::OsRelease lxd_container_os_release_;
 

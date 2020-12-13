@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 
 #include <algorithm>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -16,12 +17,15 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/crostini/ansible/ansible_management_service.h"
@@ -143,6 +147,49 @@ void EmitCorruptionStateMetric(CorruptionStates state) {
   base::UmaHistogramEnumeration("Crostini.FilesystemCorruption", state);
 }
 
+void EmitTimeInStageHistogram(base::TimeDelta duration,
+                              mojom::InstallerState state) {
+  std::string name;
+  switch (state) {
+    case mojom::InstallerState::kStart:
+      name = "Crostini.RestarterTimeInState.Start";
+      break;
+    case mojom::InstallerState::kInstallImageLoader:
+      name = "Crostini.RestarterTimeInState.InstallImageLoader";
+      break;
+    case mojom::InstallerState::kCreateDiskImage:
+      name = "Crostini.RestarterTimeInState.CreateDiskImage";
+      break;
+    case mojom::InstallerState::kStartTerminaVm:
+      name = "Crostini.RestarterTimeInState.StartTerminaVm";
+      break;
+    case mojom::InstallerState::kStartLxd:
+      name = "Crostini.RestarterTimeInState.StartLxd";
+      break;
+    case mojom::InstallerState::kCreateContainer:
+      name = "Crostini.RestarterTimeInState.CreateContainer";
+      break;
+    case mojom::InstallerState::kSetupContainer:
+      name = "Crostini.RestarterTimeInState.SetupContainer";
+      break;
+    case mojom::InstallerState::kStartContainer:
+      name = "Crostini.RestarterTimeInState.StartContainer";
+      break;
+    case mojom::InstallerState::kFetchSshKeys:
+      name = "Crostini.RestarterTimeInState.FetchSshKeys";
+      break;
+    case mojom::InstallerState::kMountContainer:
+      name = "Crostini.RestarterTimeInState.MountContainer";
+      break;
+    case mojom::InstallerState::kConfigureContainer:
+      NOTREACHED();
+      return;
+  }
+  base::UmaHistogramCustomTimes(name, duration,
+                                base::TimeDelta::FromMilliseconds(10),
+                                base::TimeDelta::FromHours(6), 50);
+}
+
 }  // namespace
 
 CrostiniManager::RestartOptions::RestartOptions() = default;
@@ -229,6 +276,45 @@ class CrostiniManager::CrostiniRestarter
     }
   }
 
+  void Timeout(mojom::InstallerState state) {
+    CrostiniResult result = CrostiniResult::UNKNOWN_STATE_TIMED_OUT;
+    LOG(ERROR) << "Timed out in state " << state;
+    switch (state) {
+      case mojom::InstallerState::kInstallImageLoader:
+        result = CrostiniResult::INSTALL_IMAGE_LOADER_TIMED_OUT;
+        break;
+      case mojom::InstallerState::kCreateDiskImage:
+        result = CrostiniResult::CREATE_DISK_IMAGE_TIMED_OUT;
+        break;
+      case mojom::InstallerState::kStartTerminaVm:
+        result = CrostiniResult::START_TERMINA_VM_TIMED_OUT;
+        break;
+      case mojom::InstallerState::kStartLxd:
+        result = CrostiniResult::START_LXD_TIMED_OUT;
+        break;
+      case mojom::InstallerState::kCreateContainer:
+        result = CrostiniResult::CREATE_CONTAINER_TIMED_OUT;
+        break;
+      case mojom::InstallerState::kSetupContainer:
+        result = CrostiniResult::SETUP_CONTAINER_TIMED_OUT;
+        break;
+      case mojom::InstallerState::kStartContainer:
+        result = CrostiniResult::START_CONTAINER_TIMED_OUT;
+        break;
+      case mojom::InstallerState::kFetchSshKeys:
+        result = CrostiniResult::FETCH_SSH_KEYS_TIMED_OUT;
+        break;
+      case mojom::InstallerState::kMountContainer:
+        result = CrostiniResult::MOUNT_CONTAINER_TIMED_OUT;
+        break;
+      case mojom::InstallerState::kConfigureContainer:
+      case mojom::InstallerState::kStart:
+        NOTREACHED();
+    }
+    // Note: FinishRestart may delete |this|.
+    FinishRestart(result);
+  }
+
   void Abort(base::OnceClosure callback) {
     is_aborted_ = true;
     observer_list_.Clear();
@@ -260,6 +346,10 @@ class CrostiniManager::CrostiniRestarter
   void OnContainerDownloading(int download_percent) {
     if (!is_running_) {
       return;
+    }
+    if (stage_timeout_timer_.IsRunning()) {
+      // We got a progress message, reset the timeout duration back to full.
+      stage_timeout_timer_.Reset();
     }
     for (auto& observer : observer_list_) {
       observer.OnContainerDownloading(download_percent);
@@ -294,6 +384,42 @@ class CrostiniManager::CrostiniRestarter
       mount_manager->RemoveObserver(this);
   }
 
+  // This is public so CallRestarterStartLxdContainerFinishedForTesting can call
+  // it.
+  void StartLxdContainerFinished(CrostiniResult result) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    CloseCrostiniUpdateFilesystemView();
+    for (auto& observer : observer_list_) {
+      observer.OnContainerStarted(result);
+    }
+    if (ReturnEarlyIfAborted()) {
+      return;
+    }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kStartContainer);
+    if (result != CrostiniResult::SUCCESS) {
+      LOG(ERROR) << "Failed to Start Lxd Container.";
+      FinishRestart(result);
+      return;
+    }
+    // If default termina/penguin, then sshfs mount and reshare folders, else we
+    // are finished.
+    // If arc sideloading is enabled, configure the container for that.
+    crostini_manager_->ConfigureForArcSideload();
+    auto info = crostini_manager_->GetContainerInfo(container_id_);
+    if (container_id_ == ContainerId::GetDefault() && info &&
+        !info->sshfs_mounted) {
+      StartStage(mojom::InstallerState::kFetchSshKeys);
+      crostini_manager_->GetContainerSshKeys(
+          container_id_,
+          base::BindOnce(&CrostiniRestarter::GetContainerSshKeysFinished,
+                         weak_ptr_factory_.GetWeakPtr(), info->username,
+                         info->homedir));
+    } else {
+      FinishRestart(result);
+    }
+  }
+
  private:
   void ContinueRestart() {
     is_running_ = true;
@@ -313,7 +439,43 @@ class CrostiniManager::CrostiniRestarter
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  base::OneShotTimer stage_timeout_timer_;
+  base::TimeTicks stage_start_;
+
+  // TODO(crbug/1153210): Better numbers for timeouts once we have data.
+  std::map<mojom::InstallerState, base::TimeDelta> stage_timeouts_ = {
+      {mojom::InstallerState::kStart, base::TimeDelta::FromMinutes(5)},
+      {mojom::InstallerState::kInstallImageLoader,
+       base::TimeDelta::FromHours(6)},  // May need to download DLC or component
+      {mojom::InstallerState::kCreateDiskImage,
+       base::TimeDelta::FromMinutes(5)},
+      {mojom::InstallerState::kStartTerminaVm, base::TimeDelta::FromMinutes(5)},
+      {mojom::InstallerState::kStartLxd, base::TimeDelta::FromMinutes(5)},
+      // While CreateContainer may need to download a file, we get progress
+      // messages that reset the countdown.
+      {mojom::InstallerState::kCreateContainer,
+       base::TimeDelta::FromMinutes(5)},
+      {mojom::InstallerState::kSetupContainer, base::TimeDelta::FromMinutes(5)},
+      {mojom::InstallerState::kStartContainer, base::TimeDelta::FromMinutes(5)},
+      {mojom::InstallerState::kFetchSshKeys, base::TimeDelta::FromMinutes(5)},
+      {mojom::InstallerState::kMountContainer, base::TimeDelta::FromMinutes(5)},
+      // ConfigureContainer is special, it's not part of the restarter flow, so
+      // it doesn't have a timeout.
+      {mojom::InstallerState::kConfigureContainer,
+       base::TimeDelta::FromHours(0)},
+  };
+
   void StartStage(mojom::InstallerState stage) {
+    EmitTimeInStageHistogram(base::TimeTicks::Now() - stage_start_, stage);
+    this->stage_ = stage;
+    stage_start_ = base::TimeTicks::Now();
+    DCHECK(stage_timeouts_.find(stage) != stage_timeouts_.end());
+    auto delay = stage_timeouts_[stage];
+    stage_timeout_timer_.Start(
+        FROM_HERE, delay,
+        base::BindOnce(&CrostiniRestarter::Timeout,
+                       weak_ptr_factory_.GetWeakPtr(), stage));
+
     for (auto& observer : observer_list_) {
       observer.OnStageStarted(stage);
     }
@@ -327,6 +489,13 @@ class CrostiniManager::CrostiniRestarter
     crostini_manager_->FinishRestart(this, result);
   }
 
+  void EmitMetricIfInIncorrectState(mojom::InstallerState expected) {
+    if (expected != stage_) {
+      base::UmaHistogramEnumeration("Crostini.InvalidStateTransition",
+                                    expected);
+    }
+  }
+
   void LoadComponentFinished(CrostiniResult result) {
     for (auto& observer : observer_list_) {
       observer.OnComponentLoaded(result);
@@ -334,6 +503,7 @@ class CrostiniManager::CrostiniRestarter
     if (ReturnEarlyIfAborted()) {
       return;
     }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kInstallImageLoader);
     if (result != CrostiniResult::SUCCESS) {
       FinishRestart(result);
       return;
@@ -365,6 +535,7 @@ class CrostiniManager::CrostiniRestarter
     if (ReturnEarlyIfAborted()) {
       return;
     }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateDiskImage);
     if (!success) {
       FinishRestart(CrostiniResult::CREATE_DISK_IMAGE_FAILED);
       return;
@@ -410,6 +581,7 @@ class CrostiniManager::CrostiniRestarter
     if (ReturnEarlyIfAborted()) {
       return;
     }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kStartTerminaVm);
     if (!success) {
       FinishRestart(CrostiniResult::VM_START_FAILED);
       return;
@@ -438,6 +610,7 @@ class CrostiniManager::CrostiniRestarter
     if (ReturnEarlyIfAborted()) {
       return;
     }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kStartLxd);
     if (result != CrostiniResult::SUCCESS) {
       FinishRestart(result);
       return;
@@ -471,6 +644,7 @@ class CrostiniManager::CrostiniRestarter
     if (ReturnEarlyIfAborted()) {
       return;
     }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateContainer);
     if (result != CrostiniResult::SUCCESS) {
       LOG(ERROR) << "Failed to Create Lxd Container.";
       FinishRestart(result);
@@ -494,6 +668,7 @@ class CrostiniManager::CrostiniRestarter
     if (ReturnEarlyIfAborted()) {
       return;
     }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kSetupContainer);
     if (!success) {
       FinishRestart(CrostiniResult::CONTAINER_SETUP_FAILED);
       return;
@@ -504,39 +679,6 @@ class CrostiniManager::CrostiniRestarter
         container_id_,
         base::BindOnce(&CrostiniRestarter::StartLxdContainerFinished,
                        weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void StartLxdContainerFinished(CrostiniResult result) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-    CloseCrostiniUpdateFilesystemView();
-    for (auto& observer : observer_list_) {
-      observer.OnContainerStarted(result);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    if (result != CrostiniResult::SUCCESS) {
-      LOG(ERROR) << "Failed to Start Lxd Container.";
-      FinishRestart(result);
-      return;
-    }
-    // If default termina/penguin, then sshfs mount and reshare folders, else we
-    // are finished.
-    // If arc sideloading is enabled, configure the container for that.
-    crostini_manager_->ConfigureForArcSideload();
-    auto info = crostini_manager_->GetContainerInfo(container_id_);
-    if (container_id_ == ContainerId::GetDefault() && info &&
-        !info->sshfs_mounted) {
-      StartStage(mojom::InstallerState::kFetchSshKeys);
-      crostini_manager_->GetContainerSshKeys(
-          container_id_,
-          base::BindOnce(&CrostiniRestarter::GetContainerSshKeysFinished,
-                         weak_ptr_factory_.GetWeakPtr(), info->username,
-                         info->homedir));
-    } else {
-      FinishRestart(result);
-    }
   }
 
   void GetContainerSshKeysFinished(const std::string& container_username,
@@ -552,6 +694,7 @@ class CrostiniManager::CrostiniRestarter
     if (ReturnEarlyIfAborted()) {
       return;
     }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kFetchSshKeys);
     if (!success) {
       FinishRestart(CrostiniResult::GET_CONTAINER_SSH_KEYS_FAILED);
       return;
@@ -586,6 +729,7 @@ class CrostiniManager::CrostiniRestarter
         mount_info.source_path != source_path_) {
       return;
     }
+    EmitMetricIfInIncorrectState(mojom::InstallerState::kMountContainer);
     bool success = error_code == chromeos::MountError::MOUNT_ERROR_NONE;
     for (auto& observer : observer_list_) {
       observer.OnContainerMounted(success);
@@ -646,6 +790,7 @@ class CrostiniManager::CrostiniRestarter
   CrostiniManager::RestartId restart_id_;
   bool is_aborted_ = false;
   bool is_running_ = false;
+  mojom::InstallerState stage_ = mojom::InstallerState::kStart;
 
   static CrostiniManager::RestartId next_restart_id_;
 
@@ -1015,6 +1160,9 @@ void CrostiniManager::MaybeUpdateCrostiniAfterChecks() {
 }
 
 void CrostiniManager::InstallTermina(CrostiniResultCallback callback) {
+  if (install_termina_never_completes_) {
+    return;
+  }
   termina_installer_.Install(base::BindOnce(
       [](CrostiniResultCallback callback,
          TerminaInstaller::InstallResult result) {
@@ -3532,5 +3680,13 @@ void CrostiniManager::EmitVmDiskTypeMetric(const std::string vm_name) {
           }
         }
       }));
+}
+
+void CrostiniManager::CallRestarterStartLxdContainerFinishedForTesting(
+    CrostiniManager::RestartId id,
+    CrostiniResult result) {
+  auto restarter_it = restarters_by_id_.find(id);
+  DCHECK(restarter_it != restarters_by_id_.end());
+  restarter_it->second->StartLxdContainerFinished(result);
 }
 }  // namespace crostini

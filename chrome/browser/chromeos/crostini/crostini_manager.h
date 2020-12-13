@@ -645,6 +645,12 @@ class CrostiniManager : public KeyedService,
       CrostiniMicSharingEnabledObserver* observer);
   void RemoveCrostiniMicSharingEnabledObserver(
       CrostiniMicSharingEnabledObserver* observer);
+  void CallRestarterStartLxdContainerFinishedForTesting(
+      CrostiniManager::RestartId id,
+      CrostiniResult result);
+  void SetInstallTerminaNeverCompletesForTesting(bool never_completes) {
+    install_termina_never_completes_ = never_completes;
+  }
 
  private:
   class CrostiniRestarter;
@@ -929,6 +935,8 @@ class CrostiniManager : public KeyedService,
       upgrade_available_notification_;
 
   TerminaInstaller termina_installer_{};
+
+  bool install_termina_never_completes_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

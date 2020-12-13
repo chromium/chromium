@@ -215,9 +215,10 @@ void FakeCiceroneClient::CreateLxdContainer(
     const vm_tools::cicerone::CreateLxdContainerRequest& request,
     DBusMethodCallback<vm_tools::cicerone::CreateLxdContainerResponse>
         callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), create_lxd_container_response_));
+      base::BindOnce(std::move(callback), create_lxd_container_response_),
+      send_create_lxd_container_response_delay_);
 
   // Trigger CiceroneClient::Observer::NotifyLxdContainerCreatedSignal.
   vm_tools::cicerone::LxdContainerCreatedSignal signal;
@@ -225,9 +226,11 @@ void FakeCiceroneClient::CreateLxdContainer(
   signal.set_vm_name(request.vm_name());
   signal.set_container_name(request.container_name());
   signal.set_status(lxd_container_created_signal_status_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeCiceroneClient::NotifyLxdContainerCreated,
-                                weak_factory_.GetWeakPtr(), std::move(signal)));
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeCiceroneClient::NotifyLxdContainerCreated,
+                     weak_factory_.GetWeakPtr(), std::move(signal)),
+      send_notify_lxd_container_created_signal_delay_);
 }
 
 void FakeCiceroneClient::DeleteLxdContainer(
@@ -245,33 +248,35 @@ void FakeCiceroneClient::StartLxdContainer(
         callback) {
   start_lxd_container_response_.mutable_os_release()->CopyFrom(
       lxd_container_os_release_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), start_lxd_container_response_));
+      base::BindOnce(std::move(callback), start_lxd_container_response_),
+      send_start_lxd_container_response_delay_);
 
   // Trigger CiceroneClient::Observer::NotifyLxdContainerStartingSignal.
-  vm_tools::cicerone::LxdContainerStartingSignal signal;
-  signal.set_owner_id(request.owner_id());
-  signal.set_vm_name(request.vm_name());
-  signal.set_container_name(request.container_name());
-  signal.set_status(lxd_container_starting_signal_status_);
-  signal.mutable_os_release()->CopyFrom(lxd_container_os_release_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeCiceroneClient::NotifyLxdContainerStarting,
-                                weak_factory_.GetWeakPtr(), std::move(signal)));
+  vm_tools::cicerone::LxdContainerStartingSignal starting_signal;
+  starting_signal.set_owner_id(request.owner_id());
+  starting_signal.set_vm_name(request.vm_name());
+  starting_signal.set_container_name(request.container_name());
+  starting_signal.set_status(lxd_container_starting_signal_status_);
+  starting_signal.mutable_os_release()->CopyFrom(lxd_container_os_release_);
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeCiceroneClient::NotifyLxdContainerStarting,
+                     weak_factory_.GetWeakPtr(), std::move(starting_signal)),
+      send_container_starting_signal_delay_);
 
-  if (send_container_started_signal_) {
-    // Trigger CiceroneClient::Observer::NotifyContainerStartedSignal.
-    vm_tools::cicerone::ContainerStartedSignal signal;
-    signal.set_owner_id(request.owner_id());
-    signal.set_vm_name(request.vm_name());
-    signal.set_container_name(request.container_name());
-    signal.set_container_username(last_container_username_);
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FakeCiceroneClient::NotifyContainerStarted,
-                       weak_factory_.GetWeakPtr(), std::move(signal)));
-  }
+  // Trigger CiceroneClient::Observer::NotifyContainerStartedSignal.
+  vm_tools::cicerone::ContainerStartedSignal started_signal;
+  started_signal.set_owner_id(request.owner_id());
+  started_signal.set_vm_name(request.vm_name());
+  started_signal.set_container_name(request.container_name());
+  started_signal.set_container_username(last_container_username_);
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeCiceroneClient::NotifyContainerStarted,
+                     weak_factory_.GetWeakPtr(), std::move(started_signal)),
+      send_container_started_signal_delay_);
 }
 
 void FakeCiceroneClient::GetLxdContainerUsername(
@@ -289,9 +294,10 @@ void FakeCiceroneClient::SetUpLxdContainerUser(
     DBusMethodCallback<vm_tools::cicerone::SetUpLxdContainerUserResponse>
         callback) {
   last_container_username_ = request.container_username();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), setup_lxd_container_user_response_));
+      base::BindOnce(std::move(callback), setup_lxd_container_user_response_),
+      send_set_up_lxd_container_user_response_delay_);
 }
 
 void FakeCiceroneClient::ExportLxdContainer(
@@ -369,8 +375,9 @@ void FakeCiceroneClient::CancelUpgradeContainer(
 void FakeCiceroneClient::StartLxd(
     const vm_tools::cicerone::StartLxdRequest& request,
     DBusMethodCallback<vm_tools::cicerone::StartLxdResponse> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), start_lxd_response_));
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), start_lxd_response_),
+      send_start_lxd_response_delay_);
 }
 
 void FakeCiceroneClient::AddFileWatch(

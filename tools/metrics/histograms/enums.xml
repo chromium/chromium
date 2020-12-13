@@ -14641,6 +14641,22 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="5" label="Failed Insufficient Space"/>
 </enum>
 
+<enum name="CrostiniInstallerState">
+<!-- Keep this in sync with InstallerState in crostini_types.mojom -->
+
+  <int value="0" label="Start"/>
+  <int value="1" label="InstallImageLoader"/>
+  <int value="2" label="CreateDiskImage"/>
+  <int value="3" label="StartTerminaVm"/>
+  <int value="4" label="StartLxd"/>
+  <int value="5" label="CreateContainer"/>
+  <int value="6" label="SetupContainer"/>
+  <int value="7" label="StartContainer"/>
+  <int value="8" label="FetchSshKeys"/>
+  <int value="9" label="MountContainer"/>
+  <int value="10" label="ConfigureContainer"/>
+</enum>
+
 <enum name="CrostiniResult">
   <int value="0" label="SUCCESS"/>
   <int value="4" label="CREATE_DISK_IMAGE_FAILED"/>
@@ -14684,6 +14700,16 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="49" label="NEVER_FINISHED"/>
   <int value="50" label="CONTAINER_SETUP_FAILED"/>
   <int value="51" label="START_LXD_FAILED"/>
+  <int value="52" label="INSTALL_IMAGE_LOADER_TIMED_OUT"/>
+  <int value="53" label="CREATE_DISK_IMAGE_TIMED_OUT"/>
+  <int value="54" label="START_TERMINA_VM_TIMED_OUT"/>
+  <int value="55" label="START_LXD_TIMED_OUT"/>
+  <int value="56" label="CREATE_CONTAINER_TIMED_OUT"/>
+  <int value="57" label="SETUP_CONTAINER_TIMED_OUT"/>
+  <int value="58" label="START_CONTAINER_TIMED_OUT"/>
+  <int value="59" label="FETCH_SSH_KEYS_TIMED_OUT"/>
+  <int value="60" label="MOUNT_CONTAINER_TIMED_OUT"/>
+  <int value="61" label="UNKNOWN_STATE_TIMED_OUT"/>
 </enum>
 
 <enum name="CrostiniSettingsEvent">

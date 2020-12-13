@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
 
@@ -252,6 +253,19 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
     resize_disk_image_response_ = resize_disk_image_response;
   }
 
+  void set_send_create_disk_image_response_delay(base::TimeDelta delay) {
+    send_create_disk_image_response_delay_ = delay;
+  }
+  void set_send_start_vm_response_delay(base::TimeDelta delay) {
+    send_start_vm_response_delay_ = delay;
+  }
+  void set_send_tremplin_started_signal_delay(base::TimeDelta delay) {
+    send_tremplin_started_signal_delay_ = delay;
+  }
+  void send_get_container_ssh_keys_response_delay(base::TimeDelta delay) {
+    send_get_container_ssh_keys_response_delay_ = delay;
+  }
+
   void NotifyVmStarted(const vm_tools::concierge::VmStartedSignal& signal);
   void NotifyVmStopped(const vm_tools::concierge::VmStoppedSignal& signal);
   bool HasVmObservers() const;
@@ -327,6 +341,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   base::Optional<vm_tools::concierge::ResizeDiskImageResponse>
       resize_disk_image_response_;
   base::Optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response_;
+
+  base::TimeDelta send_create_disk_image_response_delay_;
+  base::TimeDelta send_start_vm_response_delay_;
+  base::TimeDelta send_tremplin_started_signal_delay_;
+  base::TimeDelta send_get_container_ssh_keys_response_delay_;
 
   // Can be set to fake a series of disk image status signals.
   std::vector<vm_tools::concierge::DiskImageStatusResponse>

@@ -12,10 +12,12 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_util.h"
@@ -63,6 +65,7 @@ constexpr int64_t kDiskSizeBytes = 4ll * 1024 * 1024 * 1024;  // 4 GiB
 const char kTerminaKernelVersion[] =
     "4.19.56-05556-gca219a5b1086 #3 SMP PREEMPT Mon Jul 1 14:36:38 CEST 2019";
 const char kCrostiniCorruptionHistogram[] = "Crostini.FilesystemCorruption";
+constexpr auto kLongTime = base::TimeDelta::FromDays(1);
 
 void ExpectFailure(base::OnceClosure closure, bool success) {
   EXPECT_FALSE(success);
@@ -170,7 +173,8 @@ class CrostiniManagerTest : public testing::Test {
   }
 
   CrostiniManagerTest()
-      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
+      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         local_state_(std::make_unique<ScopedTestingLocalState>(
             TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
@@ -198,8 +202,7 @@ class CrostiniManagerTest : public testing::Test {
     browser_part_.InitializeCrosComponentManager(component_manager_);
     chromeos::DlcserviceClient::InitializeFake();
 
-    scoped_feature_list_.InitWithFeatures(
-        {features::kCrostini, features::kCrostiniArcSideload}, {});
+    scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
     run_loop_ = std::make_unique<base::RunLoop>();
     profile_ = std::make_unique<TestingProfile>();
     crostini_manager_ = CrostiniManager::GetForProfile(profile_.get());
@@ -260,9 +263,9 @@ class CrostiniManagerTest : public testing::Test {
   const ContainerId container_id_ = ContainerId(kVmName, kContainerName);
   device::FakeUsbDeviceManager fake_usb_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
@@ -659,6 +662,12 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
     }
   }
 
+  void OnLxdStarted(CrostiniResult result) override {
+    if (abort_on_lxd_started_) {
+      Abort();
+    }
+  }
+
   void OnContainerCreated(CrostiniResult result) override {
     if (abort_on_container_created_) {
       Abort();
@@ -753,6 +762,7 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   bool abort_on_component_loaded_ = false;
   bool abort_on_disk_image_created_ = false;
   bool abort_on_vm_started_ = false;
+  bool abort_on_lxd_started_ = false;
   bool abort_on_container_created_ = false;
   bool abort_on_container_started_ = false;
   bool abort_on_container_setup_ = false;
@@ -792,6 +802,8 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
   EXPECT_EQ(container_info.value().username,
             DefaultContainerUserNameForProfile(profile()));
   ExpectRestarterUmaCount(1);
+  histogram_tester_.ExpectTotalCount(
+      "Crostini.RestarterTimeInState.StartTerminaVm", 1);
 }
 
 TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {
@@ -888,6 +900,20 @@ TEST_F(CrostiniManagerRestartTest, AbortOnComponentLoaded) {
   ExpectRestarterUmaCount(1);
 }
 
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringComponentLoaded) {
+  crostini_manager()->SetInstallTerminaNeverCompletesForTesting(true);
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_FALSE(fake_concierge_client_->create_disk_image_called());
+  ExpectCrostiniRestartResult(CrostiniResult::INSTALL_IMAGE_LOADER_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
 TEST_F(CrostiniManagerRestartTest, AbortOnDiskImageCreated) {
   abort_on_disk_image_created_ = true;
   restart_id_ = crostini_manager()->RestartCrostini(
@@ -901,6 +927,41 @@ TEST_F(CrostiniManagerRestartTest, AbortOnDiskImageCreated) {
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateDiskImage) {
+  fake_concierge_client_->set_send_create_disk_image_response_delay(
+      base::TimeDelta::Max());
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_FALSE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::CREATE_DISK_IMAGE_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, UnexpectedTransitionsRecorded) {
+  fake_concierge_client_->set_send_create_disk_image_response_delay(
+      base::TimeDelta::Max());
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  // Run until we're sitting in the CreateDiskImage step that'll never return,
+  // then try triggering a different transition.
+  run_loop()->RunUntilIdle();
+  crostini_manager()->CallRestarterStartLxdContainerFinishedForTesting(
+      restart_id_, CrostiniResult::CONTAINER_START_FAILED);
+  histogram_tester_.ExpectUniqueSample("Crostini.InvalidStateTransition",
+                                       mojom::InstallerState::kStartContainer,
+                                       1);
 }
 
 TEST_F(CrostiniManagerRestartTest, AbortOnVmStarted) {
@@ -918,6 +979,93 @@ TEST_F(CrostiniManagerRestartTest, AbortOnVmStarted) {
   ExpectRestarterUmaCount(1);
 }
 
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartVm) {
+  fake_concierge_client_->set_send_start_vm_response_delay(
+      base::TimeDelta::Max());
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::START_TERMINA_VM_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForVmStarted) {
+  fake_concierge_client_->set_send_tremplin_started_signal_delay(
+      base::TimeDelta::Max());
+  vm_tools::concierge::StartVmResponse response;
+  response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_STARTING);
+  fake_concierge_client_->set_start_vm_response(response);
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::START_TERMINA_VM_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, AbortOnLxdStarted) {
+  abort_on_lxd_started_ = true;
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartLxd) {
+  fake_cicerone_client_->set_send_start_lxd_response_delay(
+      base::TimeDelta::Max());
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::START_LXD_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForLxdStarted) {
+  vm_tools::cicerone::StartLxdResponse response;
+  response.set_status(vm_tools::cicerone::StartLxdResponse::STARTING);
+  fake_cicerone_client_->set_start_lxd_response(response);
+  restart_id_ = crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::START_LXD_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
 TEST_F(CrostiniManagerRestartTest, AbortOnContainerCreated) {
   abort_on_container_created_ = true;
   // Use termina/penguin names to allow fetch ssh keys.
@@ -931,6 +1079,70 @@ TEST_F(CrostiniManagerRestartTest, AbortOnContainerCreated) {
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateContainer) {
+  fake_cicerone_client_->set_send_create_lxd_container_response_delay(
+      base::TimeDelta::Max());
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      ContainerId::GetDefault(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerCreated) {
+  fake_cicerone_client_->set_send_notify_lxd_container_created_signal_delay(
+      base::TimeDelta::Max());
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      ContainerId::GetDefault(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, HeartbeatKeepsCreateContainerFromTimingOut) {
+  fake_cicerone_client_->set_send_notify_lxd_container_created_signal_delay(
+      base::TimeDelta::Max());
+  vm_tools::cicerone::LxdContainerDownloadingSignal signal;
+  signal.set_container_name(ContainerId::GetDefault().container_name);
+  signal.set_vm_name(ContainerId::GetDefault().vm_name);
+  signal.set_owner_id(CryptohomeIdForProfile(profile()));
+
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      ContainerId::GetDefault(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(4));
+  crostini_manager_->OnLxdContainerDownloading(signal);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(4));
+  ASSERT_EQ(0, restart_crostini_callback_count_);
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(6));
+  ASSERT_EQ(1, restart_crostini_callback_count_);
+
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
@@ -985,6 +1197,57 @@ TEST_F(CrostiniManagerRestartTest, AbortOnContainerSetup) {
   ExpectRestarterUmaCount(1);
 }
 
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringContainerSetup) {
+  fake_cicerone_client_->set_send_set_up_lxd_container_user_response_delay(
+      base::TimeDelta::Max());
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      ContainerId::GetDefault(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::SETUP_CONTAINER_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartContainer) {
+  fake_cicerone_client_->set_send_start_lxd_container_response_delay(
+      base::TimeDelta::Max());
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      ContainerId::GetDefault(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  ExpectCrostiniRestartResult(CrostiniResult::START_CONTAINER_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerStarted) {
+  fake_cicerone_client_->set_send_container_started_signal_delay(
+      base::TimeDelta::Max());
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      ContainerId::GetDefault(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::START_CONTAINER_TIMED_OUT);
+  ExpectRestarterUmaCount(1);
+}
+
 TEST_F(CrostiniManagerRestartTest, AbortOnSshKeysFetched) {
   abort_on_ssh_keys_fetched_ = true;
   // Use termina/penguin names to allow fetch ssh keys.
@@ -998,6 +1261,24 @@ TEST_F(CrostiniManagerRestartTest, AbortOnSshKeysFetched) {
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_TRUE(fake_concierge_client_->get_container_ssh_keys_called());
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
+  ExpectRestarterUmaCount(1);
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringSshKeysFetched) {
+  fake_concierge_client_->send_get_container_ssh_keys_response_delay(
+      base::TimeDelta::Max());
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      ContainerId::GetDefault(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_TRUE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::FETCH_SSH_KEYS_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
@@ -1078,6 +1359,31 @@ TEST_F(CrostiniManagerRestartTest, AbortOnMountEventWithError) {
   EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_TRUE(fake_concierge_client_->get_container_ssh_keys_called());
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
+  ExpectRestarterUmaCount(1);
+
+  chromeos::disks::DiskMountManager::Shutdown();
+}
+
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringMountContainer) {
+  disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
+  chromeos::disks::DiskMountManager::InitializeForTesting(
+      disk_mount_manager_mock_);
+  disk_mount_manager_mock_->SetupDefaultReplies();
+  // EXPECT_CALL(*disk_mount_manager_mock_, MountPath)
+  //     .WillOnce(base::DoNothing::Once());
+
+  // Use termina/penguin names to allow fetch ssh keys.
+  restart_id_ = crostini_manager()->RestartCrostini(
+      ContainerId::GetDefault(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      this);
+  task_environment_.FastForwardBy(kLongTime);
+  run_loop()->Run();
+  EXPECT_TRUE(fake_concierge_client_->create_disk_image_called());
+  EXPECT_TRUE(fake_concierge_client_->start_termina_vm_called());
+  EXPECT_TRUE(fake_concierge_client_->get_container_ssh_keys_called());
+  ExpectCrostiniRestartResult(CrostiniResult::MOUNT_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 
   chromeos::disks::DiskMountManager::Shutdown();
@@ -1384,7 +1690,8 @@ TEST_F(CrostiniManagerRestartTest, UninstallThenRestart) {
 }
 
 TEST_F(CrostiniManagerRestartTest, VmStoppedDuringRestart) {
-  fake_cicerone_client_->set_send_container_started_signal(false);
+  fake_cicerone_client_->set_send_container_started_signal_delay(
+      base::TimeDelta::Max());
   restart_id_ = crostini_manager()->RestartCrostini(
       container_id(),
       base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,

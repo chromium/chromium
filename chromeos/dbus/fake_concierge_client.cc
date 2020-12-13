@@ -81,9 +81,10 @@ void FakeConciergeClient::CreateDiskImage(
     const vm_tools::concierge::CreateDiskImageRequest& request,
     DBusMethodCallback<vm_tools::concierge::CreateDiskImageResponse> callback) {
   create_disk_image_called_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), create_disk_image_response_));
+      base::BindOnce(std::move(callback), create_disk_image_response_),
+      send_create_disk_image_response_delay_);
 }
 
 void FakeConciergeClient::CreateDiskImageWithFd(
@@ -166,8 +167,9 @@ void FakeConciergeClient::StartTerminaVm(
     const vm_tools::concierge::StartVmRequest& request,
     DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
   start_termina_vm_called_ = true;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), start_vm_response_));
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), start_vm_response_),
+      send_start_vm_response_delay_);
 
   if (!start_vm_response_ ||
       start_vm_response_->status() != vm_tools::concierge::VM_STATUS_STARTING) {
@@ -179,10 +181,12 @@ void FakeConciergeClient::StartTerminaVm(
   vm_tools::cicerone::TremplinStartedSignal tremplin_started_signal;
   tremplin_started_signal.set_vm_name(request.name());
   tremplin_started_signal.set_owner_id(request.owner_id());
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeConciergeClient::NotifyTremplinStarted,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                std::move(tremplin_started_signal)));
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeConciergeClient::NotifyTremplinStarted,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(tremplin_started_signal)),
+      send_tremplin_started_signal_delay_);
 }
 
 void FakeConciergeClient::NotifyTremplinStarted(
@@ -263,9 +267,10 @@ void FakeConciergeClient::GetContainerSshKeys(
         callback) {
   get_container_ssh_keys_called_ = true;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), container_ssh_keys_response_));
+      base::BindOnce(std::move(callback), container_ssh_keys_response_),
+      send_get_container_ssh_keys_response_delay_);
 }
 
 void FakeConciergeClient::AttachUsbDevice(
