@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string16.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager_factory.h"
@@ -25,7 +26,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
+#include "media/capture/video/chromeos/public/cros_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -84,6 +88,15 @@ VmCameraMicManager::VmCameraMicManager(Profile* profile)
   for (VmType vm : {VmType::kCrostiniVm, VmType::kPluginVm}) {
     notification_map_[vm] = {};
   }
+
+  // Camera service does not behave in non ChromeOS environment (e.g. testing,
+  // linux chromeos).
+  if (base::SysInfo::IsRunningOnChromeOS() &&
+      media::ShouldUseCrosCameraService()) {
+    // OnActiveClientChange() will be called automatically after the
+    // subscription, so there is no need to get the current status here.
+    camera_observation_.Observe(media::CameraHalDispatcherImpl::GetInstance());
+  }
 }
 
 VmCameraMicManager::~VmCameraMicManager() = default;
@@ -140,6 +153,21 @@ bool VmCameraMicManager::IsNotificationActive(DeviceType device) const {
     }
   }
   return false;
+}
+
+void VmCameraMicManager::OnActiveClientChange(
+    cros::mojom::CameraClientType type,
+    bool is_active) {
+  // TODO(b/167491603): `UNKNOWN` is for Parallels using v0 camera API. We
+  // should be able to remove it soon.
+  if (type == cros::mojom::CameraClientType::UNKNOWN ||
+      type == cros::mojom::CameraClientType::PLUGINVM) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VmCameraMicManager::SetActive,
+                       weak_ptr_factory_.GetWeakPtr(), VmType::kPluginVm,
+                       DeviceType::kCamera, is_active));
+  }
 }
 
 void VmCameraMicManager::AddObserver(Observer* observer) {

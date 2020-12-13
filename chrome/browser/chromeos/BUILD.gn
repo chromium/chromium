@@ -316,6 +316,7 @@ source_set("chromeos") {
     "//components/unified_consent",
     "//components/user_manager",
     "//components/vector_icons",
+    "//media/capture/video/chromeos/public:public",
 
     # This depends directly on the variations target, rather than just
     # transitively via the common target because the proto sources need to
