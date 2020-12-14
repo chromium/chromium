@@ -1,8 +1,8 @@
-CONSOLE ERROR: 'plugin-types' Content Security Policy directive is empty; all plugins will be blocked.
+CONSOLE ERROR: 'plugin-types' Content Security Policy directive is empty; all plugins will be blocked. To disallow all plugins, the "object-src 'none'" directive should be used instead.
 
 CONSOLE ERROR: line 16: Refused to load 'data:application/x-blink-test-plugin,' (MIME type 'application/x-blink-test-plugin') because it violates the following Content Security Policy Directive: 'plugin-types '.
 
-CONSOLE ERROR: 'plugin-types' Content Security Policy directive is empty; all plugins will be blocked.
+CONSOLE ERROR: 'plugin-types' Content Security Policy directive is empty; all plugins will be blocked. To disallow all plugins, the "object-src 'none'" directive should be used instead.
 
 CONSOLE ERROR: line 16: Refused to load 'data:application/x-blink-test-plugin,' (MIME type 'application/x-blink-test-plugin') because it violates the following Content Security Policy Directive: 'plugin-types '.
 
