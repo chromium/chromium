@@ -7,6 +7,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "base/files/file_path.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_save_handler.h"
 
 namespace {
 
@@ -20,11 +21,11 @@ namespace full_restore {
 
 void SaveAppLaunchInfo(const base::FilePath& profile_dir,
                        std::unique_ptr<AppLaunchInfo> app_launch_info) {
-  if (!ash::features::IsFullRestoreEnabled())
+  if (!ash::features::IsFullRestoreEnabled() || !app_launch_info)
     return;
 
-  // TODO(crbug.com/1146900): Save the app launch parameters to the full restore
-  // file.
+  FullRestoreSaveHandler::GetInstance()->SaveAppLaunchInfo(
+      profile_dir, std::move(app_launch_info));
 }
 
 bool ShouldRestore() {

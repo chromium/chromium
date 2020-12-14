@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
