@@ -618,9 +618,10 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
+// TODO(crbug/1158343): Re-enable when not flaky.
 IN_PROC_BROWSER_TEST_F(
     OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest,
-    IncognitoCanStillReadFromComponentHints) {
+    DISABLED_IncognitoCanStillReadFromComponentHints) {
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideKeyedServiceFactory::GetForProfile(
       browser()->profile()->GetPrimaryOTRProfile())

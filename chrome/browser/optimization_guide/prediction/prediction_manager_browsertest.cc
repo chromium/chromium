@@ -701,9 +701,9 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(IncognitoDoesntFetchModels)) {
+// TODO(crbug/1158257): Re-enable when not flaky.
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       DISABLED_IncognitoDoesntFetchModels) {
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
                       kSuccessfulWithModelsAndFeatures);
   base::HistogramTester histogram_tester;
