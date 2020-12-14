@@ -529,7 +529,7 @@ void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
   DictionaryPrefUpdate update(prefs_, kPrefAlwaysTranslateLists);
   base::DictionaryValue* dict = update.Get();
   if (!dict) {
-    NOTREACHED() << "Unregistered translate whitelist pref";
+    NOTREACHED() << "Always translate pref is unregistered";
     return;
   }
   dict->SetStringKey(original_language, target_language);
@@ -541,7 +541,7 @@ void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
   DictionaryPrefUpdate update(prefs_, kPrefAlwaysTranslateLists);
   base::DictionaryValue* dict = update.Get();
   if (!dict) {
-    NOTREACHED() << "Unregistered translate whitelist pref";
+    NOTREACHED() << "Always translate pref is unregistered";
     return;
   }
   dict->RemoveKey(original_language);
