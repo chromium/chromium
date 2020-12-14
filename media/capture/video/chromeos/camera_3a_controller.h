@@ -50,6 +50,11 @@ class CAPTURE_EXPORT Camera3AController final
   // only effective if |enable_auto| is set to false
   void SetExposureTime(bool enable_auto, int64_t exposure_time_nanoseconds);
 
+  // Set focus distance.
+  // |enable_auto| enables auto focus mode. |focus_distance_diopters| is only
+  // effective if |enable_auto| is set to false
+  void SetFocusDistance(bool enable_auto, float focus_distance_diopters);
+
   bool IsPointOfInterestSupported();
 
   // Set point of interest. The coordinate system is based on the active
