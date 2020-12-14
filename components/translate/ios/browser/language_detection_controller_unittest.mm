@@ -111,8 +111,8 @@ TEST_F(LanguageDetectionControllerTest, OnTextCaptured) {
   EXPECT_NE(nullptr, details);
   EXPECT_EQ(kRootLanguage, details->html_root_language);
   EXPECT_EQ(kContentLanguage, details->content_language);
-  EXPECT_FALSE(details->is_cld_reliable);
-  EXPECT_EQ(kUndefined, details->cld_language);
+  EXPECT_FALSE(details->is_model_reliable);
+  EXPECT_EQ(kUndefined, details->model_detected_language);
 }
 
 // Tests that Content-Language response header is used if httpContentLanguage

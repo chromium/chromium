@@ -69,7 +69,7 @@ class PerFrameContentTranslateDriverTest
   }
 
   bool HasGoodContentDetection() const {
-    return observer_.GetObservedDetails().is_cld_reliable;
+    return observer_.GetObservedDetails().is_model_reliable;
   }
 
   bool DoNotTranslate() const {

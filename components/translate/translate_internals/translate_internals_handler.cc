@@ -92,8 +92,8 @@ void TranslateInternalsHandler::AddLanguageDetectionDetails(
   dict.SetDouble("time", details.time.ToJsTime());
   dict.SetString("url", details.url.spec());
   dict.SetString("content_language", details.content_language);
-  dict.SetString("cld_language", details.cld_language);
-  dict.SetBoolean("is_cld_reliable", details.is_cld_reliable);
+  dict.SetString("model_detected_language", details.model_detected_language);
+  dict.SetBoolean("is_model_reliable", details.is_model_reliable);
   dict.SetBoolean("has_notranslate", details.has_notranslate);
   dict.SetString("html_root_language", details.html_root_language);
   dict.SetString("adopted_language", details.adopted_language);

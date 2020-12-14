@@ -27,8 +27,8 @@ struct LanguageDetectionDetails {
   mojo_base.mojom.Time time;
   url.mojom.Url url;
   string content_language;
-  string cld_language;
-  bool is_cld_reliable;
+  string model_detected_language;
+  bool is_model_reliable;
   bool has_notranslate;
   string html_root_language;
   string adopted_language;

@@ -20,10 +20,10 @@ LanguageDetectionServiceImpl::~LanguageDetectionServiceImpl() = default;
 void LanguageDetectionServiceImpl::DetermineLanguage(
     const ::base::string16& text,
     DetermineLanguageCallback callback) {
-  bool is_cld_reliable = false;
-  std::string cld_language = translate::DetermineTextLanguage(
-      base::UTF16ToUTF8(text), &is_cld_reliable);
-  std::move(callback).Run(cld_language, is_cld_reliable);
+  bool is_model_reliable = false;
+  std::string model_detected_language = translate::DetermineTextLanguage(
+      base::UTF16ToUTF8(text), &is_model_reliable);
+  std::move(callback).Run(model_detected_language, is_model_reliable);
 }
 
 }  // namespace language_detection

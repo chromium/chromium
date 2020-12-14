@@ -398,9 +398,9 @@ cr.define('cr.translateInternals', function() {
         tr, formatLanguageCode(detail['content_language']),
         'detection-logs-content-language');
     appendTD(
-        tr, formatLanguageCode(detail['cld_language']),
+        tr, formatLanguageCode(detail['model_detected_language']),
         'detection-logs-cld-language');
-    appendTD(tr, detail['is_cld_reliable'], 'detection-logs-is-cld-reliable');
+    appendTD(tr, detail['is_model_reliable'], 'detection-logs-is-cld-reliable');
     appendTD(tr, detail['has_notranslate'], 'detection-logs-has-notranslate');
     appendTD(
         tr, formatLanguageCode(detail['html_root_language']),

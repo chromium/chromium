@@ -77,8 +77,8 @@ TEST_F(IOSLanguageDetectionTabHelperObserverBridgeTest, OnLanguageDetermined) {
 
   translate::LanguageDetectionDetails details;
   details.content_language = kContentLanguage;
-  details.cld_language = kUndefined;
-  details.is_cld_reliable = true;
+  details.model_detected_language = kUndefined;
+  details.is_model_reliable = true;
   details.has_notranslate = true;
   details.html_root_language = kRootLanguage;
   details.adopted_language = kAdoptedLanguage;
@@ -89,8 +89,8 @@ TEST_F(IOSLanguageDetectionTabHelperObserverBridgeTest, OnLanguageDetermined) {
   const translate::LanguageDetectionDetails& forwarded_details =
       observer().languageDetectionDetails;
   EXPECT_EQ(kContentLanguage, forwarded_details.content_language);
-  EXPECT_EQ(kUndefined, forwarded_details.cld_language);
-  EXPECT_TRUE(forwarded_details.is_cld_reliable);
+  EXPECT_EQ(kUndefined, forwarded_details.model_detected_language);
+  EXPECT_TRUE(forwarded_details.is_model_reliable);
   EXPECT_TRUE(forwarded_details.has_notranslate);
   EXPECT_EQ(kRootLanguage, forwarded_details.html_root_language);
   EXPECT_EQ(kAdoptedLanguage, forwarded_details.adopted_language);

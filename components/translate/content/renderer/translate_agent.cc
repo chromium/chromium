@@ -142,8 +142,8 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
   details.time = base::Time::Now();
   details.url = web_detection_details.url;
   details.content_language = content_language;
-  details.cld_language = model_detected_language;
-  details.is_cld_reliable = is_model_reliable;
+  details.model_detected_language = model_detected_language;
+  details.is_model_reliable = is_model_reliable;
   details.has_notranslate = web_detection_details.has_no_translate_meta;
   details.html_root_language = html_lang;
   details.adopted_language = language;

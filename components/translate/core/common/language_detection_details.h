@@ -29,16 +29,16 @@ struct LanguageDetectionDetails {
   // The language detected by the content (Content-Language).
   std::string content_language;
 
-  // The language detected by CLD.
-  std::string cld_language;
+  // The language detected by the model.
+  std::string model_detected_language;
 
-  // Whether the CLD detection is reliable or not.
-  bool is_cld_reliable;
+  // Whether the model detection is reliable or not.
+  bool is_model_reliable = false;
 
   // Whether the notranslate is specified in head tag as a meta;
   //   <meta name="google" value="notranslate"> or
   //   <meta name="google" content="notranslate">.
-  bool has_notranslate;
+  bool has_notranslate = false;
 
   // The language written in the lang attribute of the html element.
   std::string html_root_language;

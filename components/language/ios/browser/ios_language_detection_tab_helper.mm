@@ -43,8 +43,8 @@ void IOSLanguageDetectionTabHelper::RemoveObserver(Observer* observer) {
 void IOSLanguageDetectionTabHelper::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   // Update language histogram.
-  if (url_language_histogram_ && details.is_cld_reliable) {
-    url_language_histogram_->OnPageVisited(details.cld_language);
+  if (url_language_histogram_ && details.is_model_reliable) {
+    url_language_histogram_->OnPageVisited(details.model_detected_language);
   }
 
   for (auto& observer : observer_list_) {

@@ -102,10 +102,10 @@ bool StructTraits<translate::mojom::LanguageDetectionDetailsDataView,
     return false;
   if (!data.ReadContentLanguage(&out->content_language))
     return false;
-  if (!data.ReadCldLanguage(&out->cld_language))
+  if (!data.ReadModelDetectedLanguage(&out->model_detected_language))
     return false;
 
-  out->is_cld_reliable = data.is_cld_reliable();
+  out->is_model_reliable = data.is_model_reliable();
   out->has_notranslate = data.has_notranslate();
 
   if (!data.ReadHtmlRootLanguage(&out->html_root_language))

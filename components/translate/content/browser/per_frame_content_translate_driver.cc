@@ -354,8 +354,8 @@ void PerFrameContentTranslateDriver::OnPageLanguageDetermined(
 
   // If we have a language histogram (i.e. we're not in incognito), update it
   // with the detected language of every page visited.
-  if (language_histogram() && details.is_cld_reliable)
-    language_histogram()->OnPageVisited(details.cld_language);
+  if (language_histogram() && details.is_model_reliable)
+    language_histogram()->OnPageVisited(details.model_detected_language);
 
   if (translate_manager() && web_contents()) {
     translate_manager()->GetLanguageState()->LanguageDetermined(
@@ -406,8 +406,8 @@ void PerFrameContentTranslateDriver::OnPageContentsLanguage(
     const std::string& contents_language,
     bool is_contents_language_reliable) {
   awaiting_contents_ = false;
-  details_.cld_language = contents_language;
-  details_.is_cld_reliable = is_contents_language_reliable;
+  details_.model_detected_language = contents_language;
+  details_.is_model_reliable = is_contents_language_reliable;
 
   if (!details_.url.is_empty())
     ComputeActualPageLanguage();
@@ -418,7 +418,7 @@ void PerFrameContentTranslateDriver::ComputeActualPageLanguage() {
   // utility process.
   std::string language = DeterminePageLanguage(
       details_.content_language, details_.html_root_language,
-      details_.cld_language, details_.is_cld_reliable);
+      details_.model_detected_language, details_.is_model_reliable);
 
   if (!language.empty()) {
     details_.time = base::Time::Now();

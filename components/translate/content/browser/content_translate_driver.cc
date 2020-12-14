@@ -296,8 +296,8 @@ void ContentTranslateDriver::RegisterPage(
 
   // If we have a language histogram (i.e. we're not in incognito), update it
   // with the detected language of every page visited.
-  if (language_histogram_ && details.is_cld_reliable)
-    language_histogram_->OnPageVisited(details.cld_language);
+  if (language_histogram_ && details.is_model_reliable)
+    language_histogram_->OnPageVisited(details.model_detected_language);
 
   translate_agents_[++next_page_seq_no_].Bind(std::move(translate_agent));
   translate_agents_[next_page_seq_no_].set_disconnect_handler(

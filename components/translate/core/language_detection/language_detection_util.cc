@@ -66,16 +66,16 @@ void ApplyLanguageCodeCorrection(std::string* code) {
   language::ToTranslateLanguageSynonym(code);
 }
 
-// Checks if CLD can complement a sub code when the page language doesn't know
-// the sub code.
-bool CanCLDComplementSubCode(const std::string& page_language,
-                             const std::string& cld_language) {
+// Checks if the model can complement a sub code when the page language doesn't
+// know the sub code.
+bool CanModelComplementSubCode(const std::string& page_language,
+                               const std::string& model_detected_language) {
   // Translate server cannot treat general Chinese. If Content-Language and
-  // CLD agree that the language is Chinese and Content-Language doesn't know
-  // which dialect is used, CLD language has priority.
+  // the detection model agree that the language is Chinese and Content-Language
+  // doesn't know which dialect is used, the model language has priority.
   // TODO(hajimehoshi): How about the other dialects like zh-MO?
   return page_language == "zh" &&
-         base::StartsWith(cld_language, "zh-",
+         base::StartsWith(model_detected_language, "zh-",
                           base::CompareCase::INSENSITIVE_ASCII);
 }
 
@@ -121,10 +121,10 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
 namespace translate {
 
 // Returns the ISO 639 language code of the specified |utf8_text|, or 'unknown'
-// if it failed. |is_cld_reliable| will be set as true if CLD says the detection
-// is reliable.
+// if it failed. |is_model_reliable| will be set as true if CLD says the
+// detection is reliable.
 std::string DetermineTextLanguage(const std::string& utf8_text,
-                                  bool* is_cld_reliable) {
+                                  bool* is_model_reliable) {
   // Make a prediction.
   base::TimeTicks lang_id_start = base::TimeTicks::Now();
   chrome_lang_id::NNetLanguageIdentifier lang_id;
@@ -145,8 +145,8 @@ std::string DetermineTextLanguage(const std::string& utf8_text,
                              static_cast<int>(100 * lang_id_result.proportion));
   }
 
-  if (is_cld_reliable != nullptr) {
-    *is_cld_reliable = is_detection_reliable;
+  if (is_model_reliable != nullptr) {
+    *is_model_reliable = is_detection_reliable;
   }
   return FilterDetectedLanguage(utf8_text, detected_language,
                                 is_detection_reliable);
@@ -155,26 +155,27 @@ std::string DetermineTextLanguage(const std::string& utf8_text,
 std::string DeterminePageLanguage(const std::string& code,
                                   const std::string& html_lang,
                                   const base::string16& contents,
-                                  std::string* cld_language_p,
-                                  bool* is_cld_reliable_p) {
-  // First determine the language for the test contents.
-  bool is_cld_reliable;
+                                  std::string* model_detected_language,
+                                  bool* is_model_reliable) {
+  // First determine the language for the text contents.
+  bool is_reliable;
   const std::string utf8_text(base::UTF16ToUTF8(contents));
-  std::string cld_language = DetermineTextLanguage(utf8_text, &is_cld_reliable);
-  if (cld_language_p != nullptr)
-    *cld_language_p = cld_language;
-  if (is_cld_reliable_p != nullptr)
-    *is_cld_reliable_p = is_cld_reliable;
-  language::ToTranslateLanguageSynonym(&cld_language);
+  std::string detected_language =
+      DetermineTextLanguage(utf8_text, &is_reliable);
+  if (model_detected_language != nullptr)
+    *model_detected_language = detected_language;
+  if (is_model_reliable != nullptr)
+    *is_model_reliable = is_reliable;
+  language::ToTranslateLanguageSynonym(&detected_language);
 
-  return DeterminePageLanguage(code, html_lang, cld_language, is_cld_reliable);
+  return DeterminePageLanguage(code, html_lang, detected_language, is_reliable);
 }
 
 // Now consider the web page language details along with the contents language.
 std::string DeterminePageLanguage(const std::string& code,
                                   const std::string& html_lang,
-                                  const std::string& cld_language,
-                                  bool is_cld_reliable) {
+                                  const std::string& model_detected_language,
+                                  bool is_model_reliable) {
   // Check if html lang attribute is valid.
   std::string modified_html_lang;
   if (!html_lang.empty()) {
@@ -202,31 +203,31 @@ std::string DeterminePageLanguage(const std::string& code,
   if (language.empty()) {
     translate::ReportLanguageVerification(
         translate::LANGUAGE_VERIFICATION_CLD_ONLY);
-    return cld_language;
+    return model_detected_language;
   }
 
-  if (cld_language == kUnknownLanguageCode) {
+  if (model_detected_language == kUnknownLanguageCode) {
     translate::ReportLanguageVerification(
         translate::LANGUAGE_VERIFICATION_UNKNOWN);
     return language;
   }
 
-  if (CanCLDComplementSubCode(language, cld_language)) {
+  if (CanModelComplementSubCode(language, model_detected_language)) {
     translate::ReportLanguageVerification(
         translate::LANGUAGE_VERIFICATION_CLD_COMPLEMENT_SUB_CODE);
-    return cld_language;
+    return model_detected_language;
   }
 
-  if (IsSameOrSimilarLanguages(language, cld_language)) {
+  if (IsSameOrSimilarLanguages(language, model_detected_language)) {
     translate::ReportLanguageVerification(
         translate::LANGUAGE_VERIFICATION_CLD_AGREE);
     return language;
   }
 
-  if (MaybeServerWrongConfiguration(language, cld_language)) {
+  if (MaybeServerWrongConfiguration(language, model_detected_language)) {
     translate::ReportLanguageVerification(
         translate::LANGUAGE_VERIFICATION_TRUST_CLD);
-    return cld_language;
+    return model_detected_language;
   }
 
   // Content-Language value might be wrong because CLD says that this page is
@@ -298,33 +299,33 @@ bool IsValidLanguageCode(const std::string& code) {
 }
 
 bool IsSameOrSimilarLanguages(const std::string& page_language,
-                              const std::string& cld_language) {
+                              const std::string& model_detected_language) {
   std::vector<std::string> chunks = base::SplitString(
       page_language, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (chunks.size() == 0)
     return false;
   std::string page_language_main_part = chunks[0];  // Need copy.
 
-  chunks = base::SplitString(
-      cld_language, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  chunks = base::SplitString(model_detected_language, "-",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (chunks.size() == 0)
     return false;
-  const std::string& cld_language_main_part = chunks[0];
+  const std::string& model_detected_language_main_part = chunks[0];
 
-  // Language code part of |page_language| is matched to one of |cld_language|.
-  // Country code is ignored here.
-  if (page_language_main_part == cld_language_main_part) {
+  // Language code part of |page_language| is matched to one of
+  // |model_detected_language|. Country code is ignored here.
+  if (page_language_main_part == model_detected_language_main_part) {
     // Languages are matched strictly. Reports false to metrics, but returns
     // true.
     translate::ReportSimilarLanguageMatch(false);
     return true;
   }
 
-  // Check if |page_language| and |cld_language| are in the similar language
-  // list and belong to the same language group.
+  // Check if |page_language| and |model_detected_language| are in the similar
+  // language list and belong to the same language group.
   int page_code = GetSimilarLanguageGroupCode(page_language);
-  bool match = page_code != 0 &&
-               page_code == GetSimilarLanguageGroupCode(cld_language);
+  bool match = page_code != 0 && page_code == GetSimilarLanguageGroupCode(
+                                                  model_detected_language);
 
   translate::ReportSimilarLanguageMatch(match);
   return match;
@@ -339,7 +340,7 @@ bool IsServerWrongConfigurationLanguage(const std::string& language_code) {
 }
 
 bool MaybeServerWrongConfiguration(const std::string& page_language,
-                                   const std::string& cld_language) {
+                                   const std::string& model_detected_language) {
   // If |page_language| is not "en-*", respect it and just return false here.
   if (!base::StartsWith(page_language, "en",
                         base::CompareCase::INSENSITIVE_ASCII))
@@ -347,10 +348,11 @@ bool MaybeServerWrongConfiguration(const std::string& page_language,
 
   // A server provides a language meta information representing "en-*". But it
   // might be just a default value due to missing user configuration.
-  // Let's trust |cld_language| if the determined language is not difficult to
-  // distinguish from English, and the language is one of well-known languages
-  // which often provide "en-*" meta information mistakenly.
-  return IsServerWrongConfigurationLanguage(cld_language);
+  // Let's trust |model_detected_language| if the determined language is not
+  // difficult to distinguish from English, and the language is one of
+  // well-known languages which often provide "en-*" meta information
+  // mistakenly.
+  return IsServerWrongConfigurationLanguage(model_detected_language);
 }
 
 }  // namespace translate
