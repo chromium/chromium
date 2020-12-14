@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_SESSION) SessionTerminationManager {
 
  private:
   void DidWaitForServiceToBeAvailable(bool service_is_available);
-  void ProcessTpmStatusReply(
+  void ProcessCryptohomeLoginStatusReply(
       const base::Optional<cryptohome::BaseReply>& reply);
   void Reboot();
   void RebootIfNecessaryProcessReply(

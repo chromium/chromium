@@ -289,6 +289,18 @@ bool FakeCryptohomeClient::InstallAttributesIsFirstInstall(
   return true;
 }
 
+void FakeCryptohomeClient::GetLoginStatus(
+    const cryptohome::GetLoginStatusRequest& request,
+    DBusMethodCallback<cryptohome::BaseReply> callback) {
+  cryptohome::BaseReply reply;
+  cryptohome::GetLoginStatusReply* get_login_status_reply =
+      reply.MutableExtension(cryptohome::GetLoginStatusReply::reply);
+  get_login_status_reply->set_owner_user_exists(false);
+  get_login_status_reply->set_boot_lockbox_finalized(false);
+  get_login_status_reply->set_is_locked_to_single_user(false);
+  ReturnProtobufMethodCallback(reply, std::move(callback));
+}
+
 void FakeCryptohomeClient::GetKeyDataEx(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const cryptohome::AuthorizationRequest& auth,

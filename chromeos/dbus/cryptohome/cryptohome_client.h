@@ -29,6 +29,7 @@ class EndFingerprintAuthSessionRequest;
 class FlushAndSignBootAttributesRequest;
 class GetBootAttributeRequest;
 class GetKeyDataRequest;
+class GetLoginStatusRequest;
 class GetSupportedKeyPoliciesRequest;
 class GetTpmStatusRequest;
 class LockToSingleUserMountUntilRebootRequest;
@@ -274,6 +275,14 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // Calls InstallAttributesIsFirstInstall method and returns true when the call
   // succeeds. This method blocks until the call returns.
   virtual bool InstallAttributesIsFirstInstall(bool* is_first_install) = 0;
+
+  // Asynchronously calls the GetLoginStatus method. |callback| will be invoked
+  // with the reply protobuf.
+  // GetLoginStatus returns information about the current status of user login.
+  // For example, it tells if cryptohome is locked to single user until reboot.
+  virtual void GetLoginStatus(
+      const cryptohome::GetLoginStatusRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
   // Asynchronously calls the GetKeyDataEx method. |callback| will be invoked
   // with the reply protobuf.

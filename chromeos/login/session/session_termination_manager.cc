@@ -63,22 +63,23 @@ void SessionTerminationManager::DidWaitForServiceToBeAvailable(
     LOG(ERROR) << "WaitForServiceToBeAvailable failed.";
     return;
   }
-  CryptohomeClient::Get()->GetTpmStatus(
-      cryptohome::GetTpmStatusRequest(),
+  CryptohomeClient::Get()->GetLoginStatus(
+      cryptohome::GetLoginStatusRequest(),
       base::BindOnce(&SessionTerminationManager::RebootIfNecessaryProcessReply,
                      weak_factory_.GetWeakPtr()));
 }
 
-void SessionTerminationManager::ProcessTpmStatusReply(
+void SessionTerminationManager::ProcessCryptohomeLoginStatusReply(
     const base::Optional<cryptohome::BaseReply>& reply) {
   if (!reply.has_value() || reply->has_error() ||
-      !reply->HasExtension(cryptohome::GetTpmStatusReply::reply)) {
-    LOG(ERROR) << "TPM status request failed, error: "
+      !reply->HasExtension(cryptohome::GetLoginStatusReply::reply)) {
+    LOG(ERROR) << "Login status request failed, error: "
                << (reply.has_value() && reply->has_error() ? reply->error()
                                                            : 0);
     return;
   }
-  auto reply_proto = reply->GetExtension(cryptohome::GetTpmStatusReply::reply);
+  auto reply_proto =
+      reply->GetExtension(cryptohome::GetLoginStatusReply::reply);
   if (reply_proto.has_is_locked_to_single_user() &&
       reply_proto.is_locked_to_single_user()) {
     is_locked_to_single_user_ = true;
@@ -92,7 +93,7 @@ void SessionTerminationManager::Reboot() {
 
 void SessionTerminationManager::RebootIfNecessaryProcessReply(
     base::Optional<cryptohome::BaseReply> reply) {
-  ProcessTpmStatusReply(reply);
+  ProcessCryptohomeLoginStatusReply(reply);
   if (is_locked_to_single_user_)
     Reboot();
 }

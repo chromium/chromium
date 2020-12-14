@@ -404,6 +404,19 @@ class CryptohomeClientImpl : public CryptohomeClient {
     return CallBoolMethodAndBlock(&method_call, is_first_install);
   }
 
+  void GetLoginStatus(
+      const cryptohome::GetLoginStatusRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) override {
+    dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
+                                 cryptohome::kCryptohomeGetLoginStatus);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendProtoAsArrayOfBytes(request);
+    proxy_->CallMethod(
+        &method_call, kTpmDBusTimeoutMs,
+        base::BindOnce(&CryptohomeClientImpl::OnBaseReplyMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void GetKeyDataEx(
       const cryptohome::AccountIdentifier& id,
       const cryptohome::AuthorizationRequest& auth,
