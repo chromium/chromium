@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/logging.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 
 #if defined(USE_X11)
