@@ -5,14 +5,28 @@
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
-android_library("java") {
+# Minimal Java library for the DownloadFileProvider which will be included in
+# the base module.
+android_library("file_provider_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/DirectoryOption.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadDirectoryProvider.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadFileProvider.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//components/embedder_support/android:util_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_core_core_java",
+  ]
+}
+
+android_library("java") {
+  sources = [
     "java/src/org/chromium/chrome/browser/download/DownloadConstants.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridge.java",
-    "java/src/org/chromium/chrome/browser/download/DownloadDirectoryProvider.java",
-    "java/src/org/chromium/chrome/browser/download/DownloadFileProvider.java",
     "java/src/org/chromium/chrome/browser/download/DownloadFilter.java",
     "java/src/org/chromium/chrome/browser/download/DownloadInfo.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLaterMetrics.java",
@@ -51,6 +65,7 @@ android_library("java") {
   ]
 
   deps = [
+    ":file_provider_java",
     ":java_resources",
     "//base:base_java",
     "//base:jni_java",
@@ -125,6 +140,7 @@ android_library("download_java_tests") {
   ]
 
   deps = [
+    ":file_provider_java",
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -154,6 +170,7 @@ android_library("junit_tests") {
   ]
 
   deps = [
+    ":file_provider_java",
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",

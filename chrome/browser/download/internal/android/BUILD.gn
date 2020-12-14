@@ -107,6 +107,7 @@ android_library("java") {
     ":jni_headers",
     "//base:base_java",
     "//base:jni_java",
+    "//chrome/browser/download/android:file_provider_java",
     "//chrome/browser/download/android:java",
     "//chrome/browser/thumbnail:java",
     "//chrome/browser/ui/messages/android:java",
