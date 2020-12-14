@@ -14,8 +14,9 @@ CookieAccessDelegateImpl::CookieAccessDelegateImpl(
     mojom::CookieAccessDelegateType type,
     const FirstPartySets* first_party_sets,
     const CookieSettings* cookie_settings)
-    : type_(type), cookie_settings_(cookie_settings) {
-  // TODO(crbug.com/1143756): Save and use the FirstPartySets.
+    : type_(type),
+      cookie_settings_(cookie_settings),
+      first_party_sets_(first_party_sets) {
   if (type == mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS) {
     DCHECK(cookie_settings);
   }
@@ -49,6 +50,20 @@ bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
         url, site_for_cookies.RepresentativeUrl());
   }
   return false;
+}
+
+bool CookieAccessDelegateImpl::IsContextSamePartyWithSite(
+    const net::SchemefulSite& site,
+    const net::SchemefulSite& top_frame_site,
+    const std::set<net::SchemefulSite>& party_context) const {
+  return first_party_sets_ && first_party_sets_->IsContextSamePartyWithSite(
+                                  site, top_frame_site, party_context);
+}
+
+bool CookieAccessDelegateImpl::IsInNontrivialFirstPartySet(
+    const net::SchemefulSite& site) const {
+  return first_party_sets_ &&
+         first_party_sets_->IsInNontrivialFirstPartySet(site);
 }
 
 }  // namespace network

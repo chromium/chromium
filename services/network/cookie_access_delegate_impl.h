@@ -11,6 +11,11 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
 
+namespace net {
+class CanonicalCookie;
+class SchemefulSite;
+}  // namespace net
+
 namespace network {
 
 class FirstPartySets;
@@ -40,10 +45,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override;
+  bool IsContextSamePartyWithSite(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite& top_frame_site,
+      const std::set<net::SchemefulSite>& party_context) const override;
+  bool IsInNontrivialFirstPartySet(
+      const net::SchemefulSite& site) const override;
 
  private:
   const mojom::CookieAccessDelegateType type_;
   const CookieSettings* const cookie_settings_;
+  const FirstPartySets* const first_party_sets_;
 };
 
 }  // namespace network

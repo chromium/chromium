@@ -26,6 +26,12 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
+  bool IsContextSamePartyWithSite(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite& top_frame_site,
+      const std::set<net::SchemefulSite>& party_context) const override;
+  bool IsInNontrivialFirstPartySet(
+      const net::SchemefulSite& site) const override;
 
   // Sets the expected return value for any cookie whose Domain
   // matches |cookie_domain|. Pass the value of |cookie.Domain()| and any

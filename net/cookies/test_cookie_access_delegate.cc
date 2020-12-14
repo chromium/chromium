@@ -32,6 +32,18 @@ bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(
   return true;
 }
 
+bool TestCookieAccessDelegate::IsContextSamePartyWithSite(
+    const net::SchemefulSite& site,
+    const net::SchemefulSite& top_frame_site,
+    const std::set<net::SchemefulSite>& party_context) const {
+  return false;
+}
+
+bool TestCookieAccessDelegate::IsInNontrivialFirstPartySet(
+    const net::SchemefulSite& site) const {
+  return false;
+}
+
 void TestCookieAccessDelegate::SetExpectationForCookieDomain(
     const std::string& cookie_domain,
     CookieAccessSemantics access_semantics) {

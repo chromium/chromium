@@ -12,6 +12,7 @@
 
 namespace net {
 
+class SchemefulSite;
 class SiteForCookies;
 
 class NET_EXPORT CookieAccessDelegate {
@@ -35,6 +36,17 @@ class NET_EXPORT CookieAccessDelegate {
   virtual bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const SiteForCookies& site_for_cookies) const = 0;
+
+  // Returns whether `site` is same-party with `party_context` and
+  // `top_frame_site`.
+  virtual bool IsContextSamePartyWithSite(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite& top_frame_site,
+      const std::set<net::SchemefulSite>& party_context) const = 0;
+
+  // Returns whether `site` belongs to a non-singleton First-Party Set.
+  virtual bool IsInNontrivialFirstPartySet(
+      const net::SchemefulSite& site) const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CookieAccessDelegate);
