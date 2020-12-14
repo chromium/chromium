@@ -312,7 +312,8 @@
       "chrome://tab-search/*",
       "chrome://tab-strip/*",
       "chrome://welcome/*",
-      "chrome://profile-picker/*"
+      "chrome://profile-picker/*",
+      "chrome://file-manager/*"
     ]
   }, {
     "channel": "stable",

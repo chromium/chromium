@@ -76,67 +76,6 @@ window.chrome.storage = {
   },
 };
 
-/** @suppress {checkTypes} */
-window.chrome.metricsPrivate = {
-  /** @enum {string} */
-  MetricTypeType: {
-    HISTOGRAM_LINEAR: 'histogram-linear',
-  },
-
-  /**
-   * Describes the type of metric to be collected.
-   * @typedef {{
-   *   metricName: string,
-   *   type: !chrome.metricsPrivate.MetricTypeType,
-   *   min: number,
-   *   max: number,
-   *   buckets: number
-   * }}
-   */
-  MetricType: {},
-
-  /**
-   * Records a value than can range from 1 to 100.
-   * @param {string} metricName
-   * @param {number} value
-   */
-  recordSmallCount: (metricName, value) => {},
-
-  /**
-   * Records a value than can range from 1 to 10,000.
-   * @param {string} metricName
-   * @param {number} value
-   */
-  recordMediumCount: (metricName, value) => {},
-
-  /**
-   * Records a percentage value from 1 to 100.
-   * @param {string} metricName
-   * @param {number} value
-   */
-  recordPercentage: (metricName, value) => {},
-
-  /**
-   * Records an elapsed time of no more than 10 seconds.
-   * @param {string} metricName
-   * @param {number} value Value in milliseconds.
-   */
-  recordTime: (metricName, value) => {},
-
-  /**
-   * Records an action performed by the user.
-   * @param {string} name
-   */
-  recordUserAction: (name) => {},
-
-  /**
-   * Adds a value to the given metric.
-   * @param {!chrome.metricsPrivate.MetricType} metric
-   * @param {number} value
-   */
-  recordValue: (metricName, value) => {},
-};
-
 window.BackgroundWindowSWA = class {
   constructor() {
     /**
