@@ -13,8 +13,24 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/isolation_info.h"
 
 namespace predictors {
+
+namespace {
+
+// Preconnects can be received from the renderer before commit messages, so
+// need to use the key from the pending navigation, and not the committed
+// navigation, unlike other consumers. This does mean on navigating away from a
+// site, preconnect is more likely to incorrectly use the NetworkIsolationKey of
+// the previous commit.
+net::NetworkIsolationKey GetPendingNetworkIsolationKey(
+    content::RenderFrameHost* render_frame_host) {
+  return render_frame_host->GetPendingIsolationInfoForSubresources()
+      .network_isolation_key();
+}
+
+}  // namespace
 
 NetworkHintsHandlerImpl::~NetworkHintsHandlerImpl() = default;
 
@@ -38,7 +54,7 @@ void NetworkHintsHandlerImpl::PrefetchDNS(
     return;
 
   preconnect_manager_->StartPreresolveHosts(
-      names, render_frame_host->GetNetworkIsolationKey());
+      names, GetPendingNetworkIsolationKey(render_frame_host));
 }
 
 void NetworkHintsHandlerImpl::Preconnect(const GURL& url,
@@ -60,7 +76,7 @@ void NetworkHintsHandlerImpl::Preconnect(const GURL& url,
     return;
 
   preconnect_manager_->StartPreconnectUrl(
-      url, allow_credentials, render_frame_host->GetNetworkIsolationKey());
+      url, allow_credentials, GetPendingNetworkIsolationKey(render_frame_host));
 }
 
 NetworkHintsHandlerImpl::NetworkHintsHandlerImpl(
