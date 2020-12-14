@@ -13,8 +13,8 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -36,20 +36,8 @@ namespace installer {
 
 namespace {
 
-// Substitutes the locale parameter in |url| with whatever Google Update tells
-// us is the locale. In case we fail to find the locale, we use US English.
-base::string16 LocalizeUrl(const wchar_t* url) {
-  base::string16 language;
-  if (!GoogleUpdateSettings::GetLanguage(&language))
-    language = L"en-US";  // Default to US English.
-  return base::ReplaceStringPlaceholders(url, language, nullptr);
-}
-
-base::string16 GetUninstallSurveyUrl() {
-  static constexpr wchar_t kSurveyUrl[] =
-      L"https://support.google.com/chrome/contact/chromeuninstall3?hl=$1";
-  return LocalizeUrl(kSurveyUrl);
-}
+constexpr base::StringPiece16 kUninstallSurveyUrl(
+    L"https://support.google.com/chrome?p=chrome_uninstall_survey");
 
 bool NavigateToUrlWithEdge(const base::string16& url) {
   base::string16 protocol_url = L"microsoft-edge:" + url;
@@ -201,7 +189,7 @@ void DoPostUninstallOperations(const base::Version& version,
       base::StringPrintf(L"%d.%d.%d", version_number.major,
                          version_number.minor, version_number.build);
 
-  const base::string16 survey_url = GetUninstallSurveyUrl();
+  const base::string16 survey_url = base::string16(kUninstallSurveyUrl);
 #if DCHECK_IS_ON()
   // The URL is expected to have a query part and not end with '&'.
   const size_t pos = survey_url.find(L'?');
