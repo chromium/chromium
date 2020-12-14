@@ -458,7 +458,7 @@ async function sendFilesToGuest() {
  * @return {!FileContext}
  */
 function fileDescriptorToFileContext(fd) {
-  // TODO(b/163285796): Properly detect files that can't be renamed/deleted.
+  // TODO(b/163285659): Properly detect files that can't be renamed/deleted.
   return {
     token: fd.token,
     file: fd.file,
