@@ -4,10 +4,9 @@
 
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 
-#include <vector>
-
 #include "base/notreached.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "extensions/common/constants.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -23,44 +22,12 @@ bool IsFilesApp(const GURL& url) {
          url.has_host() && url.host() == extension_misc::kFilesManagerAppId;
 }
 
-DlpRulesManager::Level IsDstRestricted(const GURL& src, const GURL& dst) {
-  // Safe to not check for nullptr as DataTransferDlpController is owned by
-  // DlpRulesManager.
-  return DlpRulesManagerFactory::GetForPrimaryProfile()
-      ->IsRestrictedDestination(src, dst,
-                                DlpRulesManager::Restriction::kClipboard);
-}
-
-DlpRulesManager::Level IsCrostiniRestricted(const GURL& src) {
-  // Safe to not check for nullptr as DataTransferDlpController is owned by
-  // DlpRulesManager.
-  return DlpRulesManagerFactory::GetForPrimaryProfile()->IsRestrictedComponent(
-      src, DlpRulesManager::Component::kCrostini,
-      DlpRulesManager::Restriction::kClipboard);
-}
-
-DlpRulesManager::Level IsPluginVmRestricted(const GURL& src) {
-  // Safe to not check for nullptr as DataTransferDlpController is owned by
-  // DlpRulesManager.
-  return DlpRulesManagerFactory::GetForPrimaryProfile()->IsRestrictedComponent(
-      src, DlpRulesManager::Component::kPluginVm,
-      DlpRulesManager::Restriction::kClipboard);
-}
-
-DlpRulesManager::Level IsArcRestricted(const GURL& src) {
-  // Safe to not check for nullptr as DataTransferDlpController is owned by
-  // DlpRulesManager.
-  return DlpRulesManagerFactory::GetForPrimaryProfile()->IsRestrictedComponent(
-      src, DlpRulesManager::Component::kArc,
-      DlpRulesManager::Restriction::kClipboard);
-}
-
 }  // namespace
 
 // static
-void DataTransferDlpController::Init() {
+void DataTransferDlpController::Init(const DlpRulesManager& dlp_rules_manager) {
   if (!HasInstance())
-    new DataTransferDlpController();
+    new DataTransferDlpController(dlp_rules_manager);
 }
 
 bool DataTransferDlpController::IsDataReadAllowed(
@@ -79,15 +46,18 @@ bool DataTransferDlpController::IsDataReadAllowed(
   switch (dst_type) {
     case ui::EndpointType::kDefault:
     case ui::EndpointType::kUnknownVm:
-    case ui::EndpointType::kBorealis:
+    case ui::EndpointType::kBorealis: {
       // Passing empty URL will return restricted if there's a rule restricting
       // the src against any dst (*), otherwise it will return ALLOW.
-      level = IsDstRestricted(src_url, GURL());
+      level = dlp_rules_manager_.IsRestrictedDestination(
+          src_url, GURL(), DlpRulesManager::Restriction::kClipboard);
       break;
+    }
 
     case ui::EndpointType::kUrl: {
       GURL dst_url = data_dst->origin()->GetURL();
-      level = IsDstRestricted(src_url, dst_url);
+      level = dlp_rules_manager_.IsRestrictedDestination(
+          src_url, dst_url, DlpRulesManager::Restriction::kClipboard);
       // Files Apps continously reads the clipboard data which triggers a lot of
       // notifications while the user isn't actually initiating any copy/paste.
       // TODO(crbug.com/1152475): Find a better way to handle File app.
@@ -96,23 +66,33 @@ bool DataTransferDlpController::IsDataReadAllowed(
       break;
     }
 
-    case ui::EndpointType::kCrostini:
-      level = IsCrostiniRestricted(src_url);
+    case ui::EndpointType::kCrostini: {
+      level = dlp_rules_manager_.IsRestrictedComponent(
+          src_url, DlpRulesManager::Component::kCrostini,
+          DlpRulesManager::Restriction::kClipboard);
       break;
+    }
 
-    case ui::EndpointType::kPluginVm:
-      level = IsPluginVmRestricted(src_url);
+    case ui::EndpointType::kPluginVm: {
+      level = dlp_rules_manager_.IsRestrictedComponent(
+          src_url, DlpRulesManager::Component::kPluginVm,
+          DlpRulesManager::Restriction::kClipboard);
       break;
+    }
 
-    case ui::EndpointType::kArc:
-      level = IsArcRestricted(src_url);
+    case ui::EndpointType::kArc: {
+      level = dlp_rules_manager_.IsRestrictedComponent(
+          src_url, DlpRulesManager::Component::kArc,
+          DlpRulesManager::Restriction::kClipboard);
       break;
+    }
 
-    case ui::EndpointType::kClipboardHistory:
+    case ui::EndpointType::kClipboardHistory: {
       // When ClipboardHistory tries to read the clipboard we should allow it
       // silently.
       notify_on_paste = false;
       break;
+    }
 
     default:
       NOTREACHED();
@@ -125,7 +105,9 @@ bool DataTransferDlpController::IsDataReadAllowed(
   return level == DlpRulesManager::Level::kAllow;
 }
 
-DataTransferDlpController::DataTransferDlpController() = default;
+DataTransferDlpController::DataTransferDlpController(
+    const DlpRulesManager& dlp_rules_manager)
+    : dlp_rules_manager_(dlp_rules_manager) {}
 
 DataTransferDlpController::~DataTransferDlpController() = default;
 

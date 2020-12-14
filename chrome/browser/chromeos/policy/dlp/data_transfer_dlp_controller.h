@@ -15,6 +15,8 @@ class DataTransferEndpoint;
 
 namespace policy {
 
+class DlpRulesManager;
+
 // DataTransferDlpController is responsible for preventing leaks of confidential
 // data through clipboard data read or drag-and-drop by controlling read
 // operations according to the rules of the Data leak prevention policy set by
@@ -23,11 +25,14 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
  public:
   // Creates an instance of the class.
   // Indicates that restricting clipboard content and drag-n-drop is required.
-  static void Init();
+  // It's guaranteed that `dlp_rules_manager` controls the lifetime of
+  // DataTransferDlpController and outlives it.
+  static void Init(const DlpRulesManager& dlp_rules_manager);
 
   DataTransferDlpController(const DataTransferDlpController&) = delete;
   void operator=(const DataTransferDlpController&) = delete;
 
+  // ui::DataTransferPolicyController:
   // nullptr can be passed instead of `data_src` or `data_dst`. If data read is
   // not allowed, this function will show a notification to the user.
   bool IsDataReadAllowed(
@@ -35,7 +40,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
       const ui::DataTransferEndpoint* const data_dst) override;
 
  protected:
-  DataTransferDlpController();
+  DataTransferDlpController(const DlpRulesManager& dlp_rules_manager);
   ~DataTransferDlpController() override;
 
  private:
@@ -43,6 +48,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst);
 
+  const DlpRulesManager& dlp_rules_manager_;
   DlpClipboardNotificationHelper helper_;
 };
 

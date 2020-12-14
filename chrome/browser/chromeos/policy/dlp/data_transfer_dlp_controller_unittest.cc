@@ -4,9 +4,15 @@
 
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,9 +28,11 @@ constexpr char kYoutubeUrl[] = "https://www.youtube.com";
 
 class MockDlpRulesManager : public DlpRulesManager {
  public:
-  explicit MockDlpRulesManager(PrefService* local_state)
-      : DlpRulesManager(local_state) {}
+  MockDlpRulesManager() = default;
   ~MockDlpRulesManager() override = default;
+
+  MOCK_CONST_METHOD2(IsRestricted,
+                     Level(const GURL& source, Restriction restriction));
 
   MOCK_CONST_METHOD3(IsRestrictedDestination,
                      Level(const GURL& source,
@@ -44,24 +52,30 @@ class MockDlpRulesManager : public DlpRulesManager {
 
 class MockDlpController : public DataTransferDlpController {
  public:
+  MockDlpController(const DlpRulesManager& dlp_rules_manager)
+      : DataTransferDlpController(dlp_rules_manager) {}
+
   MOCK_METHOD2(DoNotifyBlockedPaste,
                void(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst));
 };
+
+// Creates a new MockDlpRulesManager for the given |context|.
+std::unique_ptr<KeyedService> BuildDlpRulesManager(
+    content::BrowserContext* context) {
+  return std::make_unique<::testing::StrictMock<MockDlpRulesManager>>();
+}
 
 }  // namespace
 
 class DataTransferDlpControllerTest : public testing::Test {
  protected:
   DataTransferDlpControllerTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
-        rules_manager_(scoped_testing_local_state_.Get()) {
-    DlpRulesManagerFactory::OverrideManagerForTesting(&rules_manager_);
-  }
+      : rules_manager_(), dlp_controller_(rules_manager_) {}
 
   ~DataTransferDlpControllerTest() override = default;
 
-  ScopedTestingLocalState scoped_testing_local_state_;
+  content::BrowserTaskEnvironment task_environment_;
   ::testing::StrictMock<MockDlpRulesManager> rules_manager_;
   ::testing::StrictMock<MockDlpController> dlp_controller_;
 };

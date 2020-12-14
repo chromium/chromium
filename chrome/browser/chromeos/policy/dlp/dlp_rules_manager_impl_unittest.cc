@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 
 #include <string>
-#include <vector>
 
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -57,9 +57,9 @@ base::Value GenerateClipboardCopyDisallowedRule() {
 
 }  // namespace
 
-class DlpRulesManagerTest : public testing::Test {
+class DlpRulesManagerImplTest : public testing::Test {
  protected:
-  DlpRulesManagerTest()
+  DlpRulesManagerImplTest()
       : testing_local_state_(TestingBrowserProcess::GetGlobal()),
         dlp_rules_manager_(testing_local_state_.Get()) {}
 
@@ -70,10 +70,10 @@ class DlpRulesManagerTest : public testing::Test {
   }
 
   ScopedTestingLocalState testing_local_state_;
-  DlpRulesManager dlp_rules_manager_;
+  DlpRulesManagerImpl dlp_rules_manager_;
 };
 
-TEST_F(DlpRulesManagerTest, EmptyPref) {
+TEST_F(DlpRulesManagerImplTest, EmptyPref) {
   UpdatePolicyPref(base::Value(base::Value::Type::LIST));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
@@ -85,7 +85,7 @@ TEST_F(DlpRulesManagerTest, EmptyPref) {
                 DlpRulesManager::Restriction::kClipboard));
 }
 
-TEST_F(DlpRulesManagerTest, IsRestricted_LevelPrecedence) {
+TEST_F(DlpRulesManagerImplTest, IsRestricted_LevelPrecedence) {
   base::Value rules(base::Value::Type::LIST);
 
   // First Rule
@@ -156,7 +156,7 @@ TEST_F(DlpRulesManagerTest, IsRestricted_LevelPrecedence) {
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
 }
 
-TEST_F(DlpRulesManagerTest, UpdatePref) {
+TEST_F(DlpRulesManagerImplTest, UpdatePref) {
   // First DLP rule
   base::Value rules_1(base::Value::Type::LIST);
 
@@ -203,7 +203,7 @@ TEST_F(DlpRulesManagerTest, UpdatePref) {
                 GURL(kUrlStr2), DlpRulesManager::Restriction::kScreenshot));
 }
 
-TEST_F(DlpRulesManagerTest, IsRestrictedComponent_Clipboard) {
+TEST_F(DlpRulesManagerImplTest, IsRestrictedComponent_Clipboard) {
   base::Value rules(base::Value::Type::LIST);
 
   base::Value src_urls(base::Value::Type::LIST);
@@ -232,7 +232,7 @@ TEST_F(DlpRulesManagerTest, IsRestrictedComponent_Clipboard) {
                 DlpRulesManager::Restriction::kClipboard));
 }
 
-TEST_F(DlpRulesManagerTest, SameSrcDst_Clipboard) {
+TEST_F(DlpRulesManagerImplTest, SameSrcDst_Clipboard) {
   base::Value rules = GenerateClipboardCopyDisallowedRule();
 
   UpdatePolicyPref(std::move(rules));
@@ -243,7 +243,7 @@ TEST_F(DlpRulesManagerTest, SameSrcDst_Clipboard) {
                 DlpRulesManager::Restriction::kClipboard));
 }
 
-TEST_F(DlpRulesManagerTest, EmptyUrl_Clipboard) {
+TEST_F(DlpRulesManagerImplTest, EmptyUrl_Clipboard) {
   base::Value rules = GenerateClipboardCopyDisallowedRule();
 
   // Second Rule
@@ -274,7 +274,7 @@ TEST_F(DlpRulesManagerTest, EmptyUrl_Clipboard) {
           GURL(kUrlStr4), GURL(), DlpRulesManager::Restriction::kClipboard));
 }
 
-TEST_F(DlpRulesManagerTest, IsRestricted_MultipleURLs) {
+TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
   base::Value rules(base::Value::Type::LIST);
 
   base::Value src_urls_1(base::Value::Type::LIST);
@@ -352,7 +352,7 @@ TEST_F(DlpRulesManagerTest, IsRestricted_MultipleURLs) {
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kClipboard));
 }
 
-TEST_F(DlpRulesManagerTest, DisabledByFeature) {
+TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
   base::Value rules = GenerateClipboardCopyDisallowedRule();
 
   UpdatePolicyPref(std::move(rules));

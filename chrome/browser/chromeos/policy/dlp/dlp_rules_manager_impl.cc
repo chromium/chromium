@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 
 #include <algorithm>
 #include <iterator>
@@ -16,38 +16,16 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/common/chrome_features.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace policy {
-
-namespace dlp {
-
-constexpr char kClipboardRestriction[] = "CLIPBOARD";
-constexpr char kScreenshotRestriction[] = "SCREENSHOT";
-constexpr char kPrintingRestriction[] = "PRINTING";
-constexpr char kPrivacyScreenRestriction[] = "PRIVACY_SCREEN";
-constexpr char kScreenShareRestriction[] = "SCREEN_SHARE";
-
-constexpr char kArc[] = "ARC";
-constexpr char kCrostini[] = "CROSTINI";
-constexpr char kPluginVm[] = "PLUGIN_VM";
-
-constexpr char kAllowLevel[] = "ALLOW";
-constexpr char kBlockLevel[] = "BLOCK";
-
-}  // namespace dlp
 
 namespace {
 
@@ -108,18 +86,13 @@ DlpRulesManager::Level GetMaxLevel(const DlpRulesManager::Level& level_1,
                                                                    : level_2;
 }
 
-DlpRulesManager::Level GetMinLevel(const DlpRulesManager::Level& level_1,
-                                   const DlpRulesManager::Level& level_2) {
-  return GetPriorityMapping(level_1) < GetPriorityMapping(level_2) ? level_1
-                                                                   : level_2;
-}
-
 // Inserts a mapping between URLs conditions IDs range to `rule_id` in `map`.
 void InsertUrlsRulesMapping(
-    DlpRulesManager::UrlConditionId url_condition_id_start,
-    DlpRulesManager::UrlConditionId url_condition_id_end,
-    DlpRulesManager::RuleId rule_id,
-    std::map<DlpRulesManager::UrlConditionId, DlpRulesManager::RuleId>& map) {
+    DlpRulesManagerImpl::UrlConditionId url_condition_id_start,
+    DlpRulesManagerImpl::UrlConditionId url_condition_id_end,
+    DlpRulesManagerImpl::RuleId rule_id,
+    std::map<DlpRulesManagerImpl::UrlConditionId, DlpRulesManagerImpl::RuleId>&
+        map) {
   for (auto url_condition_id = url_condition_id_start;
        url_condition_id <= url_condition_id_end; ++url_condition_id) {
     map[url_condition_id] = rule_id;
@@ -128,33 +101,34 @@ void InsertUrlsRulesMapping(
 
 // Matches `url` against `url_matcher` patterns and returns the rules IDs
 // configured with the matched patterns.
-std::set<DlpRulesManager::RuleId> MatchUrlAndGetRulesMapping(
+std::set<DlpRulesManagerImpl::RuleId> MatchUrlAndGetRulesMapping(
     const GURL& url,
     const url_matcher::URLMatcher* url_matcher,
-    const std::map<DlpRulesManager::UrlConditionId, DlpRulesManager::RuleId>&
-        rules_map) {
+    const std::map<DlpRulesManagerImpl::UrlConditionId,
+                   DlpRulesManagerImpl::RuleId>& rules_map) {
   DCHECK(url_matcher);
-  const std::set<DlpRulesManager::UrlConditionId> url_conditions_ids =
+  const std::set<DlpRulesManagerImpl::UrlConditionId> url_conditions_ids =
       url_matcher->MatchURL(url);
 
-  std::set<DlpRulesManager::RuleId> rule_ids;
+  std::set<DlpRulesManagerImpl::RuleId> rule_ids;
   for (const auto& id : url_conditions_ids) {
     rule_ids.insert(rules_map.at(id));
   }
   return rule_ids;
 }
 
-// A singleton instance of DlpRulesManager for testing.
-static DlpRulesManager* g_dlp_rules_manager_for_testing = nullptr;
-
 }  // namespace
 
+DlpRulesManagerImpl::~DlpRulesManagerImpl() {
+  DataTransferDlpController::DeleteInstance();
+}
+
 // static
-void DlpRulesManager::RegisterPrefs(PrefRegistrySimple* registry) {
+void DlpRulesManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(policy_prefs::kDlpRulesList);
 }
 
-DlpRulesManager::Level DlpRulesManager::IsRestricted(
+DlpRulesManager::Level DlpRulesManagerImpl::IsRestricted(
     const GURL& source,
     Restriction restriction) const {
   DCHECK(src_url_matcher_);
@@ -169,7 +143,7 @@ DlpRulesManager::Level DlpRulesManager::IsRestricted(
   return GetMaxJoinRestrictionLevel(restriction, source_rules_ids);
 }
 
-DlpRulesManager::Level DlpRulesManager::IsRestrictedDestination(
+DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
     const GURL& source,
     const GURL& destination,
     Restriction restriction) const {
@@ -192,7 +166,7 @@ DlpRulesManager::Level DlpRulesManager::IsRestrictedDestination(
                                     destination_rules_ids);
 }
 
-DlpRulesManager::Level DlpRulesManager::IsRestrictedComponent(
+DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
     const GURL& source,
     const Component& destination,
     Restriction restriction) const {
@@ -212,18 +186,16 @@ DlpRulesManager::Level DlpRulesManager::IsRestrictedComponent(
                                     components_rules_ids);
 }
 
-DlpRulesManager::DlpRulesManager(PrefService* local_state) {
+DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
       policy_prefs::kDlpRulesList,
-      base::BindRepeating(&DlpRulesManager::OnPolicyUpdate,
+      base::BindRepeating(&DlpRulesManagerImpl::OnPolicyUpdate,
                           base::Unretained(this)));
   OnPolicyUpdate();
 }
 
-DlpRulesManager::~DlpRulesManager() = default;
-
-void DlpRulesManager::OnPolicyUpdate() {
+void DlpRulesManagerImpl::OnPolicyUpdate() {
   components_rules_.clear();
   restrictions_map_.clear();
   src_url_rules_mapping_.clear();
@@ -307,13 +279,13 @@ void DlpRulesManager::OnPolicyUpdate() {
   }
 
   if (base::Contains(restrictions_map_, Restriction::kClipboard)) {
-    DataTransferDlpController::Init();
+    DataTransferDlpController::Init(*this);
   } else {
     DataTransferDlpController::DeleteInstance();
   }
 }
 
-DlpRulesManager::Level DlpRulesManager::GetMaxJoinRestrictionLevel(
+DlpRulesManager::Level DlpRulesManagerImpl::GetMaxJoinRestrictionLevel(
     const Restriction restriction,
     const std::set<RuleId>& selected_rules) const {
   auto restriction_it = restrictions_map_.find(restriction);
@@ -336,7 +308,7 @@ DlpRulesManager::Level DlpRulesManager::GetMaxJoinRestrictionLevel(
   return max_level;
 }
 
-DlpRulesManager::Level DlpRulesManager::GetMaxJoinRestrictionLevel(
+DlpRulesManager::Level DlpRulesManagerImpl::GetMaxJoinRestrictionLevel(
     const Restriction restriction,
     const std::set<RuleId>& source_rules,
     const std::set<RuleId>& destination_rules) const {
@@ -345,58 +317,6 @@ DlpRulesManager::Level DlpRulesManager::GetMaxJoinRestrictionLevel(
                         destination_rules.begin(), destination_rules.end(),
                         std::inserter(intersection, intersection.begin()));
   return GetMaxJoinRestrictionLevel(restriction, intersection);
-}
-
-// static
-DlpRulesManagerFactory* DlpRulesManagerFactory::GetInstance() {
-  static base::NoDestructor<DlpRulesManagerFactory> factory;
-  return factory.get();
-}
-
-// static
-DlpRulesManager* DlpRulesManagerFactory::GetForPrimaryProfile() {
-  if (g_dlp_rules_manager_for_testing)
-    return g_dlp_rules_manager_for_testing;
-
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile)
-    return nullptr;
-  return static_cast<DlpRulesManager*>(
-      DlpRulesManagerFactory::GetInstance()->GetServiceForBrowserContext(
-          profile, /*create=*/false));
-}
-
-// static
-void DlpRulesManagerFactory::OverrideManagerForTesting(
-    DlpRulesManager* manager) {
-  g_dlp_rules_manager_for_testing = manager;
-}
-
-DlpRulesManagerFactory::DlpRulesManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "DlpRulesManager",
-          BrowserContextDependencyManager::GetInstance()) {}
-
-bool DlpRulesManagerFactory::ServiceIsCreatedWithBrowserContext() const {
-  return true;
-}
-
-KeyedService* DlpRulesManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  // UserManager might be not available in tests.
-  if (!user_manager::UserManager::IsInitialized() || !profile ||
-      !chromeos::ProfileHelper::IsPrimaryProfile(profile) ||
-      !profile->GetProfilePolicyConnector()->IsManaged()) {
-    return nullptr;
-  }
-
-  PrefService* local_state = g_browser_process->local_state();
-  // Might be not available in tests.
-  if (!local_state)
-    return nullptr;
-
-  return new DlpRulesManager(local_state);
 }
 
 }  // namespace policy
