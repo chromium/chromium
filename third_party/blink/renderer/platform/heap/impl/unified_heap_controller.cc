@@ -22,7 +22,8 @@ namespace {
 
 constexpr BlinkGC::StackState ToBlinkGCStackState(
     v8::EmbedderHeapTracer::EmbedderStackState stack_state) {
-  return stack_state == v8::EmbedderHeapTracer::EmbedderStackState::kEmpty
+  return stack_state ==
+                 v8::EmbedderHeapTracer::EmbedderStackState::kNoHeapPointers
              ? BlinkGC::kNoHeapPointersOnStack
              : BlinkGC::kHeapPointersOnStack;
 }

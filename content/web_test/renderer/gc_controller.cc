@@ -89,7 +89,7 @@ void GCController::AsyncCollectAllWithEmptyStack(
 
   for (int i = 0; i < kNumberOfGCsForFullCollection; i++) {
     isolate->GetEmbedderHeapTracer()->GarbageCollectionForTesting(
-        v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
+        v8::EmbedderHeapTracer::EmbedderStackState::kNoHeapPointers);
   }
 
   v8::HandleScope scope(isolate);
