@@ -270,8 +270,7 @@ bool SharedContextState::InitializeGrContext(
   // affect text rendering, make sure to match the capabilities initialized
   // in GetCapabilities and ensuring these are also used by the
   // PaintOpBufferSerializer.
-  GrContextOptions options =
-      GetDefaultGrContextOptions(gr_context_type_, gpu_preferences);
+  GrContextOptions options = GetDefaultGrContextOptions(gr_context_type_);
   options.fPersistentCache = cache;
   options.fShaderErrorHandler = this;
   if (gpu_preferences.force_max_texture_size)
