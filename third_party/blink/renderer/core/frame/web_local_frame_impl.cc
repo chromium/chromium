@@ -2435,9 +2435,9 @@ void WebLocalFrameImpl::SendOrientationChangeEvent() {
   CHECK(GetFrame()->Client());
   CHECK(Client());
 
-  SCOPED_CRASH_KEY_NUMBER("debug-1154141", web_frame_core_frame,
+  SCOPED_CRASH_KEY_NUMBER("debug-1154141", "web_frame_core_frame",
                           reinterpret_cast<uintptr_t>(GetFrame()));
-  SCOPED_CRASH_KEY_NUMBER("debug-1154141", web_frame_dom_window,
+  SCOPED_CRASH_KEY_NUMBER("debug-1154141", "web_frame_dom_window",
                           reinterpret_cast<uintptr_t>(GetFrame()->DomWindow()));
 
   // Screen Orientation API

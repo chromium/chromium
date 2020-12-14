@@ -182,11 +182,11 @@ class WebMojoURLLoaderClient::BodyBuffer final
   // mojo::DataPipeDrainer::Client
   void OnDataAvailable(const void* data, size_t num_bytes) override {
     DCHECK(draining_);
-    SCOPED_CRASH_KEY_NUMBER(OnDataAvailable, buffered_body_size,
+    SCOPED_CRASH_KEY_NUMBER("OnDataAvailable", "buffered_body_size",
                             buffered_body_.size());
-    SCOPED_CRASH_KEY_NUMBER(OnDataAvailable, data_bytes, num_bytes);
+    SCOPED_CRASH_KEY_NUMBER("OnDataAvailable", "data_bytes", num_bytes);
     SCOPED_CRASH_KEY_STRING256(
-        OnDataAvailable, last_loaded_url,
+        "OnDataAvailable", "last_loaded_url",
         owner_->last_loaded_url().possibly_invalid_spec());
     total_bytes_drained_ += num_bytes;
 

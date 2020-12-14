@@ -1447,28 +1447,28 @@ void NavigationRequest::BeginNavigation() {
       // and other crash keys once the bug investigation completes.  Note that
       // the crash related to crbug/1116320 is expected to happen inside the
       // call to CommitNavigation below, a few statements down.
-      SCOPED_CRASH_KEY_STRING256("nav_request", host_choice_reason,
+      SCOPED_CRASH_KEY_STRING256("nav_request", "host_choice_reason",
                                  frame_host_choice_reason);
-      SCOPED_CRASH_KEY_BOOL("nav_request", has_source_instance,
+      SCOPED_CRASH_KEY_BOOL("nav_request", "has_source_instance",
                             !!GetSourceSiteInstance());
       // Crash keys capturing values affecting |was_opener_suppressed| in
       // RequiresInitiatorBasedSourceSiteInstance:
-      SCOPED_CRASH_KEY_BOOL("nav_request", is_main_frame, IsInMainFrame());
-      SCOPED_CRASH_KEY_BOOL("nav_request", got_initiator_routing_id,
+      SCOPED_CRASH_KEY_BOOL("nav_request", "is_main_frame", IsInMainFrame());
+      SCOPED_CRASH_KEY_BOOL("nav_request", "got_initiator_routing_id",
                             GetInitiatorFrameToken() != base::nullopt);
-      SCOPED_CRASH_KEY_BOOL("nav_request", is_renderer_initiated,
+      SCOPED_CRASH_KEY_BOOL("nav_request", "is_renderer_initiated",
                             IsRendererInitiated());
       // Crash keys capturing values affecting whether
       // SetSourceSiteInstanceToInitiatorIfNeeded is called:
-      SCOPED_CRASH_KEY_BOOL("nav_request", from_begin_navigation,
+      SCOPED_CRASH_KEY_BOOL("nav_request", "from_begin_navigation",
                             from_begin_navigation_);
       SCOPED_CRASH_KEY_NUMBER(
-          "nav_request", navigation_type,
+          "nav_request", "navigation_type",
           static_cast<int>(common_params().navigation_type));
       SCOPED_CRASH_KEY_BOOL(
-          "nav_request", is_hist_nav_in_new_child,
+          "nav_request", "is_hist_nav_in_new_child",
           common_params().is_history_navigation_in_new_child_frame);
-      SCOPED_CRASH_KEY_BOOL("nav_request", has_nav_entry,
+      SCOPED_CRASH_KEY_BOOL("nav_request", "has_nav_entry",
                             !!GetNavigationEntry());
 
       CHECK(Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(

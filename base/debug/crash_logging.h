@@ -85,32 +85,42 @@ class BASE_EXPORT ScopedCrashKeyString {
 // The static_assert that checks the length of |key_name| is a compile-time
 // equivalent of the DCHECK in crash_reporter::internal::CrashKeyStringImpl::Set
 // that restricts the name of a crash key to 40 characters.
-#define SCOPED_CRASH_KEY_STRING_INTERNAL2(key_name, key_data, key_data_size, \
-                                          key_var, scoper_var)               \
-  static_assert(::base::size(key_name) < 40,                                 \
-                "Crash key names need to be shorter than 40 characters.");   \
-  static ::base::debug::CrashKeyString* const key_var =                      \
-      ::base::debug::AllocateCrashKeyString(key_name, key_data_size);        \
-  ::base::debug::ScopedCrashKeyString scoper_var(key_var, (key_data))
+#define SCOPED_CRASH_KEY_STRING_INTERNAL2(category, name, nonce, data,  \
+                                          key_size)                     \
+  static_assert(::base::size(category "-" name) < 40,                   \
+                "Crash key names must be shorter than 40 characters."); \
+  ::base::debug::ScopedCrashKeyString scoped_crash_key_helper##nonce(   \
+      [] {                                                              \
+        static auto* const key = ::base::debug::AllocateCrashKeyString( \
+            category "-" name, key_size);                               \
+        return key;                                                     \
+      }(),                                                              \
+      (data))
 
-#define SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, data, size)   \
-  SCOPED_CRASH_KEY_STRING_INTERNAL2(#category "-" #name, (data), size, \
-                                    crash_key_string_##name,           \
-                                    crash_scoped_##name)
+// This indirection is needed to expand __COUNTER__.
+#define SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, nonce, data, \
+                                         key_size)                    \
+  SCOPED_CRASH_KEY_STRING_INTERNAL2(category, name, nonce, data, key_size)
 
 // Helper macros for putting a local variable crash key on the stack before
-// causing a crash or calling CrashWithoutDumping().
-#define SCOPED_CRASH_KEY_STRING32(category, name, data)    \
-  SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, (data), \
-                                   base::debug::CrashKeySize::Size32)
+// causing a crash or calling CrashWithoutDumping(). `category` and `name`
+// should be string literals.
+//
+//   SCOPED_CRASH_KEY_STRING32("MyCategory", "key_name", "value");
+//
+// will set the crash key annotation named "MyCategory-key_name" to "value"
+// while in scope.
+#define SCOPED_CRASH_KEY_STRING32(category, name, data)                 \
+  SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, __COUNTER__, (data), \
+                                   ::base::debug::CrashKeySize::Size32)
 
-#define SCOPED_CRASH_KEY_STRING64(category, name, data)    \
-  SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, (data), \
-                                   base::debug::CrashKeySize::Size64)
+#define SCOPED_CRASH_KEY_STRING64(category, name, data)                 \
+  SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, __COUNTER__, (data), \
+                                   ::base::debug::CrashKeySize::Size64)
 
-#define SCOPED_CRASH_KEY_STRING256(category, name, data)   \
-  SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, (data), \
-                                   base::debug::CrashKeySize::Size256)
+#define SCOPED_CRASH_KEY_STRING256(category, name, data)                \
+  SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, __COUNTER__, (data), \
+                                   ::base::debug::CrashKeySize::Size256)
 
 #define SCOPED_CRASH_KEY_BOOL(category, name, data)                       \
   static_assert(std::is_same<std::decay_t<decltype(data)>, bool>::value,  \
@@ -118,7 +128,7 @@ class BASE_EXPORT ScopedCrashKeyString {
   SCOPED_CRASH_KEY_STRING32(category, name, (data) ? "true" : "false")
 
 #define SCOPED_CRASH_KEY_NUMBER(category, name, data) \
-  SCOPED_CRASH_KEY_STRING32(category, name, base::NumberToString(data))
+  SCOPED_CRASH_KEY_STRING32(category, name, ::base::NumberToString(data))
 
 ////////////////////////////////////////////////////////////////////////////////
 // The following declarations are used to initialize the crash key system

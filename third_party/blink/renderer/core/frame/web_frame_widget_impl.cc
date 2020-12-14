@@ -2026,7 +2026,7 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
       // TODO(https://crbug.com/1139104): Remove this.
       std::string reason = View()->GetNullFrameReasonForBug1139104();
       DCHECK(false) << reason;
-      SCOPED_CRASH_KEY_STRING32(Crbug1139104, NullFrameReason, reason);
+      SCOPED_CRASH_KEY_STRING32("Crbug1139104", "NullFrameReason", reason);
       base::debug::DumpWithoutCrashing();
     }
   }

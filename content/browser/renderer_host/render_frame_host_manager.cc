@@ -588,10 +588,10 @@ void RenderFrameHostManager::UnloadOldFrame(
   }
   // TODO(https://crbug.com/1146573): Delete this.
   SCOPED_CRASH_KEY_STRING256(
-      Bug1146573, OldSiteInstance,
+      "Bug1146573", "OldSiteInstance",
       old_render_frame_host->GetSiteInstance()->GetSiteURL().spec());
   SCOPED_CRASH_KEY_STRING256(
-      Bug1146573, NewSiteInstance,
+      "Bug1146573", "NewSiteInstance",
       render_frame_host_->GetSiteInstance()->GetSiteURL().spec());
 
   // |old_render_frame_host| will be deleted when its unload ACK is received,
@@ -757,23 +757,24 @@ void RenderFrameHostManager::ValidateSpeculativeRenderFrameHostForBug1146573(
     return;
   if (pending->GetSiteInstance() == current->GetSiteInstance()) {
     // This should never be true.
-    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, HostsEqual, pending == current);
+    SCOPED_CRASH_KEY_BOOL("ValidateSpeculative", "HostsEqual",
+                          pending == current);
     DCHECK_NE(pending, current);
-    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, Live,
+    SCOPED_CRASH_KEY_BOOL("ValidateSpeculative", "Live",
                           current->IsRenderFrameLive());
-    SCOPED_CRASH_KEY_STRING256(ValidateSpeculative, OldSiteInstance,
+    SCOPED_CRASH_KEY_STRING256("ValidateSpeculative", "OldSiteInstance",
                                current->GetSiteInstance()->GetSiteURL().spec());
-    SCOPED_CRASH_KEY_STRING256(ValidateSpeculative, NewSiteInstance,
+    SCOPED_CRASH_KEY_STRING256("ValidateSpeculative", "NewSiteInstance",
                                pending->GetSiteInstance()->GetSiteURL().spec());
-    SCOPED_CRASH_KEY_BOOL(ValidateSpeculative, MustBeReplaced,
+    SCOPED_CRASH_KEY_BOOL("ValidateSpeculative", "MustBeReplaced",
                           current->must_be_replaced());
-    SCOPED_CRASH_KEY_NUMBER(ValidateSpeculative, OldProcessID,
+    SCOPED_CRASH_KEY_NUMBER("ValidateSpeculative", "OldProcessID",
                             current->GetProcess()->GetID());
-    SCOPED_CRASH_KEY_NUMBER(ValidateSpeculative, OldRoutingID,
+    SCOPED_CRASH_KEY_NUMBER("ValidateSpeculative", "OldRoutingID",
                             current->GetRoutingID());
-    SCOPED_CRASH_KEY_NUMBER(ValidateSpeculative, NewProcessID,
+    SCOPED_CRASH_KEY_NUMBER("ValidateSpeculative", "NewProcessID",
                             pending->GetProcess()->GetID());
-    SCOPED_CRASH_KEY_NUMBER(ValidateSpeculative, NewRoutingID,
+    SCOPED_CRASH_KEY_NUMBER("ValidateSpeculative", "NewRoutingID",
                             pending->GetRoutingID());
     NOTREACHED();
     base::debug::DumpWithoutCrashing();

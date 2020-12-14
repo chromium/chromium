@@ -2106,11 +2106,11 @@ void RenderFrameHostImpl::ValidateStateForBug1146573() {
   // InitializeMainRenderFrameForImmediateUse and it resets must_be_replaced_ so
   // should not trigger this.
   if (must_be_replaced_ && render_frame_created_) {
-    SCOPED_CRASH_KEY_BOOL(ValidateStateForBug1146573, IsMainFrame,
+    SCOPED_CRASH_KEY_BOOL("ValidateStateForBug1146573", "IsMainFrame",
                           is_main_frame());
-    SCOPED_CRASH_KEY_NUMBER(ValidateStateForBug1146573, ProcessID,
+    SCOPED_CRASH_KEY_NUMBER("ValidateStateForBug1146573", "ProcessID",
                             GetProcess()->GetID());
-    SCOPED_CRASH_KEY_NUMBER(alidateStateForBug1146573, RoutingID,
+    SCOPED_CRASH_KEY_NUMBER("ValidateStateForBug1146573", "RoutingID",
                             GetRoutingID());
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
@@ -2471,9 +2471,9 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 
   // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
   if (dump_on_render_frame_created_for_bug_1146573_) {
-    SCOPED_CRASH_KEY_NUMBER(Bug1146573, DumpNestCount,
+    SCOPED_CRASH_KEY_NUMBER("Bug1146573", "DumpNestCount",
                             dump_on_render_frame_created_for_bug_1146573_);
-    SCOPED_CRASH_KEY_BOOL(Bug1146573, RenderFrameCreated,
+    SCOPED_CRASH_KEY_BOOL("Bug1146573", "RenderFrameCreated",
                           render_frame_created_);
     base::debug::DumpWithoutCrashing();
     NOTREACHED();
@@ -3312,11 +3312,11 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
     // RenderDocument: After a local<->local swap, this function is called with
     // a null |proxy|.
     // TODO(https://crbug.com/1146573): Delete this.
-    SCOPED_CRASH_KEY_BOOL(Bug1146573, Live, IsRenderFrameLive());
-    SCOPED_CRASH_KEY_BOOL(Bug1146573, MustBeReplaced, must_be_replaced());
-    SCOPED_CRASH_KEY_BOOL(Bug1146573, IsMainFrame, is_main_frame());
-    SCOPED_CRASH_KEY_NUMBER(Bug1146573, ProcessID, GetProcess()->GetID());
-    SCOPED_CRASH_KEY_NUMBER(Bug1146573, RoutingID, GetRoutingID());
+    SCOPED_CRASH_KEY_BOOL("Bug1146573", "Live", IsRenderFrameLive());
+    SCOPED_CRASH_KEY_BOOL("Bug1146573", "MustBeReplaced", must_be_replaced());
+    SCOPED_CRASH_KEY_BOOL("Bug1146573", "IsMainFrame", is_main_frame());
+    SCOPED_CRASH_KEY_NUMBER("Bug1146573", "ProcessID", GetProcess()->GetID());
+    SCOPED_CRASH_KEY_NUMBER("Bug1146573", "RoutingID", GetRoutingID());
     CHECK(ShouldCreateNewHostForSameSiteSubframe());
 
     // The unload handlers already ran for this document during the
@@ -9738,111 +9738,116 @@ void RenderFrameHostImpl::
     return;
   }
 
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, browser_intended,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_intended",
                         request->commit_params().intended_as_new_entry);
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_intended,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_intended",
                         params.intended_as_new_entry);
 
-  SCOPED_CRASH_KEY_STRING32(VerifyDidCommit, browser_method, browser_method);
-  SCOPED_CRASH_KEY_STRING32(VerifyDidCommit, renderer_method, params.method);
-  SCOPED_CRASH_KEY_STRING32(VerifyDidCommit, original_method,
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "browser_method",
+                            browser_method);
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "renderer_method",
+                            params.method);
+  SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "original_method",
                             request->commit_params().original_method);
 
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, browser_unreachable,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_unreachable",
                         browser_url_is_unreachable);
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_unreachable,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_unreachable",
                         params.url_is_unreachable);
 
-  SCOPED_CRASH_KEY_STRING256(VerifyDidCommit, browser_base_url,
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "browser_base_url",
                              browser_base_url.possibly_invalid_spec());
-  SCOPED_CRASH_KEY_STRING256(VerifyDidCommit, renderer_base_url,
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "renderer_base_url",
                              params.base_url.possibly_invalid_spec());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, base_url_exp_match,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "base_url_exp_match",
                         base_url_expectations_match);
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, b_base_url_valid,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "b_base_url_valid",
                         browser_base_url.is_valid());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, b_base_url_empty,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "b_base_url_empty",
                         browser_base_url.is_empty());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, r_base_url_empty,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "r_base_url_empty",
                         params.base_url.is_empty());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, r_base_url_is_error,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "r_base_url_is_error",
                         params.base_url == kUnreachableWebDataURL);
 
-  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, browser_post_id, browser_post_id);
-  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, renderer_post_id, params.post_id);
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "browser_post_id",
+                          browser_post_id);
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "renderer_post_id",
+                          params.post_id);
 
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, browser_override_ua,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_override_ua",
                         browser_is_overriding_user_agent);
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_override_ua,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_override_ua",
                         params.is_overriding_user_agent);
 
-  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, browser_code,
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "browser_code",
                           browser_http_status_code);
-  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, renderer_code,
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "renderer_code",
                           params.http_status_code);
 
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, browser_suh,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_suh",
                         browser_should_update_history);
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_suh,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_suh",
                         params.should_update_history);
 
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_same_document,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_document",
                         is_same_document_navigation);
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_same_doc_history,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_doc_history",
                         is_same_document_history_api_navigation);
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, renderer_initiated,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_initiated",
                         request->IsRendererInitiated());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_subframe,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_subframe",
                         !frame_tree_node_->IsMainFrame());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_form_submission,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_form_submission",
                         request->IsFormSubmission());
-  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, net_error,
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "net_error",
                           request->GetNetErrorCode());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_server_redirect,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_server_redirect",
                         request->WasServerRedirect());
-  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, redirects_size,
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "redirects_size",
                           params.redirects.size());
-  SCOPED_CRASH_KEY_NUMBER(VerifyDidCommit, entry_offset,
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "entry_offset",
                           request->GetNavigationEntryOffset());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_reload,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_reload",
                         request->GetReloadType() != ReloadType::NONE);
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, is_restore,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_restore",
                         request->GetRestoreType() == RestoreType::kRestored);
 
   auto* last_committed_entry = NavigationEntryImpl::FromNavigationEntry(
       frame_tree()->controller()->GetLastCommittedEntry());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, lce_exists, !!last_committed_entry);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "lce_exists",
+                        !!last_committed_entry);
   SCOPED_CRASH_KEY_NUMBER(
-      VerifyDidCommit, last_post_id,
+      "VerifyDidCommit", "last_post_id",
       last_committed_entry ? last_committed_entry->GetPostID() : -1);
 
-  SCOPED_CRASH_KEY_STRING256(VerifyDidCommit, navigation_url,
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "navigation_url",
                              params.url.possibly_invalid_spec());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, nav_url_blank,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_blank",
                         params.url.IsAboutBlank());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, nav_url_srcdoc,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_srcdoc",
                         params.url.IsAboutSrcdoc());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, nav_url_blocked,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_blocked",
                         params.url == kBlockedURL);
 
-  SCOPED_CRASH_KEY_STRING256(VerifyDidCommit, last_committed_url,
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_committed_url",
                              GetLastCommittedURL().spec());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, last_url_blank,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_blank",
                         GetLastCommittedURL().IsAboutBlank());
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, last_url_srcdoc,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_srcdoc",
                         GetLastCommittedURL().IsAboutSrcdoc());
   bool has_original_url =
       GetSiteInstance() && !GetSiteInstance()->IsDefaultSiteInstance();
   SCOPED_CRASH_KEY_STRING256(
-      VerifyDidCommit, original_url,
+      "VerifyDidCommit", "original_url",
       has_original_url
           ? GetSiteInstance()->original_url().possibly_invalid_spec()
           : "");
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, original_url_blank,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "original_url_blank",
                         has_original_url
                             ? GetSiteInstance()->original_url().IsAboutBlank()
                             : false);
-  SCOPED_CRASH_KEY_BOOL(VerifyDidCommit, original_url_srcdoc,
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "original_url_srcdoc",
                         has_original_url
                             ? GetSiteInstance()->original_url().IsAboutSrcdoc()
                             : false);
