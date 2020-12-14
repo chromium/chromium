@@ -1368,7 +1368,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   bool prefetch_canceled_histogram_added = false;
   EXPECT_TRUE(base::StatisticsRecorder::SetCallback(
       kPrefetchCanceledHistogram,
-      base::Bind(
+      base::BindRepeating(
           [](const base::Closure& quit_closure, bool* called,
              const char* histogram_name, uint64_t name_hash,
              base::HistogramBase::Sample sample) {

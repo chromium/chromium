@@ -511,9 +511,9 @@ void PrerenderInProcessBrowserTest::CreatedBrowserMainParts(
 void PrerenderInProcessBrowserTest::SetUpOnMainThread() {
   current_browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kPromptForDownload, false);
-  embedded_test_server()->RegisterRequestMonitor(
-      base::Bind(&PrerenderInProcessBrowserTest::MonitorResourceRequest,
-                 base::Unretained(this)));
+  embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+      &PrerenderInProcessBrowserTest::MonitorResourceRequest,
+      base::Unretained(this)));
   if (autostart_test_server_)
     CHECK(embedded_test_server()->Start());
   ExternalProtocolHandler::SetDelegateForTesting(
@@ -547,9 +547,9 @@ void PrerenderInProcessBrowserTest::UseHttpsSrcServer() {
   https_src_server_.reset(
       new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
   https_src_server_->ServeFilesFromSourceDirectory("chrome/test/data");
-  https_src_server_->RegisterRequestMonitor(
-      base::Bind(&PrerenderInProcessBrowserTest::MonitorResourceRequest,
-                 base::Unretained(this)));
+  https_src_server_->RegisterRequestMonitor(base::BindRepeating(
+      &PrerenderInProcessBrowserTest::MonitorResourceRequest,
+      base::Unretained(this)));
   CHECK(https_src_server_->Start());
 }
 
