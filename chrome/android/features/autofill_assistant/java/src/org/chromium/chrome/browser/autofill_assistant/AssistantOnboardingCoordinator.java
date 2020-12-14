@@ -8,7 +8,6 @@ import android.content.Context;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.view.LayoutInflater;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -258,7 +257,7 @@ class AssistantOnboardingCoordinator {
      * Set the content of the bottom sheet to be the Autofill Assistant onboarding.
      */
     private void initContent(Callback<Boolean> callback) {
-        mView = (ScrollView) LayoutInflater.from(mContext).inflate(
+        mView = (ScrollView) LayoutUtils.createInflater(mContext).inflate(
                 R.layout.autofill_assistant_onboarding, /* root= */ null);
 
         // Set focusable for accessibility.

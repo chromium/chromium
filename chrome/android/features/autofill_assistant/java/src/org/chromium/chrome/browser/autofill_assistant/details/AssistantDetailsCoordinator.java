@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.autofill_assistant.details;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.details.AssistantDetailsViewBinder.ViewHolder;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
@@ -34,7 +34,7 @@ public class AssistantDetailsCoordinator {
     @VisibleForTesting
     public AssistantDetailsCoordinator(
             Context context, AssistantDetailsModel model, ImageFetcher imageFetcher) {
-        mView = LayoutInflater.from(context).inflate(
+        mView = LayoutUtils.createInflater(context).inflate(
                 R.layout.autofill_assistant_details, /* root= */ null);
         mModel = model;
         ViewHolder viewHolder = new ViewHolder(context, mView);

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill_assistant.trigger_scripts;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantBottomBarDelegate
 import org.chromium.chrome.browser.autofill_assistant.AssistantBottomSheetContent;
 import org.chromium.chrome.browser.autofill_assistant.AssistantRootViewContainer;
 import org.chromium.chrome.browser.autofill_assistant.BottomSheetUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipViewHolder;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDimension;
@@ -140,7 +140,7 @@ public class AssistantTriggerScript {
                 horizontalMargin, verticalMargin, horizontalMargin, verticalMargin);
 
         AssistantRootViewContainer rootViewContainer =
-                (AssistantRootViewContainer) LayoutInflater.from(mContext).inflate(
+                (AssistantRootViewContainer) LayoutUtils.createInflater(mContext).inflate(
                         R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
         ScrollView scrollableContent = rootViewContainer.findViewById(R.id.scrollable_content);
         rootViewContainer.addView(mHeaderCoordinator.getView(), 0);

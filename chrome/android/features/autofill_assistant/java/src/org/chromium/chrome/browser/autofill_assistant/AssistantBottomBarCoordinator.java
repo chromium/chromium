@@ -9,7 +9,6 @@ import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -125,8 +124,9 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         }
 
         // Replace or set the content to the actual Autofill Assistant views.
-        mRootViewContainer = (AssistantRootViewContainer) LayoutInflater.from(activity).inflate(
-                R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
+        mRootViewContainer =
+                (AssistantRootViewContainer) LayoutUtils.createInflater(activity).inflate(
+                        R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
         mScrollableContent = mRootViewContainer.findViewById(R.id.scrollable_content);
         ViewGroup scrollableContentContainer =
                 mScrollableContent.findViewById(R.id.scrollable_content_container);

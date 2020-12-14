@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill_assistant.form;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 
 /**
  * A coordinator responsible for showing a form to the user.
@@ -32,7 +32,7 @@ public class AssistantFormCoordinator {
 
         mFormView = makeLinearLayout(context);
 
-        mInfoView = (LinearLayout) LayoutInflater.from(context).inflate(
+        mInfoView = (LinearLayout) LayoutUtils.createInflater(context).inflate(
                 R.layout.autofill_assistant_form_information, mRootView,
                 /* attachToRoot= */ false);
 

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Space;
 
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
 
@@ -44,7 +45,7 @@ public class AssistantAdditionalSectionContainer {
 
         mSections.clear();
         int index = mParent.indexOfChild(mPlaceholderView);
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        LayoutInflater inflater = LayoutUtils.createInflater(mContext);
         for (int i = sections.size() - 1; i >= 0; i--) {
             View divider = inflater.inflate(
                     R.layout.autofill_assistant_payment_request_section_divider, mParent, false);

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantChevronStyle;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpander;
 import org.chromium.content.browser.input.PopupItemType;
@@ -77,7 +78,7 @@ public class AssistantPopupListSection implements AssistantAdditionalSection {
         mTitleToContentPadding = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_payment_request_title_padding);
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutUtils.createInflater(context);
         mSectionExpander = new AssistantVerticalExpander(context, null);
         View sectionTitle =
                 inflater.inflate(R.layout.autofill_assistant_payment_request_section_title, null);

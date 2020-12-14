@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
@@ -31,7 +30,7 @@ public class AssistantBottomSheetContent implements BottomSheetContent {
 
     public AssistantBottomSheetContent(
             Context context, Supplier<AssistantBottomBarDelegate> supplier) {
-        mToolbarView = LayoutInflater.from(context).inflate(
+        mToolbarView = LayoutUtils.createInflater(context).inflate(
                 R.layout.autofill_assistant_bottom_sheet_toolbar, /* root= */ null);
         mContentView = new SizeListenableLinearLayout(context);
         mContentView.setLayoutParams(new ViewGroup.LayoutParams(

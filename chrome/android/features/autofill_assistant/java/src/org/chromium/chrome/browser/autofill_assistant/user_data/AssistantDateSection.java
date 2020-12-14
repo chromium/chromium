@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantChevronStyle;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.content.browser.input.PopupItemType;
 import org.chromium.content.browser.input.SelectPopupDialog;
 import org.chromium.content.browser.input.SelectPopupItem;
@@ -62,7 +63,7 @@ public class AssistantDateSection {
         mTitleToContentPadding = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_payment_request_title_padding);
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutUtils.createInflater(context);
         mRootLayout = (LinearLayout) inflater.inflate(R.layout.autofill_assistant_datetime, null);
         mRootLayout.setVisibility(View.GONE);
 
@@ -139,7 +140,7 @@ public class AssistantDateSection {
 
     /** Common view configuration for the vertical expanders. */
     private void setupExpander(Context context, AssistantVerticalExpander expander) {
-        View titleView = LayoutInflater.from(context).inflate(
+        View titleView = LayoutUtils.createInflater(context).inflate(
                 R.layout.autofill_assistant_payment_request_section_title, null);
         TextView summaryView = new TextView(context);
         summaryView.setSingleLine();

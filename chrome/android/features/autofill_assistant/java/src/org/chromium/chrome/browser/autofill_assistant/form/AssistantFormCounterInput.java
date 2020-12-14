@@ -10,13 +10,13 @@ import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ class AssistantFormCounterInput extends AssistantFormInput {
         private final View mIncreaseButtonView;
 
         private CounterViewHolder(Context context) {
-            mView = LayoutInflater.from(context).inflate(
+            mView = LayoutUtils.createInflater(context).inflate(
                     R.layout.autofill_assistant_form_counter, /*root= */ null);
             mLabelView = mView.findViewById(R.id.label);
             mDescriptionLine1View = mView.findViewById(R.id.description_line_1);
@@ -95,7 +95,7 @@ class AssistantFormCounterInput extends AssistantFormInput {
 
     @Override
     public View createView(Context context, ViewGroup parent) {
-        ViewGroup root = (ViewGroup) LayoutInflater.from(context).inflate(
+        ViewGroup root = (ViewGroup) LayoutUtils.createInflater(context).inflate(
                 R.layout.autofill_assistant_form_counter_input, parent, /* attachToRoot= */ false);
         TextView label = root.findViewById(R.id.label);
         if (mLabel.isEmpty()) {

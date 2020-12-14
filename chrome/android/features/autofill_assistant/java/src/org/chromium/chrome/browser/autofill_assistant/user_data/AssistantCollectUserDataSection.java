@@ -19,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.components.autofill.EditableOption;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
         mItems = new ArrayList<>();
         mTitleToContentPadding = titleToContentPadding;
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutUtils.createInflater(context);
         mSectionExpander = new AssistantVerticalExpander(context, null);
         View sectionTitle =
                 inflater.inflate(R.layout.autofill_assistant_payment_request_section_title, null);
@@ -290,7 +291,7 @@ public abstract class AssistantCollectUserDataSection<T extends EditableOption> 
      * Creates a new item from {@code option}.
      */
     private Item createItem(T option) {
-        View fullView = LayoutInflater.from(mContext).inflate(mFullViewResId, null);
+        View fullView = LayoutUtils.createInflater(mContext).inflate(mFullViewResId, null);
         updateFullView(fullView, option);
         Item item = new Item(fullView, option);
         return item;

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -19,6 +18,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 
 /**
  * The third party terms and conditions section of the Autofill Assistant payment request.
@@ -40,7 +40,7 @@ public class AssistantTermsSection {
     private Delegate mDelegate;
 
     AssistantTermsSection(Context context, ViewGroup parent, boolean showAsSingleCheckbox) {
-        mView = LayoutInflater.from(context).inflate(
+        mView = LayoutUtils.createInflater(context).inflate(
                 R.layout.autofill_assistant_payment_request_terms_and_conditions, parent, false);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
