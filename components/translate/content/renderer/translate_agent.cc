@@ -111,7 +111,7 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
   std::string content_language = web_detection_details.content_language.Utf8();
   std::string html_lang = web_detection_details.html_language.Utf8();
   std::string model_detected_language;
-  bool is_model_reliable;
+  bool is_model_reliable = false;
 
   std::string language;
   if (translate::IsTFLiteLanguageDetectionEnabled()) {
