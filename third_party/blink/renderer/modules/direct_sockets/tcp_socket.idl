@@ -14,4 +14,9 @@
 
   [RaisesException, CallWith=ScriptState]
   Promise<void> close();
+
+  readonly attribute DOMString remoteAddress;
+  readonly attribute unsigned short remotePort;
+  readonly attribute ReadableStream readable;
+  readonly attribute WritableStream writable;
 };

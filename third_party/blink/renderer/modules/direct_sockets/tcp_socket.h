@@ -13,6 +13,8 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/tcp_socket.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
+#include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -51,6 +53,11 @@ class MODULES_EXPORT TCPSocket final
   // Web-exposed function
   ScriptPromise close(ScriptState*, ExceptionState&);
 
+  ReadableStream* readable() const;
+  WritableStream* writable() const;
+  String remoteAddress() const;
+  uint16_t remotePort() const;
+
   // network::mojom::blink::SocketObserver:
   void OnReadError(int32_t net_error) override;
   void OnWriteError(int32_t net_error) override;
@@ -61,6 +68,9 @@ class MODULES_EXPORT TCPSocket final
  private:
   void OnSocketObserverConnectionError();
 
+  void OnReadableStreamAbort();
+  void OnWritableStreamAbort();
+
   Member<ScriptPromiseResolver> resolver_;
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
@@ -68,6 +78,11 @@ class MODULES_EXPORT TCPSocket final
   mojo::Remote<network::mojom::blink::TCPConnectedSocket> tcp_socket_;
   mojo::Receiver<network::mojom::blink::SocketObserver>
       socket_observer_receiver_{this};
+
+  Member<TCPReadableStreamWrapper> tcp_readable_stream_wrapper_;
+  Member<TCPWritableStreamWrapper> tcp_writable_stream_wrapper_;
+  base::Optional<net::IPEndPoint> local_addr_;
+  base::Optional<net::IPEndPoint> peer_addr_;
 };
 
 }  // namespace blink

@@ -522,6 +522,10 @@ source_set("unit_tests") {
     "//v8",
   ]
 
+  if (!is_android) {
+    deps += [ "//third_party/blink/renderer/modules/direct_sockets:unit_tests" ]
+  }
+
   data_deps = [
     ":accessibility_unittests_data",
     ":mediastream_unittests_data",

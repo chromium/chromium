@@ -50,9 +50,23 @@ void TCPSocket::Init(int32_t result,
                      mojo::ScopedDataPipeConsumerHandle receive_stream,
                      mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK(resolver_);
+  DCHECK(!tcp_readable_stream_wrapper_);
+  DCHECK(!tcp_writable_stream_wrapper_);
   if (result == net::Error::OK) {
-    // TODO(crbug.com/905818): Finish initialization.
-    NOTIMPLEMENTED();
+    local_addr_ = local_addr;
+    peer_addr_ = peer_addr;
+    tcp_readable_stream_wrapper_ =
+        MakeGarbageCollected<TCPReadableStreamWrapper>(
+            resolver_->GetScriptState(),
+            WTF::Bind(&TCPSocket::OnReadableStreamAbort,
+                      WrapWeakPersistent(this)),
+            std::move(receive_stream));
+    tcp_writable_stream_wrapper_ =
+        MakeGarbageCollected<TCPWritableStreamWrapper>(
+            resolver_->GetScriptState(),
+            WTF::Bind(&TCPSocket::OnWritableStreamAbort,
+                      WrapWeakPersistent(this)),
+            std::move(send_stream));
     resolver_->Resolve(this);
   } else {
     resolver_->Reject(MakeGarbageCollected<DOMException>(
@@ -67,6 +81,26 @@ ScriptPromise TCPSocket::close(ScriptState*, ExceptionState&) {
   return ScriptPromise();
 }
 
+ReadableStream* TCPSocket::readable() const {
+  DCHECK(tcp_readable_stream_wrapper_);
+  return tcp_readable_stream_wrapper_->Readable();
+}
+
+WritableStream* TCPSocket::writable() const {
+  DCHECK(tcp_writable_stream_wrapper_);
+  return tcp_writable_stream_wrapper_->Writable();
+}
+
+String TCPSocket::remoteAddress() const {
+  DCHECK(peer_addr_);
+  return String::FromUTF8(peer_addr_->ToStringWithoutPort());
+}
+
+uint16_t TCPSocket::remotePort() const {
+  DCHECK(peer_addr_);
+  return peer_addr_->port();
+}
+
 void TCPSocket::OnReadError(int32_t net_error) {
   // TODO(crbug.com/905818): Implement error handling.
   NOTIMPLEMENTED();
@@ -79,12 +113,30 @@ void TCPSocket::OnWriteError(int32_t net_error) {
 
 void TCPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
+  visitor->Trace(tcp_readable_stream_wrapper_);
+  visitor->Trace(tcp_writable_stream_wrapper_);
   ScriptWrappable::Trace(visitor);
 }
 
 void TCPSocket::OnSocketObserverConnectionError() {
   // TODO(crbug.com/905818): Implement error handling.
   NOTIMPLEMENTED();
+}
+
+void TCPSocket::OnReadableStreamAbort() {
+  if (tcp_writable_stream_wrapper_->GetState() ==
+      TCPWritableStreamWrapper::State::kAborted) {
+    return;
+  }
+  tcp_writable_stream_wrapper_->Reset();
+}
+
+void TCPSocket::OnWritableStreamAbort() {
+  if (tcp_readable_stream_wrapper_->GetState() ==
+      TCPReadableStreamWrapper::State::kAborted) {
+    return;
+  }
+  tcp_readable_stream_wrapper_->Reset();
 }
 
 }  // namespace blink

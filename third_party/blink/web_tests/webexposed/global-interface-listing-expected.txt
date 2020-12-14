@@ -8285,6 +8285,10 @@ interface SyncManager
     method register
 interface TCPSocket
     attribute @@toStringTag
+    getter readable
+    getter remoteAddress
+    getter remotePort
+    getter writable
     method close
     method constructor
 interface TaskAttributionTiming : PerformanceEntry
