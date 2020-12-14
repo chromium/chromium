@@ -1,7 +1,8 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package org.chromium.chrome.browser.signin;
+
+package org.chromium.chrome.browser.signin.ui;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -24,17 +25,12 @@ import org.robolectric.shadows.ShadowAlertDialog;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.ui.ConfirmImportSyncDataDialog;
-import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachineDelegate;
 
 /**
  * Tests for {@link ConfirmImportSyncDataDialog}.
- * TODO(https://crbug.com/1156585): Modularize this class after moving the
- * {@link ConfirmSyncDataStateMachineDelegate}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ConfirmImportSyncDataDialogTest {

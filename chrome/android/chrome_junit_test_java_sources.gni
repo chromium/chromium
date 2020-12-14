@@ -203,8 +203,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapterTest.java",
   "junit/src/org/chromium/chrome/browser/send_tab_to_self/SendTabToSelfShareActivityTest.java",
   "junit/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandlerTest.java",
-  "junit/src/org/chromium/chrome/browser/signin/ConfirmImportSyncDataDialogTest.java",
-  "junit/src/org/chromium/chrome/browser/signin/ConfirmManagedSyncDataDialogTest.java",
   "junit/src/org/chromium/chrome/browser/signin/ConfirmSyncDataStateMachineTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SignOutDialogFragmentTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninManagerTest.java",
