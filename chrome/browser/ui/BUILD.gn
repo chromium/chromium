@@ -3337,7 +3337,7 @@ static_library("ui") {
       ]
     }
     if (use_ozone) {
-      if (!is_linux || is_chromeos_lacros) {
+      if (!is_linux && !is_chromeos_lacros) {
         sources += [
           "views/frame/browser_desktop_window_tree_host_platform.cc",
           "views/frame/browser_desktop_window_tree_host_platform.h",
