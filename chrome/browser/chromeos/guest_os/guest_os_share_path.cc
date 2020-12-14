@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -183,9 +184,6 @@ GuestOsSharePath::GuestOsSharePath(Profile* profile)
       file_watcher_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       seneschal_callback_(base::BindRepeating(LogErrorResult)) {
-  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
-  crostini_manager->AddVmShutdownObserver(this);
-
   if (auto* vmgr = file_manager::VolumeManager::Get(profile_)) {
     vmgr->AddObserver(this);
   }
@@ -204,9 +202,6 @@ GuestOsSharePath::~GuestOsSharePath() = default;
 
 void GuestOsSharePath::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
-  crostini_manager->RemoveVmShutdownObserver(this);
-
   for (auto& shared_path : shared_paths_) {
     if (shared_path.second.watcher) {
       file_watcher_task_runner_->DeleteSoon(
@@ -485,7 +480,12 @@ void GuestOsSharePath::UnsharePath(const std::string& vm_name,
                                    SuccessCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (auto* info = FindSharedPathInfo(path)) {
-    if (RemoveSharedPathInfo(*info, vm_name)) {
+    info->vm_names.erase(vm_name);
+    if (info->vm_names.empty()) {
+      if (info->watcher) {
+        file_watcher_task_runner_->DeleteSoon(FROM_HERE,
+                                              info->watcher.release());
+      }
       shared_paths_.erase(path);
     }
   }
@@ -586,17 +586,6 @@ bool GuestOsSharePath::IsPathShared(const std::string& vm_name,
       return false;
     }
     path = std::move(parent);
-  }
-}
-
-void GuestOsSharePath::OnVmShutdown(const std::string& vm_name) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (auto it = shared_paths_.begin(); it != shared_paths_.end();) {
-    if (RemoveSharedPathInfo(it->second, vm_name)) {
-      shared_paths_.erase(it++);
-    } else {
-      ++it;
-    }
   }
 }
 
@@ -765,18 +754,6 @@ SharedPathInfo* GuestOsSharePath::FindSharedPathInfo(
     return nullptr;
   }
   return &it->second;
-}
-
-bool GuestOsSharePath::RemoveSharedPathInfo(SharedPathInfo& info,
-                                            const std::string& vm_name) {
-  info.vm_names.erase(vm_name);
-  if (info.vm_names.empty()) {
-    if (info.watcher) {
-      file_watcher_task_runner_->DeleteSoon(FROM_HERE, info.watcher.release());
-    }
-    return true;
-  }
-  return false;
 }
 
 }  // namespace guest_os
