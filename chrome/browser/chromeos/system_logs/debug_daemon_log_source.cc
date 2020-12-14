@@ -35,6 +35,7 @@ namespace {
 
 constexpr char kNotAvailable[] = "<not available>";
 constexpr char kRoutesKeyName[] = "routes";
+constexpr char kRoutesv6KeyName[] = "routes6";
 constexpr char kLogTruncated[] = "<earlier logs truncated>\n";
 
 // List of user log files that Chrome reads directly as these logs are generated
@@ -115,7 +116,12 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
   client->GetRoutes(true,   // Numeric
                     false,  // No IPv6
                     base::BindOnce(&DebugDaemonLogSource::OnGetRoutes,
-                                   weak_ptr_factory_.GetWeakPtr()));
+                                   weak_ptr_factory_.GetWeakPtr(), false));
+  ++num_pending_requests_;
+  client->GetRoutes(true,  // Numeric
+                    true,  // with IPv6
+                    base::BindOnce(&DebugDaemonLogSource::OnGetRoutes,
+                                   weak_ptr_factory_.GetWeakPtr(), true));
   ++num_pending_requests_;
 
   if (scrub_) {
@@ -134,12 +140,13 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
 }
 
 void DebugDaemonLogSource::OnGetRoutes(
+    bool is_ipv6,
     base::Optional<std::vector<std::string>> routes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  (*response_)[kRoutesKeyName] = routes.has_value()
-                                     ? base::JoinString(routes.value(), "\n")
-                                     : kNotAvailable;
+  std::string key = is_ipv6 ? kRoutesv6KeyName : kRoutesKeyName;
+  (*response_)[key] = routes.has_value()
+                          ? base::JoinString(routes.value(), "\n")
+                          : kNotAvailable;
   RequestCompleted();
 }
 

@@ -43,7 +43,8 @@ class DebugDaemonLogSource : public SystemLogsSource {
   typedef std::map<std::string, std::string> KeyValueMap;
 
   // Callbacks for the dbus calls to debugd.
-  void OnGetRoutes(base::Optional<std::vector<std::string>> routes);
+  void OnGetRoutes(bool is_ipv6,
+                   base::Optional<std::vector<std::string>> routes);
   void OnGetOneLog(std::string key, base::Optional<std::string> status);
   void OnGetLogs(bool succeeded,
                  const KeyValueMap& logs);
