@@ -352,8 +352,10 @@ SVGResourceInvalidator::SVGResourceInvalidator(LayoutObject& object)
 
 void SVGResourceInvalidator::InvalidateEffects() {
   const ComputedStyle& style = object_.StyleRef();
-  if (style.HasFilter() && style.Filter().HasReferenceFilter())
-    SVGResources::GetClient(object_)->InvalidateFilterData();
+  if (style.HasFilter() && style.Filter().HasReferenceFilter()) {
+    if (SVGElementResourceClient* client = SVGResources::GetClient(object_))
+      client->InvalidateFilterData();
+  }
   if (style.ClipPath()) {
     object_.SetShouldDoFullPaintInvalidation();
     object_.InvalidateClipPathCache();
