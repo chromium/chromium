@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/devtools/device/adb/adb_client_socket.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,7 +43,7 @@ static void RunSocketCallback(
 class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
  public:
   ResolveHostAndOpenSocket(const net::HostPortPair& address,
-                           const AdbClientSocket::SocketCallback& callback)
+                           const AndroidDeviceManager::SocketCallback& callback)
       : callback_(callback) {
     mojo::Remote<network::mojom::HostResolver> resolver;
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -92,7 +91,7 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
     delete this;
   }
 
-  AdbClientSocket::SocketCallback callback_;
+  AndroidDeviceManager::SocketCallback callback_;
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
 };
 
