@@ -29,18 +29,31 @@
  *
  */
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRERENDERER_CLIENT_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRERENDERER_CLIENT_H_
+#include "third_party/blink/renderer/core/loader/no_state_prefetch_client.h"
 
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/web/web_no_state_prefetch_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
 
-class WebPrerendererClient {
- public:
-  virtual bool IsPrefetchOnly() = 0;
-};
+// static
+const char NoStatePrefetchClient::kSupplementName[] = "NoStatePrefetchClient";
+
+// static
+NoStatePrefetchClient* NoStatePrefetchClient::From(Page* page) {
+  return Supplement<Page>::From<NoStatePrefetchClient>(page);
+}
+
+NoStatePrefetchClient::NoStatePrefetchClient(Page& page,
+                                             WebNoStatePrefetchClient* client)
+    : Supplement<Page>(page), client_(client) {}
+
+bool NoStatePrefetchClient::IsPrefetchOnly() {
+  return client_ && client_->IsPrefetchOnly();
+}
+
+void ProvideNoStatePrefetchClientTo(Page& page, NoStatePrefetchClient* client) {
+  NoStatePrefetchClient::ProvideTo(page, client);
+}
 
 }  // namespace blink
-
-#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PRERENDERER_CLIENT_H_

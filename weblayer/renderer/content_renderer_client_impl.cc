@@ -14,10 +14,10 @@
 #include "components/js_injection/renderer/js_communication.h"
 #include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
 #include "components/no_state_prefetch/renderer/prerender_helper.h"
 #include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
 #include "components/no_state_prefetch/renderer/prerender_utils.h"
-#include "components/no_state_prefetch/renderer/prerenderer_client.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
@@ -143,7 +143,7 @@ void ContentRendererClientImpl::RenderFrameCreated(
 
 void ContentRendererClientImpl::RenderViewCreated(
     content::RenderView* render_view) {
-  new prerender::PrerendererClient(render_view);
+  new prerender::NoStatePrefetchClient(render_view);
 }
 
 SkBitmap* ContentRendererClientImpl::GetSadPluginBitmap() {

@@ -154,10 +154,6 @@ specific_include_rules = {
     "find_task_controller.cc" : [
         "+third_party/blink/renderer/core/frame/web_local_frame_impl.h",
     ],
-    # TODO(darin): Remove once onion-souping is complete for prerendering.
-    "prerenderer_client.cc" : [
-        "+third_party/blink/renderer/core/frame/web_local_frame_impl.h",
-    ],
     "html_media_element_test.cc": [
         "+base/test/gtest_util.h",
     ],

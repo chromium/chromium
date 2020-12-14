@@ -41,7 +41,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_prerenderer_client.h"
+#include "third_party/blink/public/web/web_no_state_prefetch_client.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_view_client.h"
@@ -57,10 +57,10 @@ namespace blink {
 
 namespace {
 
-class TestWebPrerendererClient : public WebPrerendererClient {
+class TestWebNoStatePrefetchClient : public WebNoStatePrefetchClient {
  public:
-  TestWebPrerendererClient() = default;
-  virtual ~TestWebPrerendererClient() = default;
+  TestWebNoStatePrefetchClient() = default;
+  virtual ~TestWebNoStatePrefetchClient() = default;
 
  private:
   bool IsPrefetchOnly() override { return false; }
@@ -111,7 +111,8 @@ class PrerenderTest : public testing::Test {
         WebString::FromUTF8(base_url), blink::test::CoreTestDataPath(),
         WebString::FromUTF8(file_name));
     web_view_helper_.Initialize();
-    web_view_helper_.GetWebView()->SetPrerendererClient(&prerenderer_client_);
+    web_view_helper_.GetWebView()->SetNoStatePrefetchClient(
+        &no_state_prefetch_client_);
 
     web_view_helper_.LocalMainFrame()
         ->GetFrame()
@@ -169,7 +170,7 @@ class PrerenderTest : public testing::Test {
   std::vector<std::unique_ptr<MockPrerenderProcessor>> processors_;
   mojo::ReceiverSet<mojom::blink::PrerenderProcessor> receiver_set_;
 
-  TestWebPrerendererClient prerenderer_client_;
+  TestWebNoStatePrefetchClient no_state_prefetch_client_;
 
   frame_test_helpers::WebViewHelper web_view_helper_;
 };

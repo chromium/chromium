@@ -66,8 +66,8 @@ class WebFrame;
 class WebFrameWidget;
 class WebHitTestResult;
 class WebLocalFrame;
+class WebNoStatePrefetchClient;
 class WebPagePopup;
-class WebPrerendererClient;
 class WebRemoteFrame;
 class WebSettings;
 class WebString;
@@ -133,8 +133,7 @@ class WebView {
   // Called to inform WebViewImpl that a remote main frame has been detached.
   virtual void DidDetachRemoteMainFrame() = 0;
 
-  // Initializes the various client interfaces.
-  virtual void SetPrerendererClient(WebPrerendererClient*) = 0;
+  virtual void SetNoStatePrefetchClient(WebNoStatePrefetchClient*) = 0;
 
   // Options -------------------------------------------------------------
 

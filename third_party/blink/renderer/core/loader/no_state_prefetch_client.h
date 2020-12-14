@@ -29,30 +29,39 @@
  *
  */
 
-#include "third_party/blink/renderer/core/loader/prerenderer_client.h"
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NO_STATE_PREFETCH_CLIENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NO_STATE_PREFETCH_CLIENT_H_
 
-#include "third_party/blink/public/web/web_prerenderer_client.h"
+#include "base/macros.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-// static
-const char PrerendererClient::kSupplementName[] = "PrerendererClient";
+class Page;
+class WebNoStatePrefetchClient;
 
-// static
-PrerendererClient* PrerendererClient::From(Page* page) {
-  return Supplement<Page>::From<PrerendererClient>(page);
-}
+class CORE_EXPORT NoStatePrefetchClient
+    : public GarbageCollected<NoStatePrefetchClient>,
+      public Supplement<Page> {
+ public:
+  static const char kSupplementName[];
 
-PrerendererClient::PrerendererClient(Page& page, WebPrerendererClient* client)
-    : Supplement<Page>(page), client_(client) {}
+  NoStatePrefetchClient(Page&, WebNoStatePrefetchClient*);
 
-bool PrerendererClient::IsPrefetchOnly() {
-  return client_ && client_->IsPrefetchOnly();
-}
+  virtual bool IsPrefetchOnly();
 
-void ProvidePrerendererClientTo(Page& page, PrerendererClient* client) {
-  PrerendererClient::ProvideTo(page, client);
-}
+  static NoStatePrefetchClient* From(Page*);
+
+ private:
+  WebNoStatePrefetchClient* client_;
+
+  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchClient);
+};
+
+CORE_EXPORT void ProvideNoStatePrefetchClientTo(Page&, NoStatePrefetchClient*);
 
 }  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NO_STATE_PREFETCH_CLIENT_H_

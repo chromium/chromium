@@ -256,7 +256,7 @@
 #include "third_party/blink/renderer/core/loader/http_refresh_scheduler.h"
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
-#include "third_party/blink/renderer/core/loader/prerenderer_client.h"
+#include "third_party/blink/renderer/core/loader/no_state_prefetch_client.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_row_element.h"
@@ -1913,9 +1913,9 @@ bool Document::IsPrefetchOnly() const {
   if (!GetFrame() || !GetFrame()->GetPage())
     return false;
 
-  PrerendererClient* prerenderer_client =
-      PrerendererClient::From(GetFrame()->GetPage());
-  return prerenderer_client && prerenderer_client->IsPrefetchOnly();
+  NoStatePrefetchClient* no_state_prefetch_client =
+      NoStatePrefetchClient::From(GetFrame()->GetPage());
+  return no_state_prefetch_client && no_state_prefetch_client->IsPrefetchOnly();
 }
 
 AtomicString Document::visibilityState() const {

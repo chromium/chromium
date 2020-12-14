@@ -29,39 +29,18 @@
  *
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRERENDERER_CLIENT_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRERENDERER_CLIENT_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NO_STATE_PREFETCH_CLIENT_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NO_STATE_PREFETCH_CLIENT_H_
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
 
-class Page;
-class WebPrerendererClient;
-
-class CORE_EXPORT PrerendererClient
-    : public GarbageCollected<PrerendererClient>,
-      public Supplement<Page> {
+class WebNoStatePrefetchClient {
  public:
-  static const char kSupplementName[];
-
-  PrerendererClient(Page&, WebPrerendererClient*);
-
-  virtual bool IsPrefetchOnly();
-
-  static PrerendererClient* From(Page*);
-
- private:
-  WebPrerendererClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrerendererClient);
+  virtual bool IsPrefetchOnly() = 0;
 };
-
-CORE_EXPORT void ProvidePrerendererClientTo(Page&, PrerendererClient*);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRERENDERER_CLIENT_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NO_STATE_PREFETCH_CLIENT_H_

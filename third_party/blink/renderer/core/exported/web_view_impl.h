@@ -136,7 +136,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidDetachLocalMainFrame() override;
   void DidAttachRemoteMainFrame() override;
   void DidDetachRemoteMainFrame() override;
-  void SetPrerendererClient(WebPrerendererClient*) override;
+  void SetNoStatePrefetchClient(WebNoStatePrefetchClient*) override;
   WebSettings* GetSettings() override;
   WebString PageEncoding() const override;
   void SetTabKeyCyclesThroughElements(bool value) override;

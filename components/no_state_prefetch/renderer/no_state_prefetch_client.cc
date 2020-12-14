@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/renderer/prerenderer_client.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
 
 #include "base/logging.h"
 #include "components/no_state_prefetch/renderer/prerender_helper.h"
@@ -12,22 +12,22 @@
 
 namespace prerender {
 
-PrerendererClient::PrerendererClient(content::RenderView* render_view)
+NoStatePrefetchClient::NoStatePrefetchClient(content::RenderView* render_view)
     : content::RenderViewObserver(render_view) {
   DCHECK(render_view);
-  DVLOG(5) << "PrerendererClient::PrerendererClient()";
-  render_view->GetWebView()->SetPrerendererClient(this);
+  DVLOG(5) << "NoStatePrefetchClient::NoStatePrefetchClient()";
+  render_view->GetWebView()->SetNoStatePrefetchClient(this);
 }
 
-PrerendererClient::~PrerendererClient() = default;
+NoStatePrefetchClient::~NoStatePrefetchClient() = default;
 
-bool PrerendererClient::IsPrefetchOnly() {
+bool NoStatePrefetchClient::IsPrefetchOnly() {
   return PrerenderHelper::GetPrerenderMode(
              render_view()->GetMainRenderFrame()) ==
          prerender::mojom::PrerenderMode::kPrefetchOnly;
 }
 
-void PrerendererClient::OnDestruct() {
+void NoStatePrefetchClient::OnDestruct() {
   delete this;
 }
 
