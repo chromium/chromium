@@ -201,8 +201,10 @@ void AXRelationCache::GetAriaOwnedChildren(
       aria_owner_to_children_mapping_.at(owner->AXObjectID());
   for (AXID child_id : current_child_axids) {
     AXObject* child = ObjectFromAXID(child_id);
-    if (child)
+    if (child) {
       validated_owned_children_result.push_back(child);
+      DCHECK(IsAriaOwned(child)) << "Owned child not in owned child map";
+    }
   }
 }
 
@@ -368,12 +370,33 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
 }
 
 void AXRelationCache::RemoveAXID(AXID obj_id) {
+  // Need to remove from maps.
+  // There are maps from children to their owners, and owners to their children.
+  // In addition, the removed id may be an owner, or be owned, or both.
+
+  // |obj_id| owned others:
   if (aria_owner_to_children_mapping_.Contains(obj_id)) {
+    // |obj_id| longer owns anything.
     Vector<AXID> child_axids = aria_owner_to_children_mapping_.at(obj_id);
     aria_owned_child_to_owner_mapping_.RemoveAll(child_axids);
+    // Owned children are no longer owned by |obj_id|
     aria_owner_to_children_mapping_.erase(obj_id);
   }
-  aria_owned_child_to_owner_mapping_.erase(obj_id);
+
+  // Another id owned |obj_id|:
+  if (aria_owned_child_to_owner_mapping_.Contains(obj_id)) {
+    // Previous owner no longer relevant to this child.
+    // Also, remove |obj_id| from previous owner's owned child list:
+    AXID owner_id = aria_owned_child_to_owner_mapping_.Take(obj_id);
+    const Vector<AXID>& owners_owned_children =
+        aria_owner_to_children_mapping_.at(owner_id);
+    for (wtf_size_t index = 0; index < owners_owned_children.size(); index++) {
+      if (owners_owned_children[index] == obj_id) {
+        aria_owner_to_children_mapping_.at(owner_id).EraseAt(index);
+        break;
+      }
+    }
+  }
 }
 
 AXObject* AXRelationCache::ObjectFromAXID(AXID axid) const {

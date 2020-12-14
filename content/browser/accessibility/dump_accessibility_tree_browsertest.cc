@@ -1553,6 +1553,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCustomElement) {
   RunHtmlTest(FILE_PATH_LITERAL("custom-element.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCustomElementWithAriaOwnsOutside) {
+  RunHtmlTest(FILE_PATH_LITERAL("custom-element-with-aria-owns-outside.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCustomElementWithAriaOwnsInside) {
+  RunHtmlTest(FILE_PATH_LITERAL("custom-element-with-aria-owns-inside.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityEm) {
   RunHtmlTest(FILE_PATH_LITERAL("em.html"));
 }

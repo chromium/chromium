@@ -732,6 +732,8 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   RemoveAXID(obj);
 
   // Finally, remove the object.
+  // TODO(accessibility) We don't use the return value, can we use .erase()
+  // and it will still make sure that the object is cleaned up?
   if (!objects_.Take(ax_id))
     return;
 
@@ -1392,7 +1394,15 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     DCHECK(node) << "Refresh() is currently only supported for objects "
                     "with a backing node";
     AXID retained_axid = current->AXObjectID();
-    Remove(current);
+    // Remove from relevant maps, but not from relation cache, as the relations
+    // between AXIDs will still the same.
+    node_object_mapping_.erase(node);
+    if (current->GetLayoutObject())
+      layout_object_mapping_.erase(current->GetLayoutObject());
+    current->Detach();
+    // TODO(accessibility) We don't use the return value, can we use .erase()
+    // and it will still make sure that the object is cleaned up?
+    objects_.Take(retained_axid);
     return CreateAndInit(node, retained_axid);
   };
 
