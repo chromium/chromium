@@ -76097,6 +76097,52 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Play on cast device"/>
 </enum>
 
+<enum name="VideoResolutionDesignation">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="QQVGA (160x120)"/>
+  <int value="2" label="HQVGA (240x160)"/>
+  <int value="3" label="QVGA (320x240)"/>
+  <int value="4" label="WQVGA (432x240)"/>
+  <int value="5" label="HVGA (480x320)"/>
+  <int value="6" label="VGA (640x480)"/>
+  <int value="7" label="WVGA (720x480)"/>
+  <int value="8" label="WSVGA (1024x576)"/>
+  <int value="9" label="SVGA (800x600)"/>
+  <int value="10" label="SXGA- (1280x960)"/>
+  <int value="11" label="UXGA (1600x1200)"/>
+  <int value="12" label="QXGA (2048x1536)"/>
+  <int value="13" label="QCIF (176x144)"/>
+  <int value="14" label="CIF (352x288)"/>
+  <int value="15" label="NHD (640x360)"/>
+  <int value="16" label="QHD (960x540)"/>
+  <int value="17" label="HD Fullscreen (960x720)"/>
+  <int value="18" label="HD (1280x720)"/>
+  <int value="19" label="HD_PLUS (1600x900)"/>
+  <int value="20" label="FHD (1920x1080)"/>
+  <int value="21" label="WQHD (2560x1440)"/>
+  <int value="22" label="QHD+ (3200x1800)"/>
+  <int value="23" label="4K UHD (3840x2160)"/>
+  <int value="24" label="DCI 4K (4096x2160)"/>
+  <int value="25" label="5K (5120x2880)"/>
+  <int value="26" label="8K UHD (7680x4320)"/>
+  <int value="27" label="160x90"/>
+  <int value="28" label="320x176"/>
+  <int value="29" label="320x180"/>
+  <int value="30" label="480x270"/>
+  <int value="31" label="544x288"/>
+  <int value="32" label="752x416"/>
+  <int value="33" label="864x480"/>
+  <int value="34" label="800x448"/>
+  <int value="35" label="960x544"/>
+  <int value="36" label="1184x656"/>
+  <int value="37" label="1392x768"/>
+  <int value="38" label="1504x832"/>
+  <int value="39" label="1600x896"/>
+  <int value="40" label="1712x960"/>
+  <int value="41" label="1792x1008"/>
+  <int value="42" label="2592x1944"/>
+</enum>
+
 <enum name="VideoRotation">
   <int value="0" label="VIDEO_ROTATION_0"/>
   <int value="1" label="VIDEO_ROTATION_90"/>
