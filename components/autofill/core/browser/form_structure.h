@@ -411,51 +411,9 @@ class FormStructure {
   FRIEND_TEST_ALL_PREFIXES(ParameterizedFormStructureTest,
                            RationalizePhoneNumber_RunsOncePerSection);
 
-  class SectionedFieldsIndexes {
-   public:
-    SectionedFieldsIndexes();
-    ~SectionedFieldsIndexes();
-
-    size_t LastFieldIndex() const {
-      if (sectioned_indexes.empty())
-        return (size_t)-1;  // Shouldn't happen.
-      return sectioned_indexes.back().back();
-    }
-
-    void AddFieldIndex(const size_t index, bool is_new_section) {
-      if (is_new_section || Empty()) {
-        sectioned_indexes.push_back(std::vector<size_t>(1, index));
-        return;
-      }
-      sectioned_indexes.back().push_back(index);
-    }
-
-    void WalkForwardToTheNextSection() { current_section_ptr++; }
-
-    bool IsFinished() const {
-      return current_section_ptr >= sectioned_indexes.size();
-    }
-
-    size_t CurrentIndex() const { return CurrentSection()[0]; }
-
-    std::vector<size_t> CurrentSection() const {
-      if (current_section_ptr < sectioned_indexes.size())
-        return sectioned_indexes[current_section_ptr];
-      return std::vector<size_t>(1, (size_t)-1);  // To handle edge cases.
-    }
-
-    void Reset() { current_section_ptr = 0; }
-
-    bool Empty() const { return sectioned_indexes.empty(); }
-
-   private:
-    // A vector of sections. Each section is a vector of some of the indexes
-    // that belong to the same section. The sections and indexes are sorted by
-    // their order of appearance on the form.
-    std::vector<std::vector<size_t>> sectioned_indexes;
-    // Points to a vector of indexes that belong to the same section.
-    size_t current_section_ptr = 0;
-  };
+  // This class wraps a vector of vectors of field indices. The indices of a
+  // vector belong to the same group.
+  class SectionedFieldsIndexes;
 
   // Parses the field types from the server query response. |forms| must be the
   // same as the one passed to EncodeQueryRequest when constructing the query.

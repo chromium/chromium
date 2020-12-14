@@ -592,6 +592,55 @@ GetTypeRelationshipMap() {
 
 }  // namespace
 
+class FormStructure::SectionedFieldsIndexes {
+ public:
+  SectionedFieldsIndexes() = default;
+  ~SectionedFieldsIndexes() = default;
+
+  size_t LastFieldIndex() const {
+    if (sectioned_indexes_.empty())
+      return std::numeric_limits<size_t>::max();  // Shouldn't happen.
+    return sectioned_indexes_.back().back();
+  }
+
+  void AddFieldIndex(const size_t index, bool is_new_section) {
+    if (is_new_section || Empty()) {
+      sectioned_indexes_.emplace_back();
+    }
+    sectioned_indexes_.back().push_back(index);
+  }
+
+  void WalkForwardToTheNextSection() { current_section_ptr_++; }
+
+  bool IsFinished() const {
+    return current_section_ptr_ >= sectioned_indexes_.size();
+  }
+
+  size_t CurrentIndex() const {
+    return current_section_ptr_ < sectioned_indexes_.size()
+               ? sectioned_indexes_[current_section_ptr_].front()
+               : std::numeric_limits<size_t>::max();
+  }
+
+  const std::vector<size_t>* CurrentSection() const {
+    return current_section_ptr_ < sectioned_indexes_.size()
+               ? &sectioned_indexes_[current_section_ptr_]
+               : nullptr;
+  }
+
+  void Reset() { current_section_ptr_ = 0; }
+
+  bool Empty() const { return sectioned_indexes_.empty(); }
+
+ private:
+  // A vector of sections. Each section is a vector of some of the indexes
+  // that belong to the same section. The sections and indexes are sorted by
+  // their order of appearance on the form.
+  std::vector<std::vector<size_t>> sectioned_indexes_;
+  // Points to a vector of indexes that belong to the same section.
+  size_t current_section_ptr_ = 0;
+};
+
 FormStructure::FormStructure(const FormData& form)
     : id_attribute_(form.id_attribute),
       name_attribute_(form.name_attribute),
@@ -1480,16 +1529,12 @@ FormData FormStructure::ToFormData() const {
   data.is_formless_checkout = is_formless_checkout_;
   data.unique_renderer_id = unique_renderer_id_;
 
-  for (size_t i = 0; i < fields_.size(); ++i) {
-    data.fields.push_back(FormFieldData(*fields_[i]));
+  for (const auto& field : fields_) {
+    data.fields.push_back(*field);
   }
 
   return data;
 }
-
-FormStructure::SectionedFieldsIndexes::SectionedFieldsIndexes() {}
-
-FormStructure::SectionedFieldsIndexes::~SectionedFieldsIndexes() {}
 
 void FormStructure::RationalizeCreditCardFieldPredictions() {
   bool cc_first_name_found = false;
@@ -1668,16 +1713,17 @@ void FormStructure::RationalizeAddressLineFields(
   for (sections_of_address_indexes->Reset();
        !sections_of_address_indexes->IsFinished();
        sections_of_address_indexes->WalkForwardToTheNextSection()) {
-    auto current_section = sections_of_address_indexes->CurrentSection();
+    auto* current_section = sections_of_address_indexes->CurrentSection();
 
     // The rationalization only applies to sections that have 2 or 3 visible
     // street address predictions.
-    if (current_section.size() != 2 && current_section.size() != 3) {
+    if (!current_section ||
+        (current_section->size() != 2 && current_section->size() != 3)) {
       continue;
     }
 
     int nb_address_rationalized = 0;
-    for (auto field_index : current_section) {
+    for (auto field_index : *current_section) {
       switch (nb_address_rationalized) {
         case 0:
           ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE1,
@@ -1808,10 +1854,6 @@ void FormStructure::RationalizeAddressStateCountry(
 
   while (!sections_of_state_indexes->IsFinished() ||
          !sections_of_country_indexes->IsFinished()) {
-    auto current_section_of_state_indexes =
-        sections_of_state_indexes->CurrentSection();
-    auto current_section_of_country_indexes =
-        sections_of_country_indexes->CurrentSection();
     // If there are still sections left with both country and state type, and
     // state and country current sections are equal, then that section has both
     // state and country. No rationalization needed.
@@ -1824,22 +1866,33 @@ void FormStructure::RationalizeAddressStateCountry(
       continue;
     }
 
-    size_t upper_index = 0, lower_index = 0;
+    size_t upper_index = 0;
+    size_t lower_index = 0;
+
+    auto* current_section_of_state_indexes =
+        sections_of_state_indexes->CurrentSection();
+    auto* current_section_of_country_indexes =
+        sections_of_country_indexes->CurrentSection();
+    DCHECK(current_section_of_state_indexes ||
+           current_section_of_country_indexes);
 
     // If country section is before the state ones, it means that that section
     // misses states, and the other way around.
-    if (current_section_of_state_indexes < current_section_of_country_indexes) {
+    if (!current_section_of_country_indexes ||
+        (current_section_of_state_indexes &&
+         *current_section_of_state_indexes <
+             *current_section_of_country_indexes)) {
       // We only rationalize when we have exactly two visible fields of a kind.
-      if (current_section_of_state_indexes.size() == 2) {
-        upper_index = current_section_of_state_indexes[0];
-        lower_index = current_section_of_state_indexes[1];
+      if (current_section_of_state_indexes->size() == 2) {
+        upper_index = (*current_section_of_state_indexes)[0];
+        lower_index = (*current_section_of_state_indexes)[1];
       }
       sections_of_state_indexes->WalkForwardToTheNextSection();
     } else {
       // We only rationalize when we have exactly two visible fields of a kind.
-      if (current_section_of_country_indexes.size() == 2) {
-        upper_index = current_section_of_country_indexes[0];
-        lower_index = current_section_of_country_indexes[1];
+      if (current_section_of_country_indexes->size() == 2) {
+        upper_index = (*current_section_of_country_indexes)[0];
+        lower_index = (*current_section_of_country_indexes)[1];
       }
       sections_of_country_indexes->WalkForwardToTheNextSection();
     }
@@ -1879,24 +1932,25 @@ void FormStructure::RationalizeRepeatedFields(
   // indexes of fields whose types are predicted as FULL_NAME by the server.
   SectionedFieldsIndexes sectioned_field_indexes_by_type[MAX_VALID_FIELD_TYPE];
 
-  for (const auto& field : fields_) {
+  for (size_t i = 0; i < fields_.size(); ++i) {
+    const AutofillField& field = *fields_[i];
     // The hidden fields are not considered when rationalizing.
-    if (!field->IsVisible())
+    if (!field.IsVisible())
       continue;
     // The billing and non-billing types are aggregated.
-    auto current_type = field->Type().GetStorableType();
+    auto current_type = field.Type().GetStorableType();
 
     if (current_type != UNKNOWN_TYPE && current_type < MAX_VALID_FIELD_TYPE) {
       // Look at the sectioned field indexes for the current type, if the
       // current field belongs to that section, then the field index should be
       // added to that same section, otherwise, start a new section.
       sectioned_field_indexes_by_type[current_type].AddFieldIndex(
-          &field - &fields_[0],
+          i,
           /*is_new_section*/ sectioned_field_indexes_by_type[current_type]
                   .Empty() ||
               fields_[sectioned_field_indexes_by_type[current_type]
                           .LastFieldIndex()]
-                      ->section != field->section);
+                      ->section != field.section);
     }
   }
 
