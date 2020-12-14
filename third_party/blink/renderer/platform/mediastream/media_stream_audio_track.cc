@@ -139,8 +139,9 @@ void MediaStreamAudioTrack::OnSetFormat(const media::AudioParameters& params) {
 
 void MediaStreamAudioTrack::OnData(const media::AudioBus& audio_bus,
                                    base::TimeTicks reference_time) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
-               "MediaStreamAudioTrack::OnData");
+  TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("mediastream"),
+               "MediaStreamAudioTrack::OnData", "this", this, "frame",
+               audio_bus.frames());
 
   if (!received_audio_callback_) {
     // Add log message with unique this pointer id to mark the audio track as

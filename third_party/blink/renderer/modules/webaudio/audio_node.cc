@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
@@ -333,6 +334,10 @@ void AudioHandler::ProcessIfNecessary(uint32_t frames_to_process) {
 
   if (!IsInitialized())
     return;
+
+  TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+               "AudioHandler::ProcessIfNecessary", "this", this, "node type",
+               NodeTypeName().Ascii());
 
   // Ensure that we only process once per rendering quantum.
   // This handles the "fanout" problem where an output is connected to multiple

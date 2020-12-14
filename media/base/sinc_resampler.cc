@@ -79,6 +79,7 @@
 
 #include "base/check_op.h"
 #include "base/numerics/math_constants.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 
@@ -228,6 +229,8 @@ void SincResampler::SetRatio(double io_sample_rate_ratio) {
 }
 
 void SincResampler::Resample(int frames, float* destination) {
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"), "SincResampler::Resample",
+               "io sample rate ratio", io_sample_rate_ratio_);
   int remaining_frames = frames;
 
   // Step (1) -- Prime the input buffer at the start of the input stream.

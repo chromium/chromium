@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -99,6 +100,9 @@ void WebRtcAudioSink::OnData(const media::AudioBus& audio_bus,
                              base::TimeTicks estimated_capture_time) {
   // No thread check: OnData might be called on different threads (but not
   // concurrently).
+  TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("mediastream"),
+               "WebRtcAudioSink::OnData", "this", this, "frames",
+               audio_bus.frames());
 
   // TODO(crbug.com/1054769): Better to let |fifo_| handle the estimated capture
   // time and let it return a corrected interpolated capture time to
@@ -131,6 +135,8 @@ void WebRtcAudioSink::OnSetFormat(const media::AudioParameters& params) {
 void WebRtcAudioSink::DeliverRebufferedAudio(const media::AudioBus& audio_bus,
                                              int frame_delay) {
   DCHECK(params_.IsValid());
+  TRACE_EVENT1("audio", "WebRtcAudioSink::DeliverRebufferedAudio", "frames",
+               audio_bus.frames());
 
   // TODO(miu): Why doesn't a WebRTC sink care about reference time passed to
   // OnData(), and the |frame_delay| here?  How is AV sync achieved otherwise?
