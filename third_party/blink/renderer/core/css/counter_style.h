@@ -73,6 +73,10 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   // 'system', 'range' and 'symbols'/'additive-symbols' descriptor values.
   String GenerateInitialRepresentation(int value) const;
 
+  // Uses the fallback counter style to generate a representation for the value.
+  // It may recurse, and if it enters a loop, it uses 'decimal' instead.
+  String GenerateFallbackRepresentation(int value) const;
+
   // The corresponding style rule in CSS.
   Member<const StyleRuleCounterStyle> style_rule_;
 
@@ -99,6 +103,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   String negative_prefix_ = "-";
   String negative_suffix_;
+
+  String pad_symbol_;
+  wtf_size_t pad_length_ = 0;
 
   friend class CounterStyleMapTest;
 };

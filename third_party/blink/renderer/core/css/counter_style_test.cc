@@ -206,4 +206,50 @@ TEST_F(CounterStyleTest, CustomNegative) {
   EXPECT_EQ("99", extended.GenerateRepresentation(99));
 }
 
+TEST_F(CounterStyleTest, CustomPad) {
+  InsertStyleElement(R"CSS(
+    @counter-style financial-decimal-pad {
+      system: extends decimal;
+      negative: '(' ')';
+      pad: 4 '0';
+    }
+
+    @counter-style extended {
+      system: extends financial-decimal-pad;
+    }
+  )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Getting custom 'pad' directly from descriptor value.
+  const CounterStyle& financial_decimal_pad =
+      GetCounterStyle("financial-decimal-pad");
+  EXPECT_EQ("(99)", financial_decimal_pad.GenerateRepresentation(-99));
+  EXPECT_EQ("(01)", financial_decimal_pad.GenerateRepresentation(-1));
+  EXPECT_EQ("0000", financial_decimal_pad.GenerateRepresentation(0));
+  EXPECT_EQ("0001", financial_decimal_pad.GenerateRepresentation(1));
+  EXPECT_EQ("0099", financial_decimal_pad.GenerateRepresentation(99));
+
+  // Getting custom 'pad' indirectly by extending a counter style.
+  const CounterStyle& extended = GetCounterStyle("extended");
+  EXPECT_EQ("(99)", extended.GenerateRepresentation(-99));
+  EXPECT_EQ("(01)", extended.GenerateRepresentation(-1));
+  EXPECT_EQ("0000", extended.GenerateRepresentation(0));
+  EXPECT_EQ("0001", extended.GenerateRepresentation(1));
+  EXPECT_EQ("0099", extended.GenerateRepresentation(99));
+}
+
+TEST_F(CounterStyleTest, PadLengthLimit) {
+  InsertStyleElement(R"CSS(
+    @counter-style foo {
+      system: extends decimal;
+      pad: 1000 '0';
+    }
+  )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Pad length is too long. Fallback to 'decimal'.
+  const CounterStyle& foo = GetCounterStyle("foo");
+  EXPECT_EQ("0", foo.GenerateRepresentation(0));
+}
+
 }  // namespace blink

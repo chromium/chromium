@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -246,6 +247,12 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
     }
   }
 
+  if (const CSSValue* pad = rule.GetPad()) {
+    const CSSValuePair& pair = To<CSSValuePair>(*pad);
+    pad_length_ = To<CSSPrimitiveValue>(pair.First()).GetIntValue();
+    pad_symbol_ = SymbolToString(pair.Second());
+  }
+
   // TODO(crbug.com/687225): Implement and populate other fields.
 }
 
@@ -267,6 +274,11 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
   if (!style_rule_->GetNegative()) {
     negative_prefix_ = extended.negative_prefix_;
     negative_suffix_ = extended.negative_suffix_;
+  }
+
+  if (!style_rule_->GetPad()) {
+    pad_length_ = extended.pad_length_;
+    pad_symbol_ = extended.pad_symbol_;
   }
 
   // TODO(crbug.com/687225): Implement and populate other fields.
@@ -324,23 +336,37 @@ bool CounterStyle::NeedsNegativeSign(int value) const {
   }
 }
 
-String CounterStyle::GenerateRepresentation(int value) const {
+String CounterStyle::GenerateFallbackRepresentation(int value) const {
   if (is_in_fallback_) {
     // We are in a fallback cycle. Use decimal instead.
     return GetDecimal().GenerateRepresentation(value);
   }
 
-  String initial_representation = GenerateInitialRepresentation(value);
-  if (initial_representation.IsNull()) {
-    base::AutoReset<bool> in_fallback_scope(&is_in_fallback_, true);
-    return fallback_style_->GenerateRepresentation(value);
-  }
+  base::AutoReset<bool> in_fallback_scope(&is_in_fallback_, true);
+  return fallback_style_->GenerateRepresentation(value);
+}
 
-  // TODO(crbug.com/687225): Implement non-default 'pad' value.
+String CounterStyle::GenerateRepresentation(int value) const {
+  if (pad_length_ > kCounterLengthLimit)
+    return GenerateFallbackRepresentation(value);
+
+  String initial_representation = GenerateInitialRepresentation(value);
+  if (initial_representation.IsNull())
+    return GenerateFallbackRepresentation(value);
+
+  wtf_size_t initial_length = NumGraphemeClusters(initial_representation);
+  if (NeedsNegativeSign(value)) {
+    initial_length += NumGraphemeClusters(negative_prefix_);
+    initial_length += NumGraphemeClusters(negative_suffix_);
+  }
+  wtf_size_t pad_copies =
+      pad_length_ > initial_length ? pad_length_ - initial_length : 0;
 
   StringBuilder result;
   if (NeedsNegativeSign(value))
     result.Append(negative_prefix_);
+  for (wtf_size_t i = 0; i < pad_copies; ++i)
+    result.Append(pad_symbol_);
   result.Append(initial_representation);
   if (NeedsNegativeSign(value))
     result.Append(negative_suffix_);
