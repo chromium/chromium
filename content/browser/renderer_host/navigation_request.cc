@@ -708,7 +708,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     mojom::CommonNavigationParamsPtr common_params,
     mojom::CommitNavigationParamsPtr commit_params,
     bool browser_initiated,
-    const GlobalFrameRoutingId& initiator_routing_id,
+    const base::UnguessableToken* initiator_frame_token,
+    int initiator_process_id,
     const std::string& extra_headers,
     FrameNavigationEntry* frame_entry,
     NavigationEntryImpl* entry,
@@ -723,7 +724,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
   auto navigation_params = mojom::BeginNavigationParams::New(
-      initiator_routing_id.frame_routing_id /* initiator_routing_id */,
+      initiator_frame_token ? base::make_optional(*initiator_frame_token)
+                            : base::nullopt,
       extra_headers, net::LOAD_NORMAL, false /* skip_service_worker */,
       blink::mojom::RequestContextType::LOCATION, destination,
       blink::WebMixedContentContextType::kBlockable, is_form_submission,
@@ -761,7 +763,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       false /* from_begin_navigation */, false /* is_for_commit */, frame_entry,
       entry, std::move(navigation_ui_data), mojo::NullAssociatedRemote(),
       mojo::NullRemote(), rfh_restored_from_back_forward_cache,
-      initiator_routing_id));
+      initiator_process_id));
 
   if (frame_entry) {
     navigation_request->blob_url_loader_factory_ =
@@ -865,9 +867,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   // initiated by a frame in the same process.
   // TODO(https://crbug.com/1074464): Find a way to DCHECK that the routing ID
   // is from the current RFH.
-  GlobalFrameRoutingId initiator_routing_id(
-      frame_tree_node->current_frame_host()->GetProcess()->GetID(),
-      begin_params->initiator_routing_id);
+  int initiator_process_id =
+      frame_tree_node->current_frame_host()->GetProcess()->GetID();
 
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
       frame_tree_node, std::move(common_params), std::move(begin_params),
@@ -879,7 +880,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       nullptr,  // navigation_ui_data
       std::move(navigation_client), std::move(navigation_initiator),
       nullptr,  // rfh_restored_from_back_forward_cache
-      initiator_routing_id));
+      initiator_process_id));
   navigation_request->blob_url_loader_factory_ =
       std::move(blob_url_loader_factory);
   navigation_request->prefetched_signed_exchange_cache_ =
@@ -975,8 +976,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
       false /* from_begin_navigation */, true /* is_for_commit */,
       nullptr /* frame_navigation_entry */, nullptr /* navigation_entry */,
       nullptr /* navigation_ui_data */, mojo::NullAssociatedRemote(),
-      mojo::NullRemote(), nullptr, /* rfh_restored_from_back_forward_cache */
-      {} /* initiator_routing_id */));
+      mojo::NullRemote(), nullptr /* rfh_restored_from_back_forward_cache */,
+      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */));
 
   navigation_request->web_bundle_navigation_info_ =
       std::move(web_bundle_navigation_info);
@@ -1008,7 +1009,7 @@ NavigationRequest::NavigationRequest(
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
     mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator,
     RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
-    GlobalFrameRoutingId initiator_routing_id)
+    int initiator_process_id)
     : frame_tree_node_(frame_tree_node),
       is_for_commit_(is_for_commit),
       common_params_(std::move(common_params)),
@@ -1036,7 +1037,8 @@ NavigationRequest::NavigationRequest(
       previous_render_frame_host_id_(GlobalFrameRoutingId(
           frame_tree_node->current_frame_host()->GetProcess()->GetID(),
           frame_tree_node->current_frame_host()->GetRoutingID())),
-      initiator_routing_id_(initiator_routing_id),
+      initiator_frame_token_(begin_params_->initiator_frame_token),
+      initiator_process_id_(initiator_process_id),
       coop_status_(frame_tree_node, common_params_->initiator_origin),
       previous_page_ukm_source_id_(
           frame_tree_node_->current_frame_host()->GetPageUkmSourceId()) {
@@ -1093,9 +1095,9 @@ NavigationRequest::NavigationRequest(
              common_params_->url.SchemeIs(url::kDataScheme) ||
              common_params_->url.SchemeIs(url::kBlobScheme) ||
              common_params_->url.SchemeIs(url::kFileSystemScheme)) {
-    if (GetInitiatorRoutingId()) {
-      RenderFrameHostImpl* initiator_rfh = static_cast<RenderFrameHostImpl*>(
-          RenderFrameHost::FromID(GetInitiatorRoutingId()));
+    if (initiator_frame_token_) {
+      RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+          initiator_process_id_, initiator_frame_token_.value());
       // It can happen that the initiator RenderFrameHost is deleted just before
       // this NavigationRequest is created, se https://crbug.com/1129416.
       //
@@ -1452,9 +1454,8 @@ void NavigationRequest::BeginNavigation() {
       // Crash keys capturing values affecting |was_opener_suppressed| in
       // RequiresInitiatorBasedSourceSiteInstance:
       SCOPED_CRASH_KEY_BOOL("nav_request", is_main_frame, IsInMainFrame());
-      SCOPED_CRASH_KEY_BOOL(
-          "nav_request", got_initiator_routing_id,
-          GetInitiatorRoutingId().frame_routing_id != MSG_ROUTING_NONE);
+      SCOPED_CRASH_KEY_BOOL("nav_request", got_initiator_routing_id,
+                            GetInitiatorFrameToken() != base::nullopt);
       SCOPED_CRASH_KEY_BOOL("nav_request", is_renderer_initiated,
                             IsRendererInitiated());
       // Crash keys capturing values affecting whether
@@ -4999,8 +5000,13 @@ const base::Optional<Impression>& NavigationRequest::GetImpression() {
   return begin_params()->impression;
 }
 
-const GlobalFrameRoutingId& NavigationRequest::GetInitiatorRoutingId() {
-  return initiator_routing_id_;
+const base::Optional<base::UnguessableToken>&
+NavigationRequest::GetInitiatorFrameToken() {
+  return initiator_frame_token_;
+}
+
+int NavigationRequest::GetInitiatorProcessID() {
+  return initiator_process_id_;
 }
 
 const base::Optional<url::Origin>& NavigationRequest::GetInitiatorOrigin() {
@@ -5129,15 +5135,14 @@ bool NavigationRequest::RequiresInitiatorBasedSourceSiteInstance() const {
           .IsValid();
 
   // If renderer-initiated navigation of a main frame |has_valid_initiator| but
-  // has no |initiator_routing_id_|, then it means that the opener was
-  // suppressed (and therefore that a source SiteInstance is not needed).  Note
-  // that |initiator_routing_id| is always MSG_ROUTING_NONE during
+  // has no |initiator_frame_token_|, then it means that the opener was
+  // suppressed (and therefore that a source SiteInstance is not needed). Note
+  // that |initiator_frame_token_| is always base::nullopt during
   // browser-initiated navigations (including session restore or history
   // navigations).
   const bool was_opener_suppressed =
       has_valid_initiator && frame_tree_node()->IsMainFrame() &&
-      initiator_routing_id_.frame_routing_id == MSG_ROUTING_NONE &&
-      !browser_initiated_;
+      !initiator_frame_token_.has_value() && !browser_initiated_;
 
   return is_data_or_about && has_valid_initiator && !was_opener_suppressed &&
          !dest_site_instance_;

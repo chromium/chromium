@@ -327,7 +327,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BrowserInitiatedNavigations) {
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_FALSE(observer.last_initiator_origin().has_value());
-    EXPECT_FALSE(observer.last_initiator_routing_id());
+    EXPECT_FALSE(observer.last_initiator_frame_token().has_value());
+    EXPECT_EQ(ChildProcessHost::kInvalidUniqueID,
+              observer.last_initiator_process_id());
   }
 
   RenderFrameHost* initial_rfh = current_frame_host();
@@ -340,7 +342,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BrowserInitiatedNavigations) {
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_FALSE(observer.last_initiator_origin().has_value());
-    EXPECT_FALSE(observer.last_initiator_routing_id());
+    EXPECT_FALSE(observer.last_initiator_frame_token().has_value());
+    EXPECT_EQ(ChildProcessHost::kInvalidUniqueID,
+              observer.last_initiator_process_id());
   }
 
   RenderFrameHost* second_rfh = current_frame_host();
@@ -361,7 +365,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BrowserInitiatedNavigations) {
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_FALSE(observer.last_initiator_origin().has_value());
-    EXPECT_FALSE(observer.last_initiator_routing_id());
+    EXPECT_FALSE(observer.last_initiator_frame_token().has_value());
+    EXPECT_EQ(ChildProcessHost::kInvalidUniqueID,
+              observer.last_initiator_process_id());
   }
 
   // The RenderFrameHost should have changed.
@@ -379,13 +385,15 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_FALSE(observer.last_initiator_origin().has_value());
-    EXPECT_FALSE(observer.last_initiator_routing_id());
+    EXPECT_FALSE(observer.last_initiator_frame_token().has_value());
+    EXPECT_EQ(ChildProcessHost::kInvalidUniqueID,
+              observer.last_initiator_process_id());
   }
 
   RenderFrameHost* initial_rfh = current_frame_host();
 
-  auto initial_rfh_routing_id = GlobalFrameRoutingId(
-      initial_rfh->GetProcess()->GetID(), initial_rfh->GetRoutingID());
+  base::UnguessableToken initial_rfh_frame_token = initial_rfh->GetFrameToken();
+  int initial_rfh_process_id = initial_rfh->GetProcess()->GetID();
 
   // Simulate clicking on a same-site link.
   {
@@ -403,18 +411,21 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_EQ(current_frame_host()->GetLastCommittedOrigin(),
               observer.last_initiator_origin());
 
+    EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
     if (CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
       // If same-site ProactivelySwapBrowsingInstance or main-frame
       // RenderDocument is enabled, the navigation will result in a new RFH, so
       // we need to compare with |initial_rfh|.
       EXPECT_NE(current_frame_host(), initial_rfh);
-      EXPECT_EQ(initial_rfh_routing_id, observer.last_initiator_routing_id());
+      EXPECT_EQ(initial_rfh_frame_token,
+                observer.last_initiator_frame_token().value());
+      EXPECT_EQ(initial_rfh_process_id, observer.last_initiator_process_id());
     } else {
       EXPECT_EQ(current_frame_host(), initial_rfh);
-      EXPECT_EQ(
-          GlobalFrameRoutingId(current_frame_host()->GetProcess()->GetID(),
-                               current_frame_host()->GetRoutingID()),
-          observer.last_initiator_routing_id());
+      EXPECT_EQ(current_frame_host()->GetFrameToken(),
+                observer.last_initiator_frame_token().value());
+      EXPECT_EQ(current_frame_host()->GetProcess()->GetID(),
+                observer.last_initiator_process_id());
     }
   }
 
@@ -443,8 +454,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   RenderFrameHost* initial_rfh = current_frame_host();
   url::Origin initial_origin = initial_rfh->GetLastCommittedOrigin();
-  GlobalFrameRoutingId initiator_routing_id(initial_rfh->GetProcess()->GetID(),
-                                            initial_rfh->GetRoutingID());
+  base::UnguessableToken initiator_frame_token = initial_rfh->GetFrameToken();
+  int initiator_process_id = initial_rfh->GetProcess()->GetID();
 
   // Simulate clicking on a cross-site link.
   {
@@ -466,7 +477,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_EQ(initial_origin, observer.last_initiator_origin().value());
-    EXPECT_EQ(initiator_routing_id, observer.last_initiator_routing_id());
+    EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
+    EXPECT_EQ(initiator_frame_token,
+              observer.last_initiator_frame_token().value());
+    EXPECT_EQ(initiator_process_id, observer.last_initiator_process_id());
   }
 
   // The RenderFrameHost should not have changed unless site-per-process or
@@ -1000,9 +1014,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   GURL url(embedded_test_server()->GetURL("/simple_links.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  GlobalFrameRoutingId initiator_routing_id(
-      current_frame_host()->GetProcess()->GetID(),
-      current_frame_host()->GetRoutingID());
+  base::UnguessableToken initiator_frame_token =
+      current_frame_host()->GetFrameToken();
+  int initiator_process_id = current_frame_host()->GetProcess()->GetID();
 
   // Simulate clicking on a cross-site link.
   {
@@ -1028,7 +1042,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     observer.Wait();
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
-    EXPECT_EQ(initiator_routing_id, observer.last_initiator_routing_id());
+    EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
+    EXPECT_EQ(initiator_frame_token,
+              observer.last_initiator_frame_token().value());
+    EXPECT_EQ(initiator_process_id, observer.last_initiator_process_id());
   }
 }
 
@@ -1045,8 +1062,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   RenderFrameHostImpl* subframe_rfh =
       current_frame_host()->child_at(0)->current_frame_host();
-  GlobalFrameRoutingId initiator_routing_id(subframe_rfh->GetProcess()->GetID(),
-                                            subframe_rfh->GetRoutingID());
+  base::UnguessableToken initiator_frame_token = subframe_rfh->GetFrameToken();
+  int initiator_process_id = subframe_rfh->GetProcess()->GetID();
 
   // Simulate clicking on a cross-site link.
   {
@@ -1072,7 +1089,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     observer.Wait();
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
-    EXPECT_EQ(initiator_routing_id, observer.last_initiator_routing_id());
+    EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
+    EXPECT_EQ(initiator_frame_token,
+              observer.last_initiator_frame_token().value());
+    EXPECT_EQ(initiator_process_id, observer.last_initiator_process_id());
   }
 }
 
@@ -1124,9 +1144,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   GURL url(embedded_test_server()->GetURL("/simple_links.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  GlobalFrameRoutingId initiator_routing_id(
-      current_frame_host()->GetProcess()->GetID(),
-      current_frame_host()->GetRoutingID());
+  base::UnguessableToken initiator_frame_token =
+      current_frame_host()->GetFrameToken();
+  int initiator_process_id = current_frame_host()->GetProcess()->GetID();
 
   // Simulate middle-clicking on a cross-site link.
   {
@@ -1151,7 +1171,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     observer.Wait();
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());
-    EXPECT_EQ(initiator_routing_id, observer.last_initiator_routing_id());
+    EXPECT_TRUE(observer.last_initiator_frame_token().has_value());
+    EXPECT_EQ(initiator_frame_token,
+              observer.last_initiator_frame_token().value());
+    EXPECT_EQ(initiator_process_id, observer.last_initiator_process_id());
   }
 }
 
@@ -3585,9 +3608,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 }
 
 // Create two windows. When the second is deleted, it initiates a navigation in
-// the first.
-// This is a situation where the navigation has an initiator routing ID, but no
-// corresponding RenderFrameHost.
+// the first. This is a situation where the navigation has an initiator frame
+// token, but no corresponding RenderFrameHost.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        RendererInitiatedCrossWindowNavigationInUnload) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
@@ -3610,15 +3632,21 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   RenderFrameHost* openee_rfh =
       static_cast<WebContentsImpl*>(openee_shell->web_contents())
           ->GetMainFrame();
-  GlobalFrameRoutingId openee_routing_id(openee_rfh->GetProcess()->GetID(),
-                                         openee_rfh->GetRoutingID());
+  base::UnguessableToken initiator_frame_token = openee_rfh->GetFrameToken();
+  int initiator_process_id = openee_rfh->GetProcess()->GetID();
   base::RunLoop loop;
   DidStartNavigationCallback callback(
       web_contents(), base::BindLambdaForTesting([&](NavigationHandle* handle) {
         auto* request = NavigationRequest::From(handle);
-        GlobalFrameRoutingId initiator_id = request->GetInitiatorRoutingId();
-        ASSERT_EQ(openee_routing_id, initiator_id);
-        auto* initiator_rfh = RenderFrameHostImpl::FromID(initiator_id);
+
+        const base::Optional<base::UnguessableToken>& frame_token =
+            request->GetInitiatorFrameToken();
+        EXPECT_TRUE(frame_token.has_value());
+        EXPECT_EQ(initiator_frame_token, frame_token.value());
+        EXPECT_EQ(initiator_process_id, request->GetInitiatorProcessID());
+
+        auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+            request->GetInitiatorProcessID(), *frame_token);
         ASSERT_FALSE(initiator_rfh);
         loop.Quit();
       }));
@@ -3629,7 +3657,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 }
 
 // A document initiates a form submission in another frame, then deletes itself.
-// Check the initiator_routing_id.
+// Check the initiator frame token.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
@@ -3672,21 +3700,22 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
           ->GetMainFrame()
           ->child_at(0)
           ->current_frame_host();
-  GlobalFrameRoutingId initiator_id(initiator_rfh->GetProcess()->GetID(),
-                                    initiator_rfh->GetRoutingID());
+  base::UnguessableToken initiator_frame_token = initiator_rfh->GetFrameToken();
+  int initiator_process_id = initiator_rfh->GetProcess()->GetID();
   base::RunLoop loop;
   DidStartNavigationCallback callback(
       web_contents(), base::BindLambdaForTesting([&](NavigationHandle* handle) {
         auto* request = NavigationRequest::From(handle);
         ASSERT_TRUE(request->IsPost());
 
-        GlobalFrameRoutingId id = request->GetInitiatorRoutingId();
-        // TODO(https://crbug.com/1059959): The initiator routing ID should be
-        // set, even if the |initiator_rfh| has already been deleted.
-        EXPECT_FALSE(id);
-        EXPECT_NE(initiator_id, id);
+        const base::Optional<base::UnguessableToken>& frame_token =
+            request->GetInitiatorFrameToken();
+        EXPECT_TRUE(frame_token.has_value());
+        EXPECT_EQ(initiator_frame_token, frame_token.value());
+        EXPECT_EQ(initiator_process_id, request->GetInitiatorProcessID());
 
-        auto* initiator_rfh = RenderFrameHostImpl::FromID(id);
+        auto* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
+            request->GetInitiatorProcessID(), frame_token.value());
         ASSERT_FALSE(initiator_rfh);
 
         loop.Quit();

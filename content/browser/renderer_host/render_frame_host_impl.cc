@@ -944,6 +944,13 @@ RenderFrameHost* RenderFrameHost::FromID(int render_process_id,
 }
 
 // static
+RenderFrameHost* RenderFrameHost::FromFrameToken(
+    int process_id,
+    const base::UnguessableToken& token) {
+  return RenderFrameHostImpl::FromFrameToken(process_id, token);
+}
+
+// static
 void RenderFrameHost::AllowInjectingJavaScript() {
   g_allow_injecting_javascript = true;
 }
@@ -5104,12 +5111,15 @@ void RenderFrameHostImpl::OpenURL(mojom::OpenURLParamsPtr params) {
 
   frame_tree_node_->navigator().RequestOpenURL(
       this, validated_url,
-      GlobalFrameRoutingId(GetProcess()->GetID(), params->initiator_routing_id),
-      params->initiator_origin, params->post_body, params->extra_headers,
-      params->referrer.To<content::Referrer>(), params->disposition,
-      params->should_replace_current_entry, params->user_gesture,
-      params->triggering_event_info, params->href_translate,
-      std::move(blob_url_loader_factory), params->impression);
+      params->initiator_frame_token.has_value()
+          ? &(params->initiator_frame_token.value())
+          : nullptr,
+      GetProcess()->GetID(), params->initiator_origin, params->post_body,
+      params->extra_headers, params->referrer.To<content::Referrer>(),
+      params->disposition, params->should_replace_current_entry,
+      params->user_gesture, params->triggering_event_info,
+      params->href_translate, std::move(blob_url_loader_factory),
+      params->impression);
 }
 
 void RenderFrameHostImpl::DidStopLoading() {

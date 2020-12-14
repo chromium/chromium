@@ -140,15 +140,22 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
   if (web_contents()->IsPortal() &&
       !web_contents()->GetController().GetLastCommittedEntry()) {
     content::RenderFrameHost* initiator_frame_host =
-        content::RenderFrameHost::FromID(
-            navigation_handle->GetInitiatorRoutingId());
-    content::WebContents* initiator_contents =
-        content::WebContents::FromRenderFrameHost(initiator_frame_host);
-    manager_->RecordNewWebContents(
-        initiator_contents, initiator_frame_host->GetProcess()->GetID(),
-        initiator_frame_host->GetRoutingID(), navigation_handle->GetURL(),
-        navigation_handle->GetPageTransition(), web_contents(),
-        navigation_handle->IsRendererInitiated());
+        navigation_handle->GetInitiatorFrameToken().has_value()
+            ? content::RenderFrameHost::FromFrameToken(
+                  navigation_handle->GetInitiatorProcessID(),
+                  navigation_handle->GetInitiatorFrameToken().value())
+            : nullptr;
+    // TODO(https://crbug.com/1074422): Handle the case where the initiator
+    // RenderFrameHost is gone.
+    if (initiator_frame_host) {
+      content::WebContents* initiator_contents =
+          content::WebContents::FromRenderFrameHost(initiator_frame_host);
+      manager_->RecordNewWebContents(
+          initiator_contents, initiator_frame_host->GetProcess()->GetID(),
+          initiator_frame_host->GetRoutingID(), navigation_handle->GetURL(),
+          navigation_handle->GetPageTransition(), web_contents(),
+          navigation_handle->IsRendererInitiated());
+    }
   }
 
   std::unique_ptr<NavigationEvent> nav_event =

@@ -157,7 +157,8 @@ inline FormSubmission::FormSubmission(
     std::unique_ptr<ResourceRequest> resource_request,
     Frame* target_frame,
     WebFrameLoadType load_type,
-    LocalDOMWindow* origin_window)
+    LocalDOMWindow* origin_window,
+    const base::UnguessableToken& initiator_frame_token)
     : method_(method),
       action_(action),
       target_(target),
@@ -170,7 +171,8 @@ inline FormSubmission::FormSubmission(
       resource_request_(std::move(resource_request)),
       target_frame_(target_frame),
       load_type_(load_type),
-      origin_window_(origin_window) {}
+      origin_window_(origin_window),
+      initiator_frame_token_(initiator_frame_token) {}
 
 inline FormSubmission::FormSubmission(const String& result)
     : method_(kDialogMethod), result_(result) {}
@@ -327,7 +329,8 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       encoding_type, form, std::move(form_data), event,
       frame_request.GetNavigationPolicy(), triggering_event_info, reason,
       std::move(resource_request), target_frame, load_type,
-      form->GetDocument().domWindow());
+      form->GetDocument().domWindow(),
+      form->GetDocument().GetFrame()->GetFrameToken());
 }
 
 void FormSubmission::Trace(Visitor* visitor) const {
@@ -349,6 +352,7 @@ void FormSubmission::Navigate() {
   frame_request.SetClientRedirectReason(reason_);
   frame_request.SetForm(form_);
   frame_request.SetTriggeringEventInfo(triggering_event_info_);
+  frame_request.SetInitiatorFrameToken(initiator_frame_token_);
 
   if (target_frame_ && !target_frame_->GetPage())
     return;

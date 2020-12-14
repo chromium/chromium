@@ -113,7 +113,8 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
                  std::unique_ptr<ResourceRequest> resource_request,
                  Frame* target_frame,
                  WebFrameLoadType load_type,
-                 LocalDOMWindow* origin_window);
+                 LocalDOMWindow* origin_window,
+                 const base::UnguessableToken& initiator_frame_token);
   // FormSubmission for DialogMethod
   explicit FormSubmission(const String& result);
 
@@ -148,6 +149,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
   Member<Frame> target_frame_;
   WebFrameLoadType load_type_;
   Member<LocalDOMWindow> origin_window_;
+  base::UnguessableToken initiator_frame_token_;
 };
 
 }  // namespace blink

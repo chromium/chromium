@@ -628,8 +628,8 @@ void LocalFrameClientImpl::BeginNavigation(
     const base::Optional<WebImpression>& impression,
     WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> initiator_csp,
     network::mojom::IPAddressSpace initiator_address_space,
-    mojo::PendingRemote<mojom::blink::NavigationInitiator>
-        navigation_initiator) {
+    mojo::PendingRemote<mojom::blink::NavigationInitiator> navigation_initiator,
+    const base::UnguessableToken* initiator_frame_token) {
   if (!web_frame_->Client())
     return;
 
@@ -646,9 +646,17 @@ void LocalFrameClientImpl::BeginNavigation(
       should_check_main_world_content_security_policy;
   navigation_info->blob_url_token = std::move(blob_url_token);
   navigation_info->input_start = input_start_time;
+  if (initiator_frame_token)
+    navigation_info->initiator_frame_token = *initiator_frame_token;
   if (origin_window && origin_window->GetFrame()) {
     navigation_info->initiator_frame =
         origin_window->GetFrame()->Client()->GetWebFrame();
+    // Many navigation paths do not pass an |initiator_frame_token|, so we need
+    // to compute it here.
+    if (!navigation_info->initiator_frame_token) {
+      navigation_info->initiator_frame_token =
+          origin_window->GetFrame()->GetFrameToken();
+    }
   } else {
     navigation_info->initiator_frame = nullptr;
   }

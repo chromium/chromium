@@ -245,9 +245,8 @@ void Portal::Navigate(const GURL& url,
   // navigated by a frame other than the owning frame. Find a way to route the
   // correct initiator of the portal navigation to this call.
   portal_root->navigator().NavigateFromFrameProxy(
-      portal_frame, url,
-      GlobalFrameRoutingId(owner_render_frame_host_->GetProcess()->GetID(),
-                           owner_render_frame_host_->GetRoutingID()),
+      portal_frame, url, &owner_render_frame_host_->GetFrameToken(),
+      owner_render_frame_host_->GetProcess()->GetID(),
       owner_render_frame_host_->GetLastCommittedOrigin(),
       owner_render_frame_host_->GetSiteInstance(),
       mojo::ConvertTo<Referrer>(referrer), ui::PAGE_TRANSITION_LINK,

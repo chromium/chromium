@@ -2335,7 +2335,8 @@ void NavigationControllerImpl::GoToOffsetInSandboxedFrame(
 void NavigationControllerImpl::NavigateFromFrameProxy(
     RenderFrameHostImpl* render_frame_host,
     const GURL& url,
-    const GlobalFrameRoutingId& initiator_routing_id,
+    const base::UnguessableToken* initiator_frame_token,
+    int initiator_process_id,
     const base::Optional<url::Origin>& initiator_origin,
     bool is_renderer_initiated,
     SiteInstance* source_site_instance,
@@ -2444,7 +2445,10 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   }
 
   LoadURLParams params(url);
-  params.initiator_routing_id = initiator_routing_id;
+  params.initiator_frame_token =
+      initiator_frame_token ? base::make_optional(*initiator_frame_token)
+                            : base::nullopt;
+  params.initiator_process_id = initiator_process_id;
   params.initiator_origin = initiator_origin;
   params.source_site_instance = source_site_instance;
   params.load_type = method == "POST" ? LOAD_TYPE_HTTP_POST : LOAD_TYPE_DEFAULT;
@@ -3488,8 +3492,12 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   auto navigation_request = NavigationRequest::CreateBrowserInitiated(
       node, std::move(common_params), std::move(commit_params),
-      !params.is_renderer_initiated, params.initiator_routing_id,
-      extra_headers_crlf, frame_entry, entry, request_body,
+      !params.is_renderer_initiated,
+      params.initiator_frame_token.has_value()
+          ? &(params.initiator_frame_token.value())
+          : nullptr,
+      params.initiator_process_id, extra_headers_crlf, frame_entry, entry,
+      request_body,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
       params.impression);
   navigation_request->set_from_download_cross_origin_redirect(
@@ -3605,10 +3613,10 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
 
   return NavigationRequest::CreateBrowserInitiated(
       frame_tree_node, std::move(common_params), std::move(commit_params),
-      !entry->is_renderer_initiated(),
-      GlobalFrameRoutingId() /* initiator_routing_id */, entry->extra_headers(),
-      frame_entry, entry, request_body, nullptr /* navigation_ui_data */,
-      base::nullopt /* impression */);
+      !entry->is_renderer_initiated(), nullptr /* initiator_frame_token */,
+      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
+      entry->extra_headers(), frame_entry, entry, request_body,
+      nullptr /* navigation_ui_data */, base::nullopt /* impression */);
 }
 
 void NavigationControllerImpl::NotifyNavigationEntryCommitted(
@@ -3706,8 +3714,8 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(
           node, std::move(common_params), std::move(commit_params),
-          true /* browser_initiated */,
-          GlobalFrameRoutingId() /* initiator_routing_id */,
+          true /* browser_initiated */, nullptr /* initiator_frame_token */,
+          ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
           "" /* extra_headers */, nullptr /* frame_entry */,
           nullptr /* entry */, nullptr /* post_body */,
           nullptr /* navigation_ui_data */, base::nullopt /* impression */);

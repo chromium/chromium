@@ -184,6 +184,9 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   // Renderer's frame id.
   const int render_frame_id_;
 
+  // Renderer's frame token.
+  const base::UnguessableToken render_frame_token_;
+
   // The RenderFrameHost's IDs.
   const int render_process_id_;
 

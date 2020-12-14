@@ -106,7 +106,8 @@ void EmptyLocalFrameClient::BeginNavigation(
     const base::Optional<WebImpression>&,
     WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> initiator_csp,
     network::mojom::IPAddressSpace,
-    mojo::PendingRemote<mojom::blink::NavigationInitiator>) {}
+    mojo::PendingRemote<mojom::blink::NavigationInitiator>,
+    const base::UnguessableToken* initiator_frame_token) {}
 
 void EmptyLocalFrameClient::DispatchWillSendSubmitEvent(HTMLFormElement*) {}
 

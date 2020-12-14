@@ -500,7 +500,8 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
 void Navigator::RequestOpenURL(
     RenderFrameHostImpl* render_frame_host,
     const GURL& url,
-    const GlobalFrameRoutingId& initiator_routing_id,
+    const base::UnguessableToken* initiator_frame_token,
+    int initiator_process_id,
     const base::Optional<url::Origin>& initiator_origin,
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     const std::string& extra_headers,
@@ -551,7 +552,10 @@ void Navigator::RequestOpenURL(
   params.user_gesture = user_gesture;
   params.triggering_event_info = triggering_event_info;
   params.initiator_origin = initiator_origin;
-  params.initiator_routing_id = initiator_routing_id;
+  params.initiator_frame_token =
+      initiator_frame_token ? base::make_optional(*initiator_frame_token)
+                            : base::nullopt;
+  params.initiator_process_id = initiator_process_id;
 
   // RequestOpenURL is used only for local frames, so we can get here only if
   // the navigation is initiated by a frame in the same SiteInstance as this
@@ -584,7 +588,8 @@ void Navigator::RequestOpenURL(
 void Navigator::NavigateFromFrameProxy(
     RenderFrameHostImpl* render_frame_host,
     const GURL& url,
-    const GlobalFrameRoutingId& initiator_routing_id,
+    const base::UnguessableToken* initiator_frame_token,
+    int initiator_process_id,
     const url::Origin& initiator_origin,
     SiteInstance* source_site_instance,
     const Referrer& referrer,
@@ -631,10 +636,11 @@ void Navigator::NavigateFromFrameProxy(
   }
 
   controller_->NavigateFromFrameProxy(
-      render_frame_host, url, initiator_routing_id, initiator_origin,
-      is_renderer_initiated, source_site_instance, referrer_to_use,
-      page_transition, should_replace_current_entry, download_policy, method,
-      post_body, extra_headers, std::move(blob_url_loader_factory), impression);
+      render_frame_host, url, initiator_frame_token, initiator_process_id,
+      initiator_origin, is_renderer_initiated, source_site_instance,
+      referrer_to_use, page_transition, should_replace_current_entry,
+      download_policy, method, post_body, extra_headers,
+      std::move(blob_url_loader_factory), impression);
 }
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,

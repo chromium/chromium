@@ -276,7 +276,8 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
           initiator_csp,
       network::mojom::IPAddressSpace,
-      mojo::PendingRemote<mojom::blink::NavigationInitiator>) override;
+      mojo::PendingRemote<mojom::blink::NavigationInitiator>,
+      const base::UnguessableToken* initiator_frame_token) override;
 
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
 

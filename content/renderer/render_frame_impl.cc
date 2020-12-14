@@ -5670,11 +5670,7 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
       render_view_->history_list_length_;
   params->user_gesture = info->has_transient_user_activation;
 
-  RenderFrameImpl* initiator_render_frame =
-      RenderFrameImpl::FromWebFrame(info->initiator_frame);
-  params->initiator_routing_id = initiator_render_frame
-                                     ? initiator_render_frame->GetRoutingID()
-                                     : MSG_ROUTING_NONE;
+  params->initiator_frame_token = info->initiator_frame_token;
 
   if (info->impression)
     params->impression = ConvertWebImpressionToImpression(*info->impression);
@@ -5984,15 +5980,9 @@ void RenderFrameImpl::BeginNavigationInternal(
         base::JSONReader::ReadDeprecated(info->devtools_initiator_info.Utf8()));
   }
 
-  RenderFrameImpl* initiator_render_frame =
-      RenderFrameImpl::FromWebFrame(info->initiator_frame);
-  int initiator_frame_routing_id = initiator_render_frame
-                                       ? initiator_render_frame->GetRoutingID()
-                                       : MSG_ROUTING_NONE;
-
   mojom::BeginNavigationParamsPtr begin_navigation_params =
       mojom::BeginNavigationParams::New(
-          initiator_frame_routing_id,
+          info->initiator_frame_token,
           blink::GetWebURLRequestHeadersAsString(info->url_request).Latin1(),
           load_flags, info->url_request.GetSkipServiceWorker(),
           blink::GetRequestContextTypeForWebURLRequest(info->url_request),

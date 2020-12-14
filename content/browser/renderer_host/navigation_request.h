@@ -170,7 +170,8 @@ class CONTENT_EXPORT NavigationRequest
       mojom::CommonNavigationParamsPtr common_params,
       mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
-      const GlobalFrameRoutingId& initiator_routing_id,
+      const base::UnguessableToken* initiator_frame_token,
+      int initiator_process_id,
       const std::string& extra_headers,
       FrameNavigationEntry* frame_entry,
       NavigationEntryImpl* entry,
@@ -324,7 +325,9 @@ class CONTENT_EXPORT NavigationRequest
   const net::ProxyServer& GetProxyServer() override;
   const std::string& GetHrefTranslate() override;
   const base::Optional<Impression>& GetImpression() override;
-  const GlobalFrameRoutingId& GetInitiatorRoutingId() override;
+  const base::Optional<base::UnguessableToken>& GetInitiatorFrameToken()
+      override;
+  int GetInitiatorProcessID() override;
   const base::Optional<url::Origin>& GetInitiatorOrigin() override;
   bool IsSameProcess() override;
   NavigationEntry* GetNavigationEntry() override;
@@ -798,7 +801,7 @@ class CONTENT_EXPORT NavigationRequest
       mojo::PendingRemote<blink::mojom::NavigationInitiator>
           navigation_initiator,
       RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
-      GlobalFrameRoutingId initiator_routing_id);
+      int initiator_process_id);
 
   // Checks if the response requests an isolated origin (using either origin
   // policy or the Origin-Isolation header), and if so opts in the origin to be
@@ -1445,12 +1448,18 @@ class CONTENT_EXPORT NavigationRequest
   // This is used to store the current_frame_host id at request creation time.
   const GlobalFrameRoutingId previous_render_frame_host_id_;
 
-  // Routing id of the frame host that initiated the navigation, derived from
-  // |begin_params()->initiator_routing_id|. This is best effort: it is only
+  // Frame token of the frame host that initiated the navigation, derived from
+  // |begin_params()->initiator_frame_token|. This is best effort: it is only
   // defined for some renderer-initiated navigations (e.g., not drag and drop).
-  // The frame with the corresponding routing ID may have been deleted before
-  // the navigation begins.
-  const GlobalFrameRoutingId initiator_routing_id_;
+  // The frame with the corresponding frame token may have been deleted before
+  // the navigation begins. This parameter is defined if and only if
+  // |initiator_process_id_| below is.
+  const base::Optional<base::UnguessableToken> initiator_frame_token_;
+
+  // ID of the renderer process of the frame host that initiated the navigation.
+  // This is defined if and only if |initiator_frame_token_| above is, and it is
+  // only valid in conjunction with it.
+  int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
 
   // This tracks a connection between the current pending entry and this
   // request, such that the pending entry can be discarded if no requests are

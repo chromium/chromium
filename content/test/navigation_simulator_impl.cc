@@ -1145,8 +1145,9 @@ bool NavigationSimulatorImpl::SimulateBrowserInitiatedStart() {
 bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   mojom::BeginNavigationParamsPtr begin_params =
       mojom::BeginNavigationParams::New(
-          initiator_frame_host_ ? initiator_frame_host_->GetRoutingID()
-                                : MSG_ROUTING_NONE /* initiator_routing_id */,
+          initiator_frame_host_
+              ? base::make_optional(initiator_frame_host_->GetFrameToken())
+              : base::nullopt,
           std::string() /* headers */, net::LOAD_NORMAL,
           false /* skip_service_worker */,
           blink::mojom::RequestContextType::HYPERLINK,

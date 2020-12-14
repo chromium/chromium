@@ -155,6 +155,13 @@ struct CORE_EXPORT FrameLoadRequest {
 
   bool CanDisplay(const KURL&) const;
 
+  void SetInitiatorFrameToken(const base::UnguessableToken& token) {
+    initiator_frame_token_ = token;
+  }
+  const base::UnguessableToken* GetInitiatorFrameToken() const {
+    return initiator_frame_token_ ? &(initiator_frame_token_.value()) : nullptr;
+  }
+
  private:
   LocalDOMWindow* origin_window_;
   ResourceRequest resource_request_;
@@ -174,6 +181,7 @@ struct CORE_EXPORT FrameLoadRequest {
       mojom::RequestContextFrameType::kNone;
   WebWindowFeatures window_features_;
   base::Optional<WebImpression> impression_;
+  base::Optional<base::UnguessableToken> initiator_frame_token_;
 };
 
 }  // namespace blink

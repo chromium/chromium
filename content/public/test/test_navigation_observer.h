@@ -88,9 +88,19 @@ class TestNavigationObserver {
     return last_navigation_initiator_origin_;
   }
 
-  const GlobalFrameRoutingId& last_initiator_routing_id() const {
-    return last_initiator_routing_id_;
+  // Returns the frame token of the initiator RenderFrameHost of the last
+  // finished navigation. This is defined if and only if
+  // last_initiator_process_id below is.
+  const base::Optional<base::UnguessableToken>& last_initiator_frame_token()
+      const {
+    return last_initiator_frame_token_;
   }
+
+  // Returns the process id of the initiator RenderFrameHost of the last
+  // finished navigation. This is defined if and only if
+  // last_initiator_frame_token above is, and it is valid only in conjunction
+  // with it.
+  int last_initiator_process_id() const { return last_initiator_process_id_; }
 
   // Returns the net::Error origin of the last finished navigation (that matched
   // URL / net error filters, if set).
@@ -192,8 +202,15 @@ class TestNavigationObserver {
   // The initiator origin of the last navigation.
   base::Optional<url::Origin> last_navigation_initiator_origin_;
 
-  // The routing id of the initiator frame for the last observed navigation.
-  GlobalFrameRoutingId last_initiator_routing_id_;
+  // The frame token of the initiator frame for the last observed
+  // navigation. This parameter is defined if and only if
+  // |initiator_process_id_| below is.
+  base::Optional<base::UnguessableToken> last_initiator_frame_token_;
+
+  // The process id of the initiator frame for the last observed navigation.
+  // This is defined if and only if |initiator_frame_token_| above is, and it is
+  // only valid in conjunction with it.
+  int last_initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
 
   // The net error code of the last navigation.
   net::Error last_net_error_code_;

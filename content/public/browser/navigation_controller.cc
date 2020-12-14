@@ -17,7 +17,8 @@ NavigationController::LoadURLParams::LoadURLParams(const GURL& url)
 
 NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
     : url(input.url),
-      initiator_routing_id(input.initiator_routing_id),
+      initiator_frame_token(input.initiator_frame_token),
+      initiator_process_id(input.initiator_process_id),
       initiator_origin(input.initiator_origin),
       source_site_instance(input.source_site_instance),
       load_type(input.post_data ? LOAD_TYPE_HTTP_POST : LOAD_TYPE_DEFAULT),

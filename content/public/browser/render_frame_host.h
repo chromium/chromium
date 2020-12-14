@@ -99,6 +99,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   static RenderFrameHost* FromID(GlobalFrameRoutingId id);
   static RenderFrameHost* FromID(int render_process_id, int render_frame_id);
 
+  // Returns the RenderFrameHost given its frame token and its process
+  // ID. Returns nullptr if the frame token does not correspond to a live
+  // RenderFrameHost.
+  static RenderFrameHost* FromFrameToken(
+      int initiator_process_id,
+      const base::UnguessableToken& frame_token);
+
   // Globally allows for injecting JavaScript into the main world. This feature
   // is present only to support Android WebView, WebLayer, Fuchsia web.Contexts,
   // and CastOS content shell. It must not be used in other configurations.

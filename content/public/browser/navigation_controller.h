@@ -24,6 +24,7 @@
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/common/child_process_host.h"
 #include "content/public/common/impression.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/was_activated_option.mojom.h"
@@ -128,13 +129,19 @@ class NavigationController {
     // The url to load. This field is required.
     GURL url;
 
-    // The routing id of the initiator of the navigation if the
-    // navigation was initiated through trusted, non-web-influenced UI (e.g. via
-    // omnibox, the bookmarks bar, local NTP, etc.). This frame is not
-    // guaranteed to exist at any point during navigation. This can be an
-    // invalid id if the navigation was not associated with a frame, or if the
-    // initiating frame did not exist by the time navigation started.
-    GlobalFrameRoutingId initiator_routing_id;
+    // The frame token of the initiator of the navigation if the navigation was
+    // initiated through trusted, non-web-influenced UI (e.g. via omnibox, the
+    // bookmarks bar, local NTP, etc.). This frame is not guaranteed to exist at
+    // any point during navigation. This can be an invalid id if the navigation
+    // was not associated with a frame, or if the initiating frame did not exist
+    // by the time navigation started. This parameter is defined if and only if
+    // |initiator_process_id| below is.
+    base::Optional<base::UnguessableToken> initiator_frame_token;
+
+    // ID of the renderer process of the frame host that initiated the
+    // navigation. This is defined if and only if |initiator_frame_token| above
+    // is, and it is only valid in conjunction with it.
+    int initiator_process_id = ChildProcessHost::kInvalidUniqueID;
 
     // The origin of the initiator of the navigation or base::nullopt if the
     // navigation was initiated through trusted, non-web-influenced UI

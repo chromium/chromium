@@ -155,7 +155,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void NavigateFromFrameProxy(
       RenderFrameHostImpl* render_frame_host,
       const GURL& url,
-      const GlobalFrameRoutingId& initiator_routing_id,
+      const base::UnguessableToken* initiator_frame_token,
+      int initiator_process_id,
       const base::Optional<url::Origin>& initiator_origin,
       bool is_renderer_initiated,
       SiteInstance* source_site_instance,

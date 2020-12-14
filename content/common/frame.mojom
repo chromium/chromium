@@ -354,7 +354,12 @@ struct OpenURLParams {
   // The main URL to open.
   url.mojom.Url url;
   url.mojom.Origin initiator_origin;
-  int32 initiator_routing_id;
+
+  // The token of the RenderFrameHost that initiated the navigation. It might
+  // refer to a RenderFrameHost that doesn't exist anymore when the IPC reaches
+  // the browser process.
+  mojo_base.mojom.UnguessableToken? initiator_frame_token;
+
   network.mojom.URLRequestBody? post_body;
   string extra_headers;
   blink.mojom.Referrer referrer;

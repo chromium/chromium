@@ -10,6 +10,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/child_process_host.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -121,9 +122,11 @@ class MockNavigationHandle : public NavigationHandle {
   const base::Optional<Impression>& GetImpression() override {
     return impression_;
   }
-  const GlobalFrameRoutingId& GetInitiatorRoutingId() override {
-    return initiator_routing_id_;
+  const base::Optional<base::UnguessableToken>& GetInitiatorFrameToken()
+      override {
+    return initiator_frame_token_;
   }
+  int GetInitiatorProcessID() override { return initiator_process_id_; }
   const base::Optional<url::Origin>& GetInitiatorOrigin() override {
     return initiator_origin_;
   }
@@ -197,9 +200,14 @@ class MockNavigationHandle : public NavigationHandle {
   void set_impression(const Impression& impression) {
     impression_ = impression;
   }
-  void set_initiator_routing_id(
-      const GlobalFrameRoutingId& initiator_routing_id) {
-    initiator_routing_id_ = initiator_routing_id;
+  void set_initiator_frame_token(
+      const base::UnguessableToken* initiator_frame_token) {
+    initiator_frame_token_ = initiator_frame_token
+                                 ? base::make_optional(*initiator_frame_token)
+                                 : base::nullopt;
+  }
+  void set_initiator_process_id(int process_id) {
+    initiator_process_id_ = process_id;
   }
   void set_initiator_origin(const url::Origin& initiator_origin) {
     initiator_origin_ = initiator_origin;
@@ -235,7 +243,8 @@ class MockNavigationHandle : public NavigationHandle {
   ReloadType reload_type_ = content::ReloadType::NONE;
   std::string href_translate_;
   base::Optional<Impression> impression_;
-  GlobalFrameRoutingId initiator_routing_id_;
+  base::Optional<base::UnguessableToken> initiator_frame_token_;
+  int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
 };
 
 }  // namespace content

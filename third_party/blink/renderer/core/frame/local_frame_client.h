@@ -168,7 +168,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
           initiator_csp,
       network::mojom::IPAddressSpace,
-      mojo::PendingRemote<mojom::blink::NavigationInitiator>) = 0;
+      mojo::PendingRemote<mojom::blink::NavigationInitiator>,
+      const base::UnguessableToken* initiator_frame_token) = 0;
 
   virtual void DispatchWillSendSubmitEvent(HTMLFormElement*) = 0;
 

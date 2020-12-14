@@ -16,6 +16,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/common/child_process_host.h"
 #include "content/public/common/impression.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/was_activated_option.mojom.h"
@@ -88,11 +89,17 @@ struct NavigateParams {
   GURL url;
   content::Referrer referrer;
 
-  // The routing id of the initiator of the navigation. This is best effort: it
+  // The frame token of the initiator of the navigation. This is best effort: it
   // is only defined for some renderer-initiated navigations (e.g., not drag and
-  // drop), and the frame with the corresponding routing ID may have been
-  // deleted before the navigation begins.
-  content::GlobalFrameRoutingId initiator_routing_id;
+  // drop), and the frame with the corresponding frame token may have been
+  // deleted before the navigation begins. It is defined if and only if
+  // |initiator_process_id| below is.
+  base::Optional<base::UnguessableToken> initiator_frame_token;
+
+  // ID of the renderer process of the frame host that initiated the navigation.
+  // This is defined if and only if |initiator_frame_token| above is, and it is
+  // only valid in conjunction with it.
+  int initiator_process_id = content::ChildProcessHost::kInvalidUniqueID;
 
   // The origin of the initiator of the navigation.
   base::Optional<url::Origin> initiator_origin;

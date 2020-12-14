@@ -827,7 +827,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       should_check_main_world_csp, request.GetBlobURLToken(),
       request.GetInputStartTime(), request.HrefTranslate().GetString(),
       request.Impression(), std::move(initiator_csp), initiator_address_space,
-      std::move(navigation_initiator));
+      std::move(navigation_initiator), request.GetInitiatorFrameToken());
 }
 
 static void FillStaticResponseIfNeeded(WebNavigationParams* params,

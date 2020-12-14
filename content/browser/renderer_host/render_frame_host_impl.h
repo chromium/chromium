@@ -282,6 +282,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   static RenderFrameHostImpl* FromFrameToken(
       int process_id,
       const base::UnguessableToken& frame_token);
+
   static RenderFrameHostImpl* FromAXTreeID(ui::AXTreeID ax_tree_id);
   static RenderFrameHostImpl* FromOverlayRoutingToken(
       const base::UnguessableToken& token);

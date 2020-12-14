@@ -621,11 +621,9 @@ void RenderFrameProxy::Navigate(
   params->triggering_event_info = blink::TriggeringEventInfo::kUnknown;
   params->blob_url_token = std::move(blob_url_token);
 
-  RenderFrameImpl* initiator_render_frame =
-      RenderFrameImpl::FromWebFrame(initiator_frame);
-  params->initiator_routing_id = initiator_render_frame
-                                     ? initiator_render_frame->GetRoutingID()
-                                     : MSG_ROUTING_NONE;
+  params->initiator_frame_token =
+      initiator_frame ? base::make_optional(initiator_frame->GetFrameToken())
+                      : base::nullopt;
 
   if (impression)
     params->impression = ConvertWebImpressionToImpression(*impression);

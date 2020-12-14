@@ -300,7 +300,8 @@ void NavigateClientOnUI(const GURL& url,
   int frame_tree_node_id = rfhi->frame_tree_node()->frame_tree_node_id();
   Navigator& navigator = rfhi->frame_tree_node()->navigator();
   navigator.RequestOpenURL(
-      rfhi, url, GlobalFrameRoutingId() /* initiator_routing_id */,
+      rfhi, url, nullptr /* initiator_frame_token */,
+      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       url::Origin::Create(script_url), nullptr /* post_body */,
       std::string() /* extra_headers */,
       Referrer::SanitizeForRequest(

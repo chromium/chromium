@@ -172,6 +172,9 @@ struct BLINK_EXPORT WebNavigationInfo {
   // The frame policy specified by the frame owner element.
   // For top-level window with no opener, this is the default lax FramePolicy.
   FramePolicy frame_policy;
+
+  // The frame token of the initiator Frame.
+  base::Optional<base::UnguessableToken> initiator_frame_token;
 };
 
 // This structure holds all information provided by the embedder that is

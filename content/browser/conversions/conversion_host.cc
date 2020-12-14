@@ -92,7 +92,11 @@ void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   }
 
   RenderFrameHostImpl* initiator_frame_host =
-      RenderFrameHostImpl::FromID(navigation_handle->GetInitiatorRoutingId());
+      navigation_handle->GetInitiatorFrameToken().has_value()
+          ? RenderFrameHostImpl::FromFrameToken(
+                navigation_handle->GetInitiatorProcessID(),
+                navigation_handle->GetInitiatorFrameToken().value())
+          : nullptr;
 
   // The initiator frame host may be deleted by this point. In that case, ignore
   // this navigation and drop the impression associated with it.

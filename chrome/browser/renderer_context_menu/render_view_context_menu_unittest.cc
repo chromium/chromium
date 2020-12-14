@@ -542,7 +542,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
   EXPECT_EQ(kTestSuggestedFileName, suggested_filename);
 }
 
-// Verify ContextMenu navigations properly set the initiator routing id for a
+// Verify ContextMenu navigations properly set the initiator frame token for a
 // frame.
 TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
   TestNavigationDelegate delegate;
@@ -559,10 +559,10 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
 
   // Verify that the ContextMenu source frame is set as the navigation
   // initiator.
-  auto main_frame_id = content::GlobalFrameRoutingId(
-      main_frame->GetProcess()->GetID(), main_frame->GetRoutingID());
-  EXPECT_EQ(main_frame_id,
-            delegate.last_navigation_params()->initiator_routing_id);
+  EXPECT_EQ(main_frame->GetFrameToken(),
+            delegate.last_navigation_params()->initiator_frame_token);
+  EXPECT_EQ(main_frame->GetProcess()->GetID(),
+            delegate.last_navigation_params()->initiator_process_id);
 
   // Verify that the impression is attached to the navigation.
   EXPECT_TRUE(delegate.last_navigation_params()->impression);
