@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Weitere Einstellungen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
+<translation id="2224337661447660594">Kein Internet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivieren Sie Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2364498172489649528">Bestanden</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Gescannte Dateien gespeichert</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
 <translation id="4429881212383817840">Kerberos-Ticket läuft bald ab</translation>
 <translation id="445059817448385655">Altes Passwort</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Signal nicht gefunden</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />-mAh-Akku</translation>
 <translation id="458794348635939462">Es konnten nicht alle Hosts aufgelöst werden</translation>
+<translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
 <translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
@@ -119,7 +120,7 @@
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
 <translation id="4932733599132424254">Datum</translation>
-<translation id="498186245079027698">Prüfen Sie den Scanner und versuchen Sie es noch einmal. Sehen Sie nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
+<translation id="498186245079027698">Prüfe den Scanner und versuche es noch einmal. Sieh nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
 <translation id="4985509611418653372">Ausführen</translation>
 <translation id="500920857929044050">Test beenden</translation>
 <translation id="5154917547274118687">Speicher</translation>
@@ -180,7 +181,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6766275201586212568">Fehlgeschlagene DNS-Auflösungen</translation>
 <translation id="6768237774506518020">Hohe Fehlerrate bei der DNS-Auflösung</translation>
 <translation id="6839141349259399400">Verbindung mit Scanner nicht möglich?</translation>
-<translation id="6853312040151791195">Entladungsrate</translation>
+<translation id="6853312040151791195">Entladestrom</translation>
 <translation id="6898743098396957679">Scan konnte nicht abgeschlossen werden</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
@@ -197,7 +198,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="773153675489693198">Anzahl der Ladezyklen</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />-Test</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">Gescannte Datei gespeichert</translation>
 <translation id="7928373994957558460">Speicherort der Datei anzeigen</translation>
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
 <translation id="7960831585769876809">Temperatur</translation>
@@ -230,7 +230,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> verbleibende Versuche</translation>
-<translation id="8968751544471797276">Aufladerate</translation>
+<translation id="8968751544471797276">Ladestrom</translation>
 <translation id="8970109610781093811">Erneut ausführen</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
 <translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>

@@ -61,7 +61,6 @@
 <translation id="405887016757208221">원격 컴퓨터가 세션을 초기화하는 데 실패했습니다. 문제가 지속되면 호스트를 다시 구성해 보시기 바랍니다.</translation>
 <translation id="4060747889721220580">파일 다운로드</translation>
 <translation id="4126409073460786861">설정이 완료된 후 이 페이지를 새로고침하면 기기를 선택하고 PIN을 입력하여 컴퓨터에 액세스할 수 있습니다.</translation>
-<translation id="4139423942711457311">Copyright 2020 Google LLC All Rights Reserved.</translation>
 <translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" /> 계정으로 로그인했습니다.</translation>
 <translation id="4155497795971509630">일부 필수 구성요소가 누락되었습니다. 소프트웨어의 최신 버전을 설치했는지 확인한 뒤 다시 시도해주세요.</translation>
 <translation id="4176825807642096119">액세스 코드</translation>
@@ -130,6 +129,7 @@
 <translation id="7067321367069083429">화면이 터치스크린처럼 작동합니다</translation>
 <translation id="7116737094673640201">Chrome 원격 데스크톱에 오신 것을 환영합니다.</translation>
 <translation id="7144878232160441200">다시 시도</translation>
+<translation id="724402108658370587">Copyright 2020 Google LLC. All Rights Reserved.</translation>
 <translation id="7312846573060934304">호스트가 오프라인 상태입니다.</translation>
 <translation id="7319983568955948908">공유 중지</translation>
 <translation id="7401733114166276557">Chrome 원격 데스크톱</translation>

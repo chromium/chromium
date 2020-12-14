@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Više podešavanja</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
+<translation id="2224337661447660594">Nema interneta</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2364498172489649528">Prošlo</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">Skeniraj</translation>
 <translation id="2570743873672969996">Pokreće se test <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Skenirani fajl je sačuvan!}one{Skenirani fajlovi su sačuvani!}few{Skenirani fajlovi su sačuvani!}other{Skenirani fajlovi su sačuvani!}}</translation>
 <translation id="2740531572673183784">Potvrdi</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Skenirani fajlovi su sačuvani!</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kerberos tiket uskoro ističe</translation>
 <translation id="445059817448385655">Stara lozinka</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">Signal nije pronađen</translation>
 <translation id="455835558791489930">Baterija od <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Razrešenje svih hostova nije uspelo</translation>
+<translation id="4593212453765072419">Potrebna je potvrda autentičnosti proksija</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite taster Enter da biste otkazali zadatak štampanja.</translation>
 <translation id="4646949265910132906">Bezbedna WiFi veza</translation>
 <translation id="467510802200863975">Lozinke se ne podudaraju</translation>
@@ -188,6 +190,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tip datoteke</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
 <translation id="7441459999606975924">Kapacitet baterije se smanjuje tokom korišćenja</translation>
 <translation id="7561454561030345039">Ovim podešavanjem upravlja administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -197,7 +200,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">Skenirani fajl je sačuvan!</translation>
 <translation id="7928373994957558460">Prikaži lokaciju datoteke</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server za imena</translation>
 <translation id="7960831585769876809">Temperatura</translation>

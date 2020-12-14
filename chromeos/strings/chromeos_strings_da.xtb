@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
+<translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
 <translation id="2364498172489649528">Bestået</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2570743873672969996">Kører testen <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Den scannede fil er gemt.}one{Den scannede fil er gemt.}other{De scannede filer er gemt.}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Sluk</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
 <translation id="4378373042927530923">Kørte ikke</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">De scannede filer er gemt.</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
 <translation id="445059817448385655">Gammel adgangskode</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">Der blev ikke fundet noget signal</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh batteri</translation>
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
+<translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
 <translation id="467510802200863975">Adgangskoderne stemmer ikke overens</translation>
@@ -187,6 +189,7 @@
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Filtype</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanningen er gennemført. 1 side blev scannet}one{Scanningen er gennemført. {NUMBER_OF_PAGES} side blev scannet}other{Scanningen er gennemført. {NUMBER_OF_PAGES} sider blev scannet}}</translation>
 <translation id="7441459999606975924">Batteritiden forværres med tiden</translation>
 <translation id="7561454561030345039">Denne handling administreres af din administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -196,7 +199,6 @@
 <translation id="773153675489693198">Antal gennemførte cyklusser</translation>
 <translation id="7732651821766520760">Testen <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">Den scannede fil er gemt.</translation>
 <translation id="7928373994957558460">Se filplacering</translation>
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="7960831585769876809">Temperatur</translation>

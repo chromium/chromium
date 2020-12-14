@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 個月前}other{# 個月前}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="430191667033048642">已將「<ph name="MOVED_APP_NAME" />」移至「<ph name="FOLDER_NAME" />」資料夾。</translation>
+<translation id="4306392492252714209">從剪貼簿中移除。</translation>
 <translation id="4316910396681052118">所有應用程式</translation>
 <translation id="4491109536499578614">圖片</translation>
 <translation id="4588090240171750605">向右捲動</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">要將這個搜尋從你的記錄中刪除嗎？</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">表情符號</translation>
+<translation id="7620655452534002301">已移除。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>

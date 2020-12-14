@@ -171,6 +171,7 @@
 <translation id="2157851137955077194">如果想将您手机上的内容分享到另一部设备，那么对于这两部设备，您都需在 Chrome 设置中开启同步功能</translation>
 <translation id="2158408438301413340">Chrome 无法检查所有密码</translation>
 <translation id="2169830938017475061">现在</translation>
+<translation id="2172688499998841696">“图片说明”功能已关闭</translation>
 <translation id="2175927920773552910">二维码</translation>
 <translation id="218608176142494674">共享</translation>
 <translation id="2195339740518523951">获享 Chrome 的最强安全保护</translation>
@@ -208,6 +209,7 @@
 轻触并按住任意字词即可进行搜索。要优化您的搜索，请多选或少选一些字词。要修改您的搜索，请打开面板，点按图标打开新标签页，然后在搜索框中做出更改。</translation>
 <translation id="2459390580524506445">增强版语音搜索</translation>
 <translation id="246532703174860178">分享</translation>
+<translation id="247737702124049222">“图片说明”功能已开启</translation>
 <translation id="2478076885740497414">安装应用</translation>
 <translation id="2479148705183875116">转到“设置”</translation>
 <translation id="2482878487686419369">通知</translation>
@@ -313,6 +315,7 @@
 <translation id="3232754137068452469">网络应用</translation>
 <translation id="3236059992281584593">还剩 1 分钟</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3250563604907490871">当您连接到 Wi-Fi 后，“图片说明”功能将会恢复运作</translation>
 <translation id="3254409185687681395">为此页添加书签</translation>
 <translation id="3259831549858767975">缩小网页上的所有内容</translation>
 <translation id="3264124641674805320">如何下载内容以备后用</translation>
@@ -897,6 +900,7 @@
 <translation id="7274013316676448362">禁止访问的网站</translation>
 <translation id="7286572596625053347">更改<ph name="LANGUAGE" />？</translation>
 <translation id="7290209999329137901">不可重命名</translation>
+<translation id="7291910923717764901">已为此网页添加图片说明</translation>
 <translation id="7293171162284876153">要开始同步，请开启“同步 Chrome 数据”。</translation>
 <translation id="7293429513719260019">选择语言</translation>
 <translation id="729975465115245577">您的设备上没有可以存储密码文件的应用。</translation>

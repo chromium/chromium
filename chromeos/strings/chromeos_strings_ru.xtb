@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
+<translation id="2224337661447660594">Нет подключения к Интернету</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2364498172489649528">Завершено</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">Искать</translation>
 <translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Отсканированный файл сохранен.}one{Отсканированные файлы сохранены.}few{Отсканированные файлы сохранены.}many{Отсканированные файлы сохранены.}other{Отсканированные файлы сохранены.}}</translation>
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4378373042927530923">Не проверено</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Отсканированные файлы сохранены.</translation>
 <translation id="4425149324548788773">Мой диск</translation>
 <translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
 <translation id="445059817448385655">Старый пароль</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">Отсутствует сигнал Wi-Fi.</translation>
 <translation id="455835558791489930">Батарея <ph name="CHARGE_VALUE" /> мА·ч</translation>
 <translation id="458794348635939462">Не удалось преобразовать имена всех хостов.</translation>
+<translation id="4593212453765072419">Требуется аутентификация на прокси-сервере</translation>
 <translation id="4627232916386272576">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, напечатано страниц: <ph name="PRINTED_PAGE_NUMBER" /> из <ph name="TOTAL_PAGE_NUMBER" />. Чтобы отменить задание печати, нажмите клавишу "Ввод".</translation>
 <translation id="4646949265910132906">Защищенное подключение к Wi-Fi</translation>
 <translation id="467510802200863975">Пароли не совпадают.</translation>
@@ -188,6 +190,7 @@
 <translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Тип файла</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
 <translation id="7441459999606975924">Емкость батареи со временем уменьшается</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -197,7 +200,6 @@
 <translation id="773153675489693198">Количество циклов</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />: проверка</translation>
 <translation id="7805768142964895445">Состояние</translation>
-<translation id="7855434858642800953">Отсканированный файл сохранен.</translation>
 <translation id="7928373994957558460">Показать, где сохранен файл</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7960831585769876809">Температура</translation>

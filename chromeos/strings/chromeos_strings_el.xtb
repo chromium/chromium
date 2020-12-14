@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Περισσότερες ρυθμίσεις</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Ακύρωση εργασίας εκτύπωσης</translation>
+<translation id="2224337661447660594">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ενεργοποιήστε το Bluetooth, για να εντοπίσετε κοντινές συσκευές</translation>
 <translation id="2364498172489649528">Επιτυχία</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">Σάρωση</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
 <translation id="2620436844016719705">Σύστημα</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Το σαρωμένο αρχείο αποθηκεύτηκε!}other{Τα σαρωμένα αρχεία αποθηκεύτηκαν!}}</translation>
 <translation id="2740531572673183784">ΟK</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
 <translation id="4378373042927530923">Δεν εκτελέστηκε</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Τα σαρωμένα αρχεία αποθηκεύτηκαν!</translation>
 <translation id="4425149324548788773">Το Drive μου</translation>
 <translation id="4429881212383817840">Το εισιτήριο Kerberos θα λήξει σύντομα</translation>
 <translation id="445059817448385655">Παλιός κωδικός πρόσβασης</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">Δεν βρέθηκε σήμα.</translation>
 <translation id="455835558791489930">Μπαταρία <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Αποτυχία επίλυσης όλων των κεντρικών υπολογιστών.</translation>
+<translation id="4593212453765072419">Απαιτείται έλεγχος ταυτότητας του διακομιστή μεσολάβησης</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> από <ph name="TOTAL_PAGE_NUMBER" />. Πατήστε enter, για να ακυρώσετε την εργασία εκτύπωσης.</translation>
 <translation id="4646949265910132906">Ασφαλής σύνδεση Wi-Fi</translation>
 <translation id="467510802200863975">Δεν ταιριάζουν οι κωδικοί πρόσβασης</translation>
@@ -188,6 +190,7 @@
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Η σάρωση ολοκληρώθηκε. Σαρώθηκε 1 σελίδα.}other{Η σάρωση ολοκληρώθηκε. Σαρώθηκαν {NUMBER_OF_PAGES} σελίδες.}}</translation>
 <translation id="7441459999606975924">Η χωρητικότητα των μπαταριών μειώνεται με τη χρήση.</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -197,7 +200,6 @@
 <translation id="773153675489693198">Πλήθος φορτίσεων-εξαντλήσεων μπαταρίας</translation>
 <translation id="7732651821766520760">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
-<translation id="7855434858642800953">Το σαρωμένο αρχείο αποθηκεύτηκε!</translation>
 <translation id="7928373994957558460">Εμφάνιση τοποθεσίας αρχείου</translation>
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
 <translation id="7960831585769876809">Θερμοκρασία</translation>

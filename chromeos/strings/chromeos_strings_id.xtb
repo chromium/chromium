@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
+<translation id="2224337661447660594">Tidak ada internet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktifkan Bluetooth untuk menemukan perangkat di sekitar</translation>
 <translation id="2364498172489649528">Lulus</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">File yang dipindai telah disimpan.</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4429881212383817840">Masa berlaku tiket Kerberos segera berakhir</translation>
 <translation id="445059817448385655">Sandi lama</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Sinyal tidak ditemukan</translation>
 <translation id="455835558791489930">Baterai <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Gagal me-resolve semua host</translation>
+<translation id="4593212453765072419">Autentikasi Proxy dibutuhkan</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
 <translation id="4646949265910132906">Koneksi Wi-Fi aman</translation>
 <translation id="467510802200863975">Sandi tidak cocok</translation>
@@ -197,7 +198,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="773153675489693198">Jumlah siklus</translation>
 <translation id="7732651821766520760">Pengujian <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">File yang dipindai telah disimpan.</translation>
 <translation id="7928373994957558460">Tampilkan lokasi file</translation>
 <translation id="7936303884198020182">Tidak ada server nama yang ditemukan</translation>
 <translation id="7960831585769876809">Suhu</translation>

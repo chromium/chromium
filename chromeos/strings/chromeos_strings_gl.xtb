@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Máis configuracións</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
+<translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa o Bluetooth para detectar dispositivos situados nas proximidades</translation>
 <translation id="2364498172489649528">Aprobou</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
 <translation id="4378373042927530923">Non se executou</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Gardáronse os ficheiros escaneados</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4429881212383817840">O tícket de Kerberos caduca pronto</translation>
 <translation id="445059817448385655">Contrasinal antigo</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Non se atopou o sinal</translation>
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
+<translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Para cancelar o traballo de impresión, preme Intro.</translation>
 <translation id="4646949265910132906">Conexión wifi segura</translation>
 <translation id="467510802200863975">Os contrasinais non coinciden</translation>
@@ -197,7 +198,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7732651821766520760">Proba de <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estado</translation>
-<translation id="7855434858642800953">Gardouse o ficheiro escaneado</translation>
 <translation id="7928373994957558460">Mostrar localización do ficheiro</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="7960831585769876809">Temperatura</translation>

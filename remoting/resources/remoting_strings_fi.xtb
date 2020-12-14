@@ -61,7 +61,6 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="405887016757208221">Etätietokone ei alustanut istuntoa oikein. Jos ongelma ei ratkea, yritä määrittää isäntäkoneen asetukset uudelleen.</translation>
 <translation id="4060747889721220580">Lataa tiedosto</translation>
 <translation id="4126409073460786861">Päivitä tämä sivu määrityksen jälkeen, niin voit käyttää tietokonetta valitsemalla laitteesi ja syöttämällä PIN-koodin</translation>
-<translation id="4139423942711457311">© 2020 Google LLC Kaikki oikeudet pidätetään.</translation>
 <translation id="4145029455188493639">Kirjautunut osoitteella <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="4155497795971509630">Joitakin vaadittavia komponentteja puuttuu. Varmista, että olet asentanut ohjelmiston uusimman version, ja yritä uudelleen.</translation>
 <translation id="4176825807642096119">Käyttökoodi</translation>
@@ -130,6 +129,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="7067321367069083429">Näyttö toimii kosketusnäyttönä</translation>
 <translation id="7116737094673640201">Tervetuloa Chrome-etäkäyttöön</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
+<translation id="724402108658370587">Copyright 2020 Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="7312846573060934304">Isäntä on offline-tilassa.</translation>
 <translation id="7319983568955948908">Lopeta jakaminen</translation>
 <translation id="7401733114166276557">Chrome-etäkäyttö</translation>

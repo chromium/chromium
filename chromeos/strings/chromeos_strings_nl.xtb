@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Afdruktaak annuleren</translation>
+<translation id="2224337661447660594">Geen internet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Schakel Bluetooth in om apparaten in de buurt te vinden</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">Scannen</translation>
 <translation id="2570743873672969996">Test <ph name="TEST_NAME" /> wordt uitgevoerd...</translation>
 <translation id="2620436844016719705">Systeem</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Gescand bestand opgeslagen.}other{Gescande bestanden opgeslagen.}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
 <translation id="4378373042927530923">Niet uitgevoerd</translation>
 <translation id="4382484599443659549">Pdf</translation>
-<translation id="4421943235406860811">Gescande bestanden opgeslagen.</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
 <translation id="4429881212383817840">Kerberos-ticket verloopt binnenkort</translation>
 <translation id="445059817448385655">Oud wachtwoord</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">Signaal niet gevonden</translation>
 <translation id="455835558791489930">Batterij van <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Kan niet alle hosts omzetten</translation>
+<translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk op Enter om de afdruktaak te annuleren.</translation>
 <translation id="4646949265910132906">Beveiligde wifi-verbinding</translation>
 <translation id="467510802200863975">De wachtwoorden komen niet overeen</translation>
@@ -188,6 +190,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Bestandstype</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scannen voltooid. 1 pagina gescand.}other{Scannen voltooid. {NUMBER_OF_PAGES} pagina's gescand.}}</translation>
 <translation id="7441459999606975924">De batterijcapaciteit gaat achteruit naarmate een batterij langer wordt gebruikt</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -197,7 +200,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="773153675489693198">Aantal oplaadbeurten</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">Gescand bestand opgeslagen.</translation>
 <translation id="7928373994957558460">Bestandslocatie weergeven</translation>
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
@@ -236,6 +238,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
-<translation id="9149391708638971077">Geheugentest doen</translation>
-<translation id="982713511914535780">Ontlaadtest doen</translation>
+<translation id="9149391708638971077">Geheugentest uitvoeren</translation>
+<translation id="982713511914535780">Ontlaadtest uitvoeren</translation>
 </translationbundle>

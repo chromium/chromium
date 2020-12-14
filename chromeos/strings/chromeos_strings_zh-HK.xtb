@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
+<translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">開啟藍牙即可探索附近的裝置</translation>
 <translation id="2364498172489649528">已通過</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">掃瞄</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試…</translation>
 <translation id="2620436844016719705">系統</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{已儲存完成掃描的檔案！}other{已儲存完成掃描的檔案！}}</translation>
 <translation id="2740531572673183784">確定</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2872961005593481000">關閉</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">已儲存掃瞄的檔案！</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4429881212383817840">Kerberos 票證即將到期</translation>
 <translation id="445059817448385655">舊密碼</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">偵測不到訊號</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
 <translation id="458794348635939462">無法解析所有主機</translation>
+<translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
 <translation id="4646949265910132906">安全 Wi-Fi 連線</translation>
 <translation id="467510802200863975">密碼不相符</translation>
@@ -188,6 +190,7 @@
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理員可能會遠端設定裝置。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">檔案類型</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
 <translation id="7441459999606975924">電池容量會隨使用時間增加而下降</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -197,7 +200,6 @@
 <translation id="773153675489693198">週期數</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />測試</translation>
 <translation id="7805768142964895445">狀態</translation>
-<translation id="7855434858642800953">已儲存掃瞄的檔案！</translation>
 <translation id="7928373994957558460">顯示檔案位置</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
 <translation id="7960831585769876809">溫度</translation>

@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Більше налаштувань</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Скасувати завдання друку</translation>
+<translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2364498172489649528">Виконано</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
 <translation id="4378373042927530923">Не виконано</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Відскановані файли збережено.</translation>
 <translation id="4425149324548788773">Мій диск</translation>
 <translation id="4429881212383817840">Термін дії квитка Kerberos незабаром минає</translation>
 <translation id="445059817448385655">Старий пароль</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">сигнал не знайдено</translation>
 <translation id="455835558791489930">Акумулятор ємністю <ph name="CHARGE_VALUE" /> мА·год</translation>
 <translation id="458794348635939462">Не вдалося розпізнати всі хости</translation>
+<translation id="4593212453765072419">Потрібна автентифікація проксі-сервера</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
 <translation id="4646949265910132906">Надійне з'єднання Wi-Fi</translation>
 <translation id="467510802200863975">Паролі не збігаються</translation>
@@ -197,7 +198,6 @@
 <translation id="773153675489693198">Кількість циклів</translation>
 <translation id="7732651821766520760">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="7805768142964895445">Статус</translation>
-<translation id="7855434858642800953">Відсканований файл збережено.</translation>
 <translation id="7928373994957558460">Показати, де збережено файл</translation>
 <translation id="7936303884198020182">не знайдено серверів імен</translation>
 <translation id="7960831585769876809">Температура</translation>

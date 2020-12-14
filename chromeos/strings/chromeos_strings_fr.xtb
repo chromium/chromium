@@ -36,10 +36,11 @@
 <translation id="1947737735496445907">Impression terminée</translation>
 <translation id="1979103255016296513">Mot de passe à modifier</translation>
 <translation id="1980044825731880088">Vitesse du CPU</translation>
-<translation id="2008685064673031089">Recherche principale</translation>
+<translation id="2008685064673031089">Recherche de nombres premiers</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
+<translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
 <translation id="2364498172489649528">Réussi</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Les fichiers scannés ont bien été enregistrés !</translation>
 <translation id="4425149324548788773">Mon Drive</translation>
 <translation id="4429881212383817840">Le ticket Kerberos arrive bientôt à expiration</translation>
 <translation id="445059817448385655">Ancien mot de passe</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Signal introuvable</translation>
 <translation id="455835558791489930">Batterie de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
+<translation id="4593212453765072419">L'authentification du proxy est requise.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
 <translation id="467510802200863975">Les mots de passe sont différents</translation>
@@ -180,7 +181,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="6839141349259399400">Impossible d'établir la connexion avec les scanners ?</translation>
-<translation id="6853312040151791195">Niveau de décharge</translation>
+<translation id="6853312040151791195">Vitesse de décharge</translation>
 <translation id="6898743098396957679">Échec de la numérisation</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités des utilisateurs, y compris les pages Web consultées, les mots de passe et la messagerie.</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
@@ -197,7 +198,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="773153675489693198">Nombre de cycles</translation>
 <translation id="7732651821766520760">Test "<ph name="TEST_NAME" />"</translation>
 <translation id="7805768142964895445">État</translation>
-<translation id="7855434858642800953">Le fichier scanné a bien été enregistré !</translation>
 <translation id="7928373994957558460">Afficher l'emplacement du fichier</translation>
 <translation id="7936303884198020182">Aucun serveur de noms trouvé</translation>
 <translation id="7960831585769876809">Température</translation>
@@ -230,7 +230,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8919837981463578619">Échec – Bac à papier manquant</translation>
 <translation id="8928727111548978589">Échec – À court de papier</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> tentatives restantes</translation>
-<translation id="8968751544471797276">Niveau de recharge</translation>
+<translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter à nouveau</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
 <translation id="910415269708673980">Actualiser le ticket associé à <ph name="PRINCIPAL_NAME" /></translation>

@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
+<translation id="2224337661447660594">Sin conexión a Internet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> PPP</translation>
 <translation id="2338501278241028356">Activa el Bluetooth para encontrar dispositivos cercanos</translation>
 <translation id="2364498172489649528">Aprobado</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
 <translation id="4378373042927530923">Sin ejecutar</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Archivos escaneados guardados.</translation>
 <translation id="4425149324548788773">Mi unidad</translation>
 <translation id="4429881212383817840">El ticket de Kerberos caducará pronto</translation>
 <translation id="445059817448385655">Contraseña antigua</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Señal no encontrada</translation>
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
+<translation id="4593212453765072419">Autenticación de proxy necesaria</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pulsa Intro para cancelar el trabajo de impresión.</translation>
 <translation id="4646949265910132906">Conexión Wi‑Fi segura</translation>
 <translation id="467510802200863975">Las contraseñas no coinciden</translation>
@@ -196,7 +197,6 @@
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7732651821766520760">Prueba de <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estado</translation>
-<translation id="7855434858642800953">Archivo escaneado guardado.</translation>
 <translation id="7928373994957558460">Mostrar ubicación del archivo</translation>
 <translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
 <translation id="7960831585769876809">Temperatura</translation>

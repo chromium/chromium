@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{לפני חודש אחד}two{לפני חודשיים}many{לפני # חודשים}other{לפני # חודשים}}</translation>
 <translation id="4289300219472526559">יש להתחיל לדבר</translation>
 <translation id="430191667033048642">האפליקציה <ph name="MOVED_APP_NAME" /> הועברה אל התיקייה <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">הסרה מהלוח.</translation>
 <translation id="4316910396681052118">כל האפליקציות</translation>
 <translation id="4491109536499578614">תמונה</translation>
 <translation id="4588090240171750605">גלילה ימינה</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">למחוק את החיפוש הזה מההיסטוריה?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">אמוג'י</translation>
+<translation id="7620655452534002301">הרשומה הוסר.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7814458197256864873">&amp;העתקה</translation>

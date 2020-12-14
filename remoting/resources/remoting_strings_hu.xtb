@@ -61,7 +61,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="405887016757208221">A távoli számítógépnek nem sikerült inicializálnia a munkamenetet. Ha a probléma továbbra is fennáll, próbálja meg újra beállítani a gazdagépet.</translation>
 <translation id="4060747889721220580">Fájl letöltése</translation>
 <translation id="4126409073460786861">Ha végzett a beállítással, frissítse ezt az oldalt, majd az eszköz kiválasztásával és a PIN-kód megadásával hozzáférhet a számítógéphez.</translation>
-<translation id="4139423942711457311">Copyright 2020 Google LLC. Minden jog fenntartva.</translation>
 <translation id="4145029455188493639">Bejelentkezve mint <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Hiányzik néhány szükséges összetevő. Kérjük, ellenőrizze, hogy a szoftver legfrissebb verzióját telepítette-e, majd próbálja újra.</translation>
 <translation id="4176825807642096119">Elérési kód</translation>
@@ -130,6 +129,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="7067321367069083429">A képernyő érintőképernyőként működik</translation>
 <translation id="7116737094673640201">Üdvözli a Chrome távoliasztal-szolgáltatás</translation>
 <translation id="7144878232160441200">Újra</translation>
+<translation id="724402108658370587">Copyright 2020 Google LLC. Minden jog fenntartva.</translation>
 <translation id="7312846573060934304">A gazdagép offline állapotban van.</translation>
 <translation id="7319983568955948908">Megosztás leállítása</translation>
 <translation id="7401733114166276557">Chrome távoliasztal-szolgáltatás</translation>

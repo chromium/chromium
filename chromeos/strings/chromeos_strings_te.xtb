@@ -36,14 +36,17 @@
 <translation id="1947737735496445907">ప్రింట్ అయింది</translation>
 <translation id="1979103255016296513">పాస్‌వర్డ్‌ మార్చాల్సిన గడువు ముగిసింది</translation>
 <translation id="1980044825731880088">CPU వేగం</translation>
+<translation id="2008685064673031089">ప్రైమ్ సెర్చ్</translation>
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయి</translation>
+<translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">సమీప పరికరాలను కనుగొనడానికి బ్లూటూత్‌ను ఆన్ చేయండి</translation>
 <translation id="2364498172489649528">ఆమోదించినవి</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> ప్రయత్నాలు మిగిలి ఉన్నాయి</translation>
 <translation id="2391082728065870591">ఫీడ్‌బ్యాక్ రిపోర్ట్‌ను పంపు</translation>
+<translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
@@ -52,6 +55,7 @@
 <translation id="2740531572673183784">సరే</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చెయ్యండి</translation>
+<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -91,7 +95,6 @@
 <translation id="4297501883039923494">ఆగిపోయింది - తెలియని ఎర్రర్</translation>
 <translation id="4378373042927530923">రన్ కాలేదు</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">స్కాన్ చేయబడిన ఫైల్‌లు సేవ్ చేయబడ్డాయి!</translation>
 <translation id="4425149324548788773">నా డిస్క్</translation>
 <translation id="4429881212383817840">Kerberos టిక్కెట్ గడువు త్వరలో ముగుస్తుంది</translation>
 <translation id="445059817448385655">పాత పాస్‌వర్డ్</translation>
@@ -100,6 +103,7 @@
 <translation id="4548483925627140043">సిగ్నల్ కనుగొనబడలేదు</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh బ్యాటరీ</translation>
 <translation id="458794348635939462">హోస్ట్‌లను పరిష్కరించడంలో విఫలమైంది</translation>
+<translation id="4593212453765072419">ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />లో <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. ప్రింట్ టాస్క్‌ను రద్దు చేయడానికి ఎంటర్ నొక్కండి.</translation>
 <translation id="4646949265910132906">సురక్షిత Wi-Fi కనెక్షన్</translation>
 <translation id="467510802200863975">పాస్‌వర్డ్‌లు సరిపోలడం లేదు</translation>
@@ -112,9 +116,11 @@
 <translation id="4832079907277790330">Files యాప్‌లో ఫోల్డర్‌ను ఎంచుకోండి...</translation>
 <translation id="4848429997038228357">రన్ అవుతోంది</translation>
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
+<translation id="4891842000192098784">ఒత్తిడి</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
+<translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
 <translation id="500920857929044050">పరీక్షను ఆపండి</translation>
 <translation id="5154917547274118687">మెమరీ</translation>
@@ -137,6 +143,7 @@
 <translation id="5551702563755460533">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
 <translation id="5635169860413004179">రిపోర్ట్‌ను చూడండి</translation>
 <translation id="5719918614880940190">ఇది CPU వినియోగాన్ని లెక్కిస్తుంది, అలాగే ఇది అన్ని కోర్‌ల సముదాయం</translation>
+<translation id="5781694279199921985">సెషన్ లాగ్‌ను సేవ్ చేయండి</translation>
 <translation id="5797428682393400134">విజయవంతమైంది</translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించు</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
@@ -173,6 +180,8 @@
 <translation id="6766275201586212568">విఫలమైన DNS రిజల్యూషన్‌లు</translation>
 <translation id="6768237774506518020">అధిక DNS రిజల్యూషన్ వైఫల్య రేటు</translation>
 <translation id="6839141349259399400">స్కానర్‌లకు కనెక్ట్ చేయడం సాధ్యపడటంలేదా?</translation>
+<translation id="6853312040151791195">డిశ్చార్జింగ్ రేట్</translation>
+<translation id="6898743098396957679">స్కాన్ చేయడాన్ని పూర్తి చేయడం సాధ్యపడలేదు</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, అలాగే సందర్శించిన వెబ్ పేజీలు, పాస్‌వర్డ్‌లు, ఇమెయిల్‌లతో సహా యూజర్ యాక్టివిటీకి యాక్సెస్‌ను కలిగి ఉంటుంది.</translation>
 <translation id="714876143603641390">LAN కనెక్టివిటీ</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -185,12 +194,14 @@
 <translation id="7648838807254605802">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7690294790491645610">కొత్త పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
+<translation id="773153675489693198">సైకిల్ సంఖ్య</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> పరీక్ష</translation>
 <translation id="7805768142964895445">స్థితి</translation>
-<translation id="7855434858642800953">స్కాన్ చేయబడిన ఫైల్ సేవ్ చేయబడింది!</translation>
 <translation id="7928373994957558460">ఫైల్ లొకేషన్‌ను చూపు</translation>
 <translation id="7936303884198020182">పేరుతో సర్వర్‌లు కనుగొనబడలేదు</translation>
+<translation id="7960831585769876809">ఉష్ణోగ్రత</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
+<translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">ప్రారంభించడానికి, మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టి <ph name="SPAN_BEGIN" />స్కాన్ చేయి<ph name="SPAN_END" />ని ఎంచుకోండి</translation>
@@ -218,6 +229,7 @@
 <translation id="8919837981463578619">విఫలమైంది - ట్రే అందుబాటులో లేదు</translation>
 <translation id="8928727111548978589">విఫలమైంది - పేపర్ లేదు</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ప్రయత్నాలు మిగిలి ఉన్నాయి</translation>
+<translation id="8968751544471797276">ఛార్జింగ్ రేట్</translation>
 <translation id="8970109610781093811">మళ్లీ అమలు చేయి</translation>
 <translation id="9088306295921699330">ప్రస్తుత వినియోగం</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> సంబంధిత టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>

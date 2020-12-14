@@ -563,6 +563,7 @@
 <translation id="4970824347203572753">你所在的地區無法使用這項功能</translation>
 <translation id="4971735654804503942">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制。系統會顯示密碼遭外洩的警告訊息。須將瀏覽資料傳送至 Google。</translation>
 <translation id="497421865427891073">往前</translation>
+<translation id="4986638582553854481">標題</translation>
 <translation id="4988210275050210843">正在下載檔案 (<ph name="MEGABYTES" />)。</translation>
 <translation id="4988526792673242964">網頁</translation>
 <translation id="5004416275253351869">Google 活動控制項</translation>
@@ -895,12 +896,13 @@
 <translation id="718926126787620637">書籤資料夾清單已開啟，顯示於整個畫面</translation>
 <translation id="7189372733857464326">正在等待 Google Play 服務完成更新</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
+<translation id="720894724577012575">類別：<ph name="COMMA_SEPERATED_CATEGORY_LIST" /></translation>
 <translation id="7233236755231902816">如要以你偏好的語言查看網頁，請取得最新版本的 Chrome</translation>
 <translation id="7248069434667874558">請確認「<ph name="TARGET_DEVICE_NAME" />」的 Chrome 同步功能已開啟</translation>
 <translation id="7274013316676448362">已封鎖網站</translation>
 <translation id="7286572596625053347">要將<ph name="LANGUAGE" />變更為其他語言嗎？</translation>
 <translation id="7290209999329137901">無法重新命名</translation>
-<translation id="7291910923717764901">已將圖片說明新增至這個網頁</translation>
+<translation id="7291910923717764901">已新增這個頁面的圖片說明</translation>
 <translation id="7293171162284876153">如要開始同步處理，請開啟「同步處理你的 Chrome 資料」。</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="729975465115245577">你的裝置沒有可儲存密碼檔案的應用程式。</translation>

@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Digər ayarlar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
+<translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
 <translation id="2364498172489649528">Keçdi</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Skanlanan fayllar saxlanıldı!</translation>
 <translation id="4425149324548788773">Diskim</translation>
 <translation id="4429881212383817840">Kerberos biletinin vaxtı tezliklə başa çatacaq</translation>
 <translation id="445059817448385655">Köhnə parol</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Siqnal tapılmadı</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh Batareya</translation>
 <translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
+<translation id="4593212453765072419">Proksi doğrulama tələb olunur</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
 <translation id="4646949265910132906">Güvənli WiFi Bağlantısı</translation>
 <translation id="467510802200863975">Parollar üst-üstə düşmür</translation>
@@ -196,7 +197,6 @@
 <translation id="773153675489693198">Dövrə sayı</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> Test</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">Skanlanan fayl saxlandı!</translation>
 <translation id="7928373994957558460">Fayl məkanını göstərin</translation>
 <translation id="7936303884198020182">Ad serveri tapılmadı</translation>
 <translation id="7960831585769876809">Temperatur</translation>

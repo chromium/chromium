@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{Fa 1 mes}other{Fa # mesos}}</translation>
 <translation id="4289300219472526559">Comença a parlar</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> s'ha mogut a la carpeta <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Suprimeix del porta-retalls.</translation>
 <translation id="4316910396681052118">TOTES LES APLICACIONS</translation>
 <translation id="4491109536499578614">Imatge</translation>
 <translation id="4588090240171750605">Desplaçament a la dreta</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Vols suprimir aquesta cerca de l'historial?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emojis</translation>
+<translation id="7620655452534002301">S'ha suprimit.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="7814458197256864873">&amp;Copia</translation>

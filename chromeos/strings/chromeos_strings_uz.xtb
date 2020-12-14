@@ -36,10 +36,11 @@
 <translation id="1947737735496445907">Chop etildi</translation>
 <translation id="1979103255016296513">Parolni almashtirish muddati tugadi</translation>
 <translation id="1980044825731880088">CPU tezligi</translation>
-<translation id="2008685064673031089">Asosiy qidiruv</translation>
+<translation id="2008685064673031089">Oddiy sonlarni qidirish</translation>
 <translation id="2080070583977670716">Kengaytirilgan sozlamalar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
+<translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
 <translation id="2364498172489649528">Tugadi</translation>
@@ -51,10 +52,11 @@
 <translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi bajarilmoqda...</translation>
 <translation id="2620436844016719705">Tizim</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Skanerlangan fayl saqlandi!}other{Skanerlangan fayllar saqlandi!}}</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
-<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvatsizlanadi.</translation>
+<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat sarflandi.</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
 <translation id="3009958530611748826">Saqlash uchun jild tanlang</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
 <translation id="4378373042927530923">Ishga tushmadi</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Skanerlangan fayllar saqlandi!</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos chiptasi amal qilish muddati tezda tugaydi</translation>
 <translation id="445059817448385655">Eski parol</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">Signal topilmadi</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh Batareya</translation>
 <translation id="458794348635939462">Hech qaysi host aniqlanmadi</translation>
+<translation id="4593212453765072419">Proksi hisob tekshiruvini talab qiladi</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Chop etilishini bekor qilish uchun Enter tugmasini bosing.</translation>
 <translation id="4646949265910132906">Xavfsiz WiFi aloqasi</translation>
 <translation id="467510802200863975">Parollaringiz mos kelmadi</translation>
@@ -180,7 +182,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6766275201586212568">DNS manzil ajratilmadi</translation>
 <translation id="6768237774506518020">DNS manzil ajratilmasligi juda yuqori</translation>
 <translation id="6839141349259399400">Skanerlarga ulanmadimi?</translation>
-<translation id="6853312040151791195">Quvvatsizlanish foizi</translation>
+<translation id="6853312040151791195">Quvvat sarflanishi tezligi</translation>
 <translation id="6898743098396957679">Skanerlash yakunlanmadi</translation>
 <translation id="7028979494427204405">Bu qurilma va uning foydalanuvchilari harakatlari, ochilgan sahifalar, parollar va emaillar <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="714876143603641390">LAN aloqasi</translation>
@@ -188,16 +190,16 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Fayl turi</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanerlandi. 1 ta sahifa skanerlandi}other{Skanerlandi. {NUMBER_OF_PAGES} ta sahifa skanerlandi}}</translation>
 <translation id="7441459999606975924">Batareya sigʻimi ishlatilishi davomida kamayadi</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">HTTPS kechikishi yuqori</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7690294790491645610">Yangi parolni tasdiqlang.</translation>
-<translation id="773153675489693198">Davr soni</translation>
+<translation id="773153675489693198">Davrlar soni</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> sinovi</translation>
 <translation id="7805768142964895445">Holat</translation>
-<translation id="7855434858642800953">Skanerlangan fayl saqlandi!</translation>
 <translation id="7928373994957558460">Fayl joylashuvini chiqarish</translation>
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
 <translation id="7960831585769876809">Harorat</translation>
@@ -230,7 +232,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8919837981463578619">Bajarilmadi - Tarnov joyida emas</translation>
 <translation id="8928727111548978589">Bajarilmadi - Qogʻoz tugadi</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> ta urinish qoldi</translation>
-<translation id="8968751544471797276">Quvvatlash foizi</translation>
+<translation id="8968751544471797276">Quvvatlash tezligi</translation>
 <translation id="8970109610781093811">Qayta tekshirish</translation>
 <translation id="9088306295921699330">Joriy faollik</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> uchun chiptani yangilash</translation>

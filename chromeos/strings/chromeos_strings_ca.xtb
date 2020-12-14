@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Més opcions de configuració</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
+<translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
 <translation id="2364498172489649528">Comprovació superada</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4378373042927530923">No s'ha executat</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Els fitxers escanejats s'han desat.</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
 <translation id="445059817448385655">Contrasenya antiga</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">No s'ha trobat el senyal</translation>
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">No s'han pogut resoldre tots els amfitrions</translation>
+<translation id="4593212453765072419">Cal l'autenticació del servidor intermediari</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
 <translation id="4646949265910132906">Connexió Wi‑Fi segura</translation>
 <translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
@@ -197,7 +198,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="773153675489693198">Nombre de cicles</translation>
 <translation id="7732651821766520760">Prova <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estat</translation>
-<translation id="7855434858642800953">El fitxer escanejat s'ha desat.</translation>
 <translation id="7928373994957558460">Mostra la ubicació del fitxer</translation>
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="7960831585769876809">Temperatura</translation>

@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{قبل شهر واحد}zero{قبل # شهر}two{قبل شهرين (#)}few{قبل # أشهر}many{قبل # شهرًا}other{قبل # شهر}}</translation>
 <translation id="4289300219472526559">بدء التحدث</translation>
 <translation id="430191667033048642">تم نقل <ph name="MOVED_APP_NAME" /> إلى المجلد <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">إزالة من الحافظة</translation>
 <translation id="4316910396681052118">جميع التطبيقات</translation>
 <translation id="4491109536499578614">صورة</translation>
 <translation id="4588090240171750605">التمرير إلى اليسار</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">هل تريد حذف هذا البحث من السجل؟</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> تيرابايت</translation>
 <translation id="7507604095951736240">الرموز التعبيرية</translation>
+<translation id="7620655452534002301">تمت الإزالة.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7814458197256864873">&amp;نسخ</translation>

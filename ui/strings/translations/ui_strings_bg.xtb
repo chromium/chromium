@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{Преди 1 месец}other{Преди # месеца}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="430191667033048642">Приложението <ph name="MOVED_APP_NAME" /> бе преместено в папката <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Премахване от буферната памет.</translation>
 <translation id="4316910396681052118">ВСИЧКИ ПРИЛОЖЕНИЯ</translation>
 <translation id="4491109536499578614">Изображение</translation>
 <translation id="4588090240171750605">Превъртане надясно</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Да се изтрие ли това търсене от историята ви?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7507604095951736240">Емоджи</translation>
+<translation id="7620655452534002301">Премахнато.</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7814458197256864873">&amp;Копиране</translation>

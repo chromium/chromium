@@ -107,6 +107,7 @@
 <translation id="3670030362669914947">নম্বর</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> জিবি/সেকেণ্ড</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> জিবি</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />। <ph name="TYPE_2" />।</translation>
 <translation id="3842239759367498783">আপনার মোবাইল ডিভাইস <ph name="TITLE" /> থেকে পড়ুন</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3889424535448813030">Right Arrow</translation>
@@ -119,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{১ মাস আগে}one{# মাস আগে}other{# মাস আগে}}</translation>
 <translation id="4289300219472526559">কথা বলা শুরু করুন</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> অ্যাপ <ph name="FOLDER_NAME" /> ফোল্ডারে সরানো হয়েছে।</translation>
+<translation id="4306392492252714209">ক্লিপবোর্ড থেকে সরান।</translation>
 <translation id="4316910396681052118">সব অ্যাপ</translation>
 <translation id="4491109536499578614">ছবি</translation>
 <translation id="4588090240171750605">ডান দিকে স্ক্রল করুন</translation>
@@ -213,6 +215,7 @@
 <translation id="7430878839542012341">এই সার্চ কি ইতিহাস থেকে মুছে দিতে চান?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ইমোজি</translation>
+<translation id="7620655452534002301">সরানো হয়েছে।</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7781829728241885113">গতকাল</translation>
 <translation id="7814458197256864873">&amp;কপি করুন</translation>

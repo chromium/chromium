@@ -61,7 +61,6 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="405887016757208221">Udaljeni računar nije uspio pokrenuti sesiju. Ako se problem ponovi, pokušajte ponovo konfigurirati host računar.</translation>
 <translation id="4060747889721220580">Preuzmite fajl</translation>
 <translation id="4126409073460786861">Osvježite stranicu nakon što se postavljanje završi. Nakon toga ćete odabirom uređaja i unosom PIN-a moći pristupiti svom računaru.</translation>
-<translation id="4139423942711457311">Autorska prava 2020. Google LLC. Sva prava zadržana.</translation>
 <translation id="4145029455188493639">Prijavljeni ste s računom <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Nedostaju neke potrebne komponente. Provjerite jeste li instalirali najnoviju verziju softvera i pokušajte ponovo.</translation>
 <translation id="4176825807642096119">Pristupni kôd</translation>
@@ -130,6 +129,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="7067321367069083429">Ekran se ponaša kao ekran na dodir</translation>
 <translation id="7116737094673640201">Dobro došli u Chrome udaljeni računar</translation>
 <translation id="7144878232160441200">Pokušajte ponovo.</translation>
+<translation id="724402108658370587">Autorska prava 2020. Google LLC. Sva prava su zadržana.</translation>
 <translation id="7312846573060934304">Host računar je van mreže.</translation>
 <translation id="7319983568955948908">Prestani dijeliti</translation>
 <translation id="7401733114166276557">Chrome udaljeni računar</translation>

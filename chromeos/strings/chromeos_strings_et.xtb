@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Rohkem seadeid</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Tühista prinditöö</translation>
+<translation id="2224337661447660594">Interneti-ühendus puudub</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Lülitage Bluetooth sisse, et läheduses olevaid seadmeid avastada</translation>
 <translation id="2364498172489649528">Läbitud</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
 <translation id="4378373042927530923">Ei käitatud</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Skannitud failid on salvestatud</translation>
 <translation id="4425149324548788773">Minu ketas</translation>
 <translation id="4429881212383817840">Kerberose pilet aegub peagi</translation>
 <translation id="445059817448385655">Vana parool</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Signaali ei leitud</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh aku</translation>
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
+<translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
 <translation id="4646949265910132906">Turvaline WiFi-ühendus</translation>
 <translation id="467510802200863975">Paroolid ei kattu</translation>
@@ -197,7 +198,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="773153675489693198">Tsüklite arv</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Olek</translation>
-<translation id="7855434858642800953">Skannitud fail on salvestatud.</translation>
 <translation id="7928373994957558460">Kuva faili asukoht</translation>
 <translation id="7936303884198020182">Ei leitud ühtegi nimeserverit</translation>
 <translation id="7960831585769876809">Temperatuur</translation>

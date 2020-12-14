@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Daha fazla ayar</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2161394479394250669">Yazdırma işini iptal et</translation>
+<translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yakındaki cihazları keşfetmek için Bluetooth'u aç</translation>
 <translation id="2364498172489649528">Başarılı oldu</translation>
@@ -54,7 +55,7 @@
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2872961005593481000">Kapat</translation>
-<translation id="2878387241690264070">Şarj, <ph name="NUM_SECONDS" /> saniye içinde <ph name="RATE" /> oranında boşaldı.</translation>
+<translation id="2878387241690264070">Şarj, <ph name="NUM_SECONDS" /> saniye içinde <ph name="RATE" /> boşaldı.</translation>
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Taranan dosyalar kaydedildi</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
 <translation id="4429881212383817840">Kerberos biletinin süresi yakında doluyor</translation>
 <translation id="445059817448385655">Eski şifre</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Sinyal bulunamadı</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh Pil</translation>
 <translation id="458794348635939462">Tüm ana makineler çözümlenemedi</translation>
+<translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Yazdırma işini iptal etmek için enter tuşuna basın.</translation>
 <translation id="4646949265910132906">Güvenli Kablosuz Bağlantı</translation>
 <translation id="467510802200863975">Şifreler eşleşmiyor</translation>
@@ -197,7 +198,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="773153675489693198">Şarj döngüsü sayısı</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> Test</translation>
 <translation id="7805768142964895445">Durum</translation>
-<translation id="7855434858642800953">Taranan dosya kaydedildi</translation>
 <translation id="7928373994957558460">Dosya konumunu göster</translation>
 <translation id="7936303884198020182">Alan adı sunucusu bulunamadı</translation>
 <translation id="7960831585769876809">Sıcaklık</translation>

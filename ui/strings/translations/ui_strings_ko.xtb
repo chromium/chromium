@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1개월 전}other{#개월 전}}</translation>
 <translation id="4289300219472526559">말하기 시작</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> 앱이 <ph name="FOLDER_NAME" /> 폴더로 이동했습니다.</translation>
+<translation id="4306392492252714209">클립보드에서 삭제합니다.</translation>
 <translation id="4316910396681052118">모든 앱</translation>
 <translation id="4491109536499578614">이미지</translation>
 <translation id="4588090240171750605">오른쪽 스크롤</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">기록에서 검색어를 삭제하시겠습니까?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" />TB</translation>
 <translation id="7507604095951736240">그림 이모티콘</translation>
+<translation id="7620655452534002301">삭제되었습니다.</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7781829728241885113">어제</translation>
 <translation id="7814458197256864873">복사(&amp;C)</translation>

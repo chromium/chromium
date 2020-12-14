@@ -65,7 +65,7 @@
 <translation id="2586406160782125153">Энэ нь төхөөрөмжөөс таны хайлтын өгөгдлийг устгах болно. Өгөгдлөө дараа нь сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2622559029861875898">Chrome нь шинэчлэлтийг шалгах боломжгүй байна. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="2644798301485385923">Chrome OS-н систем</translation>
-<translation id="2652691236519827073">Холбоосыг шинэ Chrome-н чихтэй хуудсанд нээх</translation>
+<translation id="2652691236519827073">Холбоосыг шинэ Chrome-н табад нээх</translation>
 <translation id="2665296953892887393">Google рүү эвдрэлийн тайлан болон <ph name="UMA_LINK" />-ыг илгээх замаар Google Chrome-ыг сайжруулахад туслаач</translation>
 <translation id="2689103672227170538">Энэ өргөтгөл нь таныг Chrome-г эхлүүлэх үед хуудсанд харагдах зүйлийг өөрчилсөн.</translation>
 <translation id="2765403129283291972">Энэ сайтыг ашиглахын тулд Chrome-д таны микрофонд хандах зөвшөөрөл шаардлагатай</translation>
@@ -83,7 +83,7 @@
 <translation id="298099161970687941">Chrome-г нээх үед асуух</translation>
 <translation id="3037838751736561277">Google Chrome нь суурь горимд байна.</translation>
 <translation id="3059710691562604940">Аюулгүй үзэх онцлог унтраалттай байна. Chrome түүнийг асаахыг зөвлөж байна.</translation>
-<translation id="3065168410429928842">Chrome-н чихтэй хуудас</translation>
+<translation id="3065168410429928842">Chrome-н таб</translation>
 <translation id="3080151273017101988">Google Chrome хаагдсан үед үндсэн аппликйешнуудыг үргэлжлүүлэн ажиллуул</translation>
 <translation id="3089968997497233615">Google Chrome-ийн шинэ, илүү аюулгүй хувилбар бэлэн боллоо.</translation>
 <translation id="3114643501466072395">Бусад нууц үгэндээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
@@ -149,7 +149,7 @@
 <translation id="4771048833395599659">Энэ файл аюултай байж болзошгүй тул Chrome блоклосон байна.</translation>
 <translation id="479167709087336770">Энэ нь Google хайлтад ашигладаг зөв бичгийн ижил алдаа шалгагчийг ашигладаг. Таны хөтчид бичсэн текстийг Google-д илгээдэг. Та энэ ажиллах төлөвийг хүссэн үедээ тохиргоонд өөрчилж болно</translation>
 <translation id="4891791193823137474">Google Chrome-ыг энэ дэвсгэр дээр ажиллуулна уу</translation>
-<translation id="4895437082222824641">Холбоосыг шинэ Chrome-н чихтэй хуудсанд нээх</translation>
+<translation id="4895437082222824641">Холбоосыг шинэ Chrome-н табад нээх</translation>
 <translation id="4953650215774548573">Google Chrome-ыг өөрийн анхдагч веб хөтөч болгон тохируулна уу</translation>
 <translation id="495931528404527476">Chrome-д</translation>
 <translation id="4990567037958725628">Google Chrome цайвар шаргал өнгө</translation>

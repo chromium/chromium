@@ -5,14 +5,12 @@
 <translation id="1566281227936819866">保存されているお支払い方法を表示します</translation>
 <translation id="1717486229951421299">タップ操作で入力する認証情報のリストが画面の下半分に表示されています。</translation>
 <translation id="207576718733492531">タップ操作で入力する認証情報のリストは閉じています。</translation>
-<translation id="2359808026110333948">続行</translation>
 <translation id="2610239185026711824">パスワードを自動生成</translation>
 <translation id="2803478378562657435">保存したパスワードとパスワードのオプションを表示しています</translation>
 <translation id="2903493209154104877">住所</translation>
 <translation id="3399357656427473483">タップ操作で入力する認証情報のリスト。</translation>
 <translation id="4660011489602794167">キーボードを表示</translation>
 <translation id="4694050069269396220"><ph name="ORIGIN" /> を信用できる場合は、他のサイトで保存したパスワードを使用できます。</translation>
-<translation id="4778644898150334464">他のパスワードを使用</translation>
 <translation id="5016175294846053194">キーボード上部で自動入力の候補を選択できます</translation>
 <translation id="5088366526685584589">保存された住所を表示しています</translation>
 <translation id="5441504010984421144">タップ操作で入力する認証情報のリストが画面全体に表示されています。</translation>
@@ -22,7 +20,6 @@
 <translation id="7299100402441711551">住所を表示</translation>
 <translation id="7494879913343971937">パスワードを表示</translation>
 <translation id="7594473730623999723">スワイプして他の候補を表示</translation>
-<translation id="7658239707568436148">キャンセル</translation>
 <translation id="7992095260806105436">Chrome の自動入力候補を使用する</translation>
 <translation id="8037472847879765671">お支払い方法を表示</translation>
 <translation id="8507520749471379845">使用可能なパスワード</translation>

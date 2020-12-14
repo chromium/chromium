@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{pred mesiacom}few{pred # mesiacmi}many{pred # mesiacom}other{pred # mesiacmi}}</translation>
 <translation id="4289300219472526559">Začať hovoriť</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> bola presunutá do priečinka <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Odstrániť zo schránky</translation>
 <translation id="4316910396681052118">VŠETKY APLIKÁCIE</translation>
 <translation id="4491109536499578614">Obrázok</translation>
 <translation id="4588090240171750605">Rolovať doprava</translation>
@@ -182,7 +183,7 @@
 <translation id="6430678249303439055">Blokovať všetky upozornenia z tejto aplikácie</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{pred sekundou}few{pred # sekundami}many{pred # sekundami}other{pred # sekundami}}</translation>
 <translation id="6503257047630241175">Obsah vo formáte RTF</translation>
-<translation id="6539092367496845964">Vyskytol sa problém. Skúste to znova neskôr.</translation>
+<translation id="6539092367496845964">Vyskytol sa problém. Skúste to neskôr.</translation>
 <translation id="654149438358937226">Blokovať všetky upozornenia</translation>
 <translation id="6567071839949112727">kliknúť na nadradený objekt</translation>
 <translation id="6578407462441924264">Bez názvu</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Chcete odstrániť toto vyhľadávanie z histórie?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emodži</translation>
+<translation id="7620655452534002301">Odstránené.</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7814458197256864873">&amp;Kopírovať</translation>

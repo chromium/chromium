@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 buwan ang nakalipas}one{# buwan ang nakalipas}other{# na buwan ang nakalipas}}</translation>
 <translation id="4289300219472526559">Simulan ang Pagsasalita</translation>
 <translation id="430191667033048642">Inilipat ang <ph name="MOVED_APP_NAME" /> sa folder na <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Alisin sa clipboard.</translation>
 <translation id="4316910396681052118">LAHAT NG APP</translation>
 <translation id="4491109536499578614">Larawan</translation>
 <translation id="4588090240171750605">Mag-scroll Pakanan</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">I-delete ang paghahanap na ito mula sa iyong history?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> (na) TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
+<translation id="7620655452534002301">Inalis.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7781829728241885113">Kahapon</translation>
 <translation id="7814458197256864873">&amp;Kopyahin</translation>

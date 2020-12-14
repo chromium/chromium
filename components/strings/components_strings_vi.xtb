@@ -1635,6 +1635,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7508255263130623398">ID thiết bị thuộc chính sách trả lại trống hoặc không khớp với ID của thiết bị hiện tại</translation>
 <translation id="7508870219247277067">Xanh quả bơ</translation>
 <translation id="7511955381719512146">Wi-Fi mà bạn đang sử dụng có thể yêu cầu bạn phải truy cập <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="7512685745044087310">Chính sách này đã được chuyển thành chính sách đề xuất do đây là chính sách không bắt buộc và không thể đặt thành ''Bật''</translation>
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="7518003948725431193">Không tìm thấy trang web nào ứng với địa chỉ web:<ph name="URL" /></translation>
 <translation id="7520302887438682816">C8 (Phong bì)</translation>
@@ -1923,7 +1924,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8623885649813806493">Không có mật khẩu nào khớp. Hiển thị tất cả các mật khẩu đã lưu.</translation>
 <translation id="8625384913736129811">Lưu thẻ này vào thiết bị này</translation>
 <translation id="8627040765059109009">Tiếp tục chụp ảnh màn hình</translation>
-<translation id="8657078576661269990">Quản trị viên của bạn đã chặn thao tác chia sẻ từ <ph name="ORIGIN_NAME" /> tới <ph name="VM_NAME_1" /> và <ph name="VM_NAME_2" /></translation>
 <translation id="8663226718884576429">Tóm tắt đơn hàng, <ph name="TOTAL_LABEL" />, chi tiết khác</translation>
 <translation id="867224526087042813">Chữ ký</translation>
 <translation id="8676424191133491403">Không trì hoãn</translation>

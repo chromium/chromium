@@ -59,7 +59,6 @@
 <translation id="405887016757208221">Oddaljeni računalnik ni inicializiral seje. Če se težava ponovi, poskusite znova konfigurirati gostitelja.</translation>
 <translation id="4060747889721220580">Prenos datoteke</translation>
 <translation id="4126409073460786861">Po končani nastavitvi osvežite to stran in lahko boste dostopali do računalnika tako, da boste izbrali napravo in vnesli kodo PIN</translation>
-<translation id="4139423942711457311">Copyright 2020 Google LLC. Vse pravice pridržane.</translation>
 <translation id="4145029455188493639">Prijavljen kot <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Ni nekaterih zahtevanih delov. Preverite, ali imate najnovejšo različico programske opreme in poskusite znova.</translation>
 <translation id="4176825807642096119">Koda za dostop</translation>
@@ -118,6 +117,7 @@
 <translation id="7067321367069083429">Zaslon deluje kot zaslon na dotik</translation>
 <translation id="7116737094673640201">Pozdravljeni v Oddaljenem namizju za Chrome</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
+<translation id="724402108658370587">Copyright 2020 Google LLC. Vse pravice pridržane.</translation>
 <translation id="7312846573060934304">Gostitelj ni dosegljiv.</translation>
 <translation id="7319983568955948908">Prekliči skupno rabo</translation>
 <translation id="7401733114166276557">Oddaljeno namizje za Chrome</translation>

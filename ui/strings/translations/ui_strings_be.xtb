@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 месяц таму}one{# месяц таму}few{# месяцы таму}many{# месяцаў таму}other{# месяца таму}}</translation>
 <translation id="4289300219472526559">Пачаць галасавы ўвод</translation>
 <translation id="430191667033048642">Праграма <ph name="MOVED_APP_NAME" /> перамешчана ў папку <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Выдаліць з буфера абмену.</translation>
 <translation id="4316910396681052118">УСЕ ПРАГРАМЫ</translation>
 <translation id="4491109536499578614">Відарыс</translation>
 <translation id="4588090240171750605">Прагартаць управа</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Выдаліць гэты пошукавы запыт з вашай гісторыі?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7507604095951736240">Эмодзі</translation>
+<translation id="7620655452534002301">Выдалена.</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7814458197256864873">&amp;Капіраваць</translation>

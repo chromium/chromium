@@ -38,6 +38,7 @@
 <translation id="2080070583977670716">Više postavki</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Otkaži zadatak ispisa</translation>
+<translation id="2224337661447660594">Nema interneta</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2364498172489649528">Uspješno</translation>
@@ -48,6 +49,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Traži</translation>
 <translation id="2620436844016719705">Sustav</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Skenirana datoteka je spremljena!}one{Skenirane datoteke su spremljene!}few{Skenirane datoteke su spremljene!}other{Skenirane datoteke su spremljene!}}</translation>
 <translation id="2740531572673183784">U redu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
@@ -91,7 +93,6 @@
 <translation id="4297501883039923494">Zaustavljeno – nepoznata pogreška</translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Skenirane datoteke su spremljene!</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kerberosov tiket uskoro istječe</translation>
 <translation id="445059817448385655">Stara zaporka</translation>
@@ -100,6 +101,7 @@
 <translation id="4548483925627140043">Signal nije pronađen</translation>
 <translation id="455835558791489930">Baterija od <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Razrješavanje svih hostova nije uspjelo</translation>
+<translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
 <translation id="4646949265910132906">Sigurna Wi-Fi veza</translation>
 <translation id="467510802200863975">Zaporke se ne podudaraju</translation>
@@ -139,7 +141,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5551702563755460533">Saznajte više u centru za pomoć.</translation>
 <translation id="5635169860413004179">Pogledaj izvješće</translation>
-<translation id="5781694279199921985">Spremi dnevnik sesije</translation>
+<translation id="5781694279199921985">Spremi zapisnik sesije</translation>
 <translation id="5797428682393400134">USPJEH</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
@@ -184,6 +186,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu konfigurirati uređaj na daljinu.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je dovršeno. Skenirana je jedna stranica}one{Skeniranje je dovršeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je dovršeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je dovršeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
 <translation id="7561454561030345039">Tom radnjom upravlja vaš administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7648838807254605802">Visoka latencija HTTPS-a</translation>
@@ -192,7 +195,6 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">Skenirana datoteka je spremljena!</translation>
 <translation id="7928373994957558460">Prikaži lokaciju datoteke</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan poslužitelj naziva</translation>
 <translation id="7960831585769876809">Temperatura</translation>

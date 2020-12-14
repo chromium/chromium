@@ -378,7 +378,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
 <translation id="4421231901400348175">Condividi il controllo dello schermo con <ph name="HELPER_NAME" /> tramite Assistenza remota.</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
-<translation id="4427613789487709312">Velocità predefinita (<ph name="RATE" />x)</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="445864333228800152">Buonasera,</translation>
@@ -847,6 +846,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app installata, bloccata</translation>
 <translation id="8785070478575117577">Connetti a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
+<translation id="8798099450830957504">Predefinito</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Impostazioni metodi di immissione</translation>
 <translation id="8825863694328519386">Scorri da sinistra per tornare indietro</translation>

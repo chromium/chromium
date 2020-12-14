@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Дагы жөндөөлөр</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
+<translation id="2224337661447660594">Интернет жок</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Жакын жердеги түзмөктөрдү табуу үчүн Bluetooth'ду күйгүзүңүз</translation>
 <translation id="2364498172489649528">Текшерүүдөн өттү</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Токтоду – Белгисиз ката</translation>
 <translation id="4378373042927530923">Иштетилген жок</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Скандалган файлдар сакталды.</translation>
 <translation id="4425149324548788773">Менин Drive'ым</translation>
 <translation id="4429881212383817840">Kerberos билетинин мөөнөтү өтүп баратат</translation>
 <translation id="445059817448385655">Эски сырсөз</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Сигнал жок</translation>
 <translation id="455835558791489930">Батареянын кубатынын көлөмү – <ph name="CHARGE_VALUE" />мА/с.</translation>
 <translation id="458794348635939462">Бардык башкы түйүндөр чечилген жок</translation>
+<translation id="4593212453765072419">Проксиде аныктыгын текшерүү талап кылынат</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ичинен <ph name="PRINTED_PAGE_NUMBER" /> Басып чыгарууну токтотуу үчүн "Enter" баскычын басыңыз.</translation>
 <translation id="4646949265910132906">Коопсуз WiFi туташуусу</translation>
 <translation id="467510802200863975">Сырсөздөр дал келген жок</translation>
@@ -197,7 +198,6 @@
 <translation id="773153675489693198">Циклдердин саны</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> сыноосу</translation>
 <translation id="7805768142964895445">Статусу</translation>
-<translation id="7855434858642800953">Скандалган файл сакталды.</translation>
 <translation id="7928373994957558460">Файл сакталган жерди көрсөтүү</translation>
 <translation id="7936303884198020182">Ысым серверлери табылган жок</translation>
 <translation id="7960831585769876809">Температура</translation>

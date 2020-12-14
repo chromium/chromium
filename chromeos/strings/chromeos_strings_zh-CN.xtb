@@ -36,14 +36,17 @@
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1979103255016296513">密码更改期限已过</translation>
 <translation id="1980044825731880088">CPU 速度</translation>
+<translation id="2008685064673031089">高峰搜索</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
+<translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
 <translation id="2364498172489649528">通过</translation>
 <translation id="2375079107209812402">剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
+<translation id="2446553403094072641">浮点准确性</translation>
 <translation id="2461822463642141190">电流</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">扫描</translation>
@@ -52,6 +55,7 @@
 <translation id="2740531572673183784">确定</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2872961005593481000">关机</translation>
+<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -91,7 +95,6 @@
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4378373042927530923">未运行</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">扫描的文件已保存！</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
 <translation id="4429881212383817840">Kerberos 票据即将过期</translation>
 <translation id="445059817448385655">旧密码</translation>
@@ -100,6 +103,7 @@
 <translation id="4548483925627140043">找不到信号</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh 电池</translation>
 <translation id="458794348635939462">未能解析所有主机</translation>
+<translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
 <translation id="4646949265910132906">安全的 Wi-Fi 连接</translation>
 <translation id="467510802200863975">输入的两个密码不相同</translation>
@@ -112,9 +116,11 @@
 <translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
 <translation id="4848429997038228357">正在运行</translation>
 <translation id="4890353053343094602">请立即设置一个新密码</translation>
+<translation id="4891842000192098784">压力</translation>
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒内充了 <ph name="RATE" /> 的电量。</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="498186245079027698">请检查扫描仪，然后重试。另请确保有足够的本地空间来保存扫描版文件。</translation>
 <translation id="4985509611418653372">运行</translation>
 <translation id="500920857929044050">停止测试</translation>
 <translation id="5154917547274118687">内存</translation>
@@ -138,6 +144,7 @@
 <translation id="5551702563755460533">前往帮助中心了解详情</translation>
 <translation id="5635169860413004179">查看报告</translation>
 <translation id="5719918614880940190">此指标旨在衡量 CPU 使用情况，是所有核心的汇总数据</translation>
+<translation id="5781694279199921985">保存会话日志</translation>
 <translation id="5797428682393400134">成功</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -174,6 +181,8 @@
 <translation id="6766275201586212568">DNS 解析失败</translation>
 <translation id="6768237774506518020">DNS 解析失败比率较高</translation>
 <translation id="6839141349259399400">无法连接到扫描器？</translation>
+<translation id="6853312040151791195">放电速率</translation>
+<translation id="6898743098396957679">无法完成扫描</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7162487448488904999">媒体库</translation>
@@ -186,12 +195,14 @@
 <translation id="7648838807254605802">HTTPS 延迟较高</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">再次输入新密码</translation>
+<translation id="773153675489693198">循环计数</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />测试</translation>
 <translation id="7805768142964895445">状态</translation>
-<translation id="7855434858642800953">扫描的文件已保存！</translation>
 <translation id="7928373994957558460">显示文件位置</translation>
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
+<translation id="7960831585769876809">温度</translation>
 <translation id="8041089156583427627">发送反馈</translation>
+<translation id="8075838845814659848">剩余电量</translation>
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8160445423316272678">将您的文件放置在扫描器上，然后选择<ph name="SPAN_BEGIN" />扫描<ph name="SPAN_END" />，即可开始扫描</translation>
@@ -219,6 +230,7 @@
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" />剩余尝试次数：<ph name="ATTEMPTS_LEFT" /></translation>
+<translation id="8968751544471797276">充电速率</translation>
 <translation id="8970109610781093811">重新运行</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>

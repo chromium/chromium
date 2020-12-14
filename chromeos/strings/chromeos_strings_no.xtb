@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
+<translation id="2224337661447660594">Ingen nettilkobling</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2364498172489649528">Bestått</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
 <translation id="4378373042927530923">Ikke kjørt</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">De skannede filene er lagret!</translation>
 <translation id="4425149324548788773">Min disk</translation>
 <translation id="4429881212383817840">Kerberos-saken utløper snart</translation>
 <translation id="445059817448385655">Gammelt passord</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Fant ikke noe signal</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
+<translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-tilkobling</translation>
 <translation id="467510802200863975">Passordene er ikke like</translation>
@@ -197,7 +198,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="773153675489693198">Syklusantall</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />test</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">Den skannede filen er lagret!</translation>
 <translation id="7928373994957558460">Vis filplassering</translation>
 <translation id="7936303884198020182">Fant ingen navnetjenere</translation>
 <translation id="7960831585769876809">Temperatur</translation>

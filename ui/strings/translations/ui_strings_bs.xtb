@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{Prije 1 mjesec}one{Prije # mjesec}few{Prije # mjeseca}other{Prije # mjeseci}}</translation>
 <translation id="4289300219472526559">Započinjanje govora</translation>
 <translation id="430191667033048642">Aplikacija <ph name="MOVED_APP_NAME" /> je premještena u folder <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Uklanjanje iz međumemorije.</translation>
 <translation id="4316910396681052118">SVE APLIKACIJE</translation>
 <translation id="4491109536499578614">Slika</translation>
 <translation id="4588090240171750605">Kliznite udesno</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Izbrisati ovo pretraživanje iz historije?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji sličice</translation>
+<translation id="7620655452534002301">Uklonjeno.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7781829728241885113">Jučer</translation>
 <translation id="7814458197256864873">&amp;Kopiraj</translation>

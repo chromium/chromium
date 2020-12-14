@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ай мурун}other{# ай мурун}}</translation>
 <translation id="4289300219472526559">Сүйлөп баштаңыз</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> <ph name="FOLDER_NAME" /> папкасына жылдырылды.</translation>
+<translation id="4306392492252714209">Алмашуу буферинен өчүрүү.</translation>
 <translation id="4316910396681052118">БАРДЫК КОЛДОНМОЛОР</translation>
 <translation id="4491109536499578614">Сүрөт</translation>
 <translation id="4588090240171750605">Оңго сыдырып кароо</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Бул издөө таржымалыңыздан жок кылынсынбы?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> Тб</translation>
 <translation id="7507604095951736240">Быйтыкча</translation>
+<translation id="7620655452534002301">Өчүрүлдү.</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7781829728241885113">Кечээ</translation>
 <translation id="7814458197256864873">&amp;Көчүрүү</translation>

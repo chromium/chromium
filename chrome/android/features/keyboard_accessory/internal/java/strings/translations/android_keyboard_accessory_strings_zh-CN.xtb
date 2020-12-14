@@ -5,14 +5,12 @@
 <translation id="1566281227936819866">显示的是已保存的付款方式</translation>
 <translation id="1717486229951421299">轻触即可填充的凭据的列表已半屏打开。</translation>
 <translation id="207576718733492531">轻触即可填充的凭据的列表已关闭。</translation>
-<translation id="2359808026110333948">继续</translation>
 <translation id="2610239185026711824">建议一个密码</translation>
 <translation id="2803478378562657435">正在显示已保存的密码和密码选项</translation>
 <translation id="2903493209154104877">地址</translation>
 <translation id="3399357656427473483">轻触即可填充的凭据的列表。</translation>
 <translation id="4660011489602794167">显示键盘</translation>
 <translation id="4694050069269396220">如果您信任 <ph name="ORIGIN" />，则可使用其他网站已保存的密码。</translation>
-<translation id="4778644898150334464">使用其他密码</translation>
 <translation id="5016175294846053194">键盘上方显示了自动填充建议</translation>
 <translation id="5088366526685584589">目前显示的是已保存的地址</translation>
 <translation id="5441504010984421144">轻触即可填充的凭据的列表已全屏打开。</translation>
@@ -22,7 +20,6 @@
 <translation id="7299100402441711551">显示地址</translation>
 <translation id="7494879913343971937">显示密码</translation>
 <translation id="7594473730623999723">滑动可查看更多建议</translation>
-<translation id="7658239707568436148">取消</translation>
 <translation id="7992095260806105436">使用 Chrome 自动填充建议</translation>
 <translation id="8037472847879765671">显示付款方式</translation>
 <translation id="8507520749471379845">有可用密码</translation>

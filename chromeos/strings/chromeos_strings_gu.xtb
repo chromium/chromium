@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">વધુ સેટિંગ્સ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
+<translation id="2224337661447660594">ઇન્ટરનેટ ઍક્સેસ નથી</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
 <translation id="2364498172489649528">તપાસ પાર કરી</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">બંધ - અજાણી ભૂલ</translation>
 <translation id="4378373042927530923">ચલાવ્યું નથી</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">સ્કૅન કરેલી ફાઇલો સાચવી છે!</translation>
 <translation id="4425149324548788773">મારી ડ્રાઇવ</translation>
 <translation id="4429881212383817840">ટૂંક સમયમાં Kerberos ટિકિટની સમયસીમા સમાપ્ત થશે</translation>
 <translation id="445059817448385655">જૂનો પાસવર્ડ</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">નેટવર્કનું કોઈ સિગ્નલ મળી રહ્યું નથી</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh બૅટરી</translation>
 <translation id="458794348635939462">બધા હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
+<translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />માંથી <ph name="PRINTED_PAGE_NUMBER" />. પ્રિન્ટ કરવાનું અટકાવવા માટે, Enter કી દબાવો.</translation>
 <translation id="4646949265910132906">સુરક્ષિત વાઇ-ફાઇ કનેક્શન</translation>
 <translation id="467510802200863975">પાસવર્ડ મેળ ખાતા નથી</translation>
@@ -196,7 +197,6 @@
 <translation id="773153675489693198">ચક્રની સંખ્યા</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />નું પરીક્ષણ</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
-<translation id="7855434858642800953">સ્કૅન કરેલી ફાઇલ સાચવી છે!</translation>
 <translation id="7928373994957558460">ફાઇલનું સ્થાન બતાવો</translation>
 <translation id="7936303884198020182">IP કન્ફિગ્યુરેશનમાં કોઈ નામ સર્વર મળ્યા નથી</translation>
 <translation id="7960831585769876809">તાપમાન</translation>

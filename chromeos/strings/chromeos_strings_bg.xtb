@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Още настройки</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
+<translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2364498172489649528">Премината</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
 <translation id="4378373042927530923">Не е стартирано</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Сканираните файлове са запазени!</translation>
 <translation id="4425149324548788773">Моят диск</translation>
 <translation id="4429881212383817840">Пропускът за Kerberos изтича скоро</translation>
 <translation id="445059817448385655">Стара парола</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Не бе открит сигнал</translation>
 <translation id="455835558791489930">Батерия с капацитет от <ph name="CHARGE_VALUE" /> мАч</translation>
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
+<translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
 <translation id="4646949265910132906">Сигурна Wi-Fi връзка</translation>
 <translation id="467510802200863975">Паролите не са идентични</translation>
@@ -197,7 +198,6 @@
 <translation id="773153675489693198">Брой цикли</translation>
 <translation id="7732651821766520760">Тест: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Състояние</translation>
-<translation id="7855434858642800953">Сканираният файл е запазен!</translation>
 <translation id="7928373994957558460">Показване на местоположението на файла</translation>
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="7960831585769876809">Температура</translation>

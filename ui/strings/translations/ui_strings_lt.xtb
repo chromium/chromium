@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{Prieš 1 mėnesį}one{Prieš # mėnesį}few{Prieš # mėnesius}many{Prieš # mėnesio}other{Prieš # mėnesių}}</translation>
 <translation id="4289300219472526559">Pradėti kalbėti</translation>
 <translation id="430191667033048642">„<ph name="MOVED_APP_NAME" />“ perkelta į aplanką „<ph name="FOLDER_NAME" />“.</translation>
+<translation id="4306392492252714209">Pašalinti iš iškarpinės.</translation>
 <translation id="4316910396681052118">VISOS PROGRAMOS</translation>
 <translation id="4491109536499578614">Vaizdas</translation>
 <translation id="4588090240171750605">Slinkti į dešinę</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Ištrinti šią paiešką iš istorijos?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Jaustukai</translation>
+<translation id="7620655452534002301">Pašalinta.</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7814458197256864873">&amp;Kopijuoti</translation>

@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 month ago}other{# months ago}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> moved to folder <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Remove from clipboard.</translation>
 <translation id="4316910396681052118">ALL APPS</translation>
 <translation id="4491109536499578614">Image</translation>
 <translation id="4588090240171750605">Scroll Right</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Delete this search from your history?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
+<translation id="7620655452534002301">Removed.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7814458197256864873">&amp;Copy</translation>

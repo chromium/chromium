@@ -856,7 +856,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4318566738941496689">Qurilma nomi va tarmoq manzili</translation>
 <translation id="4325863107915753736">Maqola topilmadi</translation>
 <translation id="4326324639298822553">Kartangiz muddatini tekshiring va qaytadan urinib ko‘ring.</translation>
-<translation id="4329871760342656885">Siyosat tahlil qilinmadi: <ph name="ERROR" /></translation>
+<translation id="4329871760342656885">Qoida tahlil qilinmadi: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Taxlovchi 5</translation>
 <translation id="4331708818696583467">Xavfsiz emas</translation>
 <translation id="4340982228985273705">Bu kompyuter korporativ boshqaruv ostida ekanligi aniqlanmadi, shuning uchun faqat Chrome internet-do‘konidagi kengaytmalar avtomatik tarzda o‘rnatilishi mumkin. Yangilash uchun URL manzili: “<ph name="CWS_UPDATE_URL" />”.</translation>
@@ -1629,6 +1629,7 @@ Batafsil axborot:
 <translation id="7508255263130623398">Qurilmaning qaytarilgan identifikatori bo‘sh yoki joriy qurilma identifikatoriga mos kelmaydi</translation>
 <translation id="7508870219247277067">Yashil avokado</translation>
 <translation id="7511955381719512146">Siz ulangan Wi-Fi tarmog‘i <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> sahifaga o‘tishingizni talab qilishi mumkin.</translation>
+<translation id="7512685745044087310">Bu siyosat yoniq (true) yoki asosiy boʻlishi mumkin emas, shu sababli u tavsiya etilgan holatga almashtirildi.</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7518003948725431193">Bu manzilda hech qanday veb-sahifa topilmadi: <ph name="URL" /></translation>
 <translation id="7520302887438682816">C8 (Envelope)</translation>
@@ -1916,7 +1917,6 @@ Batafsil axborot:
 <translation id="8623885649813806493">Mos parollar mavjud emas. Saqlangan barcha parollar koʻrsatilsin.</translation>
 <translation id="8625384913736129811">Kartani bu qurilmaga saqlash</translation>
 <translation id="8627040765059109009">Ekranni tasvirga olish davom ettirildi</translation>
-<translation id="8657078576661269990"><ph name="ORIGIN_NAME" /> dan <ph name="VM_NAME_1" /> va <ph name="VM_NAME_2" /> tizimlariga axborot ulashish administrator tomonidan taqiqlangan</translation>
 <translation id="8663226718884576429">Buyurtma axboroti, <ph name="TOTAL_LABEL" />, Batafsil</translation>
 <translation id="867224526087042813">Imzo</translation>
 <translation id="8676424191133491403">Kechikishsiz</translation>

@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 tháng trước}other{# tháng trước}}</translation>
 <translation id="4289300219472526559">Bắt đầu nói</translation>
 <translation id="430191667033048642">Đã chuyển <ph name="MOVED_APP_NAME" /> vào thư mục <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Xóa khỏi khay nhớ tạm.</translation>
 <translation id="4316910396681052118">TẤT CẢ ỨNG DỤNG</translation>
 <translation id="4491109536499578614">Hình ảnh</translation>
 <translation id="4588090240171750605">Cuộn qua Phải</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Xóa nội dung tìm kiếm này khỏi lịch sử của bạn?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Biểu tượng cảm xúc</translation>
+<translation id="7620655452534002301">Đã xóa.</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7814458197256864873">Sao &amp;chép</translation>

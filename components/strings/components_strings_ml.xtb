@@ -1627,6 +1627,7 @@
 <translation id="7508255263130623398">നൽകിയ നയ ഉപകരണ ഐഡി ശൂന്യമാണ് അല്ലെങ്കിൽ നിലവിലെ ഉപകരണ ഐഡിയുമായി യോജിക്കുന്നില്ല</translation>
 <translation id="7508870219247277067">അവക്കാഡോ പച്ച</translation>
 <translation id="7511955381719512146">നിങ്ങൾ ഉപയോഗിക്കുന്ന Wi-Fi <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
+<translation id="7512685745044087310">ഈ നയം "ശരി" എന്നതായും നിർബന്ധമാണ് എന്നും സജ്ജീകരിക്കാനാകില്ല, അതിനാൽ അത് നിർദ്ദേശിക്കുന്നത് എന്നാക്കി മാറ്റി.</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7518003948725431193">വെബ് വിലാസത്തിനായി വെബ്‌പേജൊന്നും കണ്ടെത്തിയില്ല: <ph name="URL" /></translation>
 <translation id="7520302887438682816">C8 (എൻവലപ്പ്)</translation>
@@ -1914,7 +1915,6 @@
 <translation id="8623885649813806493">പൊരുത്തപ്പെടുന്ന പാസ്‌വേഡുകളൊന്നുമില്ല. സംരക്ഷിച്ച എല്ലാ പാസ്‌വേഡുകളും കാണിക്കുക.</translation>
 <translation id="8625384913736129811">ഈ ഉപകരണത്തിലേക്ക് ഈ കാർഡ് സംരക്ഷിക്കുക</translation>
 <translation id="8627040765059109009">സ്‌ക്രീൻ ക്യാപ്‌ചർ പുനരാരംഭിച്ചു</translation>
-<translation id="8657078576661269990"><ph name="ORIGIN_NAME" /> എന്നതിൽ നിന്ന് <ph name="VM_NAME_1" />, <ph name="VM_NAME_2" /> എന്നിവയിലേക്ക് പങ്കിടുന്നത് നിങ്ങളുടെ അഡ്മിൻ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="867224526087042813">ഒപ്പ്</translation>
 <translation id="8676424191133491403">കാലതാമസമില്ല</translation>

@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
+<translation id="2224337661447660594">Brak internetu</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
 <translation id="2364498172489649528">Zaliczone</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">Skanuj</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Zeskanowany plik został zapisany.}few{Zeskanowane pliki zostały zapisane.}many{Zeskanowane pliki zostały zapisane.}other{Zeskanowane pliki zostały zapisane.}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
 <translation id="4378373042927530923">Nie wykonano</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Zeskanowane pliki zostały zapisane.</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
 <translation id="4429881212383817840">Bilet Kerberos wkrótce straci ważność</translation>
 <translation id="445059817448385655">Stare hasło</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">Nie znaleziono sygnału</translation>
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
+<translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Naciśnij Enter, by anulować zadanie drukowania.</translation>
 <translation id="4646949265910132906">Bezpieczne połączenie z Wi-Fi</translation>
 <translation id="467510802200863975">Hasła nie są zgodne</translation>
@@ -188,6 +190,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Typ pliku</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}many{Gotowe. Zeskanowano {NUMBER_OF_PAGES} stron.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
 <translation id="7441459999606975924">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -197,7 +200,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="773153675489693198">Liczba cykli</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> – test</translation>
 <translation id="7805768142964895445">Stan</translation>
-<translation id="7855434858642800953">Zeskanowany plik został zapisany.</translation>
 <translation id="7928373994957558460">Pokaż lokalizację pliku</translation>
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7960831585769876809">Temperatura</translation>

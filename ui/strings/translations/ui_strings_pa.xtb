@@ -107,6 +107,7 @@
 <translation id="3670030362669914947">ਨੰਬਰ</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />। <ph name="TYPE_2" />।</translation>
 <translation id="3842239759367498783">ਆਪਣੇ ਮੋਬਾਈਲ ਡੀਵਾਈਸ <ph name="TITLE" /> ਤੋਂ ਪੜ੍ਹਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="3889424535448813030">ਸੱਜਾ ਤੀਰ</translation>
@@ -119,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ਮਹੀਨਾ ਪਹਿਲਾਂ}one{# ਮਹੀਨਾ ਪਹਿਲਾਂ}other{# ਮਹੀਨੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="4289300219472526559">ਬੋਲਣਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
+<translation id="4306392492252714209">ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਹਟਾਓ।</translation>
 <translation id="4316910396681052118">ਸਭ ਐਪਾਂ</translation>
 <translation id="4491109536499578614">ਚਿੱਤਰ</translation>
 <translation id="4588090240171750605">ਸੱਜੇ ਪਾਸੇ ਸਕ੍ਰੌਲ ਕਰੋ</translation>
@@ -213,6 +215,7 @@
 <translation id="7430878839542012341">ਕੀ ਇਸ ਖੋਜ ਨੂੰ ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ਇਮੋਜੀ</translation>
+<translation id="7620655452534002301">ਹਟਾਇਆ ਗਿਆ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7781829728241885113">ਕੱਲ੍ਹ</translation>
 <translation id="7814458197256864873">&amp;ਕਾਪੀ ਕਰੋ</translation>

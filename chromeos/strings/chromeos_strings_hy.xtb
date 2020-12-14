@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Այլ կարգավորումներ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
+<translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Մոտակա սարքերը գտնելու համար միացրեք Bluetooth-ը</translation>
 <translation id="2364498172489649528">Անցել է ստուգում</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
 <translation id="4378373042927530923">Չի գործարկվել</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Սկանավորված ֆայլերը պահված են</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
 <translation id="4429881212383817840">Kerberos տոմսի գործողության ժամկետը շուտով կսպառվի</translation>
 <translation id="445059817448385655">Հին գաղտնաբառը</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Ազդանշան չի գտնվել</translation>
 <translation id="455835558791489930">Մարտկոց՝ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
+<translation id="4593212453765072419">Պահանջվում է միջնորդ սերվերի նույնականացում</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
 <translation id="4646949265910132906">Ապահով Wi-Fi կապ</translation>
 <translation id="467510802200863975">Գաղտնաբառերը չեն համընկնում</translation>
@@ -197,7 +198,6 @@
 <translation id="773153675489693198">Շրջափուլերի թիվը</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> փորձարկում</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
-<translation id="7855434858642800953">Սկանավորված ֆայլը պահված է</translation>
 <translation id="7928373994957558460">Ցուցադրել ֆայլի հասցեն</translation>
 <translation id="7936303884198020182">DNS սերվերներ չեն գտնվել</translation>
 <translation id="7960831585769876809">Ջերմաստիճան</translation>

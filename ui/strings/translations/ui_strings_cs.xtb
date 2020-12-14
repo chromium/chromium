@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{před 1 měsícem}few{před # měsíci}many{před # měsíce}other{před # měsíci}}</translation>
 <translation id="4289300219472526559">Začít mluvit</translation>
 <translation id="430191667033048642">Aplikace <ph name="MOVED_APP_NAME" /> byla přesunuta do složky <ph name="FOLDER_NAME" /></translation>
+<translation id="4306392492252714209">Odstranit ze schránky.</translation>
 <translation id="4316910396681052118">VŠECHNY APLIKACE</translation>
 <translation id="4491109536499578614">Obrázek</translation>
 <translation id="4588090240171750605">Posuv doprava</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Vymazat toto vyhledávání z historie?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emodži</translation>
+<translation id="7620655452534002301">Odstraněno.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7814458197256864873">&amp;Kopírovat</translation>

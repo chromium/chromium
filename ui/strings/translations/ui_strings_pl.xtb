@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{miesiąc temu}few{# miesiące temu}many{# miesięcy temu}other{# miesiąca temu}}</translation>
 <translation id="4289300219472526559">Zacznij mówić</translation>
 <translation id="430191667033048642">Aplikacja <ph name="MOVED_APP_NAME" /> została przeniesiona do folderu <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Usuń ze schowka.</translation>
 <translation id="4316910396681052118">WSZYSTKIE APLIKACJE</translation>
 <translation id="4491109536499578614">Obraz</translation>
 <translation id="4588090240171750605">Przewiń w prawo</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Usunąć to hasło z historii wyszukiwania?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emotikony</translation>
+<translation id="7620655452534002301">Usunięto.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7781829728241885113">Wczoraj</translation>
 <translation id="7814458197256864873">&amp;Kopiuj</translation>

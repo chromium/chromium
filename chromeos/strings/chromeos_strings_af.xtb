@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Nog instellings</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
+<translation id="2224337661447660594">Geen internet nie</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Skakel Bluetooth aan om toestelle in die omtrek te ontdek</translation>
 <translation id="2364498172489649528">Geslaag</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
 <translation id="4378373042927530923">Nie laat loop nie</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Geskandeerde lêers is gestoor!</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos-kaartjie verval binnekort</translation>
 <translation id="445059817448385655">Ou wagwoord</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Kon nie sein kry nie</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-battery</translation>
 <translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
+<translation id="4593212453765072419">Instaanstawing word vereis</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk om die druktaak te kanselleer.</translation>
 <translation id="4646949265910132906">Veilige wi-fi-verbinding</translation>
 <translation id="467510802200863975">Wagwoorde is nie dieselfde nie</translation>
@@ -197,7 +198,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="773153675489693198">Siklustelling</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" />-toets</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7855434858642800953">Geskandeerde lêer is gestoor!</translation>
 <translation id="7928373994957558460">Wys lêerligging</translation>
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="7960831585769876809">Temperatuur</translation>

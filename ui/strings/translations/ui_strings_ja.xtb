@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 か月前}other{# か月前}}</translation>
 <translation id="4289300219472526559">読み上げを開始</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> をフォルダ <ph name="FOLDER_NAME" /> に移動しました。</translation>
+<translation id="4306392492252714209">クリップボードから削除します。</translation>
 <translation id="4316910396681052118">すべてのアプリ</translation>
 <translation id="4491109536499578614">画像</translation>
 <translation id="4588090240171750605">右にスクロール</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">この検索キーワードを履歴から削除しますか？</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">絵文字</translation>
+<translation id="7620655452534002301">削除しました。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7814458197256864873">コピー(&amp;C)</translation>

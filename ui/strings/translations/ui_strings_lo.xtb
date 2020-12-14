@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ເດືອນກ່ອນນີ້}other{# ເດືອນກ່ອນນີ້}}</translation>
 <translation id="4289300219472526559">ເລີ່ມ​ຕົ້ນ​ເວົ້າ</translation>
 <translation id="430191667033048642">ຍ້າຍ <ph name="MOVED_APP_NAME" /> ໄປຫາໂຟນເດີ <ph name="FOLDER_NAME" /> ແລ້ວ.</translation>
+<translation id="4306392492252714209">ລຶບອອກຈາກຄລິບບອດ.</translation>
 <translation id="4316910396681052118">ທຸກແອັບ</translation>
 <translation id="4491109536499578614">ຮູບ​</translation>
 <translation id="4588090240171750605">ເລື່ອນໄປທາງຂວາ</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">ລຶບການຊອກຫາອອກຈາກປະຫວັດຂອງທ່ານບໍ?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ອີໂມຈິ</translation>
+<translation id="7620655452534002301">ລຶບອອກແລ້ວ.</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7814458197256864873">ກັອບປີ້</translation>

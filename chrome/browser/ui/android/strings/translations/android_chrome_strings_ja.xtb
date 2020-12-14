@@ -315,7 +315,7 @@
 <translation id="3232754137068452469">ウェブアプリ</translation>
 <translation id="3236059992281584593">残り 1 分</translation>
 <translation id="3244271242291266297">MM</translation>
-<translation id="3250563604907490871">Wi-Fi に接続すると画像の説明が再開されます</translation>
+<translation id="3250563604907490871">画像の説明は Wi-Fi に接続すると再開します</translation>
 <translation id="3254409185687681395">このページをブックマークに追加します</translation>
 <translation id="3259831549858767975">ページ上のすべての要素を縮小する</translation>
 <translation id="3264124641674805320">後で見るコンテンツをダウンロードするには</translation>
@@ -563,6 +563,7 @@
 <translation id="4970824347203572753">お住まいの地域ではご利用になれません</translation>
 <translation id="4971735654804503942">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります。</translation>
 <translation id="497421865427891073">次に進む</translation>
+<translation id="4986638582553854481">敬称</translation>
 <translation id="4988210275050210843">ファイルをダウンロードしています（<ph name="MEGABYTES" />）。</translation>
 <translation id="4988526792673242964">ページ</translation>
 <translation id="5004416275253351869">Google アクティビティ管理</translation>

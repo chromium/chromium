@@ -36,14 +36,17 @@
 <translation id="1947737735496445907">پرنٹ ہو گیا</translation>
 <translation id="1979103255016296513">پاس ورڈ تبدیل کرنے میں تاخیر ہو گئی ہے</translation>
 <translation id="1980044825731880088">‏CPU کی رفتار</translation>
+<translation id="2008685064673031089">پرائم تلاش</translation>
 <translation id="2080070583977670716">مزید ترتیبات</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2161394479394250669">پرنٹ جاب منسوخ کریں</translation>
+<translation id="2224337661447660594">انٹرنیٹ نہیں ہے</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">قریبی آلات دریافت کرنے کیلئے بلوٹوتھ آن کریں</translation>
 <translation id="2364498172489649528">پاس ہو گیا</translation>
 <translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> کوششیں باقی ہیں</translation>
 <translation id="2391082728065870591">تاثرات کی رپورٹ بھیجیں</translation>
+<translation id="2446553403094072641">فلوٹنگ پوائنٹ کی درستگی</translation>
 <translation id="2461822463642141190">حالیہ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">اسکین کریں</translation>
@@ -52,6 +55,7 @@
 <translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2872961005593481000">بند کریں</translation>
+<translation id="2878387241690264070"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> ڈسچارج ہوئی۔</translation>
 <translation id="3008341117444806826">ریفریش کریں</translation>
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -91,7 +95,6 @@
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4378373042927530923">نہیں چلا</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">اسکین کردہ فائلز محفوظ ہو گئیں!</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
 <translation id="4429881212383817840">‏Kerberos کی ٹکٹ کی میعاد جلد ہی ختم ہو جائے گی</translation>
 <translation id="445059817448385655">پرانا پاس ورڈ</translation>
@@ -100,6 +103,7 @@
 <translation id="4548483925627140043">سگنل نہیں ملا</translation>
 <translation id="455835558791489930">‏mAh<ph name="CHARGE_VALUE" /> بیٹری</translation>
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
+<translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
 <translation id="4646949265910132906">‏WiFi کنکشن محفوظ کریں</translation>
 <translation id="467510802200863975">پاس ورڈز مماثل نہیں ہیں</translation>
@@ -112,9 +116,11 @@
 <translation id="4832079907277790330">فائلز ایپ میں فولڈر منتخب کریں...</translation>
 <translation id="4848429997038228357">جاری ہے</translation>
 <translation id="4890353053343094602">فوری طور پر نیا پاس ورڈ منتخب کریں</translation>
+<translation id="4891842000192098784">اسٹریس</translation>
 <translation id="4917889632206600977">رک گیا - کاغذ ختم ہو گیا</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> چارج کیا گیا۔</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="498186245079027698">اسکینر چیک کریں اور دوبارہ کوشش کریں۔ یقینی بنائیں کہ اسکین کردہ فائلز محفوظ کرنے کے لیے کافی مقامی جگہ ہے۔</translation>
 <translation id="4985509611418653372">چلائیں</translation>
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5154917547274118687">میموری</translation>
@@ -137,6 +143,7 @@
 <translation id="5551702563755460533">مرکز امداد میں مزید جانیں</translation>
 <translation id="5635169860413004179">رپورٹ دیکھیں</translation>
 <translation id="5719918614880940190">‏اس سے CPU استعمال کی پیمائش ہوتی ہے اور یہ سبھی کورز کا مجموعہ ہے</translation>
+<translation id="5781694279199921985">سیشن لاگ محفوظ کریں</translation>
 <translation id="5797428682393400134">کامیاب</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
@@ -173,6 +180,8 @@
 <translation id="6766275201586212568">‏ناکام DNS ریزولیوشنز</translation>
 <translation id="6768237774506518020">‏DNS ریزولیوشن ناکام ہونے کی زیادہ شرح</translation>
 <translation id="6839141349259399400">اسکینرز کے ساتھ منسلک نہیں کیا جا سکتا؟</translation>
+<translation id="6853312040151791195">ڈسچارج ہونے کی شرح</translation>
+<translation id="6898743098396957679">اسکین کا عمل مکمل نہیں ہو سکا</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور ملاحظہ کردہ ویب صفحات، پاس ورڈز اور ای میل سمیت صارف کی تمام سرگرمی تک رسائی حاصل کر سکتا ہے۔</translation>
 <translation id="714876143603641390">‏Lan کنیکٹوٹی</translation>
 <translation id="7162487448488904999">گیلری</translation>
@@ -185,12 +194,14 @@
 <translation id="7648838807254605802">‏زیادہ HTTPS تاخیر</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7690294790491645610">نئے پاس ورڈ کی توثیق کریں</translation>
+<translation id="773153675489693198">دورانیے کی تعداد</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> ٹیسٹ</translation>
 <translation id="7805768142964895445">صورتحال</translation>
-<translation id="7855434858642800953">اسکین کردہ فائل محفوظ ہو گئی!</translation>
 <translation id="7928373994957558460">فائل کا مقام دکھائیں</translation>
 <translation id="7936303884198020182">کوئی نام سرور نہیں ملا</translation>
+<translation id="7960831585769876809">درجہ حرارت</translation>
 <translation id="8041089156583427627">تاثرات بھیجیں</translation>
+<translation id="8075838845814659848">باقی چارج</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8160445423316272678">اپنی دستاویز کو اسکینر پر رکھیں اور شروع کرنے کیلئے <ph name="SPAN_BEGIN" />اسکین کریں<ph name="SPAN_END" /> کو منتخب کریں</translation>
@@ -218,6 +229,7 @@
 <translation id="8919837981463578619">ناکام ہو گیا - ٹرے موجود نہیں ہے</translation>
 <translation id="8928727111548978589">ناکام ہو گیا - کاغذ ختم ہو گیا</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> کوششیں باقی ہیں</translation>
+<translation id="8968751544471797276">چارج ہونے کی شرح</translation>
 <translation id="8970109610781093811">دوبارہ چلائيں</translation>
 <translation id="9088306295921699330">حالیہ استعمال</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> کے لیے ٹکٹ ریفریش کریں</translation>

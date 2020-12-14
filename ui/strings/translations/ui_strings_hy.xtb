@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ամիս առաջ}one{# months ago}other{# ամիս առաջ}}</translation>
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="430191667033048642">«<ph name="MOVED_APP_NAME" />» հավելվածը տեղափոխվեց «<ph name="FOLDER_NAME" />» պանակ։</translation>
+<translation id="4306392492252714209">Հեռացնել սեղմատախտակից</translation>
 <translation id="4316910396681052118">ԲՈԼՈՐ ՀԱՎԵԼՎԱԾՆԵՐԸ</translation>
 <translation id="4491109536499578614">Պատկեր</translation>
 <translation id="4588090240171750605">Ոլորել դեպի աջ</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Ջնջե՞լ այս որոնման հարցումը պատմությունից</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ՏԲ</translation>
 <translation id="7507604095951736240">Զմայլիկներ</translation>
+<translation id="7620655452534002301">Հեռացվեց։</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7814458197256864873">&amp;Պատճենել</translation>

@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Lisää asetuksia</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Peruuta tulostustyö</translation>
+<translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Löydä lähellä olevat laitteet ottamalla ensin Bluetooth käyttöön.</translation>
 <translation id="2364498172489649528">Onnistui</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4378373042927530923">Ei suoritettu</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Skannatut tiedostot tallennettu!</translation>
 <translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
 <translation id="445059817448385655">Vanha salasana</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Ei signaalia</translation>
 <translation id="455835558791489930">Akku: <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Kaikkien isäntien selvittäminen epäonnistui</translation>
+<translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peruuta tulostustyö painamalla Enter.</translation>
 <translation id="4646949265910132906">Suojattu Wi-Fi-yhteys</translation>
 <translation id="467510802200863975">Salasanat eivät täsmää</translation>
@@ -197,7 +198,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="773153675489693198">Syklien määrä</translation>
 <translation id="7732651821766520760">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Tila</translation>
-<translation id="7855434858642800953">Skannattu tiedosto tallennettu!</translation>
 <translation id="7928373994957558460">Näytä tiedoston sijainti</translation>
 <translation id="7936303884198020182">Nimipalvelimia ei löydy</translation>
 <translation id="7960831585769876809">Lämpötila</translation>

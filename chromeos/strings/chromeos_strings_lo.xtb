@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
+<translation id="2224337661447660594">ບໍ່ມີອິນເຕີເນັດ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2570743873672969996">ກຳລັງເອີ້ນໃຊ້ການທົດສອບ <ph name="TEST_NAME" />...</translation>
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{ບັນທຶກໄຟລ໌ທີ່ສະແກນໄວ້ແລ້ວ!}other{ບັນທຶກໄຟລ໌ທີ່ສະແກນໄວ້ແລ້ວ!}}</translation>
 <translation id="2740531572673183784">ຕົກລົງ</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
 <translation id="2872961005593481000">ມອດ</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">ບັນທຶກໄຟລ໌ທີ່ສະແກນໄວ້ແລ້ວ!</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">ປີ້ Kerberos ຈະໝົດອາຍຸໃນໄວໆນີ້</translation>
 <translation id="445059817448385655">ລະຫັດຜ່ານເກົ່າ</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">ບໍ່ພົບສັນຍານ</translation>
 <translation id="455835558791489930">ແບັດເຕີຣີ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="458794348635939462">ແກ້ໄຂບັນຫາໂຮສທັງໝົດບໍ່ສຳເລັດ</translation>
+<translation id="4593212453765072419">ຈຳເປັນຕ້ອງພິສູດຢືນຢັນພຣັອກຊີ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUMBER" />. ກົດ Enter ເພື່ອຍົກເລີກວຽກພິມ.</translation>
 <translation id="4646949265910132906">ການເຊື່ອມຕໍ່ WiFi ທີ່ປອດໄພ</translation>
 <translation id="467510802200863975">ລະຫັດຜ່ານບໍ່ກົງກັນ</translation>
@@ -188,6 +190,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ປະເພດໄຟລ໌</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
 <translation id="7441459999606975924">ຄວາມຈຸຂອງແບັດເຕີຣີຈະຫຼຸດລົງເມື່ອໃຊ້ໄປເລື້ອຍໆ</translation>
 <translation id="7561454561030345039">ການດຳເນີນການນີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -197,7 +200,6 @@
 <translation id="773153675489693198">ຈຳນວນຮອບ</translation>
 <translation id="7732651821766520760">ການທົດສອບ <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
-<translation id="7855434858642800953">ບັນທຶກໄຟລ໌ທີ່ສະແກນໄວ້ແລ້ວ!</translation>
 <translation id="7928373994957558460">ສະແດງສະຖານທີ່ໄຟລ໌</translation>
 <translation id="7936303884198020182">ບໍ່ພົບເຊີບເວີຊື່</translation>
 <translation id="7960831585769876809">ອຸນຫະພູມ</translation>

@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{ከ1 ወር በፊት}one{ከ# ወሮች በፊት}other{ከ# ወሮች በፊት}}</translation>
 <translation id="4289300219472526559">መናገር ይጀምሩ</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> ወደ <ph name="FOLDER_NAME" /> አቃፊ ተንቀሳቅሷል።</translation>
+<translation id="4306392492252714209">ከቅንጥብ ሰሌዳ ላይ አስወግድ።</translation>
 <translation id="4316910396681052118">ሁሉም መተግበሪያዎች</translation>
 <translation id="4491109536499578614">ምስል</translation>
 <translation id="4588090240171750605">ወደ ቀኝ ሸብልል</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">ይሄ ፍለጋ ከታሪክዎ ይሰረዝ?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ቴባ</translation>
 <translation id="7507604095951736240">ስሜት ገላጭ ምስል</translation>
+<translation id="7620655452534002301">ተወግዷል።</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7814458197256864873">&amp;ቅዳ</translation>

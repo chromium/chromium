@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
+<translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para detetar dispositivos próximos</translation>
 <translation id="2364498172489649528">Aprovado</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">Analisar</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{Ficheiro digitalizado guardado!}other{Ficheiros digitalizados guardados!}}</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Encerrar</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
 <translation id="4378373042927530923">Não foi executada.</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Ficheiros digitalizados guardados!</translation>
 <translation id="4425149324548788773">O meu disco</translation>
 <translation id="4429881212383817840">A permissão Kerberos expira em breve</translation>
 <translation id="445059817448385655">Palavra-passe antiga</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">Sinal não encontrado.</translation>
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Falha ao resolver todos os anfitriões.</translation>
+<translation id="4593212453765072419">Autenticação proxy necessária</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prima Enter para cancelar a tarefa de impressão.</translation>
 <translation id="4646949265910132906">Ligação segura ao Wi-Fi</translation>
 <translation id="467510802200863975">As palavras-passe não correspondem.</translation>
@@ -188,6 +190,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />. Os administradores podem configurar remotamente o dispositivo.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
 <translation id="7441459999606975924">A capacidade das baterias diminui com a utilização.</translation>
 <translation id="7561454561030345039">Esta ação é gerida pelo seu administrador.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -197,7 +200,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7732651821766520760">Teste <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Estado</translation>
-<translation id="7855434858642800953">Ficheiro digitalizado guardado!</translation>
 <translation id="7928373994957558460">Mostrar localização do ficheiro</translation>
 <translation id="7936303884198020182">Não foram encontrados servidores de nomes.</translation>
 <translation id="7960831585769876809">Temperatura</translation>

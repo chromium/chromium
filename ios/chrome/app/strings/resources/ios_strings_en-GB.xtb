@@ -341,7 +341,7 @@ Your data is encrypted with your sync passphrase. Enter it to start sync.</trans
 <translation id="4689564913179979534">Manage Payment Methods...</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4747097190499141774">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you will need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
-<translation id="4751645464639803239">New Incognito Tab</translation>
+<translation id="4751645464639803239">New Incognito tab</translation>
 <translation id="4775879719735953715">Default Browser</translation>
 <translation id="4778644898150334464">Use other password</translation>
 <translation id="4802417911091824046">Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
@@ -480,7 +480,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6202364442240589072">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
 <translation id="6219688215832490856">Never translate</translation>
 <translation id="6254066287920239840">Open links in the app instead of the browser.</translation>
-<translation id="6255097610484507482">Edit Credit Card</translation>
+<translation id="6255097610484507482">Edit credit card</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>
 <translation id="6303969859164067831">Sign out and turn off sync</translation>
 <translation id="6308436439357671616">This lets you take and upload photos.</translation>

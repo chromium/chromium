@@ -160,8 +160,8 @@
 <translation id="5430073640787465221">Ihre Einstellungsdatei ist beschädigt oder ungültig. Google Chrome kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="556024056938947818">Google Chrome versucht, Passwörter anzuzeigen.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5655746611259367388">Sie können dieses Konto und weitere Google-Konten, die Sie für <ph name="USER_NAME" /> hinzugefügt haben, in den <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> verwalten.
-          Berechtigungen, die Sie Websites im Chrome-Browser und Apps von Google Play gewährt haben, gelten möglicherweise für alle Konten.</translation>
+<translation id="5655746611259367388">Du kannst dieses Konto und weitere Google-Konten, die du für <ph name="USER_NAME" /> hinzugefügt hast, in den <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> verwalten.
+          Berechtigungen, die du Websites im Chrome-Browser und Apps von Google Play gewährt hast, gelten möglicherweise für alle Konten.</translation>
 <translation id="5657226924540934362">Wenn Sie auf dieser Seite eine Einstellung nicht finden können, sehen Sie in den <ph name="LINK_BEGIN" />Einstellungen von Chrome OS<ph name="LINK_END" /> nach</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ist möglicherweise schädlich und wurde daher von Chrome blockiert.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Ihr Administrator empfiehlt Ihnen, Chrome neu zu starten, um dieses Update durchzuführen}=1{Ihr Administrator empfiehlt Ihnen, Chrome neu zu starten, um dieses Update durchzuführen. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Ihr Administrator empfiehlt Ihnen, Chrome neu starten, um dieses Update durchzuführen. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>

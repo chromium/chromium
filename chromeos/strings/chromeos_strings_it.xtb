@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Altre impostazioni</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">Annulla processo di stampa</translation>
+<translation id="2224337661447660594">Nessuna connessione a Internet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2364498172489649528">Superato</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
 <translation id="4378373042927530923">Non eseguito</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">File sottoposti a scansione salvati.</translation>
 <translation id="4425149324548788773">I miei file</translation>
 <translation id="4429881212383817840">La richiesta di Kerberos scade a breve</translation>
 <translation id="445059817448385655">Vecchia password</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">segnale non trovato</translation>
 <translation id="455835558791489930">Batteria da <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
+<translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
 <translation id="4646949265910132906">Connessione Wi-Fi protetta</translation>
 <translation id="467510802200863975">Le password non corrispondono</translation>
@@ -197,7 +198,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="773153675489693198">Conteggio dei cicli</translation>
 <translation id="7732651821766520760">Test <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stato</translation>
-<translation id="7855434858642800953">File sottoposto a scansione salvato.</translation>
 <translation id="7928373994957558460">Mostra la posizione del file</translation>
 <translation id="7936303884198020182">nessun server dei nomi trovato</translation>
 <translation id="7960831585769876809">Temperatura</translation>

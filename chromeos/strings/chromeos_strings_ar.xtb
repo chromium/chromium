@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
+<translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
 <translation id="2364498172489649528">تم الاجتياز.</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4378373042927530923">لم يتم التشغيل</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">تم حفظ الملفات التي تم مسحها ضوئيًا.</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
 <translation id="445059817448385655">كلمة المرور القديمة</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">لم يتم العثور على إشارة.</translation>
 <translation id="455835558791489930">بطارية بسعة <ph name="CHARGE_VALUE" /> ملّي أمبير في الساعة</translation>
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
+<translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi آمن</translation>
 <translation id="467510802200863975">كلمتا المرور غير متطابقتين.</translation>
@@ -197,7 +198,6 @@
 <translation id="773153675489693198">عدد مرات تفريغ البطارية وشحنها</translation>
 <translation id="7732651821766520760">اختبار <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">الحالة</translation>
-<translation id="7855434858642800953">تم حفظ الملف الذي تم مسحه ضوئيًا.</translation>
 <translation id="7928373994957558460">عرض مكان الملف</translation>
 <translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
 <translation id="7960831585769876809">درجة الحرارة</translation>

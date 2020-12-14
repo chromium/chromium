@@ -107,6 +107,7 @@
 <translation id="3670030362669914947">نمبر</translation>
 <translation id="3740362395218339114">‎<ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />۔ <ph name="TYPE_2" />۔</translation>
 <translation id="3842239759367498783">اپنے موبائل آلہ سے پڑھنا جاری رکھیں <ph name="TITLE" /></translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3889424535448813030">دایاں تیر کا نشان</translation>
@@ -119,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 مہینہ پہلے}other{# مہینے پہلے}}</translation>
 <translation id="4289300219472526559">بولنا شروع کریں</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> کو فولڈر<ph name="FOLDER_NAME" /> میں منتقل کر دیا گیا۔</translation>
+<translation id="4306392492252714209">کلپ بورڈ سے ہٹائیں۔</translation>
 <translation id="4316910396681052118">سبھی ایپس</translation>
 <translation id="4491109536499578614">تصویر</translation>
 <translation id="4588090240171750605">دائیں سکرول کریں</translation>
@@ -213,6 +215,7 @@
 <translation id="7430878839542012341">آپ کی سرگزشت سے یہ تلاش حذف کریں؟</translation>
 <translation id="7460907917090416791">‎<ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
+<translation id="7620655452534002301">ہٹا دیا گیا۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7814458197256864873">&amp;کاپی کریں</translation>

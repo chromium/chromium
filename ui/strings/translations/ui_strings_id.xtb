@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 bulan yang lalu}other{# bulan yang lalu}}</translation>
 <translation id="4289300219472526559">Mulai Berbicara</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> dipindahkan ke folder <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Hapus dari papan klip.</translation>
 <translation id="4316910396681052118">SEMUA APLIKASI</translation>
 <translation id="4491109536499578614">Gambar</translation>
 <translation id="4588090240171750605">Gulir ke Kanan</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Hapus penelusuran ini dari histori Anda?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
+<translation id="7620655452534002301">Dihapus.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7814458197256864873">&amp;Salin</translation>

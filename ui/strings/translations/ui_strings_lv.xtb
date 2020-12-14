@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{Pirms 1 mēneša}zero{Pirms # mēnešiem}one{Pirms # mēneša}other{Pirms # mēnešiem}}</translation>
 <translation id="4289300219472526559">Sākt runāt</translation>
 <translation id="430191667033048642">Lietotne <ph name="MOVED_APP_NAME" /> pārvietota uz mapi <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Noņemt no starpliktuves.</translation>
 <translation id="4316910396681052118">VISAS LIETOTNES</translation>
 <translation id="4491109536499578614">Attēls</translation>
 <translation id="4588090240171750605">Ritināt pa labi</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Vai dzēst šo meklēšanas vaicājumu no vēstures?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emocijzīmes</translation>
+<translation id="7620655452534002301">Noņemts.</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7814458197256864873">Ko&amp;pēt</translation>

@@ -183,6 +183,7 @@
 <translation id="2949781154072577687">正在将“<ph name="DRIVE_NAME" />”格式化…</translation>
 <translation id="2951236788251446349">海蜇</translation>
 <translation id="2984337792991268709">今天<ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994320653639462337">正在恢复 <ph name="COUNT" /> 项内容…</translation>
 <translation id="2994669386200004489">无法备份 <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">法语（加拿大）</translation>
 <translation id="3003633581067744647">切换到缩略图视图</translation>
@@ -300,6 +301,7 @@
 <translation id="4364327530094270451">甜瓜</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">外部链接</translation>
+<translation id="4418686080762064601">为您的文件创建快捷方式</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
 <translation id="4470564870223067757">韩语(2 Set)</translation>
 <translation id="4477002475007461989">罗马尼亚语</translation>
@@ -380,6 +382,7 @@
 <translation id="508423945471810158">正在将 <ph name="NUMBER_OF_ITEMS" /> 项内容移动到“<ph name="FOLDER_NAME" />”</translation>
 <translation id="509429900233858213">出现错误。</translation>
 <translation id="5098629044894065541">希伯来语</translation>
+<translation id="5109254780565519649">出错了。某些内容可能未成功恢复。</translation>
 <translation id="5110329002213341433">英语（加拿大）</translation>
 <translation id="5123433949759960244">篮球</translation>
 <translation id="5129662217315786329">波兰语</translation>
@@ -605,6 +608,7 @@
 <translation id="7547811415869834682">荷兰语</translation>
 <translation id="7551643184018910560">固定到任务栏</translation>
 <translation id="7553492409867692754">授权 Linux 应用访问“<ph name="FOLDER_NAME" />”文件夹中的文件</translation>
+<translation id="7575645593344061397">正在恢复“<ph name="FILENAME" />”…</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7589661784326793847">请稍候</translation>
 <translation id="7592775719802218421">将 <ph name="FILE_NAME" /> 设为“可离线使用”</translation>
@@ -702,6 +706,7 @@
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8456681095658380701">名称无效</translation>
+<translation id="8461467696380332069">右键点击某个文件，然后选择“固定到任务栏”，以便在任务栏中快速访问您的文件。</translation>
 <translation id="8463494891489624050">越南语 VIQR</translation>
 <translation id="8466234950814670489">Tar 归档</translation>
 <translation id="8475647382427415476">Google 云端硬盘暂时无法同步“<ph name="FILENAME" />”，将在稍后重试。</translation>

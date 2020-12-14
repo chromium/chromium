@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">დამატებითი პარამეტრები</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2161394479394250669">ბეჭდვის დავალების გაუქმება</translation>
+<translation id="2224337661447660594">ინტერნეტ-კავშირი არ არის</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ახლომდებარე მოწყობილობების საპოვნელად ჩართეთ Bluetooth</translation>
 <translation id="2364498172489649528">გავლილია</translation>
@@ -51,6 +52,7 @@
 <translation id="2517472476991765520">სკანირება</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
 <translation id="2620436844016719705">სისტემა</translation>
+<translation id="2658845327196595460">{COUNT,plural, =1{სკანირებული ფაილი შენახულია!}other{სკანირებული ფაილები შენახულია!}}</translation>
 <translation id="2740531572673183784">კარგი</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2872961005593481000">გამორთვა</translation>
@@ -94,7 +96,6 @@
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">სკანირებული ფაილები შენახულია!</translation>
 <translation id="4425149324548788773">ჩემი Drive</translation>
 <translation id="4429881212383817840">Kerberos ბილეთის მოქმედების ვადა მალე იწურება</translation>
 <translation id="445059817448385655">ძველი პაროლი</translation>
@@ -103,6 +104,7 @@
 <translation id="4548483925627140043">სიგნალი ვერ მოიძებნა</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> მა·სთ-იანი ბატარეა</translation>
 <translation id="458794348635939462">ჰოსტების გარდაქმნა ვერ მოხერხდა</translation>
+<translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> / <ph name="TOTAL_PAGE_NUMBER" />. გთხოვთ დააჭიროთ შეყვანის ღილაკს ამ ბეჭდვის დავალების გასაუქმებლად.</translation>
 <translation id="4646949265910132906">დაცული Wi-Fi კავშირი</translation>
 <translation id="467510802200863975">პაროლები არ ემთხვევა</translation>
@@ -188,6 +190,7 @@
 <translation id="7177485034254901881">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">ფაილის ტიპი</translation>
+<translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{სკანირება დასრულდა. დასკანირდა 1 გვერდი.}other{სკანირება დასრულდა. დასკანირდა {NUMBER_OF_PAGES} გვერდი.}}</translation>
 <translation id="7441459999606975924">ბატარეების მოცულობა იკლებს მისი გამოყენების შესაბამისად</translation>
 <translation id="7561454561030345039">ამ მოქმედებას მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -197,7 +200,6 @@
 <translation id="773153675489693198">ციკლების რაოდენობა</translation>
 <translation id="7732651821766520760"><ph name="TEST_NAME" /> — ტესტი</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
-<translation id="7855434858642800953">სკანირებული ფაილი შენახულია!</translation>
 <translation id="7928373994957558460">ფაილის მდებარეობის ჩვენება</translation>
 <translation id="7936303884198020182">სახელების სერვერი ვერ მოიძებნა</translation>
 <translation id="7960831585769876809">ტემპერატურა</translation>

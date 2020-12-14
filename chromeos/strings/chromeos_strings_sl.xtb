@@ -40,6 +40,7 @@
 <translation id="2080070583977670716">Več nastavitev</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2161394479394250669">Preklic tiskalnega opravila</translation>
+<translation id="2224337661447660594">Ni internetne povezave</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> pik na palec</translation>
 <translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
 <translation id="2364498172489649528">Preverjanje je uspelo</translation>
@@ -94,7 +95,6 @@
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4378373042927530923">Ni se izvedlo</translation>
 <translation id="4382484599443659549">PDF</translation>
-<translation id="4421943235406860811">Optično prebrane datoteke so shranjene.</translation>
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kartonček za Kerberos kmalu poteče</translation>
 <translation id="445059817448385655">Staro geslo</translation>
@@ -103,6 +103,7 @@
 <translation id="4548483925627140043">Signal ni bil najden</translation>
 <translation id="455835558791489930">Baterija zmogljivosti <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="458794348635939462">Ni bilo mogoče razrešiti vseh gostiteljev</translation>
+<translation id="4593212453765072419">Zahtevano je preverjanje pristnosti prek strežnika proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipko Enter, če želite preklicati tiskalno opravilo.</translation>
 <translation id="4646949265910132906">Varna povezava Wi-Fi</translation>
 <translation id="467510802200863975">Gesli se ne ujemata</translation>
@@ -197,7 +198,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="773153675489693198">Število ciklov</translation>
 <translation id="7732651821766520760">Preizkus: <ph name="TEST_NAME" /></translation>
 <translation id="7805768142964895445">Stanje</translation>
-<translation id="7855434858642800953">Optično prebrana datoteka je shranjena.</translation>
 <translation id="7928373994957558460">Pokaži lokacijo datoteke</translation>
 <translation id="7936303884198020182">Najden ni bil noben imenski strežnik</translation>
 <translation id="7960831585769876809">Temperatura</translation>

@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 månad sedan}other{# månader sedan}}</translation>
 <translation id="4289300219472526559">Börja tala</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> har flyttats till mappen <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Ta bort från urklipp.</translation>
 <translation id="4316910396681052118">ALLA APPAR</translation>
 <translation id="4491109536499578614">Bild</translation>
 <translation id="4588090240171750605">Rulla åt höger</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">Vill du radera den här sökningen från historiken?</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
+<translation id="7620655452534002301">Borttagen.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7814458197256864873">&amp;Kopiera</translation>

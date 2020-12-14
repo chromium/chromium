@@ -120,6 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{۱ ماه قبل}one{# ماه قبل}other{# ماه قبل}}</translation>
 <translation id="4289300219472526559">شروع صحبت</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> به پوشه <ph name="FOLDER_NAME" /> منتقل شد.</translation>
+<translation id="4306392492252714209">برداشتن از بریده‌دان.</translation>
 <translation id="4316910396681052118">همه برنامه‌ها</translation>
 <translation id="4491109536499578614">تصویر</translation>
 <translation id="4588090240171750605">پیمایش به راست</translation>
@@ -214,6 +215,7 @@
 <translation id="7430878839542012341">این جستجو از سابقه‌تان حذف شود؟</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ترابایت</translation>
 <translation id="7507604095951736240">اموجی</translation>
+<translation id="7620655452534002301">حذف شد.</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="7814458197256864873">&amp;کپی</translation>
