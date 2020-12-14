@@ -29,7 +29,7 @@ def verify_image_libraries(image_path, allowed_libraries, binary_path):
     """
     output = subprocess.check_output(
         [binary_path + 'llvm-objdump', '--macho', '--dylibs-used', image_path])
-    output = unicode(output, encoding='utf8').strip()
+    output = output.decode('utf8').strip()
 
     disallowed_libraries = []
 
