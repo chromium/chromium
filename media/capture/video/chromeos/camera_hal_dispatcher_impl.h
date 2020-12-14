@@ -16,6 +16,7 @@
 #include "base/memory/singleton.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/observer_list_types.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
@@ -90,8 +91,20 @@ class FailedCameraHalServerCallbacks
   void CameraDeviceActivityChange(int32_t camera_id,
                                   bool opened,
                                   cros::mojom::CameraClientType type) final;
+  void CameraPrivacySwitchStateChange(
+      cros::mojom::CameraPrivacySwitchState state) final;
 
   mojo::Receiver<cros::mojom::CameraHalServerCallbacks> callbacks_;
+};
+
+class CAPTURE_EXPORT CameraPrivacySwitchObserver
+    : public base::CheckedObserver {
+ public:
+  virtual void OnCameraPrivacySwitchStatusChanged(
+      cros::mojom::CameraPrivacySwitchState state) = 0;
+
+ protected:
+  ~CameraPrivacySwitchObserver() override = default;
 };
 
 // The CameraHalDispatcherImpl hosts and waits on the unix domain socket
@@ -127,6 +140,17 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // being destroyed.
   void RemoveActiveClientObserver(CameraActiveClientObserver* observer);
 
+  // Adds an observer to get notified when the camera privacy switch status
+  // changed. Please note that for some devices, the signal will only be
+  // detectable when the camera is currently on due to hardware limitations.
+  // Returns the current state of the camera privacy switch.
+  cros::mojom::CameraPrivacySwitchState AddCameraPrivacySwitchObserver(
+      CameraPrivacySwitchObserver* observer);
+
+  // Removes the observer. A previously-added observer must be removed before
+  // being destroyed.
+  void RemoveCameraPrivacySwitchObserver(CameraPrivacySwitchObserver* observer);
+
   // Called by vm_permission_service to register the token used for pluginvm.
   void RegisterPluginVmToken(const base::UnguessableToken& token);
   void UnregisterPluginVmToken(const base::UnguessableToken& token);
@@ -156,6 +180,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void CameraDeviceActivityChange(int32_t camera_id,
                                   bool opened,
                                   cros::mojom::CameraClientType type) final;
+  void CameraPrivacySwitchStateChange(
+      cros::mojom::CameraPrivacySwitchState state) final;
 
   base::UnguessableToken GetTokenForTrustedClient(
       cros::mojom::CameraClientType type);
@@ -239,6 +265,13 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   scoped_refptr<base::ObserverListThreadSafe<CameraActiveClientObserver>>
       active_client_observers_;
+
+  base::Lock privacy_switch_state_lock_;
+  cros::mojom::CameraPrivacySwitchState current_privacy_switch_state_
+      GUARDED_BY(privacy_switch_state_lock_);
+
+  scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
+      privacy_switch_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(CameraHalDispatcherImpl);
 };

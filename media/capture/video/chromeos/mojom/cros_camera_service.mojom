@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 5
+// Next min version: 6
 
 module cros.mojom;
 
@@ -19,6 +19,22 @@ enum CameraClientType{
   CHROME = 2,
   ANDROID = 3,
   PLUGINVM = 4,
+};
+
+// CameraPrivacySwitchState indicates the state of the camera privacy switch.
+enum CameraPrivacySwitchState{
+  // For devices which can only read the privacy switch status while the camera
+  // is streaming, it is possible that the state of privacy switch is currently
+  // unknown.
+  UNKNOWN = 0,
+
+  // State when the privacy switch is on, which means the black frames will be
+  // delivered when streaming.
+  ON = 1,
+
+  // State when the privacy switch is off, which means camera should stream
+  // normally.
+  OFF = 2,
 };
 
 // The CrOS camera HAL v3 Mojo dispatcher.  The dispatcher acts as a proxy and
@@ -89,7 +105,7 @@ interface CameraHalServer {
 // CameraHalDispatcher for any changes on the server side, for example when a
 // CameraHalClient opens or closes a camera device.
 //
-// Next method ID: 1
+// Next method ID: 2
 interface CameraHalServerCallbacks {
   // Fired when a CameraHalClient opens or closes a camera device. When a
   // CameraHalClient loses mojo connection to CameraHalServer, CameraHalServer
@@ -97,6 +113,12 @@ interface CameraHalServerCallbacks {
   CameraDeviceActivityChange@0(int32 camera_id,
                                bool opened,
                                CameraClientType type);
+
+  // Fired when the camera privacy switch status is changed. If the device has
+  // such switch, this callback will be fired immediately for once to notify its
+  // current status when the callbacks are registered.
+  [MinVersion=5]
+  CameraPrivacySwitchStateChange@1(CameraPrivacySwitchState state);
 };
 
 // The CrOS camera HAL v3 Mojo client.

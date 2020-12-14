@@ -115,6 +115,9 @@ void FailedCameraHalServerCallbacks::CameraDeviceActivityChange(
     bool opened,
     cros::mojom::CameraClientType type) {}
 
+void FailedCameraHalServerCallbacks::CameraPrivacySwitchStateChange(
+    cros::mojom::CameraPrivacySwitchState state) {}
+
 // static
 CameraHalDispatcherImpl* CameraHalDispatcherImpl::GetInstance() {
   return base::Singleton<CameraHalDispatcherImpl>::get();
@@ -208,6 +211,20 @@ void CameraHalDispatcherImpl::RemoveActiveClientObserver(
   active_client_observers_->RemoveObserver(observer);
 }
 
+cros::mojom::CameraPrivacySwitchState
+CameraHalDispatcherImpl::AddCameraPrivacySwitchObserver(
+    CameraPrivacySwitchObserver* observer) {
+  privacy_switch_observers_->AddObserver(observer);
+
+  base::AutoLock lock(privacy_switch_state_lock_);
+  return current_privacy_switch_state_;
+}
+
+void CameraHalDispatcherImpl::RemoveCameraPrivacySwitchObserver(
+    CameraPrivacySwitchObserver* observer) {
+  privacy_switch_observers_->RemoveObserver(observer);
+}
+
 void CameraHalDispatcherImpl::RegisterPluginVmToken(
     const base::UnguessableToken& token) {
   token_manager_.RegisterPluginVmToken(token);
@@ -223,7 +240,11 @@ CameraHalDispatcherImpl::CameraHalDispatcherImpl()
       blocking_io_thread_("CameraBlockingIOThread"),
       camera_hal_server_callbacks_(this),
       active_client_observers_(
-          new base::ObserverListThreadSafe<CameraActiveClientObserver>()) {}
+          new base::ObserverListThreadSafe<CameraActiveClientObserver>()),
+      current_privacy_switch_state_(
+          cros::mojom::CameraPrivacySwitchState::UNKNOWN),
+      privacy_switch_observers_(
+          new base::ObserverListThreadSafe<CameraPrivacySwitchObserver>()) {}
 
 CameraHalDispatcherImpl::~CameraHalDispatcherImpl() {
   VLOG(1) << "Stopping CameraHalDispatcherImpl...";
@@ -357,6 +378,18 @@ void CameraHalDispatcherImpl::CameraDeviceActivityChange(
           /*is_active=*/false);
     }
   }
+}
+
+void CameraHalDispatcherImpl::CameraPrivacySwitchStateChange(
+    cros::mojom::CameraPrivacySwitchState state) {
+  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(privacy_switch_state_lock_);
+  current_privacy_switch_state_ = state;
+  privacy_switch_observers_->Notify(
+      FROM_HERE,
+      &CameraPrivacySwitchObserver::OnCameraPrivacySwitchStatusChanged,
+      current_privacy_switch_state_);
 }
 
 base::UnguessableToken CameraHalDispatcherImpl::GetTokenForTrustedClient(
@@ -568,6 +601,14 @@ void CameraHalDispatcherImpl::OnCameraHalServerConnectionError() {
     }
   }
   opened_camera_id_map_.clear();
+
+  base::AutoLock privacy_lock(privacy_switch_state_lock_);
+  current_privacy_switch_state_ =
+      cros::mojom::CameraPrivacySwitchState::UNKNOWN;
+  privacy_switch_observers_->Notify(
+      FROM_HERE,
+      &CameraPrivacySwitchObserver::OnCameraPrivacySwitchStatusChanged,
+      current_privacy_switch_state_);
 }
 
 void CameraHalDispatcherImpl::OnCameraHalClientConnectionError(
