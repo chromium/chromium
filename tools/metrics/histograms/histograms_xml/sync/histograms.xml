@@ -738,7 +738,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.PostedClientToServerMessageError" enum="SyncErrorType"
     expires_after="2021-06-06">
+<!-- TODO(crbug.com/1004302): Deprecate once
+Sync.PostedClientToServerMessageError2 has reached Stable (so the two histograms
+can be compared for the same population). -->
+
   <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    WARNING: Some buckets in this histogram are not recorded due to a bug
+    (crbug.com/1004302), see Sync.PostedClientToServerMessageError2 instead.
+
+    A sync error code received from the sync server as a result of a
+    client-initiated request. Note that this excludes network errors (e.g.
+    client offline) and HTTP errors.
+  </summary>
+</histogram>
+
+<histogram name="Sync.PostedClientToServerMessageError2" enum="SyncErrorType"
+    expires_after="2021-12-14">
+  <owner>mastiz@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
   <summary>
     A sync error code received from the sync server as a result of a
     client-initiated request. Note that this excludes network errors (e.g.
