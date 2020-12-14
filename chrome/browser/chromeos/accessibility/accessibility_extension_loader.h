@@ -29,6 +29,8 @@ class AccessibilityExtensionLoader {
 
   bool loaded() { return loaded_; }
 
+  Profile* profile() { return profile_; }
+
  private:
   void LoadExtension(Profile* profile, base::Closure done_cb);
   void LoadExtensionImpl(Profile* profile, base::Closure done_cb);
