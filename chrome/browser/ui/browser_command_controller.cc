@@ -78,6 +78,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/desks_helper.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
@@ -288,6 +289,10 @@ void BrowserCommandController::FullscreenStateChanged() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void BrowserCommandController::LockedFullscreenStateChanged() {
   UpdateCommandsForLockedFullscreenMode();
+}
+
+void BrowserCommandController::DesksStateChanged(int num_desks) {
+  UpdateCommandsForDesks(num_desks);
 }
 #endif
 
@@ -672,6 +677,16 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_TAKE_SCREENSHOT:
       TakeScreenshot();
       break;
+    case IDC_SEND_TO_DESK_1:
+    case IDC_SEND_TO_DESK_2:
+    case IDC_SEND_TO_DESK_3:
+    case IDC_SEND_TO_DESK_4:
+    case IDC_SEND_TO_DESK_5:
+    case IDC_SEND_TO_DESK_6:
+    case IDC_SEND_TO_DESK_7:
+    case IDC_SEND_TO_DESK_8:
+      SendToDeskAtIndex(browser_, id - IDC_SEND_TO_DESK_1);
+      break;
 #endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDC_FEEDBACK:
@@ -960,6 +975,19 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_VISIT_DESKTOP_OF_LRU_USER_3, true);
   command_updater_.UpdateCommandEnabled(IDC_VISIT_DESKTOP_OF_LRU_USER_4, true);
   command_updater_.UpdateCommandEnabled(IDC_VISIT_DESKTOP_OF_LRU_USER_5, true);
+
+  // Assign to desks
+  command_updater_.UpdateCommandEnabled(IDC_ASSIGN_TO_DESKS_MENU, true);
+  static_assert(IDC_SEND_TO_DESK_1 == IDC_SEND_TO_DESK_2 - 1 &&
+                    IDC_SEND_TO_DESK_2 == IDC_SEND_TO_DESK_3 - 1 &&
+                    IDC_SEND_TO_DESK_3 == IDC_SEND_TO_DESK_4 - 1 &&
+                    IDC_SEND_TO_DESK_4 == IDC_SEND_TO_DESK_5 - 1 &&
+                    IDC_SEND_TO_DESK_5 == IDC_SEND_TO_DESK_6 - 1 &&
+                    IDC_SEND_TO_DESK_6 == IDC_SEND_TO_DESK_7 - 1 &&
+                    IDC_SEND_TO_DESK_7 == IDC_SEND_TO_DESK_8 - 1,
+                "IDC_SEND_TO_DESK_* commands must be in order.");
+  auto* desks_helper = ash::DesksHelper::Get();
+  UpdateCommandsForDesks(desks_helper ? desks_helper->GetNumberOfDesks() : 1);
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -1433,6 +1461,14 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
     // Do an init call to re-initialize command state after the
     // DisableAllCommands.
     InitCommandState();
+  }
+}
+
+void BrowserCommandController::UpdateCommandsForDesks(int num_desks) {
+  constexpr int kMaxNumberOfDesks = IDC_SEND_TO_DESK_8 - IDC_SEND_TO_DESK_1 + 1;
+  for (int i = 0; i < kMaxNumberOfDesks; ++i) {
+    command_updater_.UpdateCommandEnabled(IDC_SEND_TO_DESK_1 + i,
+                                          i < num_desks);
   }
 }
 #endif

@@ -1158,6 +1158,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_VISIT_DESKTOP_OF_LRU_USER" desc="The text label of the menu item which allows the user to move a window from one users desktop to another.">
           Move window to <ph name="USER_NAME">$1<ex>User name</ex></ph> (<ph name="USER_EMAIL">$2<ex>john@google.com</ex></ph>)
         </message>
+        <message name="IDS_ASSIGN_TO_DESKS_MENU" desc="The text label of the Assign to Desks submenu">
+          Assign to desk
+        </message>
       </if>
 
       <message name="IDS_ACCNAME_ZOOM_PLUS2" desc="The accessible description of the Make Text Larger menu item in the merged menu">

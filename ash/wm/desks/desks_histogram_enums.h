@@ -24,7 +24,8 @@ enum class DesksCreationRemovalSource {
 enum class DesksMoveWindowFromActiveDeskSource {
   kDragAndDrop = 0,
   kShortcut = 1,
-  kMaxValue = kShortcut,
+  kSendToDesk = 2,
+  kMaxValue = kSendToDesk,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and

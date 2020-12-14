@@ -7,6 +7,8 @@
 
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
+class AssignToDesksMenuModel;
+
 // Menu model for the menu button in a web app browser window.
 class WebAppMenuModel : public AppMenuModel {
  public:
@@ -26,6 +28,10 @@ class WebAppMenuModel : public AppMenuModel {
   void Build() override;
   void LogMenuAction(AppMenuAction action_id) override;
 
+ private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<AssignToDesksMenuModel> assign_to_desks_submenu_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_MENU_MODEL_H_

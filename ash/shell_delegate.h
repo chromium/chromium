@@ -64,6 +64,10 @@ class ASH_EXPORT ShellDelegate {
   virtual std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const = 0;
 
+  // Notifies the browser that there was a change in the state for desks and now
+  // there are |num_desks| desks.
+  virtual void DesksStateChanged(int num_desks) const;
+
   // Check whether the current tab of the browser window can go back.
   virtual bool CanGoBack(gfx::NativeWindow window) const = 0;
 

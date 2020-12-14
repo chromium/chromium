@@ -24,7 +24,9 @@
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/ash/tab_scrubber.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -81,6 +83,11 @@ void ChromeShellDelegate::OpenKeyboardShortcutHelpPage() const {
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::SINGLETON_TAB;
   Navigate(&params);
+}
+
+void ChromeShellDelegate::DesksStateChanged(int num_desks) const {
+  for (auto* browser : *BrowserList::GetInstance())
+    browser->command_controller()->DesksStateChanged(num_desks);
 }
 
 bool ChromeShellDelegate::CanGoBack(gfx::NativeWindow window) const {

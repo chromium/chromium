@@ -6,6 +6,10 @@
 
 namespace ash {
 
+void ShellDelegate::DesksStateChanged(int num_desks) const {
+  return;
+}
+
 bool ShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {
   return true;
 }

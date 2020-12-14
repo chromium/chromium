@@ -20,6 +20,11 @@
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/ash_features.h"
+#include "chrome/browser/ui/toolbar/assign_to_desks_menu_model.h"
+#endif
+
 constexpr int WebAppMenuModel::kUninstallAppCommandId;
 
 WebAppMenuModel::WebAppMenuModel(ui::AcceleratorProvider* provider,
@@ -65,6 +70,15 @@ void WebAppMenuModel::Build() {
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringId(IDC_COPY_URL, IDS_COPY_URL);
   AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsBentoEnabled()) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    assign_to_desks_submenu_ = std::make_unique<AssignToDesksMenuModel>(this);
+    AddSubMenuWithStringId(IDC_ASSIGN_TO_DESKS_MENU, IDS_ASSIGN_TO_DESKS_MENU,
+                           assign_to_desks_submenu_.get());
+  }
+#endif
 
 // Chrome OS's app list is prominent enough to not need a separate uninstall
 // option in the app menu.

@@ -10,6 +10,9 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/views/frame/system_menu_model_delegate.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class AssignToDesksMenuModel;
+#endif
 class Browser;
 class ZoomMenuModel;
 
@@ -43,12 +46,20 @@ class SystemMenuModelBuilder {
   // Adds items for toggling the frame type (if necessary).
   void AddFrameToggleItems(ui::SimpleMenuModel* model);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Add the submenu for assign to desks.
+  void AppendAssignToDesksMenu(ui::SimpleMenuModel* model);
+#endif
+
   // Add the items to allow the window to visit the desktop of another user.
   void AppendTeleportMenu(ui::SimpleMenuModel* model);
 
   SystemMenuModelDelegate menu_delegate_;
   std::unique_ptr<ui::MenuModel> menu_model_;
   std::unique_ptr<ZoomMenuModel> zoom_menu_contents_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<AssignToDesksMenuModel> assign_to_desks_model_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(SystemMenuModelBuilder);
 };

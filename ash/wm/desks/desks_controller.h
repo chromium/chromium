@@ -173,6 +173,10 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   // DesksHelper:
   bool BelongsToActiveDesk(aura::Window* window) override;
+  int GetActiveDeskIndex() const override;
+  base::string16 GetDeskName(int index) const override;
+  int GetNumberOfDesks() const override;
+  void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
 
   // ::wm::ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,

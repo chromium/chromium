@@ -20,12 +20,15 @@
 #include "ui/base/models/simple_menu_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/toolbar/assign_to_desks_menu_model.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
@@ -90,6 +93,9 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE_WINDOW_MENU);
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AppendAssignToDesksMenu(model);
+#endif
   AppendTeleportMenu(model);
   // If it's a regular browser window with tabs, we don't add any more items,
   // since it already has menus (Page, Chrome).
@@ -138,6 +144,20 @@ void SystemMenuModelBuilder::AddFrameToggleItems(ui::SimpleMenuModel* model) {
                    base::ASCIIToUTF16("Toggle Frame Type"));
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void SystemMenuModelBuilder::AppendAssignToDesksMenu(
+    ui::SimpleMenuModel* model) {
+  if (ash::features::IsBentoEnabled()) {
+    model->AddSeparator(ui::NORMAL_SEPARATOR);
+    assign_to_desks_model_ =
+        std::make_unique<AssignToDesksMenuModel>(&menu_delegate_);
+    model->AddSubMenuWithStringId(IDC_ASSIGN_TO_DESKS_MENU,
+                                  IDS_ASSIGN_TO_DESKS_MENU,
+                                  assign_to_desks_model_.get());
+  }
+}
+#endif
 
 void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

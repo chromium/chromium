@@ -14,7 +14,6 @@ DesksHelper* g_instance = nullptr;
 
 // static
 DesksHelper* DesksHelper::Get() {
-  DCHECK(g_instance);
   return g_instance;
 }
 

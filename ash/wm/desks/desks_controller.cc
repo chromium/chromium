@@ -14,6 +14,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
@@ -332,14 +333,15 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
                       /*set_by_user=*/false);
   }
 
-  Shell::Get()
-      ->accessibility_controller()
-      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-          IDS_ASH_VIRTUAL_DESKS_ALERT_NEW_DESK_CREATED,
-          base::NumberToString16(desks_.size())));
+  auto* shell = Shell::Get();
+  shell->accessibility_controller()->TriggerAccessibilityAlertWithMessage(
+      l10n_util::GetStringFUTF8(IDS_ASH_VIRTUAL_DESKS_ALERT_NEW_DESK_CREATED,
+                                base::NumberToString16(desks_.size())));
 
   for (auto& observer : observers_)
     observer.OnDeskAdded(new_desk);
+
+  shell->shell_delegate()->DesksStateChanged(desks_.size());
 
   if (!is_first_ever_desk) {
     desks_restore_util::UpdatePrimaryUserDesksPrefs();
@@ -569,6 +571,36 @@ bool DesksController::BelongsToActiveDesk(aura::Window* window) {
   return desks_util::BelongsToActiveDesk(window);
 }
 
+int DesksController::GetActiveDeskIndex() const {
+  return GetDeskIndex(active_desk_);
+}
+
+base::string16 DesksController::GetDeskName(int index) const {
+  return index < static_cast<int>(desks_.size()) ? desks_[index]->name()
+                                                 : base::string16();
+}
+
+int DesksController::GetNumberOfDesks() const {
+  return static_cast<int>(desks_.size());
+}
+
+void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
+  if (desk_index < 0 || desk_index >= static_cast<int>(desks_.size()))
+    return;
+
+  const int active_desk_index = GetDeskIndex(active_desk_);
+  if (desk_index == active_desk_index)
+    return;
+
+  DCHECK(desks_.at(desk_index));
+
+  desks_animations::PerformWindowMoveToDeskAnimation(
+      window, /*going_left=*/desk_index < active_desk_index);
+  MoveWindowFromActiveDeskTo(window, desks_[desk_index].get(),
+                             window->GetRootWindow(),
+                             DesksMoveWindowFromActiveDeskSource::kSendToDesk);
+}
+
 void DesksController::OnWindowActivating(ActivationReason reason,
                                          aura::Window* gaining_active,
                                          aura::Window* losing_active) {
@@ -702,7 +734,8 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   DCHECK(!desks_.empty());
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* shell = Shell::Get();
+  auto* overview_controller = shell->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
   const std::vector<aura::Window*> removed_desk_windows =
       removed_desk->windows();
@@ -789,6 +822,8 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   for (auto& observer : observers_)
     observer.OnDeskRemoved(removed_desk.get());
+
+  shell->shell_delegate()->DesksStateChanged(desks_.size());
 
   available_container_ids_.push(removed_desk->container_id());
 

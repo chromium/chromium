@@ -2067,6 +2067,8 @@ static_library("ui") {
       "settings_window_manager_chromeos.h",
       "settings_window_manager_observer_chromeos.h",
       "supervised_user/parent_permission_dialog.h",
+      "toolbar/assign_to_desks_menu_model.cc",
+      "toolbar/assign_to_desks_menu_model.h",
       "views/apps/app_dialog/app_block_dialog_view.cc",
       "views/apps/app_dialog/app_block_dialog_view.h",
       "views/apps/app_dialog/app_pause_dialog_view.cc",

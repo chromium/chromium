@@ -58,6 +58,9 @@ class BrowserCommandController : public CommandUpdater,
   // prevent changing the state of enabled shortcuts while in this mode (so the
   // other *Changed() functions will be a NO-OP in this state).
   void LockedFullscreenStateChanged();
+  // Called when a desk is created/removed. Used to determine send
+  // to desk command states.
+  void DesksStateChanged(int num_desks);
 #endif
   void PrintingStateChanged();
   void LoadingStateChanged(bool is_loading, bool force);
@@ -161,6 +164,9 @@ class BrowserCommandController : public CommandUpdater,
   // Update commands whose state depends on whether the window is in locked
   // fullscreen mode or not.
   void UpdateCommandsForLockedFullscreenMode();
+
+  // Update commands whose state depends on how many desks exist.
+  void UpdateCommandsForDesks(int num_desks);
 #endif
 
   // Updates the printing command state.
