@@ -202,8 +202,8 @@ class LocalWPT(object):
     def is_commit_affecting_directory(self, commit, directory):
         """Checks if a commit affects a directory."""
         exit_code = self.run([
-            'git', 'diff-tree', '--quiet', '--no-commit-id', commit, '--',
-            directory
+            'git', 'diff-tree', '--quiet', '--no-commit-id', '-r', commit,
+            '--', directory
         ],
                              return_exit_code=True)
         return exit_code == 1

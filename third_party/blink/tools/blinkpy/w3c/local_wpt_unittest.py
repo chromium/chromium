@@ -146,8 +146,8 @@ class LocalWPTTest(unittest.TestCase):
         self.assertTrue(
             local_wpt.is_commit_affecting_directory('HEAD', 'css/'))
         self.assertEqual(host.executive.calls, [[
-            'git', 'diff-tree', '--quiet', '--no-commit-id', 'HEAD', '--',
-            'css/'
+            'git', 'diff-tree', '--quiet', '--no-commit-id', '-r', 'HEAD',
+            '--', 'css/'
         ]])
 
     def test_seek_change_id(self):
