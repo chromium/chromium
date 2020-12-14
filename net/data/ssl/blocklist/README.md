@@ -282,6 +282,7 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=1423400
 For details, see <https://security.googleblog.com/2019/08/protecting-chrome-users-in-kazakhstan.html>
 
   * [00309c736dd661da6f1eb24173aa849944c168a43a15bffd192eecfdb6f8dbd2.pem](00309c736dd661da6f1eb24173aa849944c168a43a15bffd192eecfdb6f8dbd2.pem)
+  * [61c0fc2e38b5b6f9071b42cee54a9013d858b6697c68b460948551b3249576a1.pem](61c0fc2e38b5b6f9071b42cee54a9013d858b6697c68b460948551b3249576a1.pem)
 
 ### revoked.badssl.com
 
