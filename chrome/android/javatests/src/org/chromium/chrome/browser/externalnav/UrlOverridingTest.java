@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -54,6 +55,7 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -451,6 +453,11 @@ public class UrlOverridingTest {
     @SmallTest
     public void testRedirectionFromIntentWarm() throws Exception {
         Context context = ContextUtils.getApplicationContext();
+        // TODO(crbug.com/1153686): This test times out on M tablets.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            return;
+        }
         mActivityTestRule.startMainActivityOnBlankPage();
         Intent intent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(mTestServer.getURL(NAVIGATION_FROM_JAVA_REDIRECTION_PAGE)));
