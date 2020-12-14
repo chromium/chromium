@@ -3581,7 +3581,7 @@ TEST_F(NearbySharingServiceImplTest, RotateBackgroundAdvertisement_Periodic) {
       fake_nearby_connections_manager_->advertising_endpoint_info();
 
   certificate_manager()->set_next_salt({0x00, 0x02});
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(15));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(870));
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   auto endpoint_info_rotated =
       fake_nearby_connections_manager_->advertising_endpoint_info();

@@ -54,8 +54,9 @@ namespace {
 
 constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMin =
     base::TimeDelta::FromMinutes(12);
+// 870 seconds represents 14:30 minutes
 constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMax =
-    base::TimeDelta::FromMinutes(15);
+    base::TimeDelta::FromSeconds(870);
 constexpr base::TimeDelta kInvalidateSurfaceStateDelayAfterTransferDone =
     base::TimeDelta::FromMilliseconds(3000);
 
