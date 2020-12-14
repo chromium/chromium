@@ -31,7 +31,9 @@ void SharesheetServiceDelegate::ShowBubble(
     sharesheet::CloseCallback close_callback) {
   if (is_bubble_open_) {
     // TODO(melzhang@) Update by adding SharesheetAlreadyOpenCancel.
-    std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
+    if (close_callback) {
+      std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
+    }
     return;
   }
   sharesheet_bubble_view_->ShowBubble(std::move(targets), std::move(intent),
