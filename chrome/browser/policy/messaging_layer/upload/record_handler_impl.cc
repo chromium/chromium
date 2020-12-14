@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
 #include "base/values.h"
@@ -52,11 +53,11 @@ class RecordHandlerImpl::ReportUploader
 
   void OnStart() override;
 
-  void StartUpload(bool need_encryption_key,
-                   const EncryptedRecord& encrypted_record);
+  void StartUpload(const EncryptedRecord& encrypted_record);
   void OnUploadComplete(base::Optional<base::Value> response);
   void HandleFailedUpload();
   void HandleSuccessfulUpload();
+  void Complete(DmServerUploadService::CompletionResponse result);
 
   // Populates upload request. Returns JSON request base::Value or nullopt,
   // if an error was detected.
@@ -64,9 +65,23 @@ class RecordHandlerImpl::ReportUploader
       bool need_encryption_key,
       const EncryptedRecord& encrypted_record);
 
-  void Complete(DmServerUploadService::CompletionResponse result);
+  // Returns a gap record if it is necessary. Expects the contents of the
+  // failedUploadedRecord field in the response:
+  // {
+  //   "sequencingId": 1234
+  //   "generationId": 4321
+  //   "priority": 3
+  // }
+  base::Optional<EncryptedRecord> HandleFailedUploadedSequencingInformation(
+      const base::Value& sequencing_information);
 
-  const bool need_encryption_key_;
+  // Helper function for converting a base::Value representation of
+  // SequencingInformation into a proto. Will return an INVALID_ARGUMENT error
+  // if the base::Value is not convertable.
+  StatusOr<SequencingInformation> SequencingInformationValueToProto(
+      const base::Value& value);
+
+  bool need_encryption_key_;
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
   policy::CloudPolicyClient* client_;
 
@@ -79,6 +94,10 @@ class RecordHandlerImpl::ReportUploader
   // so it is a class member variable. |last_response_| must be processed before
   // any attempt to retry calling the client, otherwise it will be overwritten.
   base::Value last_response_;
+
+  // When a record fails to be processed on the server, |ReportUploader| creates
+  // a gap record to upload in its place.
+  EncryptedRecord gap_record_;
 
   // Set for the highest record being uploaded.
   base::Optional<SequencingInformation> highest_sequencing_information_;
@@ -128,18 +147,17 @@ void RecordHandlerImpl::ReportUploader::OnStart() {
   // We'll be popping records off the back.
   std::reverse(records_->begin(), records_->end());
 
-  StartUpload(need_encryption_key_, records_->back());
+  StartUpload(records_->back());
 }
 
 void RecordHandlerImpl::ReportUploader::StartUpload(
-    bool need_encryption_key,
     const EncryptedRecord& encrypted_record) {
   auto response_cb =
       base::BindOnce(&RecordHandlerImpl::ReportUploader::OnUploadComplete,
                      base::Unretained(this));
 
   auto request_result =
-      UploadEncryptedReportingRequestBuilder(need_encryption_key)
+      UploadEncryptedReportingRequestBuilder(need_encryption_key_)
           .AddRecord(encrypted_record)
           .Build();
   if (!request_result.has_value()) {
@@ -200,31 +218,19 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   //    "encryptionSettings": ... // EncryptionSettings proto
   //  }
   // TODO(b/169883262): Factor out the decoding into a separate class.
-
   const base::Value* last_succeed_uploaded_record =
       last_response_.FindDictKey("lastSucceedUploadedRecord");
   if (last_succeed_uploaded_record != nullptr) {
-    // Note: Fields below are 'int', should be converted into 'uint64_t'.
-    const std::string* sequencing_id_str =
-        last_succeed_uploaded_record->FindStringKey("sequencingId");
-    const std::string* generation_id_str =
-        last_succeed_uploaded_record->FindStringKey("generationId");
-    const auto priority = last_succeed_uploaded_record->FindIntKey("priority");
-    uint64_t sequencing_id = 0;
-    uint64_t generation_id = 0;
-    if (sequencing_id_str &&
-        base::StringToUint64(*sequencing_id_str, &sequencing_id) &&
-        generation_id_str &&
-        base::StringToUint64(*generation_id_str, &generation_id) &&
-        priority.has_value() && Priority_IsValid(priority.value())) {
-      SequencingInformation seq_info;
-      seq_info.set_sequencing_id(sequencing_id);
-      seq_info.set_generation_id(generation_id);
-      seq_info.set_priority(Priority(priority.value()));
-      highest_sequencing_information_ = std::move(seq_info);
+    auto seq_info_result =
+        SequencingInformationValueToProto(*last_succeed_uploaded_record);
+    if (seq_info_result.ok()) {
+      highest_sequencing_information_ = std::move(seq_info_result.ValueOrDie());
+    } else {
+      LOG(ERROR) << "Server responded with an invalid SequencingInformation "
+                    "for lastSucceedUploadedRecord:"
+                 << *last_succeed_uploaded_record;
     }
   }
-  // TODO(b/169883262): Decode and handle failure information.
 
   // Handle the encryption settings.
   // Note: server can attach it to response regardless of whether
@@ -254,6 +260,29 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
       signed_encryption_key.set_public_key_id(public_key_id_result.value());
       signed_encryption_key.set_signature(public_key_signature);
       encryption_key_attached_cb_.Run(signed_encryption_key);
+      need_encryption_key_ = false;
+    }
+  }
+
+  // Check if the previous record was unprocessable on the server.
+  const base::Value* failed_uploaded_record = last_response_.FindDictPath(
+      "firstFailedUploadedRecord.failedUploadedRecord");
+  if (failed_uploaded_record != nullptr) {
+    // The record we uploaded previously was unprocessable by the server, if the
+    // record was after the current |highest_sequencing_information_| we should
+    // return a gap record. A gap record consists of an EncryptedRecord with
+    // just SequencingInformation. The server will report success for the gap
+    // record and |highest_sequencing_information_| will be updated in the next
+    // response. In the future there may be recoverable |failureStatus|, but
+    // for now all the device can do is delete the record.
+    auto gap_record_result =
+        HandleFailedUploadedSequencingInformation(*failed_uploaded_record);
+    if (gap_record_result.has_value()) {
+      gap_record_ = std::move(gap_record_result.value());
+      LOG(ERROR) << "Data Loss. Record was unprocessable by the server: "
+                 << *failed_uploaded_record;
+      StartUpload(gap_record_);
+      return;
     }
   }
 
@@ -266,13 +295,78 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   }
 
   // Upload the next record but do not request encryption key again.
-  StartUpload(/*need_encryption_key=*/false, records_->back());
+  StartUpload(records_->back());
+}
+
+base::Optional<EncryptedRecord>
+RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequencingInformation(
+    const base::Value& sequencing_information) {
+  if (!highest_sequencing_information_.has_value()) {
+    LOG(ERROR) << "highest_sequencing_information_ has no value.";
+    return base::nullopt;
+  }
+
+  auto seq_info_result =
+      SequencingInformationValueToProto(sequencing_information);
+  if (!seq_info_result.ok()) {
+    LOG(ERROR) << "Server responded with an invalid SequencingInformation for "
+                  "firstFailedUploadedRecord.failedUploadedRecord:"
+               << sequencing_information;
+    return base::nullopt;
+  }
+
+  SequencingInformation& seq_info = seq_info_result.ValueOrDie();
+
+  // |seq_info| should be of the same generation and priority as
+  // highest_sequencing_information_, and have the next sequencing_id.
+  if (seq_info.generation_id() !=
+          highest_sequencing_information_->generation_id() ||
+      seq_info.priority() != highest_sequencing_information_->priority() ||
+      seq_info.sequencing_id() !=
+          highest_sequencing_information_->sequencing_id() + 1) {
+    return base::nullopt;
+  }
+
+  // Build a gap record and return it.
+  EncryptedRecord encrypted_record;
+  *encrypted_record.mutable_sequencing_information() = std::move(seq_info);
+  return encrypted_record;
 }
 
 void RecordHandlerImpl::ReportUploader::Complete(
     DmServerUploadService::CompletionResponse completion_result) {
   Schedule(&RecordHandlerImpl::ReportUploader::Response, base::Unretained(this),
            completion_result);
+}
+
+StatusOr<SequencingInformation>
+RecordHandlerImpl::ReportUploader::SequencingInformationValueToProto(
+    const base::Value& value) {
+  const std::string* sequencing_id = value.FindStringKey("sequencingId");
+  const std::string* generation_id = value.FindStringKey("generationId");
+  const auto priority = value.FindIntKey("priority");
+
+  // If any of the previous values don't exist, or are malformed, return error.
+  // TODO(chromium:1158036) Once SequencingId starts at 1 instead of 0, we
+  // should use 0 as an error value.
+  uint64_t seq_id;
+  uint64_t gen_id;
+  if (!sequencing_id || sequencing_id->empty() ||
+      !base::StringToUint64(*sequencing_id, &seq_id) || !generation_id ||
+      generation_id->empty() ||
+      !base::StringToUint64(*generation_id, &gen_id) || gen_id == 0 ||
+      !priority.has_value() || !Priority_IsValid(priority.value())) {
+    return Status(error::INVALID_ARGUMENT,
+                  base::StrCat({"Provided value did not conform to a valid "
+                                "SequencingInformation proto: ",
+                                value.DebugString()}));
+  }
+
+  SequencingInformation proto;
+  proto.set_sequencing_id(seq_id);
+  proto.set_generation_id(gen_id);
+  proto.set_priority(Priority(priority.value()));
+  return proto;
 }
 
 RecordHandlerImpl::RecordHandlerImpl(policy::CloudPolicyClient* client)

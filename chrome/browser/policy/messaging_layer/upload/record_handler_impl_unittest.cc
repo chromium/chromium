@@ -82,44 +82,97 @@ using TestCompletionResponder =
 
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
-// Helper function composes JSON represented as base::Value from Sequencing
-// information in request.
-base::Value ValueFromSucceededSequencingInfo(
-    const base::Optional<base::Value> request) {
-  EXPECT_TRUE(request.has_value());
-  EXPECT_TRUE(request.value().is_dict());
-  base::Value response(base::Value::Type::DICTIONARY);
+// Helper function for retrieving and processing the SequencingInformation from
+// a request.
+void RetrieveFinalSequencingInforamation(const base::Value& request,
+                                         base::Value& sequencing_info) {
+  ASSERT_TRUE(request.is_dict());
 
   // Retrieve and process sequencing information
   const base::Value* const encrypted_record_list =
-      request.value().FindListKey("encryptedRecord");
-  EXPECT_TRUE(encrypted_record_list != nullptr);
-  EXPECT_FALSE(encrypted_record_list->GetList().empty());
-  const base::Value* seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequencingInformation");
-  EXPECT_TRUE(seq_info != nullptr);
-  response.SetPath("lastSucceedUploadedRecord", seq_info->Clone());
+      request.FindListKey("encryptedRecord");
+  ASSERT_TRUE(encrypted_record_list != nullptr);
+  ASSERT_FALSE(encrypted_record_list->GetList().empty());
+  const auto* seq_info = encrypted_record_list->GetList().rbegin()->FindDictKey(
+      "sequencingInformation");
+  ASSERT_TRUE(seq_info != nullptr);
+  ASSERT_TRUE(seq_info->FindStringKey("sequencingId"));
+  ASSERT_TRUE(seq_info->FindStringKey("generationId"));
+  ASSERT_TRUE(seq_info->FindIntKey("priority"));
+  sequencing_info.MergeDictionary(seq_info);
+}
 
+base::Optional<base::Value> BuildEncryptionSettingsFromRequest(
+    const base::Value& request) {
   // If attach_encryption_settings it true, process that.
   const auto attach_encryption_settings =
-      request.value().FindBoolKey("attachEncryptionSettings");
-  if (attach_encryption_settings.has_value() &&
-      attach_encryption_settings.value()) {
-    base::Value encryption_settings{base::Value::Type::DICTIONARY};
-    std::string public_key;
-    base::Base64Encode("PUBLIC KEY", &public_key);
-    encryption_settings.SetStringKey("publicKey", public_key);
-    encryption_settings.SetIntKey("publicKeyId", 12345);
-    std::string public_key_signature;
-    // TODO(b/170054326): Generate signature.
-    base::Base64Encode("PUBLIC KEY SIG", &public_key_signature);
-    encryption_settings.SetStringKey("publicKeySignature",
-                                     public_key_signature);
-    response.SetPath("encryptionSettings", std::move(encryption_settings));
+      request.FindBoolKey("attachEncryptionSettings");
+  if (!attach_encryption_settings.has_value() ||
+      !attach_encryption_settings.value()) {
+    return base::nullopt;
   }
 
-  return response;
+  base::Value encryption_settings{base::Value::Type::DICTIONARY};
+  std::string public_key;
+  base::Base64Encode("PUBLIC KEY", &public_key);
+  encryption_settings.SetStringKey("publicKey", public_key);
+  encryption_settings.SetIntKey("publicKeyId", 12345);
+  std::string public_key_signature;
+  // TODO(b/170054326): Generate signature.
+  base::Base64Encode("PUBLIC KEY SIG", &public_key_signature);
+  encryption_settings.SetStringKey("publicKeySignature", public_key_signature);
+  return encryption_settings;
+}
+
+// Immitates the server response for successful record upload. Since additional
+// steps and tests require the response from the server to be accurate, ASSERTS
+// that the |request| must be valid, and on a valid request updates |response|.
+void SucceedResponseFromRequest(const base::Value& request,
+                                base::Value& response) {
+  base::Value seq_info{base::Value::Type::DICTIONARY};
+  RetrieveFinalSequencingInforamation(request, seq_info);
+  response.SetPath("lastSucceedUploadedRecord", std::move(seq_info));
+
+  // If attach_encryption_settings it true, process that.
+  auto encryption_settings_result = BuildEncryptionSettingsFromRequest(request);
+  if (encryption_settings_result.has_value()) {
+    response.SetPath("encryptionSettings",
+                     std::move(encryption_settings_result.value()));
+  }
+}
+
+// Immitates the server response for failed record upload. Since additional
+// steps and tests require the response from the server to be accurate, ASSERTS
+// that the |request| must be valid, and on a valid request updates |response|.
+void FailedResponseFromRequest(const base::Value& request,
+                               base::Value& response) {
+  base::Value seq_info{base::Value::Type::DICTIONARY};
+  RetrieveFinalSequencingInforamation(request, seq_info);
+
+  // |seq_info| has been built by RetrieveFinalSequencingInforamation and is
+  // guaranteed to have these keys.
+  uint64_t sequencing_id;
+  ASSERT_TRUE(base::StringToUint64(*seq_info.FindStringKey("sequencingId"),
+                                   &sequencing_id));
+  // The lastSucceedUploadedRecord should be the record before the one
+  // indicated in seq_info.
+  response.SetStringPath("lastSucceedUploadedRecord.sequencingId",
+                         base::NumberToString(sequencing_id - 1));
+  response.SetStringPath("lastSucceedUploadedRecord.generationId",
+                         *seq_info.FindStringKey("generationId"));
+  response.SetIntPath("lastSucceedUploadedRecord.priority",
+                      seq_info.FindIntKey("priority").value());
+
+  // The firstFailedUploadedRecord.failedUploadedRecord should be the one
+  // indicated in seq_info.
+  response.SetPath("firstFailedUploadedRecord.failedUploadedRecord",
+                   std::move(seq_info));
+
+  auto encryption_settings_result = BuildEncryptionSettingsFromRequest(request);
+  if (encryption_settings_result.has_value()) {
+    response.SetPath("encryptionSettings",
+                     std::move(encryption_settings_result.value()));
+  }
 }
 
 class RecordHandlerImplTest : public ::testing::TestWithParam<bool> {
@@ -172,8 +225,9 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
           Invoke([&client_waiter](
                      base::Value request,
                      policy::CloudPolicyClient::ResponseCallback callback) {
-            std::move(callback).Run(
-                ValueFromSucceededSequencingInfo(std::move(request)));
+            base::Value response{base::Value::Type::DICTIONARY};
+            SucceedResponseFromRequest(request, response);
+            std::move(callback).Run(std::move(response));
             client_waiter.Signal();
           })));
 
@@ -223,8 +277,9 @@ TEST_P(RecordHandlerImplTest, ReportsEarlyFailure) {
             Invoke([&client_waiter](
                        base::Value request,
                        policy::CloudPolicyClient::ResponseCallback callback) {
-              std::move(callback).Run(
-                  ValueFromSucceededSequencingInfo(std::move(request)));
+              base::Value response{base::Value::Type::DICTIONARY};
+              SucceedResponseFromRequest(request, response);
+              std::move(callback).Run(std::move(response));
               client_waiter.Signal();
             })));
     EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
@@ -237,18 +292,17 @@ TEST_P(RecordHandlerImplTest, ReportsEarlyFailure) {
   }
   RecordHandlerImpl handler(client_.get());
 
-  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   StrictMock<TestCompletionResponder> responder;
   TestCallbackWaiter responder_waiter;
-
-  EXPECT_CALL(encryption_key_attached, Call(_))
-      .Times(need_encryption_key() ? 1 : 0);
-
   EXPECT_CALL(
       responder,
       Call(ValueEqualsProto(
           (*test_records)[kNumSuccessfulUploads - 1].sequencing_information())))
       .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
+
+  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
+  EXPECT_CALL(encryption_key_attached, Call(_))
+      .Times(need_encryption_key() ? 1 : 0);
 
   auto encryption_key_attached_callback =
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
@@ -265,9 +319,82 @@ TEST_P(RecordHandlerImplTest, ReportsEarlyFailure) {
   responder_waiter.Wait();
 }
 
+TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
+  uint64_t kNumInitialSuccessfulUploads = 5;
+  uint64_t kNumTestRecords = 10;
+  uint64_t kNumFinalSuccessfulUploads =
+      kNumTestRecords - kNumInitialSuccessfulUploads;
+  uint64_t kGenerationId = 1234;
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
+
+  // Wait kNumTestRecords times + 1 for the failure.
+  TestCallbackWaiterWithCounter client_waiter{kNumTestRecords + 1};
+
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+        .Times(kNumInitialSuccessfulUploads)
+        .WillRepeatedly(WithArgs<0, 2>(
+            Invoke([&client_waiter](
+                       base::Value request,
+                       policy::CloudPolicyClient::ResponseCallback callback) {
+              base::Value response{base::Value::Type::DICTIONARY};
+              SucceedResponseFromRequest(request, response);
+              std::move(callback).Run(std::move(response));
+              client_waiter.Signal();
+            })));
+    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+        .WillOnce(WithArgs<0, 2>(
+            Invoke([&client_waiter](
+                       base::Value request,
+                       policy::CloudPolicyClient::ResponseCallback callback) {
+              base::Value response{base::Value::Type::DICTIONARY};
+              FailedResponseFromRequest(request, response);
+              std::move(callback).Run(std::move(response));
+              client_waiter.Signal();
+            })));
+    EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+        .Times(kNumFinalSuccessfulUploads)
+        .WillRepeatedly(WithArgs<0, 2>(
+            Invoke([&client_waiter](
+                       base::Value request,
+                       policy::CloudPolicyClient::ResponseCallback callback) {
+              base::Value response{base::Value::Type::DICTIONARY};
+              SucceedResponseFromRequest(request, response);
+              std::move(callback).Run(std::move(response));
+              client_waiter.Signal();
+            })));
+  }
+
+  RecordHandlerImpl handler(client_.get());
+
+  StrictMock<TestCallbackWaiter> responder_waiter;
+  TestCompletionResponder responder;
+  EXPECT_CALL(
+      responder,
+      Call(ValueEqualsProto(
+          (*test_records)[kNumTestRecords - 1].sequencing_information())))
+      .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
+
+  StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
+  EXPECT_CALL(encryption_key_attached, Call(_))
+      .Times(need_encryption_key() ? 1 : 0);
+  auto encryption_key_attached_callback =
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
+  auto responder_callback = base::BindOnce(&TestCompletionResponder::Call,
+                                           base::Unretained(&responder));
+
+  handler.HandleRecords(need_encryption_key(), std::move(test_records),
+                        std::move(responder_callback),
+                        encryption_key_attached_callback);
+
+  client_waiter.Wait();
+  responder_waiter.Wait();
+}
+
 INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,
                          RecordHandlerImplTest,
                          testing::Bool());
-
 }  // namespace
 }  // namespace reporting
