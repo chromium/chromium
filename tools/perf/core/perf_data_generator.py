@@ -527,12 +527,9 @@ BUILDERS = {
     },
     'android-pixel4a_power-perf': {
         'tests': [{
-            'isolate':
-            'performance_test_suite',
+            'isolate': 'performance_test_suite',
             'extra_args': [
                 '--experimental-tbmv3-metrics',
-                '--fetch-power-profile',
-                '--performance-mode=keep',
             ],
         }],
         'platform':

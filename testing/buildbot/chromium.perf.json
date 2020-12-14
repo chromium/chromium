@@ -660,9 +660,7 @@
           "--browser=android-chrome",
           "--upload-results",
           "--test-shard-map-filename=android-pixel4a_power-perf_map.json",
-          "--experimental-tbmv3-metrics",
-          "--fetch-power-profile",
-          "--performance-mode=keep"
+          "--experimental-tbmv3-metrics"
         ],
         "isolate_name": "performance_test_suite",
         "merge": {
