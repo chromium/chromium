@@ -1069,8 +1069,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 // Creates the section for enterprise info.
 - (NSArray<TableViewItem*>*)enterpriseInfoSection {
-  NSString* message = l10n_util::GetNSString(
-      IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITHOUT_COMPANY_NAME);
+  NSString* message = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_INFO);
   TableViewItem* enterpriseInfoItem = CreateEnterpriseInfoItem(
       @"popup_menu_enterprise_icon", message,
       PopupMenuActionEnterpriseInfoMessage, kTextMenuEnterpriseInfo);
