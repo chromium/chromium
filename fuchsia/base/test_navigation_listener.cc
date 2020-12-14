@@ -52,6 +52,7 @@ void TestNavigationListener::RunUntilNavigationStateMatches(
 
 void TestNavigationListener::RunUntilLoaded() {
   fuchsia::web::NavigationState state;
+  state.set_page_type(fuchsia::web::PageType::NORMAL);
   state.set_is_main_document_loaded(true);
   RunUntilNavigationStateMatches(state);
 }
@@ -59,6 +60,7 @@ void TestNavigationListener::RunUntilLoaded() {
 void TestNavigationListener::RunUntilUrlEquals(const GURL& expected_url) {
   fuchsia::web::NavigationState state;
   state.set_url(expected_url.spec());
+  state.set_page_type(fuchsia::web::PageType::NORMAL);
   state.set_is_main_document_loaded(true);
   RunUntilNavigationStateMatches(state);
 }
@@ -67,6 +69,7 @@ void TestNavigationListener::RunUntilTitleEquals(
     const base::StringPiece expected_title) {
   fuchsia::web::NavigationState state;
   state.set_title(expected_title.as_string());
+  state.set_page_type(fuchsia::web::PageType::NORMAL);
   RunUntilNavigationStateMatches(state);
 }
 
@@ -76,6 +79,16 @@ void TestNavigationListener::RunUntilUrlAndTitleEquals(
   fuchsia::web::NavigationState state;
   state.set_url(expected_url.spec());
   state.set_title(expected_title.as_string());
+  state.set_page_type(fuchsia::web::PageType::NORMAL);
+  RunUntilNavigationStateMatches(state);
+}
+
+void TestNavigationListener::RunUntilErrorPageIsLoadedAndTitleEquals(
+    base::StringPiece expected_title) {
+  fuchsia::web::NavigationState state;
+  state.set_title(expected_title.as_string());
+  state.set_page_type(fuchsia::web::PageType::ERROR);
+  state.set_is_main_document_loaded(true);
   RunUntilNavigationStateMatches(state);
 }
 
@@ -87,6 +100,7 @@ void TestNavigationListener::RunUntilUrlTitleBackForwardEquals(
   fuchsia::web::NavigationState state;
   state.set_url(expected_url.spec());
   state.set_title(expected_title.as_string());
+  state.set_page_type(fuchsia::web::PageType::NORMAL);
   state.set_can_go_back(expected_can_go_back);
   state.set_can_go_forward(expected_can_go_forward);
   RunUntilNavigationStateMatches(state);

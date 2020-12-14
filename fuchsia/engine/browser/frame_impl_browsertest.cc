@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <fuchsia/ui/policy/cpp/fidl.h>
+#include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>

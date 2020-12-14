@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -98,6 +99,9 @@ WebEngineBrowserContext::~WebEngineBrowserContext() {
     content::GetIOThreadTaskRunner({})->DeleteSoon(
         FROM_HERE, std::move(resource_context_));
   }
+
+  BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
+      this);
 
   ShutdownStoragePartitions();
 }
