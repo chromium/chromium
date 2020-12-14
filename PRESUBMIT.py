@@ -4388,6 +4388,9 @@ def ChecksCommon(input_api, output_api):
   results.extend(
       input_api.canned_checks.CheckOwnersDirMetadataExclusive(
           input_api, output_api))
+  results.extend(
+      input_api.canned_checks.CheckNoNewMetadataInOwners(
+          input_api, output_api))
 
   for f in input_api.AffectedFiles():
     path, name = input_api.os_path.split(f.LocalPath())
