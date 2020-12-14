@@ -348,6 +348,14 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
   } else if (ShouldInheritParentActivation(navigation_handle)) {
     // Throttles are only constructed for navigations handled by the network
     // stack and we only release filters for committed navigations.
+
+    // These redundant DCHECKs are temporarily added to investigate a crash.
+    // TODO(crbug.com/1155870): Remove extra DCHECKs after the crash's cause is
+    // determined.
+    DCHECK(!filter || navigation_handle->HasCommitted());
+    DCHECK(!filter || ShouldInheritActivation(
+                          navigation_handle->GetRedirectChain().front()));
+    DCHECK(!filter || (navigation_handle->GetRedirectChain().size() == 1));
     DCHECK(!filter);
     activation_to_inherit =
         GetFrameActivationState(navigation_handle->GetParentFrame());
@@ -462,6 +470,7 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
     content::NavigationHandle* navigation_handle,
     std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles) {
   DCHECK(!navigation_handle->IsSameDocument());
+  DCHECK(!ShouldInheritActivation(navigation_handle->GetURL()));
 
   if (navigation_handle->IsInMainFrame() &&
       client_->GetSafeBrowsingDatabaseManager()) {
