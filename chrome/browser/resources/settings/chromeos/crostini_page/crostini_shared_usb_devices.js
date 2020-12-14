@@ -69,7 +69,7 @@ Polymer({
   },
 
   /** @private */
-  onReassignCancelClick_() {
+  onReassignCancel_() {
     this.reassignDevice_ = null;
   },
 

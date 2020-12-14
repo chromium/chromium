@@ -42,7 +42,7 @@
     </template>
     <template is="dom-if" if="[[reassignDevice_]]" restamp>
       <cr-dialog id="reassignDialog" close-text="$i18n{close}"
-          show-on-attach>
+          on-cancel="onReassignCancel_" show-on-attach>
         <div slot="title">
           $i18n{pluginVmSharedUsbDevicesInUse}
         </div>
@@ -51,7 +51,7 @@
         </div>
         <div slot="button-container">
           <cr-button id="cancel" class="cancel-button"
-              on-click="onReassignCancelClick_">
+              on-click="onReassignCancel_">
             $i18n{cancel}
           </cr-button>
           <cr-button id="continue" class="action-button"

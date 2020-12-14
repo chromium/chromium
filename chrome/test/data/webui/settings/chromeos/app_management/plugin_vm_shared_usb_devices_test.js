@@ -93,6 +93,17 @@ suite('SharedUsbDevices', function() {
     Polymer.dom.flush();
     assertFalse(!!page.$$('#reassignDialog'));
 
+    // Pressing escape will close the dialog, but it's not possible to trigger
+    // this with a fake keypress, so we instead send the 'cancel' event directly
+    // to the native <dialog> element.
+    items[2].click();
+    Polymer.dom.flush();
+    assertTrue(page.$$('#reassignDialog').open);
+    const e = new CustomEvent('cancel', {cancelable: true});
+    page.$$('#reassignDialog').getNative().dispatchEvent(e);
+    Polymer.dom.flush();
+    assertFalse(!!page.$$('#reassignDialog'));
+
     // Clicking continue will call the proxy and close the dialog.
     items[2].click();
     Polymer.dom.flush();
