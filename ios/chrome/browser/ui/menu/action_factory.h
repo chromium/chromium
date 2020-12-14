@@ -106,6 +106,10 @@ API_AVAILABLE(ios(13.0))
 // invoke the |block| when executed.
 - (UIAction*)actionToOpenOfflineVersionInNewTabWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance configured for executing JavaScript evalutation
+// The action will invoke the |block| when executed.
+- (UIAction*)actionToOpenJavascriptWithBlock:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_

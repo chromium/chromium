@@ -29,6 +29,12 @@ const char kHistoryEntryActionsHistogram[] =
     "Mobile.ContextMenu.HistoryEntry.Actions";
 const char kMostVisitedEntryActionsHistogram[] =
     "Mobile.ContextMenu.MostVisitedEntry.Actions";
+const char KContextMenuImageActionsHistogram[] =
+    "Mobile.ContextMenu.WebImage.Actions";
+const char KContextMenuImageLinkActionsHistogram[] =
+    "Mobile.ContextMenu.WebImageLink.Actions";
+const char KContextMenuLinkActionsHistogram[] =
+    "Mobile.ContextMenu.WebLink.Actions";
 }  // namespace
 
 void RecordMenuShown(MenuScenario scenario) {
@@ -51,5 +57,11 @@ const char* GetActionsHistogramName(MenuScenario scenario) {
       return kMostVisitedEntryActionsHistogram;
     case MenuScenario::kBookmarkFolder:
       return kBookmarkFolderActionsHistogram;
+    case MenuScenario::kContextMenuImage:
+      return KContextMenuImageActionsHistogram;
+    case MenuScenario::kContextMenuImageLink:
+      return KContextMenuImageLinkActionsHistogram;
+    case MenuScenario::kContextMenuLink:
+      return KContextMenuLinkActionsHistogram;
   }
 }

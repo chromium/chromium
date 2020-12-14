@@ -39226,6 +39226,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="Delete"/>
   <int value="9" label="Remove"/>
   <int value="10" label="Hide"/>
+  <int value="11" label="Mark as Read"/>
+  <int value="12" label="Mark as Unread"/>
+  <int value="13" label="View Offline"/>
+  <int value="14" label="Open (JavaScript evaluation)"/>
 </enum>
 
 <enum name="IOSMenuScenario">
@@ -39236,6 +39240,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Recent Tabs Entry"/>
   <int value="5" label="History Entry"/>
   <int value="6" label="Most Visited Entry"/>
+  <int value="7" label="Image on a Web page"/>
+  <int value="8" label="Image-Link on a Web page"/>
+  <int value="9" label="Link on a Web page"/>
 </enum>
 
 <enum name="IOSMultiWindowConfiguration">

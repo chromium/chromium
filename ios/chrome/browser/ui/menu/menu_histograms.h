@@ -16,7 +16,10 @@ enum class MenuScenario {
   kRecentTabsEntry = 4,
   kHistoryEntry = 5,
   kMostVisitedEntry = 6,
-  kMaxValue = kMostVisitedEntry
+  kContextMenuImage = 7,
+  kContextMenuImageLink = 8,
+  kContextMenuLink = 9,
+  kMaxValue = kContextMenuLink,
 };
 
 // Records a menu shown histogram metric for the |scenario|.

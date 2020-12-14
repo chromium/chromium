@@ -91,3 +91,11 @@ imageset("offline") {
     "offline.imageset/offline@3x.png",
   ]
 }
+
+imageset("open") {
+  sources = [
+    "open.imageset/Contents.json",
+    "open.imageset/open@2x.png",
+    "open.imageset/open@3x.png",
+  ]
+}

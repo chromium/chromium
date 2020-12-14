@@ -213,4 +213,12 @@
                          block:block];
 }
 
+- (UIAction*)actionToOpenJavascriptWithBlock:(ProceduralBlock)block {
+  return
+      [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPEN)
+                      image:[UIImage imageNamed:@"open"]
+                       type:MenuActionType::OpenJavascript
+                      block:block];
+}
+
 @end

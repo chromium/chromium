@@ -105,6 +105,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="ReadingListEntry" summary="Reading List entry"/>
     <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
     <variant name="RecentTabsHeader" summary="Recent Tabs header/device"/>
+    <variant name="WebImage" summary="Image on a Web page"/>
+    <variant name="WebImageLink" summary="Image-Link on a Web page"/>
+    <variant name="WebLink" summary="Link on a Web page"/>
   </token>
 </histogram>
 
