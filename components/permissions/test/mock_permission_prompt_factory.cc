@@ -20,13 +20,13 @@ MockPermissionPromptFactory::MockPermissionPromptFactory(
       requests_count_(0),
       response_type_(PermissionRequestManager::NONE),
       manager_(manager) {
-  manager->set_view_factory_for_testing(
-      base::Bind(&MockPermissionPromptFactory::Create, base::Unretained(this)));
+  manager->set_view_factory_for_testing(base::BindRepeating(
+      &MockPermissionPromptFactory::Create, base::Unretained(this)));
 }
 
 MockPermissionPromptFactory::~MockPermissionPromptFactory() {
   manager_->set_view_factory_for_testing(
-      base::Bind(&MockPermissionPromptFactory::DoNotCreate));
+      base::BindRepeating(&MockPermissionPromptFactory::DoNotCreate));
   for (auto* prompt : prompts_)
     prompt->factory_ = nullptr;
   prompts_.clear();
@@ -86,7 +86,7 @@ void MockPermissionPromptFactory::WaitForPermissionBubble() {
   base::RunLoop loop;
   show_bubble_quit_closure_ = loop.QuitClosure();
   loop.Run();
-  show_bubble_quit_closure_ = base::Closure();
+  show_bubble_quit_closure_ = base::RepeatingClosure();
 }
 
 // static

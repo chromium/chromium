@@ -81,7 +81,7 @@ class MockPermissionPromptFactory {
   std::vector<MockPermissionPrompt*> prompts_;
   PermissionRequestManager::AutoResponseType response_type_;
 
-  base::Closure show_bubble_quit_closure_;
+  base::RepeatingClosure show_bubble_quit_closure_;
 
   // The bubble manager that will be associated with this factory.
   PermissionRequestManager* manager_;

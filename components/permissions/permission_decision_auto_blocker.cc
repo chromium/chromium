@@ -406,7 +406,7 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
 }
 
 void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
-    base::Callback<bool(const GURL& url)> filter) {
+    base::RepeatingCallback<bool(const GURL& url)> filter) {
   std::unique_ptr<ContentSettingsForOneType> settings(
       new ContentSettingsForOneType);
   settings_map_->GetSettingsForOneType(

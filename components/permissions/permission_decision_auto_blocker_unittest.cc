@@ -48,12 +48,11 @@ class PermissionDecisionAutoBlockerUnitTest : public testing::Test {
         &browser_context_);
   }
 
-  void SetLastEmbargoStatus(base::Closure quit_closure, bool status) {
+  void SetLastEmbargoStatus(base::OnceClosure quit_closure, bool status) {
     callback_was_run_ = true;
     last_embargoed_status_ = status;
     if (quit_closure) {
-      quit_closure.Run();
-      quit_closure.Reset();
+      std::move(quit_closure).Run();
     }
   }
 
@@ -307,7 +306,8 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, RemoveEmbargoAndResetCounts_All) {
   EXPECT_EQ(
       2, autoblocker()->GetIgnoreCount(url2, ContentSettingsType::GEOLOCATION));
 
-  autoblocker()->RemoveEmbargoAndResetCounts(base::Bind(&FilterGoogle));
+  autoblocker()->RemoveEmbargoAndResetCounts(
+      base::BindRepeating(&FilterGoogle));
 
   // Expect that url1's actions are gone, but url2's remain.
   EXPECT_EQ(0, autoblocker()->GetDismissCount(
@@ -358,7 +358,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, RemoveEmbargoAndResetCounts_All) {
       1, autoblocker()->GetIgnoreCount(url2, ContentSettingsType::MIDI_SYSEX));
 
   // Remove everything and expect that it's all gone.
-  autoblocker()->RemoveEmbargoAndResetCounts(base::Bind(&FilterAll));
+  autoblocker()->RemoveEmbargoAndResetCounts(base::BindRepeating(&FilterAll));
 
   EXPECT_EQ(0, autoblocker()->GetDismissCount(
                    url1, ContentSettingsType::GEOLOCATION));
@@ -609,7 +609,8 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, CheckEmbargoStartTime) {
 
   // Remove records of dismiss and ignore embargoes and confirm start time
   // reverts to default.
-  autoblocker()->RemoveEmbargoAndResetCounts(base::Bind(&FilterGoogle));
+  autoblocker()->RemoveEmbargoAndResetCounts(
+      base::BindRepeating(&FilterGoogle));
   embargo_start_time =
       autoblocker()->GetEmbargoStartTime(url, ContentSettingsType::GEOLOCATION);
   EXPECT_EQ(base::Time(), embargo_start_time);

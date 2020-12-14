@@ -67,7 +67,7 @@ class PermissionPrompt {
     virtual bool WasCurrentRequestAlreadyDisplayed() = 0;
   };
 
-  typedef base::Callback<
+  typedef base::RepeatingCallback<
       std::unique_ptr<PermissionPrompt>(content::WebContents*, Delegate*)>
       Factory;
 

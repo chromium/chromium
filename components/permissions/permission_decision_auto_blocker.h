@@ -113,7 +113,7 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   // Same as above, but cleans the slate for all permissions and for all URLs
   // matching |filter|.
   void RemoveEmbargoAndResetCounts(
-      base::Callback<bool(const GURL& url)> filter);
+      base::RepeatingCallback<bool(const GURL& url)> filter);
 
   static const char* GetPromptDismissCountKeyForTesting();
 
