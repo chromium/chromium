@@ -1307,12 +1307,8 @@ CancelCallbackOnce FakeDriveService::MultipartUploadNewFile(
   call_resume_upload->callback = std::move(callback);
   call_resume_upload->progress_callback = progress_callback;
   InitiateUploadNewFile(
-      content_type,
-      content_length,
-      parent_resource_id,
-      title,
-      options,
-      base::Bind(&CallResumeUpload::Run, base::Owned(call_resume_upload)));
+      content_type, content_length, parent_resource_id, title, options,
+      base::BindOnce(&CallResumeUpload::Run, base::Owned(call_resume_upload)));
   return CancelCallbackOnce();
 }
 
@@ -1332,11 +1328,8 @@ CancelCallbackOnce FakeDriveService::MultipartUploadExistingFile(
   call_resume_upload->callback = std::move(callback);
   call_resume_upload->progress_callback = progress_callback;
   InitiateUploadExistingFile(
-      content_type,
-      content_length,
-      resource_id,
-      options,
-      base::Bind(&CallResumeUpload::Run, base::Owned(call_resume_upload)));
+      content_type, content_length, resource_id, options,
+      base::BindOnce(&CallResumeUpload::Run, base::Owned(call_resume_upload)));
   return CancelCallbackOnce();
 }
 
