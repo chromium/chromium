@@ -6,8 +6,7 @@
 #include "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #include "components/autofill/ios/form_util/test_form_activity_observer.h"
 #import "ios/web/public/browser_state.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
-#include "ios/web/public/test/fakes/test_web_state_observer.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
@@ -20,7 +19,7 @@
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 
-class FormTestClient : public web::TestWebClient {
+class FormTestClient : public web::FakeWebClient {
  public:
   NSString* GetDocumentStartScriptForAllFrames(
       web::BrowserState* browser_state) const override {
