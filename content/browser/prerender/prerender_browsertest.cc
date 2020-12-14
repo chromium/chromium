@@ -20,17 +20,17 @@
 namespace content {
 namespace {
 
-class PrerenderBrowserTestBase : public ContentBrowserTest,
-                                 public testing::WithParamInterface<bool> {
+class PrerenderBrowserTest : public ContentBrowserTest,
+                             public testing::WithParamInterface<bool> {
  public:
-  PrerenderBrowserTestBase() {
+  PrerenderBrowserTest() {
     std::map<std::string, std::string> parameters;
     if (IsActivationDisabled())
       parameters["activation"] = "disabled";
     feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kPrerender2, parameters);
   }
-  ~PrerenderBrowserTestBase() override = default;
+  ~PrerenderBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     // Make sure the feature param is correctly set before testing.
@@ -46,15 +46,9 @@ class PrerenderBrowserTestBase : public ContentBrowserTest,
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-    ssl_server_.RegisterRequestMonitor(
-        base::BindRepeating(&PrerenderBrowserTestBase::MonitorResourceRequest,
-                            base::Unretained(this)));
+    ssl_server_.RegisterRequestMonitor(base::BindRepeating(
+        &PrerenderBrowserTest::MonitorResourceRequest, base::Unretained(this)));
     ASSERT_TRUE(ssl_server_.Start());
-
-    // Navigate to an initial page.
-    const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-    ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-    ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
   }
 
   void TearDownOnMainThread() override {
@@ -81,18 +75,6 @@ class PrerenderBrowserTestBase : public ContentBrowserTest,
     // Add the link tag that will prerender the URL.
     EXPECT_TRUE(ExecJs(shell()->web_contents(),
                        JsReplace("add_prerender($1)", prerendering_url)));
-    observer.Wait();
-  }
-
-  // Adds <link rel=next> in the current main frame and waits until the
-  // completion of prerendering.
-  void AddNext(const GURL& prerendering_url) {
-    // Start watching new web contents to be created for prerendering.
-    content::TestNavigationObserver observer(prerendering_url);
-    observer.StartWatchingNewWebContents();
-    // Add the link tag that will prerender the URL.
-    EXPECT_TRUE(ExecJs(shell()->web_contents(),
-                       JsReplace("add_next($1)", prerendering_url)));
     observer.Wait();
   }
 
@@ -134,44 +116,21 @@ class PrerenderBrowserTestBase : public ContentBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests for prerendering triggers =============================================
-
-class PrerenderTriggerBrowserTest : public PrerenderBrowserTestBase {
- protected:
-  enum class TriggerType {
-    // <link rel=prerender>
-    kLinkRelPrerender,
-
-    // <link rel=next>
-    kLinkRelNext
-  };
-
-  void AddTrigger(const GURL& prerendering_url, TriggerType trigger_type) {
-    switch (trigger_type) {
-      case TriggerType::kLinkRelPrerender:
-        AddPrerender(prerendering_url);
-        return;
-      case TriggerType::kLinkRelNext:
-        AddNext(prerendering_url);
-        return;
-    }
-  }
-
-  void TestTrigger(TriggerType trigger_type);
-  void TestMultipleTriggers(TriggerType trigger_type);
-  void TestDuplicateTriggers(TriggerType trigger_type);
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderTriggerBrowserTest,
+                         PrerenderBrowserTest,
                          /*disable_activation=*/testing::Bool());
 
-void PrerenderTriggerBrowserTest::TestTrigger(TriggerType trigger_type) {
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
-  // Add a trigger that will prerender `kPrerenderingUrl`.
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
-  AddTrigger(kPrerenderingUrl, trigger_type);
+  AddPrerender(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
   // A prerender host for the URL should be registered.
@@ -193,25 +152,21 @@ void PrerenderTriggerBrowserTest::TestTrigger(TriggerType trigger_type) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderTriggerBrowserTest, LinkRelPrerender) {
-  TestTrigger(TriggerType::kLinkRelPrerender);
-}
-
-IN_PROC_BROWSER_TEST_P(PrerenderTriggerBrowserTest, LinkRelNext) {
-  TestTrigger(TriggerType::kLinkRelNext);
-}
-
-void PrerenderTriggerBrowserTest::TestMultipleTriggers(
-    TriggerType trigger_type) {
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
 
-  // Add triggers that will prerender `kPrerenderingUrl1` and
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl1` and
   // `kPrerenderingUrl2`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl1), 0);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl2), 0);
-  AddTrigger(kPrerenderingUrl1, trigger_type);
-  AddTrigger(kPrerenderingUrl2, trigger_type);
+  AddPrerender(kPrerenderingUrl1);
+  AddPrerender(kPrerenderingUrl2);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 
@@ -239,25 +194,8 @@ void PrerenderTriggerBrowserTest::TestMultipleTriggers(
   }
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderTriggerBrowserTest, LinkRelPrerender_Multiple) {
-  TestMultipleTriggers(TriggerType::kLinkRelPrerender);
-}
-
-IN_PROC_BROWSER_TEST_P(PrerenderTriggerBrowserTest, LinkRelNext_Multiple) {
-  TestMultipleTriggers(TriggerType::kLinkRelNext);
-}
-
-void PrerenderTriggerBrowserTest::TestDuplicateTriggers(
-    TriggerType trigger_type) {
-  GURL initial_url;
-  switch (trigger_type) {
-    case TriggerType::kLinkRelPrerender:
-      initial_url = GetUrl("/prerender/duplicate_link_prerenders.html");
-      break;
-    case TriggerType::kLinkRelNext:
-      initial_url = GetUrl("/prerender/duplicate_link_nexts.html");
-      break;
-  }
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
+  const GURL kInitialUrl = GetUrl("/prerender/duplicate_prerenders.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
 
@@ -269,7 +207,7 @@ void PrerenderTriggerBrowserTest::TestDuplicateTriggers(
 
   // Navigate to a page that initiates prerendering for `kPrerenderingUrl1`
   // twice. The second prerendering request should be ignored.
-  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Wait until the completion of prerendering.
   navigation_observer1.Wait();
@@ -304,28 +242,14 @@ void PrerenderTriggerBrowserTest::TestDuplicateTriggers(
   }
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderTriggerBrowserTest,
-                       LinkRelPrerender_Duplicate) {
-  TestDuplicateTriggers(TriggerType::kLinkRelPrerender);
-}
-
-IN_PROC_BROWSER_TEST_P(PrerenderTriggerBrowserTest, LinkRelNext_Duplicate) {
-  TestDuplicateTriggers(TriggerType::kLinkRelNext);
-}
-
-// Tests for activation =======================================================
-
-class PrerenderActivationBrowserTest : public PrerenderTriggerBrowserTest {
-  // TODO(https://crbug.com/1132746): Factor out common functions to here.
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderActivationBrowserTest,
-                         /*disable_activation=*/testing::Bool());
-
 // Makes sure that activations on navigations for iframes don't happen.
-IN_PROC_BROWSER_TEST_P(PrerenderActivationBrowserTest, iFrame) {
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
   // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -350,8 +274,13 @@ IN_PROC_BROWSER_TEST_P(PrerenderActivationBrowserTest, iFrame) {
 }
 
 // Makes sure that activations on navigations for pop-up windows don't happen.
-IN_PROC_BROWSER_TEST_P(PrerenderActivationBrowserTest, PopUpWindow) {
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_PopUpWindow) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
 
   // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
