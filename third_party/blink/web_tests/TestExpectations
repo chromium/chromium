@@ -522,6 +522,9 @@ crbug.com/417223 external/wpt/css/css-position/position-relative-table-tr-left.h
 crbug.com/417223 external/wpt/css/css-position/position-relative-table-tr-top-absolute-child.html [ Failure ]
 crbug.com/417223 external/wpt/css/css-position/position-relative-table-tr-top.html [ Failure ]
 
+#### external/wpt/css/css-sizing
+crbug.com/1158406 external/wpt/css/css-sizing/intrinsic-percent-replaced-009.html [ Failure ]
+
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-003.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-color.html [ Failure ]
@@ -2505,7 +2508,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-sizing/intrinsic-percent-replaced-009.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-paint-api/dynamic-import.html [ Failure ]
 crbug.com/626703 [ Win10 ] external/wpt/css/css-grid/grid-items/grid-auto-margin-and-replaced-item-001.html [ Failure ]
 crbug.com/626703 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/dynamic-import.html [ Failure ]
