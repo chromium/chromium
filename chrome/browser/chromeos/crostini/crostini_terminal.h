@@ -13,7 +13,6 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 
-class Browser;
 class Profile;
 
 namespace crostini {
@@ -99,17 +98,15 @@ enum class TerminalSetting {
 };
 
 // Launches the terminal tabbed app.
-Browser* LaunchTerminal(
-    Profile* profile,
-    int64_t display_id = display::kInvalidDisplayId,
-    const ContainerId& container_id = ContainerId::GetDefault(),
-    const std::string& cwd = "",
-    const std::vector<std::string>& terminal_args = {});
+void LaunchTerminal(Profile* profile,
+                    int64_t display_id = display::kInvalidDisplayId,
+                    const ContainerId& container_id = ContainerId::GetDefault(),
+                    const std::string& cwd = "",
+                    const std::vector<std::string>& terminal_args = {});
 
 // Launches the terminal settings popup window.
-Browser* LaunchTerminalSettings(
-    Profile* profile,
-    int64_t display_id = display::kInvalidDisplayId);
+void LaunchTerminalSettings(Profile* profile,
+                            int64_t display_id = display::kInvalidDisplayId);
 
 // Record which terminal settings have been changed by users.
 void RecordTerminalSettingsChangesUMAs(Profile* profile);

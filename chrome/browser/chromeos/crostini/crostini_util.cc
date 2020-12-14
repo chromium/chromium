@@ -146,10 +146,7 @@ void OnSharePathForLaunchApplication(
   if (app_id == kCrostiniTerminalSystemAppId) {
     // Use first file as 'cwd'.
     std::string cwd = !args.empty() ? args[0] : "";
-    if (!LaunchTerminal(profile, display_id, container_id, cwd)) {
-      return OnLaunchFailed(app_id, std::move(callback),
-                            "failed to launch terminal");
-    }
+    LaunchTerminal(profile, display_id, container_id, cwd);
     return OnApplicationLaunched(app_id, std::move(callback),
                                  crostini::CrostiniResult::SUCCESS, true, "");
   }
@@ -338,10 +335,7 @@ void LaunchCrostiniAppImpl(
 
     if (!requires_share) {
       RecordAppLaunchHistogram(CrostiniAppLaunchAppType::kTerminal);
-      if (!LaunchTerminal(profile, display_id, container_id, cwd.value())) {
-        RecordAppLaunchResultHistogram(crostini::CrostiniResult::UNKNOWN_ERROR);
-        return std::move(callback).Run(false, "failed to launch terminal");
-      }
+      LaunchTerminal(profile, display_id, container_id, cwd.value());
       RecordAppLaunchResultHistogram(crostini::CrostiniResult::SUCCESS);
       return std::move(callback).Run(true, "");
     }

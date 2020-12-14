@@ -79,34 +79,34 @@ GURL GenerateVshInCroshUrl(Profile* profile,
 
 }  // namespace
 
-Browser* LaunchTerminal(Profile* profile,
-                        int64_t display_id,
-                        const ContainerId& container_id,
-                        const std::string& cwd,
-                        const std::vector<std::string>& terminal_args) {
+void LaunchTerminal(Profile* profile,
+                    int64_t display_id,
+                    const ContainerId& container_id,
+                    const std::string& cwd,
+                    const std::vector<std::string>& terminal_args) {
   GURL vsh_in_crosh_url =
       GenerateVshInCroshUrl(profile, container_id, cwd, terminal_args);
   auto params = web_app::CreateSystemWebAppLaunchParams(
       profile, web_app::SystemAppType::TERMINAL, display_id);
   if (!params.has_value()) {
     LOG(WARNING) << "Empty launch params for terminal";
-    return nullptr;
+    return;
   }
-  return web_app::LaunchSystemWebApp(profile, web_app::SystemAppType::TERMINAL,
-                                     vsh_in_crosh_url, std::move(*params));
+  web_app::LaunchSystemWebApp(profile, web_app::SystemAppType::TERMINAL,
+                              vsh_in_crosh_url, std::move(*params));
 }
 
-Browser* LaunchTerminalSettings(Profile* profile, int64_t display_id) {
+void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
   auto params = web_app::CreateSystemWebAppLaunchParams(
       profile, web_app::SystemAppType::TERMINAL, display_id);
   if (!params.has_value()) {
     LOG(WARNING) << "Empty launch params for terminal";
-    return nullptr;
+    return;
   }
   std::string path = "html/terminal_settings.html";
   // Use an app pop window to host the settings page.
   params->disposition = WindowOpenDisposition::NEW_POPUP;
-  return web_app::LaunchSystemWebApp(
+  web_app::LaunchSystemWebApp(
       profile, web_app::SystemAppType::TERMINAL,
       GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL, path})),
       std::move(*params));
