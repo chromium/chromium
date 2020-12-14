@@ -70,6 +70,12 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
     return GetDevice()->GetAvailableMimeTypes();
   }
 
+  // Once this client sends wl_data_source::offer, it is responsible for holding
+  // onto its clipboard contents. At future points in time, the wayland server
+  // may send a wl_data_source::send event, in which case this client is
+  // responsible for writing the clipboard contents into the supplied fd. This
+  // client can only drop the clipboard contents when it receives a
+  // wl_data_source::cancelled event.
   virtual void Write(const ui::PlatformClipboard::DataMap* data) override {
     if (!data || data->empty()) {
       data_.clear();

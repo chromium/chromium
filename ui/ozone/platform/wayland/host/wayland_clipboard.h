@@ -25,7 +25,12 @@ namespace ui {
 class WaylandConnection;
 class WaylandDataDeviceManager;
 
-// Handles clipboard operations.
+// This class is a wrapper around Wayland data_device protocols that simulates
+// typical clipboard operations. Unlike some other platforms, data-transfer is
+// an async, lazy operation. This means that even after "writing" data to the
+// system clipboard, this class must still hold on to a local cache of the
+// clipboard contents, since it may be read (repeatedly) by other Wayland
+// clients.
 //
 // WaylandDataDeviceManager singleton is required to be up and running for
 // WaylandClipboard to be minimally functional.
