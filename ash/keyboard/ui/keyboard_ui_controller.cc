@@ -965,7 +965,9 @@ void KeyboardUIController::ReportLingeringState() {
 }
 
 gfx::Rect KeyboardUIController::GetWorkspaceOccludedBoundsInScreen() const {
-  if (!ui_)
+  // TODO(crbug.com/1157150): Investigate why the keyboard window may become
+  // null when adding a new monitor.
+  if (!ui_ || !GetKeyboardWindow())
     return gfx::Rect();
 
   const gfx::Rect visual_bounds_in_window(visual_bounds_in_root_.size());
