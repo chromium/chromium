@@ -4424,6 +4424,11 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_AVS_SETTING_ENABLED_DESCRIPTION" desc="Description of the Assistant voice search setting.">
       Google Assistant provides a better voice experience for searching the web and engaging with sites you have open. Google Assistant will receive the URL and contents of sites you use with it.
       </message>
+
+      <!-- Continuous Search Navigation strings -->
+      <message name="IDS_CSN_AD_LABEL" desc="Label for identifying an ad in search results." translateable="false">
+      Ad
+      </message>
     </messages>
   </release>
 </grit>

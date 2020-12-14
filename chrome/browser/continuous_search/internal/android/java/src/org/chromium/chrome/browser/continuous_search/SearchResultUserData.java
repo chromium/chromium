@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.continuous_search;
 
 import org.chromium.base.UserData;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
 import java.util.HashSet;
@@ -15,13 +16,25 @@ import java.util.HashSet;
 public class SearchResultUserData implements UserData {
     public static final int INVALID_POSITION = -2;
     public static final int ON_SRP = -1;
-    public static final Class<SearchResultUserData> USER_DATA_KEY = SearchResultUserData.class;
+    private static final Class<SearchResultUserData> USER_DATA_KEY = SearchResultUserData.class;
 
     private SearchResultMetadata mData;
     private HashSet<GURL> mValidUrls;
     private HashSet<SearchResultUserDataObserver> mObservers = new HashSet<>();
     private GURL mCurrentUrl;
     private int mCurrentPosition = INVALID_POSITION;
+
+    static void createForTab(Tab tab) {
+        assert tab.getUserDataHost().getUserData(USER_DATA_KEY) == null;
+        tab.getUserDataHost().setUserData(USER_DATA_KEY, new SearchResultUserData());
+    }
+
+    static SearchResultUserData getForTab(Tab tab) {
+        assert tab.getUserDataHost().getUserData(USER_DATA_KEY) != null;
+        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
+    }
+
+    private SearchResultUserData() {}
 
     /**
      * @return Whether this contains valid data.

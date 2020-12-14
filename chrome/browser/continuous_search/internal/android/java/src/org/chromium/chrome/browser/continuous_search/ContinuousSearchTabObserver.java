@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
@@ -18,15 +17,12 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
 
     public ContinuousSearchTabObserver(Tab tab) {
         mTab = tab;
-        UserDataHost host = mTab.getUserDataHost();
-        assert host.getUserData(SearchResultUserData.USER_DATA_KEY) == null;
-        SearchResultUserData searchResultUserData = new SearchResultUserData();
-        host.setUserData(SearchResultUserData.USER_DATA_KEY, searchResultUserData);
+        mTab.addObserver(this);
     }
 
     @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
-        SearchResultUserData searchResultUserData = getSearchResultUserData();
+        SearchResultUserData searchResultUserData = SearchResultUserData.getForTab(tab);
         searchResultUserData.updateCurrentUrl(url);
 
         // Cancel any existing requests.
@@ -35,7 +31,7 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         String query = SearchUrlHelper.getQueryIfSrpUrl(url);
         if (query == null) return;
 
-        mProducer = SearchResultProducerFactory.create(mTab, this);
+        mProducer = SearchResultProducerFactory.create(tab, this);
 
         // TODO: Remove this once mProducer is always created.
         if (mProducer == null) return;
@@ -46,12 +42,12 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     @Override
     public void onCloseContents(Tab tab) {
         resetProducer();
-        getSearchResultUserData().invalidateData();
+        SearchResultUserData.getForTab(tab).invalidateData();
     }
 
     @Override
     public void onDestroyed(Tab tab) {
-        mTab.removeObserver(this);
+        tab.removeObserver(this);
     }
 
     // SearchResultListener
@@ -61,22 +57,13 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         assert metadata != null;
         mProducer = null;
 
-        getSearchResultUserData().updateData(metadata, mTab.getUrl());
+        SearchResultUserData.getForTab(mTab).updateData(metadata, mTab.getUrl());
     }
 
     @Override
     public void onError(int errorCode) {
         // TODO: Handle errors.
         mProducer = null;
-    }
-
-    private SearchResultUserData getSearchResultUserData() {
-        UserDataHost host = mTab.getUserDataHost();
-        SearchResultUserData searchResultUserData =
-                host.getUserData(SearchResultUserData.USER_DATA_KEY);
-
-        assert searchResultUserData != null;
-        return searchResultUserData;
     }
 
     private void resetProducer() {

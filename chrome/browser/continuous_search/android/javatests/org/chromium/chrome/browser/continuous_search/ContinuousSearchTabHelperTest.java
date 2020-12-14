@@ -140,8 +140,7 @@ public class ContinuousSearchTabHelperTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
-            SearchResultUserData searchResultUserData =
-                    tab.getUserDataHost().getUserData(SearchResultUserData.USER_DATA_KEY);
+            SearchResultUserData searchResultUserData = SearchResultUserData.getForTab(tab);
             Assert.assertNotNull(searchResultUserData);
             searchResultUserData.addObserver(observer);
             tab.loadUrl(new LoadUrlParams(
@@ -153,8 +152,7 @@ public class ContinuousSearchTabHelperTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
-            SearchResultUserData searchResultUserData =
-                    tab.getUserDataHost().getUserData(SearchResultUserData.USER_DATA_KEY);
+            SearchResultUserData searchResultUserData = SearchResultUserData.getForTab(tab);
             Assert.assertTrue(searchResultUserData.isValid());
             String url = mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog");
             Assert.assertTrue(observer.mMetadata.getResultUrl().getSpec().startsWith(url));

@@ -24,7 +24,8 @@ public class ContinuousSearchTabHelper {
             return;
         }
 
-        ContinuousSearchTabObserver observer = new ContinuousSearchTabObserver(tab);
-        tab.addObserver(observer);
+        SearchResultUserData.createForTab(tab);
+        SearchResultListCoordinator.createForTab(tab);
+        new ContinuousSearchTabObserver(tab);
     }
 }
