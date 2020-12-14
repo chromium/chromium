@@ -21,10 +21,10 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegateImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -89,14 +89,14 @@ public class SigninUtils {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         if (!signinManager.isSignInAllowed()) {
-            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED);
             return;
         }
         if (AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().isEmpty()) {
             // TODO(https://crbug.com/1119720): Show the bottom sheet when no accounts on device
             //  in the future. This disabling is only temporary.
-            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS);
             return;
         }

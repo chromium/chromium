@@ -15,6 +15,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -53,7 +54,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
                 context, context.getResources().getDimensionPixelSize(R.dimen.user_picture_size));
 
         OnClickListener onDismissClicked = v -> {
-            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.DISMISSED_BUTTON);
             dismissBottomSheetRunnable.run();
         };
@@ -89,11 +90,11 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
      */
     @Override
     public void addAccount() {
-        AccountPickerDelegate.recordAccountConsistencyPromoAction(
+        SigninMetricsUtils.logAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.ADD_ACCOUNT_STARTED);
         mAccountPickerDelegate.addAccount(accountName -> {
             mAddedAccountName = accountName;
-            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
             onAccountSelected(accountName, false);
         });
@@ -221,13 +222,13 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     private void signIn() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
         if (TextUtils.equals(mSelectedAccountName, mAddedAccountName)) {
-            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT);
         } else if (TextUtils.equals(mSelectedAccountName, mDefaultAccountName)) {
-            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
         } else {
-            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         }
         new AsyncTask<String>() {
@@ -256,7 +257,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             promoAction = AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN;
             newViewState = ViewState.SIGNIN_GENERAL_ERROR;
         }
-        AccountPickerDelegate.recordAccountConsistencyPromoAction(promoAction);
+        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction);
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, newViewState);
     }
 

@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialCoordinator;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -35,13 +36,13 @@ public class AccountPickerBottomSheetCoordinator {
         public void onSheetClosed(@StateChangeReason int reason) {
             super.onSheetClosed(reason);
             if (reason == StateChangeReason.SWIPE) {
-                AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                SigninMetricsUtils.logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN);
             } else if (reason == StateChangeReason.BACK_PRESS) {
-                AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                SigninMetricsUtils.logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.DISMISSED_BACK);
             } else if (reason == StateChangeReason.TAP_SCRIM) {
-                AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                SigninMetricsUtils.logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.DISMISSED_SCRIM);
             }
         }
@@ -79,8 +80,7 @@ public class AccountPickerBottomSheetCoordinator {
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             IncognitoInterstitialDelegate incognitoInterstitialDelegate) {
-        AccountPickerDelegate.recordAccountConsistencyPromoAction(
-                AccountConsistencyPromoAction.SHOWN);
+        SigninMetricsUtils.logAccountConsistencyPromoAction(AccountConsistencyPromoAction.SHOWN);
 
         mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(
                 activity, accountPickerDelegate, this::dismissBottomSheet);
@@ -91,7 +91,7 @@ public class AccountPickerBottomSheetCoordinator {
         IncognitoInterstitialCoordinator incognitoInterstitialCoordinator =
                 new IncognitoInterstitialCoordinator(
                         mView.getIncognitoInterstitialView(), incognitoInterstitialDelegate, () -> {
-                            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                            SigninMetricsUtils.logAccountConsistencyPromoAction(
                                     AccountConsistencyPromoAction.STARTED_INCOGNITO_SESSION);
                         });
         mBottomSheetController = bottomSheetController;

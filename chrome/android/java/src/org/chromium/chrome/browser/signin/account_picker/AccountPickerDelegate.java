@@ -5,23 +5,13 @@
 package org.chromium.chrome.browser.signin.account_picker;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 
 /**
  * This interface is used in web sign-in flow for the account picker bottom sheet.
  */
 public interface AccountPickerDelegate {
-    /**
-     * Records Signin.AccountConsistencyPromoAction histogram.
-     */
-    static void recordAccountConsistencyPromoAction(
-            @AccountConsistencyPromoAction int promoAction) {
-        RecordHistogram.recordEnumeratedHistogram("Signin.AccountConsistencyPromoAction",
-                promoAction, AccountConsistencyPromoAction.MAX);
-    }
 
     /**
      * Called when the delegate is dismissed to release resources used by this class.
