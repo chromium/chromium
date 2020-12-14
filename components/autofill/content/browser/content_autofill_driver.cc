@@ -239,7 +239,7 @@ gfx::RectF ContentAutofillDriver::TransformBoundingBoxToViewportCoordinates(
 }
 
 net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
-  return render_frame_host_->GetIsolationInfoForSubresources();
+  return render_frame_host_->GetPendingIsolationInfoForSubresources();
 }
 
 void ContentAutofillDriver::FormsSeen(const std::vector<FormData>& forms) {
