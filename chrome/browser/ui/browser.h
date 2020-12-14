@@ -131,7 +131,13 @@ class Browser : public TabStripModelObserver,
     TYPE_NORMAL,
     // Popup browser.
     TYPE_POPUP,
-    // App browser.
+    // App browser. Specifically, one of these:
+    // * Web app; comes in different flavors but is backed by the same code:
+    //   - Progressive Web App (PWA)
+    //   - Shortcut app (from 3-dot menu > More tools > Create shortcut)
+    //   - System web app (Chrome OS only)
+    // * Legacy packaged app ("v1 packaged app")
+    // * Hosted app (e.g. the Web Store "app" preinstalled on Chromebooks)
     TYPE_APP,
     // Devtools browser.
     TYPE_DEVTOOLS,
