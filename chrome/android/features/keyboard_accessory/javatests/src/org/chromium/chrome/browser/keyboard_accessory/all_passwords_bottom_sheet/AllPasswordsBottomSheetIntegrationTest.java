@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
@@ -111,9 +107,6 @@ public class AllPasswordsBottomSheetIntegrationTest {
     public void testClickingUseOtherPasswordAndSelectCredential() {
         runOnUiThreadBlocking(
                 () -> { mCoordinator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD); });
-
-        onView(withId(R.id.positive_button)).perform(click());
-
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
 
         pollUiThread(() -> getCredentialPasswordAt(1) != null);

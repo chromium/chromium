@@ -568,6 +568,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.AllPasswordsBottomSheet.WarningActions"
     enum="AllPasswordsWarningActions" expires_after="M90">
+  <obsolete>
+    Obsolete since M88.
+  </obsolete>
   <owner>redatawfik@google.com</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>

@@ -114,7 +114,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_vpn_key_off.xml",
     "java/res/layout/address_accessory_sheet.xml",
     "java/res/layout/all_passwords_bottom_sheet.xml",
-    "java/res/layout/all_passwords_bottom_sheet_warning_dialog.xml",
     "java/res/layout/credit_card_accessory_sheet.xml",
     "java/res/layout/keyboard_accessory.xml",
     "java/res/layout/keyboard_accessory_action.xml",

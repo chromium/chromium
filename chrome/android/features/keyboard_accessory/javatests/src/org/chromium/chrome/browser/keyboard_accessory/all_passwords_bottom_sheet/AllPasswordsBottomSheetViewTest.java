@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_shee
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 
@@ -16,6 +17,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_botto
 import android.text.method.PasswordTransformationMethod;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
@@ -56,6 +58,7 @@ public class AllPasswordsBottomSheetViewTest {
     private static final Credential BOB =
             new Credential("Bob", "***", "Bob", "android://com.facebook.org", true, "facebook");
     private static final boolean IS_PASSWORD_FIELD = true;
+    private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 
     @Mock
     private Callback<Integer> mDismissHandler;
@@ -76,7 +79,7 @@ public class AllPasswordsBottomSheetViewTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
-                mDismissHandler, mSearchQueryCallback);
+                EXAMPLE_ORIGIN, mDismissHandler, mSearchQueryCallback);
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
@@ -100,6 +103,18 @@ public class AllPasswordsBottomSheetViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
         assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(false));
+    }
+
+    @Test
+    @MediumTest
+    public void testShowsWarningWithOriginByDefault() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
+        assertEquals(mAllPasswordsBottomSheetView.getWarningText().toString(),
+                String.format(
+                        getString(R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
+                        "m.example.com"));
     }
 
     @Test
@@ -189,6 +204,10 @@ public class AllPasswordsBottomSheetViewTest {
     }
     private ChromeActivity getActivity() {
         return mActivityTestRule.getActivity();
+    }
+
+    private String getString(@StringRes int stringRes) {
+        return mAllPasswordsBottomSheetView.getContentView().getResources().getString(stringRes);
     }
 
     private @SheetState int getBottomSheetState() {
