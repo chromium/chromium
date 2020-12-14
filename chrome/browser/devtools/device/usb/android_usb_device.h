@@ -71,13 +71,13 @@ class AdbMessage {
 
 class AndroidUsbDevice;
 typedef std::vector<scoped_refptr<AndroidUsbDevice> > AndroidUsbDevices;
-typedef base::Callback<void(const AndroidUsbDevices&)>
+typedef base::OnceCallback<void(const AndroidUsbDevices&)>
     AndroidUsbDevicesCallback;
 
 class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
  public:
   static void Enumerate(crypto::RSAPrivateKey* rsa_key,
-                        const AndroidUsbDevicesCallback& callback);
+                        AndroidUsbDevicesCallback callback);
 
   AndroidUsbDevice(crypto::RSAPrivateKey* rsa_key,
                    const AndroidDeviceInfo& android_device_info,

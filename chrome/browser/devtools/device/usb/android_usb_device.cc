@@ -84,7 +84,7 @@ void DumpMessage(bool outgoing, const uint8_t* data, size_t length) {
 #endif  // 0
 }
 
-void OnProbeFinished(const AndroidUsbDevicesCallback& callback,
+void OnProbeFinished(AndroidUsbDevicesCallback callback,
                      AndroidUsbDevices* new_devices) {
   std::unique_ptr<AndroidUsbDevices> devices(new_devices);
 
@@ -95,7 +95,7 @@ void OnProbeFinished(const AndroidUsbDevicesCallback& callback,
 
   // Return all claimed devices.
   AndroidUsbDevices result(g_devices.Get().begin(), g_devices.Get().end());
-  callback.Run(result);
+  std::move(callback).Run(result);
 }
 
 void OnDeviceClosed(const std::string& guid,
@@ -159,13 +159,13 @@ void OnDeviceOpened(AndroidUsbDevices* devices,
 }
 
 void OpenAndroidDevices(crypto::RSAPrivateKey* rsa_key,
-                        const AndroidUsbDevicesCallback& callback,
+                        AndroidUsbDevicesCallback callback,
                         std::vector<AndroidDeviceInfo> device_info_list) {
   // Add new devices.
   AndroidUsbDevices* devices = new AndroidUsbDevices();
-  base::RepeatingClosure barrier =
-      base::BarrierClosure(device_info_list.size(),
-                           base::BindOnce(&OnProbeFinished, callback, devices));
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      device_info_list.size(),
+      base::BindOnce(&OnProbeFinished, std::move(callback), devices));
 
   for (const auto& device_info : device_info_list) {
     if (base::Contains(g_open_devices.Get(), device_info.guid)) {
@@ -197,9 +197,9 @@ AdbMessage::~AdbMessage() {}
 
 // static
 void AndroidUsbDevice::Enumerate(crypto::RSAPrivateKey* rsa_key,
-                                 const AndroidUsbDevicesCallback& callback) {
+                                 AndroidUsbDevicesCallback callback) {
   UsbDeviceManagerHelper::GetInstance()->GetAndroidDevices(
-      base::BindOnce(&OpenAndroidDevices, rsa_key, callback));
+      base::BindOnce(&OpenAndroidDevices, rsa_key, std::move(callback)));
 }
 
 AndroidUsbDevice::AndroidUsbDevice(
