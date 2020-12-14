@@ -14,12 +14,14 @@
 #include "base/memory/aligned_memory.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/webrtc/webrtc_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -390,6 +392,112 @@ TEST_F(MediaStreamAudioProcessorTest, MAYBE_TestWithKeyboardMicChannel) {
   // Stop |audio_processor| so that it removes itself from
   // |webrtc_audio_device| and clears its pointer to it.
   audio_processor->Stop();
+}
+
+TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableDefaultAgc1) {
+  ::base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kWebRtcHybridAgc);
+
+  blink::AudioProcessingProperties properties;
+  properties.goog_auto_gain_control = true;
+  properties.goog_experimental_auto_gain_control = false;
+
+  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
+      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
+  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
+      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+          properties, webrtc_audio_device.get()));
+
+  base::Optional<webrtc::AudioProcessing::Config> apm_config =
+      audio_processor->GetAudioProcessingModuleConfig();
+  ASSERT_TRUE(apm_config);
+
+  EXPECT_TRUE(apm_config->gain_controller1.enabled);
+  EXPECT_EQ(
+      apm_config->gain_controller1.mode,
+#if defined(OS_ANDROID)
+      webrtc::AudioProcessing::Config::GainController1::Mode::kFixedDigital);
+#else
+      webrtc::AudioProcessing::Config::GainController1::Mode::kAdaptiveAnalog);
+#endif  // defined(OS_ANDROID)
+}
+
+TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgc) {
+  ::base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kWebRtcHybridAgc,
+      {{"vad_probability_attack", "0.2"},
+       {"use_peaks_not_rms", "true"},
+       {"level_estimator_speech_frames_threshold", "3"},
+       {"initial_saturation_margin", "10"},
+       {"extra_saturation_margin", "11"},
+       {"gain_applier_speech_frames_threshold", "5"},
+       {"max_gain_change_db_per_second", "4"},
+       {"max_output_noise_level_dbfs", "-22"},
+       {"avx2_allowed", "true"}});
+
+  blink::AudioProcessingProperties properties;
+  properties.goog_auto_gain_control = true;
+  properties.goog_experimental_auto_gain_control = true;
+
+  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
+      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
+  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
+      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+          properties, webrtc_audio_device.get()));
+
+  base::Optional<webrtc::AudioProcessing::Config> apm_config =
+      audio_processor->GetAudioProcessingModuleConfig();
+  ASSERT_TRUE(apm_config);
+
+  EXPECT_TRUE(apm_config->gain_controller1.enabled);
+  EXPECT_EQ(
+      apm_config->gain_controller1.mode,
+#if defined(OS_ANDROID)
+      webrtc::AudioProcessing::Config::GainController1::Mode::kFixedDigital);
+#else
+      webrtc::AudioProcessing::Config::GainController1::Mode::kAdaptiveAnalog);
+#endif  // defined(OS_ANDROID)
+  EXPECT_TRUE(apm_config->gain_controller2.enabled);
+  // `compression_gain_db` has no effect when hybrid AGC is active.
+  EXPECT_EQ(apm_config->gain_controller2.fixed_digital.gain_db, 0);
+
+  const auto& adaptive_digital = apm_config->gain_controller2.adaptive_digital;
+  EXPECT_TRUE(adaptive_digital.enabled);
+  EXPECT_FLOAT_EQ(adaptive_digital.vad_probability_attack, 0.2f);
+  EXPECT_EQ(
+      adaptive_digital.level_estimator,
+      webrtc::AudioProcessing::Config::GainController2::LevelEstimator::kPeak);
+  EXPECT_EQ(adaptive_digital.level_estimator_adjacent_speech_frames_threshold,
+            3);
+  EXPECT_FLOAT_EQ(adaptive_digital.initial_saturation_margin_db, 10);
+  EXPECT_FLOAT_EQ(adaptive_digital.extra_saturation_margin_db, 11);
+  EXPECT_EQ(adaptive_digital.gain_applier_adjacent_speech_frames_threshold, 5);
+  EXPECT_FLOAT_EQ(adaptive_digital.max_gain_change_db_per_second, 4);
+  EXPECT_FLOAT_EQ(adaptive_digital.max_output_noise_level_dbfs, -22);
+  EXPECT_TRUE(adaptive_digital.avx2_allowed);
+}
+
+TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableHybridAgcAvx2NotAllowed) {
+  ::base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(features::kWebRtcHybridAgc,
+                                                  {{"avx2_allowed", "false"}});
+
+  blink::AudioProcessingProperties properties;
+  properties.goog_auto_gain_control = true;
+  properties.goog_experimental_auto_gain_control = true;
+
+  scoped_refptr<WebRtcAudioDeviceImpl> webrtc_audio_device(
+      new rtc::RefCountedObject<WebRtcAudioDeviceImpl>());
+  scoped_refptr<MediaStreamAudioProcessor> audio_processor(
+      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+          properties, webrtc_audio_device.get()));
+
+  base::Optional<webrtc::AudioProcessing::Config> apm_config =
+      audio_processor->GetAudioProcessingModuleConfig();
+  ASSERT_TRUE(apm_config);
+
+  EXPECT_FALSE(apm_config->gain_controller2.adaptive_digital.avx2_allowed);
 }
 
 }  // namespace blink

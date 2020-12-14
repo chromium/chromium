@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/webrtc/audio_delay_stats_reporter.h"
@@ -117,7 +118,11 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   friend class MediaStreamAudioProcessorTest;
 
   FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
-                           GetAecDumpMessageFilter);
+                           TestAgcEnableDefaultAgc1);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
+                           TestAgcEnableHybridAgc);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamAudioProcessorTest,
+                           TestAgcEnableHybridAgcAvx2NotAllowed);
 
   // WebRtcPlayoutDataSource::Sink implementation.
   void OnPlayoutData(media::AudioBus* audio_bus,
@@ -125,6 +130,14 @@ class MODULES_EXPORT MediaStreamAudioProcessor
                      int audio_delay_milliseconds) override;
   void OnPlayoutDataSourceChanged() override;
   void OnRenderThreadChanged() override;
+
+  base::Optional<webrtc::AudioProcessing::Config>
+  GetAudioProcessingModuleConfig() const {
+    if (audio_processing_) {
+      return audio_processing_->GetConfig();
+    }
+    return base::nullopt;
+  }
 
   // This method is called on the libjingle thread.
   AudioProcessorStatistics GetStats(bool has_remote_tracks) override;

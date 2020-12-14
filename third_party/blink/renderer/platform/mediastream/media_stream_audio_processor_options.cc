@@ -246,6 +246,8 @@ void ConfigAutomaticGainControl(
 
       adaptive_digital.max_output_noise_level_dbfs =
           agc2_properties->max_output_noise_level_dbfs;
+
+      adaptive_digital.avx2_allowed = agc2_properties->avx2_allowed;
     }
   } else if (use_fixed_digital_agc2) {
     // Experimental AGC is disabled, thus hybrid AGC is disabled. Config AGC2

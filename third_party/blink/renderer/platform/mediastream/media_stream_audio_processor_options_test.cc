@@ -51,6 +51,7 @@ TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
   agc2_properties.gain_applier_speech_frames_threshold = 5;
   agc2_properties.max_gain_change_db_per_second = 4;
   agc2_properties.max_output_noise_level_dbfs = -22;
+  agc2_properties.avx2_allowed = true;
   const double compression_gain_db = 10.0;
 
   ConfigAutomaticGainControl(
@@ -88,6 +89,7 @@ TEST(ConfigAutomaticGainControlTest, EnableHybridAGC) {
                   agc2_properties.max_gain_change_db_per_second);
   EXPECT_FLOAT_EQ(adaptive_digital.max_output_noise_level_dbfs,
                   agc2_properties.max_output_noise_level_dbfs);
+  EXPECT_TRUE(adaptive_digital.avx2_allowed);
 }
 
 TEST(PopulateApmConfigTest, DefaultWithoutConfigJson) {
