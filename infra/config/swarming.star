@@ -64,7 +64,12 @@ swarming.pool_realm(
 swarming.task_triggerers(
     builder_realm = "ci",
     pool_realm = "pools/ci",
-    users = ["chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"],
+    users = [
+        "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+
+        # Used by Findit to re-run swarming tasks for bisection purposes.
+        "findit-for-me@appspot.gserviceaccount.com",
+    ],
 )
 
 # Realm with bots that run try builds.
