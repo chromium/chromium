@@ -1680,14 +1680,16 @@ void BrowserAccessibilityManager::CollectChangedNodesAndParentsForAtomicUpdate(
     if (obj)
       nodes_needing_update->insert(obj->GetAXPlatformNode());
 
-    // When a node is a text node or line break, update its parent, because
-    // its text is part of its hypertext.
     const ui::AXNode* parent = changed_node->GetUnignoredParent();
     if (!parent)
       continue;
 
-    if (changed_node->IsText() &&
-        changed_node->data().role != ax::mojom::Role::kInlineTextBox) {
+    // Update changed nodes' parents, including their hypertext:
+    // Any child that changes, whether text or not, can affect the parent's
+    // hypertext. Hypertext uses embedded object characters to represent
+    // child objects, and the AXHyperText caches relevant object at
+    // each embedded object character offset.
+    if (!changed_node->IsChildOfLeaf()) {
       BrowserAccessibility* parent_obj = GetFromAXNode(parent);
       if (parent_obj)
         nodes_needing_update->insert(parent_obj->GetAXPlatformNode());

@@ -1,0 +1,20 @@
+<!--
+@WIN-ALLOW:ia2_hypertext=*
+@AURALINUX-ALLOW:character_count*
+@WAIT-FOR:done
+-->
+<!-- This test makes sure the number of embedded object characters is correct -->
+<!DOCTYPE html>
+<html>
+<body>
+<div><div id="move-me" tabindex="0"></div>  <!-- The parent div is not in the platform tree -->
+<div data-hello="1"></div>
+<script>
+function go() {
+  document.querySelector('div[data-hello]').appendChild(document.getElementById("move-me"));
+  document.title = 'done';
+}
+setTimeout(go, 50);
+</script>
+</body>
+</html>
