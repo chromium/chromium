@@ -653,26 +653,19 @@ void ToolbarView::ChildPreferredSizeChanged(views::View* child) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ToolbarView, protected:
+// ToolbarView, private:
 
 // Override this so that when the user presses F6 to rotate toolbar panes,
 // the location bar gets focus, not the first control in the toolbar - and
 // also so that it selects all content in the location bar.
-bool ToolbarView::SetPaneFocusAndFocusDefault() {
-  if (!location_bar_->HasFocus()) {
-    SetPaneFocus(location_bar_);
-    location_bar_->FocusLocation(true);
-    return true;
-  }
-
-  if (!AccessiblePaneView::SetPaneFocusAndFocusDefault())
-    return false;
-  browser_->window()->RotatePaneFocus(true);
-  return true;
+views::View* ToolbarView::GetDefaultFocusableChild() {
+  return location_bar_;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// ToolbarView, private:
+void ToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kToolbar;
+  node_data->SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_TOOLBAR));
+}
 
 void ToolbarView::InitLayout() {
   const int default_margin = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);

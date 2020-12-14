@@ -5902,6 +5902,9 @@ the Bookmarks menu.">
       <message name="IDS_ACCNAME_TAB_STRIP" desc="The accessible name for the tab strip.">
         Tab strip
       </message>
+      <message name="IDS_ACCNAME_TOOLBAR" desc="The accessible name for the toolbar.">
+        Toolbar
+      </message>
 
       <!-- Clipboard permission -->
       <message name="IDS_ALLOWED_CLIPBOARD_TITLE" desc="Title of the info bubble shown when a site has been allowed access to read the contents of the system clipboard.">

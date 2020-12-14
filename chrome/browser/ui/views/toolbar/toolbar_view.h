@@ -193,15 +193,16 @@ class ToolbarView : public views::AccessiblePaneView,
   void ChildPreferredSizeChanged(views::View* child) override;
 
  protected:
-  // AccessiblePaneView:
-  bool SetPaneFocusAndFocusDefault() override;
-
   // This controls Toolbar, LocationBar and CustomTabBar visibility.
   // If we don't set all three, tab navigation from the app menu breaks
   // on Chrome OS.
   void SetToolbarVisibility(bool visible);
 
  private:
+  // AccessiblePaneView:
+  views::View* GetDefaultFocusableChild() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
   // AnimationDelegateViews:
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
