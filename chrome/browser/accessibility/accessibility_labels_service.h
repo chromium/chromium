@@ -16,7 +16,6 @@
 
 #if defined(OS_ANDROID)
 #include "net/base/network_change_notifier.h"
-#include "ui/accessibility/ax_mode_observer.h"
 #endif
 
 class Profile;
@@ -36,11 +35,9 @@ class PrefRegistrySyncable;
 class AccessibilityLabelsService
     : public KeyedService
 #if defined(OS_ANDROID)
-    // On Android, implement NetworkChangeObserver for "only on wifi" option,
-    // and an AXModeObserver for detecting when a screen reader is enabled.
+    // On Android, implement NetworkChangeObserver for "only on wifi" option.
     ,
-      public net::NetworkChangeNotifier::NetworkChangeObserver,
-      public ui::AXModeObserver
+      public net::NetworkChangeNotifier::NetworkChangeObserver
 #endif
 {
 
@@ -73,9 +70,6 @@ class AccessibilityLabelsService
   // net::NetworkChangeNotifier::NetworkChangeObserver
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
-
-  // ui::AXModeObserver
-  void OnAXModeAdded(ui::AXMode mode) override;
 
   bool GetAndroidEnabledStatus();
 #endif

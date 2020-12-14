@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -111,6 +112,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
     @Mock
+    private Profile.Natives mProfileJniMock;
+    @Mock
     private Profile mProfile;
     @Mock
     private PrefService mPrefService;
@@ -146,8 +149,10 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         mJniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        Mockito.when(mProfileJniMock.fromWebContents(any())).thenReturn(mProfile);
         FeatureList.setTestCanUseDefaultsForTesting();
 
         mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
