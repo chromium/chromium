@@ -847,6 +847,9 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
           sps->pic_width_in_ctbs_y - 1;
       for (int i = 0; i < pps->num_tile_columns_minus1; ++i) {
         READ_UE_OR_RETURN(&pps->column_width_minus1[i]);
+        IN_RANGE_OR_RETURN(
+            pps->column_width_minus1[i], 0,
+            pps->column_width_minus1[pps->num_tile_columns_minus1] - 1);
         pps->column_width_minus1[pps->num_tile_columns_minus1] -=
             pps->column_width_minus1[i] + 1;
       }
@@ -854,6 +857,9 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
           sps->pic_height_in_ctbs_y - 1;
       for (int i = 0; i < pps->num_tile_rows_minus1; ++i) {
         READ_UE_OR_RETURN(&pps->row_height_minus1[i]);
+        IN_RANGE_OR_RETURN(
+            pps->row_height_minus1[i], 0,
+            pps->row_height_minus1[pps->num_tile_rows_minus1] - 1);
         pps->row_height_minus1[pps->num_tile_rows_minus1] -=
             pps->row_height_minus1[i] + 1;
       }
