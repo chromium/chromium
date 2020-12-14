@@ -2509,7 +2509,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/css-paint-api/dynamic-import.html [ Failure ]
-crbug.com/626703 [ Win10 ] external/wpt/css/css-grid/grid-items/grid-auto-margin-and-replaced-item-001.html [ Failure ]
 crbug.com/626703 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/dynamic-import.html [ Failure ]
 crbug.com/626703 external/wpt/websockets/cookies/004.html [ Timeout ]
 crbug.com/626703 external/wpt/websockets/cookies/004.html?wss [ Timeout ]
@@ -3279,6 +3278,7 @@ crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-columns-001.h
 crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-001.html [ Failure ]
 crbug.com/935102 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Failure ]
 crbug.com/707359 [ Mac ] external/wpt/css/css-grid/alignment/self-baseline/grid-self-baseline-003.html [ Failure ]
+crbug.com/1157962 [ Win10 ] external/wpt/css/css-grid/grid-items/grid-auto-margin-and-replaced-item-001.html [ Failure ]
 crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-overflow-padding-001.html [ Failure ]
 crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-overflow-padding-002.html [ Failure ]
 crbug.com/1053825 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-001.html [ Failure ]
