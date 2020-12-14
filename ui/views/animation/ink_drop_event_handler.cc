@@ -113,6 +113,10 @@ void InkDropEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   }
 }
 
+base::StringPiece InkDropEventHandler::GetLogContext() const {
+  return "InkDropEventHandler";
+}
+
 void InkDropEventHandler::OnViewVisibilityChanged(View* observed_view,
                                                   View* starting_view) {
   DCHECK_EQ(host_view_, observed_view);

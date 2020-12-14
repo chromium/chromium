@@ -147,7 +147,7 @@ void ConvertEventLocationToTargetWindowLocation(
   located_event->set_location_f(location_in_pixel_in_host);
 }
 
-const char* EventTypeName(EventType type) {
+base::StringPiece EventTypeName(EventType type) {
   if (type >= ET_LAST)
     return "";
 

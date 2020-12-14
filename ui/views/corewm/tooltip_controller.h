@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/timer/timer.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/window_observer.h"
@@ -52,6 +54,7 @@ class VIEWS_EXPORT TooltipController
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnCancelMode(ui::CancelModeEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
   // Overridden from aura::client::CursorClientObserver.
   void OnCursorVisibilityChanged(bool is_visible) override;

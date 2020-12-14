@@ -1168,6 +1168,10 @@ void DesktopNativeWidgetAura::OnGestureEvent(ui::GestureEvent* event) {
   native_widget_delegate_->OnGestureEvent(event);
 }
 
+base::StringPiece DesktopNativeWidgetAura::GetLogContext() const {
+  return "DesktopNativeWidgetAura";
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopNativeWidgetAura, wm::ActivationDelegate implementation:
 

@@ -46,4 +46,8 @@ void ScopedTargetHandler::OnEvent(Event* event) {
   new_handler_->OnEvent(event);
 }
 
+base::StringPiece ScopedTargetHandler::GetLogContext() const {
+  return "ScopedTargetHandler";
+}
+
 }  // namespace ui

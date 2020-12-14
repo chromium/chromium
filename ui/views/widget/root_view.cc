@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -123,6 +124,10 @@ class PreEventDispatchHandler : public ui::EventHandler {
 #endif
   }
 
+  base::StringPiece GetLogContext() const override {
+    return "PreEventDispatchHandler";
+  }
+
   View* owner_;
 };
 
@@ -167,6 +172,10 @@ class PostEventDispatchHandler : public ui::EventHandler {
       target->ShowContextMenu(screen_location, ui::MENU_SOURCE_TOUCH);
       event->StopPropagation();
     }
+  }
+
+  base::StringPiece GetLogContext() const override {
+    return "PostEventDispatchHandler";
   }
 
   bool touch_dnd_enabled_;
@@ -293,6 +302,7 @@ ui::EventTargeter* RootView::GetDefaultEventTargeter() {
 }
 
 void RootView::OnEventProcessingStarted(ui::Event* event) {
+  VLOG(5) << "RootView::OnEventProcessingStarted(" << event->ToString() << ")";
   if (!event->IsGestureEvent())
     return;
 
@@ -327,6 +337,7 @@ void RootView::OnEventProcessingStarted(ui::Event* event) {
 }
 
 void RootView::OnEventProcessingFinished(ui::Event* event) {
+  VLOG(5) << "RootView::OnEventProcessingFinished(" << event->ToString() << ")";
   // If |event| was not handled and |gesture_handler_| was not set by the
   // dispatch of a previous gesture event, then no default gesture handler
   // should be set prior to the next gesture event being received.

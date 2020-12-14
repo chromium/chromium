@@ -250,4 +250,8 @@ void CompoundEventFilter::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
+base::StringPiece CompoundEventFilter::GetLogContext() const {
+  return "CompoundEventFilter";
+}
+
 }  // namespace wm

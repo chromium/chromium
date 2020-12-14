@@ -28,6 +28,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
@@ -181,6 +182,10 @@ class TabHoverCardEventSniffer : public ui::EventHandler {
 
   void OnGestureEvent(ui::GestureEvent* event) override {
     hover_card_->FadeOutToHide();
+  }
+
+  base::StringPiece GetLogContext() const override {
+    return "TabHoverCardEventSniffer";
   }
 
  private:

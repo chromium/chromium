@@ -138,6 +138,10 @@ void FocusController::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
+base::StringPiece FocusController::GetLogContext() const {
+  return "FocusController";
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // FocusController, aura::WindowObserver implementation:
 

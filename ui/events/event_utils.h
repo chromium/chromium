@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
@@ -190,7 +191,7 @@ EVENTS_EXPORT void ConvertEventLocationToTargetWindowLocation(
     ui::LocatedEvent* located_event);
 
 // Returns a string description of an event type. Useful for debugging.
-EVENTS_EXPORT const char* EventTypeName(EventType type);
+EVENTS_EXPORT base::StringPiece EventTypeName(EventType type);
 
 }  // namespace ui
 

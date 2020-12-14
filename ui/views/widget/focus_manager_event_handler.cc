@@ -28,4 +28,8 @@ void FocusManagerEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   }
 }
 
+base::StringPiece FocusManagerEventHandler::GetLogContext() const {
+  return "FocusManagerEventHandler";
+}
+
 }  // namespace views

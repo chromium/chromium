@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
@@ -49,6 +50,7 @@ class WM_CORE_EXPORT WindowModalityController : public ui::EventHandler,
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
   // Overridden from aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override;

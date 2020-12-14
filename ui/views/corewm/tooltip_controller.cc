@@ -241,6 +241,10 @@ void TooltipController::OnCancelMode(ui::CancelModeEvent* event) {
   HideTooltipAndResetStates();
 }
 
+base::StringPiece TooltipController::GetLogContext() const {
+  return "TooltipController";
+}
+
 void TooltipController::OnCursorVisibilityChanged(bool is_visible) {
   UpdateIfRequired();
 }

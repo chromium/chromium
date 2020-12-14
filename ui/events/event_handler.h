@@ -9,6 +9,7 @@
 
 #include "base/containers/stack.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/events_export.h"
 
@@ -53,6 +54,10 @@ class EVENTS_EXPORT EventHandler {
   virtual void OnGestureEvent(GestureEvent* event);
 
   virtual void OnCancelMode(CancelModeEvent* event);
+
+  // Returns information about the implementing class or scope for diagnostic
+  // logging purposes.
+  virtual base::StringPiece GetLogContext() const;
 
  private:
   friend class EventDispatcher;

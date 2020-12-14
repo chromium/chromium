@@ -16,8 +16,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
@@ -200,7 +203,7 @@ void Event::SetNativeEvent(const PlatformEvent& event) {
 }
 
 const char* Event::GetName() const {
-  return EventTypeName(type_);
+  return EventTypeName(type_).data();
 }
 
 void Event::SetProperties(const Properties& properties) {
@@ -310,10 +313,9 @@ void Event::SetHandled() {
 }
 
 std::string Event::ToString() const {
-  std::string s = GetName();
-  s += " time_stamp ";
-  s += base::NumberToString(time_stamp_.since_origin().InSecondsF());
-  return s;
+  return base::StrCat(
+      {GetName(), " time_stamp ",
+       base::NumberToString(time_stamp_.since_origin().InSecondsF())});
 }
 
 Event::Event(EventType type, base::TimeTicks time_stamp, int flags)
@@ -439,12 +441,8 @@ void LocatedEvent::UpdateForRootTransform(
 }
 
 std::string LocatedEvent::ToString() const {
-  std::string s = Event::ToString();
-  s += " location ";
-  s += location_.ToString();
-  s += " root_location ";
-  s += root_location_.ToString();
-  return s;
+  return base::StrCat({Event::ToString(), " location ", location_.ToString(),
+                       " root_location ", root_location_.ToString()});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -616,6 +614,12 @@ void MouseEvent::SetClickCount(int click_count) {
       break;
   }
   set_flags(f);
+}
+
+std::string MouseEvent::ToString() const {
+  return base::StrCat(
+      {LocatedEvent::ToString(), " flags ",
+       base::StringPrintf("(0x%.8x)", flags())});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1097,6 +1101,13 @@ void KeyEvent::NormalizeFlags() {
     set_flags(flags() & ~mask);
 }
 
+std::string KeyEvent::ToString() const {
+  return base::StrCat(
+      {Event::ToString(), " key ",
+       base::StringPrintf("(0x%.4x)", key_code_), " flags ",
+       base::StringPrintf("(0x%.8x)", flags())});
+}
+
 KeyboardCode KeyEvent::GetLocatedWindowsKeyboardCode() const {
   return NonLocatedToLocatedKeyboardCode(key_code_, code_);
 }
@@ -1202,14 +1213,11 @@ void ScrollEvent::Scale(const float factor) {
 }
 
 std::string ScrollEvent::ToString() const {
-  std::string s = MouseEvent::ToString();
-  s += " offset " + base::NumberToString(x_offset_) + "," +
-       base::NumberToString(y_offset_);
-  s += " offset_ordinal " + base::NumberToString(x_offset_ordinal_) + "," +
-       base::NumberToString(y_offset_ordinal_);
-  s += " momentum_phase " + MomentumPhaseToString(momentum_phase_);
-  s += " event_phase " + ScrollEventPhaseToString(scroll_event_phase_);
-  return s;
+  return base::StringPrintf(
+      "%s offset %g,%g offset_ordinal %g,%g momentum_phase %s event_phase %s",
+      MouseEvent::ToString().c_str(), x_offset_, y_offset_, x_offset_ordinal_,
+      y_offset_ordinal_, MomentumPhaseToString(momentum_phase_).c_str(),
+      ScrollEventPhaseToString(scroll_event_phase_).c_str());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1239,5 +1247,11 @@ GestureEvent::GestureEvent(float x,
 GestureEvent::GestureEvent(const GestureEvent& other) = default;
 
 GestureEvent::~GestureEvent() = default;
+
+std::string GestureEvent::ToString() const {
+  return base::StringPrintf("%s touch_event_id %d",
+                            LocatedEvent::ToString().c_str(),
+                            unique_touch_event_id_);
+}
 
 }  // namespace ui

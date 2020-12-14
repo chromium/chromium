@@ -1810,6 +1810,10 @@ void RenderWidgetHostViewAura::OnGestureEvent(ui::GestureEvent* event) {
   event_handler_->OnGestureEvent(event);
 }
 
+base::StringPiece RenderWidgetHostViewAura::GetLogContext() const {
+  return "RenderWidgetHostViewAura";
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostViewAura, wm::ActivationDelegate implementation:
 

@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/scoped_observer.h"
@@ -1356,6 +1357,10 @@ void View::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void View::OnGestureEvent(ui::GestureEvent* event) {}
+
+base::StringPiece View::GetLogContext() const {
+  return GetClassName();
+}
 
 void View::SetNotifyEnterExitOnChild(bool notify) {
   notify_enter_exit_on_child_ = notify;

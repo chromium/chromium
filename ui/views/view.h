@@ -24,6 +24,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -1110,6 +1111,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) final;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
   // Accelerators --------------------------------------------------------------
 

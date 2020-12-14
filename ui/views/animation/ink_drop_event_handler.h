@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/scoped_observer.h"
+#include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -50,6 +51,7 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
   // ViewObserver:
   void OnViewVisibilityChanged(View* observed_view,

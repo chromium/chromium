@@ -6,6 +6,7 @@
 #define UI_EVENTS_SCOPED_TARGET_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/events_export.h"
 
@@ -25,6 +26,7 @@ class EVENTS_EXPORT ScopedTargetHandler : public EventHandler {
 
   // EventHandler:
   void OnEvent(Event* event) override;
+  base::StringPiece GetLogContext() const override;
 
  private:
   // If non-null the destructor sets this to true. This is set while handling

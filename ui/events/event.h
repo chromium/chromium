@@ -377,7 +377,7 @@ class EVENTS_EXPORT LocatedEvent : public Event {
     location_ = location_ - diff;
   }
 
-  // Event:
+  // Event overrides.
   std::string ToString() const override;
 
  protected:
@@ -549,6 +549,9 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
   const gfx::Vector2dF& movement() const { return movement_; }
 
   const PointerDetails& pointer_details() const { return pointer_details_; }
+
+  // Event overides.
+  std::string ToString() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EventTest, DoubleClickRequiresUniqueTimestamp);
@@ -873,6 +876,9 @@ class EVENTS_EXPORT KeyEvent : public Event {
   // (Native X11 event flags describe the state before the event.)
   void NormalizeFlags();
 
+  // Event overrides.
+  std::string ToString() const override;
+
  protected:
   friend class KeyEventTestApi;
 
@@ -984,7 +990,7 @@ class EVENTS_EXPORT ScrollEvent : public MouseEvent {
   EventMomentumPhase momentum_phase() const { return momentum_phase_; }
   ScrollEventPhase scroll_event_phase() const { return scroll_event_phase_; }
 
-  // Event:
+  // Event overrides.
   std::string ToString() const override;
 
  private:
@@ -1028,6 +1034,9 @@ class EVENTS_EXPORT GestureEvent : public LocatedEvent {
   const GestureEventDetails& details() const { return details_; }
 
   uint32_t unique_touch_event_id() const { return unique_touch_event_id_; }
+
+  // Event overrides.
+  std::string ToString() const override;
 
  private:
   GestureEventDetails details_;

@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIDGET_FOCUS_MANAGER_EVENT_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
 
 namespace aura {
@@ -25,6 +26,7 @@ class FocusManagerEventHandler : public ui::EventHandler {
 
   // Implementation of ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
  private:
   Widget* widget_;

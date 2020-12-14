@@ -20,6 +20,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/layers/deadline_policy.h"
@@ -285,6 +286,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
   // Overridden from wm::ActivationDelegate:
   bool ShouldActivate() const override;
