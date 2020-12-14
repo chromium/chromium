@@ -18,57 +18,27 @@
 
 namespace cr_fuchsia {
 
-// Utility class to get the JSON value of the list URL for a DevTools service on
-// localhost.
-class DevToolsListFetcher : public net::URLFetcherDelegate {
- public:
-  DevToolsListFetcher() {
-    request_context_getter_ =
-        base::MakeRefCounted<net::TestURLRequestContextGetter>(
-            base::ThreadTaskRunnerHandle::Get());
-  }
-  ~DevToolsListFetcher() override = default;
-
-  base::Value GetDevToolsListFromPort(uint16_t port) {
-    std::string url = base::StringPrintf("http://127.0.0.1:%d/json/list", port);
-    std::unique_ptr<net::URLFetcher> fetcher = net::URLFetcher::Create(
-        GURL(url), net::URLFetcher::GET, this, TRAFFIC_ANNOTATION_FOR_TESTS);
-    fetcher->SetRequestContext(request_context_getter_.get());
-    fetcher->Start();
-
-    base::RunLoop run_loop;
-    on_url_fetch_complete_ack_ = run_loop.QuitClosure();
-    run_loop.Run();
-
-    if (fetcher->GetError() != net::OK)
-      return base::Value();
-
-    if (fetcher->GetResponseCode() != net::HTTP_OK)
-      return base::Value();
-
-    std::string result;
-    if (!fetcher->GetResponseAsString(&result))
-      return base::Value();
-
-    return base::JSONReader::Read(result).value_or(base::Value());
-  }
-
- private:
-  // fuchsia::web::URLFetcherDelegate implementation.
-  void OnURLFetchComplete(const net::URLFetcher* source) override {
-    DCHECK(on_url_fetch_complete_ack_);
-    std::move(on_url_fetch_complete_ack_).Run();
-  }
-
-  scoped_refptr<net::TestURLRequestContextGetter> request_context_getter_;
-  base::OnceClosure on_url_fetch_complete_ack_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsListFetcher);
-};
-
 base::Value GetDevToolsListFromPort(uint16_t port) {
-  DevToolsListFetcher devtools_fetcher;
-  return devtools_fetcher.GetDevToolsListFromPort(port);
+  GURL url(base::StringPrintf("http://127.0.0.1:%d/json/list", port));
+  net::TestURLRequestContext request_context;
+  net::TestDelegate delegate;
+
+  std::unique_ptr<net::URLRequest> request(request_context.CreateRequest(
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  request->Start();
+  delegate.RunUntilComplete();
+
+  if (delegate.request_status() < 0)
+    return base::Value();
+
+  if (request->response_headers()->response_code() != net::HTTP_OK)
+    return base::Value();
+
+  const std::string& result = delegate.data_received();
+  if (result.empty())
+    return base::Value();
+
+  return base::JSONReader::Read(result).value_or(base::Value());
 }
 
 }  // namespace cr_fuchsia
