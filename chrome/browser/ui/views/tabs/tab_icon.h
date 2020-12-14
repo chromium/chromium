@@ -111,8 +111,6 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // whether a layer can be used.
   void RefreshLayer();
 
-  void UpdateThemedFavicon();
-
   gfx::ImageSkia ThemeImage(const gfx::ImageSkia& source);
 
   const base::TickClock* clock_;
