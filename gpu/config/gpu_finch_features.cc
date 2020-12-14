@@ -13,10 +13,28 @@
 #include "base/android/build_info.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif
 
 namespace features {
+namespace {
+
+#if defined(OS_ANDROID)
+bool FieldIsInBlocklist(const char* current_value, std::string blocklist_str) {
+  std::vector<std::string> blocklist = base::SplitString(
+      blocklist_str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const std::string& blocklisted_value : blocklist) {
+    if (base::StartsWith(current_value, blocklisted_value,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif
+
+}  // namespace
 
 #if defined(OS_ANDROID)
 // Used to limit GL version to 2.0 for skia raster on Android.
@@ -37,6 +55,24 @@ const base::Feature kAImageReader{"AImageReader",
 // raster.
 const base::Feature kWebViewVulkan{"WebViewVulkan",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Used to enable/disable zero copy video path on webview for MCVD.
+const base::Feature kWebViewZeroCopyVideo{"WebViewZeroCopyVideo",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// List of devices on which WebViewZeroCopyVideo should be disabled.
+const base::FeatureParam<std::string> kWebViewZeroCopyVideoBlocklist{
+    &kWebViewZeroCopyVideo, "WebViewZeroCopyVideoBlocklist", ""};
+
+// Used to limit AImageReader max queue size to 1 since many devices especially
+// android Tv devices do not support more than 1 images.
+const base::Feature kLimitAImageReaderMaxSizeToOne{
+    "LimitAImageReaderMaxSizeToOne", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// List of devices on which to limit AImageReader max queue size to 1.
+const base::FeatureParam<std::string> kLimitAImageReaderMaxSizeToOneBlocklist{
+    &kLimitAImageReaderMaxSizeToOne, "LimitAImageReaderMaxSizeToOneBlocklist",
+    "MIBOX"};
 #endif
 
 // Enable GPU Rasterization by default. This can still be overridden by
@@ -148,6 +184,31 @@ bool IsAndroidSurfaceControlEnabled() {
          base::FeatureList::IsEnabled(kAndroidSurfaceControl) &&
          gfx::SurfaceControl::IsSupported();
 }
+
+// Many devices do not support more than 1 image to be acquired from the
+// AImageReader.(crbug.com/1051705). This method returns true for those
+// devices. Currently the list of device model names are sent from server side
+// via a finch config file. There is a known device MIBOX for which max size
+// should be 1 irrespecticve of the feature LimitAImageReaderMaxSizeToOne
+// enabled or not. Get() returns default value even if the feature is disabled.
+bool LimitAImageReaderMaxSizeToOne() {
+  return (FieldIsInBlocklist(base::android::BuildInfo::GetInstance()->model(),
+                             kLimitAImageReaderMaxSizeToOneBlocklist.Get()));
+}
+
+// Zero copy is disabled if device can not support 3 max images.
+bool IsWebViewZeroCopyVideoEnabled() {
+  const bool limit_max_size_to_one = LimitAImageReaderMaxSizeToOne();
+  if (!IsAImageReaderEnabled() || limit_max_size_to_one)
+    return false;
+
+  if (!base::FeatureList::IsEnabled(kWebViewZeroCopyVideo))
+    return false;
+
+  return !(FieldIsInBlocklist(base::android::BuildInfo::GetInstance()->model(),
+                              kWebViewZeroCopyVideoBlocklist.Get()));
+}
+
 #endif
 
 }  // namespace features
