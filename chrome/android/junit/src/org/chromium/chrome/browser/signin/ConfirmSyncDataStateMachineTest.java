@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.ui.ConfirmImportSyncDataDialog;
 import org.chromium.chrome.browser.signin.ui.ConfirmManagedSyncDataDialog;
+import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachine;
 import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachineDelegate;
 
 /** Tests for {@link ConfirmSyncDataStateMachine}. */

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.signin.account_picker.AccountPickerCoordinato
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachine;
 import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachineDelegate;
 import org.chromium.chrome.browser.signin.ui.ConsentTextTracker;
 import org.chromium.chrome.browser.signin.ui.SigninView;

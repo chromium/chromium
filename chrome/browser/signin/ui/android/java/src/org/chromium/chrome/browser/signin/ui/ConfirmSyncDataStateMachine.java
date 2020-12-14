@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import android.os.Handler;
 import android.text.TextUtils;
@@ -13,9 +13,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.ui.ConfirmImportSyncDataDialog;
-import org.chromium.chrome.browser.signin.ui.ConfirmManagedSyncDataDialog;
-import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachineDelegate;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -63,8 +60,9 @@ public class ConfirmSyncDataStateMachine
 
     /**
      * Callback for completion of the {@link ConfirmSyncDataStateMachine}.
+     * TODO(https://crbug.com/1155123): Change this method to package internal after modularization
      */
-    interface Listener {
+    public interface Listener {
         /**
          * The state machine has completed and the state is done, or all necessary
          * confirmations were given and the sign-in flow can proceed.
