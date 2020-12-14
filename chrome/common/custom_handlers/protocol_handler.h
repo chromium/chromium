@@ -10,6 +10,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "url/gurl.h"
 
 // A single tuple of (protocol, url, last_modified) that indicates how URLs
@@ -18,12 +19,16 @@
 // of protocol handlers based on time ranges.
 class ProtocolHandler {
  public:
-  static ProtocolHandler CreateProtocolHandler(const std::string& protocol,
-                                               const GURL& url);
+  static ProtocolHandler CreateProtocolHandler(
+      const std::string& protocol,
+      const GURL& url,
+      blink::ProtocolHandlerSecurityLevel security_level =
+          blink::ProtocolHandlerSecurityLevel::kStrict);
 
   ProtocolHandler(const std::string& protocol,
                   const GURL& url,
-                  base::Time last_modified);
+                  base::Time last_modified,
+                  blink::ProtocolHandlerSecurityLevel security_level);
 
   // Creates a ProtocolHandler with fields from the dictionary. Returns an
   // empty ProtocolHandler if the input is invalid.
@@ -85,6 +90,7 @@ class ProtocolHandler {
   std::string protocol_;
   GURL url_;
   base::Time last_modified_;
+  blink::ProtocolHandlerSecurityLevel security_level_;
 };
 
 #endif  // CHROME_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_

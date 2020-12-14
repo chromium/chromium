@@ -12,6 +12,7 @@ namespace blink {
 
 bool BLINK_COMMON_EXPORT
 IsValidCustomHandlerScheme(const base::StringPiece scheme,
+                           bool allow_ext_prefix,
                            bool& has_custom_scheme_prefix);
 
 }  // namespace blink

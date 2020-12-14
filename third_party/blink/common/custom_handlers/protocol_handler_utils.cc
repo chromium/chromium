@@ -10,17 +10,23 @@
 namespace blink {
 
 bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
+                                bool allow_ext_prefix,
                                 bool& has_custom_scheme_prefix) {
   has_custom_scheme_prefix = false;
 
   static constexpr const char kWebPrefix[] = "web+";
-  static constexpr const size_t kWebPrefixLength = base::size(kWebPrefix) - 1;
+  static constexpr const char kExtPrefix[] = "ext+";
+  DCHECK_EQ(base::size(kWebPrefix), base::size(kExtPrefix));
+  static constexpr const size_t kPrefixLength = base::size(kWebPrefix) - 1;
   if (base::StartsWith(scheme, kWebPrefix,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
+                       base::CompareCase::INSENSITIVE_ASCII) ||
+      (allow_ext_prefix &&
+       base::StartsWith(scheme, kExtPrefix,
+                        base::CompareCase::INSENSITIVE_ASCII))) {
     has_custom_scheme_prefix = true;
     // HTML5 requires that schemes with the |web+| prefix contain one or more
     // ASCII alphas after that prefix.
-    auto scheme_name = scheme.substr(kWebPrefixLength);
+    auto scheme_name = scheme.substr(kPrefixLength);
     if (scheme_name.empty())
       return false;
     for (auto& character : scheme_name) {

@@ -9,6 +9,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -1006,7 +1007,8 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
   bool is_valid_protocol = protocol.has_value();
 
   if (is_valid_protocol &&
-      !VerifyCustomHandlerScheme(protocol.value(), error_message)) {
+      !VerifyCustomHandlerScheme(protocol.value(), error_message,
+                                 ProtocolHandlerSecurityLevel::kStrict)) {
     AddErrorInfo(error_message);
     is_valid_protocol = false;
   }

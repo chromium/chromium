@@ -226,7 +226,7 @@ ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
     case extensions::Feature::WEB_PAGE_CONTEXT:
       return blink::ProtocolHandlerSecurityLevel::kStrict;
     case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
-      return blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins;
+      return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
   }
 }
 

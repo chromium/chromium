@@ -27,6 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 using content::BrowserThread;
 
@@ -168,14 +169,27 @@ class ProtocolHandlerRegistryTest : public testing::Test {
     return test_protocol_handler_;
   }
 
-  ProtocolHandler CreateProtocolHandler(const std::string& protocol,
-                                        const GURL& url) {
-    return ProtocolHandler::CreateProtocolHandler(protocol, url);
+  ProtocolHandler CreateProtocolHandler(
+      const std::string& protocol,
+      const GURL& url,
+      blink::ProtocolHandlerSecurityLevel security_level =
+          blink::ProtocolHandlerSecurityLevel::kStrict) {
+    return ProtocolHandler::CreateProtocolHandler(protocol, url,
+                                                  security_level);
   }
 
   ProtocolHandler CreateProtocolHandler(const std::string& protocol,
                                         const std::string& name) {
     return CreateProtocolHandler(protocol, GURL("http://" + name + "/%s"));
+  }
+
+  bool ProtocolHandlerCanRegisterProtocol(
+      const std::string& protocol,
+      const GURL& handler_url,
+      blink::ProtocolHandlerSecurityLevel security_level) {
+    registry()->OnAcceptRegisterProtocolHandler(
+        CreateProtocolHandler(protocol, handler_url, security_level));
+    return registry()->IsHandledProtocol(protocol);
   }
 
   void RecreateRegistry(bool initialize) {
@@ -314,7 +328,8 @@ TEST_F(ProtocolHandlerRegistryTest, SaveAndLoad) {
 
 TEST_F(ProtocolHandlerRegistryTest, Encode) {
   base::Time now = base::Time::Now();
-  ProtocolHandler handler("news", GURL("http://example.com"), now);
+  ProtocolHandler handler("news", GURL("http://example.com"), now,
+                          blink::ProtocolHandlerSecurityLevel::kStrict);
   auto value = handler.Encode();
   ProtocolHandler recreated =
       ProtocolHandler::CreateProtocolHandler(value.get());
@@ -327,10 +342,12 @@ TEST_F(ProtocolHandlerRegistryTest, GetHandlersBetween) {
   base::Time now = base::Time::Now();
   base::Time one_hour_ago = now - base::TimeDelta::FromHours(1);
   base::Time two_hours_ago = now - base::TimeDelta::FromHours(2);
-  ProtocolHandler handler1("bitcoin", GURL("http://example.com"),
-                           two_hours_ago);
-  ProtocolHandler handler2("geo", GURL("http://example.com"), one_hour_ago);
-  ProtocolHandler handler3("im", GURL("http://example.com"), now);
+  ProtocolHandler handler1("bitcoin", GURL("http://example.com"), two_hours_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler handler2("geo", GURL("http://example.com"), one_hour_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler handler3("im", GURL("http://example.com"), now,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
   registry()->OnAcceptRegisterProtocolHandler(handler1);
   registry()->OnAcceptRegisterProtocolHandler(handler2);
   registry()->OnAcceptRegisterProtocolHandler(handler3);
@@ -350,12 +367,18 @@ TEST_F(ProtocolHandlerRegistryTest, ClearHandlersBetween) {
   base::Time one_hour_ago = now - base::TimeDelta::FromHours(1);
   base::Time two_hours_ago = now - base::TimeDelta::FromHours(2);
   GURL url("http://example.com");
-  ProtocolHandler handler1("bitcoin", url, two_hours_ago);
-  ProtocolHandler handler2("geo", url, one_hour_ago);
-  ProtocolHandler handler3("im", url, now);
-  ProtocolHandler ignored1("irc", url, two_hours_ago);
-  ProtocolHandler ignored2("ircs", url, one_hour_ago);
-  ProtocolHandler ignored3("magnet", url, now);
+  ProtocolHandler handler1("bitcoin", url, two_hours_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler handler2("geo", url, one_hour_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler handler3("im", url, now,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler ignored1("irc", url, two_hours_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler ignored2("ircs", url, one_hour_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler ignored3("magnet", url, now,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
   registry()->OnAcceptRegisterProtocolHandler(handler1);
   registry()->OnAcceptRegisterProtocolHandler(handler2);
   registry()->OnAcceptRegisterProtocolHandler(handler3);
@@ -1047,6 +1070,13 @@ TEST_F(ProtocolHandlerRegistryTest, InvalidHandlers) {
       CreateProtocolHandler("https", GURL("https://www.google.com/handler%s")));
   ASSERT_FALSE(registry()->IsHandledProtocol("https"));
 
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "ext+", GURL("https://www.google.com/handler%s"),
+      blink::ProtocolHandlerSecurityLevel::kStrict));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "ext+foo", GURL("https://www.google.com/handler%s"),
+      blink::ProtocolHandlerSecurityLevel::kStrict));
+
   // Invalid handler URL.
   // data: URL.
   registry()->OnAcceptRegisterProtocolHandler(CreateProtocolHandler(
@@ -1065,10 +1095,20 @@ TEST_F(ProtocolHandlerRegistryTest, InvalidHandlers) {
 }
 
 TEST_F(ProtocolHandlerRegistryTest, ExtensionHandler) {
-  registry()->OnAcceptRegisterProtocolHandler(CreateProtocolHandler(
-      "news",
-      GURL("chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/test.html")));
-  ASSERT_TRUE(registry()->IsHandledProtocol("news"));
+  GURL chrome_extension_handler_url(
+      "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/test.html");
+
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news", chrome_extension_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kStrict));
+
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news", chrome_extension_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins));
+
+  EXPECT_TRUE(ProtocolHandlerCanRegisterProtocol(
+      "news", chrome_extension_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
 }
 
 // See
@@ -1115,4 +1155,51 @@ TEST_F(ProtocolHandlerRegistryTest, SafelistedSchemes) {
         CreateProtocolHandler(scheme, GURL("https://example.com/url=%s")));
     ASSERT_TRUE(registry()->IsHandledProtocol(scheme));
   }
+}
+
+TEST_F(ProtocolHandlerRegistryTest, ProtocolHandlerSecurityLevels) {
+  GURL https_handler_url("https://www.google.com/handler%s");
+
+  // Invalid protocol.
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "foo", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "web", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "web+", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "https", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "ext+", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "ext+foo", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins));
+
+  // Invalid handler URL.
+  // data: URL.
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news",
+      GURL("data:text/html,<html><body><b>hello "
+           "world</b></body></html>%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  // ftp:// URL.
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news", GURL("ftp://www.google.com/handler%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  // blob:// URL
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news",
+      GURL("blob:https://www.google.com/"
+           "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+
+  // ext+foo scheme.
+  EXPECT_TRUE(ProtocolHandlerCanRegisterProtocol(
+      "ext+foo", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
 }

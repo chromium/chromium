@@ -15,17 +15,21 @@
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
-ProtocolHandler::ProtocolHandler(const std::string& protocol,
-                                 const GURL& url,
-                                 base::Time last_modified)
+ProtocolHandler::ProtocolHandler(
+    const std::string& protocol,
+    const GURL& url,
+    base::Time last_modified,
+    blink::ProtocolHandlerSecurityLevel security_level)
     : protocol_(base::ToLowerASCII(protocol)),
       url_(url),
-      last_modified_(last_modified) {}
+      last_modified_(last_modified),
+      security_level_(security_level) {}
 
 ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     const std::string& protocol,
-    const GURL& url) {
-  return ProtocolHandler(protocol, url, base::Time::Now());
+    const GURL& url,
+    blink::ProtocolHandlerSecurityLevel security_level) {
+  return ProtocolHandler(protocol, url, base::Time::Now(), security_level);
 }
 
 ProtocolHandler::ProtocolHandler() {
@@ -42,13 +46,20 @@ bool ProtocolHandler::IsValid() const {
 
   // This matches VerifyCustomHandlerURLSecurity() in blink's
   // NavigatorContentUtils.
-  if (!url_.SchemeIsHTTPOrHTTPS() &&
-      !url_.SchemeIs(extensions::kExtensionScheme)) {
+  bool has_valid_scheme =
+      url_.SchemeIsHTTPOrHTTPS() ||
+      (security_level_ ==
+           blink::ProtocolHandlerSecurityLevel::kExtensionFeatures &&
+       url_.SchemeIs(extensions::kExtensionScheme));
+  if (!has_valid_scheme)
     return false;
-  }
 
-  bool has_custom_scheme_prefix;
-  return blink::IsValidCustomHandlerScheme(protocol_, has_custom_scheme_prefix);
+  bool has_custom_scheme_prefix = false;
+  bool allow_ext_plus_prefix =
+      (security_level_ >=
+       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures);
+  return blink::IsValidCustomHandlerScheme(protocol_, allow_ext_plus_prefix,
+                                           has_custom_scheme_prefix);
 }
 
 bool ProtocolHandler::IsSameOrigin(
@@ -69,6 +80,8 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   std::string protocol, url;
   // |time| defaults to the beginning of time if it is not specified.
   base::Time time;
+  blink::ProtocolHandlerSecurityLevel security_level =
+      blink::ProtocolHandlerSecurityLevel::kStrict;
   value->GetString("protocol", &protocol);
   value->GetString("url", &url);
   base::Optional<base::Time> time_value =
@@ -76,7 +89,13 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   // Treat invalid times as the default value.
   if (time_value)
     time = *time_value;
-  return ProtocolHandler(protocol, GURL(url), time);
+  base::Optional<int> security_level_value =
+      value->FindIntPath("security_level");
+  if (security_level_value) {
+    security_level =
+        blink::ProtocolHandlerSecurityLevelFrom(*security_level_value);
+  }
+  return ProtocolHandler(protocol, GURL(url), time, security_level);
 }
 
 GURL ProtocolHandler::TranslateUrl(const GURL& url) const {
@@ -92,6 +111,7 @@ std::unique_ptr<base::DictionaryValue> ProtocolHandler::Encode() const {
   d->SetString("protocol", protocol_);
   d->SetString("url", url_.spec());
   d->SetKey("last_modified", util::TimeToValue(last_modified_));
+  d->SetIntPath("security_level", static_cast<int>(security_level_));
   return d;
 }
 

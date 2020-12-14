@@ -2210,7 +2210,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveProtocolHandler) {
   registry->OnAcceptRegisterProtocolHandler(
       ProtocolHandler::CreateProtocolHandler("news", Origin1()));
   registry->OnAcceptRegisterProtocolHandler(
-      ProtocolHandler("mailto", Origin1(), yesterday));
+      ProtocolHandler("mailto", Origin1(), yesterday,
+                      blink::ProtocolHandlerSecurityLevel::kStrict));
   EXPECT_TRUE(registry->IsHandledProtocol("news"));
   EXPECT_TRUE(registry->IsHandledProtocol("mailto"));
   EXPECT_EQ(

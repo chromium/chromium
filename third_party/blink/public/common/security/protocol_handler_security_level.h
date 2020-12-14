@@ -15,8 +15,21 @@ enum class ProtocolHandlerSecurityLevel {
   kStrict,
 
   // Allow registration calls to cross-origin URLs.
-  kUntrustedOrigins
+  kUntrustedOrigins,
+
+  // Allow extension features: ext+foo schemes and chrome-extension:// URLs.
+  kExtensionFeatures,
 };
+
+inline ProtocolHandlerSecurityLevel ProtocolHandlerSecurityLevelFrom(
+    int security_level) {
+  return security_level < 0 ||
+                 security_level >
+                     static_cast<int>(
+                         ProtocolHandlerSecurityLevel::kExtensionFeatures)
+             ? ProtocolHandlerSecurityLevel::kStrict
+             : static_cast<ProtocolHandlerSecurityLevel>(security_level);
+}
 
 }  // namespace blink
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SECURITY_PROTOCOL_HANDLER_SECURITY_LEVEL_H_

@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, BrowserProcessSecurityLevel) {
   // Main frame has extension privilege.
   ASSERT_EQ(main_frame, subframes[0]);
   EXPECT_EQ(
-      blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures,
       web_contents_delegate->GetProtocolHandlerSecurityLevel(subframes[0]));
 
   // First subframe is in strict mode.
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, BrowserProcessSecurityLevel) {
   // Nested subframe has extension privilege.
   ASSERT_EQ("chrome_extension", subframes[2]->GetFrameName());
   EXPECT_EQ(
-      blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures,
       web_contents_delegate->GetProtocolHandlerSecurityLevel(subframes[2]));
 }
 

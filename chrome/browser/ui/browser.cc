@@ -1983,7 +1983,7 @@ blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
     case extensions::Feature::WEB_PAGE_CONTEXT:
       return blink::ProtocolHandlerSecurityLevel::kStrict;
     case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
-      return blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins;
+      return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
   }
 }
 
@@ -2004,8 +2004,8 @@ void Browser::RegisterProtocolHandler(
   if (vr::VrTabHelper::IsInVr(web_contents))
     return;
 
-  ProtocolHandler handler =
-      ProtocolHandler::CreateProtocolHandler(protocol, url);
+  ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(
+      protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
 
   if (!handler.IsValid())
     return;
@@ -2061,8 +2061,8 @@ void Browser::UnregisterProtocolHandler(
   if (context->IsOffTheRecord())
     return;
 
-  ProtocolHandler handler =
-      ProtocolHandler::CreateProtocolHandler(protocol, url);
+  ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(
+      protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
 
   ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(context);

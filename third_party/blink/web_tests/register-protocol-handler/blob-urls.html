@@ -29,7 +29,7 @@ Test page
 
 window.addEventListener('message', (msg) => {
   assert_equals(msg.data,
-                'rph failed: Failed to execute \'registerProtocolHandler\' on \'Navigator\': The scheme of the url provided must be \'https\' or \'chrome-extension\'.',
+                'rph failed: Failed to execute \'registerProtocolHandler\' on \'Navigator\': The scheme of the url provided must be \'https\'.',
                 'registerProtocolHandler should have failed');
   done();
 });
