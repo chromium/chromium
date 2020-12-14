@@ -136,10 +136,9 @@ class CORE_EXPORT ElementRuleCollector {
   void CollectMatchingShadowHostRules(
       const MatchRequest&,
       ShadowV0CascadeOrder = kIgnoreCascadeOrder);
-  void CollectMatchingPartPseudoRules(
-      const MatchRequest&,
-      PartNames&,
-      ShadowV0CascadeOrder = kIgnoreCascadeOrder);
+  void CollectMatchingPartPseudoRules(const MatchRequest&,
+                                      PartNames&,
+                                      bool for_shadow_pseudo);
   void SortAndTransferMatchedRules();
   void ClearMatchedRules();
   void AddElementStyleProperties(const CSSPropertyValueSet*,
@@ -160,11 +159,18 @@ class CORE_EXPORT ElementRuleCollector {
   void AddMatchedRulesToTracker(StyleRuleUsageTracker*) const;
 
  private:
+  struct PartRequest {
+    PartNames& part_names;
+    // If this is true, we're matching for a pseudo-element of the part, such as
+    // ::placeholder.
+    bool for_shadow_pseudo = false;
+  };
+
   template <typename RuleDataListType>
   void CollectMatchingRulesForList(const RuleDataListType*,
                                    ShadowV0CascadeOrder,
                                    const MatchRequest&,
-                                   PartNames* = nullptr);
+                                   PartRequest* = nullptr);
 
   bool Match(SelectorChecker&,
              const SelectorChecker::SelectorCheckingContext&,

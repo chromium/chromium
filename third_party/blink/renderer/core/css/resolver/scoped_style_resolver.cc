@@ -317,14 +317,14 @@ void ScopedStyleResolver::CollectMatchingTreeBoundaryCrossingRules(
 void ScopedStyleResolver::CollectMatchingPartPseudoRules(
     ElementRuleCollector& collector,
     PartNames& part_names,
-    ShadowV0CascadeOrder cascade_order) {
+    bool for_shadow_pseudo) {
   wtf_size_t sheet_index = 0;
   for (auto sheet : style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     MatchRequest match_request(&sheet->Contents()->GetRuleSet(),
                                &scope_->RootNode(), sheet, sheet_index++);
     collector.CollectMatchingPartPseudoRules(match_request, part_names,
-                                             cascade_order);
+                                             for_shadow_pseudo);
   }
 }
 

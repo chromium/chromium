@@ -134,7 +134,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
     const RuleDataListType* rules,
     ShadowV0CascadeOrder cascade_order,
     const MatchRequest& match_request,
-    PartNames* part_names) {
+    PartRequest* part_request) {
   if (!rules)
     return;
 
@@ -144,7 +144,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   init.element_style = style_.get();
   init.scrollbar = pseudo_style_request_.scrollbar;
   init.scrollbar_part = pseudo_style_request_.scrollbar_part;
-  init.part_names = part_names;
+  init.part_names = part_request ? &part_request->part_names : nullptr;
   SelectorChecker checker(init);
   SelectorChecker::SelectorCheckingContext context(&context_.GetElement());
   context.scope = match_request.scope;
@@ -175,12 +175,22 @@ void ElementRuleCollector::CollectMatchingRulesForList(
     if (!rule->ShouldConsiderForMatchingRules(include_empty_rules_))
       continue;
 
+    const auto& selector = rule_data->Selector();
+    if (UNLIKELY(part_request && part_request->for_shadow_pseudo)) {
+      if (!selector.IsAllowedAfterPart()) {
+        DCHECK_EQ(selector.GetPseudoType(), CSSSelector::kPseudoPart);
+        rejected++;
+        continue;
+      }
+      DCHECK_EQ(selector.Relation(), CSSSelector::kShadowPseudo);
+    }
+
     SelectorChecker::MatchResult result;
-    context.selector = &rule_data->Selector();
+    context.selector = &selector;
     context.is_inside_visited_link =
         rule_data->LinkMatchType() == CSSSelector::kMatchVisited;
     DCHECK(!context.is_inside_visited_link ||
-           (inside_link_ == EInsideLink::kInsideVisitedLink));
+           inside_link_ == EInsideLink::kInsideVisitedLink);
     if (!checker.Match(context, result)) {
       rejected++;
       continue;
@@ -283,9 +293,10 @@ void ElementRuleCollector::CollectMatchingShadowHostRules(
 void ElementRuleCollector::CollectMatchingPartPseudoRules(
     const MatchRequest& match_request,
     PartNames& part_names,
-    ShadowV0CascadeOrder cascade_order) {
+    bool for_shadow_pseudo) {
+  PartRequest request{part_names, for_shadow_pseudo};
   CollectMatchingRulesForList(match_request.rule_set->PartPseudoRules(),
-                              cascade_order, match_request, &part_names);
+                              kIgnoreCascadeOrder, match_request, &request);
 }
 
 template <class CSSRuleCollection>

@@ -400,7 +400,7 @@ const static TextTrack* GetTextTrackFromElement(const Element& element) {
 }
 
 static void MatchVTTRules(const Element& element,
-                                  ElementRuleCollector& collector) {
+                          ElementRuleCollector& collector) {
   const TextTrack* text_track = GetTextTrackFromElement(element);
   if (!text_track)
     return;
@@ -458,12 +458,15 @@ void StyleResolver::MatchPseudoPartRulesForUAHost(
   // We allow ::placeholder pseudo element after ::part(). See
   // MatchSlottedRulesForUAHost for a more detailed explanation.
   DCHECK(element.OwnerShadowHost());
-  MatchPseudoPartRules(*element.OwnerShadowHost(), collector);
+  MatchPseudoPartRules(*element.OwnerShadowHost(), collector,
+                       /* for_shadow_pseudo */ true);
 }
 
 void StyleResolver::MatchPseudoPartRules(const Element& element,
-                                         ElementRuleCollector& collector) {
-  MatchPseudoPartRulesForUAHost(element, collector);
+                                         ElementRuleCollector& collector,
+                                         bool for_shadow_pseudo) {
+  if (!for_shadow_pseudo)
+    MatchPseudoPartRulesForUAHost(element, collector);
   DOMTokenList* part = element.GetPart();
   if (!part)
     return;
@@ -480,7 +483,8 @@ void StyleResolver::MatchPseudoPartRules(const Element& element,
     TreeScope& tree_scope = host->GetTreeScope();
     if (ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver()) {
       collector.ClearMatchedRules();
-      resolver->CollectMatchingPartPseudoRules(collector, current_names);
+      resolver->CollectMatchingPartPseudoRules(collector, current_names,
+                                               for_shadow_pseudo);
       collector.SortAndTransferMatchedRules();
       collector.FinishAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
     }

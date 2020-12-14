@@ -78,10 +78,9 @@ class CORE_EXPORT ScopedStyleResolver final
   void CollectMatchingTreeBoundaryCrossingRules(
       ElementRuleCollector&,
       ShadowV0CascadeOrder = kIgnoreCascadeOrder);
-  void CollectMatchingPartPseudoRules(
-      ElementRuleCollector&,
-      PartNames& part_names,
-      ShadowV0CascadeOrder = kIgnoreCascadeOrder);
+  void CollectMatchingPartPseudoRules(ElementRuleCollector&,
+                                      PartNames& part_names,
+                                      bool for_shadow_pseudo);
   void MatchPageRules(PageRuleCollector&);
   void CollectFeaturesTo(RuleFeatureSet&,
                          HeapHashSet<Member<const StyleSheetContents>>&
