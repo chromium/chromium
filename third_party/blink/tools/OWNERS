@@ -6,6 +6,3 @@ wangxianzhu@chromium.org
 
 # For Fuchsia related files
 per-file *fuchsia.py=file://build/fuchsia/OWNERS
-
-# TEAM: blink-infra@chromium.org
-# COMPONENT: Blink>Infra
