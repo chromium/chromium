@@ -16,6 +16,8 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/federated_learning/floc_remote_permission_service.h"
+#include "chrome/browser/federated_learning/floc_remote_permission_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -55,6 +57,15 @@ bool HasAuthError(ProfileSyncService* service) {
              GoogleServiceAuthError::SERVICE_ERROR ||
          service->GetAuthError().state() ==
              GoogleServiceAuthError::REQUEST_CANCELED;
+}
+
+void FinishOutstandingFlocRemotePermissionQueries(Profile* profile) {
+  base::RunLoop run_loop;
+  FlocRemotePermissionServiceFactory::GetForProfile(profile)
+      ->QueryFlocPermission(
+          base::BindLambdaForTesting([&](bool success) { run_loop.Quit(); }),
+          PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
+  run_loop.Run();
 }
 
 class EngineInitializeChecker : public SingleClientStatusChangeChecker {
@@ -456,6 +467,15 @@ bool ProfileSyncServiceHarness::AwaitSyncSetupCompletion() {
     LOG(ERROR) << "Credentials were rejected. Sync cannot proceed.";
     return false;
   }
+
+  // Finish any outstanding floc permission network requests. Right after sync
+  // gets set up, the floc code may make a network call, and at response time
+  // a floc specific user event could be logged. We need this waiting to ensure
+  // that the behavior (i.e. either logged or not logged) are determnistic.
+  //
+  // TODO(yaoxia): The network call should be mocked out / intercepted and
+  // handled locally.
+  FinishOutstandingFlocRemotePermissionQueries(profile_);
 
   return true;
 }

@@ -17,6 +17,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
@@ -36,7 +37,14 @@ CommitResponse::ResponseType BounceType(
 
 class SingleClientUserEventsSyncTest : public SyncTest {
  public:
-  SingleClientUserEventsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientUserEventsSyncTest() : SyncTest(SINGLE_CLIENT) {
+    // Disable the floc-event-logging for this test suite. This event could be
+    // logged right after sync gets enabled, and could mess up with the test
+    // expectations. The scenario when the floc-event-logging is enabled is
+    // tested separately.
+    feature_list_.InitAndDisableFeature(features::kFlocIdComputedEventLogging);
+  }
+
   ~SingleClientUserEventsSyncTest() override = default;
 
   bool ExpectUserEvents(std::vector<UserEventSpecifics> expected_specifics) {
@@ -228,6 +236,41 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
 
   // No event should get synced up.
   EXPECT_TRUE(ExpectUserEvents({}));
+}
+
+class SingleClientUserEventsSyncTestFlocEventLoggingEnabled
+    : public SingleClientUserEventsSyncTest {
+ public:
+  SingleClientUserEventsSyncTestFlocEventLoggingEnabled() {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeature(features::kFlocIdComputedEventLogging);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTestFlocEventLoggingEnabled,
+                       FlocEventAfterSyncSetup) {
+  ASSERT_TRUE(SetupSync());
+
+  // When sync gets enabled, the floc calculation should start, and by this
+  // point it should have failed the remote permission check and logged an user
+  // event.
+  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::USER_EVENTS, 1).Wait());
+
+  UserEventSpecifics server_specifics =
+      GetFakeServer()
+          ->GetSyncEntitiesByModelType(syncer::USER_EVENTS)[0]
+          .specifics()
+          .user_event();
+
+  EXPECT_EQ(sync_pb::UserEventSpecifics::kFlocIdComputedEvent,
+            server_specifics.event_case());
+
+  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
+      server_specifics.floc_id_computed_event();
+
+  // It shouldn't have the floc_id field, because remote permission check should
+  // have failed.
+  EXPECT_FALSE(event.has_floc_id());
 }
 
 }  // namespace

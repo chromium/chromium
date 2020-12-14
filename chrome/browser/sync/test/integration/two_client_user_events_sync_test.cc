@@ -11,6 +11,7 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
@@ -25,7 +26,14 @@ const int kDecryptingClientId = 1;
 
 class TwoClientUserEventsSyncTest : public SyncTest {
  public:
-  TwoClientUserEventsSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientUserEventsSyncTest() : SyncTest(TWO_CLIENT) {
+    // Disable the floc-event-logging for this test suite. This event could be
+    // logged right after sync gets enabled, and could mess up with the test
+    // expectations. The scenario when the floc-event-logging is enabled is
+    // tested separately.
+    feature_list_.InitAndDisableFeature(features::kFlocIdComputedEventLogging);
+  }
+
   ~TwoClientUserEventsSyncTest() override = default;
 
   bool UseVerifier() override {
