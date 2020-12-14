@@ -69,7 +69,7 @@ class ChromeBrowserProviderSuggestionsCursor extends AbstractCursor {
                 return mCursor.getString(mCursor.getColumnIndex(BookmarkColumns.URL));
             case COLUMN_SUGGEST_ICON_1:
                 // This is the icon displayed to the left of the result in QSB.
-                return Integer.toString(R.mipmap.app_icon);
+                return Integer.toString(R.mipmap.browserx_app_icon);
             case COLUMN_SUGGEST_LAST_ACCESS_HINT:
                 // After clearing history, the Chrome bookmarks database will have a last access
                 // time of 0 for all bookmarks. In the Android provider, this will yield a negative

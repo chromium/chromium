@@ -13,5 +13,5 @@
         android:left="27dp"
         android:height="65dp"
         android:width="65dp"
-        android:drawable="@mipmap/app_icon"/>
+        android:drawable="@mipmap/browserx_app_icon"/>
 </layer-list>

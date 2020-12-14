@@ -297,7 +297,7 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
 
             if (mContext instanceof ChromeTabbedActivity) {
                 // Use the app icon if this is a ChromeTabbedActivity instance.
-                iconResId = R.mipmap.app_icon;
+                iconResId = R.mipmap.browserx_app_icon;
             } else {
                 // Otherwise use the link icon.
                 iconResId = getIconResId(mQuickActionCategory);

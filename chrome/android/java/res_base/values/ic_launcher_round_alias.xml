@@ -4,5 +4,5 @@
      found in the LICENSE file. -->
 
 <resources>
-    <drawable name="ic_launcher_round">@mipmap/app_icon</drawable>
+    <drawable name="ic_launcher_round">@mipmap/browserx_app_icon</drawable>
 </resources>

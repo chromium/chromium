@@ -131,7 +131,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         Resources res = getResources();
 
         setTaskDescription(new ActivityManager.TaskDescription(res.getString(R.string.app_name),
-                BitmapFactory.decodeResource(res, R.mipmap.app_icon),
+                BitmapFactory.decodeResource(res, R.mipmap.browserx_app_icon),
                 ApiCompatibilityUtils.getColor(res, R.color.default_primary_color)));
 
         setStatusBarColor();
