@@ -2623,6 +2623,8 @@ source_set("chromeos") {
     "secure_channel/nearby_endpoint_finder_impl.h",
     "secure_channel/secure_channel_client_provider.cc",
     "secure_channel/secure_channel_client_provider.h",
+    "secure_channel/util/histogram_util.cc",
+    "secure_channel/util/histogram_util.h",
     "service_sandbox_type.h",
     "session_length_limiter.cc",
     "session_length_limiter.h",
