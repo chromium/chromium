@@ -23,7 +23,7 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_X) XUserInputMonitor
     : public base::SupportsWeakPtr<XUserInputMonitor>,
       public base::CurrentThread::DestructionObserver,
-      public x11::Connection::Delegate {
+      public x11::EventObserver {
  public:
   using WriteKeyPressCallback = base::RepeatingCallback<
       void(const base::WritableSharedMemoryMapping& shmem, uint32_t count)>;
@@ -44,9 +44,8 @@ class COMPONENT_EXPORT(UI_BASE_X) XUserInputMonitor
   // base::CurrentThread::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override;
 
-  // x11::Connection::Delegate:
-  bool ShouldContinueStream() const override;
-  void DispatchXEvent(x11::Event* event) override;
+  // x11::EventObserver:
+  void OnEvent(const x11::Event& event) override;
 
   void OnConnectionData();
 

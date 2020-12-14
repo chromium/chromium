@@ -120,13 +120,13 @@ XShmImagePool::XShmImagePool(x11::Connection* connection,
       enable_multibuffering_(enable_multibuffering),
       frame_states_(frames_pending) {
   if (enable_multibuffering_)
-    X11EventSource::GetInstance()->AddXEventObserver(this);
+    connection_->AddEventObserver(this);
 }
 
 XShmImagePool::~XShmImagePool() {
   Cleanup();
   if (enable_multibuffering_)
-    X11EventSource::GetInstance()->RemoveXEventObserver(this);
+    connection_->RemoveEventObserver(this);
 }
 
 bool XShmImagePool::Resize(const gfx::Size& pixel_size) {

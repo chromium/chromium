@@ -10,7 +10,6 @@
 #include "ui/gl/egl_util.h"
 
 using ui::GetLastEGLErrorString;
-using ui::X11EventSource;
 
 namespace gl {
 

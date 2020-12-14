@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
@@ -73,13 +72,11 @@ VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
       event_selector_(std::make_unique<ui::XScopedEventSelector>(
           window,
           x11::EventMask::Exposure)) {
-  if (auto* event_source = ui::X11EventSource::GetInstance())
-    event_source->AddXEventObserver(this);
+  x11::Connection::Get()->AddEventObserver(this);
 }
 
 VulkanSurfaceX11::~VulkanSurfaceX11() {
-  if (auto* event_source = ui::X11EventSource::GetInstance())
-    event_source->RemoveXEventObserver(this);
+  x11::Connection::Get()->RemoveEventObserver(this);
 }
 
 void VulkanSurfaceX11::Destroy() {

@@ -70,8 +70,7 @@ class X11WindowOzoneTest : public testing::Test {
   ~X11WindowOzoneTest() override = default;
 
   void SetUp() override {
-    auto* connection = x11::Connection::Get();
-    event_source_ = std::make_unique<X11EventSource>(connection);
+    event_source_ = std::make_unique<X11EventSource>(x11::Connection::Get());
 
     test_screen_ = new TestScreen();
     display::Screen::SetScreenInstance(test_screen_);
@@ -96,7 +95,7 @@ class X11WindowOzoneTest : public testing::Test {
     auto* device_event = event->As<x11::Input::DeviceEvent>();
     DCHECK(device_event);
     device_event->event = static_cast<x11::Window>(widget);
-    event_source_->DispatchXEvent(event);
+    x11::Connection::Get()->DispatchEvent(*event);
   }
 
   X11WindowManager* window_manager() const {

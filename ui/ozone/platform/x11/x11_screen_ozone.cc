@@ -42,17 +42,13 @@ X11ScreenOzone::X11ScreenOzone()
 }
 
 X11ScreenOzone::~X11ScreenOzone() {
-  if (x11_display_manager_->IsXrandrAvailable() &&
-      X11EventSource::HasInstance()) {
-    X11EventSource::GetInstance()->RemoveXEventObserver(this);
-  }
+  if (x11_display_manager_->IsXrandrAvailable())
+    x11::Connection::Get()->RemoveEventObserver(this);
 }
 
 void X11ScreenOzone::Init() {
-  if (x11_display_manager_->IsXrandrAvailable() &&
-      X11EventSource::HasInstance()) {
-    X11EventSource::GetInstance()->AddXEventObserver(this);
-  }
+  if (x11_display_manager_->IsXrandrAvailable())
+    x11::Connection::Get()->AddEventObserver(this);
   x11_display_manager_->Init();
 }
 

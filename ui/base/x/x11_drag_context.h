@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "ui/base/x/selection_utils.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xproto.h"

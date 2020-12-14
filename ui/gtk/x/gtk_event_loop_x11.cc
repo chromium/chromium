@@ -11,7 +11,6 @@
 
 #include "base/memory/singleton.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/event.h"
 
 extern "C" {
@@ -22,8 +21,9 @@ namespace ui {
 
 namespace {
 
-int BuildXkbStateFromGdkEvent(unsigned int state, unsigned char group) {
-  return state | ((group & 0x3) << 13);
+x11::KeyButMask BuildXkbStateFromGdkEvent(unsigned int state,
+                                          unsigned char group) {
+  return static_cast<x11::KeyButMask>(state | ((group & 0x3) << 13));
 }
 
 }  // namespace
@@ -83,26 +83,14 @@ void GtkEventLoopX11::ProcessGdkEventKey(const GdkEventKey& gdk_event_key) {
       .root = ui::GetX11RootWindow(),
       .event = static_cast<x11::Window>(
           gdk_x11_window_get_xid(gdk_event_key.window)),
+      .state =
+          BuildXkbStateFromGdkEvent(gdk_event_key.state, gdk_event_key.group),
       .same_screen = true,
   };
-  x11::Event event(key, false);
-
-  // The key state is 16 bits on the wire, but ibus-gtk adds additional flags
-  // that may be outside this range, so set the state after conversion from
-  // the wire format.
-  // TODO(https://crbug.com/1066670): Add a test to ensure this subtle logic
-  // doesn't regress after all X11 event code is refactored from using Xlib to
-  // XProto.
-  int state =
-      BuildXkbStateFromGdkEvent(gdk_event_key.state, gdk_event_key.group);
-  event.As<x11::KeyEvent>()->state = static_cast<x11::KeyButMask>(state);
 
   // We want to process the gtk event; mapped to an X11 event immediately
   // otherwise if we put it back on the queue we may get items out of order.
-  if (ui::X11EventSource* x11_source = ui::X11EventSource::GetInstance())
-    x11_source->DispatchXEvent(&event);
-  else
-    conn->events().push_front(std::move(event));
+  conn->DispatchEvent(x11::Event{key});
 }
 
 }  // namespace ui

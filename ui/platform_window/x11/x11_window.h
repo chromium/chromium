@@ -10,7 +10,6 @@
 #include "ui/base/x/x11_move_loop_delegate.h"
 #include "ui/base/x/x11_window.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/event.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
@@ -48,7 +47,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
                                     public WmMoveResizeHandler,
                                     public XWindow,
                                     public PlatformEventDispatcher,
-                                    public XEventObserver,
+                                    public x11::EventObserver,
                                     public WorkspaceExtension,
                                     public X11Extension,
                                     public WmDragHandler,
@@ -129,7 +128,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   void SetOverrideRedirect(bool override_redirect) override;
   void SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) override;
 
-  // ui::XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;
 
  protected:
@@ -162,7 +161,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   bool CanDispatchEvent(const PlatformEvent& event) override;
   uint32_t DispatchEvent(const PlatformEvent& event) override;
 
-  void DispatchUiEvent(ui::Event* event, x11::Event* xev);
+  void DispatchUiEvent(ui::Event* event, const x11::Event& xev);
 
   // WmMoveResizeHandler
   void DispatchHostWindowDragMovement(
@@ -201,7 +200,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   void QuitDragLoop();
 
   // Handles |xevent| as a Atk Key Event
-  bool HandleAsAtkEvent(x11::Event* xevent, bool transient);
+  bool HandleAsAtkEvent(const x11::Event& xevent, bool transient);
 
   // Adjusts |requested_size_in_pixels| to avoid the WM "feature" where setting
   // the window size to the monitor size causes the WM to set the EWMH for

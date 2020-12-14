@@ -40,8 +40,7 @@ class ScreenResources {
   std::unique_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
 };
 
-class DesktopResizerX11 : public DesktopResizer,
-                          public x11::Connection::Delegate {
+class DesktopResizerX11 : public DesktopResizer {
  public:
   DesktopResizerX11();
   DesktopResizerX11(const DesktopResizerX11&) = delete;
@@ -56,10 +55,6 @@ class DesktopResizerX11 : public DesktopResizer,
   void RestoreResolution(const ScreenResolution& original) override;
 
  private:
-  // x11::Connection::Delegate:
-  bool ShouldContinueStream() const override;
-  void DispatchXEvent(x11::Event* event) override;
-
   // Add a mode matching the specified resolution and switch to it.
   void SetResolutionNewMode(const ScreenResolution& resolution);
 

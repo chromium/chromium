@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
 namespace ui {
@@ -21,13 +21,13 @@ class XScopedEventSelector;
 // A singleton that owns global objects related to the desktop and listens for
 // X11 events on the X11 root window. Destroys itself when the browser
 // shuts down.
-class X11MenuRegistrar : public ui::XEventObserver {
+class X11MenuRegistrar : public x11::EventObserver {
  public:
   // Returns the singleton handler.  Creates one if one has not
   // already been created.
   static X11MenuRegistrar* Get();
 
-  // ui::XEventObserver
+  // x11::EventObserver
   void OnEvent(const x11::Event& event) override;
 
  private:

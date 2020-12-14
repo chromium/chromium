@@ -20,12 +20,12 @@ X11OSExchangeDataProviderOzone::X11OSExchangeDataProviderOzone(
 
 X11OSExchangeDataProviderOzone::X11OSExchangeDataProviderOzone() {
   DCHECK(own_window());
-  X11EventSource::GetInstance()->AddXEventObserver(this);
+  x11::Connection::Get()->AddEventObserver(this);
 }
 
 X11OSExchangeDataProviderOzone::~X11OSExchangeDataProviderOzone() {
   if (own_window())
-    X11EventSource::GetInstance()->RemoveXEventObserver(this);
+    x11::Connection::Get()->RemoveEventObserver(this);
 }
 
 std::unique_ptr<OSExchangeDataProvider> X11OSExchangeDataProviderOzone::Clone()

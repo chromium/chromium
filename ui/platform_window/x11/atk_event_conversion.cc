@@ -14,11 +14,10 @@
 namespace ui {
 
 std::unique_ptr<AtkKeyEventStruct> AtkKeyEventFromXEvent(
-    x11::Event* x11_event) {
-  DCHECK(x11_event);
+    const x11::Event& x11_event) {
   auto atk_key_event = std::make_unique<AtkKeyEventStruct>();
 
-  auto* xkey = x11_event->As<x11::KeyEvent>();
+  auto* xkey = x11_event.As<x11::KeyEvent>();
   DCHECK(xkey);
 
   atk_key_event->type = xkey->opcode == x11::KeyEvent::Press
@@ -39,7 +38,7 @@ std::unique_ptr<AtkKeyEventStruct> AtkKeyEventFromXEvent(
   atk_key_event->string = nullptr;
   atk_key_event->length = 0;
 
-  int flags = ui::EventFlagsFromXEvent(*x11_event);
+  int flags = ui::EventFlagsFromXEvent(x11_event);
   if (flags & ui::EF_SHIFT_DOWN)
     atk_key_event->state |= AtkKeyModifierMask::kAtkShiftMask;
   if (flags & ui::EF_CAPS_LOCK_ON)

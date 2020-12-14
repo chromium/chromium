@@ -15,6 +15,7 @@
 #include "ui/display/screen_base.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
+#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/transform.h"
@@ -226,7 +227,7 @@ class X11WindowTest : public testing::Test {
     auto* device_event = x11_event->As<x11::Input::DeviceEvent>();
     DCHECK(device_event);
     device_event->event = window;
-    event_source_->DispatchXEvent(x11_event);
+    x11::Connection::Get()->DispatchEvent(*x11_event);
   }
 
  private:
@@ -258,7 +259,8 @@ TEST_F(X11WindowTest, Shape) {
   // Force update the window region.
   window->ResetWindowRegion();
 
-  X11EventSource::GetInstance()->DispatchXEvents();
+  auto* connection = x11::Connection::Get();
+  connection->DispatchAll();
 
   std::vector<gfx::Rect> shape_rects = GetShapeRects(x11_window);
   ASSERT_FALSE(shape_rects.empty());
@@ -273,7 +275,7 @@ TEST_F(X11WindowTest, Shape) {
 
   // Changing window's size should update the shape.
   window->SetBounds(gfx::Rect(100, 100, 200, 200));
-  X11EventSource::GetInstance()->DispatchXEvents();
+  connection->DispatchAll();
 
   if (window->GetBounds().width() == 200) {
     shape_rects = GetShapeRects(x11_window);
@@ -329,7 +331,7 @@ TEST_F(X11WindowTest, Shape) {
   transform.Scale(1.0f, 1.0f);
   window2->SetShape(std::move(shape_region), transform);
 
-  X11EventSource::GetInstance()->DispatchXEvents();
+  connection->DispatchAll();
 
   shape_rects = GetShapeRects(x11_window2);
   ASSERT_FALSE(shape_rects.empty());
@@ -374,7 +376,7 @@ TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
   x11::Window x11_window = window->window();
   window->Show(false);
 
-  X11EventSource::GetInstance()->DispatchXEvents();
+  connection->DispatchAll();
 
   EXPECT_NE(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
 
@@ -437,7 +439,7 @@ TEST_F(X11WindowTest, ToggleMinimizePropogateToPlatformWindowDelegate) {
   window->Show(false);
   window->Activate();
 
-  ui::X11EventSource::GetInstance()->DispatchXEvents();
+  x11::Connection::Get()->DispatchAll();
 
   x11::Window x11_window = window->window();
 

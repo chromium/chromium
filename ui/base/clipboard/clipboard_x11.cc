@@ -31,7 +31,6 @@
 #include "ui/base/x/selection_requestor.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -51,7 +50,7 @@ const char kClipboardManager[] = "CLIPBOARD_MANAGER";
 ///////////////////////////////////////////////////////////////////////////////
 
 // Uses the XFixes API to provide sequence numbers for GetSequenceNumber().
-class SelectionChangeObserver : public XEventObserver {
+class SelectionChangeObserver : public x11::EventObserver {
  public:
   static SelectionChangeObserver* GetInstance();
 
@@ -66,7 +65,7 @@ class SelectionChangeObserver : public XEventObserver {
   SelectionChangeObserver();
   ~SelectionChangeObserver() override;
 
-  // XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& xev) override;
 
   x11::Atom clipboard_atom_{};
@@ -77,7 +76,8 @@ class SelectionChangeObserver : public XEventObserver {
 };
 
 SelectionChangeObserver::SelectionChangeObserver() {
-  auto& xfixes = x11::Connection::Get()->xfixes();
+  auto* connection = x11::Connection::Get();
+  auto& xfixes = connection->xfixes();
   // Let the server know the client version.  No need to sync since we don't
   // care what version is running on the server.
   xfixes.QueryVersion({x11::XFixes::major_version, x11::XFixes::minor_version});
@@ -94,7 +94,7 @@ SelectionChangeObserver::SelectionChangeObserver() {
   // primary and the clipboard buffers. Register anyway just to be safe.
   xfixes.SelectSelectionInput({GetX11RootWindow(), x11::Atom::PRIMARY, mask});
 
-  X11EventSource::GetInstance()->AddXEventObserver(this);
+  connection->AddEventObserver(this);
 }
 
 // We are a singleton; we will outlive the event source.
@@ -173,7 +173,7 @@ x11::Window GetSelectionOwner(x11::Atom selection) {
 
 // Private implementation of our X11 integration. Keeps X11 headers out of the
 // majority of chrome, which break badly.
-class ClipboardX11::X11Details : public XEventObserver {
+class ClipboardX11::X11Details : public x11::EventObserver {
  public:
   X11Details();
   ~X11Details() override;
@@ -234,7 +234,7 @@ class ClipboardX11::X11Details : public XEventObserver {
   void StoreCopyPasteDataAndWait();
 
  private:
-  // XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& xev) override;
 
   // Our X11 state.
@@ -272,14 +272,11 @@ ClipboardX11::X11Details::X11Details()
   x_window_events_ = std::make_unique<XScopedEventSelector>(
       x_window_, x11::EventMask::PropertyChange);
 
-  if (X11EventSource::GetInstance())
-    X11EventSource::GetInstance()->AddXEventObserver(this);
+  connection_->AddEventObserver(this);
 }
 
 ClipboardX11::X11Details::~X11Details() {
-  if (X11EventSource::GetInstance())
-    X11EventSource::GetInstance()->RemoveXEventObserver(this);
-
+  connection_->RemoveEventObserver(this);
   connection_->DestroyWindow({x_window_});
 }
 

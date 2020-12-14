@@ -317,10 +317,10 @@ bool QueryShmSupport() {
   return supported;
 }
 
-int CoalescePendingMotionEvents(const x11::Event* x11_event,
+int CoalescePendingMotionEvents(const x11::Event& x11_event,
                                 x11::Event* last_event) {
-  const auto* motion = x11_event->As<x11::MotionNotifyEvent>();
-  const auto* device = x11_event->As<x11::Input::DeviceEvent>();
+  const auto* motion = x11_event.As<x11::MotionNotifyEvent>();
+  const auto* device = x11_event.As<x11::Input::DeviceEvent>();
   DCHECK(motion || device);
   auto* conn = x11::Connection::Get();
   int num_coalesced = 0;

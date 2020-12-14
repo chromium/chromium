@@ -17,7 +17,6 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/x/test/x11_property_change_waiter.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
@@ -240,7 +239,7 @@ TEST_F(X11TopmostWindowFinderTest, Basic) {
   x11::Window windows[] = {x11_window1, x11_window2, x11_window3};
   StackingClientListWaiter waiter(windows, base::size(windows));
   waiter.Wait();
-  ui::X11EventSource::GetInstance()->DispatchXEvents();
+  connection()->DispatchAll();
 
   EXPECT_EQ(x11_window1, FindTopmostXWindowAt(150, 150));
   EXPECT_EQ(window1, FindTopmostLocalProcessWindowAt(150, 150));
@@ -284,7 +283,7 @@ TEST_F(X11TopmostWindowFinderTest, Minimized) {
   x11::Window windows[] = {x11_window1, x11_window2};
   StackingClientListWaiter stack_waiter(windows, base::size(windows));
   stack_waiter.Wait();
-  ui::X11EventSource::GetInstance()->DispatchXEvents();
+  connection()->DispatchAll();
 
   EXPECT_EQ(x11_window1, FindTopmostXWindowAt(150, 150));
   {
@@ -338,7 +337,7 @@ TEST_F(X11TopmostWindowFinderTest, NonRectangular) {
   x11::Window windows[] = {window1, window2};
   StackingClientListWaiter stack_waiter(windows, base::size(windows));
   stack_waiter.Wait();
-  ui::X11EventSource::GetInstance()->DispatchXEvents();
+  connection()->DispatchAll();
 
   EXPECT_EQ(window1, FindTopmostXWindowAt(105, 120));
   EXPECT_NE(window1, FindTopmostXWindowAt(105, 105));
@@ -370,7 +369,7 @@ TEST_F(X11TopmostWindowFinderTest, NonRectangularEmptyShape) {
   x11::Window windows[] = {window1};
   StackingClientListWaiter stack_waiter(windows, base::size(windows));
   stack_waiter.Wait();
-  ui::X11EventSource::GetInstance()->DispatchXEvents();
+  connection()->DispatchAll();
 
   EXPECT_NE(window1, FindTopmostXWindowAt(105, 105));
 }
@@ -400,7 +399,7 @@ TEST_F(X11TopmostWindowFinderTest, MAYBE_NonRectangularNullShape) {
   x11::Window windows[] = {window1};
   StackingClientListWaiter stack_waiter(windows, base::size(windows));
   stack_waiter.Wait();
-  ui::X11EventSource::GetInstance()->DispatchXEvents();
+  connection()->DispatchAll();
 
   EXPECT_EQ(window1, FindTopmostXWindowAt(105, 105));
 }
@@ -428,7 +427,7 @@ TEST_F(X11TopmostWindowFinderTest, DISABLED_Menu) {
 
   ui::SetUseOSWindowFrame(menu_window, false);
   ShowAndSetXWindowBounds(menu_window, gfx::Rect(140, 110, 100, 100));
-  ui::X11EventSource::GetInstance()->DispatchXEvents();
+  connection()->DispatchAll();
 
   // |menu_window| is never added to _NET_CLIENT_LIST_STACKING.
   x11::Window windows[] = {window};

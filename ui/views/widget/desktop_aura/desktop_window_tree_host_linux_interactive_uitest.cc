@@ -20,7 +20,6 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/x/test/x11_property_change_waiter.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -79,8 +78,7 @@ void DispatchMouseMotionEvent(DesktopWindowTreeHostLinux* desktop_host,
       .same_screen = true,
   };
 
-  x11::Event x11_event(xev);
-  ui::X11EventSource::GetInstance()->DispatchXEvent(&x11_event);
+  connection->DispatchEvent(x11::Event{xev});
 }
 
 // Blocks till |window| gets activated.

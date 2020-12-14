@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -18,8 +18,7 @@ PropertyCache::PropertyCache(x11::Connection* connection,
     : connection_(connection),
       window_(window),
       event_selector_(window_, x11::EventMask::PropertyChange) {
-  if (X11EventSource::GetInstance())
-    X11EventSource::GetInstance()->AddXEventObserver(this);
+  connection_->AddEventObserver(this);
 
   std::vector<std::pair<x11::Atom, PropertyValue>> mem(properties.size());
   for (size_t i = 0; i < properties.size(); i++) {
@@ -30,8 +29,7 @@ PropertyCache::PropertyCache(x11::Connection* connection,
 }
 
 PropertyCache::~PropertyCache() {
-  if (X11EventSource::GetInstance())
-    X11EventSource::GetInstance()->RemoveXEventObserver(this);
+  connection_->RemoveEventObserver(this);
 }
 
 const x11::GetPropertyResponse& PropertyCache::GetProperty(x11::Atom atom) {

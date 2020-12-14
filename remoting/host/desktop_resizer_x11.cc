@@ -127,7 +127,7 @@ ScreenResolution DesktopResizerX11::GetCurrentResolution() {
   // Process pending events so that the connection setup data is updated
   // with the correct display metrics.
   if (has_randr_)
-    connection_.Dispatch(this);
+    connection_.DispatchAll();
 
   ScreenResolution result(
       webrtc::DesktopSize(connection_.default_screen().width_in_pixels,
@@ -192,12 +192,6 @@ void DesktopResizerX11::SetResolution(const ScreenResolution& resolution) {
 void DesktopResizerX11::RestoreResolution(const ScreenResolution& original) {
   SetResolution(original);
 }
-
-bool DesktopResizerX11::ShouldContinueStream() const {
-  return true;
-}
-
-void DesktopResizerX11::DispatchXEvent(x11::Event* event) {}
 
 void DesktopResizerX11::SetResolutionNewMode(
     const ScreenResolution& resolution) {

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/extension_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
@@ -91,7 +92,7 @@ X11ClipboardOzone::X11ClipboardOzone()
   using_xfixes_ = true;
 
   // Register to receive standard X11 events.
-  X11EventSource::GetInstance()->AddXEventObserver(this);
+  connection_->AddEventObserver(this);
 
   for (auto atom : {atom_clipboard_, x11::Atom::PRIMARY}) {
     // Register the selection state.
@@ -105,7 +106,7 @@ X11ClipboardOzone::X11ClipboardOzone()
 }
 
 X11ClipboardOzone::~X11ClipboardOzone() {
-  X11EventSource::GetInstance()->RemoveXEventObserver(this);
+  connection_->RemoveEventObserver(this);
 }
 
 void X11ClipboardOzone::OnEvent(const x11::Event& xev) {

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/platform/x11/x11_event_source.h"
 
 #include <algorithm>
 #include <memory>
@@ -49,9 +48,6 @@ namespace ui {
 namespace {
 
 void InitializeXkb(x11::Connection* connection) {
-  if (!connection)
-    return;
-
   auto& xkb = connection->xkb();
 
   // Ask the server not to send KeyRelease event when the user holds down a key.
@@ -124,9 +120,10 @@ using X11EventWatcherImpl = X11EventWatcherFdWatch;
 X11EventSource::X11EventSource(x11::Connection* connection)
     : watcher_(std::make_unique<X11EventWatcherImpl>(this)),
       connection_(connection),
-      dispatching_event_(nullptr),
       dummy_initialized_(false) {
   DCHECK(connection_);
+  connection_->AddEventObserver(this);
+
   DeviceDataManagerX11::CreateInstance();
   InitializeXkb(connection_);
 
@@ -136,6 +133,7 @@ X11EventSource::X11EventSource(x11::Connection* connection)
 X11EventSource::~X11EventSource() {
   if (dummy_initialized_)
     connection_->DestroyWindow({dummy_window_});
+  connection_->RemoveEventObserver(this);
 }
 
 // static
@@ -153,7 +151,8 @@ X11EventSource* X11EventSource::GetInstance() {
 
 void X11EventSource::DispatchXEvents() {
   continue_stream_ = true;
-  connection_->Dispatch(this);
+  while (connection_->Dispatch() && continue_stream_) {
+  }
 }
 
 x11::Time X11EventSource::GetCurrentServerTime() {
@@ -207,8 +206,8 @@ x11::Time X11EventSource::GetCurrentServerTime() {
 }
 
 x11::Time X11EventSource::GetTimestamp() {
-  if (dispatching_event_) {
-    auto timestamp = ExtractTimeFromXEvent(*dispatching_event_);
+  if (auto* dispatching_event = connection_->dispatching_event()) {
+    auto timestamp = ExtractTimeFromXEvent(*dispatching_event);
     if (timestamp != x11::Time::CurrentTime)
       return timestamp;
   }
@@ -218,11 +217,9 @@ x11::Time X11EventSource::GetTimestamp() {
 
 base::Optional<gfx::Point>
 X11EventSource::GetRootCursorLocationFromCurrentEvent() const {
-  if (!dispatching_event_)
+  auto* event = connection_->dispatching_event();
+  if (!event)
     return base::nullopt;
-
-  DCHECK(dispatching_event_);
-  x11::Event* event = dispatching_event_;
 
   auto* device = event->As<x11::Input::DeviceEvent>();
   auto* crossing = event->As<x11::Input::CrossingEvent>();
@@ -244,20 +241,46 @@ X11EventSource::GetRootCursorLocationFromCurrentEvent() const {
   }
 
   if (is_valid_event)
-    return ui::EventSystemLocationFromXEvent(*dispatching_event_);
+    return ui::EventSystemLocationFromXEvent(*event);
   return base::nullopt;
 }
 
-void X11EventSource::AddXEventObserver(XEventObserver* observer) {
-  observers_.AddObserver(observer);
-}
+////////////////////////////////////////////////////////////////////////////////
+// X11EventSource, protected
 
-void X11EventSource::RemoveXEventObserver(XEventObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
+void X11EventSource::OnEvent(const x11::Event& x11_event) {
+  bool should_update_device_list = false;
 
-void X11EventSource::ProcessXEvent(x11::Event* xevent) {
-  auto translated_event = ui::BuildEventFromXEvent(*xevent);
+  if (x11_event.As<x11::Input::HierarchyEvent>()) {
+    should_update_device_list = true;
+  } else if (auto* device = x11_event.As<x11::Input::DeviceChangedEvent>()) {
+    if (device->reason == x11::Input::ChangeReason::DeviceChange) {
+      should_update_device_list = true;
+    } else if (device->reason == x11::Input::ChangeReason::SlaveSwitch) {
+      ui::DeviceDataManagerX11::GetInstance()->InvalidateScrollClasses(
+          device->sourceid);
+    }
+  }
+
+  if (should_update_device_list) {
+    UpdateDeviceList();
+    hotplug_event_handler_->OnHotplugEvent();
+  }
+
+  auto* crossing = x11_event.As<x11::CrossingEvent>();
+  if (crossing && crossing->opcode == x11::CrossingEvent::EnterNotify &&
+      crossing->detail != x11::NotifyDetail::Inferior &&
+      crossing->mode != x11::NotifyMode::Ungrab) {
+    // Clear stored scroll data
+    ui::DeviceDataManagerX11::GetInstance()->InvalidateScrollClasses(
+        DeviceDataManagerX11::kAllDevices);
+  }
+
+  auto* mapping = x11_event.As<x11::MappingNotifyEvent>();
+  if (mapping && mapping->request == x11::Mapping::Pointer)
+    DeviceDataManagerX11::GetInstance()->UpdateButtonMap();
+
+  auto translated_event = ui::BuildEventFromXEvent(x11_event);
   // Ignore native platform-events only if they correspond to mouse events.
   // Allow other types of events to still be handled
   if (ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents() &&
@@ -272,48 +295,7 @@ void X11EventSource::ProcessXEvent(x11::Event* xevent) {
     }
 #endif
     DispatchEvent(translated_event.get());
-  } else {
-    // Only if we can't translate XEvent into ui::Event, try to dispatch XEvent
-    // directly to XEventObservers.
-    for (XEventObserver& observer : observers_)
-      observer.OnEvent(*xevent);
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// X11EventSource, protected
-
-void X11EventSource::PostDispatchEvent(x11::Event* x11_event) {
-  bool should_update_device_list = false;
-
-  if (x11_event->As<x11::Input::HierarchyEvent>()) {
-    should_update_device_list = true;
-  } else if (auto* device = x11_event->As<x11::Input::DeviceChangedEvent>()) {
-    if (device->reason == x11::Input::ChangeReason::DeviceChange) {
-      should_update_device_list = true;
-    } else if (device->reason == x11::Input::ChangeReason::SlaveSwitch) {
-      ui::DeviceDataManagerX11::GetInstance()->InvalidateScrollClasses(
-          device->sourceid);
-    }
-  }
-
-  if (should_update_device_list) {
-    UpdateDeviceList();
-    hotplug_event_handler_->OnHotplugEvent();
-  }
-
-  auto* crossing = x11_event->As<x11::CrossingEvent>();
-  if (crossing && crossing->opcode == x11::CrossingEvent::EnterNotify &&
-      crossing->detail != x11::NotifyDetail::Inferior &&
-      crossing->mode != x11::NotifyMode::Ungrab) {
-    // Clear stored scroll data
-    ui::DeviceDataManagerX11::GetInstance()->InvalidateScrollClasses(
-        DeviceDataManagerX11::kAllDevices);
-  }
-
-  auto* mapping = x11_event->As<x11::MappingNotifyEvent>();
-  if (mapping && mapping->request == x11::Mapping::Pointer)
-    DeviceDataManagerX11::GetInstance()->UpdateButtonMap();
 }
 
 void X11EventSource::StopCurrentEventStream() {
@@ -328,23 +310,6 @@ void X11EventSource::OnDispatcherListChanged() {
     // Force the initial device query to have an update list of active devices.
     hotplug_event_handler_->OnHotplugEvent();
   }
-}
-
-bool X11EventSource::ShouldContinueStream() const {
-  return continue_stream_;
-}
-
-void X11EventSource::DispatchXEvent(x11::Event* event) {
-  // NB: The event should be reset to nullptr when this function
-  // returns, not to its initial value, otherwise nested message loops
-  // will incorrectly think that the current event being dispatched is
-  // an old event.  This means base::AutoReset should not be used.
-  dispatching_event_ = event;
-
-  ProcessXEvent(event);
-  PostDispatchEvent(event);
-
-  dispatching_event_ = nullptr;
 }
 
 // static

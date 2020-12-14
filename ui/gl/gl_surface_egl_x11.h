@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gl/gl_export.h"
@@ -20,7 +19,7 @@ namespace gl {
 
 // Encapsulates an EGL surface bound to a view using the X Window System.
 class GL_EXPORT NativeViewGLSurfaceEGLX11 : public NativeViewGLSurfaceEGL,
-                                            public ui::XEventObserver {
+                                            public x11::EventObserver {
  public:
   explicit NativeViewGLSurfaceEGLX11(x11::Window window);
   NativeViewGLSurfaceEGLX11(const NativeViewGLSurfaceEGLX11& other) = delete;
@@ -41,7 +40,7 @@ class GL_EXPORT NativeViewGLSurfaceEGLX11 : public NativeViewGLSurfaceEGL,
   // NativeViewGLSurfaceEGL overrides:
   std::unique_ptr<gfx::VSyncProvider> CreateVsyncProviderInternal() override;
 
-  // XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& xev) override;
 
   std::vector<x11::Window> children_;

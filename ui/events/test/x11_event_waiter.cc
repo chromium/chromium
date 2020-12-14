@@ -5,7 +5,6 @@
 #include "ui/events/test/x11_event_waiter.h"
 
 #include "base/threading/thread_task_runner_handle.h"
-#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -33,11 +32,11 @@ XEventWaiter* XEventWaiter::Create(x11::Window window,
 // XEventWaiter implementation
 XEventWaiter::XEventWaiter(base::OnceClosure callback)
     : success_callback_(std::move(callback)) {
-  ui::X11EventSource::GetInstance()->AddXEventObserver(this);
+  x11::Connection::Get()->AddEventObserver(this);
 }
 
 XEventWaiter::~XEventWaiter() {
-  ui::X11EventSource::GetInstance()->RemoveXEventObserver(this);
+  x11::Connection::Get()->RemoveEventObserver(this);
 }
 
 void XEventWaiter::OnEvent(const x11::Event& xev) {

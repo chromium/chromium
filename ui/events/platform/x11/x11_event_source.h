@@ -27,17 +27,6 @@ namespace ui {
 class X11HotplugEventHandler;
 class XScopedEventSelector;
 
-// The XEventObserver interface is used by classes wanting to receive
-// x11::Events directly.  For input events (mouse, keyboard, touch), a
-// PlatformEventObserver should be used instead.
-class EVENTS_EXPORT XEventObserver {
- public:
-  virtual void OnEvent(const x11::Event& xevent) = 0;
-
- protected:
-  virtual ~XEventObserver() = default;
-};
-
 // Responsible for notifying X11EventSource when new x11::Events are available
 // to be processed/dispatched.
 class X11EventWatcher {
@@ -58,10 +47,10 @@ class X11EventWatcher {
 
 // PlatformEventSource implementation for X11, both Ozone and non-Ozone.
 // Receives X11 events from X11EventWatcher and sends them to registered
-// PlatformEventDispatchers/XEventObservers. Handles receiving, pre-process,
+// PlatformEventDispatchers/x11::EventObservers. Handles receiving, pre-process,
 // translation and post-processing of x11::Events.
 class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
-                                     public x11::Connection::Delegate {
+                                     x11::EventObserver {
  public:
   explicit X11EventSource(x11::Connection* connection);
   ~X11EventSource() override;
@@ -74,8 +63,6 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   void DispatchXEvents();
 
   x11::Connection* connection() { return connection_; }
-
-  x11::Event* dispatching_event() { return dispatching_event_; }
 
   // Returns the timestamp of the event currently being dispatched.  Falls back
   // on GetCurrentServerTime() if there's no event being dispatched, or if the
@@ -90,22 +77,9 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   // |last_seen_server_time_| with this value.
   x11::Time GetCurrentServerTime();
 
-  // Adds a x11::Event observer to the x11::Event observer list.
-  void AddXEventObserver(XEventObserver* observer);
-
-  // Removes an x11::Event observer from the x11::Event observer list.
-  void RemoveXEventObserver(XEventObserver* observer);
-
-  // x11::Connection::Delegate:
-  bool ShouldContinueStream() const override;
-  void DispatchXEvent(x11::Event* event) override;
-
- protected:
-  // Handles updates after event has been dispatched.
-  void PostDispatchEvent(x11::Event* xevent);
-
  private:
-  void ProcessXEvent(x11::Event* xevent);
+  // x11::EventObserver:
+  void OnEvent(const x11::Event& event) override;
 
   // PlatformEventSource:
   void StopCurrentEventStream() override;
@@ -115,9 +89,6 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
 
   // The connection to the X11 server used to receive the events.
   x11::Connection* connection_;
-
-  // Event currently being dispatched.
-  x11::Event* dispatching_event_;
 
   // State necessary for UpdateLastSeenServerTime
   bool dummy_initialized_;
@@ -130,9 +101,6 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   bool continue_stream_ = true;
 
   std::unique_ptr<X11HotplugEventHandler> hotplug_event_handler_;
-
-  // Keep track of all XEventObserver to send XEvents directly to.
-  base::ObserverList<XEventObserver>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(X11EventSource);
 };

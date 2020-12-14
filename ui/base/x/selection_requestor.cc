@@ -50,7 +50,7 @@ std::vector<uint8_t> CombineData(
 }  // namespace
 
 SelectionRequestor::SelectionRequestor(x11::Window x_window,
-                                       XEventObserver* observer)
+                                       x11::EventObserver* observer)
     : x_window_(x_window),
       x_property_(x11::Atom::None),
       observer_(observer),
@@ -255,16 +255,8 @@ void SelectionRequestor::BlockTillSelectionNotifyForRequest(Request* request) {
     // This occurs if PerformBlockingConvertSelection() is called during
     // shutdown and the X11EventSource has already been destroyed.
     auto* conn = x11::Connection::Get();
-    auto& events = conn->events();
-    while (!request->completed && request->timeout > base::TimeTicks::Now()) {
-      conn->Flush();
-      conn->ReadResponses();
-      if (!conn->events().empty()) {
-        x11::Event event = std::move(events.front());
-        events.pop_front();
-        observer_->OnEvent(event);
-      }
-    }
+    while (!request->completed && request->timeout > base::TimeTicks::Now())
+      conn->Dispatch();
   }
 }
 

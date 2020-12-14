@@ -22,12 +22,12 @@ OSExchangeDataProviderX11::OSExchangeDataProviderX11(
     : XOSExchangeDataProvider(x_window, selection) {}
 
 OSExchangeDataProviderX11::OSExchangeDataProviderX11() {
-  X11EventSource::GetInstance()->AddXEventObserver(this);
+  x11::Connection::Get()->AddEventObserver(this);
 }
 
 OSExchangeDataProviderX11::~OSExchangeDataProviderX11() {
   if (own_window())
-    X11EventSource::GetInstance()->RemoveXEventObserver(this);
+    x11::Connection::Get()->RemoveEventObserver(this);
 }
 
 std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderX11::Clone()

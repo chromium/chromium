@@ -23,7 +23,6 @@
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/events_x_utils.h"
 #include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/connection.h"

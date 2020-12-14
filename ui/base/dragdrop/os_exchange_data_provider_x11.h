@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
-#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
 namespace ui {
@@ -15,7 +15,7 @@ namespace ui {
 // OSExchangeDataProvider implementation for x11 linux.
 class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderX11
     : public XOSExchangeDataProvider,
-      public XEventObserver {
+      public x11::EventObserver {
  public:
   // |x_window| is the window the cursor is over, and |selection| is the set of
   // data being offered.
@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderX11
   // OSExchangeDataProvider:
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
 
-  // XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& xev) override;
 
   void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;

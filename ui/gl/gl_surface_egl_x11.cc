@@ -54,26 +54,24 @@ bool NativeViewGLSurfaceEGLX11::Initialize(GLSurfaceFormat format) {
   if (!NativeViewGLSurfaceEGL::Initialize(format))
     return false;
 
+  auto* connection = x11::Connection::Get();
   // Query all child windows and store them. ANGLE creates a child window when
   // eglCreateWidnowSurface is called on X11 and expose events from this window
   // need to be received by this class.
-  if (auto reply = x11::Connection::Get()
-                       ->QueryTree({static_cast<x11::Window>(window_)})
-                       .Sync()) {
+  if (auto reply =
+          connection->QueryTree({static_cast<x11::Window>(window_)}).Sync()) {
     children_ = std::move(reply->children);
   }
 
-  if (ui::X11EventSource::HasInstance()) {
-    dispatcher_set_ = true;
-    ui::X11EventSource::GetInstance()->AddXEventObserver(this);
-  }
+  dispatcher_set_ = true;
+  connection->AddEventObserver(this);
   return true;
 }
 
 void NativeViewGLSurfaceEGLX11::Destroy() {
   NativeViewGLSurfaceEGL::Destroy();
-  if (dispatcher_set_ && ui::X11EventSource::HasInstance())
-    ui::X11EventSource::GetInstance()->RemoveXEventObserver(this);
+  if (dispatcher_set_)
+    x11::Connection::Get()->RemoveEventObserver(this);
 }
 
 gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(

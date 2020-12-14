@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "gpu/vulkan/vulkan_surface.h"
-#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
 namespace ui {
@@ -18,7 +18,7 @@ class XScopedEventSelector;
 
 namespace gpu {
 
-class VulkanSurfaceX11 : public VulkanSurface, public ui::XEventObserver {
+class VulkanSurfaceX11 : public VulkanSurface, public x11::EventObserver {
  public:
   static std::unique_ptr<VulkanSurfaceX11> Create(VkInstance vk_instance,
                                                   x11::Window parent_window);
@@ -34,7 +34,7 @@ class VulkanSurfaceX11 : public VulkanSurface, public ui::XEventObserver {
                gfx::OverlayTransform pre_transform) override;
 
  private:
-  // ui::XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& xevent) override;
 
   const x11::Window parent_window_;

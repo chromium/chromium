@@ -18,7 +18,7 @@
 #include "ui/base/glib/glib_signal.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
@@ -43,7 +43,7 @@ class GtkThreadDeleter {
 
 // Can be constructed on any thread, but must be started and destroyed on the
 // main GTK+ thread (i.e., the GLib global default main context).
-class GdkLayoutMonitorOnGtkThread : public ui::XEventObserver {
+class GdkLayoutMonitorOnGtkThread : public x11::EventObserver {
  public:
   GdkLayoutMonitorOnGtkThread(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -54,7 +54,7 @@ class GdkLayoutMonitorOnGtkThread : public ui::XEventObserver {
   void Start();
 
  private:
-  // ui::XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;
 
   void QueryLayout();
@@ -121,7 +121,7 @@ GdkLayoutMonitorOnGtkThread::~GdkLayoutMonitorOnGtkThread() {
   DCHECK(g_main_context_is_owner(g_main_context_default()));
   if (handler_id_) {
     g_signal_handler_disconnect(keymap_, handler_id_);
-    ui::X11EventSource::GetInstance()->RemoveXEventObserver(this);
+    connection_->RemoveEventObserver(this);
   }
 }
 
@@ -159,7 +159,7 @@ void GdkLayoutMonitorOnGtkThread::Start() {
     });
     connection_->Flush();
   }
-  ui::X11EventSource::GetInstance()->AddXEventObserver(this);
+  connection_->AddEventObserver(this);
 
   keymap_ = gdk_keymap_get_for_display(display_);
   handler_id_ = g_signal_connect(keymap_, "keys-changed",

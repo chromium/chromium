@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
@@ -22,7 +21,7 @@ namespace ui {
 
 // Watches properties on an X11 window.  Property values are obtained once upon
 // creation and are refreshed after each property change.
-class COMPONENT_EXPORT(UI_BASE_X) PropertyCache : public XEventObserver {
+class COMPONENT_EXPORT(UI_BASE_X) PropertyCache : public x11::EventObserver {
  public:
   PropertyCache(x11::Connection* connection,
                 x11::Window window,
@@ -49,7 +48,7 @@ class COMPONENT_EXPORT(UI_BASE_X) PropertyCache : public XEventObserver {
     base::Optional<x11::GetPropertyResponse> response = base::nullopt;
   };
 
-  // ui::XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& xev) override;
 
   void FetchProperty(x11::Atom property, PropertyValue* value);

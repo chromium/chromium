@@ -6,8 +6,6 @@
 
 #include "ui/gfx/x/future.h"
 
-using ui::X11EventSource;
-
 namespace gl {
 
 GLSurfaceGLXX11::GLSurfaceGLXX11(gfx::AcceleratedWidget window)
@@ -19,19 +17,17 @@ GLSurfaceGLXX11::~GLSurfaceGLXX11() {
 
 void GLSurfaceGLXX11::RegisterEvents() {
   // Can be null in tests, when we don't care about Exposes.
-  if (X11EventSource::HasInstance()) {
-    x11::Connection::Get()->ChangeWindowAttributes(
-        x11::ChangeWindowAttributesRequest{
-            .window = static_cast<x11::Window>(window()),
-            .event_mask = x11::EventMask::Exposure});
+  auto* connection = x11::Connection::Get();
 
-    X11EventSource::GetInstance()->AddXEventObserver(this);
-  }
+  connection->ChangeWindowAttributes(x11::ChangeWindowAttributesRequest{
+      .window = static_cast<x11::Window>(window()),
+      .event_mask = x11::EventMask::Exposure});
+
+  connection->AddEventObserver(this);
 }
 
 void GLSurfaceGLXX11::UnregisterEvents() {
-  if (X11EventSource::HasInstance())
-    X11EventSource::GetInstance()->RemoveXEventObserver(this);
+  x11::Connection::Get()->RemoveEventObserver(this);
 }
 
 void GLSurfaceGLXX11::OnEvent(const x11::Event& event) {

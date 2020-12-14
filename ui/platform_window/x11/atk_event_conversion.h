@@ -27,7 +27,7 @@ typedef enum {
   KAtkMod5Mask = 1 << 7,
 } AtkKeyModifierMask;
 
-std::unique_ptr<AtkKeyEventStruct> AtkKeyEventFromXEvent(x11::Event* xev);
+std::unique_ptr<AtkKeyEventStruct> AtkKeyEventFromXEvent(const x11::Event& xev);
 
 }  // namespace ui
 

@@ -18,8 +18,11 @@
 #include "ui/events/platform_event.h"
 #include "ui/gfx/x/event.h"
 
+namespace x11 {
+class EventObserver;
+}
+
 namespace ui {
-class XEventObserver;
 class SelectionData;
 
 // Requests and later receives data from the X11 server through the selection
@@ -31,7 +34,7 @@ class SelectionData;
 // implement per-component fast-paths.
 class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
  public:
-  SelectionRequestor(x11::Window xwindow, XEventObserver* observer);
+  SelectionRequestor(x11::Window xwindow, x11::EventObserver* observer);
   ~SelectionRequestor();
 
   // Does the work of requesting |target| from |selection|, spinning up the
@@ -128,7 +131,7 @@ class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
   // observer directly if PerformBlockingConvertSelection() is called after
   // the PlatformEventSource is destroyed.
   // Not owned.
-  XEventObserver* observer_;
+  x11::EventObserver* observer_;
 
   // In progress requests. Requests are added to the list at the start of
   // PerformBlockingConvertSelection() and are removed and destroyed right

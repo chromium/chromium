@@ -24,15 +24,11 @@ void XUserInputMonitor::WillDestroyCurrentMessageLoop() {
   StopMonitor();
 }
 
-bool XUserInputMonitor::ShouldContinueStream() const {
-  return true;
-}
-
-void XUserInputMonitor::DispatchXEvent(x11::Event* event) {
+void XUserInputMonitor::OnEvent(const x11::Event& event) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   DCHECK(write_key_press_callback_);
 
-  auto* raw = event->As<x11::Input::RawDeviceEvent>();
+  auto* raw = event.As<x11::Input::RawDeviceEvent>();
   if (!raw || (raw->opcode != x11::Input::RawDeviceEvent::RawKeyPress &&
                raw->opcode != x11::Input::RawDeviceEvent::RawKeyRelease)) {
     return;
@@ -73,6 +69,7 @@ void XUserInputMonitor::StartMonitor(WriteKeyPressCallback& callback) {
     }
   }
 
+  connection_->AddEventObserver(this);
   if (!connection_->xinput().present()) {
     LOG(ERROR) << "X Input extension not available.";
     StopMonitor();
@@ -126,7 +123,7 @@ void XUserInputMonitor::StopMonitor() {
 
 void XUserInputMonitor::OnConnectionData() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  connection_->Dispatch(this);
+  connection_->DispatchAll();
 }
 
 }  // namespace ui

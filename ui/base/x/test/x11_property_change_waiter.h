@@ -11,14 +11,15 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/platform_event.h"
+#include "ui/events/x/x11_window_event_manager.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
 namespace ui {
 
 // Blocks till the value of |property| on |window| changes.
-class X11PropertyChangeWaiter : public XEventObserver {
+class X11PropertyChangeWaiter : public x11::EventObserver {
  public:
   X11PropertyChangeWaiter(x11::Window window, const char* property);
   ~X11PropertyChangeWaiter() override;
@@ -33,7 +34,7 @@ class X11PropertyChangeWaiter : public XEventObserver {
   x11::Window xwindow() const { return x_window_; }
 
  private:
-  // XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;
 
   x11::Window x_window_;

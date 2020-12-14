@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
-#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/x11_window_event_manager.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
@@ -24,13 +23,11 @@ X11PropertyChangeWaiter::X11PropertyChangeWaiter(x11::Window window,
   x_window_events_ = std::make_unique<XScopedEventSelector>(
       x_window_, x11::EventMask::PropertyChange);
 
-  // Add ourselves as an event observer so that we get events before X11Window
-  // does. We must do this because X11Window stops propagation.
-  X11EventSource::GetInstance()->AddXEventObserver(this);
+  x11::Connection::Get()->AddEventObserver(this);
 }
 
 X11PropertyChangeWaiter::~X11PropertyChangeWaiter() {
-  X11EventSource::GetInstance()->RemoveXEventObserver(this);
+  x11::Connection::Get()->RemoveEventObserver(this);
 }
 
 void X11PropertyChangeWaiter::Wait() {

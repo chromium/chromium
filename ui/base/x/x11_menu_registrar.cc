@@ -10,7 +10,6 @@
 #include "ui/base/x/x11_menu_list.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/x/x11_window_event_manager.h"
-#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/scoped_ignore_errors.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
@@ -33,8 +32,7 @@ X11MenuRegistrar* X11MenuRegistrar::Get() {
 }
 
 X11MenuRegistrar::X11MenuRegistrar() {
-  if (ui::X11EventSource::HasInstance())
-    ui::X11EventSource::GetInstance()->AddXEventObserver(this);
+  x11::Connection::Get()->AddEventObserver(this);
 
   x_root_window_events_ = std::make_unique<ui::XScopedEventSelector>(
       ui::GetX11RootWindow(),
@@ -42,8 +40,7 @@ X11MenuRegistrar::X11MenuRegistrar() {
 }
 
 X11MenuRegistrar::~X11MenuRegistrar() {
-  if (ui::X11EventSource::HasInstance())
-    ui::X11EventSource::GetInstance()->RemoveXEventObserver(this);
+  x11::Connection::Get()->RemoveEventObserver(this);
 }
 
 void X11MenuRegistrar::OnEvent(const x11::Event& xev) {

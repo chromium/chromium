@@ -254,7 +254,7 @@ COMPONENT_EXPORT(UI_BASE_X) bool QueryShmSupport();
 // the queue, and return the number eliminated, storing the last one in
 // |last_event|.
 COMPONENT_EXPORT(UI_BASE_X)
-int CoalescePendingMotionEvents(const x11::Event* xev, x11::Event* last_event);
+int CoalescePendingMotionEvents(const x11::Event& xev, x11::Event* last_event);
 
 // Sets whether |window| should use the OS window frame.
 COMPONENT_EXPORT(UI_BASE_X)

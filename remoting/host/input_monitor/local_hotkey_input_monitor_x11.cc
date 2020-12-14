@@ -40,7 +40,7 @@ class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
  private:
   // The implementation resides in LocalHotkeyInputMonitorX11::Core class.
   class Core : public base::RefCountedThreadSafe<Core>,
-               public x11::Connection::Delegate {
+               public x11::EventObserver {
    public:
     Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
          scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
@@ -59,9 +59,8 @@ class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
     // Called when there are pending X events.
     void OnConnectionData();
 
-    // x11::Connection::Delegate:
-    bool ShouldContinueStream() const override;
-    void DispatchXEvent(x11::Event* event) override;
+    // x11::EventObserver:
+    void OnEvent(const x11::Event& event) override;
 
     // Task runner on which public methods of this class must be called.
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
@@ -178,21 +177,17 @@ void LocalHotkeyInputMonitorX11::Core::StopOnInputThread() {
 
 void LocalHotkeyInputMonitorX11::Core::OnConnectionData() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  connection_->Dispatch(this);
+  connection_->DispatchAll();
 }
 
-bool LocalHotkeyInputMonitorX11::Core::ShouldContinueStream() const {
-  return true;
-}
-
-void LocalHotkeyInputMonitorX11::Core::DispatchXEvent(x11::Event* event) {
+void LocalHotkeyInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
 
   // Ignore input if we've already initiated a disconnect.
   if (!disconnect_callback_)
     return;
 
-  const auto* raw = event->As<x11::Input::RawDeviceEvent>();
+  const auto* raw = event.As<x11::Input::RawDeviceEvent>();
   DCHECK(raw);
   DCHECK(raw->opcode == x11::Input::RawDeviceEvent::RawKeyPress ||
          raw->opcode == x11::Input::RawDeviceEvent::RawKeyRelease);

@@ -6,14 +6,14 @@
 #define UI_OZONE_PLATFORM_X11_X11_OS_EXCHANGE_DATA_PROVIDER_OZONE_H_
 
 #include "ui/base/x/x11_os_exchange_data_provider.h"
-#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
 namespace ui {
 
 // OSExchangeDataProvider implementation for Ozone/X11.
 class X11OSExchangeDataProviderOzone : public XOSExchangeDataProvider,
-                                       public XEventObserver {
+                                       public x11::EventObserver {
  public:
   X11OSExchangeDataProviderOzone(x11::Window x_window,
                                  const SelectionFormatMap& selection);
@@ -27,7 +27,7 @@ class X11OSExchangeDataProviderOzone : public XOSExchangeDataProvider,
   // OSExchangeDataProvider:
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
 
-  // XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& xev) override;
 };
 

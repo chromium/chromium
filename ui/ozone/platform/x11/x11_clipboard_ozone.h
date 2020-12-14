@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xproto.h"
@@ -26,7 +26,7 @@ namespace ui {
 // text/plain.  Otherwise GetAvailableMimeTypes and RequestClipboardData call
 // the appropriate X11 functions and invoke callbacks when the associated events
 // are received.
-class X11ClipboardOzone : public PlatformClipboard, public XEventObserver {
+class X11ClipboardOzone : public PlatformClipboard, public x11::EventObserver {
  public:
   X11ClipboardOzone();
   ~X11ClipboardOzone() override;
@@ -52,7 +52,7 @@ class X11ClipboardOzone : public PlatformClipboard, public XEventObserver {
  private:
   struct SelectionState;
 
-  // XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& xev) override;
 
   void OnSelectionRequest(const x11::SelectionRequestEvent& event);

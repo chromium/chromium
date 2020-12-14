@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 
 namespace ui {
 
 // X11 Event Waiter class
-class XEventWaiter : public ui::XEventObserver {
+class XEventWaiter : public x11::EventObserver {
  public:
   static XEventWaiter* Create(x11::Window window, base::OnceClosure callback);
 
@@ -22,7 +22,7 @@ class XEventWaiter : public ui::XEventObserver {
   explicit XEventWaiter(base::OnceClosure callback);
   ~XEventWaiter() override;
 
-  // ui::XEventObserver:
+  // x11::EventObserver:
   void OnEvent(const x11::Event& xev) override;
 
   // Returns atom that indidates that the XEvent is marker event.

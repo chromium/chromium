@@ -27,6 +27,17 @@ class Event;
 class KeyboardState;
 class WriteBuffer;
 
+// This interface is used by classes wanting to receive
+// x11::Events directly.  For input events (mouse, keyboard, touch), a
+// PlatformEventObserver should be used instead.
+class EVENTS_EXPORT EventObserver {
+ public:
+  virtual void OnEvent(const x11::Event& xevent) = 0;
+
+ protected:
+  virtual ~EventObserver() = default;
+};
+
 // Represents a socket to the X11 server.
 class COMPONENT_EXPORT(X11) Connection : public XProto,
                                          public ExtensionManager {
@@ -41,15 +52,6 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // xcb returns unsigned int when making requests.  This may be updated to
   // uint16_t if/when we stop using xcb for socket IO.
   using SequenceType = unsigned int;
-
-  class Delegate {
-   public:
-    virtual bool ShouldContinueStream() const = 0;
-    virtual void DispatchXEvent(x11::Event* event) = 0;
-
-   protected:
-    virtual ~Delegate() = default;
-  };
 
   struct VisualInfo {
     const Format* format;
@@ -117,6 +119,11 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
     return *default_root_visual_;
   }
 
+  const x11::Event* dispatching_event() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return dispatching_event_;
+  }
+
   // Returns the underlying socket's FD if the connection is valid, or -1
   // otherwise.
   int GetFd();
@@ -147,13 +154,24 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   // Are there any events, errors, or replies already buffered?
   bool HasPendingResponses();
 
-  // Dispatch any buffered events, errors, or replies.
-  void Dispatch(Delegate* delegate);
+  // Dispatches one event, reply, or error from the server; or returns false
+  // if there's none available.
+  bool Dispatch();
+
+  // Dispatches all available events, replies, and errors.
+  void DispatchAll();
+
+  // Directly dispatch an event, bypassing the event queue.
+  void DispatchEvent(const x11::Event& event);
 
   // Returns the old error handler.
   ErrorHandler SetErrorHandler(ErrorHandler new_handler);
 
   void SetIOErrorHandler(IOErrorHandler new_handler);
+
+  void AddEventObserver(EventObserver* observer);
+
+  void RemoveEventObserver(EventObserver* observer);
 
   // Returns the visual data for |id|, or nullptr if the visual with that ID
   // doesn't exist or only exists on a non-default screen.
@@ -242,6 +260,10 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   void InitRootDepthAndVisual();
 
+  void ProcessNextEvent();
+
+  void ProcessNextResponse();
+
   bool HasNextResponse();
 
   // Creates a new Request and adds it to the end of the queue.
@@ -289,6 +311,11 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   std::unique_ptr<KeyboardState> keyboard_state_;
 
   std::list<Event> events_;
+
+  base::ObserverList<EventObserver>::Unchecked event_observers_;
+
+  // The Event currently being dispatched, or nullptr if there is none.
+  const x11::Event* dispatching_event_ = nullptr;
 
   base::circular_deque<Request> requests_;
   // The sequence ID of requests_.front(), or if |requests_| is empty, then the

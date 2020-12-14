@@ -19,6 +19,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/util/display_util.h"
+#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -33,7 +34,7 @@ namespace views {
 
 DesktopScreenX11::DesktopScreenX11() {
   if (LinuxUI::instance())
-    display_scale_factor_observer_.Add(LinuxUI::instance());
+    display_scale_factor_observer_.Observe(LinuxUI::instance());
 }
 
 DesktopScreenX11::~DesktopScreenX11() {
@@ -41,9 +42,8 @@ DesktopScreenX11::~DesktopScreenX11() {
 }
 
 void DesktopScreenX11::Init() {
-  if (x11_display_manager_->IsXrandrAvailable() &&
-      ui::X11EventSource::HasInstance())
-    event_source_observer_.Add(ui::X11EventSource::GetInstance());
+  if (x11_display_manager_->IsXrandrAvailable())
+    event_observer_.Observe(x11::Connection::Get());
   x11_display_manager_->Init();
 }
 

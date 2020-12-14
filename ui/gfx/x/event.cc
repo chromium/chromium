@@ -20,11 +20,9 @@ namespace x11 {
 Event::Event() = default;
 
 Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
-             x11::Connection* connection,
-             bool sequence_valid) {
+             x11::Connection* connection) {
   auto* xcb_event = reinterpret_cast<xcb_generic_event_t*>(
       const_cast<uint8_t*>(event_bytes->data()));
-  sequence_valid_ = sequence_valid;
   sequence_ = xcb_event->full_sequence;
   // KeymapNotify events are the only events that don't have a sequence.
   if ((xcb_event->response_type & ~kSendEventMask) !=

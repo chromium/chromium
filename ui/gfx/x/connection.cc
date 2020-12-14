@@ -349,7 +349,7 @@ void Connection::ReadResponses() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (auto* event = xcb_poll_for_event(XcbConnection())) {
     events_.emplace_back(base::MakeRefCounted<MallocedRefCountedMemory>(event),
-                         this, true);
+                         this);
   }
 }
 
@@ -362,7 +362,7 @@ Event Connection::WaitForNextEvent() {
   }
   if (auto* xcb_event = xcb_wait_for_event(XcbConnection())) {
     return Event(base::MakeRefCounted<MallocedRefCountedMemory>(xcb_event),
-                 this, true);
+                 this);
   }
   return Event();
 }
@@ -402,64 +402,49 @@ void Connection::DetachFromSequence() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-void Connection::Dispatch(Delegate* delegate) {
+bool Connection::Dispatch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto process_next_response = [&] {
-    DCHECK(!requests_.empty());
-    DCHECK(requests_.front().have_response);
+  Flush();
+  ReadResponses();
 
-    Request request = std::move(requests_.front());
-    requests_.pop_front();
-    if (last_non_void_request_id_.has_value() &&
-        last_non_void_request_id_.value() == first_request_id_) {
-      last_non_void_request_id_ = base::nullopt;
-    }
-    first_request_id_++;
-    if (request.callback) {
-      std::move(request.callback)
-          .Run(std::move(request.reply), std::move(request.error));
-    }
-  };
+  if (HasNextResponse() && !events_.empty()) {
+    auto next_response_sequence = first_request_id_;
+    auto next_event_sequence = events_.front().sequence();
 
-  auto process_next_event = [&] {
-    DCHECK(!events_.empty());
-
-    Event event = std::move(events_.front());
-    events_.pop_front();
-    PreDispatchEvent(event);
-    delegate->DispatchXEvent(&event);
-  };
-
-  // Handle all pending events.
-  while (delegate->ShouldContinueStream()) {
-    Flush();
-    ReadResponses();
-
-    if (HasNextResponse() && !events_.empty()) {
-      if (!events_.front().sequence_valid()) {
-        process_next_event();
-        continue;
-      }
-
-      auto next_response_sequence = first_request_id_;
-      auto next_event_sequence = events_.front().sequence();
-
-      // All events have the sequence number of the last processed request
-      // included in them.  So if a reply and an event have the same sequence,
-      // the reply must have been received first.
-      if (CompareSequenceIds(next_event_sequence, next_response_sequence) <= 0)
-        process_next_response();
-      else
-        process_next_event();
-    } else if (HasNextResponse()) {
-      process_next_response();
-    } else if (!events_.empty()) {
-      process_next_event();
-    } else {
-      break;
-    }
+    // All events have the sequence number of the last processed request
+    // included in them.  So if a reply and an event have the same sequence,
+    // the reply must have been received first.
+    if (CompareSequenceIds(next_event_sequence, next_response_sequence) <= 0)
+      ProcessNextResponse();
+    else
+      ProcessNextEvent();
+  } else if (HasNextResponse()) {
+    ProcessNextResponse();
+  } else if (!events_.empty()) {
+    ProcessNextEvent();
+  } else {
+    return false;
   }
+  return true;
+}
+
+void Connection::DispatchAll() {
+  while (Dispatch()) {
+  }
+}
+
+void Connection::DispatchEvent(const x11::Event& event) {
+  PreDispatchEvent(event);
+
+  // NB: The event should be reset to nullptr when this function
+  // returns, not to its initial value, otherwise nested message loops
+  // will incorrectly think that the current event being dispatched is
+  // an old event.  This means base::AutoReset should not be used.
+  dispatching_event_ = &event;
+  for (auto& observer : event_observers_)
+    observer.OnEvent(event);
+  dispatching_event_ = nullptr;
 }
 
 Connection::ErrorHandler Connection::SetErrorHandler(ErrorHandler new_handler) {
@@ -472,6 +457,14 @@ void Connection::SetIOErrorHandler(IOErrorHandler new_handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   io_error_handler_ = std::move(new_handler);
+}
+
+void Connection::AddEventObserver(EventObserver* observer) {
+  event_observers_.AddObserver(observer);
+}
+
+void Connection::RemoveEventObserver(EventObserver* observer) {
+  event_observers_.RemoveObserver(observer);
 }
 
 xcb_connection_t* Connection::XcbConnection() {
@@ -492,6 +485,34 @@ void Connection::InitRootDepthAndVisual() {
     }
   }
   NOTREACHED();
+}
+
+void Connection::ProcessNextEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!events_.empty());
+
+  Event event = std::move(events_.front());
+  events_.pop_front();
+
+  DispatchEvent(event);
+}
+
+void Connection::ProcessNextResponse() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!requests_.empty());
+  DCHECK(requests_.front().have_response);
+
+  Request request = std::move(requests_.front());
+  requests_.pop_front();
+  if (last_non_void_request_id_.has_value() &&
+      last_non_void_request_id_.value() == first_request_id_) {
+    last_non_void_request_id_ = base::nullopt;
+  }
+  first_request_id_++;
+  if (request.callback) {
+    std::move(request.callback)
+        .Run(std::move(request.reply), std::move(request.error));
+  }
 }
 
 std::unique_ptr<Connection::FutureImpl> Connection::SendRequest(
