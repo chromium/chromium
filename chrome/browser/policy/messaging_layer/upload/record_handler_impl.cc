@@ -217,7 +217,6 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
   //    }
   //    "encryptionSettings": ... // EncryptionSettings proto
   //  }
-  // TODO(b/169883262): Factor out the decoding into a separate class.
   const base::Value* last_succeed_uploaded_record =
       last_response_.FindDictKey("lastSucceedUploadedRecord");
   if (last_succeed_uploaded_record != nullptr) {
