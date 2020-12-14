@@ -12,15 +12,23 @@ function readAsFilePromise(fileReader, blob, encoding) {
   });
 }
 
+function readField(dictionary, name, defaultValue) {
+  return dictionary.get(name) || defaultValue;
+}
+
 function respondToShare(event) {
   event.respondWith((async () => {
     const template = await fetch('share.template.html');
     let body = await template.text();
-    const formData = await event.request.formData();
+    const formData = (event.request.method === 'POST')
+                         ? await event.request.formData()
+                         : (new URL(event.request.url)).searchParams;
 
-    body = body.replace('{{headline}}', formData.get('headline'))
-               .replace('{{author}}', formData.get('author'))
-               .replace('{{link}}', formData.get('link'));
+    body = body.replace('{{method}}', event.request.method)
+               .replace('{{type}}', event.request.headers.get('Content-Type'))
+               .replace('{{headline}}', readField(formData, 'headline', 'N/A'))
+               .replace('{{author}}', readField(formData, 'author', 'N/A'))
+               .replace('{{link}}', readField(formData, 'link', 'N/A'));
 
     const init = {
       status: 200,

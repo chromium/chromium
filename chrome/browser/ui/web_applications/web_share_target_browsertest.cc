@@ -18,10 +18,14 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/share_target.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
@@ -76,9 +80,6 @@ namespace web_app {
 
 class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
  public:
-  GURL app_url() const {
-    return embedded_test_server()->GetURL("/web_share_target/charts.html");
-  }
   GURL share_target_url() const {
     return embedded_test_server()->GetURL("/web_share_target/share.html");
   }
@@ -106,7 +107,9 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareTextFiles) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/charts.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
   const base::FilePath directory = PrepareWebShareDirectory(profile());
 
   apps::mojom::IntentPtr intent;
@@ -131,7 +134,9 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareTextFiles) {
 
 IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImageWithText) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/charts.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
   const base::FilePath directory = PrepareWebShareDirectory(profile());
 
   apps::mojom::IntentPtr intent;
@@ -160,7 +165,9 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImageWithText) {
 
 IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/charts.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
   const base::FilePath directory = PrepareWebShareDirectory(profile());
 
   apps::mojom::IntentPtr intent;
@@ -184,6 +191,39 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
   EXPECT_EQ("a b c", ReadTextContent(web_contents, "notes"));
 
   RemoveWebShareDirectory(directory);
+}
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, PostLink) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/poster.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  const apps::ShareTarget* share_target =
+      WebAppProvider::Get(browser()->profile())
+          ->registrar()
+          .GetAppShareTarget(app_id);
+  EXPECT_EQ(share_target->method, apps::ShareTarget::Method::kPost);
+  EXPECT_EQ(share_target->enctype, apps::ShareTarget::Enctype::kFormUrlEncoded);
+
+  const std::string shared_title = "Hyperlink";
+  const std::string shared_link = "https://example.org/a?b=c&d=e%20#f";
+
+  apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
+      profile(), /*file_paths=*/std::vector<base::FilePath>(),
+      /*mime_types=*/std::vector<std::string>(),
+      /*share_text=*/shared_link,
+      /*share_title=*/shared_title);
+
+  content::WebContents* const web_contents =
+      LaunchAppWithIntent(app_id, std::move(intent));
+  EXPECT_EQ("POST", ReadTextContent(web_contents, "method"));
+  EXPECT_EQ("application/x-www-form-urlencoded",
+            ReadTextContent(web_contents, "type"));
+
+  EXPECT_EQ(shared_title, ReadTextContent(web_contents, "headline"));
+  // Poster web app's service worker detects omitted value.
+  EXPECT_EQ("N/A", ReadTextContent(web_contents, "author"));
+  EXPECT_EQ(shared_link, ReadTextContent(web_contents, "link"));
 }
 
 }  // namespace web_app

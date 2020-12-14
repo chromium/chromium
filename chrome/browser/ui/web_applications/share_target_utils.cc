@@ -82,44 +82,42 @@ NavigateParams NavigateParamsForShareTarget(
   std::vector<std::string> types;
   std::vector<bool> is_value_file_uris;
 
-  DCHECK(intent.mime_type.has_value());
-  DCHECK(intent.file_urls.has_value());
-
-  const std::string& mime_type = intent.mime_type.value();
-  std::string name;
-  for (const apps::ShareTarget::Files& files : share_target.params.files) {
-    // Filter on MIME types. Chrome OS does not filter on file extensions.
-    // https://w3c.github.io/web-share-target/level-2/#dfn-accepted
-    if (base::ranges::any_of(files.accept, [&mime_type](const auto& criteria) {
-          return !base::StartsWith(criteria, ".") &&
-                 net::MatchesMimeType(criteria, mime_type);
-        })) {
-      name = files.name;
-      break;
-    }
-  }
-  if (name.empty()) {
-    VLOG(1) << "Received unexpected MIME type: " << mime_type;
-  } else {
-    // Files for Web Share intents are created by the browser in
-    // a .WebShare directory, with generated file names and file urls - see
-    // //chrome/browser/webshare/chromeos/sharesheet_client.cc
-    for (const GURL& file_url : intent.file_urls.value()) {
-      storage::FileSystemContext* file_system_context =
-          file_manager::util::GetFileSystemContextForExtensionId(
-              browser->profile(), extension_misc::kFilesManagerAppId);
-      storage::FileSystemURL file_system_url =
-          file_system_context->CrackURL(file_url);
-      if (!file_system_url.is_valid()) {
-        VLOG(1) << "Received unexpected file URL: " << file_url.spec();
-        continue;
+  if (intent.mime_type.has_value() && intent.file_urls.has_value()) {
+    const std::string& mime_type = intent.mime_type.value();
+    std::string name;
+    for (const apps::ShareTarget::Files& files : share_target.params.files) {
+      // Filter on MIME types. Chrome OS does not filter on file extensions.
+      // https://w3c.github.io/web-share-target/level-2/#dfn-accepted
+      if (base::ranges::any_of(
+              files.accept, [&mime_type](const auto& criteria) {
+                return !base::StartsWith(criteria, ".") &&
+                       net::MatchesMimeType(criteria, mime_type);
+              })) {
+        name = files.name;
+        break;
       }
+    }
+    if (!name.empty()) {
+      // Files for Web Share intents are created by the browser in
+      // a .WebShare directory, with generated file names and file urls - see
+      // //chrome/browser/webshare/chromeos/sharesheet_client.cc
+      for (const GURL& file_url : intent.file_urls.value()) {
+        storage::FileSystemContext* file_system_context =
+            file_manager::util::GetFileSystemContextForExtensionId(
+                browser->profile(), extension_misc::kFilesManagerAppId);
+        storage::FileSystemURL file_system_url =
+            file_system_context->CrackURL(file_url);
+        if (!file_system_url.is_valid()) {
+          VLOG(1) << "Received unexpected file URL: " << file_url.spec();
+          continue;
+        }
 
-      names.push_back(name);
-      values.push_back(file_system_url.path().AsUTF8Unsafe());
-      filenames.push_back(file_system_url.path().BaseName().AsUTF8Unsafe());
-      types.push_back(mime_type);
-      is_value_file_uris.push_back(true);
+        names.push_back(name);
+        values.push_back(file_system_url.path().AsUTF8Unsafe());
+        filenames.push_back(file_system_url.path().BaseName().AsUTF8Unsafe());
+        types.push_back(mime_type);
+        is_value_file_uris.push_back(true);
+      }
     }
   }
 
@@ -133,12 +131,22 @@ NavigateParams NavigateParamsForShareTarget(
     is_value_file_uris.push_back(false);
   }
 
-  const std::string boundary = net::GenerateMimeMultipartBoundary();
-  const std::string header_list = base::StringPrintf(
-      "Content-Type: multipart/form-data; boundary=%s\r\n", boundary.c_str());
-  scoped_refptr<network::ResourceRequestBody> post_data =
-      web_share_target::ComputeMultipartBody(names, values, is_value_file_uris,
-                                             filenames, types, boundary);
+  // TODO(crbug.com/1125880): Support Web Share Target with method=GET.
+  scoped_refptr<network::ResourceRequestBody> post_data;
+  std::string header_list;
+  if (share_target.enctype == apps::ShareTarget::Enctype::kMultipartFormData) {
+    const std::string boundary = net::GenerateMimeMultipartBoundary();
+    header_list = base::StringPrintf(
+        "Content-Type: multipart/form-data; boundary=%s\r\n", boundary.c_str());
+    post_data = web_share_target::ComputeMultipartBody(
+        names, values, is_value_file_uris, filenames, types, boundary);
+  } else {
+    const std::string body =
+        web_share_target::ComputeUrlEncodedBody(names, values);
+    header_list = "Content-Type: application/x-www-form-urlencoded\r\n";
+    post_data = network::ResourceRequestBody::CreateFromBytes(body.c_str(),
+                                                              body.length());
+  }
 
   nav_params.post_data = post_data;
   nav_params.extra_headers = header_list;

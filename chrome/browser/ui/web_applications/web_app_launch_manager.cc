@@ -145,12 +145,9 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   if (GetOpenApplicationCallback())
     return GetOpenApplicationCallback().Run(std::move(params));
 
-  // TODO(crbug.com/1125880): Support Web Share Target with no files shared.
   const apps::ShareTarget* const share_target =
-      (params.intent && params.intent->mime_type.has_value() &&
-       params.intent->file_urls.has_value())
-          ? provider_->registrar().GetAppShareTarget(params.app_id)
-          : nullptr;
+      params.intent ? provider_->registrar().GetAppShareTarget(params.app_id)
+                    : nullptr;
   const GURL url = GetLaunchUrl(*provider_, params, share_target);
 
   // Place new windows on the specified display.
