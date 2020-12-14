@@ -7,8 +7,12 @@ component("full_restore") {
   sources = [
     "app_launch_info.cc",
     "app_launch_info.h",
+    "app_restore_data.cc",
+    "app_restore_data.h",
     "full_restore_utils.cc",
     "full_restore_utils.h",
+    "restore_data.cc",
+    "restore_data.h",
   ]
 
   defines = [ "IS_FULL_RESTORE_IMPL" ]
