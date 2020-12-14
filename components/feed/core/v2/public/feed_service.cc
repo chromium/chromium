@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "build/build_config.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/feed_network_impl.h"
@@ -110,7 +111,11 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   }
 
   // FeedStream::Delegate.
-  bool IsEulaAccepted() override { return eula_notifier_.IsEulaAccepted(); }
+  bool IsEulaAccepted() override {
+    return eula_notifier_.IsEulaAccepted() ||
+           base::CommandLine::ForCurrentProcess()->HasSwitch(
+               "feedv2-accept-eula");
+  }
   bool IsOffline() override { return net::NetworkChangeNotifier::IsOffline(); }
   DisplayMetrics GetDisplayMetrics() override {
     return service_delegate_->GetDisplayMetrics();
