@@ -452,8 +452,12 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   self.scrollViewDragged = NO;
   // Content is now hidden behind toolbar, make sure that contentInset is
   // restored to initial value.
+  // If Overscroll actions are triggered and dismissed quickly, it is
+  // possible to be in a state where drag is enough to be in STARTED_PULLING
+  // or ACTION_READY state, but with no selectedAction.
   if (contentOffset.y >= 0 ||
-      self.overscrollState == OverscrollState::NO_PULL_STARTED) {
+      self.overscrollState == OverscrollState::NO_PULL_STARTED ||
+      self.overscrollActionView.selectedAction == OverscrollAction::NONE) {
     [self resetScrollViewTopContentInset];
   }
 
