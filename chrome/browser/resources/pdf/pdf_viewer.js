@@ -497,7 +497,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       // <if expr="is_macosx">
       hasModifier = e.metaKey;
       // </if>
-      if (hasModifier && (e.key === '=' || e.key === '-')) {
+      // Handle '+' and '-' buttons (both in the numpad and elsewhere).
+      if (hasModifier && (e.key === '=' || e.key === '-' || e.key === '+')) {
         e.preventDefault();
       }
 

@@ -6,7 +6,7 @@ import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehja
 import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/constants.js';
 import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {createWheelEvent} from './test_util.js';
 
@@ -49,9 +49,9 @@ const tests = [
   async function testRotateKeyboardShortcutsDisabled() {
     await ensureFullscreen();
     chrome.test.assertEq(0, viewer.viewport.getClockwiseRotations());
-    pressAndReleaseKeyOn(viewer, 0, 'ctrl', '[');
+    keyDownOn(viewer, 0, 'ctrl', '[');
     chrome.test.assertEq(0, viewer.viewport.getClockwiseRotations());
-    pressAndReleaseKeyOn(viewer, 0, 'ctrl', ']');
+    keyDownOn(viewer, 0, 'ctrl', ']');
     chrome.test.assertEq(0, viewer.viewport.getClockwiseRotations());
     chrome.test.succeed();
   },
@@ -76,30 +76,30 @@ const tests = [
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     // Test arrow keys.
-    pressAndReleaseKeyOn(viewer, 0, '', 'ArrowDown');
+    keyDownOn(viewer, 0, '', 'ArrowDown');
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
-    pressAndReleaseKeyOn(viewer, 0, '', 'ArrowUp');
+    keyDownOn(viewer, 0, '', 'ArrowUp');
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
-    pressAndReleaseKeyOn(viewer, 0, '', 'ArrowRight');
+    keyDownOn(viewer, 0, '', 'ArrowRight');
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
-    pressAndReleaseKeyOn(viewer, 0, '', 'ArrowLeft');
+    keyDownOn(viewer, 0, '', 'ArrowLeft');
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     // Test Space key.
-    pressAndReleaseKeyOn(viewer, 0, '', ' ');
+    keyDownOn(viewer, 0, '', ' ');
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
-    pressAndReleaseKeyOn(viewer, 0, 'shift', ' ');
+    keyDownOn(viewer, 0, 'shift', ' ');
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     // Test PageUp/PageDown keys.
-    pressAndReleaseKeyOn(viewer, 0, '', 'PageDown');
+    keyDownOn(viewer, 0, '', 'PageDown');
     chrome.test.assertEq(1, viewer.viewport.getMostVisiblePage());
 
-    pressAndReleaseKeyOn(viewer, 0, '', 'PageUp');
+    keyDownOn(viewer, 0, '', 'PageUp');
     chrome.test.assertEq(0, viewer.viewport.getMostVisiblePage());
 
     chrome.test.succeed();
@@ -109,13 +109,21 @@ const tests = [
 
     async function keydown(key) {
       const whenKeydown = eventToPromise('keydown', viewer);
-      pressAndReleaseKeyOn(viewer, 0, isMac ? 'meta' : 'ctrl', key);
+      keyDownOn(viewer, 0, isMac ? 'meta' : 'ctrl', key);
       return await whenKeydown;
     }
 
+    // Test case where the '+' button (which co-resides with the '=' button) is
+    // pressed.
     let e = await keydown('=');
     chrome.test.assertTrue(e.defaultPrevented);
+
+    // Test case where the '-' button is pressed.
     e = await keydown('-');
+    chrome.test.assertTrue(e.defaultPrevented);
+
+    // Test case where the '+' button (in the numpad) is pressed.
+    e = await keydown('+');
     chrome.test.assertTrue(e.defaultPrevented);
 
     chrome.test.succeed();
