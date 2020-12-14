@@ -26,6 +26,13 @@
         null,
         {}
        ]
+      ],
+      "clearance-containing-fragmented-float-crash.html": [
+       "3e62a52c30a41066fc0ccc35b713db9eb37b6973",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "linebox": {
@@ -393,7 +400,7 @@
        {}
       ]
      ],
-     "file-selector-button-display-toggle-crash.tentative.html": [
+     "file-selector-button-display-toggle-crash.html": [
       "bc9f24ae0194fc3b59a1f0da7e8c2e13cf9eb9c5",
       [
        null,
@@ -93997,7 +94004,7 @@
        {}
       ]
      ],
-     "file-selector-button-001.tentative.html": [
+     "file-selector-button-001.html": [
       "48b2852de820f61ce5344584ab1ff3aa2313adcf",
       [
        null,
@@ -102566,6 +102573,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-percent-replaced-009.html": [
+      "03407dc2b9900c8d5e1274a7f71a674349af70cb",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/intrinsic-percent-replaced-009-ref.html",
          "=="
         ]
        ],
@@ -121244,6 +121264,32 @@
        ]
       ]
      },
+     "perspective-containing-block-dynamic-1a.html": [
+      "51e76745b5a41320058aa3669499afa85ec41e72",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/containing-block-dynamic-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "perspective-containing-block-dynamic-1b.html": [
+      "a417bd482ebf71e4b53f62c792dc35383b37575f",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/containing-block-dynamic-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "perspective-origin-001.html": [
       "108dd64e126e537184ab045ef2e4fd6685e6ca93",
       [
@@ -121410,6 +121456,45 @@
        [
         [
          "/css/css-transforms/reference/perspective-reftest.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "perspective-untransformable-no-stacking-context.html": [
+      "8916a39bbb55fc18194761694ce2b9b925258901",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/perspective-untransformable-no-stacking-context-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "perspective-zero-2.html": [
+      "59565ff3cd279f38c5968b117fb984d83e98178b",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/perspective-zero-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "perspective-zero.html": [
+      "f0044ad0010c5af53bcac1e448bcba46c2ed6042",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/reference/green.html",
          "=="
         ]
        ],
@@ -123370,6 +123455,32 @@
         [
          "/css/css-transforms/transform-compound-notref-2.html",
          "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transform-containing-block-dynamic-1a.html": [
+      "7e6a10dda1c24e86f7635bd202efec48e6089fbd",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/containing-block-dynamic-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transform-containing-block-dynamic-1b.html": [
+      "61266f02e265ebc0db1aa742aff74b8f70cbe30f",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/containing-block-dynamic-1-ref.html",
+         "=="
         ]
        ],
        {}
@@ -173666,19 +173777,19 @@
        "afdcc7c011b18e372a4e8b4b9e383d85c3b0327f",
        []
       ],
-      "worker-importscripts.js": [
-       "0ae53e7877a6d1d218ba67bb66849294a3912fa8",
+      "worker-with-script-src-none-importscripts.js": [
+       "d2b6691b8aa4baae4048acfdb8d0a2f4aa9d7884",
        []
       ],
-      "worker-importscripts.js.sub.headers": [
+      "worker-with-script-src-none-importscripts.js.sub.headers": [
        "57616b1fc2dbdcd6399152a03cd13a248ef66313",
        []
       ],
-      "worker-set-timeout.js": [
-       "a16827eddfc8b214f674614de1cc2b9d10009141",
+      "worker-with-script-src-none-set-timeout.js": [
+       "c4241c97d0b4aa37baf50a7a5f8312aabb4e50d6",
        []
       ],
-      "worker-set-timeout.js.sub.headers": [
+      "worker-with-script-src-none-set-timeout.js.sub.headers": [
        "57616b1fc2dbdcd6399152a03cd13a248ef66313",
        []
       ]
@@ -173922,7 +174033,7 @@
       []
      ],
      "testharness-helper.js": [
-      "291af74037aa25d99597538327b0a3cf1900d897",
+      "5c36e286da2b0ad68da22f7c0e9f68e29ea7857b",
       []
      ],
      "var-a.js": [
@@ -195539,16 +195650,12 @@
       "79a432c4557bbda081a9b1c8d0dd9602c0eb85e5",
       []
      ],
-     "inheritance-expected.txt": [
-      "8bf6e1686e1810053679f6f3fe819f6368eb6943",
-      []
-     ],
      "logical-box-border-color-expected.txt": [
       "3d74c1a301b7d1be2676c660037188546c4ad7df",
       []
      ],
      "logical-box-border-radius-expected.txt": [
-      "a5b6fb240545deff00fed0a77452049c6cf20b17",
+      "880f90d1798e0b1efb759ec05f21568411204f65",
       []
      ],
      "logical-box-border-shorthands-expected.txt": [
@@ -200023,6 +200130,10 @@
       "38f480c0acdbf4ca9605831e9e48a9998b1bcdd3",
       []
      ],
+     "intrinsic-percent-replaced-009-ref.html": [
+      "df854d75fcaa381ad51912f3c282b179db478fbf",
+      []
+     ],
      "max-content-input-001-ref.html": [
       "c01e46550a7f0b5b92321d5893a8fe2a1ea0c9ac",
       []
@@ -204271,6 +204382,10 @@
       "ebd2d860cec74ba0d535637934aca8dadf90571d",
       []
      ],
+     "containing-block-dynamic-1-ref.html": [
+      "34b66abdb143f3566cadba64d3fd8f66511528f3",
+      []
+     ],
      "css-rotate-2d-3d-001-ref.html": [
       "54940566cd107ba443d3183dccecb505a811d14e",
       []
@@ -204445,6 +204560,14 @@
       "a4fc022382c957fe130905f5935cd33736117b03",
       []
      ],
+     "perspective-untransformable-no-stacking-context-ref.html": [
+      "31be3d081e802857c40bc8cef2664f140169ba36",
+      []
+     ],
+     "perspective-zero-2-ref.html": [
+      "64969c4b7a196cc585bd4ef99e6372d3c73c9610",
+      []
+     ],
      "preserve3d-button-ref.html": [
       "e5e3c1ebfcdd7c832a211d17ac2f1ed6f4116252",
       []
@@ -204496,6 +204619,10 @@
       ],
       "css3-transform-scale-ref.html": [
        "2d09498f3b6f1290468ec886c8db01dee41e5455",
+       []
+      ],
+      "green.html": [
+       "f7714d2b8bdfa95c88d0fc4139cfb3ad7f78fcad",
        []
       ],
       "perspective-origin-reftest.html": [
@@ -206000,7 +206127,7 @@
         []
        ],
        "logical-expected.txt": [
-        "0f32b2d70c3d07b5f03bef59d58114fe1b4b865a",
+        "69d7dd27831a7ee7ff8a220e158463377d55699c",
         []
        ],
        "margin-expected.txt": [
@@ -210194,7 +210321,7 @@
       []
      ],
      "cssstyledeclaration-custom-properties-expected.txt": [
-      "ed7b9579bbf36b390f31ac4dae180888724dd346",
+      "7287e4fe19d2359052dbe4650b4419ff5d88c69c",
       []
      ],
      "cssstyledeclaration-properties-expected.txt": [
@@ -210206,7 +210333,7 @@
       []
      ],
      "getComputedStyle-detached-subtree-expected.txt": [
-      "81349138ee814eb982e12b02d31560607f0de6a9",
+      "97d84ff195dd599378592436c7933794db0e3077",
       []
      ],
      "getComputedStyle-insets-absolute-expected.txt": [
@@ -283402,8 +283529,8 @@
        {}
       ]
      ],
-     "worker-importscripts-blocked.sub.html": [
-      "28906138069e255d671d5d25db75d15082647ea2",
+     "worker-importscripts.sub.html": [
+      "0d7490d350ee413b5ddaef81bfabf50c6e809f4f",
       [
        null,
        {}
@@ -283416,8 +283543,8 @@
        {}
       ]
      ],
-     "worker-set-timeout-blocked.sub.html": [
-      "5f93433416b1a40efe7fa38389dc5a54a587add4",
+     "worker-set-timeout.sub.html": [
+      "68d7a56a186774b627ae7e8644eb5ef1ed36620a",
       [
        null,
        {}
