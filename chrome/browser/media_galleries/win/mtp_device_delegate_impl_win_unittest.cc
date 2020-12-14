@@ -171,7 +171,7 @@ TEST_F(MTPDeviceDelegateImplWinTest, DISABLED_GalleryNameMTP) {
       g_browser_process->media_file_system_registry();
   registry->GetMediaFileSystemsForExtension(
       web_contents(), extension_.get(),
-      base::Bind(&GetGalleryInfoCallback, base::Unretained(&results)));
+      base::BindOnce(&GetGalleryInfoCallback, base::Unretained(&results)));
   content::RunAllTasksUntilIdle();
 
   ASSERT_EQ(media_directories_.num_galleries() + 1u, results.size());
