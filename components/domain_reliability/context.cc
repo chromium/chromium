@@ -150,6 +150,7 @@ void DomainReliabilityContext::StartUpload() {
 
   uploader_->UploadReport(
       report_json, max_upload_depth, collector_url,
+      net::NetworkIsolationKey::Todo(),
       base::BindOnce(&DomainReliabilityContext::OnUploadComplete,
                      weak_factory_.GetWeakPtr()));
 }

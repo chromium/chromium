@@ -90,12 +90,14 @@ MockUploader::~MockUploader() = default;
 
 bool MockUploader::discard_uploads() const { return discard_uploads_; }
 
-void MockUploader::UploadReport(const std::string& report_json,
-                                int max_upload_depth,
-                                const GURL& upload_url,
-                                UploadCallback callback) {
+void MockUploader::UploadReport(
+    const std::string& report_json,
+    int max_upload_depth,
+    const GURL& upload_url,
+    const net::NetworkIsolationKey& network_isolation_key,
+    UploadCallback callback) {
   std::move(callback_).Run(report_json, max_upload_depth, upload_url,
-                           std::move(callback));
+                           network_isolation_key, std::move(callback));
 }
 
 void MockUploader::Shutdown() {}

@@ -15,6 +15,7 @@
 #include "url/gurl.h"
 
 namespace net {
+class NetworkIsolationKey;
 class URLRequest;
 class URLRequestContext;
 }  // namespace net
@@ -55,10 +56,12 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityUploader {
 
   // Uploads |report_json| to |upload_url| and calls |callback| when the upload
   // has either completed or failed.
-  virtual void UploadReport(const std::string& report_json,
-                            int max_beacon_depth,
-                            const GURL& upload_url,
-                            UploadCallback callback) = 0;
+  virtual void UploadReport(
+      const std::string& report_json,
+      int max_beacon_depth,
+      const GURL& upload_url,
+      const net::NetworkIsolationKey& network_isolation_key,
+      UploadCallback callback) = 0;
 
   // Shuts down the uploader prior to destruction. Currently, terminates pending
   // uploads and prevents the uploader from starting new ones to avoid hairy

@@ -179,6 +179,7 @@ class DomainReliabilityContextTest : public testing::Test {
   void OnUploadRequest(const std::string& report_json,
                        int max_upload_depth,
                        const GURL& upload_url,
+                       const net::NetworkIsolationKey& network_isolation_key,
                        DomainReliabilityUploader::UploadCallback callback) {
     ASSERT_FALSE(upload_pending_);
     upload_report_ = report_json;
