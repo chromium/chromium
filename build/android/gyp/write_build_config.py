@@ -1565,9 +1565,6 @@ def main(argv):
     # The classpath used for error prone.
     javac_full_interface_classpath = set(c['interface_jar_path']
                                          for c in all_library_deps)
-    # The path of the jetified jars.
-    jetified_full_jar_classpath = set(c['jetified_jar_path']
-                                      for c in all_library_deps)
 
     # Adding base module to classpath to compile against its R.java file
     if base_module_build_config:
@@ -1575,8 +1572,6 @@ def main(argv):
           base_module_build_config['deps_info']['unprocessed_jar_path'])
       javac_full_interface_classpath.add(
           base_module_build_config['deps_info']['interface_jar_path'])
-      jetified_full_jar_classpath.add(
-          base_module_build_config['deps_info']['jetified_jar_path'])
       # Turbine now compiles headers against only the direct classpath, so the
       # base module's interface jar must be on the direct interface classpath.
       javac_interface_classpath.add(
@@ -1590,7 +1585,6 @@ def main(argv):
       if 'extra_classpath_jars' in dep:
         javac_full_classpath.update(dep['extra_classpath_jars'])
         javac_full_interface_classpath.update(dep['extra_classpath_jars'])
-        jetified_full_jar_classpath.update(dep['extra_classpath_jars'])
 
     # TODO(agrieve): Might be less confusing to fold these into bootclasspath.
     # Deps to add to the compile-time classpath (but not the runtime classpath).
@@ -1601,7 +1595,6 @@ def main(argv):
       javac_interface_classpath.update(extra_classpath_jars)
       javac_full_classpath.update(extra_classpath_jars)
       javac_full_interface_classpath.update(extra_classpath_jars)
-      jetified_full_jar_classpath.update(extra_classpath_jars)
 
   if is_java_target or options.type == 'android_app_bundle':
     # The classpath to use to run this target (or as an input to ProGuard).
@@ -1852,12 +1845,9 @@ def main(argv):
     javac_interface_classpath.add(tested_apk_config['interface_jar_path'])
     javac_full_classpath.add(tested_apk_config['unprocessed_jar_path'])
     javac_full_interface_classpath.add(tested_apk_config['interface_jar_path'])
-    jetified_full_jar_classpath.add(tested_apk_config['interface_jar_path'])
     javac_full_classpath.update(tested_apk_config['javac_full_classpath'])
     javac_full_interface_classpath.update(
         tested_apk_config['javac_full_interface_classpath'])
-    jetified_full_jar_classpath.update(
-        tested_apk_config['jetified_full_jar_classpath'])
 
     # Exclude .jar files from the test apk that exist within the apk under test.
     tested_apk_library_deps = tested_apk_deps.All('java_library')
@@ -1901,8 +1891,6 @@ def main(argv):
     deps_info['javac_full_classpath'] = sorted(javac_full_classpath)
     deps_info['javac_full_interface_classpath'] = sorted(
         javac_full_interface_classpath)
-    deps_info['jetified_full_jar_classpath'] = sorted(
-        jetified_full_jar_classpath)
   elif options.type == 'android_app_bundle':
     # bundles require javac_full_classpath to create .aab.jar.info and require
     # javac_full_interface_classpath for lint.
@@ -2022,7 +2010,6 @@ def main(argv):
     RemoveObjDups(config, base, 'deps_info', 'device_classpath')
     RemoveObjDups(config, base, 'deps_info', 'javac_full_classpath')
     RemoveObjDups(config, base, 'deps_info', 'javac_full_interface_classpath')
-    RemoveObjDups(config, base, 'deps_info', 'jetified_full_jar_classpath')
     RemoveObjDups(config, base, 'deps_info', 'jni', 'all_source')
     RemoveObjDups(config, base, 'final_dex', 'all_dex_files')
     RemoveObjDups(config, base, 'extra_android_manifests')
