@@ -420,6 +420,7 @@ def ci_builder(
     # Enable "chromium.resultdb.result_sink" on ci builders.
     experiments = experiments or {}
     experiments.setdefault("chromium.resultdb.result_sink", 100)
+    experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
@@ -506,9 +507,6 @@ def android_builder(
         builder_group = "chromium.android",
         goma_backend = builders.goma.backend.RBE_PROD,
         goma_jobs = goma_jobs,
-        experiments = {
-            "chromium.resultdb.result_sink.junit_tests": 50,
-        },
         **kwargs
     )
 
@@ -553,9 +551,6 @@ def clang_builder(*, name, builderless = True, cores = 32, properties = None, **
         # CFI builds will take even longer - around 11h.
         execution_timeout = 14 * time.hour,
         properties = properties,
-        experiments = {
-            "chromium.resultdb.result_sink.junit_tests": 50,
-        },
         **kwargs
     )
 
@@ -658,12 +653,6 @@ def fyi_builder(
         builder_group = "chromium.fyi",
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
-        # TODO(crbug.com/1108016): Move this kwarg to ci.builder(), after
-        # ResultSink and result_adapter is confirmed to work.
-        experiments = {
-            "chromium.resultdb.result_sink": 100,
-            "chromium.resultdb.result_sink.junit_tests": 30,
-        },
         **kwargs
     )
 
