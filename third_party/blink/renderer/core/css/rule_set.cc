@@ -85,7 +85,8 @@ static unsigned DetermineLinkMatchType(const AddRuleFlags add_rule_flags,
 RuleData* RuleData::MaybeCreate(StyleRule* rule,
                                 unsigned selector_index,
                                 unsigned position,
-                                AddRuleFlags add_rule_flags) {
+                                AddRuleFlags add_rule_flags,
+                                const ContainerQuery* container_query) {
   // The selector index field in RuleData is only 13 bits so we can't support
   // selectors at index 8192 or beyond.
   // See https://crbug.com/804179
@@ -93,11 +94,23 @@ RuleData* RuleData::MaybeCreate(StyleRule* rule,
     return nullptr;
   if (position >= (1 << RuleData::kPositionBits))
     return nullptr;
+  if (container_query) {
+    return MakeGarbageCollected<ExtendedRuleData>(
+        base::PassKey<RuleData>(), rule, selector_index, position,
+        add_rule_flags, container_query);
+  }
   return MakeGarbageCollected<RuleData>(rule, selector_index, position,
                                         add_rule_flags);
 }
 
 RuleData::RuleData(StyleRule* rule,
+                   unsigned selector_index,
+                   unsigned position,
+                   AddRuleFlags add_rule_flags)
+    : RuleData(Type::kNormal, rule, selector_index, position, add_rule_flags) {}
+
+RuleData::RuleData(Type type,
+                   StyleRule* rule,
                    unsigned selector_index,
                    unsigned position,
                    AddRuleFlags add_rule_flags)
@@ -111,6 +124,7 @@ RuleData::RuleData(StyleRule* rule,
       valid_property_filter_(
           static_cast<std::underlying_type_t<ValidPropertyFilter>>(
               DetermineValidPropertyFilter(add_rule_flags, Selector()))),
+      type_(static_cast<unsigned>(type)),
       descendant_selector_identifier_hashes_() {
   SelectorFilter::CollectIdentifierHashes(
       Selector(), descendant_selector_identifier_hashes_,
@@ -274,9 +288,10 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
 
 void RuleSet::AddRule(StyleRule* rule,
                       unsigned selector_index,
-                      AddRuleFlags add_rule_flags) {
-  RuleData* rule_data =
-      RuleData::MaybeCreate(rule, selector_index, rule_count_, add_rule_flags);
+                      AddRuleFlags add_rule_flags,
+                      const ContainerQuery* container_query) {
+  RuleData* rule_data = RuleData::MaybeCreate(rule, selector_index, rule_count_,
+                                              add_rule_flags, container_query);
   if (!rule_data) {
     // This can happen if selector_index or position is out of range.
     return;
@@ -300,7 +315,7 @@ void RuleSet::AddRule(StyleRule* rule,
   if (rule_data->LinkMatchType() == CSSSelector::kMatchLink) {
     RuleData* visited_dependent = RuleData::MaybeCreate(
         rule, rule_data->SelectorIndex(), rule_data->GetPosition(),
-        add_rule_flags | kRuleIsVisitedDependent);
+        add_rule_flags | kRuleIsVisitedDependent, container_query);
     DCHECK(visited_dependent);
     visited_dependent_rules_.push_back(visited_dependent);
   }
@@ -383,7 +398,8 @@ void RuleSet::AddScrollTimelineRule(StyleRuleScrollTimeline* rule) {
 
 void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                             const MediaQueryEvaluator& medium,
-                            AddRuleFlags add_rule_flags) {
+                            AddRuleFlags add_rule_flags,
+                            const ContainerQuery* container_query) {
   for (unsigned i = 0; i < rules.size(); ++i) {
     StyleRuleBase* rule = rules[i].Get();
 
@@ -402,14 +418,16 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
           slotted_pseudo_element_rules_.push_back(
               MinimalRuleData(style_rule, selector_index, add_rule_flags));
         } else {
-          AddRule(style_rule, selector_index, add_rule_flags);
+          AddRule(style_rule, selector_index, add_rule_flags, container_query);
         }
       }
     } else if (auto* page_rule = DynamicTo<StyleRulePage>(rule)) {
       AddPageRule(page_rule);
     } else if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
-      if (MatchMediaForAddRules(medium, media_rule->MediaQueries()))
-        AddChildRules(media_rule->ChildRules(), medium, add_rule_flags);
+      if (MatchMediaForAddRules(medium, media_rule->MediaQueries())) {
+        AddChildRules(media_rule->ChildRules(), medium, add_rule_flags,
+                      container_query);
+      }
     } else if (auto* font_face_rule = DynamicTo<StyleRuleFontFace>(rule)) {
       AddFontFaceRule(font_face_rule);
     } else if (auto* keyframes_rule = DynamicTo<StyleRuleKeyframes>(rule)) {
@@ -423,8 +441,15 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                    DynamicTo<StyleRuleScrollTimeline>(rule)) {
       AddScrollTimelineRule(scroll_timeline_rule);
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
-      if (supports_rule->ConditionIsSupported())
-        AddChildRules(supports_rule->ChildRules(), medium, add_rule_flags);
+      if (supports_rule->ConditionIsSupported()) {
+        AddChildRules(supports_rule->ChildRules(), medium, add_rule_flags,
+                      container_query);
+      }
+    } else if (auto* container_rule = DynamicTo<StyleRuleContainer>(rule)) {
+      // TODO(crbug.com/1145970): Handle nested container queries.
+      // For now only the innermost applies.
+      AddChildRules(container_rule->ChildRules(), medium, add_rule_flags,
+                    &container_rule->GetContainerQuery());
     }
   }
 }
@@ -458,7 +483,8 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
     }
   }
 
-  AddChildRules(sheet->ChildRules(), medium, add_rule_flags);
+  AddChildRules(sheet->ChildRules(), medium, add_rule_flags,
+                nullptr /* container_query */);
 }
 
 void RuleSet::AddStyleRule(StyleRule* rule, AddRuleFlags add_rule_flags) {
@@ -466,8 +492,10 @@ void RuleSet::AddStyleRule(StyleRule* rule, AddRuleFlags add_rule_flags) {
            rule->SelectorList().SelectorIndex(*rule->SelectorList().First());
        selector_index != kNotFound;
        selector_index =
-           rule->SelectorList().IndexOfNextSelectorAfter(selector_index))
-    AddRule(rule, selector_index, add_rule_flags);
+           rule->SelectorList().IndexOfNextSelectorAfter(selector_index)) {
+    AddRule(rule, selector_index, add_rule_flags,
+            nullptr /* container_query */);
+  }
 }
 
 void RuleSet::CompactPendingRules(PendingRuleMap& pending_map,
@@ -524,8 +552,39 @@ void MinimalRuleData::Trace(Visitor* visitor) const {
   visitor->Trace(rule_);
 }
 
+const ContainerQuery* RuleData::GetContainerQuery() const {
+  if (auto* extended = DynamicTo<ExtendedRuleData>(this))
+    return extended->container_query_;
+  return nullptr;
+}
+
 void RuleData::Trace(Visitor* visitor) const {
+  switch (static_cast<Type>(type_)) {
+    case Type::kNormal:
+      TraceAfterDispatch(visitor);
+      break;
+    case Type::kExtended:
+      To<ExtendedRuleData>(*this).TraceAfterDispatch(visitor);
+      break;
+  }
+}
+
+void RuleData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(rule_);
+}
+
+ExtendedRuleData::ExtendedRuleData(base::PassKey<RuleData>,
+                                   StyleRule* rule,
+                                   unsigned selector_index,
+                                   unsigned position,
+                                   AddRuleFlags flags,
+                                   const ContainerQuery* container_query)
+    : RuleData(Type::kExtended, rule, selector_index, position, flags),
+      container_query_(container_query) {}
+
+void ExtendedRuleData::TraceAfterDispatch(Visitor* visitor) const {
+  RuleData::TraceAfterDispatch(visitor);
+  visitor->Trace(container_query_);
 }
 
 void RuleSet::PendingRuleMaps::Trace(Visitor* visitor) const {

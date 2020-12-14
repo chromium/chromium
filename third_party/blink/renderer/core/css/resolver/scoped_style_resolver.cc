@@ -346,8 +346,12 @@ void ScopedStyleResolver::Trace(Visitor* visitor) const {
 
 static void AddRules(RuleSet* rule_set,
                      const HeapVector<MinimalRuleData>& rules) {
-  for (const auto& info : rules)
-    rule_set->AddRule(info.rule_, info.selector_index_, info.flags_);
+  for (const auto& info : rules) {
+    // TODO(crbug.com/1145970): Store container_query on MinimalRuleData
+    // and propagate it here.
+    rule_set->AddRule(info.rule_, info.selector_index_, info.flags_,
+                      nullptr /* container_query */);
+  }
 }
 
 void ScopedStyleResolver::AddTreeBoundaryCrossingRules(

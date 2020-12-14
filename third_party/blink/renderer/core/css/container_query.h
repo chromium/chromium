@@ -22,6 +22,7 @@ class CORE_EXPORT ContainerQuery final
 
  private:
   friend class ContainerQueryTest;
+  friend class ContainerQueryEvaluator;
 
   // TODO(crbug.com/1145970): Refactor to avoid internal MediaQuerySet.
   scoped_refptr<MediaQuerySet> media_queries_;

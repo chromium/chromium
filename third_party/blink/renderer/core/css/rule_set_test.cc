@@ -301,22 +301,28 @@ TEST(RuleSetTest, RuleDataSelectorIndexLimit) {
   StyleRule* rule = CreateDummyStyleRule();
   AddRuleFlags flags = kRuleHasNoSpecialState;
   const unsigned position = 0;
-  EXPECT_TRUE(RuleData::MaybeCreate(rule, 0, position, flags));
+  EXPECT_TRUE(RuleData::MaybeCreate(rule, 0, position, flags,
+                                    nullptr /* container_query */));
   EXPECT_FALSE(RuleData::MaybeCreate(rule, (1 << RuleData::kSelectorIndexBits),
-                                     position, flags));
-  EXPECT_FALSE(RuleData::MaybeCreate(
-      rule, (1 << RuleData::kSelectorIndexBits) + 1, position, flags));
+                                     position, flags,
+                                     nullptr /* container_query */));
+  EXPECT_FALSE(
+      RuleData::MaybeCreate(rule, (1 << RuleData::kSelectorIndexBits) + 1,
+                            position, flags, nullptr /* container_query */));
 }
 
 TEST(RuleSetTest, RuleDataPositionLimit) {
   StyleRule* rule = CreateDummyStyleRule();
   AddRuleFlags flags = kRuleHasNoSpecialState;
   const unsigned selector_index = 0;
-  EXPECT_TRUE(RuleData::MaybeCreate(rule, selector_index, 0, flags));
+  EXPECT_TRUE(RuleData::MaybeCreate(rule, selector_index, 0, flags,
+                                    nullptr /* container_query */));
   EXPECT_FALSE(RuleData::MaybeCreate(rule, selector_index,
-                                     (1 << RuleData::kPositionBits), flags));
-  EXPECT_FALSE(RuleData::MaybeCreate(
-      rule, selector_index, (1 << RuleData::kPositionBits) + 1, flags));
+                                     (1 << RuleData::kPositionBits), flags,
+                                     nullptr /* container_query */));
+  EXPECT_FALSE(RuleData::MaybeCreate(rule, selector_index,
+                                     (1 << RuleData::kPositionBits) + 1, flags,
+                                     nullptr /* container_query */));
 }
 
 TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
@@ -327,11 +333,12 @@ TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
   StyleRule* rule = CreateDummyStyleRule();
 
   // Add with valid selector_index=0.
-  rule_set->AddRule(rule, 0, flags);
+  rule_set->AddRule(rule, 0, flags, nullptr /* container_query */);
   EXPECT_EQ(1u, rule_set->RuleCount());
 
   // Adding with invalid selector_index should not lead to a change in count.
-  rule_set->AddRule(rule, 1 << RuleData::kSelectorIndexBits, flags);
+  rule_set->AddRule(rule, 1 << RuleData::kSelectorIndexBits, flags,
+                    nullptr /* container_query */);
   EXPECT_EQ(1u, rule_set->RuleCount());
 }
 

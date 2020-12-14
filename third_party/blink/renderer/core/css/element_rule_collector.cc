@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
+#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
@@ -199,6 +200,17 @@ void ElementRuleCollector::CollectMatchingRulesForList(
         pseudo_style_request_.pseudo_id != result.dynamic_pseudo) {
       rejected++;
       continue;
+    }
+    if (auto* container_query = rule_data->GetContainerQuery()) {
+      // TODO(crbug.com/1145970): Propagate actual ContainerQueryEvaluator
+      // instance from the container.
+      // For now a fixed container size of 500x500 is used.
+      auto* eval = MakeGarbageCollected<ContainerQueryEvaluator>(500.0, 500.0);
+
+      if (!eval->Eval(*container_query)) {
+        rejected++;
+        continue;
+      }
     }
 
     matched++;

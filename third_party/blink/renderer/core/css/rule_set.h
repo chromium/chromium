@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_stack.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -97,18 +99,30 @@ namespace blink {
 // and makes it accessible cheaply.
 class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
  public:
+  enum class Type {
+    kNormal = 0,
+    kExtended = 1,
+    // Note that the above values are stored in a 1-bit field.
+    // See RuleData::type_.
+  };
+
   static RuleData* MaybeCreate(StyleRule*,
                                unsigned selector_index,
                                unsigned position,
-                               AddRuleFlags);
+                               AddRuleFlags,
+                               const ContainerQuery*);
 
   RuleData(StyleRule*,
            unsigned selector_index,
            unsigned position,
            AddRuleFlags);
 
+  bool IsExtended() const {
+    return static_cast<Type>(type_) == Type::kExtended;
+  }
   unsigned GetPosition() const { return position_; }
   StyleRule* Rule() const { return rule_; }
+  const ContainerQuery* GetContainerQuery() const;
   const CSSSelector& Selector() const {
     return rule_->SelectorList().SelectorAt(selector_index_);
   }
@@ -136,6 +150,7 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   }
 
   void Trace(Visitor*) const;
+  void TraceAfterDispatch(blink::Visitor* visitor) const;
 
   // This number is picked fairly arbitrary. If lowered, be aware that there
   // might be sites and extensions using style rules with selector lists
@@ -147,6 +162,13 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   // need to. Some simple testing showed <100,000 RuleData's on large sites.
   static constexpr size_t kPositionBits = 18;
 
+ protected:
+  RuleData(Type type,
+           StyleRule*,
+           unsigned selector_index,
+           unsigned position,
+           AddRuleFlags);
+
  private:
   Member<StyleRule> rule_;
   unsigned selector_index_ : kSelectorIndexBits;
@@ -157,9 +179,35 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   unsigned link_match_type_ : 2;
   unsigned has_document_security_origin_ : 1;
   unsigned valid_property_filter_ : 3;
-  // 30 bits above
+  unsigned type_ : 1;  // RuleData::Type
+  // 31 bits above
   // Use plain array instead of a Vector to minimize memory overhead.
   unsigned descendant_selector_identifier_hashes_[kMaximumIdentifierCount];
+};
+
+// Big websites can have a large number of RuleData objects (30k+). This class
+// exists to avoid allocating unnecessary memory for "rare" fields.
+class CORE_EXPORT ExtendedRuleData : public RuleData {
+ public:
+  // Do not create ExtendedRuleData objects directly; RuleData::MaybeCreate
+  // will decide if ExtendedRuleData is needed or not.
+  ExtendedRuleData(base::PassKey<RuleData>,
+                   StyleRule*,
+                   unsigned selector_index,
+                   unsigned position,
+                   AddRuleFlags,
+                   const ContainerQuery*);
+  void TraceAfterDispatch(Visitor*) const;
+
+ private:
+  friend class RuleData;
+
+  Member<const ContainerQuery> container_query_;
+};
+
+template <>
+struct DowncastTraits<ExtendedRuleData> {
+  static bool AllowFrom(const RuleData& data) { return data.IsExtended(); }
 };
 
 }  // namespace blink
@@ -195,7 +243,10 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                          const MediaQueryEvaluator&,
                          AddRuleFlags = kRuleHasNoSpecialState);
   void AddStyleRule(StyleRule*, AddRuleFlags);
-  void AddRule(StyleRule*, unsigned selector_index, AddRuleFlags);
+  void AddRule(StyleRule*,
+               unsigned selector_index,
+               AddRuleFlags,
+               const ContainerQuery*);
 
   const RuleFeatureSet& Features() const { return features_; }
 
@@ -333,7 +384,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                              const MediaQuerySet* media_queries);
   void AddChildRules(const HeapVector<Member<StyleRuleBase>>&,
                      const MediaQueryEvaluator& medium,
-                     AddRuleFlags);
+                     AddRuleFlags,
+                     const ContainerQuery*);
   bool FindBestRuleSetAndAdd(const CSSSelector&, RuleData*);
 
   void SortKeyframesRulesIfNeeded();

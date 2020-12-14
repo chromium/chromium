@@ -6,6 +6,10 @@
 
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -107,6 +111,28 @@ TEST_F(ContainerQueryTest, RuleCopy) {
   // The inner MediaQuerySet should be copied.
   EXPECT_NE(&GetMediaQuerySet(container->GetContainerQuery()),
             &GetMediaQuerySet(copy->GetContainerQuery()));
+}
+
+TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
+  // TODO(crbug.com/1145970): This test relies on the temporary fixed container
+  // size in ElementRuleCollector::CollectMatchingRulesForList.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div { z-index:1; }
+      /* Should apply: */
+      @container (min-width: 500px) {
+        div { z-index:2; }
+      }
+      /* Should not apply: */
+      @container (min-width: 600px) {
+        div { z-index:3; }
+      }
+    </style>
+    <div id=div></div>
+  )HTML");
+  Element* div = GetDocument().getElementById("div");
+  ASSERT_TRUE(div);
+  EXPECT_EQ(2, div->ComputedStyleRef().ZIndex());
 }
 
 }  // namespace blink

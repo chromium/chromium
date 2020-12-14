@@ -21,6 +21,8 @@ blink_core_sources_css = [
   "counter_style_map.h",
   "container_query.cc",
   "container_query.h",
+  "container_query_evaluator.cc",
+  "container_query_evaluator.h",
   "css_axis_value.cc",
   "css_axis_value.h",
   "css_basic_shape_values.cc",
