@@ -46,6 +46,7 @@ class VideoEncoder {
     kBitstreamReady,
     kFlushing,
     kFlushDone,
+    kKeyFrame,
     kNumEvents,
   };
 
@@ -90,6 +91,8 @@ class VideoEncoder {
   void Flush();
   // Updates bitrate based on the specified |bitrate| and |framerate|.
   void UpdateBitrate(uint32_t bitrate, uint32_t framerate);
+  // Force key frame.
+  void ForceKeyFrame();
 
   // Get the current state of the video encoder.
   EncoderState GetState() const;
@@ -99,6 +102,8 @@ class VideoEncoder {
   // events with different types will be consumed. Will return false if the
   // specified timeout is exceeded while waiting for the events.
   bool WaitForEvent(EncoderEvent event, size_t times = 1);
+  // Wait until the |video_encoder_state_| becomes kIdle.
+  bool WaitUntilIdle();
   // Helper function to wait for a FlushDone event.
   bool WaitForFlushDone();
   // Helper function to wait for the specified number of FrameReleased events.
@@ -146,8 +151,7 @@ class VideoEncoder {
 
   // Automatically pause encoding once the video encoder has seen the specified
   // number of events occur.
-  std::pair<EncoderEvent, size_t> encode_until_{
-      kNumEvents, std::numeric_limits<size_t>::max()};
+  std::pair<EncoderEvent, size_t> encode_until_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -239,6 +239,14 @@ void VideoEncoderClient::UpdateBitrate(const VideoBitrateAllocation& bitrate,
                                 weak_this_, bitrate, framerate));
 }
 
+void VideoEncoderClient::ForceKeyFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(test_sequence_checker_);
+
+  encoder_client_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoEncoderClient::ForceKeyFrameTask, weak_this_));
+}
+
 bool VideoEncoderClient::WaitForBitstreamProcessors() {
   bool success = true;
   for (auto& bitstream_processor : bitstream_processors_)
@@ -357,6 +365,8 @@ void VideoEncoderClient::BitstreamBufferReady(
 
   auto it = bitstream_buffers_.find(bitstream_buffer_id);
   ASSERT_NE(it, bitstream_buffers_.end());
+  if (metadata.key_frame)
+    FireEvent(VideoEncoder::EncoderEvent::kKeyFrame);
 
   // Notify the test an encoded bitstream buffer is ready. We should only do
   // this after scheduling the bitstream to be processed, so calling
@@ -494,10 +504,9 @@ void VideoEncoderClient::EncodeNextFrameTask() {
       weak_this_, encoder_client_task_runner_,
       &VideoEncoderClient::EncodeDoneTask, video_frame->timestamp()));
 
-  // TODO(dstaessens): Add support for forcing key frames.
-  bool force_keyframe = false;
-  encoder_->Encode(video_frame, force_keyframe);
+  encoder_->Encode(video_frame, force_keyframe_);
 
+  force_keyframe_ = false;
   num_encodes_requested_++;
   num_outstanding_encode_requests_++;
   if (encoder_client_config_.encode_interval) {
@@ -540,6 +549,13 @@ void VideoEncoderClient::UpdateBitrateTask(
   encoder_->RequestEncodingParametersChange(bitrate, framerate);
   base::AutoLock auto_lcok(stats_lock_);
   current_stats_.framerate = framerate;
+}
+
+void VideoEncoderClient::ForceKeyFrameTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
+  DVLOGF(4);
+
+  force_keyframe_ = true;
 }
 
 void VideoEncoderClient::EncodeDoneTask(base::TimeDelta timestamp) {

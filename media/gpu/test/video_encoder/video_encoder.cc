@@ -31,6 +31,8 @@ const char* EventName(VideoEncoder::EncoderEvent event) {
       return "Flushing";
     case VideoEncoder::EncoderEvent::kFlushDone:
       return "FlushDone";
+    case VideoEncoder::EncoderEvent::kKeyFrame:
+      return "KeyFrame";
     default:
       return "Unknown";
   }
@@ -43,6 +45,8 @@ constexpr base::TimeDelta kDefaultEventWaitTimeout =
 // Default initial size used for |video_encoder_events_|.
 constexpr size_t kDefaultEventListSize = 512;
 
+constexpr std::pair<VideoEncoder::EncoderEvent, size_t> kInvalidEncodeUntil{
+    VideoEncoder::kNumEvents, std::numeric_limits<size_t>::max()};
 }  // namespace
 
 // static
@@ -61,7 +65,8 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
 VideoEncoder::VideoEncoder()
     : event_timeout_(kDefaultEventWaitTimeout),
       video_encoder_event_counts_{},
-      next_unprocessed_event_(0) {
+      next_unprocessed_event_(0),
+      encode_until_(kInvalidEncodeUntil) {
   video_encoder_events_.reserve(kDefaultEventListSize);
 }
 
@@ -137,6 +142,7 @@ void VideoEncoder::Encode() {
 void VideoEncoder::EncodeUntil(EncoderEvent event, size_t event_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(video_encoder_state_.load(), EncoderState::kIdle);
+  DCHECK(encode_until_ == kInvalidEncodeUntil);
   DCHECK(video_);
   DVLOGF(4);
 
@@ -160,6 +166,13 @@ void VideoEncoder::UpdateBitrate(uint32_t bitrate, uint32_t framerate) {
   VideoBitrateAllocation bitrate_allocation;
   ASSERT_TRUE(bitrate_allocation.SetBitrate(0, 0, bitrate));
   encoder_client_->UpdateBitrate(bitrate_allocation, framerate);
+}
+
+void VideoEncoder::ForceKeyFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOGF(4);
+
+  encoder_client_->ForceKeyFrame();
 }
 
 VideoEncoder::EncoderState VideoEncoder::GetState() const {
@@ -191,6 +204,25 @@ bool VideoEncoder::WaitForEvent(EncoderEvent event, size_t times) {
     if (time_waiting >= event_timeout_) {
       LOG(ERROR) << "Timeout while waiting for '" << EventName(event)
                  << "' event";
+      return false;
+    }
+
+    const base::TimeTicks start_time = base::TimeTicks::Now();
+    event_cv_.TimedWait(event_timeout_ - time_waiting);
+    time_waiting += base::TimeTicks::Now() - start_time;
+  }
+}
+
+bool VideoEncoder::WaitUntilIdle() {
+  base::TimeDelta time_waiting;
+  base::AutoLock auto_lock(event_lock_);
+  while (true) {
+    if (video_encoder_state_.load() == EncoderState::kIdle)
+      return true;
+
+    // Check whether we've exceeded the maximum time we're allowed to wait.
+    if (time_waiting >= event_timeout_) {
+      LOG(ERROR) << "Timeout while waiting for EncodeUntil complete";
       return false;
     }
 
@@ -244,16 +276,17 @@ bool VideoEncoder::NotifyEvent(EncoderEvent event) {
 
   video_encoder_events_.push_back(event);
   video_encoder_event_counts_[event]++;
-  event_cv_.Signal();
 
+  bool should_continue_encoding = true;
   // Check whether video encoding should be paused after this event.
   if (encode_until_.first == event &&
       encode_until_.second == video_encoder_event_counts_[event]) {
     video_encoder_state_ = EncoderState::kIdle;
-    return false;
+    encode_until_ = kInvalidEncodeUntil;
+    should_continue_encoding = false;
   }
-  return true;
+  event_cv_.Signal();
+  return should_continue_encoding;
 }
-
 }  // namespace test
 }  // namespace media

@@ -279,9 +279,6 @@ base::Optional<std::string> SupportsNV12DmaBufInput() {
 }
 }  // namespace
 
-// TODO(dstaessens): Add more test scenarios:
-// - Forcing key frames
-
 // Encode video from start to end. Wait for the kFlushDone event at the end of
 // the stream, that notifies us all frames have been encoded.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
@@ -314,6 +311,40 @@ TEST_F(VideoEncoderTest, DestroyBeforeInitialize) {
                                             g_env->GetGpuMemoryBufferFactory());
 
   EXPECT_NE(video_encoder, nullptr);
+}
+
+// Test forcing key frames while encoding a video.
+TEST_F(VideoEncoderTest, ForceKeyFrame) {
+  auto config = GetDefaultConfig();
+  const size_t middle_frame = config.num_frames_to_encode;
+  config.num_frames_to_encode *= 2;
+  auto encoder = CreateVideoEncoder(g_env->Video(), config);
+
+  // It is expected that our hw encoders don't produce key frames in a short
+  // time span like a few hundred frames.
+  // TODO(hiroh): This might be wrong on some platforms. Needs to update.
+  // Encode the first frame, this should always be a keyframe.
+  encoder->EncodeUntil(VideoEncoder::kBitstreamReady, 1u);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
+  EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 1u);
+  // Encode until the middle of stream and request force_keyframe.
+  encoder->EncodeUntil(VideoEncoder::kFrameReleased, middle_frame);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
+  // Check if there is no keyframe except the first frame.
+  EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 1u);
+  encoder->ForceKeyFrame();
+  // Check if the |middle_frame|+1-th frame is keyframe.
+  encoder->EncodeUntil(VideoEncoder::kBitstreamReady, middle_frame + 1u);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
+  EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 2u);
+
+  // Encode until the end of stream.
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 2u);
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
 // Encode video from start to end. Multiple buffer encodes will be queued in the
@@ -387,8 +418,7 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   const uint32_t first_bitrate = config.bitrate;
   encoder->EncodeUntil(VideoEncoder::kFrameReleased,
                        kNumFramesToEncodeForBitrateCheck);
-  encoder->WaitForEvent(VideoEncoder::kFrameReleased,
-                        kNumFramesToEncodeForBitrateCheck);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
   EXPECT_NEAR(encoder->GetStats().Bitrate(), first_bitrate,
               kBitrateTolerance * first_bitrate);
 
@@ -421,8 +451,7 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
 
   encoder->EncodeUntil(VideoEncoder::kFrameReleased,
                        kNumFramesToEncodeForBitrateCheck);
-  encoder->WaitForEvent(VideoEncoder::kFrameReleased,
-                        kNumFramesToEncodeForBitrateCheck);
+  EXPECT_TRUE(encoder->WaitUntilIdle());
   EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate,
               kBitrateTolerance * config.bitrate);
 

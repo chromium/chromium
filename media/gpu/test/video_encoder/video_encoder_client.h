@@ -129,6 +129,9 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   // Updates bitrate based on the specified |bitrate| and |framerate|.
   void UpdateBitrate(const VideoBitrateAllocation& bitrate, uint32_t framerate);
 
+  // Force the next frame to be encoded to be a key frame.
+  void ForceKeyFrame();
+
   // Wait until all bitstream processors have finished processing. Returns
   // whether processing was successful.
   bool WaitForBitstreamProcessors();
@@ -179,6 +182,8 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   void FlushTask();
   void UpdateBitrateTask(const VideoBitrateAllocation& bitrate,
                          uint32_t framerate);
+  // Instruct the encoder to force a key frame on the |encoder_client_thread_|.
+  void ForceKeyFrameTask();
 
   // Called by the encoder when a frame has been encoded.
   void EncodeDoneTask(base::TimeDelta timestamp);
@@ -243,6 +248,10 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   // A counter to track what frame is represented by a bitstream returned on
   // BitstreamBufferReady().
   size_t frame_index_ = 0;
+
+  // Force a key frame on next Encode(), only accessed on the
+  // |encoder_client_thread_|.
+  bool force_keyframe_ = false;
 
   VideoEncoderStats current_stats_ GUARDED_BY(stats_lock_);
   mutable base::Lock stats_lock_;
