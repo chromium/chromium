@@ -20,6 +20,14 @@ enum class ASH_PUBLIC_EXPORT FocusRingBehavior { FADE_OUT, PERSIST };
 // The visual style of the focus ring.
 enum class ASH_PUBLIC_EXPORT FocusRingType { GLOW, SOLID, DASHED };
 
+// How focus rings are layered.
+enum class ASH_PUBLIC_EXPORT FocusRingStackingOrder {
+  // Above most UI, including accessibility bubble panels.
+  ABOVE_ACCESSIBILITY_BUBBLES,
+  // Above most UI, except below accessibility bubble panels.
+  BELOW_ACCESSIBILITY_BUBBLES
+};
+
 // Defines a specific focus ring by specifying:
 // - |rects_in_screen| the regions around which to draw the focus ring (in
 //       screen coordinates).
@@ -40,6 +48,8 @@ struct ASH_PUBLIC_EXPORT AccessibilityFocusRingInfo {
   std::vector<gfx::Rect> rects_in_screen;
   FocusRingBehavior behavior = FocusRingBehavior::FADE_OUT;
   FocusRingType type = FocusRingType::GLOW;
+  FocusRingStackingOrder stacking_order =
+      FocusRingStackingOrder::ABOVE_ACCESSIBILITY_BUBBLES;
   SkColor color = SK_ColorTRANSPARENT;
   SkColor secondary_color = SK_ColorTRANSPARENT;
   SkColor background_color = SK_ColorTRANSPARENT;

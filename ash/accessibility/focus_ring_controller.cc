@@ -5,6 +5,8 @@
 #include "ash/accessibility/focus_ring_controller.h"
 
 #include "ash/accessibility/focus_ring_layer.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/window_util.h"
@@ -83,7 +85,9 @@ void FocusRingController::UpdateFocusRing() {
   // Update the focus ring layer.
   if (!focus_ring_layer_)
     focus_ring_layer_.reset(new FocusRingLayer(this));
-  focus_ring_layer_->Set(root_window, view_bounds);
+  aura::Window* container = Shell::GetContainer(
+      root_window, kShellWindowId_AccessibilityBubbleContainer);
+  focus_ring_layer_->Set(container, view_bounds, /*stack_at_top=*/true);
 }
 
 void FocusRingController::OnDeviceScaleFactorChanged() {

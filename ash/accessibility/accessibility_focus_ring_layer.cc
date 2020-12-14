@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/accessibility_focus_ring_layer.h"
 
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -100,6 +101,8 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
+  aura::Window* container = Shell::GetContainer(
+      root_window, kShellWindowId_AccessibilityBubbleContainer);
 
   if (SkColorGetA(background_color_) > 0) {
     bounds = display.bounds();
@@ -107,16 +110,22 @@ void AccessibilityFocusRingLayer::Set(const AccessibilityFocusRing& ring) {
     int inset = kGradientWidth;
     bounds.Inset(-inset, -inset, -inset, -inset);
   }
-  ::wm::ConvertRectFromScreen(root_window, &bounds);
-  CreateOrUpdateLayer(root_window, "AccessibilityFocusRing", bounds);
+  ::wm::ConvertRectFromScreen(container, &bounds);
+  bool stack_at_top =
+      (stacking_order_ == FocusRingStackingOrder::ABOVE_ACCESSIBILITY_BUBBLES);
+  CreateOrUpdateLayer(container, "AccessibilityFocusRing", bounds,
+                      stack_at_top);
 }
 
-void AccessibilityFocusRingLayer::SetAppearance(FocusRingType type,
-                                                SkColor color,
-                                                SkColor secondary_color,
-                                                SkColor background_color) {
+void AccessibilityFocusRingLayer::SetAppearance(
+    FocusRingType type,
+    FocusRingStackingOrder stacking_order,
+    SkColor color,
+    SkColor secondary_color,
+    SkColor background_color) {
   SetColor(color);
   type_ = type;
+  stacking_order_ = stacking_order;
   secondary_color_ = secondary_color;
   background_color_ = background_color;
 }

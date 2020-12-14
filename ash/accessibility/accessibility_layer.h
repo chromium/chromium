@@ -45,7 +45,9 @@ class AccessibilityLayer : public ui::LayerDelegate,
 
   // Move the accessibility layer to the given bounds in the coordinates of
   // the given root window.
-  void Set(aura::Window* root_window, const gfx::Rect& bounds);
+  void Set(aura::Window* root_window,
+           const gfx::Rect& bounds,
+           bool stack_at_top);
 
   // Set the layer's opacity.
   void SetOpacity(float opacity);
@@ -70,10 +72,11 @@ class AccessibilityLayer : public ui::LayerDelegate,
  protected:
   // Updates |root_window_| and creates |layer_| if it doesn't exist,
   // or if the root window has changed. Moves the layer to the top if
-  // it wasn't there already.
+  // |stack_at_top| is true, otherwise moves layer to the bottom.
   void CreateOrUpdateLayer(aura::Window* root_window,
                            const char* layer_name,
-                           const gfx::Rect& bounds);
+                           const gfx::Rect& bounds,
+                           bool stack_at_top);
 
   // The current root window containing the focused object.
   aura::Window* root_window_ = nullptr;

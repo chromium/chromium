@@ -50,7 +50,8 @@ void AccessibilityCursorRingLayer::Set(const gfx::Point& location) {
       display::Screen::GetScreen()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   ::wm::ConvertRectFromScreen(root_window, &bounds);
-  CreateOrUpdateLayer(root_window, "AccessibilityCursorRing", bounds);
+  CreateOrUpdateLayer(root_window, "AccessibilityCursorRing", bounds,
+                      /*stack_at_top=*/true);
 }
 
 void AccessibilityCursorRingLayer::OnPaintLayer(

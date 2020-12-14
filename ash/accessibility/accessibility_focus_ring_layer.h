@@ -26,6 +26,7 @@ class ASH_EXPORT AccessibilityFocusRingLayer : public FocusRingLayer {
   void Set(const AccessibilityFocusRing& ring);
 
   void SetAppearance(FocusRingType type,
+                     FocusRingStackingOrder stacking_order,
                      SkColor color,
                      SkColor secondary_color,
                      SkColor background_alpha);
@@ -45,6 +46,9 @@ class ASH_EXPORT AccessibilityFocusRingLayer : public FocusRingLayer {
   AccessibilityFocusRing ring_;
   // The type of focus ring.
   FocusRingType type_;
+  // How the focus ring should be stacked relative to other layers.
+  FocusRingStackingOrder stacking_order_ =
+      FocusRingStackingOrder::ABOVE_ACCESSIBILITY_BUBBLES;
   // The secondary color.
   SkColor secondary_color_;
   // The color of the background. When fully transparent, no background will be

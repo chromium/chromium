@@ -159,6 +159,12 @@
         "enum": ["glow", "solid", "dashed"]
       },
       {
+        "id": "FocusRingStackingOrder",
+        "type": "string",
+        "description": "Whether to stack focus rings above or below accessibility bubble panels. Note: focus rings will be stacked above most other UI in either case",
+        "enum": ["aboveAccessibilityBubbles", "belowAccessibilityBubbles"]
+      },
+      {
         "id": "FocusRingInfo",
         "type": "object",
         "properties": {
@@ -183,6 +189,11 @@
           "backgroundColor": {
             "type": "string",
             "description": "A RGB hex-value color string (e.g. #803F82E4) that describes the color drawn outside of the focus ring and over the rest of the display.",
+            "optional": true
+          },
+          "stackingOrder": {
+            "$ref": "FocusRingStackingOrder",
+            "description": "The FocusType for the ring.",
             "optional": true
           },
           "id": {

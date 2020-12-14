@@ -84,8 +84,9 @@ void AccessibilityFocusRingGroup::UpdateFocusRingsFromInfo(
 
   for (size_t i = 0; i < focus_rings_.size(); ++i) {
     focus_layers_[i]->SetAppearance(
-        focus_ring_info_->type, focus_ring_info_->color,
-        focus_ring_info_->secondary_color, focus_ring_info_->background_color);
+        focus_ring_info_->type, focus_ring_info_->stacking_order,
+        focus_ring_info_->color, focus_ring_info_->secondary_color,
+        focus_ring_info_->background_color);
   }
 }
 
