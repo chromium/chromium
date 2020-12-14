@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "chromeos/audio/cras_audio_handler.h"
+#include "chromeos/services/assistant/platform/audio_input_host.h"
 #include "chromeos/services/assistant/platform/audio_input_provider_impl.h"
 #include "chromeos/services/assistant/platform/audio_output_provider_impl.h"
 #include "chromeos/services/assistant/platform/file_provider_impl.h"
@@ -101,6 +102,7 @@ class PlatformApiImpl : public CrosPlatformApi,
   FakeAuthProvider auth_provider_;
   FileProviderImpl file_provider_;
   NetworkProviderImpl network_provider_;
+  AudioInputHost audio_input_host_;
   std::unique_ptr<SystemProviderImpl> system_provider_;
   std::string pref_locale_;
 

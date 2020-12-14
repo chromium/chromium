@@ -84,12 +84,13 @@ PlatformApiImpl::PlatformApiImpl(
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
     std::string pref_locale)
-    : audio_input_provider_(power_manager_client, cras_audio_handler),
-      audio_output_provider_(power_manager_client,
-                             cras_audio_handler,
-                             media_session,
+    : audio_input_provider_(),
+      audio_output_provider_(media_session,
                              background_task_runner,
                              media::AudioDeviceDescription::kDefaultDeviceId),
+      audio_input_host_(&audio_input_provider_.GetAudioInput(),
+                        cras_audio_handler,
+                        power_manager_client),
       pref_locale_(pref_locale),
       cras_audio_handler_(cras_audio_handler) {
   // Only enable native power features if they are supported by the UI.
@@ -165,32 +166,32 @@ void PlatformApiImpl::OnAudioNodesChanged() {
     }
   }
 
-  audio_input_provider_.SetDeviceId(
+  audio_input_host_.SetDeviceId(
       input_device ? base::NumberToString(input_device->id) : std::string());
 
   if (hotword_device) {
-    audio_input_provider_.SetHotwordDeviceId(
+    audio_input_host_.SetHotwordDeviceId(
         base::NumberToString(hotword_device->id));
-    audio_input_provider_.SetDspHotwordLocale(pref_locale_);
+    audio_input_host_.SetDspHotwordLocale(pref_locale_);
   } else {
-    audio_input_provider_.SetHotwordDeviceId(std::string());
+    audio_input_host_.SetHotwordDeviceId(std::string());
   }
 }
 
 void PlatformApiImpl::SetMicState(bool mic_open) {
-  audio_input_provider_.SetMicState(mic_open);
+  audio_input_host_.SetMicState(mic_open);
 }
 
 void PlatformApiImpl::OnConversationTurnStarted() {
-  audio_input_provider_.GetAudioInput().OnConversationTurnStarted();
+  audio_input_host_.OnConversationTurnStarted();
 }
 
 void PlatformApiImpl::OnConversationTurnFinished() {
-  audio_input_provider_.GetAudioInput().OnConversationTurnFinished();
+  audio_input_host_.OnConversationTurnFinished();
 }
 
 void PlatformApiImpl::OnHotwordEnabled(bool enable) {
-  audio_input_provider_.OnHotwordEnabled(enable);
+  audio_input_host_.OnHotwordEnabled(enable);
 }
 
 }  // namespace assistant

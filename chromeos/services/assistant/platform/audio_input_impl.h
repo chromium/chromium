@@ -12,28 +12,26 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "libassistant/shared/public/platform_audio_input.h"
 #include "media/base/audio_capturer_source.h"
 
 namespace chromeos {
-class CrasAudioHandler;
-
 namespace assistant {
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
     : public assistant_client::AudioInput,
-      public media::AudioCapturerSource::CaptureCallback,
-      public chromeos::PowerManagerClient::Observer {
+      public media::AudioCapturerSource::CaptureCallback {
  public:
-  AudioInputImpl(PowerManagerClient* power_manager_client,
-                 CrasAudioHandler* cras_audio_handler,
-                 const std::string& device_id);
+  enum class LidState {
+    kOpen,
+    kClosed,
+  };
+
+  explicit AudioInputImpl(const std::string& device_id);
   ~AudioInputImpl() override;
 
   class HotwordStateManager {
@@ -70,10 +68,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
   void RemoveObserver(
       assistant_client::AudioInput::Observer* observer) override;
 
-  // chromeos::PowerManagerClient::Observer overrides:
-  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        base::TimeTicks timestamp) override;
-
   // Called when the mic state associated with the interaction is changed.
   void SetMicState(bool mic_open);
   void OnConversationTurnStarted();
@@ -84,8 +78,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
 
   void SetDeviceId(const std::string& device_id);
   void SetHotwordDeviceId(const std::string& device_id);
-  void SetDspHotwordLocale(std::string pref_locale);
-  void SetDspHotwordLocaleCallback(std::string pref_locale, bool success);
+
+  // Called when the user opens/closes the lid.
+  void OnLidStateChanged(LidState new_state);
 
   void RecreateAudioInputStream(bool use_dsp);
 
@@ -100,10 +95,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
   void StartRecording();
   void StopRecording();
   void UpdateRecordingState();
-
-  // Updates lid state from received switch states.
-  void OnSwitchStatesReceived(
-      base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   scoped_refptr<media::AudioCapturerSource> source_;
 
@@ -128,13 +119,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
   // sequence.
   SEQUENCE_CHECKER(observer_sequence_checker_);
 
-  chromeos::PowerManagerClient* power_manager_client_;
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_;
-
-  CrasAudioHandler* const cras_audio_handler_;
-
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::unique_ptr<HotwordStateManager> state_manager_;
@@ -146,8 +130,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
   // Device currently being used for recording.
   std::string device_id_;
 
-  chromeos::PowerManagerClient::LidState lid_state_ =
-      chromeos::PowerManagerClient::LidState::NOT_PRESENT;
+  // Start with lidstate |kClosed| so we do not open the microphone before we
+  // know if the lid is open or closed.
+  LidState lid_state_ = LidState::kClosed;
 
   base::WeakPtrFactory<AudioInputImpl> weak_factory_;
   DISALLOW_COPY_AND_ASSIGN(AudioInputImpl);
