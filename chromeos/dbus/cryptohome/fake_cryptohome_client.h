@@ -131,9 +131,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   void FlushAndSignBootAttributes(
       const cryptohome::FlushAndSignBootAttributesRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) override;
-  void GetTpmStatus(
-      const cryptohome::GetTpmStatusRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override;
   void MigrateToDircrypto(const cryptohome::AccountIdentifier& cryptohome_id,
                           const cryptohome::MigrateToDircryptoRequest& request,
                           VoidDBusMethodCallback callback) override;

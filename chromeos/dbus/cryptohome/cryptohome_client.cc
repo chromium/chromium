@@ -554,13 +554,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
                          request, std::move(callback));
   }
 
-  void GetTpmStatus(
-      const cryptohome::GetTpmStatusRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override {
-    CallCryptohomeMethod(cryptohome::kCryptohomeGetTpmStatus, request,
-                         std::move(callback));
-  }
-
   void RemoveFirmwareManagementParametersFromTpm(
       const cryptohome::RemoveFirmwareManagementParametersRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) override {

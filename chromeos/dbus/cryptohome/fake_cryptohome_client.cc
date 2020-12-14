@@ -429,12 +429,6 @@ void FakeCryptohomeClient::FlushAndSignBootAttributes(
   ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
 }
 
-void FakeCryptohomeClient::GetTpmStatus(
-    const cryptohome::GetTpmStatusRequest& request,
-    DBusMethodCallback<cryptohome::BaseReply> callback) {
-  ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
-}
-
 void FakeCryptohomeClient::MigrateToDircrypto(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const cryptohome::MigrateToDircryptoRequest& request,

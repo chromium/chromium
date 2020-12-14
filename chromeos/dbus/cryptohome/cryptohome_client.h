@@ -31,7 +31,6 @@ class GetBootAttributeRequest;
 class GetKeyDataRequest;
 class GetLoginStatusRequest;
 class GetSupportedKeyPoliciesRequest;
-class GetTpmStatusRequest;
 class LockToSingleUserMountUntilRebootRequest;
 class MassRemoveKeysRequest;
 class MigrateKeyRequest;
@@ -378,12 +377,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   // fails after any user, publuc, or guest session starts.
   virtual void FlushAndSignBootAttributes(
       const cryptohome::FlushAndSignBootAttributesRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
-
-  // Asynchronously gets the underlying TPM status information and passes it to
-  // the given callback with reply protobuf.
-  virtual void GetTpmStatus(
-      const cryptohome::GetTpmStatusRequest& request,
       DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
   // Asynchronously calls MigrateToDircrypto method. It tells cryptohomed to
