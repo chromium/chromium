@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
+import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
@@ -157,6 +158,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
             ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(
                     mTile.getUrl().getSpec(), PageTransition.AUTO_BOOKMARK, null /*incognito*/,
                     mParentTabSupplier.get());
+            SuggestionsMetrics.recordTileTapped();
         }
 
         @Override
