@@ -606,7 +606,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Threading features.
   base::PlatformThread::InitThreadPostFieldTrial();
 #endif
