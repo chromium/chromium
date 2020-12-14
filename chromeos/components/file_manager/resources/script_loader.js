@@ -56,7 +56,7 @@ export class ScriptLoader {
       script.onload = () => resolve(this.src_);
       script.onerror = (error) => reject(error);
       script.src = this.src_;
-      document.body.append(script);
+      document.head.append(script);
     });
   }
 }
