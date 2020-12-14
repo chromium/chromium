@@ -271,7 +271,7 @@ Polymer({
    * @param {!mojoBase.mojom.FilePath} lastScannedFilePath
    */
   onScanComplete(success, lastScannedFilePath) {
-    if (!success) {
+    if (!success || this.objectUrls_.length == 0) {
       this.$.scanFailedDialog.showModal();
       return;
     }
