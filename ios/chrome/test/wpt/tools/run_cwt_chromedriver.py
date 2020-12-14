@@ -19,6 +19,8 @@ def GetIosDir():
 
 sys.path.append(os.path.join(GetIosDir(), 'build', 'bots', 'scripts'))
 
+import iossim_util
+import test_apps
 import xcodebuild_runner
 
 def GetDefaultBuildDir():
@@ -32,21 +34,14 @@ parser.add_argument('--build-dir', default=GetDefaultBuildDir(),
     help='Chrome build directory')
 parser.add_argument('--out-dir', default='/tmp/cwt_chromedriver',
     help='Output directory for CWTChromeDriver\'s dummy test case')
-parser.add_argument('--os', default='12.2', help='iOS version')
-parser.add_argument('--device', default='iPhone 8', help='Device type')
+parser.add_argument('--os', default='14.3', help='iOS version')
+parser.add_argument('--device', default='iPhone 11 Pro', help='Device type')
 args=parser.parse_args()
 
 test_app = os.path.join(
     args.build_dir, 'ios_cwt_chromedriver_tests_module-Runner.app')
 host_app = os.path.join(args.build_dir, 'ios_cwt_chromedriver_tests.app')
-destination = 'platform=iOS Simulator,OS=%s,name=%s' % (args.os, args.device)
-
-# Shutdown running simulators. This is needed since a running simulator may
-# be in a hung state.
-# TODO(crbug.com/673423): Change this logic to only shut down the simulator that
-# will be used for this run, when adding support for running multiple instances
-# of CWTChromeDriver.
-subprocess.check_call(['xcrun', 'simctl', 'shutdown', 'booted'])
+destination = iossim_util.get_simulator(args.device, args.os)
 
 if not os.path.exists(args.out_dir):
   os.mkdir(args.out_dir)
@@ -56,7 +51,7 @@ if not os.path.exists(args.out_dir):
 # skipped, meaning that CWTChromeDriver's http server won't get launched.
 output_directory = os.path.join(args.out_dir, 'run%d' %  int(time.time()))
 
-egtests_app = xcodebuild_runner.EgtestsApp(
+egtests_app = test_apps.EgtestsApp(
     egtests_app=test_app, test_args=['--port %s' % args.port],
     host_app_path=host_app)
 
