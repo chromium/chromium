@@ -468,7 +468,7 @@ content::WebContents* WebAppsChromeOs::LaunchAppWithParams(
           params_for_restore.app_id, session_id, params_for_restore.container,
           params_for_restore.disposition, params_for_restore.display_id,
           std::move(params_for_restore.launch_files),
-          params_for_restore.intent));
+          std::move(params_for_restore.intent)));
   return web_contents;
 }
 

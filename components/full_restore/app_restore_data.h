@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FULL_RESTORE_APP_RESTORE_DATA_H_
 #define COMPONENTS_FULL_RESTORE_APP_RESTORE_DATA_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/component_export.h"
@@ -14,6 +15,8 @@
 #include "url/gurl.h"
 
 namespace full_restore {
+
+struct AppLaunchInfo;
 
 // This is the struct used by RestoreData to save both app launch parameters and
 // app window information. This struct can be converted to JSON format to be
@@ -27,6 +30,8 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
 
   AppRestoreData(const AppRestoreData&) = delete;
   AppRestoreData& operator=(const AppRestoreData&) = delete;
+
+  AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info);
 
   // App launch parameters.
   base::Optional<int32_t> event_flag;

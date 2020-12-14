@@ -5095,6 +5095,7 @@ test("unit_tests") {
       "//chromeos/services/machine_learning/public/cpp:test_support",
       "//chromeos/services/nearby/public/cpp:test_support",
       "//components/arc:arc_test_support",
+      "//components/full_restore:unit_tests",
     ]
   }
 

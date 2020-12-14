@@ -15,7 +15,7 @@ class FilePath;
 
 namespace full_restore {
 
-class AppLaunchInfo;
+struct AppLaunchInfo;
 
 // Saves the app launch parameters to the full restore file.
 COMPONENT_EXPORT(FULL_RESTORE)

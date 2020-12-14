@@ -13,16 +13,17 @@
 
 namespace full_restore {
 
+struct AppLaunchInfo;
+
 // This class is responsible for saving all app launch and app windows
 // information. It can be converted to JSON format to be written to the
 // FullRestoreData file.
 //
 // TODO(crbug.com/1146900):
 // 1. Add the interface to convert this struct to JSON format.
-// 2. Add the interface to add a LaunchAndWindowInfo with AppLaunchInfo.
-// 3. Add the interface to modify LaunchAndWindowInfo when the window
+// 2. Add the interface to modify LaunchAndWindowInfo when the window
 // information is updated.
-// 4. Add the interface to remove LaunchAndWindowInfo.
+// 3. Add the interface to remove LaunchAndWindowInfo.
 class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
  public:
   // Map from a window id to AppRestoreData.
@@ -36,6 +37,13 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
 
   RestoreData(const RestoreData&) = delete;
   RestoreData& operator=(const RestoreData&) = delete;
+
+  // Add |app_launch_info| to |app_id_to_launch_list_|.
+  void AddAppLaunchInfo(std::unique_ptr<AppLaunchInfo> app_launch_info);
+
+  const AppIdToLaunchList& app_id_to_launch_list() {
+    return app_id_to_launch_list_;
+  }
 
  private:
   AppIdToLaunchList app_id_to_launch_list_;

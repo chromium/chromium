@@ -12,14 +12,14 @@ AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
                              WindowOpenDisposition disposition,
                              int64_t display_id,
                              std::vector<base::FilePath> launch_files,
-                             apps::mojom::IntentPtr& intent)
-    : app_id_(app_id),
-      id_(session_id),
-      container_(static_cast<int32_t>(container)),
-      disposition_(static_cast<int32_t>(disposition)),
-      display_id_(display_id),
-      file_paths_(std::move(launch_files)),
-      intent_(std::move(intent)) {}
+                             apps::mojom::IntentPtr intent)
+    : app_id(app_id),
+      id(session_id),
+      container(static_cast<int32_t>(container)),
+      disposition(static_cast<int32_t>(disposition)),
+      display_id(display_id),
+      file_paths(std::move(launch_files)),
+      intent(std::move(intent)) {}
 
 AppLaunchInfo::~AppLaunchInfo() = default;
 

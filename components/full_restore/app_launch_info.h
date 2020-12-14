@@ -17,30 +17,28 @@ namespace full_restore {
 
 // This class is the parameter for the interface SaveAppLaunchInfo, to save the
 // app launch information.
-class COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
- public:
+struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
   AppLaunchInfo(const std::string& app_id,
                 int32_t session_id,
                 apps::mojom::LaunchContainer container,
                 WindowOpenDisposition disposition,
                 int64_t display_id,
                 std::vector<base::FilePath> launch_files,
-                apps::mojom::IntentPtr& intent);
+                apps::mojom::IntentPtr intent);
   ~AppLaunchInfo();
 
   AppLaunchInfo(const AppLaunchInfo&) = delete;
   AppLaunchInfo& operator=(const AppLaunchInfo&) = delete;
 
- private:
-  const std::string app_id_;
-  const base::Optional<int32_t> id_;
-  const base::Optional<int32_t> event_flag_;
-  const base::Optional<int32_t> container_;
-  const base::Optional<int32_t> disposition_;
-  const base::Optional<int64_t> display_id_;
-  const base::Optional<GURL> url_;
-  const base::Optional<std::vector<base::FilePath>> file_paths_;
-  const base::Optional<apps::mojom::IntentPtr> intent_;
+  std::string app_id;
+  base::Optional<int32_t> id;
+  base::Optional<int32_t> event_flag;
+  base::Optional<int32_t> container;
+  base::Optional<int32_t> disposition;
+  base::Optional<int64_t> display_id;
+  base::Optional<GURL> url;
+  base::Optional<std::vector<base::FilePath>> file_paths;
+  base::Optional<apps::mojom::IntentPtr> intent;
 };
 
 }  // namespace full_restore

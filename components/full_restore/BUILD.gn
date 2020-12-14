@@ -23,3 +23,14 @@ component("full_restore") {
     "//components/services/app_service/public/mojom",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "restore_data_unittest.cc" ]
+
+  deps = [
+    ":full_restore",
+    "//testing/gtest",
+  ]
+}
