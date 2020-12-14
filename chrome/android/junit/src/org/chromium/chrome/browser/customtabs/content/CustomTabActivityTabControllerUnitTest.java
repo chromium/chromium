@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.customtabs.content;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -182,5 +185,21 @@ public class CustomTabActivityTabControllerUnitTest {
         env.reachNativeInit(mTabController);
         mTabController.detachAndStartReparenting(new Intent(), new Bundle(), mock(Runnable.class));
         assertNull(env.tabProvider.getTab());
+    }
+
+    // Some websites replace the tab with a new one.
+    @Test
+    public void doesNotSetHeaderWhenIncognito() {
+        doAnswer((mock) -> {
+            fail("setClientDataHeaderForNewTab() should not be called for incognito tabs");
+            return null;
+        })
+                .when(env.connection)
+                .setClientDataHeaderForNewTab(any(), any());
+        env.isIncognito = true;
+        mTabController.onPreInflationStartup();
+        mTabController.finishNativeInitialization();
+        Tab tab = env.prepareTab();
+        assertTrue(tab.isIncognito());
     }
 }

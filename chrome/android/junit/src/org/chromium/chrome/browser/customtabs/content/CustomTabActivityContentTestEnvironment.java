@@ -113,6 +113,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public Tab tabFromFactory;
 
+    public boolean isIncognito;
+
     @Override
     protected void starting(Description description) {
         MockitoAnnotations.initMocks(this);
@@ -242,6 +244,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(tab.getWebContents()).thenReturn(webContents);
         NavigationController navigationController = mock(NavigationController.class);
         when(webContents.getNavigationController()).thenReturn(navigationController);
+        when(tab.isIncognito()).thenAnswer((mock) -> isIncognito);
         return tab;
     }
 }

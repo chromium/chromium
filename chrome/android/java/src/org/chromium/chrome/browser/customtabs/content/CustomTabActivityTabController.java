@@ -405,7 +405,9 @@ public class CustomTabActivityTabController implements InflationObserver {
                                 mConnection.getClientPackageNameForSession(mSession)));
         // clang-format on
 
-        mConnection.setClientDataHeaderForNewTab(mSession, webContents);
+        if (!tab.isIncognito()) {
+            mConnection.setClientDataHeaderForNewTab(mSession, webContents);
+        }
 
         initializeTab(tab);
 
