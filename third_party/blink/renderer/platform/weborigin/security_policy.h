@@ -93,7 +93,6 @@ class PLATFORM_EXPORT SecurityPolicy {
 
   static void AddOriginToTrustworthySafelist(const String&);
   static bool IsOriginTrustworthySafelisted(const SecurityOrigin&);
-  static bool IsUrlTrustworthySafelisted(const KURL&);
 
   static bool ReferrerPolicyFromString(const String& policy,
                                        ReferrerPolicyLegacyKeywordsSupport,

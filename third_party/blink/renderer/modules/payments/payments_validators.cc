@@ -168,16 +168,7 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
   if (url.Protocol() != "http")
     return false;
 
-  // Allow http://localhost for local development.
-  if (SecurityOrigin::Create(url)->IsLocalhost())
-    return true;
-
-  // Allow http:// origins from
-  // --unsafely-treat-insecure-origin-as-secure=<origin> for local development.
-  if (SecurityPolicy::IsUrlTrustworthySafelisted(url))
-    return true;
-
-  return false;
+  return SecurityOrigin::Create(url)->IsPotentiallyTrustworthy();
 }
 
 void PaymentsValidators::ValidateAndStringifyObject(

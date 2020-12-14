@@ -202,13 +202,6 @@ bool SecurityPolicy::IsOriginTrustworthySafelisted(
   return false;
 }
 
-bool SecurityPolicy::IsUrlTrustworthySafelisted(const KURL& url) {
-  // Early return to avoid initializing the SecurityOrigin.
-  if (TrustworthyOriginSafelist().IsEmpty())
-    return false;
-  return IsOriginTrustworthySafelisted(*SecurityOrigin::Create(url).get());
-}
-
 bool SecurityPolicy::IsOriginAccessAllowed(
     const SecurityOrigin* active_origin,
     const SecurityOrigin* target_origin) {

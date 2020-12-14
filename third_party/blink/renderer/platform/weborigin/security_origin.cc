@@ -308,10 +308,8 @@ bool SecurityOrigin::IsSecure(const KURL& url) {
                                     ExtractInnerURL(url).Protocol()))
     return true;
 
-  if (SecurityPolicy::IsUrlTrustworthySafelisted(url))
-    return true;
-
-  return false;
+  return SecurityPolicy::IsOriginTrustworthySafelisted(
+      *SecurityOrigin::Create(url).get());
 }
 
 base::Optional<base::UnguessableToken>
