@@ -204,6 +204,15 @@
 <translation id="1327466551276625742">離線時啟用網路設定提示</translation>
 <translation id="1330145147221172764">啟用螢幕小鍵盤</translation>
 <translation id="13356285923490863">政策名稱</translation>
+<translation id="1338603603553894503">指定在瀏覽器啟動時要啟用、停用或強制顯示設定檔選擇畫面。
+
+      根據預設，瀏覽器在以下情況不會顯示設定檔選擇畫面：瀏覽器於啟動時採用訪客或無痕模式、已透過指令列指定設定檔目錄和/或網址、使用者明確要求開啟某個應用程式、瀏覽器由原生通知啟動、目前只有一個設定檔，或是 ForceBrowserSignin 的設定為 True。
+
+      如果選取了「Enabled」(0) 或不設定這項政策，瀏覽器預設會在啟動時顯示設定檔選擇畫面，但使用者可予以啟用或停用。
+
+      如果選取了「Disabled」(1)，瀏覽器一律不會顯示設定檔選擇畫面，使用者也無法變更這項設定。
+
+      如果選取了「Forced」(2)，使用者將無法隱藏設定檔選擇畫面。即使只有一個設定檔，瀏覽器也會顯示設定檔選擇畫面。</translation>
 <translation id="1347198119056266798">這項政策已遭淘汰，請改用 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> 和 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />。如果設定 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />、<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> 或 <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> 政策 (已淘汰)，系統會忽略這項政策。
 
       將 Google 網頁搜尋中的「安全搜尋」功能強制設為啟用，並禁止使用者變更這項設定。這項設定也會強制執行中度的 YouTube 嚴格篩選模式。
@@ -321,6 +330,7 @@
       可用的資料類型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" />、<ph name="DATA_TYPE_HOSTED_APP_DATA" />。
       所選類型的資料存放超過 <ph name="TIME_TO_LIVE_IN_HOURS" />後，Chrome 就會定期移除。由於 Chrome 每隔一段時間才會刪除資料，有些資料可能會留存較久，但存放時間絕不會超過預計時間長度 (<ph name="TIME_TO_LIVE_IN_HOURS" />) 的兩倍。
       </translation>
+<translation id="1506017854924185821">是否要在瀏覽器啟動時顯示設定檔選擇畫面</translation>
 <translation id="1509692106376861764">我們已於 <ph name="PRODUCT_NAME" /> 版本 29 中移除這項政策。</translation>
 <translation id="1512974677514081818">為繫結至裝置的企業印表機提供設定。
 
@@ -1630,6 +1640,7 @@
 
       請注意，先前我們誤在 Android 裝置上啟用這項政策，但這項功能從未針對 Android 裝置提供完整支援。</translation>
 <translation id="348495353354674884">啟用虛擬鍵盤</translation>
+<translation id="3485200437120267231">停用登入攔截功能</translation>
 <translation id="3492834335089638487">這項政策可控管裝置是否能使用來源不受信任 (並非來自 Google Play 商店) 的 Android 應用程式。
 
       如果不設定這項政策的值，系統會視為禁止使用這項功能。
@@ -1722,6 +1733,7 @@
       如要進一步瞭解 <ph name="CORS" />，請前往：<ph name="CORS_HELP_URL" />。
 
       請注意，我們之前宣布將在 <ph name="PRODUCT_NAME" /> 第 82 版中移除這項政策，但改為在第 84 版中移除。</translation>
+<translation id="3606571057705314194">瀏覽器啟動時不顯示設定檔選擇畫面</translation>
 <translation id="3627678165642179114">啟用或停用拼字檢查網路服務</translation>
 <translation id="3628480121685794414">啟用單面列印</translation>
 <translation id="3631099945620529777">如果設為 False，工作管理員中的「結束處理程序」按鈕隨即會停用。
@@ -1823,6 +1835,7 @@
       如果停用這項設定，使用者將無法透過 Smart Lock 登入帳戶。
 
       如未設定這項政策，在預設情況下，受企業管理的使用者將無法使用 Smart Lock 登入功能，其他一般的使用者則可使用這項登入功能。</translation>
+<translation id="3796527892245558832">瀏覽器啟動時顯示設定檔選擇畫面</translation>
 <translation id="3803171355925844705">不允許任何網站載入複合型內容</translation>
 <translation id="3808945828600697669">指定停用的外掛程式清單</translation>
 <translation id="3810642039169532482">在登入畫面上啟用語音輸入無障礙功能。
@@ -2974,6 +2987,7 @@
 
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，勾選或取消勾選已儲存密碼的核取方塊。</translation>
 <translation id="5457924070961220141">允許你在安裝「<ph name="PRODUCT_FRAME_NAME" />」之後，設定預設的 HTML 算繪器。如果未設定這項政策，系統就會使用預設設定，允許主機瀏覽器進行算繪，但是你可以覆寫這項預設，改由「<ph name="PRODUCT_FRAME_NAME" />」算繪 HTML 網頁。</translation>
+<translation id="545817252640069915">啟用登入攔截功能</translation>
 <translation id="5460797984317417682">啟用全螢幕警示</translation>
 <translation id="5464816904705580310">為管理化環境下的使用者調整設定。</translation>
 <translation id="5466596281866046569">回報應用程式資訊</translation>
@@ -3510,6 +3524,7 @@
       如果將這項政策設為 0，就會停用本機帳戶密碼變更功能。
 
       注意：如果用戶端長時間處於離線狀態，即使已經過了指定天數，密碼也可能不會變更。</translation>
+<translation id="6280973140313576289">瀏覽器啟動時強制顯示設定檔選擇畫面</translation>
 <translation id="6281043242780654992">設定內建訊息傳遞政策。如要允許列入黑名單的內建訊息傳遞主機，必須將其加入許可清單。</translation>
 <translation id="6282524907402492171">顯示 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="6282799760374509080">允許或拒絕擷取音訊</translation>
@@ -4381,6 +4396,11 @@
       如果不設定這項政策，在預設情況下，受企業管理的使用者和其他一般使用者皆可使用這項功能。</translation>
 <translation id="7372831798009983116">啟用自動點擊無障礙功能</translation>
 <translation id="7373200034079131670">在 Android 或 VM 已啟動的前提下，於使用者登出時重新啟動。</translation>
+<translation id="7373680616478819439">你可以透過這項政策啟用或停用登入攔截功能。
+
+      如果將這項政策設為 True 或不設定，當使用者在網站上新增 Google 帳戶時，將觸發登入攔截對話方塊，方便使用者將該帳戶移至其他 (新建或現有) 個人資料。
+
+      如果將這項政策設為 False，則不會觸發登入攔截對話方塊。</translation>
 <translation id="7375785904116479354">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入預設搜尋引擎。如果將這項政策設為停用或不設定，瀏覽首次執行時不會匯入預設搜尋引擎。
 
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，來勾選或取消勾選預設搜尋引擎的核取方塊。</translation>

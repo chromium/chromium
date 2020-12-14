@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Muokkaa hakukonetta</translation>
 <translation id="1129850422003387628">Sovellusvalinnat</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – kuuluu ryhmään: <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903"><ph name="DEVICE_TYPE" /> voi nyt vastaanottaa ilmoituksia puhelimestasi. Jos <ph name="DEVICE_TYPE" /> ohittaa ilmoituksia, ne ohitetaan myös puhelimellasi. Varmista, että puhelin on lähellä, sen lukitus on avattu ja Bluetooth ja Wi-Fi ovat päällä.</translation>
 <translation id="1134009406053225289">Avaa incognito-ikkunassa</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" />/<ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Suojausavain on lukittu, koska väärä PIN-koodi syötettiin liian monta kertaa. Avaa lukitus poistamalla avain ja asettamalla se uudelleen.</translation>

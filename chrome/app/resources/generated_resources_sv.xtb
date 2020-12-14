@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Redigera sökmotor</translation>
 <translation id="1129850422003387628">Hantera appar</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – ingår i gruppen <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Du får nu aviseringar från telefonen på din <ph name="DEVICE_TYPE" />. Om du ignorerar aviseringar på din <ph name="DEVICE_TYPE" /> ignoreras de även på telefonen. Kontrollera att telefonen finns i närheten, att den är olåst och att Bluetooth och Wi-Fi är aktiverat på den.</translation>
 <translation id="1134009406053225289">Öppna i inkognitofönster</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> av <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Säkerhetsnyckeln har låsts eftersom du har angett fel pinkod för många gånger. Ta ur och sätt i säkerhetsnyckeln igen för att låsa upp den.</translation>

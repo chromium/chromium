@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">საძიებო სისტემის რედაქტირება</translation>
 <translation id="1129850422003387628">აპების მართვა</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> — ჯგუფის „<ph name="GROUP_NAME" />“ ნაწილი</translation>
-<translation id="1130712065489627903">ამიერიდან შეგიძლიათ მიიღოთ შეტყობინებები თქვენი ტელეფონიდან თქვენს <ph name="DEVICE_TYPE" />-ზე. თქვენს <ph name="DEVICE_TYPE" />-ზე შეტყობინებების დახურვის შემთხვევაში, ისინი ტელეფონზეც დაიხურება. დარწმუნდით, რომ ტელეფონი ახლოს გაქვთ, განბლოკილია და მასზე ჩართულია Bluetooth/Wi-Fi.</translation>
 <translation id="1134009406053225289">ინკოგნიტო ფანჯარაში გახსნა</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> / <ph name="EMOJI_COUNT" />-დან.</translation>
 <translation id="1136712381129578788">უსაფრთხოების ეს გასაღები დაბლოკილია არასწორი PIN-კოდის მეტისმეტად ბევრჯერ შეყვანის გამო. მის განსაბლოკად გამოართეთ და ხელახლა მიაერთეთ ის.</translation>
@@ -5595,7 +5594,7 @@
 <translation id="7548856833046333824">ლიმონადი</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />-ის ჩამოტვირთვა ვერ მოხერხდა</translation>
-<translation id="7551643184018910560">დაამაგრეთ თაროზე</translation>
+<translation id="7551643184018910560">თაროზე ჩამაგრება</translation>
 <translation id="7552846755917812628">ცადეთ შემდეგი:</translation>
 <translation id="7553012839257224005">მიმდინარეობს Linux-ის კონტეინერის შემოწმება</translation>
 <translation id="7553242001898162573">შეიყვანეთ თქვენი პაროლი</translation>

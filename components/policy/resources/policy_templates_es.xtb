@@ -206,6 +206,15 @@
 <translation id="1327466551276625742">Habilitar mensaje de configuración de red si no hay conexión</translation>
 <translation id="1330145147221172764">Habilitar teclado en pantalla</translation>
 <translation id="13356285923490863">Nombre de la política</translation>
+<translation id="1338603603553894503">Especifica si el selector de perfil se habilita, se inhabilita o se fuerza al iniciar el navegador.
+
+      De forma predeterminada no se muestra el selector de perfil si se dan las siguientes situaciones: el navegador se inicia en el modo invitados o de incógnito, se especifica un directorio de perfil o URLs en línea de comandos, se solicita explícitamente abrir una aplicación, una notificación nativa abre el navegador, solo hay un perfil disponible o se le asigna el valor "true" a la política ForceBrowserSignin.
+
+      Si se selecciona "Habilitado" (0) o no se establece la política, el selector de perfil se mostrará de forma predeterminada al inicio, pero los usuarios podrán habilitarlo o inhabilitarlo.
+
+      Si se selecciona "Inhabilitado" (1), no se mostrará nunca el selector de perfil, y los usuarios no podrán cambiar la configuración.
+
+      Si se selecciona "Forzado" (2), el usuario no podrá eliminar el selector de perfil. El selector de perfil se mostrará aunque solo haya un perfil disponible.</translation>
 <translation id="1347198119056266798">Esta política está obsoleta. Te recomendamos que utilices <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> y <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Esta política se ignorará si se asigna un valor a las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsoleta).
 
       Permite forzar las consultas en la Búsqueda web de Google para que se realicen con la función Búsqueda Segura activada e impide que los usuarios modifiquen esta opción. Además, esta opción fuerza el modo restringido moderado en YouTube.
@@ -341,6 +350,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Los tipos de datos disponibles son <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> y <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome retira regularmente tipos específicos de datos con una antigüedad superior a <ph name="TIME_TO_LIVE_IN_HOURS" />. Como se eliminan datos en intervalos concretos, es posible que algunos datos perduren más tiempo, pero nunca más del doble de lo esperado (<ph name="TIME_TO_LIVE_IN_HOURS" />).
       </translation>
+<translation id="1506017854924185821">Disponibilidad del selector de perfil al iniciar</translation>
 <translation id="1509692106376861764">Esta política no está disponible desde la versión 29 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Proporciona opciones de configuración para impresoras de empresa vinculadas a dispositivos.
 
@@ -1686,6 +1696,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
 
       Ten en cuenta que esta política se ha habilitado anteriormente en Android por error, pero la función nunca ha sido totalmente compatible con Android.</translation>
 <translation id="348495353354674884">Habilitar teclado virtual</translation>
+<translation id="3485200437120267231">Inhabilitar interceptación de inicio de sesión</translation>
 <translation id="3492834335089638487">Esta política controla el uso de aplicaciones Android de fuentes que no son de confianza (distintas a Google Play Store) en un dispositivo.
 
       Si no se asigna ningún valor a esta política, se considerará que no se permite la función.
@@ -1778,6 +1789,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Para consultar más información sobre <ph name="CORS" />, visita <ph name="CORS_HELP_URL" />.
 
       Ten en cuenta que se anunció que esta política se eliminaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se eliminará en la versión 84.</translation>
+<translation id="3606571057705314194">Selector de perfil inhabilitado al iniciar</translation>
 <translation id="3627678165642179114">Habilitar o inhabilitar el servicio web de corrección ortográfica</translation>
 <translation id="3628480121685794414">Habilitar impresión por una cara</translation>
 <translation id="3631099945620529777">Si se asigna el valor "False" a esta política, se inhabilita el botón Finalizar proceso en el administrador de tareas.
@@ -1879,6 +1891,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si este ajuste está inhabilitado, los usuarios no podrán iniciar sesión con Smart Lock.
 
       Si esta política no se configura, Smart Lock se inhabilita para los usuarios administrados por empresas y se habilita para los no administrados.</translation>
+<translation id="3796527892245558832">Selector de perfil disponible al iniciar</translation>
 <translation id="3803171355925844705">No permitir que los sitios web puedan cargar contenido mixto</translation>
 <translation id="3808945828600697669">Especificar una lista de complementos inhabilitados</translation>
 <translation id="3810642039169532482">Habilita la función de accesibilidad de dictado en la pantalla de inicio de sesión.
@@ -3035,6 +3048,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de contraseñas guardadas aparecerá marcada o desmarcada en función del valor de esta política.</translation>
 <translation id="5457924070961220141">Permite configurar el procesador de HTML predeterminado si se ha instalado <ph name="PRODUCT_FRAME_NAME" />.
           Si no se establece esta política, se permitirá que el navegador del host muestre las páginas HTML de forma predeterminada, pero puedes anular esta opción para que <ph name="PRODUCT_FRAME_NAME" /> muestre las páginas HTML de forma predeterminada.</translation>
+<translation id="545817252640069915">Habilitar interceptación de inicio de sesión</translation>
 <translation id="5460797984317417682">Habilitar la alerta en pantalla completa</translation>
 <translation id="5464816904705580310">Permite establecer opciones de configuración de usuarios administrados.</translation>
 <translation id="5466596281866046569">Enviar información sobre las aplicaciones</translation>
@@ -3581,6 +3595,7 @@ Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no usará notificac
       Si se asigna el valor "0" a esta política, se desactivará el cambio de la contraseña de la cuenta del dispositivo.
 
       Nota: Las contraseñas podrían mantenerse más tiempo del especificado si el cliente ha estado sin conexión durante un periodo de tiempo mayor.</translation>
+<translation id="6280973140313576289">Forzar selector de perfil al iniciar</translation>
 <translation id="6281043242780654992">Configura las políticas relativas a los mensajes nativos. Los hosts de mensajes nativos de la lista negra se inhabilitarán a menos que se incluyan en la lista blanca.</translation>
 <translation id="6282524907402492171">Mostrar advertencias de desactivación de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir o denegar captura de audio</translation>
@@ -4455,6 +4470,11 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si no se asigna ningún valor a esta política o no se establece, el valor predeterminado para los usuarios gestionados por una empresa y para los no gestionados es permitir esta función.</translation>
 <translation id="7372831798009983116">Habilitar la función de accesibilidad de clic automático</translation>
 <translation id="7373200034079131670">Reinicia cuando el usuario cierra sesión si se ha iniciado Android o una máquina virtual.</translation>
+<translation id="7373680616478819439">Este ajuste habilita o inhabilita la interceptación de inicio de sesión.
+
+      Cuando se le asigna el valor "True" a esta política o no se establece, el cuadro de diálogo de interceptación de inicio de sesión se activa cuando se añade una cuenta de Google a la Web y el usuario tiene la opción de mover esa cuenta a otro perfil (nuevo o ya creado).
+
+      Cuando se le asigna el valor "False", no se activa el cuadro de diálogo de interceptación de inicio de sesión.</translation>
 <translation id="7375785904116479354">Si se asigna el valor "Habilitada" a esta política, se importará el buscador predeterminado del anterior navegador predeterminado al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará el buscador predeterminado al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla del buscador predeterminado aparecerá marcada o desmarcada en función del valor de esta política.</translation>

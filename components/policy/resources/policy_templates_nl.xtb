@@ -206,6 +206,15 @@
 <translation id="1327466551276625742">Prompt voor netwerkconfiguratie inschakelen als je offline bent</translation>
 <translation id="1330145147221172764">Schermtoetsenbord inschakelen</translation>
 <translation id="13356285923490863">Naam van beleid</translation>
+<translation id="1338603603553894503">Geeft aan of de profielkiezer is ingeschakeld, uitgeschakeld of afgedwongen bij het opstarten van de browser.
+
+      Standaard zie je de profielkiezer niet als de browser start in de gast- of incognitomodus, er een profieldirectory en/of URL's zijn opgegeven via een opdrachtregel, het openen van een app expliciet is aangevraagd, de browser is gestart via een systeemeigen melding, er maar één profiel beschikbaar is of het beleid ForceBrowserSignin is ingesteld op True.
+
+      Als Ingeschakeld (0) is geselecteerd of het beleid niet is ingesteld, wordt de profielkiezer standaard getoond bij het opstarten, maar kunnen gebruikers deze in- of uitschakelen.
+
+      Als Uitgeschakeld (1) is geselecteerd, wordt de profielkiezer nooit getoond en kunnen gebruikers de instelling niet wijzigen.
+
+      Als Afgedwongen (2) is geselecteerd, kunnen gebruikers de profielkiezer niet onderdrukken. De profielkiezer wordt ook getoond als er maar één profiel beschikbaar is.</translation>
 <translation id="1347198119056266798">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> en <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Dit beleid wordt genegeerd als het beleid <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> of <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (verouderd) is ingesteld.
 
       Hiermee wordt afgedwongen dat zoekopdrachten in Google Zoeken worden uitgevoerd met SafeSearch ingesteld op 'actief' en wordt voorkomen dat gebruikers deze instelling kunnen wijzigen. Met deze instelling wordt ook de gemiddelde Beperkte modus op YouTube afgedwongen.
@@ -331,6 +340,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome verwijdert regelmatig gegevens van geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. Aangezien deze verwijdering alleen met bepaalde intervallen plaatsvindt, kan de levensduur van bepaalde gegevens iets langer zijn, maar nooit langer dan twee keer de verwachte <ph name="TIME_TO_LIVE_IN_HOURS" />.
       </translation>
+<translation id="1506017854924185821">Beschikbaarheid van profielkiezer bij opstarten</translation>
 <translation id="1509692106376861764">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_NAME" /> versie 29.</translation>
 <translation id="1512974677514081818">Biedt configuraties voor bedrijfsprinters die aan apparaten zijn gekoppeld.
 
@@ -1652,6 +1662,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 
       Dit beleid werd eerder ten onrechte ingeschakeld op Android, maar deze functionaliteit is nooit volledig ondersteund geweest op Android.</translation>
 <translation id="348495353354674884">Virtueel toetsenbord inschakelen</translation>
+<translation id="3485200437120267231">Onderschepping bij inloggen uitschakelen</translation>
 <translation id="3492834335089638487">Dit beleid beheert het gebruik van Android-apps van niet-vertrouwde bronnen (anders dan de Google Play Store) voor een apparaat.
 
       Als de waarde voor dit beleid niet is ingesteld, wordt de functionaliteit behandeld alsof er geen toestemming is gegeven.
@@ -1744,6 +1755,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
       Ga naar <ph name="CORS_HELP_URL" /> voor meer informatie over <ph name="CORS" />.
 
       Er was aangekondigd dat dit beleid zou worden verwijderd in <ph name="PRODUCT_NAME" /> versie 82, maar dat is versie 84 geworden.</translation>
+<translation id="3606571057705314194">Profielkiezer uitgeschakeld bij opstarten</translation>
 <translation id="3627678165642179114">Webservice voor spellingcontrole in- of uitschakelen</translation>
 <translation id="3628480121685794414">Enkelzijdig afdrukken inschakelen</translation>
 <translation id="3631099945620529777">Als deze optie is ingesteld op 'false', is de knop 'Proces beëindigen' uitgeschakeld in Taakbeheer.
@@ -1845,6 +1857,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Als dit beleid is uitgeschakeld, kunnen gebruikers Smart Lock Signin niet gebruiken.
 
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde Enterprise-gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
+<translation id="3796527892245558832">Profielkiezer beschikbaar bij opstarten</translation>
 <translation id="3803171355925844705">Niet toestaan dat sites gemengde content laden</translation>
 <translation id="3808945828600697669">Een lijst met uitgeschakelde plug-ins specificeren</translation>
 <translation id="3810642039169532482">De toegankelijkheidsfunctie voor dicteren op het inlogscherm inschakelen.
@@ -2999,6 +3012,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor opgeslagen wachtwoorden aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
 <translation id="5457924070961220141">Hiermee kun je de standaard HTML-renderer configureren wanneer <ph name="PRODUCT_FRAME_NAME" /> is geïnstalleerd.
           De standaardinstelling die wordt gebruikt wanneer dit beleid niet wordt ingesteld, wordt gebruikt om de hostbrowser de rendering te laten regelen, maar je kunt dit naar wens aanpassen en <ph name="PRODUCT_FRAME_NAME" /> HTML-pagina's standaard laten renderen.</translation>
+<translation id="545817252640069915">Onderschepping bij inloggen inschakelen</translation>
 <translation id="5460797984317417682">Melding voor volledig scherm inschakelen</translation>
 <translation id="5464816904705580310">Hiermee configureer je instellingen voor beheerde gebruikers.</translation>
 <translation id="5466596281866046569">App-gegevens melden</translation>
@@ -3540,6 +3554,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als je het beleid instelt op 0, wordt het wachtwoord van het computeraccount niet gewijzigd.
 
       Opmerking: Wachtwoorden kunnen ouder zijn dan de ingestelde periode als de client langere tijd offline is.</translation>
+<translation id="6280973140313576289">Profielkiezer afgedwongen bij opstarten</translation>
 <translation id="6281043242780654992">Configureert beleid voor systeemeigen berichten. Hosts voor systeemeigen berichten op de zwarte lijst worden niet toegestaan, tenzij ze op de witte lijst worden gezet.</translation>
 <translation id="6282524907402492171">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> tonen</translation>
 <translation id="6282799760374509080">Het opnemen van audio toestaan of weigeren</translation>
@@ -4412,6 +4427,11 @@ Als je ervoor kiest het volgende te gebruiken:
       Als je dit beleid niet instelt, geldt de standaardwaarde 'toegestaan' voor zowel beheerde zakelijke gebruikers als niet-beheerde gebruikers.</translation>
 <translation id="7372831798009983116">De toegankelijkheidsfunctie voor automatisch klikken inschakelen</translation>
 <translation id="7373200034079131670">Opnieuw opstarten bij uitloggen gebruiker als Android of een VM is gestart.</translation>
+<translation id="7373680616478819439">Met deze instelling kun je onderschepping bij inloggen in- of uitschakelen.
+
+      Als je dit beleid niet instelt of het instelt op True, wordt het dialoogvenster voor onderschepping bij inloggen getoond als een Google-account wordt toegevoegd op het web en de gebruiker er mogelijk baat bij heeft als dit account wordt verplaatst naar een ander (nieuw of bestaand) profiel.
+
+      Als je het beleid instelt op False, wordt geen dialoogvenster voor onderschepping bij inloggen getoond.</translation>
 <translation id="7375785904116479354">Als je het beleid inschakelt, wordt de standaard zoekmachine van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid uitschakelt of niet instelt, wordt de standaard zoekmachine niet geïmporteerd bij de eerste uitvoering.
 
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor de standaard zoekmachine aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>

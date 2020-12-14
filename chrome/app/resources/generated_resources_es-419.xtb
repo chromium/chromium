@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Editar el motor de búsqueda</translation>
 <translation id="1129850422003387628">Administrar apps</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: Parte del grupo <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Ahora puedes recibir notificaciones del teléfono en tu <ph name="DEVICE_TYPE" />. Cuando las descartes en tu <ph name="DEVICE_TYPE" />, también se descartarán en el teléfono. Asegúrate de que esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="1134009406053225289">Abrir en una ventana de incógnito</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Para desbloquearla, quítala y vuelve a insertarla.</translation>

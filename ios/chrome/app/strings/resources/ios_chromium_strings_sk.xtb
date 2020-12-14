@@ -33,7 +33,7 @@
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Zapnutie skenera prehliadača Chromium</translation>
 <translation id="4787850887676698916">Tu sa zobrazia karty, ktoré ste otvorili v prehliadači Chromium na iných zariadeniach.</translation>
-<translation id="4828317641996116749">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova neskôr.</translation>
+<translation id="4828317641996116749">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>
 <translation id="4985291216379576555">Offline, Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="4999538639245140991">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
@@ -67,7 +67,7 @@
 <translation id="8073677936375100957">Chcete vymazať údaje prehliadača Chromium z tohto zariadenia?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Presuňte Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Ak chcete Chromium nastaviť ako predvolený prehliadač, otvorte Nastavenia, klepnite na Predvolený prehliadač a vyberte Chromium.</translation>
-<translation id="8240981428553046115">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to znova neskôr.</translation>
+<translation id="8240981428553046115">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>
 <translation id="8252885722420466166">Získajte lepšie prostredie Google v prehliadači Chromium na základe svojej polohy.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>

@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Modifier le moteur de recherche</translation>
 <translation id="1129850422003387628">Gérer les applications</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> : fait partie du groupe <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Vous pouvez maintenant recevoir les notifications de votre téléphone sur votre <ph name="DEVICE_TYPE" />. Si vous les fermez sur votre <ph name="DEVICE_TYPE" />, elles le seront également sur votre téléphone. Assurez-vous que votre téléphone est à proximité, qu'il est déverrouillé et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="1134009406053225289">Ouvrir dans une fenêtre de navigation privée</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> sur <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">La clé de sécurité est verrouillée, car un NIP incorrect a été entré trop de fois. Pour la déverrouiller, retirez-la et insérez-la de nouveau.</translation>

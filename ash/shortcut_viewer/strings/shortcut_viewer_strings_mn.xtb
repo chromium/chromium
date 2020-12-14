@@ -4,7 +4,7 @@
 <translation id="1036550831858290950">Одоогийн табаа хавчуурга болгон хадгалах</translation>
 <translation id="104962181688258143">Файлс аппыг нээх</translation>
 <translation id="1122869341872663659"><ph name="QUERY" />-н <ph name="N" /> хайлтын илэрцийг харуулж байна</translation>
-<translation id="1195667586424773550">Холбоосыг чихтэй хуудасны хаяг оруулах хэсэгт чирэх</translation>
+<translation id="1195667586424773550">Холбоосыг табын хаяг оруулах хэсэгт чирэх</translation>
 <translation id="1204450209689312104">Шинэ чихтэй хуудсыг нууцлалын горимд нээх</translation>
 <translation id="1251638888133819822">Бүтэн дэлгэцийн томруулагчийг асаах эсвэл унтраах</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
@@ -25,15 +25,15 @@
 <translation id="1733525068429116555">Хаяг оруулах хэсэгт www. болон .com гэж нэмээд хуудсыг нээнэ үү</translation>
 <translation id="1872219238824176091">Одоогийн дэлгэцийг устгах</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> дараа нь <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> эсвэл <ph name="LEFT" /></translation>
-<translation id="1996162290124031907">Дараагийн чихтэй хуудсанд очих</translation>
-<translation id="2010818616644390445">Цонхны сүүлийн чихтэй хуудсанд очих</translation>
+<translation id="1996162290124031907">Дараагийн табад очих</translation>
+<translation id="2010818616644390445">Цонхны сүүлийн табад очих</translation>
 <translation id="2040706009561734834">Эхлүүлэгчийг нээх/хаах</translation>
 <translation id="2088054208777350526">Товчлуурын шууд холбоос хайх</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> эсвэл <ph name="F" /></translation>
 <translation id="2145908266289632567">Текстийн засвар</translation>
 <translation id="215292019801409139"><ph name="SEARCH" /><ph name="SEPARATOR" /> 1 хүртэл =</translation>
 <translation id="2181097965834437145">Хавчуургын хэсгийг харуулах эсвэл нуух</translation>
-<translation id="2185166372312820725">Өмнөх чихтэй хуудсанд очих</translation>
+<translation id="2185166372312820725">Өмнөх табад очих</translation>
 <translation id="2194790690264064655"><ph name="CTRL" />-г дараад холбоосыг дарах</translation>
 <translation id="2246352309084894470">Бүтэн дэлгэц эхлүүлэгчийг нээх/хаах</translation>
 <translation id="2354531887393764880">үе</translation>
@@ -72,13 +72,13 @@
 <translation id="3407560819924487926">Ажлын менежерийг ажиллуулах</translation>
 <translation id="3422679037938588196">Хайлтын өмнөх тохирох илэрцэд очих</translation>
 <translation id="353037708190149633">Одоогийн цонхны нээлттэй бүх хуудсаа шинэ фолдерт хавчуурга болгон хадгалах</translation>
-<translation id="355103131818127604">Холбоосыг шинэ чихтэй хуудсанд цаана нээх</translation>
+<translation id="355103131818127604">Холбоосыг шинэ табад цаана нээх</translation>
 <translation id="3622741593887335780">Томруулах (суурилуулсан ЭСВЭЛ бүтэн дэлгэцийн томруулагч идэвхжүүлсэн үед)</translation>
 <translation id="3649256019230929621">Цонхыг хумих</translation>
-<translation id="3655154169297074232">Чихтэй хуудас болон цонх</translation>
+<translation id="3655154169297074232">Таб болон цонх</translation>
 <translation id="3668361878347172356">Сүүлийн үйлдлээ дахин хийх</translation>
 <translation id="3710784500737332588">Тусламжийн төвийг нээх</translation>
-<translation id="3720939646656082033">Холбоосыг шинэ чихтэй хуудсанд нээж шинэ чихтэй хуудас руу сэлгэх</translation>
+<translation id="3720939646656082033">Холбоосыг шинэ табад нээж шинэ таб руу сэлгэх</translation>
 <translation id="3725795051337497754">Одоогийн чихтэй хуудсаа хаах</translation>
 <translation id="3751033133896282964">Сүүлийн үйлдлээ буцаах</translation>
 <translation id="3792178297143798024">Тавиур дээр тодруулсан зүйлийг нээх</translation>
@@ -89,7 +89,7 @@
 <translation id="3994783594793697310">Дэлгэцийн томруулалтын түвшинг шинэчлэх</translation>
 <translation id="4026843240379844265">Идэвхтэй цонхыг дэлгэц хооронд зөөх</translation>
 <translation id="4035482366624727273">Хуудасны бүх зүйлийг сонгох</translation>
-<translation id="4060703249685950734">Сүүлд хаасан чихтэй хуудас эсвэл цонхоо дахин нээх</translation>
+<translation id="4060703249685950734">Сүүлд хаасан таб эсвэл цонхоо дахин нээх</translation>
 <translation id="4090342722461256974">Нээх цонхоо олох хүртлээ <ph name="ALT" /><ph name="SEPARATOR" /><ph name="SHIFT" />-г удаан дараад <ph name="TAB" />-г товшино уу. Дараа нь суллана уу.</translation>
 <translation id="4092538597492297615">Түр санах ойд сонгосон агуулгыг хуулах</translation>
 <translation id="4101772068965291327">Нүүр хуудсыг нээх</translation>
@@ -119,7 +119,7 @@
 <translation id="526651782186312376">Мөрийн эхлэл хэсэгт текст сонгох</translation>
 <translation id="5316716239522500219">Тусгалын мониторууд</translation>
 <translation id="539072479502328326">Суурилуулсан томруулагчийг асаах эсвэл унтраах</translation>
-<translation id="5541719484267030947">Чихтэй хуудсыг чирэх үедээ <ph name="ESC" />-г дарах</translation>
+<translation id="5541719484267030947">Табыг чирэх үедээ <ph name="ESC" />-г дарах</translation>
 <translation id="5554139136362089836">Одоогийн хуудсыг хайх</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />-г дараад холбоосыг дарах</translation>
 <translation id="561814908794220892">Чихтэй хуудсанд веб хуудсыг нээх</translation>
@@ -145,7 +145,7 @@
 <translation id="6395172954772765143">Мөрийн төгсгөл хэсэгт текст сонгох</translation>
 <translation id="6425378783626925378">Тавиур дээрх 1-8 гэсэн дүрс тэмдгийг дарах</translation>
 <translation id="6435207348963613811">Тавиур дээрх өмнөх зүйлийг тодруулах</translation>
-<translation id="6445033640292336367">Чихтэй хуудсыг үндсэн байрлалд нь буцаах</translation>
+<translation id="6445033640292336367">Табыг үндсэн байрлалд нь буцаах</translation>
 <translation id="6474744297082284761">Жижгэрүүлэх (суурилуулсан ЭСВЭЛ бүтэн дэлгэцийн томруулагч идэвхжүүлсэн үед)</translation>
 <translation id="649811797655257835">Файлаа сонгоод <ph name="SPACE" />-г дарах</translation>
 <translation id="6556040137485212400">Хамгийн удаан хугацаанд ашиглаагүй цонхыг нээх</translation>
@@ -178,7 +178,7 @@
 <translation id="7724603315864178912">Хайчлах</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> дараа нь <ph name="SPACE" /> эсвэл <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">Файлыг хөтчид нээх</translation>
-<translation id="7952165122793773711">1-с 8 хүртэлх чихтэй хуудсанд очих</translation>
+<translation id="7952165122793773711">1-с 8 хүртэлх табад очих</translation>
 <translation id="8026334261755873520">Хайлтын өгөгдлийг цэвэрлэх</translation>
 <translation id="8130528849632411619">Документийн эхлэл хэсэгт очих</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> эсвэл <ph name="E" /></translation>
@@ -192,8 +192,8 @@
 <translation id="8389638407792712197">Шинэ цонх нээх</translation>
 <translation id="8429696719963529183">F түлхүүрийг ашиглах (F1-с F12)</translation>
 <translation id="8537650670971624753">Хайлтын горимоос гарах</translation>
-<translation id="85690795166292698">Холбоосыг шинэ чихтэй хуудсанд нээх</translation>
-<translation id="8609384513243082612">Шинэ чихтэй хуудас нээх</translation>
+<translation id="85690795166292698">Холбоосыг шинэ табад нээх</translation>
+<translation id="8609384513243082612">Шинэ таб нээх</translation>
 <translation id="8644639153978066712">Файлс аппад нуусан файлыг харуулах</translation>
 <translation id="8717459106217102612">Өмнөх үг эсвэл үсгийг сонгох</translation>
 <translation id="8727232706774971183">Мэдэгдлээ харах</translation>

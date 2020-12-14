@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Edit mesin telusur</translation>
 <translation id="1129850422003387628">Kelola aplikasi</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Bagian dari grup <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Anda sekarang dapat menerima notifikasi dari ponsel di <ph name="DEVICE_TYPE" />. Menutup notifikasi di <ph name="DEVICE_TYPE" /> juga akan menutupnya di ponsel Anda. Pastikan ponsel berada di dekat Anda, tidak terkunci, serta Bluetooth dan Wi-Fi aktif.</translation>
 <translation id="1134009406053225289">Buka di jendela samaran</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> dari <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Kunci keamanan dikunci karena Anda terlalu sering memasukkan PIN yang salah. Untuk membukanya, lepaskan kunci keamanan dan pasang kembali.</translation>
@@ -5596,7 +5595,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7548856833046333824">Minum</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Gagal mendownload <ph name="FILE_NAME" /></translation>
-<translation id="7551643184018910560">Pin ke rak</translation>
+<translation id="7551643184018910560">Sematkan ke rak</translation>
 <translation id="7552846755917812628">Coba tips berikut:</translation>
 <translation id="7553012839257224005">Memeriksa container Linux</translation>
 <translation id="7553242001898162573">Masukkan sandi Anda</translation>

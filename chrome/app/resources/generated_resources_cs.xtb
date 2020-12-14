@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Úprava vyhledávače</translation>
 <translation id="1129850422003387628">Správa aplikací</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Součást skupiny <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Na zařízení <ph name="DEVICE_TYPE" /> teď můžete dostávat oznámení z telefonu. Když oznámení zavřete na zařízení <ph name="DEVICE_TYPE" />, zavře se i na telefonu. Zkontrolujte, zda je telefon poblíž, zda je odemknutý a zda na něm je zapnuté rozhraní Bluetooth a Wi-Fi.</translation>
 <translation id="1134009406053225289">Otevřít v anonymním okně</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> z <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Bezpečnostní klíč je uzamčen, protože byl příliš mnohokrát zadán nesprávný PIN. Chcete-li jej odemknout, vyjměte jej a znovu jej vložte.</translation>

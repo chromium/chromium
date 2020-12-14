@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">検索エンジンの編集</translation>
 <translation id="1129850422003387628">アプリの管理</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> グループの一部</translation>
-<translation id="1130712065489627903">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で受信できるようになりました。<ph name="DEVICE_TYPE" /> で通知を非表示にすると、その通知はスマートフォンでも表示されなくなります。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="1134009406053225289">シークレット ウィンドウで開く</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。<ph name="EMOJI_COUNT" /> 件中 <ph name="EMOJI_INDEX" /> 件目。</translation>
 <translation id="1136712381129578788">PIN の入力間違いが許容回数を超えたため、セキュリティ キーがロックされています。ロックを解除するには、セキュリティ キーをいったん取り外し、もう一度挿入してください。</translation>

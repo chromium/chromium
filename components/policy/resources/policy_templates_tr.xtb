@@ -205,6 +205,15 @@
 <translation id="1327466551276625742">Çevrimdışı iken ağ yapılandırma istemini etkinleştir</translation>
 <translation id="1330145147221172764">Ekran klavyesini etkinleştir</translation>
 <translation id="13356285923490863">Politika Adı</translation>
+<translation id="1338603603553894503">Profil seçicinin etkin olup olmadığını, devre dışı bırakılıp bırakılmadığını veya tarayıcı başlatılırken zorunlu tutulup tutulmadığını belirtir.
+
+      Varsayılan olarak profil seçici şu durumlarda gösterilmez: Tarayıcı misafir modunda veya gizli modda başlatıldığında, profil dizini ve/veya URL'ler komut satırı tarafından belirtildiğinde, uygulamanın açılması açıkça istendiğinde, tarayıcı yerel bildirim tarafından başlatıldığında, kullanılabilir yalnızca tek bir profil olduğunda veya ForceBrowserSignin politikası doğru değerine ayarlandığında.
+
+      Politika, "Etkin" (0) değerine ayarlanırsa veya ayarlanmadan bırakılırsa profil seçici, varsayılan olarak başlangıçta gösterilir, ancak kullanıcılar bu ayarı etkinleştirebilir veya devre dışı bırakabilirler.
+
+      Politika, "Devre Dışı" (1) değerine ayarlanırsa profil seçici hiçbir zaman gösterilmez ve kullanıcılar bu ayarı değiştiremezler.
+
+      Politika, "Zorunlu" (2) değerine ayarlanırsa profil seçici kullanıcı tarafından engellenemez. Kullanılabilir tek bir profil olsa bile profil seçici gösterilir.</translation>
 <translation id="1347198119056266798">Bu politika kullanımda kaldırılmıştır. Lütfen bunun yerine <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> ve <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> politikalarını kullanın. <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> veya (kullanımdan kaldırılan) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> politikası ayarlanırsa bu politika yoksayılır.
 
       Google Web Arama'daki sorguları Güvenli Arama etkin olarak yapılmaya zorlar ve kullanıcıların bu ayarı değiştirmelerini engeller. Bu ayar, aynı zamanda YouTube'da Orta Düzey Kısıtlı Mod'un kullanılmasını da zorunlu kılar.
@@ -330,6 +339,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Kullanılabilir veri türleri şunlardır: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> ve <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome, <ph name="TIME_TO_LIVE_IN_HOURS" /> saatten daha eski olan belirli türlerdeki verileri düzenli olarak kaldırır. Bu silme işlemi, yalnızca belirli aralıklarla gerçekleştiğinden bazı verilerin geçerlilik süresi biraz daha uzun olabilir, ancak hiçbir zaman <ph name="TIME_TO_LIVE_IN_HOURS" /> olarak beklenen ömrünün iki katından fazla olmaz.
       </translation>
+<translation id="1506017854924185821">Başlangıçta profil seçiciyi etkinleştir</translation>
 <translation id="1509692106376861764">Bu politika, <ph name="PRODUCT_NAME" /> Sürüm 29 itibariyle kullanımdan kaldırılmıştır.</translation>
 <translation id="1512974677514081818">Cihazlara bağlı kurumsal yazıcılar için yapılandırmalar sağlar.
 
@@ -1660,6 +1670,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 
       Bu politikanın önceden Android'de hatalı bir şekilde etkinleştirildiğini, ancak bu işlevin Android'de hiçbir zaman tam olarak desteklenmediğini unutmayın.</translation>
 <translation id="348495353354674884">Sanal klavyeyi etkinleştir</translation>
+<translation id="3485200437120267231">Oturum açma müdahalesini devre dışı bırak</translation>
 <translation id="3492834335089638487">Bu politika, cihazda güvenilmeyen kaynaklardan (Google Play Store dışında) Android uygulamalarının kullanımını kontrol eder.
 
       Bu politikanın değeri ayarlanmazsa işleve izin verilmiyor olarak değerlendirilir.
@@ -1752,6 +1763,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
       <ph name="CORS" /> ile ilgili ayrıntılar için şu adresi ziyaret edin: <ph name="CORS_HELP_URL" />.
 
       Bu politikanın <ph name="PRODUCT_NAME" /> sürüm 82'de kaldırılacağı duyurulmuştu, ancak sürüm 84'te kaldırıldığını belirtmek isteriz.</translation>
+<translation id="3606571057705314194">Başlangıçta profil seçiciyi devre dışı bırak</translation>
 <translation id="3627678165642179114">Yazım denetimi Web hizmetini etkinleştir veya devre dışı bırak</translation>
 <translation id="3628480121685794414">Tek yönlü yazdırmayı etkinleştir</translation>
 <translation id="3631099945620529777">False (yanlış) değerine ayarlanırsa Görev Yöneticisi'nde "İşlemi sonlandır" düğmesi devre dışı bırakılır.
@@ -1853,6 +1865,7 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
       Bu ayar devre dışı bırakılırsa, kullanıcıların Smart Lock ile Oturum Açma özelliğini kullanmalarına izin verilmez.
 
       Bu politika ayarlanmadan bırakılırsa, varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
+<translation id="3796527892245558832">Başlangıçta profil seçiciyi etkinleştir</translation>
 <translation id="3803171355925844705">Hiçbir sitenin engellenebilir karma içerik yüklemesine izin verme</translation>
 <translation id="3808945828600697669">Devre dışı bırakılan eklentilerin listesini belirt</translation>
 <translation id="3810642039169532482">Giriş ekranında dikte erişilebilirlik özelliğini etkinleştirin.
@@ -3004,6 +3017,7 @@ False (yanlış) olarak ayarlanırsa veya hiç ayarlanmazsa, hiçbir sertifika o
       Kullanıcılar içe aktarma iletişim kutusunu tetikleyebilir ve kayıtlı şifre onay kutusu, bu politikanın değerine uyacak şekilde işaretlenir veya işareti kaldırılır.</translation>
 <translation id="5457924070961220141"><ph name="PRODUCT_FRAME_NAME" /> yüklendiğinde varsayılan HTML oluşturucusunu yapılandırabilmenizi sağlar.
           Bu politika ayarlanmadan bırakılırsa kullanılan varsayılan ayar, oluşturma işlemini ana makine tarayıcısının yapmasına izin vermektir, ancak isteğe bağlı olarak bu ayarı geçersiz kılabilir ve HTML sayfalarını oluşturma işleminin varsayılan olarak <ph name="PRODUCT_FRAME_NAME" /> tarafından yapılmasını sağlayabilirsiniz.</translation>
+<translation id="545817252640069915">Oturum açma müdahalesini etkinleştir</translation>
 <translation id="5460797984317417682">Tam ekran uyarısını etkinleştir</translation>
 <translation id="5464816904705580310">Yönetilen kullanıcılar için ayarları yapılandırın.</translation>
 <translation id="5466596281866046569">Uygulama bilgilerini bildir</translation>
@@ -3544,6 +3558,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Politikanın 0 değerine ayarlanması makine hesap şifresi değişimini devre dışı bırakır.
 
       Not: İstemcinin belirtilen gün sayısından daha uzun bir süre boyunca çevrimdışı olması halinde şifreler, söz konusu gün sayısı geçmesine rağmen değiştirilmeyebilir.</translation>
+<translation id="6280973140313576289">Başlangıçta profil seçiciyi zorunlu tut</translation>
 <translation id="6281043242780654992">Yerel Mesajlaşma için politikaları yapılandırır. Kara listeye alınan yerel mesajlaşma ana makinelerine, beyaz listeye eklenmedikçe izin verilmez.</translation>
 <translation id="6282524907402492171"><ph name="CLOUD_PRINT_NAME" /> için kullanımdan kaldırma uyarılarını göster</translation>
 <translation id="6282799760374509080">Ses yakalamaya izin verme veya reddetme</translation>
@@ -4418,6 +4433,11 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Bu politika ayarlanmadan bırakılırsa hem kurumsal olarak yönetilen kullanıcılar hem de yönetilmeyen kullanıcılar için varsayılan ayara izin verilir.</translation>
 <translation id="7372831798009983116">Otomatik tıklama erişilebilirlik özelliğini etkinleştir</translation>
 <translation id="7373200034079131670">Android veya bir sanal makine başlatılmışsa kullanıcı oturumu kapatıldığında cihazı yeniden başlatır.</translation>
+<translation id="7373680616478819439">Bu ayar, oturum açma müdahalesini etkinleştirir veya devre dışı bırakır.
+
+      Bu politika ayarlanmaz veya Doğru değerine ayarlanırsa web'de bir Google hesabı eklendiğinde oturum açma müdahalesi iletişim kutusu tetiklenir ve kullanıcı bu hesabı başka (yeni veya mevcut) bir profile taşıyabilir.
+
+      Bu politika Yanlış değerine ayarlanırsa oturum açma müdahalesi iletişim kutusu tetiklenmez.</translation>
 <translation id="7375785904116479354">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıdaki varsayılan arama motoru ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa varsayılan arama motoru ilk çalıştırmada içe aktarılmaz.
 
       Kullanıcılar içe aktarma iletişim kutusunu tetikleyebilir ve varsayılan arama motoru onay kutusu, bu politikanın değerine uyacak şekilde işaretlenir veya işareti kaldırılır.</translation>

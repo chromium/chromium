@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Rediger søgemaskine</translation>
 <translation id="1129850422003387628">Administrer apps</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – en del af gruppen <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Nu kan du få notifikationer fra din telefon på din <ph name="DEVICE_TYPE" />. Hvis du afviser notifikationer på din <ph name="DEVICE_TYPE" />, afvises de også på din telefon. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="1134009406053225289">Åbn i inkognitovindue</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> af <ph name="EMOJI_COUNT" /></translation>
 <translation id="1136712381129578788">Sikkerhedsnøglen er låst, fordi der blev angivet en forkert pinkode for mange gange. Fjern nøglen, og indsæt den igen for at låse den op.</translation>

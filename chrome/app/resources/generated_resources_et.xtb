@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Otsingumootori muutmine</translation>
 <translation id="1129850422003387628">Rakenduste haldamine</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – osa grupist <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Võite nüüd oma telefoni märguandeid saada seadmes <ph name="DEVICE_TYPE" />. Kui loobute märguannetest seadmes <ph name="DEVICE_TYPE" />, loobutakse nendest märguannetest ka teie telefonis. Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud.</translation>
 <translation id="1134009406053225289">Ava inkogonito aknas</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" />/<ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Turvavõti lukustati, kuna vale PIN-kood sisestati liiga palju kordi. Selle avamiseks eemaldage turvavõti ja sisestage see uuesti.</translation>

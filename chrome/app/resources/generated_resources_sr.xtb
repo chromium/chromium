@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Измена претраживача</translation>
 <translation id="1129850422003387628">Управљајте апликацијама</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – део групе <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Сада можете да добијате обавештења са телефона на уређају <ph name="DEVICE_TYPE" />. Ако одбаците обавештења на уређају <ph name="DEVICE_TYPE" />, одбацићете их и на телефону. Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени.</translation>
 <translation id="1134009406053225289">Отвори у прозору без архивирања</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> од <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Безбедносни кључ је закључан јер сте превише пута унели погрешан PIN. Да бисте га откључали, уклоните га, па га поново уметните.</translation>

@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Editar motor de busca</translation>
 <translation id="1129850422003387628">Xestionar aplicacións</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> (forma parte do grupo <ph name="GROUP_NAME" />)</translation>
-<translation id="1130712065489627903">Xa podes recibir as notificacións do teléfono no teu dispositivo (<ph name="DEVICE_TYPE" />). Cando ignores unha notificación no teu dispositivo (<ph name="DEVICE_TYPE" />) tamén se marcará como ignorada no teléfono. Asegúrate de que o teu teléfono estea preto e desbloqueado, e comproba que teña o Bluetooth e a wifi activados.</translation>
 <translation id="1134009406053225289">Abre o marcador nunha ventá do modo de incógnito</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">A chave de seguranza bloqueouse porque se introduciu o PIN demasiadas veces. Para desbloqueala, quítaa e introdúcea de novo.</translation>

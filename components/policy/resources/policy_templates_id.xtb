@@ -205,6 +205,15 @@
 <translation id="1327466551276625742">Aktifkan permintaan konfigurasi jaringan saat offline</translation>
 <translation id="1330145147221172764">Aktifkan keyboard di layar</translation>
 <translation id="13356285923490863">Nama Kebijakan</translation>
+<translation id="1338603603553894503">Menentukan apakah alat pilih profil akan diaktifkan, dinonaktifkan, atau dipaksa saat browser dimulai.
+
+      Secara default, alat pilih profil tidak akan ditampilkan jika browser dimulai dalam mode tamu atau Samaran, direktori dan/atau URL profil ditentukan oleh command line, aplikasi secara eksplisit diminta terbuka, browser diluncurkan oleh notifikasi native, hanya tersedia satu profil, atau kebijakan ForceBrowserSignin disetel ke benar (true).
+
+      Jika 'Enabled' (0) dipilih atau kebijakan tidak disetel, secara default alat pilih profil akan ditampilkan saat browser dimulai, tetapi pengguna dapat mengaktifkan/menonaktifkannya.
+
+      Jika 'Disabled' (1) dipilih, alat pilih profil tidak akan pernah ditampilkan dan pengguna tidak dapat mengubah setelan.
+
+      Jika 'Forced' (2) dipilih, alat pilih profil tidak dapat disembunyikan oleh pengguna. Alat pilih profil akan ditampilkan meski hanya tersedia satu profil.</translation>
 <translation id="1347198119056266798">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> dan <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Kebijakan ini diabaikan jika salah satu dari kebijakan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> atau <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (tidak digunakan lagi) ditetapkan.
 
       Memaksa kueri di Google Penelusuran Web untuk dijalankan dengan SafeSearch disetel ke aktif dan mencegah pengguna mengubah setelan ini. Setelan ini juga memaksa Mode Terbatas Menengah di YouTube.
@@ -340,6 +349,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jenis data yang tersedia adalah <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" />, dan <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Untuk data dengan jenis yang dipilih, Chrome akan secara berkala menghapus yang usianya lebih dari <ph name="TIME_TO_LIVE_IN_HOURS" />. Karena penghapusan ini hanya terjadi dalam interval tertentu, beberapa data mungkin aktif sedikit lebih lama tetapi tidak pernah melebihi dua kali lipat dari estimasi <ph name="TIME_TO_LIVE_IN_HOURS" />-nya.
       </translation>
+<translation id="1506017854924185821">Ketersediaan alat pilih profil saat browser dimulai</translation>
 <translation id="1509692106376861764">Kebijakan ini tidak lagi digunakan mulai <ph name="PRODUCT_NAME" /> versi 29.</translation>
 <translation id="1512974677514081818">Memberikan konfigurasi untuk printer perusahaan yang terikat ke perangkat.
 
@@ -1686,6 +1696,7 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 
       Perlu diperhatikan bahwa sebelumnya kebijakan ini diaktifkan secara keliru di Android, tetapi fungsi ini belum pernah sepenuhnya didukung di Android.</translation>
 <translation id="348495353354674884">Aktifkan keyboard virtual</translation>
+<translation id="3485200437120267231">Nonaktifkan login intersepsi</translation>
 <translation id="3492834335089638487">Kebijakan ini mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya (selain Google Play Store) untuk perangkat.
 
       Jika nilai kebijakan ini tidak ditetapkan, fungsinya dianggap tidak diizinkan.
@@ -1777,6 +1788,7 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
       Untuk mengetahui detail <ph name="CORS" />, buka: <ph name="CORS_HELP_URL" />.
 
       Perlu diketahui bahwa kebijakan ini sebelumnya diumumkan akan dihapus di <ph name="PRODUCT_NAME" /> versi 82, tetapi saat ini telah dihapus di versi 84.</translation>
+<translation id="3606571057705314194">Alat pilih profil dinonaktifkan saat browser dimulai</translation>
 <translation id="3627678165642179114">Mengaktifkan atau menonaktifkan layanan web memeriksa ejaan</translation>
 <translation id="3628480121685794414">Aktifkan pencetakan simpleks</translation>
 <translation id="3631099945620529777">Jika ditetapkan ke False, tombol 'Akhiri proses' akan dinonaktifkan di Pengelola Tugas.
@@ -1879,6 +1891,7 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menggunakan fitur Smart Lock Signin.
 
 Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengguna yang dikelola perusahaan dan diizinkan bagi pengguna yang tidak dikelola.</translation>
+<translation id="3796527892245558832">Alat pilih profil tersedia saat browser dimulai</translation>
 <translation id="3803171355925844705">Jangan izinkan situs apa pun memuat konten campuran</translation>
 <translation id="3808945828600697669">Tentukan daftar plugin yang dinonaktifkan</translation>
 <translation id="3810642039169532482">Mengaktifkan fitur aksesibilitas dikte di layar login.
@@ -3030,6 +3043,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Pengguna dapat memicu dialog impor dan kotak centang sandi yang tersimpan akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
 <translation id="5457924070961220141">Memungkinkan Anda mengonfigurasi perender HTML default saat <ph name="PRODUCT_FRAME_NAME" /> dipasang. Setelan default yang digunakan ketika kebijakan ini tidak disetel adalah mengizinkan browser host melakukan rendering, tetapi Anda dapat menimpanya secara opsional dan membiarkan <ph name="PRODUCT_FRAME_NAME" /> merender halaman HTML secara default.</translation>
+<translation id="545817252640069915">Aktifkan login intersepsi</translation>
 <translation id="5460797984317417682">Aktifkan peringatan layar penuh</translation>
 <translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna yang dikelola.</translation>
 <translation id="5466596281866046569">Melaporkan informasi aplikasi</translation>
@@ -3576,6 +3590,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Menyetel kebijakan ke 0 akan menonaktifkan perubahan sandi akun perangkat.
 
       Catatan: Sandi mungkin menjadi lebih lama dari jumlah hari yang ditentukan jika klien offline selama jangka waktu yang lebih lama.</translation>
+<translation id="6280973140313576289">Alat pilih profil dipaksa saat browser dimulai</translation>
 <translation id="6281043242780654992">Mengonfigurasikan kebijakan untuk Perpesanan Asli. Hosting perpesanan asli yang dimasukkan dalam daftar hitam tidak akan diizinkan kecuali telah dimasukkan dalam daftar putih.</translation>
 <translation id="6282524907402492171">Tampilkan peringatan <ph name="CLOUD_PRINT_NAME" /> tidak digunakan lagi</translation>
 <translation id="6282799760374509080">Izinkan atau tolak penangkapan audio</translation>
@@ -4372,7 +4387,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 
           Jika setelan ini dinonaktifkan, fitur ini tidak akan tersedia.</translation>
 <translation id="7274077256421167535">Mengaktifkan berbagi daya USB</translation>
-<translation id="7275334191706090484">Bookmark yang Terkelola</translation>
+<translation id="7275334191706090484">Bookmark Terkelola</translation>
 <translation id="7278854311116092134">Nama hosting pesan native untuk dikeluarkan dari daftar yang tidak diizinkan</translation>
 <translation id="7284511417206336750">Kebijakan ini tidak digunakan lagi di <ph name="PRODUCT_NAME" /> 83. Sebagai gantinya, gunakan <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
 
@@ -4446,6 +4461,11 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="7372831798009983116">Mengaktifkan fitur aksesibilitas klik otomatis</translation>
 <translation id="7373200034079131670">Reboot saat pengguna logout jika Android atau VM telah dimulai.</translation>
+<translation id="7373680616478819439">Setelan ini mengaktifkan atau menonaktifkan login intersepsi.
+
+      Jika kebijakan ini tidak disetel atau disetel ke Benar, dialog login intersepsi dipicu saat akun Google ditambahkan di web, dan pengguna bisa mendapatkan keuntungan dengan memindahkan akun ini ke profil lain (profil baru atau yang sudah ada).
+
+      Jika disetel ke Salah, dialog login intersepsi masuk tidak akan dipicu.</translation>
 <translation id="7375785904116479354">Jika kebijakan disetel ke Aktif, mesin telusur default akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada mesin telusur default yang akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kotak centang mesin telusur default akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>

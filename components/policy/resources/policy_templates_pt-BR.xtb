@@ -202,6 +202,15 @@
 <translation id="1327466551276625742">Ativar prompt de configuração de rede quando estiver off-line</translation>
 <translation id="1330145147221172764">Ativar o teclado na tela</translation>
 <translation id="13356285923490863">Nome da política</translation>
+<translation id="1338603603553894503">Especifica se o seletor de perfil será ativado, desativado ou forçado na inicialização do navegador.
+
+      Por padrão, o seletor de perfil não é exibido quando o navegador é inicializado nos modos de navegação anônima ou visitante, quando um diretório e/ou URLs de perfil são especificados por linha de comando, quando a abertura de um app é explicitamente solicitada, quando o navegador é aberto por uma notificação nativa, quando há apenas um perfil disponível ou quando a política ForceBrowserSignin é definida como verdadeira.
+
+      Se a política for definida como "Ativada" (0) ou não for definida, o seletor de perfil será exibido por padrão ao inicializar, mas os usuários poderão ativá-lo ou desativá-lo.
+
+      Se a política for definida como "Desativada" (1), o seletor de perfil nunca será exibido, e os usuários não poderão mudar essa opção.
+
+      Se a política for definida como "Forçada" (2), o seletor de perfil não poderá ser suprimido pelos usuários. Ele será exibido mesmo quando houver apenas um perfil disponível.</translation>
 <translation id="1347198119056266798">Esta política está obsoleta. Use <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Esta política será ignorada se as políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> ou <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsoleta) estiverem definidas.
 
       Faz com que as consultas na Pesquisa Google na Web sejam feitas com o SafeSearch ativado e evita que usuários mudem essa configuração. Esta configuração também força o Modo restrito moderado no YouTube.
@@ -327,6 +336,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Os tipos de dados disponíveis são: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       O Chrome removerá regularmente dados de tipos selecionados com mais de <ph name="TIME_TO_LIVE_IN_HOURS" />. Como essa exclusão acontece apenas em intervalos específicos, alguns dados podem ser mantidos por mais tempo, mas nunca mais de duas vezes o esperado (<ph name="TIME_TO_LIVE_IN_HOURS" />).
       </translation>
+<translation id="1506017854924185821">Disponibilidade do seletor de perfil na inicialização</translation>
 <translation id="1509692106376861764">Esta política teve o uso suspenso a partir da versão 29 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Fornece configurações para impressoras empresariais vinculadas a dispositivos.
 
@@ -1663,6 +1673,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       Esta política já foi ativada no Android por engano, mas a funcionalidade nunca foi totalmente compatível com ele.</translation>
 <translation id="348495353354674884">Ativar teclado virtual</translation>
+<translation id="3485200437120267231">Desativar intercepção de login</translation>
 <translation id="3492834335089638487">Essa política controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis (diferentes da Google Play Store).
 
       Se o valor da política não for definido, a funcionalidade será tratada como não permitida.
@@ -1753,6 +1764,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Para ver detalhes sobre <ph name="CORS" />, acesse: <ph name="CORS_HELP_URL" />.
 
       A remoção desta política foi anunciada para o <ph name="PRODUCT_NAME" /> versão 82, mas ela foi removida na versão 84.</translation>
+<translation id="3606571057705314194">Seletor de perfil desativado na inicialização</translation>
 <translation id="3627678165642179114">Ativar ou desativar serviço da web de verificação ortográfica</translation>
 <translation id="3628480121685794414">Ativar impressão simplex</translation>
 <translation id="3631099945620529777">Se definida como falsa, o botão "Encerrar processo" será desativado no Gerenciador de tarefas.
@@ -1854,6 +1866,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Se esta configuração estiver desativada, os usuários não terão permissão para usar o login do Smart Lock.
 
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
+<translation id="3796527892245558832">Seletor de perfil disponível na inicialização</translation>
 <translation id="3803171355925844705">Não permitir que nenhum site carregue conteúdo misto</translation>
 <translation id="3808945828600697669">Especificar uma lista de plug-ins desativados</translation>
 <translation id="3810642039169532482">Ativar o recurso de acessibilidade de ditado na tela de login.
@@ -2996,6 +3009,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção de senhas salvas estará marcada ou desmarcada de acordo com o valor da política.</translation>
 <translation id="5457924070961220141">Permite configurar o processador HTML padrão quando <ph name="PRODUCT_FRAME_NAME" /> estiver instalado. A configuração padrão utilizada quando esta política é deixada sem definição é permitir que o navegador host faça o processamento, mas você pode, opcionalmente, substituí-la para que <ph name="PRODUCT_FRAME_NAME" /> processe as páginas HTML por padrão.</translation>
+<translation id="545817252640069915">Ativar intercepção de login</translation>
 <translation id="5460797984317417682">Permitir alertas de tela cheia</translation>
 <translation id="5464816904705580310">Definir configurações para usuários gerenciados.</translation>
 <translation id="5466596281866046569">Relatar informações sobre aplicativos</translation>
@@ -3537,6 +3551,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Se a política for definida como "0", a mudança da senha da conta será desativada.
 
       Observação: as senhas podem ser mais velhas do que o número especificado de dias caso o cliente tenha passado um período maior off-line.</translation>
+<translation id="6280973140313576289">Seletor de perfil forçado na inicialização</translation>
 <translation id="6281043242780654992">Configura políticas para as mensagens nativas. Os hosts de mensagens nativas presentes na lista de proibições não serão permitidos, a menos que estejam na lista de permissões.</translation>
 <translation id="6282524907402492171">Exibir avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir ou negar captura de áudio</translation>
@@ -4406,6 +4421,11 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se esta política não for definida, o padrão será permitido tanto para usuários gerenciados por empresas quanto para usuários não gerenciados.</translation>
 <translation id="7372831798009983116">Ativar o recurso de acessibilidade de clique automático</translation>
 <translation id="7373200034079131670">Reinicializar quando o usuário sair se o Android ou uma VM tiver sido iniciada.</translation>
+<translation id="7373680616478819439">Esta configuração ativa ou desativa a intercepção de login.
+
+      Se esta política não é configurada ou é definida como "Verdadeira", a caixa de diálogo de interceptação de login é acionada quando uma Conta do Google é adicionada na Web, e o usuário pode se beneficiar da transferência dessa conta para outro perfil (novo ou existente).
+
+      Quando ela é definida como "Falsa", a caixa de diálogo de interceptação de login não é acionada.</translation>
 <translation id="7375785904116479354">Se a política for definida como ativada, o mecanismo de pesquisa padrão será importado do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, o mecanismo de pesquisa padrão não será importado durante a primeira execução.
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção do mecanismo de pesquisa padrão estará marcada ou desmarcada de acordo com o valor da política.</translation>

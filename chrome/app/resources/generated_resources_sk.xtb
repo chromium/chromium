@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Úprava vyhľadávača</translation>
 <translation id="1129850422003387628">Spravovať aplikácie</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – súčasť skupiny <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Teraz môžete dostávať upozornenia zo svojho telefónu v zariadení <ph name="DEVICE_TYPE" />. Zrušením upozornení v zariadení <ph name="DEVICE_TYPE" /> ich tiež zrušíte vo svojom telefóne. Uistite sa, že je telefón nablízku, odomknutý a má zapnuté rozhranie Bluetooth a pripojenie Wi‑Fi.</translation>
 <translation id="1134009406053225289">Otvoriť v okne inkognito</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> z <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Bezpečnostný kľúč je uzamknutý, pretože bol príliš veľakrát zadaný nesprávny PIN. Ak ho chcete odomknúť, vyberte ho a znova ho vložte.</translation>
@@ -585,7 +584,7 @@
 <translation id="1633947793238301227">Zakázať Asistenta Google</translation>
 <translation id="1634783886312010422">Už ste zmenili toto heslo na webe <ph name="WEBSITE" />?</translation>
 <translation id="1637224376458524414">Uložte si túto záložku do zariadenia iPhone</translation>
-<translation id="1637246113959718501">Požadované súbory nie je možné stiahnuť. Skúste to znova neskôr.</translation>
+<translation id="1637246113959718501">Požadované súbory nie je možné stiahnuť. Skúste to neskôr.</translation>
 <translation id="1637350598157233081">Heslo je uložené v tomto zariadení</translation>
 <translation id="1637765355341780467">Pri pokuse o otvorenie profilu sa vyskytla chyba. Niektoré funkcie nemusia byť k dispozícii.</translation>
 <translation id="1639239467298939599">Prebieha načítavanie</translation>
@@ -1441,7 +1440,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="26224892172169984">Nepovoliť žiadnym stránkam obsluhovať protokoly</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Táto stránka má prístup k vašej kamere a mikrofónu.</translation>
-<translation id="2626799779920242286">Skúste to znova neskôr.</translation>
+<translation id="2626799779920242286">Skúste to neskôr.</translation>
 <translation id="2627424346328942291">Nedá sa zdieľať</translation>
 <translation id="2628770867680720336">Aktivácia ladenia ADB vyžaduje v tomto Chromebooku obnovenie výrobných nastavení. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Vývoj aplikácií pre Android</translation>
@@ -1502,7 +1501,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2690024944919328218">Zobraziť možnosti jazyka</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Zmeniť nastavenia vstupu</translation>
-<translation id="2693176596243495071">Ojoj, vyskytla sa neznáma chyba. Skúste to znova neskôr alebo, ak problém pretrváva, kontaktujte správcu.</translation>
+<translation id="2693176596243495071">Ojoj, vyskytla sa neznáma chyba. Skúste to neskôr alebo, ak problém pretrváva, kontaktujte správcu.</translation>
 <translation id="2695749433451188613">Protokol IPP (HTTPS)</translation>
 <translation id="2699911226086014512">Operácia kódu PIN zlyhala. Kód chyby: <ph name="RETRIES" />.</translation>
 <translation id="2701737434167469065">Prihlásiť sa, <ph name="EMAIL" /></translation>
@@ -2047,7 +2046,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3341699307020049241">Nesprávny PIN. Zostáva niekoľko pokusov (<ph name="RETRIES" />).</translation>
 <translation id="3341703758641437857">Povoliť prístup k webovým adresám súboru</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“ chce toto rozšírenie odstrániť.</translation>
-<translation id="3345135638360864351">Vašu žiadosť o prístup k týmto webovým stránkam sa používateľovi <ph name="NAME" /> neporadilo odoslať. Skúste to znova neskôr.</translation>
+<translation id="3345135638360864351">Vašu žiadosť o prístup k týmto webovým stránkam sa používateľovi <ph name="NAME" /> neporadilo odoslať. Skúste to neskôr.</translation>
 <translation id="3345634917232014253">Kontrola bezpečnosti prebehla pred chvíľou</translation>
 <translation id="3345886924813989455">Nenašiel sa žiadny podporovaný prehliadač</translation>
 <translation id="3347086966102161372">K&amp;opírovať adresu obrázka</translation>
@@ -2190,7 +2189,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3495660573538963482">Nastavenia Asistenta Google</translation>
 <translation id="3496213124478423963">Oddialiť</translation>
 <translation id="3497560059572256875">Zdieľať doodle</translation>
-<translation id="3498215018399854026">V tejto chvíli sa nám nepodarilo spojiť s vaším rodičom. Skúste to znova neskôr.</translation>
+<translation id="3498215018399854026">V tejto chvíli sa nám nepodarilo spojiť s vaším rodičom. Skúste to neskôr.</translation>
 <translation id="3500417806337761827">Chyba pri inštalácií zdieľaného priestoru. Už je nainštalovaných príliš veľa zdieľaných priestorov SMB.</translation>
 <translation id="3505030558724226696">Odvolať prístup k zariadeniam</translation>
 <translation id="3507132249039706973">Je zapnutá štandardná ochrana</translation>
@@ -2290,7 +2289,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3615073365085224194">Dotknite sa senzora odtlačkov prstov</translation>
 <translation id="3615579745882581859">Súbor <ph name="FILE_NAME" /> sa kontroluje.</translation>
 <translation id="3616741288025931835">&amp;Vymazať dáta prehliadania…</translation>
-<translation id="3617891479562106823">Pozadia nie sú k dispozícii. Skúste to znova neskôr.</translation>
+<translation id="3617891479562106823">Pozadia nie sú k dispozícii. Skúste to neskôr.</translation>
 <translation id="3619115746895587757">Kapučíno</translation>
 <translation id="362333465072914957">Čaká sa, kým certifikačná autorita vydá certifikát</translation>
 <translation id="3624567683873126087">Odomknúť zariadenie a prihlásiť sa do účtu Google</translation>
@@ -3710,7 +3709,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5319359161174645648">Google odporúča Chrome</translation>
 <translation id="5320112320661303273">Asistenta ste už zrejme nastavili v inom zariadení. Ak chcete získať ešte viac funkcií Asistenta, zapnite nasledovné nastavenie.</translation>
-<translation id="532247166573571973">Server môže byť nedostupný. Skúste to znova neskôr.</translation>
+<translation id="532247166573571973">Server môže byť nedostupný. Skúste to neskôr.</translation>
 <translation id="5324300749339591280">Zoznam aplikácií</translation>
 <translation id="5324780743567488672">Nastaviť časové pásmo automaticky na základe polohy</translation>
 <translation id="5327248766486351172">Názov</translation>
@@ -5242,7 +5241,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7114054701490058191">Heslá sa nezhodujú</translation>
 <translation id="7114648273807173152">Do účtu Google sa môžete prihlásiť pomocou funkcie Smart Lock v časti Nastavenia &gt; Pripojené zariadenia &gt; Váš telefón &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Žiadne dostupné kontakty</translation>
-<translation id="7117228822971127758">Skúste to znova neskôr</translation>
+<translation id="7117228822971127758">Skúste to neskôr</translation>
 <translation id="7117247127439884114">Znova prihlásiť...</translation>
 <translation id="711840821796638741">Zobraziť spravované záložky</translation>
 <translation id="711902386174337313">Čítať zoznam zariadení, v ktorých ste prihlásení</translation>
@@ -6030,7 +6029,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8006143138282906848">Odstrániť tento profil</translation>
 <translation id="8008356846765065031">Internet je odpojený. Skontrolujte svoje pripojenie k internetu.</translation>
 <translation id="8009225694047762179">Spravovať heslá</translation>
-<translation id="8012647001091218357">V tejto chvíli sa nám nepodarilo spojiť s vašimi rodičmi. Skúste to znova neskôr.</translation>
+<translation id="8012647001091218357">V tejto chvíli sa nám nepodarilo spojiť s vašimi rodičmi. Skúste to neskôr.</translation>
 <translation id="8013993649590906847">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
 <translation id="8014154204619229810">Aktualizačný nástroj je práve spustený. Obnovením stránky o minútu to znova skontrolujte.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> sa nedokáže vrátiť späť na predchádzajúcu nainštalovanú verziu. Skúste znova vykonať úplné obnovenie svojho zariadenia (tzv. Powerwash).</translation>
@@ -6835,7 +6834,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8933960630081805351">&amp;Zobraziť v aplikácii Finder</translation>
 <translation id="8934732568177537184">Pokračovať</translation>
 <translation id="8938800817013097409">Zariadenie USB-C (pravý port vzadu)</translation>
-<translation id="8940081510938872932">Počítač momentálne vykonáva priveľa úloh.  Skúste to znova neskôr.</translation>
+<translation id="8940081510938872932">Počítač momentálne vykonáva priveľa úloh.  Skúste to neskôr.</translation>
 <translation id="8941173171815156065">Odvolať povolenie „<ph name="PERMISSION" />“</translation>
 <translation id="894360074127026135">Netscape – medzinárodný prestup na vyššiu edíciu</translation>
 <translation id="8944099748578356325">Bude intenzívnejšie využívať batériu (aktuálne <ph name="BATTERY_PERCENTAGE" /> %)</translation>

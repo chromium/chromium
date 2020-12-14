@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">검색엔진 수정</translation>
 <translation id="1129850422003387628">앱 관리</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> 그룹에 속함</translation>
-<translation id="1130712065489627903"><ph name="DEVICE_TYPE" />에서 휴대전화 알림을 받아 볼 수 있습니다. <ph name="DEVICE_TYPE" />에서 알림을 닫으면 휴대전화에서도 닫힙니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="1134009406053225289">시크릿 창으로 열기</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" />개 중 <ph name="EMOJI_INDEX" />번째.</translation>
 <translation id="1136712381129578788">잘못된 PIN을 너무 여러 번 입력하여 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 분리한 후 다시 삽입하세요.</translation>

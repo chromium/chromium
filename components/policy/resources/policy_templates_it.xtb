@@ -205,6 +205,15 @@
 <translation id="1327466551276625742">Attivazione richiesta di configurazione della rete offline</translation>
 <translation id="1330145147221172764">Attiva tastiera sullo schermo</translation>
 <translation id="13356285923490863">Nome criterio</translation>
+<translation id="1338603603553894503">Consente di specificare se il selettore profilo è attivato, disattivato o forzato all'avvio del browser.
+
+      Per impostazione predefinita, il selettore profilo non viene mostrato quando il browser si avvia in modalità ospite o di navigazione in incognito, quando una directory e/o gli URL del profilo sono specificati da una riga di comando, quando è richiesta esplicitamente l'apertura di un'app, quando il browser è stato lanciato da una notifica nativa, quando c'è un solo profilo disponibile o quando il criterio ForceBrowserSignin è impostato su Vero.
+
+      Se è selezionata l'opzione "Attivato" (0) o se il criterio non viene impostato, il selettore profilo verrà mostrato all'avvio per impostazione predefinita, ma gli utenti potranno attivarlo/disattivarlo.
+
+      Se è selezionata l'opzione "Disattivato" (1), il selettore profilo non verrà mai mostrato e gli utenti non saranno in grado di modificare l'impostazione.
+
+      Se è selezionata l'opzione "Forzato" (2), il selettore profilo non può essere eliminato dall'utente. Il selettore profilo sarà mostrato anche se c'è un solo profilo disponibile.</translation>
 <translation id="1347198119056266798">Questa norma è obsoleta, al suo posto usa <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Questa norma viene ignorata se sono impostate le norme <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o la norma (obsoleta) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" />.
 
       Forza l'esecuzione delle query in Ricerca Google con l'opzione SafeSearch attiva e impedisce agli utenti di modificare questa impostazione. Questa impostazione forza anche il livello medio della Modalità con restrizioni su YouTube.
@@ -330,6 +339,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       I tipi di dati disponibili sono i seguenti: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> e <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome rimuove regolarmente i dati dei tipi selezionati che sono antecedenti al periodo indicato (<ph name="TIME_TO_LIVE_IN_HOURS" />). Poiché l'eliminazione avviene solo in determinati intervalli di tempo, alcuni dati potrebbero durare più a lungo, ma mai oltre il doppio del periodo previsto (<ph name="TIME_TO_LIVE_IN_HOURS" />).
       </translation>
+<translation id="1506017854924185821">Disponibilità selettore profilo all'avvio</translation>
 <translation id="1509692106376861764">Questa norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi.
 
@@ -1665,6 +1675,7 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 
       Tieni presente che in precedenza questo criterio è stato erroneamente abilitato su Android, ma questa funzionalità non è mai stata completamente supportata su Android.</translation>
 <translation id="348495353354674884">Attiva tastiera virtuale</translation>
+<translation id="3485200437120267231">Disattiva l'intercettazione dell'accesso</translation>
 <translation id="3492834335089638487">Questo criterio consente di controllare l'utilizzo delle app Android di fonti non attendibili (diverse dal Google Play Store) per un dispositivo.
 
       Se il valore di questo criterio non viene impostato, la funzionalità viene considerata vietata.
@@ -1757,6 +1768,7 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Per informazioni dettagliate su <ph name="CORS" />, visita la pagina <ph name="CORS_HELP_URL" />.
 
       Tieni presente che, nonostante sia stata comunicata la rimozione di questo criterio nella versione 82 di <ph name="PRODUCT_NAME" />, il criterio è stato rimosso nella versione 84.</translation>
+<translation id="3606571057705314194">Selettore profilo disattivato all'avvio</translation>
 <translation id="3627678165642179114">Attiva o disattiva il servizio web di controllo ortografico</translation>
 <translation id="3628480121685794414">Attiva stampa su un lato</translation>
 <translation id="3631099945620529777">Se la norma è impostata su false, il pulsante "Termina processo" in Task Manager viene disattivato.
@@ -1858,6 +1870,7 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
       Se questa impostazione viene disattivata, gli utenti non potranno usare l'accesso tramite Smart Lock.
 
       Se questa norma non viene impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
+<translation id="3796527892245558832">Selettore profilo disponibile all'avvio</translation>
 <translation id="3803171355925844705">Non consentire il caricamento di contenuti misti in nessun sito</translation>
 <translation id="3808945828600697669">Specifica un elenco dei plug-in disattivati</translation>
 <translation id="3810642039169532482">Consente di attivare la funzione di accessibilità di dettatura nella schermata di accesso.
@@ -3011,6 +3024,7 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo delle password salvate verrà selezionata o deselezionata in modo che corrisponda al valore del criterio.</translation>
 <translation id="5457924070961220141">Consente di configurare il renderer HTML predefinito se <ph name="PRODUCT_FRAME_NAME" /> è installato. Se questa norma non viene impostata, per impostazione predefinita il rendering viene eseguito dal browser host; tuttavia, in alternativa, puoi sostituire tale impostazione e consentire che l'esecuzione del rendering delle pagine HTML venga eseguita, per impostazione predefinita, da <ph name="PRODUCT_FRAME_NAME" />.</translation>
+<translation id="545817252640069915">Attiva l'intercettazione dell'accesso</translation>
 <translation id="5460797984317417682">Attiva avviso schermo intero</translation>
 <translation id="5464816904705580310">Configurazione delle impostazioni per gli utenti gestiti.</translation>
 <translation id="5466596281866046569">Segnala informazioni sulle applicazioni</translation>
@@ -3557,6 +3571,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Se viene impostato su 0, la password dell'account della macchina non viene mai modificata.
 
       Nota: se il client è stato offline per un periodo di tempo maggiore del numero di giorni specificato, le password potrebbero durare più a lungo.</translation>
+<translation id="6280973140313576289">Selettore profilo forzato all'avvio</translation>
 <translation id="6281043242780654992">Consente di configurare le norme per i messaggi nativi. Gli host di messaggi nativi non autorizzati non saranno consentiti se non vengono aggiunti alla whitelist.</translation>
 <translation id="6282524907402492171">Mostra avvisi ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Consenti o nega acquisizione audio</translation>
@@ -4429,6 +4444,11 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="7372831798009983116">Attiva la funzione di accessibilità di clic automatico</translation>
 <translation id="7373200034079131670">Riavvia all'uscita dell'utente se si avvia Android o una VM.</translation>
+<translation id="7373680616478819439">Questa impostazione consente di attivare o disattivare l'intercettazione dell'accesso.
+
+      Se questo criterio non viene configurato o se viene impostato su Vero, la finestra di dialogo di intercettazione dell'accesso viene attivata quando viene aggiunto un Account Google sul Web; l'utente potrebbe avere la possibilità di spostare l'account in un altro profilo (nuovo o esistente).
+
+      Se questo criterio viene impostato su Falso, la finestra di dialogo di intercettazione dell'accesso non viene attivata.</translation>
 <translation id="7375785904116479354">Se il criterio viene impostato su Attivato, il motore di ricerca predefinito del precedente browser predefinito verrà importato alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, il motore di ricerca predefinito non verrà importato alla prima esecuzione.
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo del motore di ricerca predefinito verrà selezionata o deselezionata in modo che corrisponda al valore del criterio.</translation>

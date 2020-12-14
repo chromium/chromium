@@ -206,6 +206,15 @@
 <translation id="1327466551276625742">Bật lời nhắc về cấu hình mạng khi ngoại tuyến</translation>
 <translation id="1330145147221172764">Bật bàn phím ảo</translation>
 <translation id="13356285923490863">Tên chính sách</translation>
+<translation id="1338603603553894503">Chỉ định việc bật, tắt hay buộc hiển thị bộ chọn hồ sơ khi khởi động trình duyệt.
+
+      Theo mặc định, bộ chọn hồ sơ sẽ không hiển thị nếu người dùng khởi động trình duyệt ở chế độ khách hoặc ẩn danh, chỉ định một thư mục hồ sơ và/hoặc URL bằng dòng lệnh, yêu cầu rõ là mở một ứng dụng, khởi động trình duyệt bằng một thông báo gốc, chỉ có một hồ sơ hoặc chính sách ForceBrowserSignin được đặt thành bật.
+
+      Theo mặc định, nếu bạn chọn "Bật" (0) hoặc không đặt chính sách, thì bộ chọn hồ sơ sẽ hiển thị khi khởi động, nhưng người dùng không thể bật/tắt bộ chọn này.
+
+      Nếu bạn chọn "Tắt" (1), bộ chọn hồ sơ sẽ không bao giờ hiển thị và người dùng sẽ không thể thay đổi tùy chọn cài đặt đó.
+
+      Nếu bạn chọn "Bắt buộc" (2), người dùng sẽ không thể ngăn bộ chọn hồ sơ mở ra. Bộ chọn hồ sơ sẽ hiển thị ngay cả khi chỉ có một hồ sơ.</translation>
 <translation id="1347198119056266798">Chính sách này không còn dùng nữa, thay vào đó hãy sử dụng <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> và <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Chính sách này sẽ bị bỏ qua nếu bạn đặt chính sách <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> hoặc <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (không dùng nữa).
 
       Buộc thực hiện các cụm từ tìm kiếm trong Google Web Search bằng cách đặt tính năng Tìm kiếm an toàn thành hoạt động và ngăn người dùng thay đổi tùy chọn cài đặt này. Tùy chọn cài đặt này cũng sẽ buộc bật Chế độ hạn chế trung bình trên YouTube.
@@ -341,6 +350,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Dữ liệu duyệt web gồm có các loại sau đây: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> và <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Chrome sẽ thường xuyên xóa dữ liệu thuộc những loại đã chọn có khoảng thời gian lưu giữ quá <ph name="TIME_TO_LIVE_IN_HOURS" />. Vì hoạt động xóa này chỉ diễn ra định kỳ, nên một số dữ liệu có thể tồn tại lâu hơn một chút nhưng không quá 2 lần khoảng thời gian lưu giữ dự kiến là <ph name="TIME_TO_LIVE_IN_HOURS" />.
       </translation>
+<translation id="1506017854924185821">Khả năng hiển thị bộ chọn hồ sơ khi khởi động</translation>
 <translation id="1509692106376861764">Chính sách này đã chấm dứt kể từ phiên bản <ph name="PRODUCT_NAME" /> 29.</translation>
 <translation id="1512974677514081818">Cung cấp cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị.
 
@@ -1685,6 +1695,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Lưu ý rằng chính sách này đã được bật trên Android do lỗi, nhưng hệ điều hành Android chưa hỗ trợ đầy đủ tính năng này.</translation>
 <translation id="348495353354674884">Bật bàn phím ảo</translation>
+<translation id="3485200437120267231">Tắt tùy chọn chặn đăng nhập</translation>
 <translation id="3492834335089638487">Chính sách này kiểm soát việc thiết bị dùng ứng dụng Android từ các nguồn không tin cậy (không phải là Cửa hàng Google Play).
 
       Nếu chính sách không được đặt, thì hệ thống sẽ xem là không cho phép chức năng này.
@@ -1777,6 +1788,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Để biết thông tin chi tiết về <ph name="CORS" />, hãy truy cập: <ph name="CORS_HELP_URL" />.
 
       Xin lưu ý rằng chúng tôi đã thông báo việc loại bỏ chính sách này trong <ph name="PRODUCT_NAME" /> phiên bản 82. Tuy nhiên, chính sách này sẽ bị loại bỏ trong phiên bản 84.</translation>
+<translation id="3606571057705314194">Tắt bộ chọn hồ sơ khi khởi động</translation>
 <translation id="3627678165642179114">Bật hoặc tắt dịch vụ web kiểm tra lỗi chính tả</translation>
 <translation id="3628480121685794414">Bật chế độ in một mặt</translation>
 <translation id="3631099945620529777">Nếu bạn đặt chính sách này thành false thì nút 'Kết thúc quá trình' sẽ bị tắt trong Trình quản lý tác vụ.
@@ -1878,6 +1890,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn tắt tùy chọn cài đặt này, thì người dùng sẽ không được phép sử dụng tính năng Đăng nhập bằng Smart Lock.
 
       Nếu bạn không đặt chính sách này, thì tùy chọn cài đặt mặc định sẽ không được cho phép cho người dùng do doanh nghiệp quan lý và được cho phép cho người dùng không được quản lý.</translation>
+<translation id="3796527892245558832">Bật bộ chọn hồ sơ khi khởi động</translation>
 <translation id="3803171355925844705">Không cho phép bất kỳ trang web nào tải nội dung hỗn hợp</translation>
 <translation id="3808945828600697669">Chỉ định danh sách các plugin bị vô hiệu hóa</translation>
 <translation id="3810642039169532482">Bật tính năng hỗ trợ tiếp cận về đọc chính tả trên màn hình đăng nhập.
@@ -3036,6 +3049,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Người dùng có thể kích hoạt hộp thoại nhập. Ngoài ra, hộp đánh dấu mật khẩu đã lưu sẽ được đánh dấu/bỏ đánh dấu tương ứng với giá trị của chính sách này.</translation>
 <translation id="5457924070961220141">Cho phép bạn định cấu hình trình kết xuất HTML mặc định khi  <ph name="PRODUCT_FRAME_NAME" /> được cài đặt.
           Cài đặt mặc định, được sử dụng khi không thiết lập chính sách này, cho phép trình duyệt chính thực hiện chức năng hiển thị nhưng bạn có thể tùy chọn ghi đè cài đặt này và yêu cầu  <ph name="PRODUCT_FRAME_NAME" /> hiển thị các trang HTML theo mặc định.</translation>
+<translation id="545817252640069915">Bật tùy chọn chặn đăng nhập</translation>
 <translation id="5460797984317417682">Bật cảnh báo toàn màn hình</translation>
 <translation id="5464816904705580310">Định cấu hình cài đặt cho người dùng được quản lý.</translation>
 <translation id="5466596281866046569">Báo cáo thông tin ứng dụng</translation>
@@ -3582,6 +3596,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thành 0, hệ thống sẽ tắt tùy chọn thay đổi mật khẩu tài khoản của máy.
 
       Lưu ý: Mật khẩu có thể tồn tại lâu hơn số ngày đã chỉ định nếu máy khách không kết nối mạng trong một thời gian dài.</translation>
+<translation id="6280973140313576289">Buộc hiển thị bộ chọn hồ sơ khi khởi động</translation>
 <translation id="6281043242780654992">Định cấu hình chính sách cho Nhắn tin gốc. Máy chủ nhắn tin gốc được đưa vào danh sách cấm sẽ không được phép trừ khi chúng được đưa vào danh sách cho phép.</translation>
 <translation id="6282524907402492171">Hiển thị cảnh báo về việc ngừng cung cấp <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Cho phép hoặc từ chối ghi âm</translation>
@@ -4457,6 +4472,11 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn không đặt chính sách này, tùy chọn mặc định sẽ được phép áp dụng cho cả người dùng do doanh nghiệp quản lý và người dùng không được quản lý.</translation>
 <translation id="7372831798009983116">Bật tính năng hỗ trợ tiếp cận về tự động nhấp</translation>
 <translation id="7373200034079131670">Khởi động lại khi đăng xuất người dùng nếu Android hoặc một máy chủ ảo (VM) đã khởi động.</translation>
+<translation id="7373680616478819439">Tùy chọn cài đặt này sẽ bật hoặc tắt tính năng chặn đăng nhập.
+
+      Khi bạn đặt thành Bật hoặc không đặt chính sách này, hộp thoại chặn đăng nhập sẽ kích hoạt nếu một Tài khoản Google được thêm trên web. Ngoài ra, người dùng có thể được hưởng lợi từ việc chuyển tài khoản này sang một hồ sơ khác (mới hoặc hiện có).
+
+      Khi bạn đặt chính sách này thành Tắt, hộp thoại chặn đăng nhập sẽ không kích hoạt.</translation>
 <translation id="7375785904116479354">Nếu bạn đặt chính sách này thành Bật, thì công cụ tìm kiếm mặc định trên trình duyệt mặc định trước sẽ được nhập trong lần chạy đầu tiên. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, thì công cụ tìm kiếm mặc định sẽ không được nhập trong lần chạy đầu tiên.
 
       Người dùng có thể kích hoạt hộp thoại nhập. Ngoài ra, hộp đánh dấu công cụ tìm kiếm mặc định sẽ được đánh dấu/bỏ đánh dấu tương ứng với giá trị của chính sách này.</translation>

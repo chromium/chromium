@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Suchmaschine bearbeiten</translation>
 <translation id="1129850422003387628">Apps verwalten</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – Teil der Gruppe <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Sie können jetzt Benachrichtigungen von Ihrem Smartphone auf Ihrem <ph name="DEVICE_TYPE" /> erhalten. Wenn Sie auf Ihrem <ph name="DEVICE_TYPE" /> Benachrichtigungen ablehnen, werden diese auch auf Ihrem Smartphone abgelehnt. Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="1134009406053225289">In Inkognitofenster öffnen</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> von <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Der Sicherheitsschlüssel wurde gesperrt, weil zu oft die falsche PIN eingegeben wurde. Entfernen Sie den Sicherheitsschlüssel und stecken Sie ihn wieder ein, um ihn zu entsperren.</translation>
@@ -864,7 +863,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1954813140452229842">Fehler beim Bereitstellen der Freigabe. Überprüfen Sie Ihre Anmeldedaten und versuchen Sie es noch einmal.</translation>
 <translation id="1956050014111002555">Die Datei enthielt mehrere Zertifikate, von denen keines importiert wurde:</translation>
 <translation id="1956390763342388273">Hierdurch werden alle Dateien aus "<ph name="FOLDER_PATH" />" hochgeladen. Tun Sie dies nur, wenn Sie die Website als vertrauenswürdig einstufen.</translation>
-<translation id="1960158217849594135">Möchten Sie den Nutzernamen in Ihrem Google-Konto speichern?</translation>
+<translation id="1960158217849594135">Nutzernamen in Ihrem Google-Konto speichern?</translation>
 <translation id="196040970347962278">Zuerst eine Verbindung zum Internet herstellen</translation>
 <translation id="1962233722219655970">Diese Seite verwendet eine Native Client App, die auf Ihrem Computer nicht funktioniert.</translation>
 <translation id="1963227389609234879">Alle entfernen</translation>
@@ -2751,7 +2750,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="412940972494182898">Diesmal Flash ausführen</translation>
 <translation id="4130199216115862831">Geräteprotokoll</translation>
 <translation id="4130207949184424187">Diese Erweiterung hat die Seite geändert, die bei der Suche über die Omnibox angezeigt wird.</translation>
-<translation id="4130344535649650885">Möchten Sie das Passwort in Ihrem Google-Konto speichern?</translation>
+<translation id="4130344535649650885">Passwort in Ihrem Google-Konto speichern?</translation>
 <translation id="4130750466177569591">Ich stimme zu</translation>
 <translation id="413121957363593859">Komponenten</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>

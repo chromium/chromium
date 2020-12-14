@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">I-edit ang search engine</translation>
 <translation id="1129850422003387628">Pamahalaan ang mga app</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - Bahagi ng grupong <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Makakatanggap ka na ngayon ng mga notification mula sa iyong telepono sa <ph name="DEVICE_TYPE" /> mo. Kapag na-dismiss ang mga notification sa iyong <ph name="DEVICE_TYPE" />, madi-dismiss din ang mga ito sa telepono mo. Tiyaking nasa malapit at naka-unlock ang iyong telepono at naka-on ang Bluetooth at Wi-Fi nito.</translation>
 <translation id="1134009406053225289">Buksan sa incognito window</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> sa <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Na-lock ang security key dahil napakaraming beses nang nailagay ang maling PIN. Para i-unlock ito, alisin at ipasok ulit ito.</translation>
@@ -2903,7 +2902,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4345587454538109430">I-configure...</translation>
 <translation id="4345732373643853732">Hindi alam ng server ang username</translation>
 <translation id="4348766275249686434">Kumolekta ng mga error</translation>
-<translation id="4349828822184870497">Kapaki-pakinabang</translation>
+<translation id="4349828822184870497">Nakakatulong</translation>
 <translation id="4350019051035968019">Hindi maaaring i-enroll ang device na ito sa domain kung saan nabibilang ang iyong account dahil minarkahan ang iyong device para mapamahalaan ng ibang domain.</translation>
 <translation id="4350230709416545141">Palaging i-block ang <ph name="HOST" /> sa pag-access sa iyong lokasyon</translation>
 <translation id="4350782034419308508">Hey Google</translation>

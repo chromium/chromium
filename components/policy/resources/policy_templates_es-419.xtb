@@ -206,6 +206,15 @@
 <translation id="1327466551276625742">Habilitar mensaje de configuración de red si no hay conexión</translation>
 <translation id="1330145147221172764">Habilitar el teclado en pantalla</translation>
 <translation id="13356285923490863">Nombre de la política</translation>
+<translation id="1338603603553894503">Especifica si el selector de perfiles se habilita, inhabilita o fuerza al iniciar el navegador.
+
+      De forma predeterminada, no se mostrará el selector de perfiles si se inicia el navegador en modo Incógnito o de invitado, se especifica un directorio de perfiles o URL por línea de comandos, se solicita de forma explícita que se abra una app, se inició el navegador mediante una notificación nativa, hay un solo perfil disponible o se establece la política ForceBrowserSignin como verdadera.
+
+      Si habilitas (0) la política o no la estableces, se mostrará el selector de perfiles en el inicio de forma predeterminada, pero los usuarios podrán habilitarlo o inhabilitarlo.
+
+      Si la inhabilitas (1), no se mostrará nunca el selector de perfiles, y los usuarios no podrán cambiar la configuración.
+
+      Si la fuerzas (2), el usuario no podrá suprimir el selector de perfiles. Se mostrará el selector de perfiles incluso si hay solo un perfil disponible.</translation>
 <translation id="1347198119056266798">Esta política es obsoleta; usa las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> y <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> en su lugar. Se ignorará esta política si se configuran las políticas <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsoleta).
 
       Esta configuración aplica el uso de la función SafeSearch para las consultas en Búsqueda web de Google y evita que los usuarios puedan cambiarla. Además, aplica el modo restringido moderado en YouTube.
@@ -341,6 +350,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Los tipos de datos disponibles son <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> y <ph name="DATA_TYPE_HOSTED_APP_DATA" />.
       Periódicamente, Chrome quitará datos con una antigüedad mayor a <ph name="TIME_TO_LIVE_IN_HOURS" /> de los tipos seleccionados. Como esta acción se realiza a intervalos determinados, es posible que algunos datos se conserven un poco más de tiempo, pero nunca más del doble que el período de <ph name="TIME_TO_LIVE_IN_HOURS" /> esperado.
       </translation>
+<translation id="1506017854924185821">Disponibilidad del selector de perfiles en el inicio</translation>
 <translation id="1509692106376861764">Esta política se eliminó a partir de la versión 29 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1512974677514081818">Proporciona configuraciones para las impresoras empresariales vinculadas a dispositivos.
 
@@ -1769,6 +1779,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Para obtener más información sobre <ph name="CORS" />, visita la siguiente página web: <ph name="CORS_HELP_URL" />.
 
       Ten en cuenta que se anunció que esta política se quitaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se quitó en la versión 84.</translation>
+<translation id="3606571057705314194">Selector de perfiles inhabilitado en el inicio</translation>
 <translation id="3627678165642179114">Habilita o inhabilita el servicio web de revisión ortográfica.</translation>
 <translation id="3628480121685794414">Permitir impresión simple</translation>
 <translation id="3631099945620529777">Si se configura como falsa, se inhabilitará el botón "Finalizar proceso" en el Administrador de tareas.
@@ -1870,6 +1881,7 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si se inhabilita esta configuración, los usuarios no podrán utilizar el acceso mediante Smart Lock.
 
       Si no se establece esta política, los usuarios administrados por empresas no podrán usar la configuración predeterminada, pero los usuarios no administrados sí podrán usarla.</translation>
+<translation id="3796527892245558832">Selector de perfiles disponible en el inicio</translation>
 <translation id="3803171355925844705">No permitir que ningún sitio cargue contenido mixto</translation>
 <translation id="3808945828600697669">Especificar una lista de complementos inhabilitados</translation>
 <translation id="3810642039169532482">Habilita la función de accesibilidad de dictado en la pantalla de acceso.
@@ -3560,6 +3572,7 @@ En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instan
       Si estableces la política en 0, se desactivará el cambio de contraseña de la cuenta de máquina.
 
       Nota: Es posible que las contraseñas queden obsoletas antes de la cantidad especificada de días si el cliente no se conecta por un período prolongado.</translation>
+<translation id="6280973140313576289">Selector de perfiles forzado en el inicio</translation>
 <translation id="6281043242780654992">Permite configurar las políticas de mensajería nativa. A menos que se incluyan en la lista blanca, los hosts de mensajería nativa incluidos en la lista negra estarán bloqueados.</translation>
 <translation id="6282524907402492171">Muestra las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir o rechazar la captura de audio</translation>

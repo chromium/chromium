@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Breyta leitarvél</translation>
 <translation id="1129850422003387628">Stjórna forritum</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – hluti af hópnum <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Nú geturðu fengið tilkynningar úr símanum í <ph name="DEVICE_TYPE" />. Ef þú hunsar tilkynningar í <ph name="DEVICE_TYPE" /> verða þær líka hunsaðar í símanum þínum. Gakktu úr skugga um að síminn sé nálægt, ólæstur og með kveikt á Bluetooth og Wi-Fi.</translation>
 <translation id="1134009406053225289">Opna í huliðsglugga</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> af <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Öryggislykillinn er læstur vegna þess að rangt PIN-númer var slegið inn of oft. Til að taka hann úr lás þarftu að fjarlægja hann og setja aftur inn.</translation>
@@ -868,7 +867,7 @@
 <translation id="1954813140452229842">Villa við að tengja deilt efni. Athugaðu innskráningarupplýsingarnar og reyndu aftur.</translation>
 <translation id="1956050014111002555">Skráin inniheldur mörg vottorð og engin þeirra voru flutt inn:</translation>
 <translation id="1956390763342388273">Öllum skrám í „<ph name="FOLDER_PATH" />“ verður hlaðið upp. Gerðu þetta aðeins ef þú treystir vefsvæðinu.</translation>
-<translation id="1960158217849594135">Á að vista notandanafn Google reikningsins þíns?</translation>
+<translation id="1960158217849594135">Vista notandanafn á Google reikningnum þínum?</translation>
 <translation id="196040970347962278">Settu upp nettengingu fyrst</translation>
 <translation id="1962233722219655970">Þessi síða notast við sérforritað forrit sem virkar ekki í tölvunni þinni.</translation>
 <translation id="1963227389609234879">Fjarlægja allt</translation>

@@ -435,7 +435,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="4135200667068010335">Zoznam zariadení, s ktorými sa má zdieľať karta, je zavretý.</translation>
 <translation id="4141536112466364990">Naučte sa používať Chrome</translation>
 <translation id="4149994727733219643">Jednoduché zobrazenie webových stránok</translation>
-<translation id="4170011742729630528">Služba nie je k dispozícii. Skúste to znova neskôr.</translation>
+<translation id="4170011742729630528">Služba nie je k dispozícii. Skúste to neskôr.</translation>
 <translation id="4179980317383591987">Využité: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4183868528246477015">Hľadať cez Google Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
@@ -791,7 +791,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6532866250404780454">Weby, ktoré navštívite v Chrome, sa nezobrazia. Odstránia sa všetky časovače webov.</translation>
 <translation id="6534565668554028783">Odpoveď Googlu trvala príliš dlho</translation>
-<translation id="6539092367496845964">Vyskytol sa problém. Skúste to znova neskôr.</translation>
+<translation id="6539092367496845964">Vyskytol sa problém. Skúste to neskôr.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Kontrola prebehla pred hodinou}few{Kontrola prebehla pred # hodinami}many{Kontrola prebehla pred # hodiny}other{Kontrola prebehla pred # hodinami}}</translation>
 <translation id="6545017243486555795">Vymazať všetky dáta</translation>
 <translation id="6560414384669816528">Vyhľadávať pomocou Sogou</translation>

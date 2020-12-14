@@ -5,14 +5,12 @@
 <translation id="1566281227936819866">저장된 결제 수단 표시 중</translation>
 <translation id="1717486229951421299">터치 시 작성되는 사용자 인증 정보 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="207576718733492531">터치 시 작성되는 사용자 인증 정보 목록이 닫혔습니다.</translation>
-<translation id="2359808026110333948">계속</translation>
 <translation id="2610239185026711824">비밀번호 추천</translation>
 <translation id="2803478378562657435">저장된 비밀번호 및 비밀번호 옵션 표시 중</translation>
 <translation id="2903493209154104877">주소</translation>
 <translation id="3399357656427473483">터치 시 작성되는 사용자 인증 정보 목록입니다.</translation>
 <translation id="4660011489602794167">키보드 표시</translation>
 <translation id="4694050069269396220"><ph name="ORIGIN" />을(를) 신뢰하는 경우 다른 사이트의 저장된 비밀번호를 사용할 수 있습니다.</translation>
-<translation id="4778644898150334464">다른 비밀번호 사용</translation>
 <translation id="5016175294846053194">키보드 위에 사용 가능한 자동 완성 제안 표시</translation>
 <translation id="5088366526685584589">저장된 주소를 표시합니다</translation>
 <translation id="5441504010984421144">터치 시 작성되는 사용자 인증 정보 목록이 전체 높이로 열렸습니다.</translation>
@@ -22,7 +20,6 @@
 <translation id="7299100402441711551">주소 표시</translation>
 <translation id="7494879913343971937">비밀번호 표시</translation>
 <translation id="7594473730623999723">스와이프하여 추천 더보기</translation>
-<translation id="7658239707568436148">취소</translation>
 <translation id="7992095260806105436">Chrome 자동 완성 추천 사용</translation>
 <translation id="8037472847879765671">결제 수단 표시</translation>
 <translation id="8507520749471379845">사용할 수 있는 비밀번호</translation>

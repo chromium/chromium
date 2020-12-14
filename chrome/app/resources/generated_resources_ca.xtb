@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Edita el motor de cerca</translation>
 <translation id="1129850422003387628">Gestiona aplicacions</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> (part del grup <ph name="GROUP_NAME" />)</translation>
-<translation id="1130712065489627903">Ara pots rebre les notificacions del telèfon al teu <ph name="DEVICE_TYPE" />. Si ignores les notificacions al <ph name="DEVICE_TYPE" />, també s'ignoraran al telèfon. Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi‑Fi activats.</translation>
 <translation id="1134009406053225289">Obre-ho en una finestra d'incògnit</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">La clau de seguretat està bloquejada perquè s'ha introduït un PIN incorrecte massa vegades. Per desbloquejar-la, extreu-la i torna a inserir-la.</translation>

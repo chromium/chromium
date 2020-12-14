@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Keresőmotor beállítása</translation>
 <translation id="1129850422003387628">Alkalmazáskezelés</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – a(z) <ph name="GROUP_NAME" /> csoport része</translation>
-<translation id="1130712065489627903">Mostantól megkaphatja a telefonja értesítéseit a(z) <ph name="DEVICE_TYPE" /> eszközén. Az értesítések <ph name="DEVICE_TYPE" /> eszközön való elvetésével a telefonon is elveti őket. Gondoskodjon arról, hogy telefonja fel legyen oldva, és a közelben legyen, bekapcsolt Bluetooth és Wi-Fi funkcióval.</translation>
 <translation id="1134009406053225289">Megnyitás inkognitó ablakban</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" />/<ph name="EMOJI_INDEX" />.</translation>
 <translation id="1136712381129578788">A biztonsági hardverkulcs zárolva van, mert túl sokszor lett megadva helytelen PIN-kód. A zárolás feloldásához távolítsa el a hardverkulcsot, majd csatlakoztassa újra.</translation>

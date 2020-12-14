@@ -121,7 +121,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="6681800064886881394">Copyright 2013 Google Inc. Všetky práva vyhradené.</translation>
 <translation id="677755392401385740">Hostiteľ bol spustený pre používateľa: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6939719207673461467">Zobraziť/skryť klávesnicu</translation>
-<translation id="6963936880795878952">Pripojenia k vzdialenému počítaču sú dočasne zablokované, pretože sa k nemu niekto snažil pripojiť pomocou neplatného kódu PIN. Skúste to znova neskôr.</translation>
+<translation id="6963936880795878952">Pripojenia k vzdialenému počítaču sú dočasne zablokované, pretože sa k nemu niekto snažil pripojiť pomocou neplatného kódu PIN. Skúste to neskôr.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Naozaj chcete zakázať vzdialené pripojenia k počítaču <ph name="HOSTNAME" />? Ak zmeníte názor, pripojenie budete musieť znova povoliť priamo z uvedeného počítača.</translation>
 <translation id="7019153418965365059">Nerozpoznaná chyba hostiteľa: <ph name="HOST_OFFLINE_REASON" />.</translation>

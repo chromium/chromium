@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Editatu bilatzailea</translation>
 <translation id="1129850422003387628">Kudeatu aplikazioak</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />, <ph name="GROUP_NAME" /> taldekoa</translation>
-<translation id="1130712065489627903">Telefonoko jakinarazpenak jaso ditzakezu <ph name="DEVICE_TYPE" /> gailuan. <ph name="DEVICE_TYPE" /> gailuan jakinarazpenak baztertzen badituzu, telefonoan ere baztertu egingo dituzu. Ziurtatu telefonoa hurbil eta desblokeatuta dagoela, eta Bluetooth-a eta wifia aktibatuta dauzkala.</translation>
 <translation id="1134009406053225289">Ireki ezkutuko moduko leiho batean</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />: <ph name="EMOJI_COUNT" />/<ph name="EMOJI_INDEX" />.</translation>
 <translation id="1136712381129578788">Segurtasun-giltza blokeatuta dago PINa gehiegitan idatzi delako oker. Hura desblokeatzeko, atera ezazu, eta sar ezazu berriro.</translation>
@@ -734,7 +733,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1805888043020974594">Inprimatze-zerbitzaria</translation>
 <translation id="1805967612549112634">Berretsi PIN kodea</translation>
 <translation id="1806335016774576568">Aldatu irekita dagoen beste aplikazio batera</translation>
-<translation id="1809483812148634490">Google Play zerbitzutik deskargatu dituzun aplikazioak ezabatu egingo dira Chromebook-etik.
+<translation id="1809483812148634490">Google Play-tik deskargatu dituzun aplikazioak ezabatu egingo dira Chromebook-etik.
     <ph name="LINE_BREAKS1" />
     Erosi duzun edukia ere ezabatuko da agian; besteak beste, filmak, telesaioak, musika, liburuak eta aplikazioetako beste erosketa batzuk.
     <ph name="LINE_BREAKS2" />
@@ -2274,7 +2273,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3600051066689725006">Web-eskaerari buruzko informazioa</translation>
 <translation id="3600792891314830896">Desaktibatu soinua erreproduzitzen duten webguneen audioa</translation>
 <translation id="360180734785106144">Eskuratu eginbide berriak erabilgarri dauden bezain laster</translation>
-<translation id="3602198818276948261">Edukiontzia ez dago konfiguratuta diskoen tamaina aldatzeko. Linux-ek (Beta) erreserbatuta daukan biltegiratzeko tokia doitzeko, egin babeskopia bat eta, ondoren, lehenera ezazu edukiontzi berri batean.</translation>
+<translation id="3602198818276948261">Edukiontziaren konfigurazioak ez ditu onartzen aldaketak diskoen tamainan. Linux-ek (Beta) erreserbatuta daukan biltegiratzeko tokia doitzeko, egin babeskopia bat eta, ondoren, lehenera ezazu edukiontzi berri batean.</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
 <translation id="3603622770190368340">Eskuratu sareko ziurtagiria</translation>
 <translation id="3604713164406837697">Aldatu horma-papera</translation>

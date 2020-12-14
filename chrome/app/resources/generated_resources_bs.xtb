@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Uređivanje pretraživača</translation>
 <translation id="1129850422003387628">Upravljajte aplikacijama</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – dio grupe <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Sada možete primati obavještenja s telefona na uređaju <ph name="DEVICE_TYPE" />. Odbacivanjem obavještenja na uređaju <ph name="DEVICE_TYPE" /> ćete ih također odbaciti na telefonu. Provjerite nalazi li se telefon u blizini, je li otključan i jesu li Bluetooth i WiFi uključeni.</translation>
 <translation id="1134009406053225289">Otvori u anonimnom prozoru</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> od <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Sigurnosni ključ je zaključan zato što je pogrešan PIN unesen više puta. Uklonite i ponovo umetnite sigurnosni ključ da ga otključate.</translation>
@@ -3382,7 +3381,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4907161631261076876">Ovaj fajl se ne preuzima često i može biti opasan.</translation>
 <translation id="4907306957610201395">Kategorija odobrenja</translation>
 <translation id="4908811072292128752">Otvorite novu karticu da istovremeno pregledate dvije web lokacije</translation>
-<translation id="4909038193460299775">S obzirom da ovim računom upravlja domena <ph name="DOMAIN" />, vaše oznake, historija, lozinke i druge postavke će se izbrisati s ovog uređaja. Međutim, postojeći podaci će ostati pohranjeni na vašem Google računu i njima možete upravljati na <ph name="BEGIN_LINK" />Google Kontrolnoj tabli<ph name="END_LINK" />.</translation>
+<translation id="4909038193460299775">S obzirom da ovim računom upravlja domena <ph name="DOMAIN" />, vaše oznake, historija, lozinke i druge postavke će se izbrisati s ovog uređaja. Međutim, postojeći podaci će ostati pohranjeni na vašem Google računu i njima možete upravljati na <ph name="BEGIN_LINK" />Google kontrolnoj tabli<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Buđenja iz neaktivnosti</translation>
 <translation id="4915961947098019832">Dozvoljeno je prikazivanje slika</translation>
 <translation id="4916542008280060967">Dozvoliti web lokaciji da uredi fajl <ph name="FILE_NAME" />?</translation>
@@ -4871,7 +4870,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6688285987813868112">Kreiraj QR kôd za ovu sliku</translation>
 <translation id="6690659332373509948">Nije moguće raščlaniti fajl: <ph name="FILE_NAME" /></translation>
 <translation id="6690751852586194791">Odaberite korisnika pod nadzorom koga ćete dodati na ovaj uređaj.</translation>
-<translation id="6691331417640343772">Upravljajte sinhroniziranim podacima na Google Kontrolnoj tabli</translation>
+<translation id="6691331417640343772">Upravljajte sinhroniziranim podacima na Google kontrolnoj tabli</translation>
 <translation id="6691541770654083180">Zemlja</translation>
 <translation id="6691936601825168937">&amp;Proslijedi</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 stranica}one{{COUNT} stranica}few{{COUNT} stranice}other{{COUNT} stranica}}</translation>
@@ -6057,7 +6056,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8042142357103597104">Neprozirnost teksta</translation>
 <translation id="8044262338717486897">Aplikacija <ph name="LINUX_APP_NAME" /> ne reagira.</translation>
 <translation id="8044899503464538266">Sporo</translation>
-<translation id="8045253504249021590">Sinhronizacija je zaustavljena putem Google Dashboarda.</translation>
+<translation id="8045253504249021590">Sinhronizacija je zaustavljena putem Google kontrolne table.</translation>
 <translation id="8045923671629973368">Unesite ID aplikacije ili URL web trgovine</translation>
 <translation id="8047242494569930800">Premjesti na Google račun</translation>
 <translation id="804786196054284061">Ugovor o licenci za krajnjeg korisnika</translation>
@@ -6816,7 +6815,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8909298138148012791">Aplikacija <ph name="APP_NAME" /> je deinstalirana</translation>
 <translation id="8909833622202089127">Web lokacija prati vašu lokaciju</translation>
 <translation id="8910146161325739742">Dijelite svoj ekran</translation>
-<translation id="8910222113987937043">Promjene vaših oznaka, historije, lozinki i drugih postavki neće se više sinhronizirati s vašim Google računom. Međutim, vaši postojeći podaci će ostati pohranjeni na vašem Google računu i njima možete upravljati na <ph name="BEGIN_LINK" />Google Kontrolnoj tabli<ph name="END_LINK" />.</translation>
+<translation id="8910222113987937043">Promjene vaših oznaka, historije, lozinki i drugih postavki neće se više sinhronizirati s vašim Google računom. Međutim, vaši postojeći podaci će ostati pohranjeni na vašem Google računu i njima možete upravljati na <ph name="BEGIN_LINK" />Google kontrolnoj tabli<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google račun</translation>
 <translation id="8912793549644936705">Razvučeno</translation>
 <translation id="8912810933860534797">Omogući automatsko skeniranje</translation>

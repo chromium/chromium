@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">แก้ไขเครื่องมือค้นหา</translation>
 <translation id="1129850422003387628">จัดการแอป</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - ส่วนหนึ่งของกลุ่ม <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">ตอนนี้คุณรับการแจ้งเตือนจากโทรศัพท์ใน <ph name="DEVICE_TYPE" /> ได้แล้ว การปิดการแจ้งเตือนใน <ph name="DEVICE_TYPE" /> จะปิดการแจ้งเตือนในโทรศัพท์ด้วย ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกอยู่ และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="1134009406053225289">เปิดในหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" /> <ph name="EMOJI_INDEX" /> จาก <ph name="EMOJI_COUNT" /></translation>
 <translation id="1136712381129578788">คีย์ความปลอดภัยถูกล็อกเพราะคุณป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป หากต้องการปลดล็อก ให้ถอดคีย์ความปลอดภัยออกแล้วเสียบกลับเข้าไปใหม่</translation>
@@ -356,7 +355,7 @@
 <translation id="1396259464226642517">ผลลัพธ์นี้ต่างจากที่คาดไว้ไหม <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="1396963298126346194">ชื่อผู้ใช้และรหัสผ่านที่คุณป้อนไม่ตรงกัน</translation>
 <translation id="1397500194120344683">ไม่มีอุปกรณ์ที่มีสิทธิ์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
-<translation id="1398853756734560583">ย่อ</translation>
+<translation id="1398853756734560583">ขยายใหญ่สุด</translation>
 <translation id="139911022479327130">ปลดล็อกโทรศัพท์และยืนยันว่าเป็นคุณ</translation>
 <translation id="1399511500114202393">ไม่มีใบรับรองของผู้ใช้</translation>
 <translation id="1401308693935339022">ใช้ตำแหน่ง อนุญาตแอปและบริการที่มีสิทธิ์เข้าถึงตำแหน่งให้ใช้ตำแหน่งของอุปกรณ์นี้ Google อาจรวบรวมข้อมูลตำแหน่งเป็นระยะๆ และใช้ข้อมูลนี้แบบไม่ระบุตัวตนเพื่อปรับปรุงความแม่นยำของตำแหน่งและบริการตามสถานที่</translation>

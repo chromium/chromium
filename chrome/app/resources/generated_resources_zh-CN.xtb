@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">修改搜索引擎</translation>
 <translation id="1129850422003387628">管理应用</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 属于“<ph name="GROUP_NAME" />”群组</translation>
-<translation id="1130712065489627903">您现在可在 <ph name="DEVICE_TYPE" /> 上接收手机中的通知。在 <ph name="DEVICE_TYPE" /> 上关闭通知也会在手机上关闭这些通知。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="1134009406053225289">在无痕式窗口中打开</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 个，共 <ph name="EMOJI_COUNT" /> 个。</translation>
 <translation id="1136712381129578788">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。要解锁此密钥，请先将其拔出，然后再重新插入。</translation>
@@ -430,7 +429,7 @@
 <translation id="1468571364034902819">无法使用这份个人资料</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{向新群组中添加标签页}other{向新群组中添加标签页}}</translation>
 <translation id="1470946456740188591">如需开启或关闭光标浏览模式，请使用快捷键 Ctrl + 搜索键 + 7</translation>
-<translation id="1472675084647422956">显示更多</translation>
+<translation id="1472675084647422956">展开</translation>
 <translation id="1474785664565228650">重新启动 Parallels Desktop 后，对麦克风设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
 <translation id="1475502736924165259">您有一些证书不属于前面的任何类别</translation>
 <translation id="1476088332184200792">复制到您的设备</translation>
@@ -864,6 +863,7 @@
 <translation id="1954813140452229842">装载共享资源时出错。请检查您的凭据，然后重试。</translation>
 <translation id="1956050014111002555">该文件包含多个证书，但均未导入：</translation>
 <translation id="1956390763342388273">此操作会上传“<ph name="FOLDER_PATH" />”下的所有文件。请仅在您信任该网站的情况下执行此操作。</translation>
+<translation id="1960158217849594135">将用户名保存到您的 Google 帐号中？</translation>
 <translation id="196040970347962278">请先建立互联网连接</translation>
 <translation id="1962233722219655970">此页使用了您的计算机不支持的 Native Client 应用。</translation>
 <translation id="1963227389609234879">全部删除</translation>
@@ -2749,6 +2749,7 @@
 <translation id="412940972494182898">仅这一次允许运行 Flash</translation>
 <translation id="4130199216115862831">设备日志</translation>
 <translation id="4130207949184424187">此扩展程序更改了您通过多功能框进行搜索时系统显示的页面。</translation>
+<translation id="4130344535649650885">将密码保存到您的 Google 帐号中？</translation>
 <translation id="4130750466177569591">我同意</translation>
 <translation id="413121957363593859">组件</translation>
 <translation id="4131410914670010031">黑白色</translation>

@@ -204,6 +204,15 @@
 <translation id="1327466551276625742">离线时，弹出网络配置提示</translation>
 <translation id="1330145147221172764">启用屏幕键盘</translation>
 <translation id="13356285923490863">政策名称</translation>
+<translation id="1338603603553894503">此政策用于指定在浏览器启动时是启用、停用还是强制显示个人资料选择器。
+
+      在以下情况下，系统会默认不显示个人资料选择器：浏览器在访客模式或无痕模式下启动；个人资料目录和/或网址由命令行指定；用户已明确请求打开某个应用；用户从本地通知中启动了浏览器；只有 1 份可用的个人资料；ForceBrowserSignin 政策设为 true。
+
+      如果您选择了“已启用”(0) 或未设置此政策，系统会默认在浏览器启动时显示个人资料选择器，但用户将能够启用/停用它。
+
+      如果您选择了“已停用”(1)，系统会始终不显示个人资料选择器，而且用户将无法更改相关设置。
+
+      如果您选择了“强制”(2)，用户将无法禁止显示个人资料选择器，即使只有 1 份可用的个人资料也是如此。</translation>
 <translation id="1347198119056266798">此政策已被弃用，请改用 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> 和 <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />。如果设置了 <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> 政策、<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> 政策或（已弃用的）<ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> 政策，则系统会忽略此政策。
 
       强制启用安全搜索功能来处理 Google 网页搜索中的查询，并禁止用户更改此设置。此设置还会强制启用 YouTube“适中”受限模式。
@@ -328,6 +337,7 @@
       可用的数据类型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
       Chrome 会定期移除留存时长已超过 <ph name="TIME_TO_LIVE_IN_HOURS" /> 的所选类型数据。由于系统只会按特定的时间间隔执行这种删除操作，某些数据的留存时长可能会略久一点，但绝不会超过预期留存时长（<ph name="TIME_TO_LIVE_IN_HOURS" />）的 2 倍。
       </translation>
+<translation id="1506017854924185821">在浏览器启动时是否显示个人资料选择器</translation>
 <translation id="1509692106376861764">此政策从 <ph name="PRODUCT_NAME" /> 版本 29 起开始弃用。</translation>
 <translation id="1512974677514081818">为绑定到设备的企业打印机提供配置。
 
@@ -1734,6 +1744,7 @@
       如需详细了解 <ph name="CORS" />，请访问：<ph name="CORS_HELP_URL" />。
 
       请注意，我们曾宣布将在 <ph name="PRODUCT_NAME" /> 82 版中移除此政策，但已改为在 84 版中移除。</translation>
+<translation id="3606571057705314194">在浏览器启动时停用个人资料选择器</translation>
 <translation id="3627678165642179114">启用或停用拼写检查网络服务</translation>
 <translation id="3628480121685794414">启用单面打印</translation>
 <translation id="3631099945620529777">如果设为 false，则任务管理器中的“结束进程”按钮会处于停用状态。
@@ -1834,6 +1845,7 @@
       如果此设置处于停用状态，用户将不能使用 Smart Lock 登录功能。
 
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
+<translation id="3796527892245558832">在浏览器启动时显示个人资料选择器</translation>
 <translation id="3803171355925844705">不允许任何网站加载混合内容</translation>
 <translation id="3808945828600697669">指定已停用插件的列表</translation>
 <translation id="3810642039169532482">在登录屏幕上启用“语音输入”无障碍功能。
@@ -3523,6 +3535,7 @@
       如果此政策设为 0，客户端将无法更改机器帐号密码。
 
       注意：如果客户端在较长时间内一直处于离线状态，那么即使指定的天数已过，密码可能也不会更改。</translation>
+<translation id="6280973140313576289">在浏览器启动时强制显示个人资料选择器</translation>
 <translation id="6281043242780654992">配置本地消息传递政策。不允许黑名单中列出的本地消息传递主机（除非相应主机已列入白名单）。</translation>
 <translation id="6282524907402492171">显示 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
 <translation id="6282799760374509080">是否允许音频捕获</translation>

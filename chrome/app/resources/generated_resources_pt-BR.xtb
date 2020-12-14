@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Editar mecanismo de pesquisa</translation>
 <translation id="1129850422003387628">Gerenciar apps</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: parte do grupo <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Agora, é possível receber notificações do seu smartphone no <ph name="DEVICE_TYPE" />. Ao dispensá-las no <ph name="DEVICE_TYPE" />, elas também serão dispensadas no smartphone. Verifique se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados.</translation>
 <translation id="1134009406053225289">Abrir em uma janela anônima</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" /></translation>
 <translation id="1136712381129578788">A chave de segurança está bloqueada porque o PIN incorreto foi inserido muitas vezes. Remova e insira a chave novamente para desbloqueá-la.</translation>
@@ -636,7 +635,7 @@
 <translation id="168991973552362966">Adicionar uma impressora próxima</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
 <translation id="1692115862433274081">Usar outra conta</translation>
-<translation id="1692118695553449118">A sincronização está ativada</translation>
+<translation id="1692118695553449118">Sincronização ativada</translation>
 <translation id="1692210323591458290">Roxo-escuro</translation>
 <translation id="1697150536837697295">Arte</translation>
 <translation id="1697686431566694143">Editar arquivo</translation>
@@ -3547,7 +3546,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5125751979347152379">URL inválido.</translation>
 <translation id="5126611267288187364">Ver alterações</translation>
 <translation id="5127620150973591153">Código da conexão segura: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">A sincronização está desativada</translation>
+<translation id="5127805178023152808">Sincronização desativada</translation>
 <translation id="5127881134400491887">Gerenciar conexões de rede</translation>
 <translation id="512903556749061217">conectado</translation>
 <translation id="5131591206283983824">Arrastar com toque no touchpad</translation>
@@ -6928,7 +6927,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9031549947500880805">Fazer backup no Google Drive Restaure seus dados ou troque de dispositivo a qualquer momento com facilidade. Seu backup inclui dados do app.</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">&amp;Colar</translation>
-<translation id="9037818663270399707">Sua conexão não é privada em todo o tráfego de rede</translation>
+<translation id="9037818663270399707">Sua conexão não é particular em todo o tráfego de rede</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Você só tem mais 1 tentativa.}one{Você só tem mais # tentativa.}other{Você só tem mais # tentativas.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>

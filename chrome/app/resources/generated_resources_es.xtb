@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Editar motor de búsqueda</translation>
 <translation id="1129850422003387628">Gestionar aplicaciones</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: parte del grupo <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Ya puedes recibir notificaciones de tu teléfono en tu <ph name="DEVICE_TYPE" />. Cuando cierres una notificación en tu <ph name="DEVICE_TYPE" />, también se cerrará en tu teléfono. Comprueba que tengas el teléfono cerca, que esté desbloqueado y que las conexiones Bluetooth y Wi‑Fi estén activadas.</translation>
 <translation id="1134009406053225289">Abrir en una ventana de incógnito</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">La llave de seguridad está bloqueada porque se ha introducido el PIN de forma incorrecta demasiadas veces. Para desbloquearla, quítala y vuelve a introducirla.</translation>
@@ -880,7 +879,7 @@
 <translation id="1974043046396539880">Puntos de distribución de listas de revocación de certificados</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1974159333077206889">Mismo audio para todos los altavoces</translation>
-<translation id="1974821797477522211">Conectarse a la red</translation>
+<translation id="1974821797477522211">Conéctate a la red</translation>
 <translation id="1975841812214822307">Quitar...</translation>
 <translation id="1976150099241323601">Iniciar sesión en al dispositivo de seguridad</translation>
 <translation id="1976307821760494606"><ph name="DOMAIN" /> ha inhabilitado la depuración ADB. Este proceso restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
@@ -1480,7 +1479,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2665394472441560184">Añade una palabra nueva</translation>
 <translation id="2665647207431876759">Caducado</translation>
 <translation id="2665717534925640469">Esta página se muestra ahora en pantalla completa y ha inhabilitado el cursor del ratón.</translation>
-<translation id="2665919335226618153">¡Oh, no! Se ha producido un error dando formato.</translation>
+<translation id="2665919335226618153">¡Vaya! Se ha producido un error dando formato.</translation>
 <translation id="2667463864537187133">Administrar la revisión ortográfica</translation>
 <translation id="2669241540496514785">No se ha podido abrir el archivo <ph name="APP_NAME" /></translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está compartiendo una pestaña de Chrome.</translation>
@@ -7002,7 +7001,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9126149354162942022">Color del cursor</translation>
 <translation id="9128317794749765148">No se ha podido completar la configuración</translation>
 <translation id="9128335130883257666">Abrir página de configuración de <ph name="INPUT_METHOD_NAME" /></translation>
-<translation id="9128870381267983090">Conectarse a la red</translation>
+<translation id="9128870381267983090">Conéctate a la red</translation>
 <translation id="9130015405878219958">Modo no válido introducido</translation>
 <translation id="9131487537093447019">Enviar y recibir mensajes desde dispositivos Bluetooth.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>

@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">खोज इंजन में बदलाव करें</translation>
 <translation id="1129850422003387628">ऐप्लिकेशन प्रबंधित करें</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - <ph name="GROUP_NAME" /> ग्रुप का हिस्सा</translation>
-<translation id="1130712065489627903">आप अब <ph name="DEVICE_TYPE" /> पर अपने फ़ोन की सूचनाएं पा सकते हैं. <ph name="DEVICE_TYPE" /> पर सूचनाएं खारिज करने पर ये आपके फ़ोन से भी खारिज हो जाएंगी. पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, यह भी कि उस पर ब्लूटूथ और वाई-फ़ाई चालू हैं.</translation>
 <translation id="1134009406053225289">गुप्त विंडो में खोलें</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" /> में से <ph name="EMOJI_INDEX" />.</translation>
 <translation id="1136712381129578788">सुरक्षा कुंजी लॉक कर दी गई है क्योंकि गलत पिन कई बार डाला गया है. सुरक्षा कुंजी को अनलॉक करने के लिए, इसे हटाएं और फिर से लगाएं.</translation>
@@ -2755,7 +2754,7 @@
 <translation id="412940972494182898">इस बार फ़्लैश चलाएं</translation>
 <translation id="4130199216115862831">डिवाइस लॉग</translation>
 <translation id="4130207949184424187">इस एक्सटेंशन ने यह बदल दिया है कि जब आप ऑम्निबॉक्स से खोजते हैं तब कौन सा पेज दिखाया जाए.</translation>
-<translation id="4130344535649650885">क्या आप ये पासवर्ड अपने Google खाते में सेव करना चाहते हैं?</translation>
+<translation id="4130344535649650885">क्या आप यह पासवर्ड अपने Google खाते में सेव करना चाहते हैं?</translation>
 <translation id="4130750466177569591">मैं सहमत हूं</translation>
 <translation id="413121957363593859">घटक</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>

@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">編輯搜尋引擎</translation>
 <translation id="1129850422003387628">管理應用程式</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 屬於「<ph name="GROUP_NAME" />」群組</translation>
-<translation id="1130712065489627903">現在你可以在 <ph name="DEVICE_TYPE" /> 上接收手機的通知。在 <ph name="DEVICE_TYPE" /> 上關閉通知也會關閉手機上的通知。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="1134009406053225289">在無痕式視窗中開啟</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 個，總共 <ph name="EMOJI_COUNT" /> 個。</translation>
 <translation id="1136712381129578788">由於你輸入太多次錯誤的 PIN 碼，因此安全金鑰已遭到鎖定。如要解鎖，請移除安全金鑰後重新插入。</translation>

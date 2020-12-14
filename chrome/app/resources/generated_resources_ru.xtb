@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Изменить поисковую систему</translation>
 <translation id="1129850422003387628">Управление приложениями</translation>
 <translation id="1130589222747246278">"<ph name="WINDOW_TITLE" />" – элемент группы "<ph name="GROUP_NAME" />"</translation>
-<translation id="1130712065489627903">Теперь вы можете получать уведомления с телефона на устройстве <ph name="DEVICE_TYPE" />. Если вы скроете уведомление на <ph name="DEVICE_TYPE" />, оно будет скрыто и на телефоне. Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="1134009406053225289">Открыть в режиме инкогнито</translation>
 <translation id="1136179794690960030">Эмодзи <ph name="EMOJI_NAME" />: <ph name="EMOJI_INDEX" />из <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Слишком много попыток ввода PIN-кода. Электронный ключ заблокирован. Чтобы разблокировать ключ, извлеките его и вставьте снова.</translation>

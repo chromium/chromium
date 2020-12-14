@@ -122,7 +122,6 @@
 <translation id="1128591060186966949">Endre i søkemotoren</translation>
 <translation id="1129850422003387628">Administrer apper</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – del av gruppen <ph name="GROUP_NAME" /></translation>
-<translation id="1130712065489627903">Du kan nå motta varsler fra telefonen din på <ph name="DEVICE_TYPE" />. Hvis du lukker varsler på <ph name="DEVICE_TYPE" />, blir de også lukket på telefonen. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og Wi-Fi er slått på.</translation>
 <translation id="1134009406053225289">Åpne i inkognitovindu</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" /> – <ph name="EMOJI_INDEX" /> av <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Sikkerhetsnøkkelen er låst fordi feil PIN-kode ble skrevet inn for mange ganger. For å låse den opp, ta den ut og sett den inn på nytt.</translation>
