@@ -70,11 +70,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
       DBusMethodCallback<cryptohome::BaseReply> callback) override;
   void GetRsuDeviceId(
       DBusMethodCallback<cryptohome::BaseReply> callback) override;
-  void TpmIsReady(DBusMethodCallback<bool> callback) override;
-  void TpmIsEnabled(DBusMethodCallback<bool> callback) override;
-  bool CallTpmIsEnabledAndBlock(bool* enabled) override;
-  void TpmIsOwned(DBusMethodCallback<bool> callback) override;
-  bool CallTpmIsOwnedAndBlock(bool* owned) override;
   void Pkcs11IsTpmTokenReady(DBusMethodCallback<bool> callback) override;
   void Pkcs11GetTpmTokenInfo(
       DBusMethodCallback<TpmTokenInfo> callback) override;
@@ -186,12 +181,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   // Runs pending availability callbacks reporting that the service is
   // unavailable. Expects service not to be available when called.
   void ReportServiceIsNotAvailable();
-
-  // Changes the behavior of TpmIsReady().
-  void set_tpm_is_ready(bool value) { tpm_is_ready_ = value; }
-
-  // Changes the behavior of TpmIsEnabled().
-  void set_tpm_is_enabled(bool value) { tpm_is_enabled_ = value; }
 
   // Sets whether the MountEx() call should fail when the |create| field is not
   // provided (the error code will be CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND).
@@ -370,8 +359,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) FakeCryptohomeClient
   bool supports_low_entropy_credentials_ = false;
   // Controls if CheckKeyEx actually checks the key.
   bool enable_auth_check_ = false;
-  bool tpm_is_ready_ = true;
-  bool tpm_is_enabled_ = true;
 
   // Reply to GetRsuDeviceId().
   std::string rsu_device_id_;

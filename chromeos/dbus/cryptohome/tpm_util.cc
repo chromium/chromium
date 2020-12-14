@@ -14,18 +14,6 @@
 namespace chromeos {
 namespace tpm_util {
 
-bool TpmIsEnabled() {
-  bool result = false;
-  CryptohomeClient::Get()->CallTpmIsEnabledAndBlock(&result);
-  return result;
-}
-
-bool TpmIsOwned() {
-  bool result = false;
-  CryptohomeClient::Get()->CallTpmIsOwnedAndBlock(&result);
-  return result;
-}
-
 bool InstallAttributesGet(const std::string& name, std::string* value) {
   std::vector<uint8_t> buf;
   bool success = false;

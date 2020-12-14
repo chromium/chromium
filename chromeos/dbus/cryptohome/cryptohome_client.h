@@ -213,25 +213,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
   virtual void GetRsuDeviceId(
       DBusMethodCallback<cryptohome::BaseReply> callback) = 0;
 
-  // Calls TpmIsReady method.
-  virtual void TpmIsReady(DBusMethodCallback<bool> callback) = 0;
-
-  // Calls TpmIsEnabled method.
-  virtual void TpmIsEnabled(DBusMethodCallback<bool> callback) = 0;
-
-  // Calls TpmIsEnabled method and returns true when the call succeeds.
-  // This method blocks until the call returns.
-  // TODO(hashimoto): Remove this method. crbug.com/141006
-  virtual bool CallTpmIsEnabledAndBlock(bool* enabled) = 0;
-
-  // Calls TpmIsOwned method.
-  virtual void TpmIsOwned(DBusMethodCallback<bool> callback) = 0;
-
-  // Calls TpmIsOwned method and returns true when the call succeeds.
-  // This method blocks until the call returns.
-  // TODO(hashimoto): Remove this method. crbug.com/141012
-  virtual bool CallTpmIsOwnedAndBlock(bool* owned) = 0;
-
   // Calls Pkcs11IsTpmTokenReady method.
   virtual void Pkcs11IsTpmTokenReady(DBusMethodCallback<bool> callback) = 0;
 

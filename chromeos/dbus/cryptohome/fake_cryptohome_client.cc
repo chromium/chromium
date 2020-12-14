@@ -167,31 +167,6 @@ void FakeCryptohomeClient::GetRsuDeviceId(
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
-void FakeCryptohomeClient::TpmIsReady(DBusMethodCallback<bool> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), tpm_is_ready_));
-}
-
-void FakeCryptohomeClient::TpmIsEnabled(DBusMethodCallback<bool> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), tpm_is_enabled_));
-}
-
-bool FakeCryptohomeClient::CallTpmIsEnabledAndBlock(bool* enabled) {
-  *enabled = tpm_is_enabled_;
-  return true;
-}
-
-void FakeCryptohomeClient::TpmIsOwned(DBusMethodCallback<bool> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
-bool FakeCryptohomeClient::CallTpmIsOwnedAndBlock(bool* owned) {
-  *owned = true;
-  return true;
-}
-
 void FakeCryptohomeClient::Pkcs11IsTpmTokenReady(
     DBusMethodCallback<bool> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
