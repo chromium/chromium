@@ -74540,6 +74540,12 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="UpdateEngineErrorCode">
+  <summary>
+    Tracks the Action exit codes of Update Engine.
+
+    Enum values need to ALWAYS be same as ErrorCode:
+    chromeos_public/src/aosp/system/update_engine/common/error_code.h
+  </summary>
   <int value="0" label="kErrorCodeSuccess"/>
   <int value="1" label="kErrorCodeError"/>
   <int value="2" label="kErrorCodeOmahaRequestError"/>
@@ -74600,10 +74606,9 @@ Full version information for the fingerprint enum values:
   <int value="57" label="kErrorCodeInternalLibCurlError"/>
   <int value="58" label="kErrorCodeUnresolvedHostError"/>
   <int value="59" label="kErrorCodeUnresolvedHostRecovered"/>
-  <int value="60" label="kErrorUnresolvedHostRecovered"/>
-  <int value="61" label="kErrorNotEnoughSpace"/>
-  <int value="62" label="kErrorDeviceCorrupted"/>
-  <int value="63" label="kErrorPackageExcludedFromUpdate"/>
+  <int value="60" label="kErrorCodeNotEnoughSpace"/>
+  <int value="61" label="kErrorCodeDeviceCorrupted"/>
+  <int value="62" label="kErrorCodePackageExcludedFromUpdate"/>
 </enum>
 
 <enum name="UpdateEngineInstallDateProvisioningSource">
