@@ -418,8 +418,6 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void WarnUnusedPreloads();
 
-  void OnBackForwardCacheEvictionTimerFired();
-
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
   Member<FetchContext> context_;
@@ -472,9 +470,6 @@ class PLATFORM_EXPORT ResourceFetcher
       blob_registry_remote_;
 
   HeapHashSet<Member<SubresourceWebBundle>> subresource_web_bundles_;
-
-  base::OneShotTimer back_forward_cache_eviction_timer_;
-  base::TimeDelta back_forward_cache_timeout_;
 
   // This is not in the bit field below because we want to use AutoReset.
   bool is_in_request_resource_ = false;

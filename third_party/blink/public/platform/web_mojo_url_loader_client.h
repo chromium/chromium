@@ -93,8 +93,13 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
   // Dispatches the messages received after SetDefersLoading is called.
   void FlushDeferredMessages();
 
+  void EvictFromBackForwardCacheDueToTimeout();
+  void StopBackForwardCacheEvictionTimer();
+
   std::vector<std::unique_ptr<DeferredMessage>> deferred_messages_;
   std::unique_ptr<BodyBuffer> body_buffer_;
+  base::OneShotTimer back_forward_cache_eviction_timer_;
+  base::TimeDelta back_forward_cache_timeout_;
   const int request_id_;
   bool has_received_response_head_ = false;
   bool has_received_response_body_ = false;

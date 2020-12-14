@@ -24,6 +24,8 @@ namespace blink {
 namespace {
 
 constexpr size_t kDefaultMaxBufferedBodyBytes = 100 * 1000;
+constexpr base::TimeDelta kGracePeriodToFinishLoadingWhileInBackForwardCache =
+    base::TimeDelta::FromSeconds(15);
 
 }  // namespace
 
@@ -283,17 +285,35 @@ WebMojoURLLoaderClient::WebMojoURLLoaderClient(
       url_loader_client_observer_(url_loader_client_observer),
       task_runner_(std::move(task_runner)),
       bypass_redirect_checks_(bypass_redirect_checks),
-      last_loaded_url_(request_url) {}
+      last_loaded_url_(request_url) {
+  back_forward_cache_timeout_ =
+      base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kLoadingTasksUnfreezable,
+          "grace_period_to_finish_loading_in_seconds",
+          static_cast<int>(
+              kGracePeriodToFinishLoadingWhileInBackForwardCache.InSeconds())));
+}
 
 WebMojoURLLoaderClient::~WebMojoURLLoaderClient() = default;
 
 void WebMojoURLLoaderClient::SetDefersLoading(WebURLLoader::DeferType value) {
   deferred_state_ = value;
   if (value == WebURLLoader::DeferType::kNotDeferred) {
+    StopBackForwardCacheEvictionTimer();
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WebMojoURLLoaderClient::FlushDeferredMessages,
                        weak_factory_.GetWeakPtr()));
+  } else if (IsDeferredWithBackForwardCache() && !has_received_complete_ &&
+             !back_forward_cache_eviction_timer_.IsRunning()) {
+    // We should evict the page associated with this load if the connection
+    // takes too long until it either finished or failed.
+    back_forward_cache_eviction_timer_.SetTaskRunner(task_runner_);
+    back_forward_cache_eviction_timer_.Start(
+        FROM_HERE, back_forward_cache_timeout_,
+        base::BindOnce(
+            &WebMojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout,
+            weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -313,9 +333,20 @@ void WebMojoURLLoaderClient::OnReceiveResponse(
                                                     std::move(response_head));
   }
 }
+
 void WebMojoURLLoaderClient::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
+  StopBackForwardCacheEvictionTimer();
   url_loader_client_observer_->EvictFromBackForwardCache(reason, request_id_);
+}
+
+void WebMojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout() {
+  EvictFromBackForwardCache(
+      blink::mojom::RendererEvictionReason::kNetworkRequestTimeout);
+}
+
+void WebMojoURLLoaderClient::StopBackForwardCacheEvictionTimer() {
+  back_forward_cache_eviction_timer_.Stop();
 }
 
 void WebMojoURLLoaderClient::OnReceiveRedirect(
@@ -324,9 +355,8 @@ void WebMojoURLLoaderClient::OnReceiveRedirect(
   DCHECK(!has_received_response_head_);
   if (deferred_state_ ==
       blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
-    url_loader_client_observer_->EvictFromBackForwardCache(
-        blink::mojom::RendererEvictionReason::kNetworkRequestRedirected,
-        request_id_);
+    EvictFromBackForwardCache(
+        blink::mojom::RendererEvictionReason::kNetworkRequestRedirected);
     // Close the connections and dispatch and OnComplete message.
     url_loader_.reset();
     url_loader_client_receiver_.reset();
@@ -443,6 +473,7 @@ void WebMojoURLLoaderClient::OnStartLoadingResponseBody(
 void WebMojoURLLoaderClient::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   has_received_complete_ = true;
+  StopBackForwardCacheEvictionTimer();
 
   // Dispatch completion status to the WebMojoURLLoaderClientObserver.
   // Except for errors, there must always be a response's body.
