@@ -213267,6 +213267,10 @@
      ]
     },
     "form-associated": {
+     "ElementInternals-setFormValue-expected.txt": [
+      "8e4f1857be462a3e33b00c9112964fa3e77411f3",
+      []
+     ],
      "ElementInternals-validation-expected.txt": [
       "02fab551c01dc3b26122fab38baa37cf145c2f15",
       []
@@ -313049,7 +313053,7 @@
       ]
      ],
      "ElementInternals-setFormValue.html": [
-      "28cf3ec3d0a6117afde014253a9a68f8de0eb7f2",
+      "66ff8841a6966ca2790d486bf5d8208e3fe31195",
       [
        null,
        {}

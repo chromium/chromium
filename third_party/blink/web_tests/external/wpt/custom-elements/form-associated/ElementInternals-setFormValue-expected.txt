@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+PASS Single value - name is missing
+PASS Single value - empty name exists
+PASS Single value - Non-empty name exists
+PASS Null value should submit nothing
+PASS Multiple values - name content attribute is ignored
+PASS setFormValue with an empty FormData should submit nothing
+PASS Newline normalization - \n in name
+PASS Newline normalization - \r in name
+PASS Newline normalization - \r\n in name
+PASS Newline normalization - \n\r in name
+PASS Newline normalization - \n in value
+PASS Newline normalization - \r in value
+PASS Newline normalization - \r\n in value
+PASS Newline normalization - \n\r in value
+PASS Newline normalization - \n in filename
+PASS Newline normalization - \r in filename
+PASS Newline normalization - \r\n in filename
+PASS Newline normalization - \n\r in filename
+FAIL Newline normalization - \n in FormData name assert_equals: expected "?a%0Ab=c" but got "?a%0D%0Ab=c"
+FAIL Newline normalization - \r in FormData name assert_equals: expected "?a%0Db=c" but got "?a%0D%0Ab=c"
+PASS Newline normalization - \r\n in FormData name
+FAIL Newline normalization - \n\r in FormData name assert_equals: expected "?a%0A%0Db=c" but got "?a%0D%0A%0D%0Ab=c"
+FAIL Newline normalization - \n in FormData value assert_equals: expected "?a=b%0Ac" but got "?a=b%0D%0Ac"
+FAIL Newline normalization - \r in FormData value assert_equals: expected "?a=b%0Dc" but got "?a=b%0D%0Ac"
+PASS Newline normalization - \r\n in FormData value
+FAIL Newline normalization - \n\r in FormData value assert_equals: expected "?a=b%0A%0Dc" but got "?a=b%0D%0A%0D%0Ac"
+Harness: the test ran to completion.
+
