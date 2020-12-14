@@ -43,6 +43,9 @@ crbug.com/1048761 external/wpt/infrastructure/server/http2-context.sub.h2.any.se
 crbug.com/1048761 external/wpt/infrastructure/server/http2-context.sub.h2.any.sharedworker.html [ Skip ]
 crbug.com/1048761 external/wpt/infrastructure/server/http2-context.sub.h2.any.worker.html [ Skip ]
 crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-http.sub.html [ Skip ]
+crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html [ Skip ]
+crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=h2 [ Skip ]
+crbug.com/1048761 external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=https [ Skip ]
 
 # WPT Test harness doesn't deal with finding an about:blank ref test
 crbug.com/1066130 external/wpt/infrastructure/assumptions/blank.html [ Failure ]
@@ -5914,9 +5917,3 @@ crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [
 # Wpt importer Sheriff 2020-12-11
 crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Pass Failure ]
 crbug.com/626703 [ Mac ] external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Pass Failure ]
-crbug.com/626703 [ Mac ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html [ Pass Failure ]
-crbug.com/626703 [ Win ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html [ Pass Failure ]
-crbug.com/626703 [ Mac ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=h2 [ Pass Failure ]
-crbug.com/626703 [ Win ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=h2 [ Pass Failure ]
-crbug.com/626703 [ Mac ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=https [ Pass Failure ]
-crbug.com/626703 [ Win ] external/wpt/infrastructure/server/wpt-server-wpt-flags.sub.html?wpt_flags=https [ Pass Failure ]
