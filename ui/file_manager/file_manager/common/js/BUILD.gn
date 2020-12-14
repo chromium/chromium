@@ -52,6 +52,7 @@ js_type_check("closure_compile_jsmodules") {
     ":metrics.m",
     ":metrics_base.m",
     ":mock_entry.m",
+    ":progress_center_common.m",
     ":trash.m",
     ":util.m",
   ]
@@ -292,6 +293,12 @@ js_library("mock_entry.m") {
 js_library("progress_center_common") {
 }
 
+js_library("progress_center_common.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/progress_center_common.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("trash") {
   deps = [
     "//ui/file_manager/base/js:volume_manager_types",
@@ -421,18 +428,19 @@ js_test_gen_html("js_test_gen_html_modules") {
 js_modulizer("modulize") {
   input_files = [
     "async_util.js",
+    "file_operation_common.js",
     "file_type.js",
     "files_app_entry_types.js",
-    "file_operation_common.js",
+    "importer_common.js",
     "lru_cache.js",
     "metrics.js",
     "metrics_base.js",
     "mock_entry.js",
-    "util.js",
-    "trash.js",
-    "importer_common.js",
+    "progress_center_common.js",
     "test_importer_common.js",
+    "trash.js",
     "unittest_util.js",
+    "util.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

@@ -3,27 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * Event of the ProgressCenter class.
- * @const @enum {string}
- */
-const ProgressCenterEvent = {
-  /**
-   * Background page notifies item update to application windows.
-   */
-  ITEM_UPDATED: 'itemUpdated',
-
-  /**
-   * Background page notifies all the items are cleared.
-   */
-  RESET: 'reset'
-};
-Object.freeze(ProgressCenterEvent);
-
-/**
  * State of progress items.
  * @const @enum {string}
  */
-const ProgressItemState = {
+/* #export */ const ProgressItemState = {
   PROGRESSING: 'progressing',
   COMPLETED: 'completed',
   ERROR: 'error',
@@ -35,7 +18,7 @@ Object.freeze(ProgressItemState);
  * Type of progress items.
  * @const @enum {string}
  */
-const ProgressItemType = {
+/* #export */ const ProgressItemType = {
   // The item is file copy operation.
   COPY: 'copy',
   // The item is file move operation.
@@ -61,7 +44,7 @@ Object.freeze(ProgressItemType);
 /**
  * Item of the progress center.
  */
-class ProgressCenterItem {
+/* #export */ class ProgressCenterItem {
   constructor() {
     /**
      * Item ID.
