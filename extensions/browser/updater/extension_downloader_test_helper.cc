@@ -54,9 +54,6 @@ void MockExtensionDownloaderDelegate::DelegateTo(
   ON_CALL(*this, GetPingDataForExtension(_, _))
       .WillByDefault(Invoke(
           delegate, &ExtensionDownloaderDelegate::GetPingDataForExtension));
-  ON_CALL(*this, GetUpdateUrlData(_))
-      .WillByDefault(
-          Invoke(delegate, &ExtensionDownloaderDelegate::GetUpdateUrlData));
   ON_CALL(*this, IsExtensionPending(_))
       .WillByDefault(
           Invoke(delegate, &ExtensionDownloaderDelegate::IsExtensionPending));

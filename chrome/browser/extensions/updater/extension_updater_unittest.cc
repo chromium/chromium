@@ -73,6 +73,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/verifier_formats.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/escape.h"
@@ -804,7 +805,10 @@ class ExtensionUpdaterTest : public testing::Test {
       const std::string& id = extensions[i]->id();
       EXPECT_CALL(helper.delegate(), GetPingDataForExtension(id, _));
 
-      helper.downloader().AddExtension(*extensions[i], 0, fetch_priority);
+      helper.downloader().AddPendingExtensionWithVersion(
+          id, ManifestURL::GetUpdateURL(extensions[i].get()),
+          extensions[i]->location(), false, 0, fetch_priority,
+          extensions[i]->version(), extensions[i]->GetType(), std::string());
     }
 
     // Get the headers our loader was asked to fetch.
@@ -2765,8 +2769,9 @@ TEST_F(ExtensionUpdaterTest, TestAddPendingExtensionWithVersion) {
       .WillOnce(Return(false));
   EXPECT_TRUE(helper->downloader().AddPendingExtensionWithVersion(
       id, GURL("http://example.com/update"), Manifest::INTERNAL, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion)));
-  helper->downloader().StartAllPending(NULL);
+      ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
+      Manifest::TYPE_UNKNOWN, std::string()));
+  helper->downloader().StartAllPending(nullptr);
   Mock::VerifyAndClearExpectations(&helper->delegate());
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
@@ -2774,15 +2779,17 @@ TEST_F(ExtensionUpdaterTest, TestAddPendingExtensionWithVersion) {
   id = crx_file::id_util::GenerateId("foo2");
   EXPECT_FALSE(helper->downloader().AddPendingExtensionWithVersion(
       id, GURL("http:google.com:foo"), Manifest::INTERNAL, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion)));
-  helper->downloader().StartAllPending(NULL);
+      ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
+      Manifest::TYPE_UNKNOWN, std::string()));
+  helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with empty IDs should be rejected.
   EXPECT_FALSE(helper->downloader().AddPendingExtensionWithVersion(
       std::string(), GURL(), Manifest::INTERNAL, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion)));
-  helper->downloader().StartAllPending(NULL);
+      ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
+      Manifest::TYPE_UNKNOWN, std::string()));
+  helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Reset the ExtensionDownloader so that it drops the current fetcher.
@@ -2796,8 +2803,9 @@ TEST_F(ExtensionUpdaterTest, TestAddPendingExtensionWithVersion) {
       .WillOnce(Return(false));
   EXPECT_TRUE(helper->downloader().AddPendingExtensionWithVersion(
       id, GURL(), Manifest::INTERNAL, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion)));
-  helper->downloader().StartAllPending(NULL);
+      ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
+      Manifest::TYPE_UNKNOWN, std::string()));
+  helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   RunUntilIdle();

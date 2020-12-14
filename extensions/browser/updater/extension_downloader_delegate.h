@@ -263,10 +263,6 @@ class ExtensionDownloaderDelegate {
   virtual bool GetPingDataForExtension(const ExtensionId& id,
                                        ManifestFetchData::PingData* ping);
 
-  // Invoked to get the update url data for this extension's update url, if
-  // there is any. The default implementation returns an empty string.
-  virtual std::string GetUpdateUrlData(const ExtensionId& id);
-
   // Invoked to determine whether extension |id| is currently
   // pending installation.
   virtual bool IsExtensionPending(const ExtensionId& id) = 0;

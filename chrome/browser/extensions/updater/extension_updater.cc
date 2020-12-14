@@ -302,12 +302,39 @@ void ExtensionUpdater::AddToDownloader(
     if (!base::Contains(pending_ids, extension_id)) {
       if (CanUseUpdateService(extension_id)) {
         update_check_params->update_info[extension_id] = ExtensionUpdateData();
-      } else if (downloader_->AddExtension(extension, request_id,
-                                           fetch_priority)) {
+      } else if (AddExtensionToDownloader(extension, request_id,
+                                          fetch_priority)) {
         request.in_progress_ids_.insert(extension_id);
       }
     }
   }
+}
+
+bool ExtensionUpdater::AddExtensionToDownloader(
+    const Extension& extension,
+    int request_id,
+    ManifestFetchData::FetchPriority fetch_priority) {
+  GURL update_url = ManifestURL::GetUpdateURL(&extension);
+  // Skip extensions with empty update URLs converted from user
+  // scripts.
+  if (extension.converted_from_user_script() && update_url.is_empty()) {
+    return false;
+  }
+
+  DCHECK(alive_);
+
+  // If the extension updates itself from the gallery, ignore any update URL
+  // data.  At the moment there is no extra data that an extension can
+  // communicate to the gallery update servers.
+  std::string update_url_data;
+  if (!ManifestURL::UpdatesFromGallery(&extension))
+    update_url_data =
+        extension::GetUpdateURLData(extension_prefs_, extension.id());
+
+  return downloader_->AddPendingExtensionWithVersion(
+      extension.id(), update_url, extension.location(),
+      false /*is_corrupt_reinstall*/, request_id, fetch_priority,
+      extension.version(), extension.GetType(), update_url_data);
 }
 
 void ExtensionUpdater::CheckNow(CheckParams params) {
@@ -398,8 +425,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
       if (extension) {
         if (CanUseUpdateService(id)) {
           update_check_params.update_info[id] = ExtensionUpdateData();
-        } else if (downloader_->AddExtension(*extension, request_id,
-                                             params.fetch_priority)) {
+        } else if (AddExtensionToDownloader(*extension, request_id,
+                                            params.fetch_priority)) {
           request.in_progress_ids_.insert(extension->id());
         }
       }
@@ -543,11 +570,6 @@ bool ExtensionUpdater::GetPingDataForExtension(
       CalculateActivePingDays(extension_prefs_->LastActivePingDay(id),
                               extension_prefs_->GetActiveBit(id));
   return true;
-}
-
-std::string ExtensionUpdater::GetUpdateUrlData(const ExtensionId& id) {
-  DCHECK(alive_);
-  return extension::GetUpdateURLData(extension_prefs_, id);
 }
 
 bool ExtensionUpdater::IsExtensionPending(const ExtensionId& id) {

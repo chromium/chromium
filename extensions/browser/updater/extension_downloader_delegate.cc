@@ -69,9 +69,4 @@ bool ExtensionDownloaderDelegate::GetPingDataForExtension(
   return false;
 }
 
-std::string ExtensionDownloaderDelegate::GetUpdateUrlData(
-    const ExtensionId& id) {
-  return std::string();
-}
-
 }  // namespace extensions

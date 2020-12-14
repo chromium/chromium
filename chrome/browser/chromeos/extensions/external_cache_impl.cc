@@ -270,7 +270,8 @@ void ExternalCacheImpl::CheckCache() {
         downloader_->AddPendingExtensionWithVersion(
             entry.first, update_url, extensions::Manifest::EXTERNAL_POLICY,
             false, 0, extensions::ManifestFetchData::FetchPriority::BACKGROUND,
-            base::Version(version));
+            base::Version(version), extensions::Manifest::TYPE_UNKNOWN,
+            std::string());
       }
     }
     if (is_cached) {
