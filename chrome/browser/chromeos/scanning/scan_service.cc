@@ -58,7 +58,23 @@ struct PngImageData {
 // |file_ext|.
 std::string CreateFilename(const base::Time::Exploded& start_time,
                            uint32_t page_number,
-                           const std::string& file_ext) {
+                           const mojo_ipc::FileType file_type) {
+  std::string file_ext;
+  switch (file_type) {
+    case mojo_ipc::FileType::kPng:
+      file_ext = "png";
+      break;
+    case mojo_ipc::FileType::kJpg:
+      file_ext = "jpg";
+      break;
+    case mojo_ipc::FileType::kPdf:
+      // The filename of a PDF doesn't include the page number.
+      return base::StringPrintf("scan_%02d%02d%02d-%02d%02d%02d.pdf",
+                                start_time.year, start_time.month,
+                                start_time.day_of_month, start_time.hour,
+                                start_time.minute, start_time.second);
+  }
+
   return base::StringPrintf(
       "scan_%02d%02d%02d-%02d%02d%02d_%d.%s", start_time.year, start_time.month,
       start_time.day_of_month, start_time.hour, start_time.minute,
@@ -142,27 +158,10 @@ base::Optional<PngImageData> GetPngData(sk_sp<SkData> img_data) {
   return acquired_data;
 }
 
-// Converts |png_img| to PDF and writes the PDF to |file_path|.
-// Returns whether the converted image was successfully saved.
-bool SaveAsPdf(const std::string& png_img, const base::FilePath& file_path) {
-  SkDynamicMemoryWStream img_stream;
-  if (!img_stream.write(png_img.c_str(), png_img.size())) {
-    LOG(ERROR) << "Unable to write image to dynamic memory stream.";
-    return false;
-  }
-
-  sk_sp<SkData> img_data = img_stream.detachAsData();
-  if (img_data->isEmpty()) {
-    LOG(ERROR) << "Stream data is empty.";
-    return false;
-  }
-
-  base::Optional<PngImageData> acquired_data = GetPngData(img_data);
-  if (!acquired_data.has_value()) {
-    LOG(ERROR) << "Unable to process image data.";
-    return false;
-  }
-
+// Converts |png_images| into a single PDF and writes the PDF to |file_path|.
+// Returns whether the PDF was successfully saved.
+bool SaveAsPdf(const std::vector<std::string>& png_images,
+               const base::FilePath& file_path) {
   SkFILEWStream pdf_outfile(file_path.value().c_str());
   if (!pdf_outfile.isValid()) {
     LOG(ERROR) << "Unable to open output file.";
@@ -171,12 +170,31 @@ bool SaveAsPdf(const std::string& png_img, const base::FilePath& file_path) {
 
   sk_sp<SkDocument> pdf_doc = SkPDF::MakeDocument(&pdf_outfile);
   SkASSERT(pdf_doc);
-  if (!AddPdfPage(pdf_doc, acquired_data.value())) {
-    LOG(ERROR) << "Unable to add new PDF page.";
-    return false;
+  for (const auto& png_img : png_images) {
+    SkDynamicMemoryWStream img_stream;
+    if (!img_stream.write(png_img.c_str(), png_img.size())) {
+      LOG(ERROR) << "Unable to write image to dynamic memory stream.";
+      return false;
+    }
+
+    sk_sp<SkData> img_data = img_stream.detachAsData();
+    if (img_data->isEmpty()) {
+      LOG(ERROR) << "Stream data is empty.";
+      return false;
+    }
+
+    base::Optional<PngImageData> acquired_data = GetPngData(img_data);
+    if (!acquired_data.has_value()) {
+      LOG(ERROR) << "Unable to process image data.";
+      return false;
+    }
+
+    if (!AddPdfPage(pdf_doc, acquired_data.value())) {
+      LOG(ERROR) << "Unable to add new PDF page.";
+      return false;
+    }
   }
 
-  // TODO(kmoed): Add multipage scan functionality.
   pdf_doc->close();
   return true;
 }
@@ -188,28 +206,16 @@ base::FilePath SavePage(const base::FilePath& scan_to_path,
                         std::string scanned_image,
                         uint32_t page_number,
                         const base::Time::Exploded& start_time) {
-  std::string filename;
-  switch (file_type) {
-    case mojo_ipc::FileType::kPng:
-      filename = CreateFilename(start_time, page_number, "png");
-      if (!WriteImage(scan_to_path.Append(filename), scanned_image))
-        return base::FilePath();
-
-      break;
-    case mojo_ipc::FileType::kJpg:
-      filename = CreateFilename(start_time, page_number, "jpg");
-      scanned_image = PngToJpg(scanned_image);
-      if (scanned_image.empty() ||
-          !WriteImage(scan_to_path.Append(filename), scanned_image)) {
-        return base::FilePath();
-      }
-      break;
-    case mojo_ipc::FileType::kPdf:
-      filename = CreateFilename(start_time, page_number, "pdf");
-      if (!SaveAsPdf(scanned_image, scan_to_path.Append(filename)))
-        return base::FilePath();
-
-      break;
+  std::string filename = CreateFilename(start_time, page_number, file_type);
+  if (file_type == mojo_ipc::FileType::kPng) {
+    if (!WriteImage(scan_to_path.Append(filename), scanned_image))
+      return base::FilePath();
+  } else if (file_type == mojo_ipc::FileType::kJpg) {
+    scanned_image = PngToJpg(scanned_image);
+    if (scanned_image.empty() ||
+        !WriteImage(scan_to_path.Append(filename), scanned_image)) {
+      return base::FilePath();
+    }
   }
 
   return scan_to_path.Append(filename);
@@ -279,6 +285,7 @@ void ScanService::StartScan(
   base::Time::Now().LocalExplode(&start_time_);
   save_failed_ = false;
   last_scanned_file_path_.clear();
+  scanned_images_.clear();
   lorgnette_scanner_manager_->Scan(
       scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
       base::BindRepeating(&ScanService::OnProgressPercentReceived,
@@ -364,6 +371,17 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
   scan_job_observer_->OnPageComplete(
       std::vector<uint8_t>(scanned_image.begin(), scanned_image.end()));
 
+  // If the selected file type is PDF, the PDF will be created after all the
+  // scanned images are received.
+  if (file_type == mojo_ipc::FileType::kPdf) {
+    scanned_images_.push_back(std::move(scanned_image));
+    if (last_scanned_file_path_.empty()) {
+      last_scanned_file_path_ = scan_to_path.Append(CreateFilename(
+          start_time_, /*not used*/ 0, mojo_ipc::FileType::kPdf));
+    }
+    return;
+  }
+
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
       base::BindOnce(&SavePage, scan_to_path, file_type,
@@ -373,6 +391,15 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
 }
 
 void ScanService::OnScanCompleted(bool success) {
+  if (!scanned_images_.empty()) {
+    base::PostTaskAndReplyWithResult(
+        task_runner_.get(), FROM_HERE,
+        base::BindOnce(&SaveAsPdf, scanned_images_, last_scanned_file_path_),
+        base::BindOnce(&ScanService::OnAllPagesSaved,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   // Post a task to the task runner to ensure all the pages have been saved
   // before reporting the scan job as complete.
   base::PostTaskAndReplyWithResult(
@@ -386,6 +413,7 @@ void ScanService::OnCancelCompleted(bool success) {
   if (success) {
     save_failed_ = false;
     last_scanned_file_path_.clear();
+    scanned_images_.clear();
   }
   scan_job_observer_->OnCancelComplete(success);
 }

@@ -139,6 +139,9 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Indicates whether there was a failure to save scanned images.
   bool save_failed_;
 
+  // The scanned images used to create a multipage PDF.
+  std::vector<std::string> scanned_images_;
+
   // The time a scan was started. Used in filenames when saving scanned images.
   base::Time::Exploded start_time_;
 

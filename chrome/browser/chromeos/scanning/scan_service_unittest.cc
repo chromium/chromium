@@ -85,6 +85,15 @@ std::vector<base::FilePath> CreateSavedScanPaths(
   return file_paths;
 }
 
+// Returns single FilePath to mimic saved PDF format scan.
+base::FilePath CreateSavedPdfScanPath(const base::FilePath& dir,
+                                      const base::Time::Exploded& scan_time) {
+  return dir.Append(base::StringPrintf("scan_%02d%02d%02d-%02d%02d%02d.pdf",
+                                       scan_time.year, scan_time.month,
+                                       scan_time.day_of_month, scan_time.hour,
+                                       scan_time.minute, scan_time.second));
+}
+
 // Returns a manually generated PNG image.
 std::string CreatePng() {
   SkBitmap bitmap;
@@ -340,19 +349,16 @@ TEST_F(ScanServiceTest, Scan) {
   base::Time::Now().LocalExplode(&scan_time);
 
   scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
-  mojo_ipc::ScanSettings settings =
-      CreateScanSettings(temp_dir_.GetPath(), mojo_ipc::FileType::kPng);
   std::map<std::string, mojo_ipc::FileType> file_types = {
-      {"png", mojo_ipc::FileType::kPng},
-      {"jpg", mojo_ipc::FileType::kJpg},
-      {"pdf", mojo_ipc::FileType::kPdf}};
+      {"png", mojo_ipc::FileType::kPng}, {"jpg", mojo_ipc::FileType::kJpg}};
   for (const auto& type : file_types) {
     const std::vector<base::FilePath> saved_scan_paths = CreateSavedScanPaths(
         temp_dir_.GetPath(), scan_time, type.first, scan_data.size());
     for (const auto& saved_scan_path : saved_scan_paths)
       EXPECT_FALSE(base::PathExists(saved_scan_path));
 
-    settings.file_type = type.second;
+    mojo_ipc::ScanSettings settings =
+        CreateScanSettings(temp_dir_.GetPath(), type.second);
     EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
     for (const auto& saved_scan_path : saved_scan_paths)
       EXPECT_TRUE(base::PathExists(saved_scan_path));
@@ -361,6 +367,32 @@ TEST_F(ScanServiceTest, Scan) {
     EXPECT_EQ(saved_scan_paths.back(),
               fake_scan_job_observer_.last_scanned_file_path());
   }
+}
+
+// Test that a scan with PDF file format can be perfomed successfully.
+TEST_F(ScanServiceTest, PdfScan) {
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
+      {kFirstTestScannerName});
+  const std::vector<std::string> scan_data = {CreatePng(), CreatePng(),
+                                              CreatePng()};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  base::Time::Exploded scan_time;
+  // Since we're using mock time, this is deterministic.
+  base::Time::Now().LocalExplode(&scan_time);
+
+  scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
+  mojo_ipc::ScanSettings settings =
+      CreateScanSettings(temp_dir_.GetPath(), mojo_ipc::FileType::kPdf);
+  const base::FilePath saved_scan_path =
+      CreateSavedPdfScanPath(temp_dir_.GetPath(), scan_time);
+  EXPECT_FALSE(base::PathExists(saved_scan_path));
+  EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
+  EXPECT_TRUE(base::PathExists(saved_scan_path));
+  EXPECT_TRUE(fake_scan_job_observer_.scan_success());
+  EXPECT_EQ(saved_scan_path, fake_scan_job_observer_.last_scanned_file_path());
 }
 
 // Test that when a scan fails, the scan job is marked as failed.
