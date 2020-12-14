@@ -296,12 +296,6 @@ extern const char kOmniboxOnFocusSuggestionsDescription[];
 extern const char kOmniboxLocalHistoryZeroSuggestName[];
 extern const char kOmniboxLocalHistoryZeroSuggestDescription[];
 
-#if defined(__IPHONE_13_4)
-// Title and description for the flag to enable pointer support on tablets.
-extern const char kPointerSupportName[];
-extern const char kPointerSupportDescription[];
-#endif  // defined(__IPHONE_13_4)
-
 // Title and description for the flag that enables the refactored new tab page.
 extern const char kRefactoredNTPName[];
 extern const char kRefactoredNTPDescription[];
