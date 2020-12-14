@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.feature_engagement.ScreenshotMonitor;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotMonitorDelegate;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
@@ -189,10 +190,11 @@ public class ToolbarButtonInProductHelpController
 
     @Override
     public void onScreenshotTaken() {
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It works correctly now, but
-        // it is not safe.
-        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        boolean isIncognito =
+                mActivity.getActivityTab() != null && mActivity.getActivityTab().isIncognito();
+        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
+                mActivity.getWindowAndroid(), isIncognito);
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.notifyEvent(EventConstants.SCREENSHOT_TAKEN_CHROME_IN_FOREGROUND);
 
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
