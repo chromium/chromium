@@ -194,6 +194,11 @@ void LocationBarView::Init() {
       is_popup_mode_, this, font_list);
   omnibox_view->Init();
   omnibox_view_ = AddChildView(std::move(omnibox_view));
+  // LocationBarView directs mouse button events from
+  // |omnibox_additional_text_view_| to |omnibox_view_| so that e.g., clicking
+  // the former will focus the latter. In order to receive |ShowContextMenu()|
+  // requests, LocationBarView must have a context menu controller.
+  set_context_menu_controller(omnibox_view_->context_menu_controller());
 
   // Initiate the Omnibox additional-text label.
   if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
@@ -1097,6 +1102,11 @@ void LocationBarView::OnMouseMoved(const ui::MouseEvent& event) {
 
 void LocationBarView::OnMouseExited(const ui::MouseEvent& event) {
   OnOmniboxHovered(false);
+}
+
+void LocationBarView::ShowContextMenu(const gfx::Point& p,
+                                      ui::MenuSourceType source_type) {
+  omnibox_view_->ShowContextMenu(p, source_type);
 }
 
 void LocationBarView::WriteDragDataForView(views::View* sender,

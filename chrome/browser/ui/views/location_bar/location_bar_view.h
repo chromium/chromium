@@ -301,13 +301,16 @@ class LocationBarView : public LocationBar,
   void OnVisibleBoundsChanged() override;
   void OnFocus() override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
-  // LocationBarView directs mouse button events from OmniboxAdditionalTextView
-  // to OmniboxView so that e.g., clicking the former will focus the latter.
+  // LocationBarView directs mouse button events from
+  // |omnibox_additional_text_view_| to |omnibox_view_| so that e.g., clicking
+  // the former will focus the latter.
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  void ShowContextMenu(const gfx::Point& p,
+                       ui::MenuSourceType source_type) override;
 
   // views::DragController:
   void WriteDragDataForView(View* sender,
