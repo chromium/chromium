@@ -162,7 +162,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   FrameOrWorkerScheduler* GetScheduler() final;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
   TrustedTypePolicyFactory* GetTrustedTypes() const final {
-    return trustedTypes();
+    return GetTrustedTypesForWorld(*GetCurrentWorld());
   }
   ScriptWrappable* ToScriptWrappable() final { return this; }
   void CountPotentialFeaturePolicyViolation(
@@ -392,7 +392,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Event* CurrentEvent() const;
   void SetCurrentEvent(Event*);
 
-  TrustedTypePolicyFactory* trustedTypes() const;
+  TrustedTypePolicyFactory* trustedTypes(ScriptState*) const;
+  TrustedTypePolicyFactory* GetTrustedTypesForWorld(
+      const DOMWrapperWorld&) const;
 
   // Returns true if this window is cross-site to the main frame. Defaults to
   // false in a detached window.
@@ -485,7 +487,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // We represent the "undefined" value as nullptr.
   Member<Event> current_event_;
 
-  mutable Member<TrustedTypePolicyFactory> trusted_types_;
+  // Store TrustedTypesPolicyFactory, per DOMWrapperWorld.
+  mutable HeapHashMap<scoped_refptr<const DOMWrapperWorld>,
+                      Member<TrustedTypePolicyFactory>>
+      trusted_types_map_;
 
   // A dummy scheduler to return when the window is detached.
   // All operations on it result in no-op, but due to this it's safe to
