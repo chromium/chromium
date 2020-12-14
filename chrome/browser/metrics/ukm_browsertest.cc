@@ -754,7 +754,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NetworkProviderPopulatesSystemProfile) {
 
 // Make sure that providing consent doesn't enable UKM when sync is disabled.
 // Keep in sync with testConsentAddedButNoSync in ios/chrome/browser/metrics/
-// ukm_egtest.mm.
+// ukm_egtest.mm and consentAddedButNoSyncCheck in chrome/android/javatests/src/
+// org/chromium/chrome/browser/sync/UkmTest.java.
 // Flaky on Android crbug.com/1096400
 #if defined(OS_ANDROID)
 #define MAYBE_ConsentAddedButNoSyncCheck DISABLED_ConsentAddedButNoSyncCheck
@@ -987,7 +988,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogsOpenerSource) {
 //
 // Make sure that UKM is disabled when the profile signs out of Sync.
 // Keep in sync with testSingleSyncSignout in ios/chrome/browser/metrics/
-// ukm_egtest.mm.
+// ukm_egtest.mm and singleSyncSignoutCheck in chrome/android/javatests/src/org/
+// chromium/chrome/browser/sync/UkmTest.java.
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 IN_PROC_BROWSER_TEST_F(UkmBrowserTest, SingleSyncSignoutCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
@@ -1094,9 +1096,12 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MetricsReportingCheck) {
 #endif  // !defined(OS_ANDROID)
 
 // Make sure that pending data is deleted when user deletes history.
+//
 // Keep in sync with testHistoryDelete in ios/chrome/browser/metrics/
-// ukm_egtest.mm.
-// Quite flaky on Android: https://crbug.com/1131541
+// ukm_egtest.mm and testHistoryDeleteCheck in chrome/android/javatests/src/org/
+// chromium/chrome/browser/metrics/UkmTest.java.
+//
+// Flaky on Android: https://crbug.com/1131541.
 #if defined(OS_ANDROID)
 #define MAYBE_HistoryDeleteCheck DISABLED_HistoryDeleteCheck
 #else
