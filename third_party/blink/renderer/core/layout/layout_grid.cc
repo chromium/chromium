@@ -1650,6 +1650,50 @@ void LayoutGrid::ApplyStretchAlignmentToChildIfNeeded(LayoutBox& child) {
   }
 }
 
+bool LayoutGrid::HasAutoSizeInColumnAxis(const LayoutBox& child) const {
+  NOT_DESTROYED();
+  if (!child.StyleRef().AspectRatio().IsAuto()) {
+    if (IsHorizontalWritingMode() == child.IsHorizontalWritingMode()) {
+      // If the used inline size is non-auto, we do have a non auto block size
+      // (column axis size) because of the aspect ratio.
+      if (!child.StyleRef().LogicalWidth().IsAuto())
+        return false;
+    } else {
+      const Length& logical_height = child.StyleRef().LogicalHeight();
+      if (logical_height.IsFixed() ||
+          (logical_height.IsPercentOrCalc() &&
+           child.ComputePercentageLogicalHeight(Length::Percent(0)) !=
+               kIndefiniteSize)) {
+        return false;
+      }
+    }
+  }
+  return IsHorizontalWritingMode() ? child.StyleRef().Height().IsAuto()
+                                   : child.StyleRef().Width().IsAuto();
+}
+
+bool LayoutGrid::HasAutoSizeInRowAxis(const LayoutBox& child) const {
+  NOT_DESTROYED();
+  if (!child.StyleRef().AspectRatio().IsAuto()) {
+    if (IsHorizontalWritingMode() == child.IsHorizontalWritingMode()) {
+      // If the used block size is non-auto, we do have a non auto inline size
+      // (row axis size) because of the aspect ratio.
+      const Length& logical_height = child.StyleRef().LogicalHeight();
+      if (logical_height.IsFixed() ||
+          (logical_height.IsPercentOrCalc() &&
+           child.ComputePercentageLogicalHeight(Length::Percent(0)) !=
+               kIndefiniteSize)) {
+        return false;
+      }
+    } else {
+      if (!child.StyleRef().LogicalWidth().IsAuto())
+        return false;
+    }
+  }
+  return IsHorizontalWritingMode() ? child.StyleRef().Width().IsAuto()
+                                   : child.StyleRef().Height().IsAuto();
+}
+
 // TODO(lajava): This logic is shared by LayoutFlexibleBox, so it should be
 // moved to LayoutBox.
 bool LayoutGrid::HasAutoMarginsInColumnAxis(const LayoutBox& child) const {
