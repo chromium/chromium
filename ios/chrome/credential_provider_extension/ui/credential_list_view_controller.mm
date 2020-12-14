@@ -133,8 +133,15 @@ const CGFloat kHeaderHeight = 70;
     return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NO_SEARCH_RESULTS",
                              @"No search results found");
   } else if ([self isSuggestedPasswordSection:section]) {
-    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORDS",
-                             @"Suggested Passwords");
+    if (self.suggestedPasswords.count > 1) {
+      return NSLocalizedString(
+          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORDS",
+          @"Suggested Passwords");
+    } else {
+      return NSLocalizedString(
+          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORD",
+          @"Suggested Password");
+    }
   } else {
     return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSWORDS",
                              @"All Passwords");
