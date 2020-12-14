@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
 
 class IndexedDBBrowserTestWithLowQuota : public IndexedDBBrowserTest {
  public:
-  IndexedDBBrowserTestWithLowQuota() {}
+  IndexedDBBrowserTestWithLowQuota() = default;
 
   void SetUpOnMainThread() override {
     const int kInitialQuotaKilobytes = 5000;
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithLowQuota, QuotaTest) {
 
 class IndexedDBBrowserTestWithGCExposed : public IndexedDBBrowserTest {
  public:
-  IndexedDBBrowserTestWithGCExposed() {}
+  IndexedDBBrowserTestWithGCExposed() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");

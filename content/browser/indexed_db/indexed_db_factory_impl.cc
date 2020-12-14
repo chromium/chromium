@@ -715,10 +715,7 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
                      origin);
 
     if (disk_full) {
-      context_->IOTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&storage::QuotaManagerProxy::NotifyWriteFailed,
-                         context_->quota_manager_proxy(), origin));
+      context_->quota_manager_proxy()->NotifyWriteFailed(origin);
       return {IndexedDBOriginStateHandle(), s,
               IndexedDBDatabaseError(
                   blink::mojom::IDBException::kQuotaError,
@@ -787,14 +784,12 @@ std::unique_ptr<IndexedDBBackingStore> IndexedDBFactoryImpl::CreateBackingStore(
     IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
     IndexedDBBackingStore::ReportOutstandingBlobsCallback
         report_outstanding_blobs,
-    scoped_refptr<base::SequencedTaskRunner> idb_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> idb_task_runner) {
   return std::make_unique<IndexedDBBackingStore>(
       backing_store_mode, transactional_leveldb_factory, origin, blob_path,
       std::move(db), blob_storage_context, native_file_system_context,
       std::move(filesystem_proxy), std::move(blob_files_cleaned),
-      std::move(report_outstanding_blobs), std::move(idb_task_runner),
-      std::move(io_task_runner));
+      std::move(report_outstanding_blobs), std::move(idb_task_runner));
 }
 std::tuple<std::unique_ptr<IndexedDBBackingStore>,
            leveldb::Status,
@@ -928,10 +923,10 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
                           weak_factory_.GetWeakPtr(), origin),
       base::BindRepeating(&IndexedDBFactoryImpl::ReportOutstandingBlobs,
                           weak_factory_.GetWeakPtr(), origin),
-      context_->IDBTaskRunner(), context_->IOTaskRunner());
+      context_->IDBTaskRunner());
   status = backing_store->Initialize(
-      /*cleanup_active_journal=*/(!is_incognito_and_in_memory &&
-                                  first_open_since_startup));
+      /*clean_active_blob_journal=*/(!is_incognito_and_in_memory &&
+                                     first_open_since_startup));
 
   if (UNLIKELY(!status.ok()))
     return {nullptr, status, IndexedDBDataLossInfo(), /*is_disk_full=*/false};
@@ -958,12 +953,8 @@ void IndexedDBFactoryImpl::OnDatabaseError(const url::Origin& origin,
                                      base::ASCIIToUTF16(status.ToString()));
     HandleBackingStoreCorruption(origin, error);
   } else {
-    if (status.IsIOError()) {
-      context_->IOTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&storage::QuotaManagerProxy::NotifyWriteFailed,
-                         context_->quota_manager_proxy(), origin));
-    }
+    if (status.IsIOError())
+      context_->quota_manager_proxy()->NotifyWriteFailed(origin);
     HandleBackingStoreFailure(origin);
   }
 }

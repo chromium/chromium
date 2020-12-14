@@ -138,8 +138,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   IndexedDBFactoryImpl* GetIDBFactory();
 
-  base::SequencedTaskRunner* IOTaskRunner();
-
   // Called by StoragePartitionImpl to clear session-only data.
   // *not* called on the IDBTaskRunner.
   void Shutdown();
@@ -251,7 +249,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   bool force_keep_session_state_;
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   std::unique_ptr<std::set<url::Origin>> origin_set_;
   std::map<url::Origin, int64_t> origin_size_map_;
   // The set of origins whose storage should be cleared on shutdown.

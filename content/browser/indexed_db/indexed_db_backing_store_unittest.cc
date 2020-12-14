@@ -78,8 +78,7 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
-      scoped_refptr<base::SequencedTaskRunner> idb_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+      scoped_refptr<base::SequencedTaskRunner> idb_task_runner)
       : IndexedDBBackingStore(backing_store_mode,
                               leveldb_factory,
                               origin,
@@ -90,8 +89,12 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
                               std::move(filesystem_proxy),
                               std::move(blob_files_cleaned),
                               std::move(report_outstanding_blobs),
-                              std::move(idb_task_runner),
-                              std::move(io_task_runner)) {}
+                              std::move(idb_task_runner)) {}
+
+  TestableIndexedDBBackingStore(const TestableIndexedDBBackingStore&) = delete;
+  TestableIndexedDBBackingStore& operator=(
+      const TestableIndexedDBBackingStore&) = delete;
+
   ~TestableIndexedDBBackingStore() override = default;
 
   const std::vector<base::FilePath>& removals() const { return removals_; }
@@ -111,8 +114,6 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
   // This is modified in an overridden virtual function that is properly const
   // in the real implementation, therefore must be mutable here.
   mutable std::vector<base::FilePath> removals_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestableIndexedDBBackingStore);
 };
 
 // Factory subclass to allow the test to use the
@@ -128,6 +129,10 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
                              base::DefaultClock::GetInstance()),
         blob_storage_context_(blob_storage_context),
         native_file_system_context_(native_file_system_context) {}
+
+  TestIDBFactory(const TestIDBFactory&) = delete;
+  TestIDBFactory& operator=(const TestIDBFactory&) = delete;
+
   ~TestIDBFactory() override = default;
 
  protected:
@@ -143,8 +148,7 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
       IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
       IndexedDBBackingStore::ReportOutstandingBlobsCallback
           report_outstanding_blobs,
-      scoped_refptr<base::SequencedTaskRunner> idb_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner) override {
+      scoped_refptr<base::SequencedTaskRunner> idb_task_runner) override {
     // Use the overridden blob storage and native file system contexts rather
     // than the versions that were passed in to this method. This way tests can
     // use a different context from what is stored in the IndexedDBContext.
@@ -152,15 +156,12 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
         backing_store_mode, leveldb_factory, origin, blob_path, std::move(db),
         blob_storage_context_, native_file_system_context_,
         std::move(filesystem_proxy), std::move(blob_files_cleaned),
-        std::move(report_outstanding_blobs), std::move(idb_task_runner),
-        std::move(io_task_runner));
+        std::move(report_outstanding_blobs), std::move(idb_task_runner));
   }
 
  private:
   storage::mojom::BlobStorageContext* blob_storage_context_;
   storage::mojom::NativeFileSystemContext* native_file_system_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIDBFactory);
 };
 
 struct BlobWrite {

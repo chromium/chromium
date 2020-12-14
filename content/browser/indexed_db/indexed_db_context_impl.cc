@@ -125,10 +125,9 @@ IndexedDBContextImpl::IndexedDBContextImpl(
                      base::TaskPriority::USER_VISIBLE,
                      // BLOCK_SHUTDOWN to support clearing session-only storage.
                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN}))),
-      dispatcher_host_(this),
+      dispatcher_host_(this, std::move(io_task_runner)),
       force_keep_session_state_(false),
       quota_manager_proxy_(quota_manager_proxy),
-      io_task_runner_(io_task_runner),
       clock_(clock),
       filesystem_proxy_(storage::CreateFilesystemProxy()) {
   IDB_TRACE("init");
@@ -653,11 +652,6 @@ IndexedDBFactoryImpl* IndexedDBContextImpl::GetIDBFactory() {
         this, IndexedDBClassFactory::Get(), clock_);
   }
   return indexeddb_factory_.get();
-}
-
-base::SequencedTaskRunner* IndexedDBContextImpl::IOTaskRunner() {
-  DCHECK(io_task_runner_.get());
-  return io_task_runner_.get();
 }
 
 std::vector<Origin> IndexedDBContextImpl::GetAllOrigins() {

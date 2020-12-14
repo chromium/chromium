@@ -627,8 +627,7 @@ IndexedDBBackingStore::IndexedDBBackingStore(
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     BlobFilesCleanedCallback blob_files_cleaned,
     ReportOutstandingBlobsCallback report_outstanding_blobs,
-    scoped_refptr<base::SequencedTaskRunner> idb_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> idb_task_runner)
     : backing_store_mode_(backing_store_mode),
       transactional_leveldb_factory_(transactional_leveldb_factory),
       origin_(origin),
@@ -638,7 +637,6 @@ IndexedDBBackingStore::IndexedDBBackingStore(
       filesystem_proxy_(std::move(filesystem_proxy)),
       origin_identifier_(ComputeOriginIdentifier(origin)),
       idb_task_runner_(idb_task_runner),
-      io_task_runner_(io_task_runner),
       db_(std::move(db)),
       blob_files_cleaned_(std::move(blob_files_cleaned)) {
   DCHECK(idb_task_runner_->RunsTasksInCurrentSequence());
@@ -665,7 +663,7 @@ IndexedDBBackingStore::RecordIdentifier::RecordIdentifier(
 }
 IndexedDBBackingStore::RecordIdentifier::RecordIdentifier()
     : primary_key_(), version_(-1) {}
-IndexedDBBackingStore::RecordIdentifier::~RecordIdentifier() {}
+IndexedDBBackingStore::RecordIdentifier::~RecordIdentifier() = default;
 
 constexpr const int IndexedDBBackingStore::kMaxJournalCleanRequests;
 constexpr const base::TimeDelta
@@ -2113,7 +2111,7 @@ IndexedDBBackingStore::Cursor::Cursor(base::WeakPtr<Transaction> transaction,
   DCHECK(transaction_);
 }
 
-IndexedDBBackingStore::Cursor::~Cursor() {}
+IndexedDBBackingStore::Cursor::~Cursor() = default;
 
 std::unique_ptr<TransactionalLevelDBIterator>
 IndexedDBBackingStore::Cursor::CloneIterator(
@@ -2449,10 +2447,10 @@ class ObjectStoreKeyCursorImpl : public IndexedDBBackingStore::Cursor {
   DISALLOW_COPY_AND_ASSIGN(ObjectStoreKeyCursorImpl);
 };
 
-IndexedDBBackingStore::Cursor::CursorOptions::CursorOptions() {}
+IndexedDBBackingStore::Cursor::CursorOptions::CursorOptions() = default;
 IndexedDBBackingStore::Cursor::CursorOptions::CursorOptions(
     const CursorOptions& other) = default;
-IndexedDBBackingStore::Cursor::CursorOptions::~CursorOptions() {}
+IndexedDBBackingStore::Cursor::CursorOptions::~CursorOptions() = default;
 const IndexedDBBackingStore::RecordIdentifier&
 IndexedDBBackingStore::Cursor::record_identifier() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(idb_sequence_checker_);

@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/task_runner.h"
 #include "build/build_config.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "content/browser/indexed_db/cursor_impl.h"
@@ -195,8 +196,10 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
 };
 
 IndexedDBDispatcherHost::IndexedDBDispatcherHost(
-    IndexedDBContextImpl* indexed_db_context)
+    IndexedDBContextImpl* indexed_db_context,
+    scoped_refptr<base::TaskRunner> io_task_runner)
     : indexed_db_context_(indexed_db_context),
+      io_task_runner_(std::move(io_task_runner)),
       file_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -378,8 +381,7 @@ void IndexedDBDispatcherHost::BindFileReader(
 
   auto reader = std::make_unique<IndexedDBDataItemReader>(
       this, path, expected_modification_time, std::move(release_callback),
-      file_task_runner_, indexed_db_context_->IOTaskRunner(),
-      std::move(receiver));
+      file_task_runner_, io_task_runner_, std::move(receiver));
   file_reader_map_.insert({path, std::move(reader)});
 }
 

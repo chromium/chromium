@@ -17,7 +17,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -351,8 +350,11 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
-      scoped_refptr<base::SequencedTaskRunner> idb_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
+
+  IndexedDBBackingStore(const IndexedDBBackingStore&) = delete;
+  IndexedDBBackingStore& operator=(const IndexedDBBackingStore&) = delete;
+
   virtual ~IndexedDBBackingStore();
 
   // Initializes the backing store. This must be called before doing any
@@ -633,7 +635,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   const std::string origin_identifier_;
 
   scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   std::set<int> child_process_ids_granted_;
   std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
       incognito_external_object_map_;
@@ -664,7 +665,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   bool initialized_ = false;
 #endif
   base::WeakPtrFactory<IndexedDBBackingStore> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBackingStore);
 };
 
 }  // namespace content

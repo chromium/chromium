@@ -154,8 +154,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
       IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
       IndexedDBBackingStore::ReportOutstandingBlobsCallback
           report_outstanding_blobs,
-      scoped_refptr<base::SequencedTaskRunner> idb_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
 
  private:
   friend class IndexedDBBrowserTest;
