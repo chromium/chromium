@@ -15,6 +15,18 @@ public class Origin {
     // The internal representation of the origin that should never be used directly.
     private final org.chromium.url.internal.mojom.Origin mInternal;
 
+    /**
+     * This convenience constructor provides a way to wrap
+     * `org.chromium.url.internal.mojom.Origin`s, which are provided by Mojo-generated
+     * code but not intended for direct use (see crbug.com/1156866).
+     *
+     * @return An `Origin` providing user-friendly access to the origin represented by
+     *         `mojoOrigin`.
+     */
+    public Origin(org.chromium.url.internal.mojom.Origin mojoOrigin) {
+        mInternal = mojoOrigin;
+    }
+
     /** @return The scheme of the origin. Returns an empty string for an opaque origin. */
     public String getScheme() {
         return !isOpaque() ? mInternal.scheme : "";
