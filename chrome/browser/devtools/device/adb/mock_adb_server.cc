@@ -212,8 +212,8 @@ class SimpleHttpServer {
     virtual ~Parser() {}
   };
 
-  using SendCallback = base::Callback<void(const std::string&)>;
-  using ParserFactory = base::Callback<Parser*(const SendCallback&)>;
+  using SendCallback = base::RepeatingCallback<void(const std::string&)>;
+  using ParserFactory = base::RepeatingCallback<Parser*(const SendCallback&)>;
 
   SimpleHttpServer(const ParserFactory& factory, net::IPEndPoint endpoint);
   virtual ~SimpleHttpServer();
@@ -274,8 +274,8 @@ SimpleHttpServer::~SimpleHttpServer() {
 SimpleHttpServer::Connection::Connection(net::StreamSocket* socket,
                                          const ParserFactory& factory)
     : socket_(socket),
-      parser_(
-          factory.Run(base::Bind(&Connection::Send, base::Unretained(this)))),
+      parser_(factory.Run(
+          base::BindRepeating(&Connection::Send, base::Unretained(this)))),
       input_buffer_(base::MakeRefCounted<net::GrowableIOBuffer>()),
       output_buffer_(base::MakeRefCounted<net::GrowableIOBuffer>()),
       bytes_to_write_(0),
@@ -510,21 +510,21 @@ class AdbParser : public SimpleHttpServer::Parser,
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-static SimpleHttpServer* mock_adb_server_ = NULL;
+static SimpleHttpServer* mock_adb_server_ = nullptr;
 
 void StartMockAdbServerOnIOThread(FlushMode flush_mode) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
-  CHECK(mock_adb_server_ == NULL);
+  CHECK(mock_adb_server_ == nullptr);
   net::IPEndPoint endpoint(net::IPAddress(127, 0, 0, 1), kAdbPort);
   mock_adb_server_ = new SimpleHttpServer(
-      base::Bind(&AdbParser::Create, flush_mode), endpoint);
+      base::BindRepeating(&AdbParser::Create, flush_mode), endpoint);
 }
 
 void StopMockAdbServerOnIOThread() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
-  CHECK(mock_adb_server_ != NULL);
+  CHECK(mock_adb_server_ != nullptr);
   delete mock_adb_server_;
-  mock_adb_server_ = NULL;
+  mock_adb_server_ = nullptr;
 }
 
 } // namespace
