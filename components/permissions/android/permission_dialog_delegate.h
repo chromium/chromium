@@ -28,9 +28,6 @@ namespace permissions {
 // decision.
 class PermissionDialogDelegate : public content::WebContentsObserver {
  public:
-  using PermissionSetCallback =
-      base::Callback<void(bool, permissions::PermissionAction)>;
-
   // The interface for creating a modal dialog when the PermissionRequestManager
   // is enabled.
   static void Create(content::WebContents* web_contents,
