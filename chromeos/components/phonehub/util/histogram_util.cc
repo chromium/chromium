@@ -4,14 +4,19 @@
 
 #include "chromeos/components/phonehub/util/histogram_util.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace chromeos {
 namespace phonehub {
 namespace util {
 
 void LogFeatureOptInEntryPoint(OptInEntryPoint entry_point) {
-  UMA_HISTOGRAM_ENUMERATION("PhoneHub.OptInEntryPoint", entry_point);
+  base::UmaHistogramEnumeration("PhoneHub.OptInEntryPoint", entry_point);
+}
+
+void LogTetherConnectionResult(TetherConnectionResult result) {
+  base::UmaHistogramEnumeration(
+      "PhoneHub.TaskCompletion.TetherConnection.Result", result);
 }
 
 }  // namespace util
