@@ -75,8 +75,7 @@ class PaymentRequestTestController {
 
   // Gets the WebContents of the Payment Handler for testing purpose, or null if
   // nonexistent. To guarantee a non-null return, this function should be called
-  // only if: 1) PaymentRequest UI is opening. 2) ScrollToExpandPaymentHandler
-  // feature is enabled (on Android). 3) PaymentHandler is opening.
+  // only if: 1) PaymentRequest UI is opening. 2) PaymentHandler is opening.
   content::WebContents* GetPaymentHandlerWebContents();
 
 #if defined(OS_ANDROID)

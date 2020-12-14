@@ -22,7 +22,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -31,8 +30,7 @@ import org.chromium.ui.test.util.UiDisableIf;
 /** An integration test for PaymentRequestEvent.changePaymentMethod(). */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-blink-features=PaymentMethodChangeEvent,PaymentHandlerChangePaymentMethod",
-        "disable-features=" + PaymentFeatureList.SCROLL_TO_EXPAND_PAYMENT_HANDLER})
+        "enable-blink-features=PaymentMethodChangeEvent,PaymentHandlerChangePaymentMethod"})
 @MediumTest
 public class PaymentHandlerChangePaymentMethodTest {
     // Disable animations to reduce flakiness.

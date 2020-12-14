@@ -13,7 +13,6 @@ import androidx.collection.ArrayMap;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.AbortReason;
@@ -259,17 +258,12 @@ public class ChromePaymentRequestService
         return null;
     }
 
-    private void dimBackgroundIfNotBottomSheetPaymentHandler(PaymentApp selectedApp) {
-        // Putting isEnabled() last is intentional. It's to ensure not to confused the unexecuted
-        // group and the disabled in A/B testing.
+    private void dimBackgroundIfNotPaymentHandler(PaymentApp selectedApp) {
         if (selectedApp != null
-                && selectedApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP
-                && PaymentHandlerCoordinator.isEnabled()) {
-            // When the Payment Handler (PH) UI is based on Activity, dimming the Payment
-            // Request (PR) UI does not dim the PH; when it's based on bottom-sheet, dimming
-            // the PR dims both UIs. As bottom-sheet itself has dimming effect, dimming PR
-            // is unnecessary for the bottom-sheet PH. For now, service worker based payment apps
-            // are the only ones that can open the bottom-sheet.
+                && selectedApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP) {
+            // As bottom-sheet itself has dimming effect, dimming PR is unnecessary for the
+            // bottom-sheet PH. For now, service worker based payment apps are the only ones that
+            // can open the bottom-sheet.
             return;
         }
         mPaymentUiService.dimBackground();
@@ -305,7 +299,7 @@ public class ChromePaymentRequestService
 
             assert !mPaymentUiService.getPaymentApps().isEmpty();
             PaymentApp selectedApp = mPaymentUiService.getSelectedPaymentApp();
-            dimBackgroundIfNotBottomSheetPaymentHandler(selectedApp);
+            dimBackgroundIfNotPaymentHandler(selectedApp);
             mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
             invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
                     selectedApp);

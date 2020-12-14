@@ -14,7 +14,6 @@ chrome_java_resources = [
   "java/res/anim/decelerate_quart.xml",
   "java/res/anim/fast_out_slow_in_interpolator.xml",
   "java/res/anim/slide_in_up.xml",
-  "java/res/anim/slide_out_down.xml",
   "java/res/anim/stay_hidden.xml",
   "java/res/color/item_chooser_row_icon_color.xml",
   "java/res/color/item_chooser_row_text_color.xml",

@@ -44,8 +44,7 @@ import java.util.concurrent.TimeoutException;
         // payment apps instead of showing payment request UI.
         "enable-features=" + PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT,
         // Prevent crawling the web for real payment apps.
-        "disable-features=" + PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS + ","
-                + PaymentFeatureList.SCROLL_TO_EXPAND_PAYMENT_HANDLER})
+        "disable-features=" + PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS})
 public class PaymentRequestServiceWorkerPaymentAppTest {
     // Disable animations to reduce flakiness.
     @ClassRule

@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.view.ContentView;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
@@ -40,9 +39,7 @@ public class PaymentHandlerCoordinator {
     private PaymentHandlerToolbarCoordinator mToolbarCoordinator;
 
     /** Constructs the payment-handler component coordinator. */
-    public PaymentHandlerCoordinator() {
-        assert isEnabled();
-    }
+    public PaymentHandlerCoordinator() {}
 
     /** Observes the state changes of the payment-handler UI. */
     public interface PaymentHandlerUiObserver {
@@ -151,18 +148,6 @@ public class PaymentHandlerCoordinator {
         if (mHider == null) return;
         mHider.run();
         mHider = null;
-    }
-
-    /**
-     * @return Whether this solution (as opposed to the Chrome-custom-tab based solution) of
-     *     PaymentHandler is enabled. This solution is intended to replace the other
-     *     solution.
-     */
-    public static boolean isEnabled() {
-        // Enabling the flag of either ScrollToExpand or PaymentsExperimentalFeatures will enable
-        // this feature.
-        return PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                PaymentFeatureList.SCROLL_TO_EXPAND_PAYMENT_HANDLER);
     }
 
     @VisibleForTesting

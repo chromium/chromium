@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
-#include "components/payments/content/android/payment_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -22,11 +20,7 @@ class ExpandablePaymentHandlerBrowserTest
     : public PaymentRequestPlatformBrowserTestBase {
  public:
   ExpandablePaymentHandlerBrowserTest()
-      : http_server_(net::EmbeddedTestServer::TYPE_HTTP) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{payments::android::kScrollToExpandPaymentHandler},
-        /*disabled_features=*/{});
-  }
+      : http_server_(net::EmbeddedTestServer::TYPE_HTTP) {}
 
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
@@ -44,7 +38,6 @@ class ExpandablePaymentHandlerBrowserTest
 
  private:
   net::EmbeddedTestServer http_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Make sure merchants can confirm the payment.

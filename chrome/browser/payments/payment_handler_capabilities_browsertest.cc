@@ -25,18 +25,8 @@ constexpr char kOriginalPrice[] = "5.00";
 constexpr char kDiscountPrice[] = "4.00";
 
 class PaymentHandlerCapabilitiesTest
-    : public PaymentRequestPlatformBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+    : public PaymentRequestPlatformBrowserTestBase {
  public:
-#if defined(OS_ANDROID)
-  PaymentHandlerCapabilitiesTest() {
-    if (GetParam()) {
-      features_.InitAndEnableFeature(android::kScrollToExpandPaymentHandler);
-    } else {
-      features_.InitAndDisableFeature(android::kScrollToExpandPaymentHandler);
-    }
-  }
-#endif  // OS_ANDROID
 
   void ExpectAppTotals() {
     EXPECT_EQ(expected_app_totals_.size(),
@@ -70,20 +60,9 @@ class PaymentHandlerCapabilitiesTest
   base::test::ScopedFeatureList features_;
 };
 
-// Only Andorid has the scroll to expand payment handler feature.
-INSTANTIATE_TEST_SUITE_P(ScrollToExpand,
-                         PaymentHandlerCapabilitiesTest,
-                         ::testing::Values(
-#if defined(OS_ANDROID)
-                             // "Scroll to expand" payment handler is an
-                             // Android-only feature.
-                             true,
-#endif  // OS_ANDROID
-                             false));
-
 // Modified price should be displayed for the payment handler with the matching
 // capabilities.
-IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest, TwoApps) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerCapabilitiesTest, TwoApps) {
   NavigateTo("alicepay.com", "/payment_handler_installer.html");
   EXPECT_EQ(
       "success",
@@ -112,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest, TwoApps) {
 
 // A "basic-card" modifier without any networks will apply to a payment handler
 // that does not declare its capabilities.
-IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerCapabilitiesTest,
                        AllCardsModifierMatchesAppWithoutCapabilities) {
   NavigateTo("bobpay.com", "/payment_handler_installer.html");
   EXPECT_EQ("success",
@@ -134,7 +113,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
 
 // A "basic-card" modifier without any networks will apply to a payment handler
 // with visa capabilities.
-IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerCapabilitiesTest,
                        AllCardsModifierMatchesVisaCapabilities) {
   NavigateTo("bobpay.com", "/payment_handler_installer.html");
   EXPECT_EQ("success",
@@ -156,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
 
 // A "basic-card" modifier with visa network will not apply to a payment handler
 // that does not declare its capabilities.
-IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerCapabilitiesTest,
                        VisaCardsModifierDoesNotMatchAppWithoutCapabilities) {
   NavigateTo("bobpay.com", "/payment_handler_installer.html");
   EXPECT_EQ("success",
@@ -177,7 +156,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
 
 // A "basic-card" modifier with visa network will apply to a payment handler
 // with visa capabilities.
-IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerCapabilitiesTest,
                        VisaCardsModifierMatchesVisaCapabilities) {
   NavigateTo("bobpay.com", "/payment_handler_installer.html");
   EXPECT_EQ("success",
@@ -198,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
 
 // A "basic-card" modifier without any networks will apply to a payment handler
 // with mastercard capabilities.
-IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerCapabilitiesTest,
                        AllCardsModifierMatchesMastercardCapabilities) {
   NavigateTo("bobpay.com", "/payment_handler_installer.html");
   EXPECT_EQ(
@@ -221,7 +200,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
 
 // A "basic-card" modifier with visa network will not apply to a payment handler
 // with mastercard capabilities.
-IN_PROC_BROWSER_TEST_P(PaymentHandlerCapabilitiesTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerCapabilitiesTest,
                        VisaCardsModifierDoesNotMatchMastercardCapabilities) {
   NavigateTo("bobpay.com", "/payment_handler_installer.html");
   EXPECT_EQ(
