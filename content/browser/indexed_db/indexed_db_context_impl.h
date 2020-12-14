@@ -146,6 +146,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   int64_t GetOriginDiskUsage(const url::Origin& origin);
 
+  // This getter is thread-safe.
   base::SequencedTaskRunner* IDBTaskRunner();
 
   // Methods called by IndexedDBFactoryImpl or IndexedDBDispatcherHost for
