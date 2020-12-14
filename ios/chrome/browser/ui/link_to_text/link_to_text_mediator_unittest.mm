@@ -192,9 +192,26 @@ class LinkToTextMediatorTest : public PlatformTest {
   id mocked_consumer_;
 };
 
-// Tests that the mediator should, currently, always offer link to text.
+// Tests that the mediator should offer link to text to HTML pages that can
+// call JavaScript functions.
 TEST_F(LinkToTextMediatorTest, ShouldOfferLinkToText) {
+  // By default, all fake instances return the right values.
   EXPECT_TRUE([mediator_ shouldOfferLinkToText]);
+}
+
+// Tests that the mediator should not offer link to text to pages that are not
+// HTML.
+TEST_F(LinkToTextMediatorTest, ShouldNotOfferLinkToTextNotHTML) {
+  web_state_->SetContentIsHTML(false);
+  EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
+}
+
+// Tests that the mediator should not offer link to text when, for some reason,
+// the main frame cannot call JavaScript functions.
+TEST_F(LinkToTextMediatorTest,
+       ShouldNotOfferLinkToTextCannotExecuteJavaScript) {
+  main_frame_->set_can_call_function(false);
+  EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
 }
 
 // Tests that the shareHighlight command is triggered with the right parameters
