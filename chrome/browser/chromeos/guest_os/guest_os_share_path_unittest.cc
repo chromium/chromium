@@ -1044,6 +1044,14 @@ TEST_F(GuestOsSharePathTest, IsPathShared) {
         shared_path_.Append("a/b"), shared_path_.DirName(), root_}) {
     EXPECT_FALSE(guest_os_share_path_->IsPathShared("not-shared", path));
   }
+
+  // IsPathShared should be false after VM shutdown.
+  vm_tools::concierge::VmStoppedSignal signal;
+  signal.set_name(crostini::kCrostiniDefaultVmName);
+  signal.set_owner_id("test");
+  crostini::CrostiniManager::GetForProfile(profile())->OnVmStopped(signal);
+  EXPECT_FALSE(guest_os_share_path_->IsPathShared(
+      crostini::kCrostiniDefaultVmName, shared_path_));
 }
 
 }  // namespace guest_os

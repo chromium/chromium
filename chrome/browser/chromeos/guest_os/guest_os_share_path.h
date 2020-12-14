@@ -41,6 +41,7 @@ struct SharedPathInfo {
 // Handles sharing and unsharing paths from the Chrome OS host to guest VMs via
 // seneschal.
 class GuestOsSharePath : public KeyedService,
+                         public chromeos::VmShutdownObserver,
                          public file_manager::VolumeManagerObserver,
                          public drivefs::DriveFsHostObserver {
  public:
@@ -113,6 +114,9 @@ class GuestOsSharePath : public KeyedService,
   // Returns true if |path| or a parent is shared with |vm_name|.
   bool IsPathShared(const std::string& vm_name, base::FilePath path) const;
 
+  // chromeos::VmShutdownObserver
+  void OnVmShutdown(const std::string& vm_name) override;
+
   // file_manager::VolumeManagerObserver
   void OnVolumeMounted(chromeos::MountError error_code,
                        const file_manager::Volume& volume) override;
@@ -155,6 +159,10 @@ class GuestOsSharePath : public KeyedService,
 
   // Returns info for specified path or nullptr if not found.
   SharedPathInfo* FindSharedPathInfo(const base::FilePath& path);
+  // Removes |vm_name| from |info.vm_names| if it exists, and deletes the
+  // |info.watcher| if |info.path| is not shared with any other VMs.  Returns
+  // true if path is no longer shared with any VMs.
+  bool RemoveSharedPathInfo(SharedPathInfo& info, const std::string& vm_name);
 
   Profile* profile_;
   // Task runner for FilePathWatchers to be created, run, and be destroyed on.

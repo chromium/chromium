@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path_factory.h"
 
+#include "chrome/browser/chromeos/crostini/crostini_manager_factory.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -25,7 +26,9 @@ GuestOsSharePathFactory* GuestOsSharePathFactory::GetInstance() {
 GuestOsSharePathFactory::GuestOsSharePathFactory()
     : BrowserContextKeyedServiceFactory(
           "GuestOsSharePath",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(crostini::CrostiniManagerFactory::GetInstance());
+}
 
 GuestOsSharePathFactory::~GuestOsSharePathFactory() = default;
 
