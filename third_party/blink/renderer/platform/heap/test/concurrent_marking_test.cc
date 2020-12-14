@@ -38,6 +38,15 @@ class CollectionWrapper : public GarbageCollected<CollectionWrapper<T>> {
 
 template <typename T>
 struct MethodAdapterBase {
+  template <typename U>
+  static void insert(T& t, U&& u) {
+    t.insert(std::forward<U>(u));
+  }
+
+  static void erase(T& t, typename T::iterator&& it) {
+    t.erase(std::forward<typename T::iterator>(it));
+  }
+
   static void Swap(T& a, T& b) { a.swap(b); }
 };
 
@@ -56,7 +65,8 @@ void AddToCollection() {
     driver.SingleConcurrentStep();
     for (int j = 0; j < kIterations; ++j) {
       int num = kIterations * i + j;
-      collection->insert(MakeGarbageCollected<IntegerObject>(num));
+      MethodAdapter<C>::insert(*collection,
+                               MakeGarbageCollected<IntegerObject>(num));
     }
   }
   driver.FinishSteps();
@@ -71,13 +81,14 @@ void RemoveFromCollectionAtLocation(GetLocation location) {
       MakeGarbageCollected<CollectionWrapper<C>>();
   C* collection = persistent->GetCollection();
   for (int i = 0; i < (kIterations * kIterations); ++i) {
-    collection->insert(MakeGarbageCollected<IntegerObject>(i));
+    MethodAdapter<C>::insert(*collection,
+                             MakeGarbageCollected<IntegerObject>(i));
   }
   driver.Start();
   for (int i = 0; i < kIterations; ++i) {
     driver.SingleConcurrentStep();
     for (int j = 0; j < kIterations; ++j) {
-      collection->erase(location(collection));
+      MethodAdapter<C>::erase(*collection, location(collection));
     }
   }
   driver.FinishSteps();
@@ -121,7 +132,8 @@ void ClearCollection() {
   for (int i = 0; i < kIterations; ++i) {
     driver.SingleConcurrentStep();
     for (int j = 0; j < kIterations; ++j) {
-      collection->insert(MakeGarbageCollected<IntegerObject>(i));
+      MethodAdapter<C>::insert(*collection,
+                               MakeGarbageCollected<IntegerObject>(i));
     }
     collection->clear();
   }
@@ -140,7 +152,8 @@ void SwapCollections() {
   for (int i = 0; i < (kIterations * kIterations); ++i) {
     C* new_collection = MakeGarbageCollected<C>();
     for (int j = 0; j < kIterations * i; ++j) {
-      new_collection->insert(MakeGarbageCollected<IntegerObject>(j));
+      MethodAdapter<C>::insert(*new_collection,
+                               MakeGarbageCollected<IntegerObject>(j));
     }
     driver.SingleConcurrentStep();
     MethodAdapter<C>::Swap(*collection, *new_collection);
@@ -152,31 +165,34 @@ void SwapCollections() {
 // HeapHashMap
 
 template <typename T>
-class HeapHashMapAdapter : public HeapHashMap<T, T> {
- public:
+using IdentityHashMap = HeapHashMap<T, T>;
+
+template <typename T>
+struct MethodAdapter<HeapHashMap<T, T>>
+    : public MethodAdapterBase<HeapHashMap<T, T>> {
   template <typename U>
-  ALWAYS_INLINE void insert(U* u) {
-    HeapHashMap<T, T>::insert(u, u);
+  static void insert(HeapHashMap<T, T>& map, U&& u) {
+    map.insert(u, u);
   }
 };
 
 TEST_F(ConcurrentMarkingTest, AddToHashMap) {
-  AddToCollection<HeapHashMapAdapter<Member<IntegerObject>>>();
+  AddToCollection<IdentityHashMap<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfHashMap) {
-  RemoveFromBeginningOfCollection<HeapHashMapAdapter<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<IdentityHashMap<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfHashMap) {
-  RemoveFromMiddleOfCollection<HeapHashMapAdapter<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<IdentityHashMap<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfHashMap) {
-  RemoveFromEndOfCollection<HeapHashMapAdapter<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<IdentityHashMap<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearHashMap) {
-  ClearCollection<HeapHashMapAdapter<Member<IntegerObject>>>();
+  ClearCollection<IdentityHashMap<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapHashMap) {
-  SwapCollections<HeapHashMapAdapter<Member<IntegerObject>>>();
+  SwapCollections<IdentityHashMap<Member<IntegerObject>>>();
 }
 
 // HeapHashSet
@@ -286,7 +302,7 @@ void PopFromCollection() {
       MakeGarbageCollected<CollectionWrapper<V>>();
   V* vector = persistent->GetCollection();
   for (int i = 0; i < (kIterations * kIterations); ++i) {
-    vector->insert(MakeGarbageCollected<IntegerObject>(i));
+    MethodAdapter<V>::insert(*vector, MakeGarbageCollected<IntegerObject>(i));
   }
   driver.Start();
   for (int i = 0; i < kIterations; ++i) {
@@ -314,142 +330,140 @@ void PopFromCollection() {
   TEST_F(ConcurrentMarkingTest, Swap##name) { SwapCollections<type>(); }  \
   TEST_F(ConcurrentMarkingTest, PopFrom##name) { PopFromCollection<type>(); }
 
-template <typename T, wtf_size_t inlineCapacity = 0>
-class HeapVectorAdapter : public HeapVector<T, inlineCapacity> {
-  using Base = HeapVector<T, inlineCapacity>;
-
- public:
+template <typename T, wtf_size_t inlineCapacity>
+struct MethodAdapter<HeapVector<T, inlineCapacity>>
+    : public MethodAdapterBase<HeapVector<T, inlineCapacity>> {
   template <typename U>
-  ALWAYS_INLINE void insert(U* u) {
-    Base::push_back(u);
+  static void insert(HeapVector<T, inlineCapacity>& vector, U&& u) {
+    vector.push_back(std::forward<U>(u));
   }
 };
 
 TEST_F(ConcurrentMarkingTest, AddToVector) {
-  AddToCollection<HeapVectorAdapter<Member<IntegerObject>>>();
+  AddToCollection<HeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfVector) {
-  RemoveFromBeginningOfCollection<HeapVectorAdapter<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<HeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfVector) {
-  RemoveFromMiddleOfCollection<HeapVectorAdapter<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<HeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfVector) {
-  RemoveFromEndOfCollection<HeapVectorAdapter<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<HeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearVector) {
-  ClearCollection<HeapVectorAdapter<Member<IntegerObject>>>();
+  ClearCollection<HeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapVector) {
-  SwapCollections<HeapVectorAdapter<Member<IntegerObject>>>();
+  SwapCollections<HeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, PopFromVector) {
-  PopFromCollection<HeapVectorAdapter<Member<IntegerObject>>>();
+  PopFromCollection<HeapVector<Member<IntegerObject>>>();
 }
 
 // HeapVector with inlined buffer
 
 template <typename T>
-class HeapInlinedVectorAdapter : public HeapVectorAdapter<T, 10> {};
+using HeapVectorWithInlineStorage = HeapVector<T, 10>;
 
 TEST_F(ConcurrentMarkingTest, AddToInlinedVector) {
-  AddToCollection<HeapInlinedVectorAdapter<Member<IntegerObject>>>();
+  AddToCollection<HeapVectorWithInlineStorage<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfInlinedVector) {
   RemoveFromBeginningOfCollection<
-      HeapInlinedVectorAdapter<Member<IntegerObject>>>();
+      HeapVectorWithInlineStorage<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfInlinedVector) {
   RemoveFromMiddleOfCollection<
-      HeapInlinedVectorAdapter<Member<IntegerObject>>>();
+      HeapVectorWithInlineStorage<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfInlinedVector) {
-  RemoveFromEndOfCollection<HeapInlinedVectorAdapter<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<
+      HeapVectorWithInlineStorage<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearInlinedVector) {
-  ClearCollection<HeapInlinedVectorAdapter<Member<IntegerObject>>>();
+  ClearCollection<HeapVectorWithInlineStorage<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapInlinedVector) {
-  SwapCollections<HeapInlinedVectorAdapter<Member<IntegerObject>>>();
+  SwapCollections<HeapVectorWithInlineStorage<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, PopFromInlinedVector) {
-  PopFromCollection<HeapInlinedVectorAdapter<Member<IntegerObject>>>();
+  PopFromCollection<HeapVectorWithInlineStorage<Member<IntegerObject>>>();
 }
 
 // HeapVector of std::pairs
 
 template <typename T>
-class HeapVectorOfPairsAdapter : public HeapVector<std::pair<T, T>> {
-  using Base = HeapVector<std::pair<T, T>>;
+using HeapVectorOfPairs = HeapVector<std::pair<T, T>>;
 
- public:
+template <typename T, wtf_size_t inlineCapacity>
+struct MethodAdapter<HeapVector<std::pair<T, T>, inlineCapacity>>
+    : public MethodAdapterBase<HeapVector<std::pair<T, T>, inlineCapacity>> {
   template <typename U>
-  ALWAYS_INLINE void insert(U* u) {
-    Base::push_back(std::make_pair<T, T>(u, u));
+  static void insert(HeapVector<std::pair<T, T>, inlineCapacity>& vector,
+                     U&& u) {
+    vector.push_back(std::make_pair<U&, U&>(u, u));
   }
 };
 
 TEST_F(ConcurrentMarkingTest, AddToVectorOfPairs) {
-  AddToCollection<HeapVectorOfPairsAdapter<Member<IntegerObject>>>();
+  AddToCollection<HeapVectorOfPairs<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfVectorOfPairs) {
-  RemoveFromBeginningOfCollection<
-      HeapVectorOfPairsAdapter<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<HeapVectorOfPairs<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfVectorOfPairs) {
-  RemoveFromMiddleOfCollection<
-      HeapVectorOfPairsAdapter<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<HeapVectorOfPairs<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfVectorOfPairs) {
-  RemoveFromEndOfCollection<HeapVectorOfPairsAdapter<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<HeapVectorOfPairs<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearVectorOfPairs) {
-  ClearCollection<HeapVectorOfPairsAdapter<Member<IntegerObject>>>();
+  ClearCollection<HeapVectorOfPairs<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapVectorOfPairs) {
-  SwapCollections<HeapVectorOfPairsAdapter<Member<IntegerObject>>>();
+  SwapCollections<HeapVectorOfPairs<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, PopFromVectorOfPairs) {
-  PopFromCollection<HeapVectorOfPairsAdapter<Member<IntegerObject>>>();
+  PopFromCollection<HeapVectorOfPairs<Member<IntegerObject>>>();
 }
 
 // HeapDeque
 
 template <typename T>
-class HeapDequeAdapter : public HeapDeque<T> {
- public:
+struct MethodAdapter<HeapDeque<T>> : public MethodAdapterBase<HeapDeque<T>> {
   template <typename U>
-  ALWAYS_INLINE void insert(U* u) {
-    HeapDeque<T>::push_back(u);
+  static void insert(HeapDeque<T>& deque, U&& u) {
+    deque.push_back(std::forward<U>(u));
   }
-  ALWAYS_INLINE void erase(typename HeapDeque<T>::iterator) {
-    HeapDeque<T>::pop_back();
+
+  static void erase(HeapDeque<T>& deque, typename HeapDeque<T>::iterator&& it) {
+    deque.pop_back();
   }
-  ALWAYS_INLINE void swap(HeapDequeAdapter<T>& other) {
-    HeapDeque<T>::Swap(other);
-  }
+
+  static void Swap(HeapDeque<T>& a, HeapDeque<T>& b) { a.Swap(b); }
 };
 
 TEST_F(ConcurrentMarkingTest, AddToDeque) {
-  AddToCollection<HeapDequeAdapter<Member<IntegerObject>>>();
+  AddToCollection<HeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfDeque) {
-  RemoveFromBeginningOfCollection<HeapDequeAdapter<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<HeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfDeque) {
-  RemoveFromMiddleOfCollection<HeapDequeAdapter<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<HeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfDeque) {
-  RemoveFromEndOfCollection<HeapDequeAdapter<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<HeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearDeque) {
-  ClearCollection<HeapDequeAdapter<Member<IntegerObject>>>();
+  ClearCollection<HeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapDeque) {
-  SwapCollections<HeapDequeAdapter<Member<IntegerObject>>>();
+  SwapCollections<HeapDeque<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, PopFromDeque) {
-  PopFromCollection<HeapDequeAdapter<Member<IntegerObject>>>();
+  PopFromCollection<HeapDeque<Member<IntegerObject>>>();
 }
 
 namespace {

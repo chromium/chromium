@@ -183,12 +183,12 @@ template <typename KeyArg,
           typename HashArg = typename DefaultHash<KeyArg>::Hash,
           typename KeyTraitsArg = HashTraits<KeyArg>,
           typename MappedTraitsArg = HashTraits<MappedArg>>
-class HeapHashMap : public HashMap<KeyArg,
-                                   MappedArg,
-                                   HashArg,
-                                   KeyTraitsArg,
-                                   MappedTraitsArg,
-                                   HeapAllocator> {
+class HeapHashMap final : public HashMap<KeyArg,
+                                         MappedArg,
+                                         HashArg,
+                                         KeyTraitsArg,
+                                         MappedTraitsArg,
+                                         HeapAllocator> {
   IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
   DISALLOW_NEW();
 
@@ -262,7 +262,7 @@ struct GCInfoTrait<HeapHashSet<T, U, V>>
 template <typename Value,
           typename HashFunctions = typename DefaultHash<Value>::Hash,
           typename Traits = HashTraits<Value>>
-class HeapHashCountedSet
+class HeapHashCountedSet final
     : public HashCountedSet<Value, HashFunctions, Traits, HeapAllocator> {
   IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
   DISALLOW_NEW();
@@ -292,7 +292,7 @@ struct GCInfoTrait<HeapHashCountedSet<T, U, V>>
     : public GCInfoTrait<HashCountedSet<T, U, V, HeapAllocator>> {};
 
 template <typename T, wtf_size_t inlineCapacity = 0>
-class HeapVector : public Vector<T, inlineCapacity, HeapAllocator> {
+class HeapVector final : public Vector<T, inlineCapacity, HeapAllocator> {
   IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
   DISALLOW_NEW();
 
@@ -369,7 +369,7 @@ struct GCInfoTrait<HeapVector<T, inlineCapacity>>
     : public GCInfoTrait<Vector<T, inlineCapacity, HeapAllocator>> {};
 
 template <typename T>
-class HeapDeque : public Deque<T, 0, HeapAllocator> {
+class HeapDeque final : public Deque<T, 0, HeapAllocator> {
   IS_GARBAGE_COLLECTED_CONTAINER_TYPE();
   DISALLOW_NEW();
 
