@@ -2888,6 +2888,9 @@ extern const char kPdfFormSaveDescription[];
 
 extern const char kPdfViewerUpdateName[];
 extern const char kPdfViewerUpdateDescription[];
+
+extern const char kPdfViewerPresentationModeName[];
+extern const char kPdfViewerPresentationModeDescription[];
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

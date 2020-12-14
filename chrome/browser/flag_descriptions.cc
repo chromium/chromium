@@ -4923,6 +4923,11 @@ const char kPdfViewerUpdateName[] = "PDF Viewer Update";
 const char kPdfViewerUpdateDescription[] =
     "When enabled, the PDF viewer will display an updated UI with new "
     "options and features.";
+
+const char kPdfViewerPresentationModeName[] = "PDF Viewer Presentation Mode";
+const char kPdfViewerPresentationModeDescription[] =
+    "When enabled, the PDF viewer will include an option in the toolbar's "
+    "overflow menu to enter Presentation (full screen) Mode.";
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

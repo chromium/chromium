@@ -3900,6 +3900,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "pdf-viewer-presentation-mode",
+    "owners": [ "dpapad" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "pdf-viewer-update",
     "owners": [ "rbpotter", "thestig" ],
     "expiry_milestone": 89
