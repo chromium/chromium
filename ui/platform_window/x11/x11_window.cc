@@ -863,15 +863,17 @@ int X11Window::UpdateDrag(const gfx::Point& screen_point) {
     suggested_operations |= DragDropTypes::DRAG_COPY;
   }
 
+  XDragDropClient* source_client =
+      XDragDropClient::GetForWindow(target_current_context->source_window());
   if (!notified_enter_) {
-    drop_handler->OnDragEnter(
-        gfx::PointF(screen_point), std::move(data), suggested_operations,
-        GetKeyModifiers(target_current_context->source_client()));
+    drop_handler->OnDragEnter(gfx::PointF(screen_point), std::move(data),
+                              suggested_operations,
+                              GetKeyModifiers(source_client));
     notified_enter_ = true;
   }
-  drag_operation_ = drop_handler->OnDragMotion(
-      gfx::PointF(screen_point), suggested_operations,
-      GetKeyModifiers(target_current_context->source_client()));
+  drag_operation_ = drop_handler->OnDragMotion(gfx::PointF(screen_point),
+                                               suggested_operations,
+                                               GetKeyModifiers(source_client));
   return drag_operation_;
 }
 
@@ -909,8 +911,8 @@ int X11Window::PerformDrop() {
   // should have it since then.
   auto* target_current_context = drag_drop_client_->target_current_context();
   DCHECK(target_current_context);
-  drop_handler->OnDragDrop(
-      {}, GetKeyModifiers(target_current_context->source_client()));
+  drop_handler->OnDragDrop({}, GetKeyModifiers(XDragDropClient::GetForWindow(
+                                   target_current_context->source_window())));
   notified_enter_ = false;
   return drag_operation_;
 }
