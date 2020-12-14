@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
+#include "chromeos/components/phonehub/util/histogram_util.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -61,6 +62,8 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
 
   PA_LOG(INFO) << "MessageReceiver received a "
                << GetMessageTypeName(message_type) << " message.";
+  util::LogMessageResult(message_type,
+                         util::PhoneHubMessageResult::kResponseReceived);
 
   // Decode the proto message if the message is something we want to notify to
   // clients.
