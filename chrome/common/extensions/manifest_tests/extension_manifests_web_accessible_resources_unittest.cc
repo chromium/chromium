@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
+#include "base/test/values_test_util.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -10,6 +12,21 @@ using extensions::Extension;
 using extensions::WebAccessibleResourcesInfo;
 
 class WebAccessibleResourcesManifestTest : public ChromeManifestTest {
+ protected:
+  ManifestData GetManifestData(const std::string& web_accessible_resources,
+                               int manifest_version = 3) {
+    constexpr char kManifestStub[] =
+        R"({
+        "name": "Test",
+        "version": "0.1",
+        "manifest_version": %d,
+        "web_accessible_resources": %s
+        })";
+    base::Value manifest_value = base::test::ParseJson(base::StringPrintf(
+        kManifestStub, manifest_version, web_accessible_resources.c_str()));
+    EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
+    return ManifestData(std::move(manifest_value), "test");
+  }
 };
 
 TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
@@ -56,100 +73,170 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResources) {
       pattern.get(), "path/anything.badext", example_origin));
 }
 
-// Succeed when all keys are defined.
+// Tests valid configurations of the web_accessible_resources key in manifest
+// v3 extensions.
+TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Valid) {
+  struct {
+    const char* title;
+    const char* web_accessible_resources;
+  } test_cases[] = {
+      {"Succeed when all keys are defined.",
+       R"([
+            {
+              "resources": ["test"],
+              "matches": ["https://allowed.example/*"],
+              "extension_ids": ["abcdefghijlkmnopabcdefghijklmnop"],
+              "use_dynamic_url": true
+            }
+          ])"},
+      {"Succeed if only specifying |extension_ids| and |resources|.",
+       R"([
+            {
+              "resources": ["allowed"],
+              "extension_ids": ["abcdefghijlkmnopabcdefghijklmnop"]
+            }
+          ])"},
+      {"Succeed if only specifying |matches| and |resources|.",
+       R"([
+            {
+              "resources": ["test"],
+              "matches": ["https://allowed.example/*"]
+            }
+          ])"},
+      {"Succeed if there are multiple objects.",
+       R"([
+            {
+              "resources": ["test"],
+              "matches": ["https://allowed.example/*"],
+              "extension_ids": ["abcdefghijlkmnopabcdefghijklmnop"]
+            },
+            {
+              "resources": ["two"],
+              "matches": ["https://example.org/*"],
+              "extension_ids": ["abcdefghijlkmnopabcdefghijklmnop"]
+            }
+          ])"},
+      {"Succeed if unexpected key exists in entry.",
+       R"([
+            {
+              "resources": ["test"],
+              "matches": ["https://chromium.org/*"],
+              "extension_ids": ["abcdefghijklmnopabcdefghijklmnop"],
+              "unexpected_key": ["allowed"]
+            }
+          ])"},
+      {"Succeed if only the use_dynamic_url key is set, but not others.",
+       R"([
+            {
+              "resources": ["test"],
+              "use_dynamic_url": false
+            }
+          ])"},
+  };
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
+    scoped_refptr<Extension> extension(LoadAndExpectSuccess(
+        GetManifestData(test_case.web_accessible_resources)));
+    EXPECT_TRUE(
+        WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
+  }
+}
+
+// Tests invalid configurations of the web_accessible_resources key in manifest
+// v3 extensions.
+TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
+  struct {
+    const char* title;
+    const char* web_accessible_resources;
+    const char* expected_error;
+  } test_cases[] = {
+      {"Error if web_accessible_resources key is of incorrect type.", "{}",
+       "Invalid value for 'web_accessible_resources'."},
+      {"Error if objects has no keys.", "[{}]",
+       "Invalid value for 'web_accessible_resources[0]'."},
+      {"Error if entry only contains |resources|.",
+       R"([
+            {
+              "resources": ["error"]
+            }
+        ])",
+       "Invalid value for 'web_accessible_resources[0]'."},
+      {"Error if incorrect keyed object type is present.",
+       R"([
+            {
+              "resources": ["test"],
+              "matches": {"a": "https://error.example/*"},
+              "extension_ids": ["abcdefghijlkmnopabcdefghijklmnop"]
+            }
+        ])",
+       "Invalid value for 'web_accessible_resources[0]'."},
+      {"Error if incorrect keyed object type is present.",
+       R"([
+            {
+              "resources": ["test"],
+              "matches": [1, 2, 3],
+              "extension_ids": [1, 2, 3]
+            }
+        ])",
+       "Invalid value for 'web_accessible_resources[0]'."},
+      {"Error if extension id is invalid.",
+       R"([
+            {
+              "resources": ["test"],
+              "matches": ["https://example.com/*"],
+              "extension_ids": ["error"]
+            }
+        ])",
+       "Invalid value for 'web_accessible_resources[0]'."},
+      {"Error if any match in matches is more than just an origin.",
+       R"([
+            {
+              "resources": ["test"],
+              "matches": [
+                "https://allowed.example/*",
+                "https://example.com/error*"
+              ]
+            }
+        ])",
+       "Invalid value for 'web_accessible_resources[0]'."}};
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
+    LoadAndExpectError(GetManifestData(test_case.web_accessible_resources),
+                       test_case.expected_error);
+  }
+}
+
+// Succeed if site requesting resource exists in matches.
 TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3AllKeysDefined) {
-  scoped_refptr<Extension> extension(LoadAndExpectSuccess(
-      "web_accessible_resources/v3/all_keys_defined.json"));
+       WebAccessibleResourcesOriginRequestingResourceExistsInMatches) {
+  scoped_refptr<Extension> extension(LoadAndExpectSuccess(GetManifestData(R"([
+    {
+      "resources": ["test"],
+      "matches": ["https://allowed.example/*"]
+    }
+  ])")));
   EXPECT_TRUE(
       WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      extension.get(), "test",
+      url::Origin::Create(GURL("https://allowed.example"))));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      extension.get(), "test",
+      url::Origin::Create(GURL("http://error.example"))));
+  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      extension.get(), "test", url::Origin::Create(GURL())));
 }
 
-// Error if objects has no keys.
+// Error if V2 uses is keyed to anything other than array of string.
 TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3EmptyObject) {
-  LoadAndExpectError("web_accessible_resources/v3/empty_object.json",
-                     "Invalid value for 'web_accessible_resources[0]'.");
-}
-
-// Error if entry only contains |resources|.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3MissingAllButResources) {
-  LoadAndExpectError(
-      "web_accessible_resources/v3/missing_all_but_resources.json",
-      "Invalid value for 'web_accessible_resources[0]'.");
-}
-
-// Succeed if only specifying |extension_ids| and |resources|.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3ExtensionIdsOnly) {
-  scoped_refptr<Extension> extension(LoadAndExpectSuccess(
-      "web_accessible_resources/v3/extension_ids_only.json"));
-  EXPECT_TRUE(
-      WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
-}
-
-// Succeed if only specifying |matches| and |resources|.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3MatchesOnly) {
-  scoped_refptr<Extension> extension(
-      LoadAndExpectSuccess("web_accessible_resources/v3/matches_only.json"));
-  EXPECT_TRUE(
-      WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
-}
-
-// Succeed if there are multiple objects.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3MultipleObjects) {
-  scoped_refptr<Extension> extension(LoadAndExpectSuccess(
-      "web_accessible_resources/v3/multiple_objects.json"));
-  EXPECT_TRUE(
-      WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
-}
-
-// Error if incorrect keyed object type is present.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3MatchesObjectInsteadOfArray) {
-  LoadAndExpectError(
-      "web_accessible_resources/v3/matches_object_instead_of_array.json",
-      "Invalid value for 'web_accessible_resources[0]'.");
-}
-
-// Error if incorrect keyed object type is present.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3MatchesOrIdHasNonString) {
-  LoadAndExpectError(
-      "web_accessible_resources/v3/matches_or_id_has_non_string.json",
-      "Invalid value for 'web_accessible_resources[0]'.");
-}
-
-// Succeed if unexpected key exists in entry.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3UnexpectedKey) {
-  scoped_refptr<Extension> extension(
-      LoadAndExpectSuccess("web_accessible_resources/v3/unexpected_key.json"));
-  EXPECT_TRUE(
-      WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
-}
-
-// Succeed if only the use_dynamic_url key is set, but not others.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3UseDynamicUrlIsSetButNothingElse) {
-  LoadAndExpectSuccess(
-      "web_accessible_resources/v3/"
-      "use_dynamic_url_is_set_but_nothing_else.json");
-}
-
-// Error if web_accessible_resources key is of incorrect type.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3InvalidTopLevelType) {
-  LoadAndExpectError("web_accessible_resources/v3/invalid_top_level_type.json",
-                     "Invalid value for 'web_accessible_resources'.");
-}
-
-// Error if extension id is invalid.
-TEST_F(WebAccessibleResourcesManifestTest,
-       WebAccessibleResourcesV3ExtensionIdInvalid) {
-  LoadAndExpectError("web_accessible_resources/v3/extension_id_invalid.json",
+       WebAccessibleResourcesV2MustBeArrayOfString) {
+  constexpr char kWebAccessibleResources[] =
+      R"([
+          {
+            "resources": ["test"],
+            "matches": ["https://error.example/*"]
+          }
+    ])";
+  LoadAndExpectError(GetManifestData(kWebAccessibleResources, 2),
                      "Invalid value for 'web_accessible_resources[0]'.");
 }
