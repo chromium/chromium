@@ -5243,6 +5243,21 @@
             ]
         }
     ],
+    "OverlayPrioritizationTesting": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableOverlayPrioritization"
+                    ]
+                }
+            ]
+        }
+    ],
     "PDFViewerUpdate": [
         {
             "platforms": [
