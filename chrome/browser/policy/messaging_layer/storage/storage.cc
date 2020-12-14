@@ -9,6 +9,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
+#include "base/files/file.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/platform_file.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
@@ -18,9 +24,12 @@
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_queue.h"
+#include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
+#include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
 #include "components/policy/proto/record.pb.h"
+#include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
 namespace reporting {
 
@@ -29,37 +38,41 @@ namespace {
 // Parameters of individual queues.
 // TODO(b/159352842): Deliver space and upload parameters from outside.
 
-constexpr base::FilePath::CharType immediate_queue_subdir[] =
+constexpr base::FilePath::CharType kImmediateQueueSubdir[] =
     FILE_PATH_LITERAL("Immediate");
-constexpr base::FilePath::CharType immediate_queue_prefix[] =
+constexpr base::FilePath::CharType kImmediateQueuePrefix[] =
     FILE_PATH_LITERAL("P_Immediate");
 
-constexpr base::FilePath::CharType fast_batch_queue_subdir[] =
+constexpr base::FilePath::CharType kFastBatchQueueSubdir[] =
     FILE_PATH_LITERAL("FastBatch");
-constexpr base::FilePath::CharType fast_batch_queue_prefix[] =
+constexpr base::FilePath::CharType kFastBatchQueuePrefix[] =
     FILE_PATH_LITERAL("P_FastBatch");
-constexpr base::TimeDelta fast_batch_upload_period =
+constexpr base::TimeDelta kFastBatchUploadPeriod =
     base::TimeDelta::FromSeconds(1);
 
-constexpr base::FilePath::CharType slow_batch_queue_subdir[] =
+constexpr base::FilePath::CharType kSlowBatchQueueSubdir[] =
     FILE_PATH_LITERAL("SlowBatch");
-constexpr base::FilePath::CharType slow_batch_queue_prefix[] =
+constexpr base::FilePath::CharType kSlowBatchQueuePrefix[] =
     FILE_PATH_LITERAL("P_SlowBatch");
-constexpr base::TimeDelta slow_batch_upload_period =
+constexpr base::TimeDelta kSlowBatchUploadPeriod =
     base::TimeDelta::FromSeconds(20);
 
-constexpr base::FilePath::CharType background_queue_subdir[] =
+constexpr base::FilePath::CharType kBackgroundQueueSubdir[] =
     FILE_PATH_LITERAL("Background");
-constexpr base::FilePath::CharType background_queue_prefix[] =
+constexpr base::FilePath::CharType kBackgroundQueuePrefix[] =
     FILE_PATH_LITERAL("P_Background");
-constexpr base::TimeDelta background_upload_period =
+constexpr base::TimeDelta kBackgroundQueueUploadPeriod =
     base::TimeDelta::FromMinutes(1);
 
-constexpr base::FilePath::CharType manual_queue_subdir[] =
+constexpr base::FilePath::CharType kManualQueueSubdir[] =
     FILE_PATH_LITERAL("Manual");
-constexpr base::FilePath::CharType manual_queue_prefix[] =
+constexpr base::FilePath::CharType kManualQueuePrefix[] =
     FILE_PATH_LITERAL("P_Manual");
-constexpr base::TimeDelta manual_upload_period = base::TimeDelta::Max();
+constexpr base::TimeDelta kManualUploadPeriod = base::TimeDelta::Max();
+
+constexpr base::FilePath::CharType kEncryptionKeyFilePrefix[] =
+    FILE_PATH_LITERAL("EncryptionKey.");
+const int32_t kEncryptionKeyMaxFileSize = 256;
 
 // Returns vector of <priority, queue_options> for all expected queues in
 // Storage. Queues are all located under the given root directory.
@@ -67,28 +80,27 @@ std::vector<std::pair<Priority, QueueOptions>> ExpectedQueues(
     const StorageOptions& options) {
   return {
       std::make_pair(IMMEDIATE, QueueOptions(options)
-                                    .set_subdirectory(immediate_queue_subdir)
-                                    .set_file_prefix(immediate_queue_prefix)),
+                                    .set_subdirectory(kImmediateQueueSubdir)
+                                    .set_file_prefix(kImmediateQueuePrefix)),
       std::make_pair(FAST_BATCH,
                      QueueOptions(options)
-                         .set_subdirectory(fast_batch_queue_subdir)
-                         .set_file_prefix(fast_batch_queue_prefix)
-                         .set_upload_period(fast_batch_upload_period)),
+                         .set_subdirectory(kFastBatchQueueSubdir)
+                         .set_file_prefix(kFastBatchQueuePrefix)
+                         .set_upload_period(kFastBatchUploadPeriod)),
       std::make_pair(SLOW_BATCH,
                      QueueOptions(options)
-                         .set_subdirectory(slow_batch_queue_subdir)
-                         .set_file_prefix(slow_batch_queue_prefix)
-                         .set_upload_period(slow_batch_upload_period)),
+                         .set_subdirectory(kSlowBatchQueueSubdir)
+                         .set_file_prefix(kSlowBatchQueuePrefix)
+                         .set_upload_period(kSlowBatchUploadPeriod)),
       std::make_pair(BACKGROUND_BATCH,
                      QueueOptions(options)
-                         .set_subdirectory(background_queue_subdir)
-                         .set_file_prefix(background_queue_prefix)
-                         .set_upload_period(background_upload_period)),
-      std::make_pair(MANUAL_BATCH,
-                     QueueOptions(options)
-                         .set_subdirectory(manual_queue_subdir)
-                         .set_file_prefix(manual_queue_prefix)
-                         .set_upload_period(manual_upload_period)),
+                         .set_subdirectory(kBackgroundQueueSubdir)
+                         .set_file_prefix(kBackgroundQueuePrefix)
+                         .set_upload_period(kBackgroundQueueUploadPeriod)),
+      std::make_pair(MANUAL_BATCH, QueueOptions(options)
+                                       .set_subdirectory(kManualQueueSubdir)
+                                       .set_file_prefix(kManualQueuePrefix)
+                                       .set_upload_period(kManualUploadPeriod)),
   };
 }
 
@@ -139,6 +151,248 @@ class Storage::QueueUploaderInterface : public StorageQueue::UploaderInterface {
   const std::unique_ptr<Storage::UploaderInterface> storage_interface_;
 };
 
+class Storage::KeyInStorage {
+ public:
+  explicit KeyInStorage(const base::FilePath& directory)
+      : directory_(directory) {}
+  ~KeyInStorage() = default;
+
+  // Uploads signed encryption key to a file with an |index| >=
+  // |next_key_file_index_|. Returns status in case of any error. If succeeds,
+  // removes all files with lower indexes (if any). Called every time encryption
+  // key is updated.
+  Status UploadKeyFile(const SignedEncryptionInfo& signed_encryption_key) {
+    // Atomically reserve file index (none else will get the same index).
+    uint64_t new_file_index = next_key_file_index_.fetch_add(1);
+    // Write into file.
+    RETURN_IF_ERROR(WriteKeyInfoFile(new_file_index, signed_encryption_key));
+
+    // Enumerate data files and delete all files with lower index.
+    // numbers do we have (first and last).
+    RemoveKeyFilesWithLowerIndexes(new_file_index);
+    return Status::StatusOK();
+  }
+
+  // Locates and downloads the latest valid enumeration keys file.
+  // Atomically sets |next_key_file_index_| to the a value larger than any found
+  // file. Returns key and key id pair, or error status (NOT_FOUND if no valid
+  // file has been found). Called once during initialization only.
+  StatusOr<std::pair<std::string, Encryptor::PublicKeyId>> DownloadKeyFile() {
+    // Make sure the assigned directory exists.
+    base::File::Error error;
+    if (!base::CreateDirectoryAndGetError(directory_, &error)) {
+      return Status(
+          error::UNAVAILABLE,
+          base::StrCat(
+              {"Storage directory '", directory_.MaybeAsASCII(),
+               "' does not exist, error=", base::File::ErrorToString(error)}));
+    }
+
+    // Enumerate possible key files, collect the ones that have valid name,
+    // set next_key_file_index_ to a value that is definitely not used.
+    base::flat_set<base::FilePath> all_key_files;
+    base::flat_map<uint64_t, base::FilePath> found_key_files;
+    EnumerateKeyFiles(&all_key_files, &found_key_files);
+
+    // Try to unserialize the key from each found file (latest first).
+    auto signed_encryption_key_result = LocateValidKeyAndParse(found_key_files);
+
+    // If not found, return error.
+    if (!signed_encryption_key_result.has_value()) {
+      return Status(error::NOT_FOUND, "No valid encryption key found");
+    }
+
+    // Found and validated, delete all other files.
+    for (const auto& full_name : all_key_files) {
+      if (full_name == signed_encryption_key_result.value().first) {
+        continue;  // This file is used.
+      }
+      base::DeleteFile(full_name);  // Ignore errors, if any.
+    }
+
+    // Return the key.
+    return std::make_pair(
+        signed_encryption_key_result.value().second.public_asymmetric_key(),
+        signed_encryption_key_result.value().second.public_key_id());
+  }
+
+ private:
+  // Writes key into file. Called during key upload.
+  Status WriteKeyInfoFile(uint64_t new_file_index,
+                          const SignedEncryptionInfo& signed_encryption_key) {
+    base::FilePath key_file_path =
+        directory_.Append(kEncryptionKeyFilePrefix)
+            .AddExtensionASCII(base::NumberToString(new_file_index));
+    base::File key_file(key_file_path,
+                        base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
+    if (!key_file.IsValid()) {
+      return Status(
+          error::DATA_LOSS,
+          base::StrCat({"Cannot open key file='", key_file_path.MaybeAsASCII(),
+                        "' for append"}));
+    }
+    std::string serialized_key;
+    if (!signed_encryption_key.SerializeToString(&serialized_key) ||
+        serialized_key.empty()) {
+      return Status(error::DATA_LOSS,
+                    base::StrCat({"Failed to seralize key into file='",
+                                  key_file_path.MaybeAsASCII(), "'"}));
+    }
+    const int32_t write_result = key_file.Write(
+        /*offset=*/0, serialized_key.data(), serialized_key.size());
+    if (write_result < 0) {
+      return Status(
+          error::DATA_LOSS,
+          base::StrCat({"File write error=",
+                        key_file.ErrorToString(key_file.GetLastFileError()),
+                        " file=", key_file_path.MaybeAsASCII()}));
+    }
+    if (static_cast<size_t>(write_result) != serialized_key.size()) {
+      return Status(error::DATA_LOSS,
+                    base::StrCat({"Failed to seralize key into file='",
+                                  key_file_path.MaybeAsASCII(), "'"}));
+    }
+    return Status::StatusOK();
+  }
+
+  // Enumerates key files and deletes those with index lower than
+  // |new_file_index|. Called during key upload.
+  void RemoveKeyFilesWithLowerIndexes(uint64_t new_file_index) {
+    base::flat_set<base::FilePath> key_files_to_remove;
+    base::FileEnumerator dir_enum(
+        directory_,
+        /*recursive=*/false, base::FileEnumerator::FILES,
+        base::StrCat({kEncryptionKeyFilePrefix, FILE_PATH_LITERAL("*")}));
+    base::FilePath full_name;
+    while (full_name = dir_enum.Next(), !full_name.empty()) {
+      const auto result = key_files_to_remove.emplace(full_name);
+      if (!result.second) {
+        // Duplicate file name. Should not happen.
+        continue;
+      }
+      const auto extension = full_name.Extension();
+      if (extension.empty()) {
+        // Should not happen, will remove this file.
+        continue;
+      }
+      uint64_t file_index = 0;
+      bool success = base::StringToUint64(extension, &file_index);
+      if (!success) {
+        // Bad extension - not a number. Should not happen, will remove this
+        // file.
+        continue;
+      }
+      if (file_index < new_file_index) {
+        // Lower index file, will remove it.
+        continue;
+      }
+      // Keep this file - drop it from erase list.
+      key_files_to_remove.erase(result.first);
+    }
+    // Delete all files assigned for deletion.
+    for (const auto& full_name : key_files_to_remove) {
+      base::DeleteFile(full_name);  // Ignore errors, if any.
+    }
+  }
+
+  // Enumerates possible key files, collects the ones that have valid name,
+  // sets next_key_file_index_ to a value that is definitely not used.
+  // Called once, during initialization.
+  void EnumerateKeyFiles(
+      base::flat_set<base::FilePath>* all_key_files,
+      base::flat_map<uint64_t, base::FilePath>* found_key_files) {
+    base::FileEnumerator dir_enum(
+        directory_,
+        /*recursive=*/false, base::FileEnumerator::FILES,
+        base::StrCat({kEncryptionKeyFilePrefix, FILE_PATH_LITERAL("*")}));
+    base::FilePath full_name;
+    while (full_name = dir_enum.Next(), !full_name.empty()) {
+      if (!all_key_files->emplace(full_name).second) {
+        // Duplicate file name. Should not happen.
+        continue;
+      }
+      const auto extension = full_name.Extension();
+      if (extension.empty()) {
+        // Should not happen.
+        continue;
+      }
+      uint64_t file_index = 0;
+      bool success = base::StringToUint64(extension, &file_index);
+      if (!success) {
+        // Bad extension - not a number. Should not happen (file is corrupt).
+        continue;
+      }
+      if (!found_key_files->emplace(file_index, full_name).second) {
+        // Duplicate extension (e.g., 01 and 001). Should not happen (file is
+        // corrupt).
+        continue;
+      }
+      // Set 'next_key_file_index_' to a number which is definitely not used.
+      if (next_key_file_index_.load() <= file_index) {
+        next_key_file_index_.store(file_index + 1);
+      }
+    }
+  }
+
+  // Enumerates found key files and locates one with the highest index and
+  // valid key. Returns pair of file name and loaded signed key proto.
+  // Called once, during initialization.
+  base::Optional<std::pair<base::FilePath, SignedEncryptionInfo>>
+  LocateValidKeyAndParse(
+      const base::flat_map<uint64_t, base::FilePath>& found_key_files) {
+    // Try to unserialize the key from each found file (latest first).
+    for (auto key_file_it = found_key_files.rbegin();
+         key_file_it != found_key_files.rend(); ++key_file_it) {
+      base::File key_file(key_file_it->second,
+                          base::File::FLAG_OPEN | base::File::FLAG_READ);
+      if (!key_file.IsValid()) {
+        continue;  // Could not open.
+      }
+
+      SignedEncryptionInfo signed_encryption_key;
+      {
+        const auto key_file_buffer =
+            std::make_unique<char[]>(kEncryptionKeyMaxFileSize);
+        const int32_t read_result = key_file.Read(
+            /*offset=*/0, key_file_buffer.get(), kEncryptionKeyMaxFileSize);
+        if (read_result < 0) {
+          LOG(WARNING) << "File read error="
+                       << key_file.ErrorToString(key_file.GetLastFileError())
+                       << " " << key_file_it->second.MaybeAsASCII();
+          continue;  // File read error.
+        }
+        if (read_result == 0 || read_result >= kEncryptionKeyMaxFileSize) {
+          continue;  // Unexpected file size.
+        }
+        google::protobuf::io::ArrayInputStream key_stream(  // Zero-copy stream.
+            key_file_buffer.get(), read_result);
+        if (!signed_encryption_key.ParseFromZeroCopyStream(&key_stream)) {
+          LOG(WARNING) << "Failed to parse key file, full_name='"
+                       << key_file_it->second.MaybeAsASCII() << "'";
+          continue;
+        }
+      }
+
+      // Parsed successfully.
+      // TODO(b/170054326): Validate signature.
+      // Validated successfully. Return file name and signed key proto.
+      return std::make_pair(key_file_it->second, signed_encryption_key);
+    }
+
+    // Not found, return error.
+    return base::nullopt;
+  }
+
+  // Index of the file to serialize the signed key to.
+  // Initialized to the next available number or 0, if none present.
+  // Every time a new key is received, it is stored in a file with the next
+  // index; however, any file found with the matching signature can be used
+  // to successfully encrypt records and for the server to then decrypt them.
+  std::atomic<uint64_t> next_key_file_index_{0};
+
+  const base::FilePath directory_;
+};
+
 void Storage::Create(
     const StorageOptions& options,
     StartUploadCb start_upload_cb,
@@ -157,8 +411,7 @@ void Storage::Create(
               base::ThreadPool::CreateSequencedTaskRunner(
                   {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
           queues_options_(queues_options),
-          storage_(std::move(storage)),
-          count_(queues_options_.size()) {}
+          storage_(std::move(storage)) {}
 
    private:
     // Context can only be deleted by calling Response method.
@@ -167,13 +420,49 @@ void Storage::Create(
     void OnStart() override {
       CheckOnValidSequence();
 
-      // TODO(b/170054326): Locate the latest signed_encryption_key file with
-      // matching key signature after deserialization. Call
-      // storage_->encryption_module_->UpdateAsymmetricKey(...) with the key and
-      // id.
-      // DCHECK(storage_->encryption_module_->has_encryption_key());
+      // Locate the latest signed_encryption_key file with matching key
+      // signature after deserialization.
+      const auto download_key_result =
+          storage_->key_in_storage_->DownloadKeyFile();
+      if (!download_key_result.ok()) {
+        // Key not found or corrupt. Proceed with queues creation directly.
+        EncryptionSetUp(download_key_result.status());
+        return;
+      }
+
+      // Key found, verified and downloaded.
+      storage_->encryption_module_->UpdateAsymmetricKey(
+          download_key_result.ValueOrDie().first,
+          download_key_result.ValueOrDie().second,
+          base::BindOnce(&StorageInitContext::ScheduleEncryptionSetUp,
+                         base::Unretained(this)));
+    }
+
+    void ScheduleEncryptionSetUp(Status status) {
+      Schedule(&StorageInitContext::EncryptionSetUp, base::Unretained(this),
+               status);
+    }
+
+    void EncryptionSetUp(Status status) {
+      CheckOnValidSequence();
+
+      if (status.ok()) {
+        // Encryption key has been found and set up. Must be available now.
+        DCHECK(storage_->encryption_module_->has_encryption_key());
+      } else {
+        if (EncryptionModule::is_enabled()) {
+          // Encryptor enabled - we cannot proceed with no keys.
+          // TODO(b/170054326): For now - bail out. Change it to allow the
+          // Storage to be initialized, send Upload with no records and
+          // need_encryption_key flag and reject Enqueues until it is
+          // responded.
+          Response(status);
+          return;
+        }
+      }
 
       // Construct all queues.
+      count_ = queues_options_.size();
       for (const auto& queue_options : queues_options_) {
         StorageQueue::Create(
             /*options=*/queue_options.second,
@@ -221,7 +510,7 @@ void Storage::Create(
 
     const std::vector<std::pair<Priority, QueueOptions>> queues_options_;
     scoped_refptr<Storage> storage_;
-    int32_t count_;
+    int32_t count_ = 0;
     Status final_status_;
   };
 
@@ -240,6 +529,7 @@ Storage::Storage(const StorageOptions& options,
                  StartUploadCb start_upload_cb)
     : options_(options),
       encryption_module_(encryption_module),
+      key_in_storage_(std::make_unique<KeyInStorage>(options.directory())),
       start_upload_cb_(std::move(start_upload_cb)) {}
 
 Storage::~Storage() = default;
@@ -247,8 +537,8 @@ Storage::~Storage() = default;
 void Storage::Write(Priority priority,
                     Record record,
                     base::OnceCallback<void(Status)> completion_cb) {
-  // Note: queues_ never change after initialization is finished, so there is no
-  // need to protect or serialize access to it.
+  // Note: queues_ never change after initialization is finished, so there is
+  // no need to protect or serialize access to it.
   ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(scoped_refptr<StorageQueue> queue,
                                      completion_cb, GetQueue(priority));
   queue->Write(std::move(record), std::move(completion_cb));
@@ -257,16 +547,16 @@ void Storage::Write(Priority priority,
 void Storage::Confirm(Priority priority,
                       uint64_t seq_number,
                       base::OnceCallback<void(Status)> completion_cb) {
-  // Note: queues_ never change after initialization is finished, so there is no
-  // need to protect or serialize access to it.
+  // Note: queues_ never change after initialization is finished, so there is
+  // no need to protect or serialize access to it.
   ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(scoped_refptr<StorageQueue> queue,
                                      completion_cb, GetQueue(priority));
   queue->Confirm(seq_number, std::move(completion_cb));
 }
 
 Status Storage::Flush(Priority priority) {
-  // Note: queues_ never change after initialization is finished, so there is no
-  // need to protect or serialize access to it.
+  // Note: queues_ never change after initialization is finished, so there is
+  // no need to protect or serialize access to it.
   ASSIGN_OR_RETURN(scoped_refptr<StorageQueue> queue, GetQueue(priority));
   queue->Flush();
   return Status::StatusOK();
@@ -288,6 +578,11 @@ void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
         }
         // Encryption key updated successfully.
       }));
+
+  // Serialize whole signed_encryption_key to a new file, discard the old
+  // one(s).
+  const Status status = key_in_storage_->UploadKeyFile(signed_encryption_key);
+  LOG_IF(ERROR, !status.ok()) << "Failed to upload the new encription key.";
 }
 
 bool Storage::has_encryption_key() const {

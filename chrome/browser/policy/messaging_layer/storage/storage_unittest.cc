@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
@@ -234,10 +235,14 @@ class MockUploadClient : public Storage::UploaderInterface {
 
 class StorageTest : public ::testing::TestWithParam<size_t> {
  protected:
-  void SetUp() override { ASSERT_TRUE(location_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(location_.CreateUniqueTempDir());
+    // Encryption is disabled.
+    ASSERT_FALSE(EncryptionModule::is_enabled());
+  }
 
-  void CreateStorageTestOrDie(const StorageOptions& options) {
-    ASSERT_FALSE(storage_) << "StorageTest already assigned";
+  StatusOr<scoped_refptr<Storage>> CreateStorageTest(
+      const StorageOptions& options) {
     test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
     TestEvent<StatusOr<scoped_refptr<Storage>>> e;
@@ -245,7 +250,13 @@ class StorageTest : public ::testing::TestWithParam<size_t> {
                     base::BindRepeating(&StorageTest::BuildMockUploader,
                                         base::Unretained(this)),
                     test_encryption_module_, e.cb());
-    StatusOr<scoped_refptr<Storage>> storage_result = e.result();
+    return e.result();
+  }
+
+  void CreateStorageTestOrDie(const StorageOptions& options) {
+    ASSERT_FALSE(storage_) << "StorageTest already assigned";
+    StatusOr<scoped_refptr<Storage>> storage_result =
+        CreateStorageTest(options);
     ASSERT_OK(storage_result)
         << "Failed to create StorageTest, error=" << storage_result.status();
     storage_ = std::move(storage_result.ValueOrDie());
@@ -287,6 +298,8 @@ class StorageTest : public ::testing::TestWithParam<size_t> {
     const Status c_result = c.result();
     ASSERT_OK(c_result) << c_result;
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   base::ScopedTempDir location_;
   scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
@@ -712,6 +725,18 @@ TEST_P(StorageTest, WriteEncryptFailure) {
   const Status result = WriteString(FAST_BATCH, "TEST_MESSAGE");
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
+}
+
+TEST_P(StorageTest, InitFailureWithNoKey) {
+  // Enable encryption.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      {EncryptionModule::kEncryptedReporting}, {});
+  // TODO(b/170054326): When lack of key file is handled correctly,
+  // rewrite this test accordingly.
+  StatusOr<scoped_refptr<Storage>> storage_result =
+      CreateStorageTest(BuildStorageOptions());
+  ASSERT_FALSE(storage_result.ok()) << "Storage initialized";
 }
 
 INSTANTIATE_TEST_SUITE_P(VaryingFileSize,

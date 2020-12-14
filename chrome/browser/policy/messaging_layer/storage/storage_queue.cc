@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -152,7 +153,7 @@ Status StorageQueue::Init() {
     return Status(
         error::UNAVAILABLE,
         base::StrCat(
-            {"Fileset directory '", options_.directory().MaybeAsASCII(),
+            {"Storage queue directory '", options_.directory().MaybeAsASCII(),
              "' does not exist, error=", base::File::ErrorToString(error)}));
   }
   // Enumerate data files and scan the last one to determine what sequence

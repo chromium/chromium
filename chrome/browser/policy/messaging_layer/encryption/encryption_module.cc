@@ -47,7 +47,13 @@ void AddToRecord(base::StringPiece record,
 
 }  // namespace
 
+// static
 const char EncryptionModule::kEncryptedReporting[] = "EncryptedReporting";
+
+// static
+bool EncryptionModule::is_enabled() {
+  return base::FeatureList::IsEnabled(kEncryptedReportingFeature);
+}
 
 EncryptionModule::EncryptionModule() {
   auto encryptor_result = Encryptor::Create();
@@ -60,7 +66,7 @@ EncryptionModule::~EncryptionModule() = default;
 void EncryptionModule::EncryptRecord(
     base::StringPiece record,
     base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) const {
-  if (!base::FeatureList::IsEnabled(kEncryptedReportingFeature)) {
+  if (!is_enabled()) {
     // Encryptor disabled.
     EncryptedRecord encrypted_record;
     encrypted_record.mutable_encrypted_wrapped_record()->assign(record.begin(),

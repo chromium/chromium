@@ -22,8 +22,8 @@ class EncryptionModule : public base::RefCountedThreadSafe<EncryptionModule> {
   // Feature to enable/disable encryption.
   // By default encryption is disabled, until server can support decryption.
   static const char kEncryptedReporting[];
-  EncryptionModule();
 
+  EncryptionModule();
   EncryptionModule(const EncryptionModule& other) = delete;
   EncryptionModule& operator=(const EncryptionModule& other) = delete;
 
@@ -46,6 +46,10 @@ class EncryptionModule : public base::RefCountedThreadSafe<EncryptionModule> {
   // even after the key has already been set - this is harmless, since resetting
   // or even changing the key is OK at any time.
   bool has_encryption_key() const;
+
+  // Returns 'true' if |kEncryptedReporting| feature is enabled.
+  // To be removed once encryption becomes mandatory.
+  static bool is_enabled();
 
  protected:
   virtual ~EncryptionModule();

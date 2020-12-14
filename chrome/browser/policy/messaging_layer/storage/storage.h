@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
@@ -88,6 +89,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Private bridge class.
   class QueueUploaderInterface;
 
+  // Private helper class for key upload/download to the file system.
+  class KeyInStorage;
+
   // Private constructor, to be called by Create factory method only.
   // Queues need to be added afterwards.
   Storage(const StorageOptions& options,
@@ -110,6 +114,9 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
 
   // Encryption module.
   scoped_refptr<EncryptionModule> encryption_module_;
+
+  // Internal key management module.
+  std::unique_ptr<KeyInStorage> key_in_storage_;
 
   // Map priority->StorageQueue.
   base::flat_map<Priority, scoped_refptr<StorageQueue>> queues_;
