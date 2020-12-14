@@ -2019,7 +2019,7 @@ if (enable_java_templates) {
 
             # Temporarily using java_full_interface_classpath until classpath validation of targets
             # is implemented, see http://crbug.com/885273
-            "--classpath=@FileArg($_rebased_build_config:deps_info:jetified_full_jar_classpath)",
+            "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
             "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_interface_jars)",
             "--depfile",
             rebase_path(depfile, root_build_dir),
