@@ -2220,6 +2220,7 @@ bool LocalFrameView::UpdateAllLifecyclePhases(DocumentUpdateReason reason) {
     // kLayoutClean.
     ForAllThrottledLocalFrameViews([](LocalFrameView& frame_view) {
       DCHECK(frame_view.intersection_observation_state_ != kRequired ||
+             frame_view.IsDisplayLocked() ||
              frame_view.Lifecycle().GetState() >=
                  DocumentLifecycle::kLayoutClean);
     });
@@ -3739,7 +3740,8 @@ void LocalFrameView::AttachToLayout() {
   if (parent_view->IsVisible())
     SetParentVisible(true);
   UpdateRenderThrottlingStatus(IsHiddenForThrottling(),
-                               parent_view->CanThrottleRendering());
+                               parent_view->CanThrottleRendering(),
+                               IsDisplayLocked());
 
   // We may have updated paint properties in detached frame subtree for
   // printing (see UpdateLifecyclePhasesForPrinting()). The paint properties
@@ -4331,7 +4333,7 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
   unsigned flags = GetIntersectionObservationFlags(parent_flags);
   bool needs_occlusion_tracking = false;
 
-  if (!NeedsLayout()) {
+  if (!NeedsLayout() || IsDisplayLocked()) {
     // Notify javascript IntersectionObservers
     if (IntersectionObserverController* controller =
             GetFrame().GetDocument()->GetIntersectionObserverController()) {
@@ -4375,13 +4377,13 @@ void LocalFrameView::CrossOriginToMainFrameChanged() {
   // If any of these conditions hold, then a change in cross-origin status does
   // not affect throttling.
   if (lifecycle_updates_throttled_ || IsSubtreeThrottled() ||
-      !IsHiddenForThrottling()) {
+      IsDisplayLocked() || !IsHiddenForThrottling()) {
     return;
   }
   RenderThrottlingStatusChanged();
   // Immediately propagate changes to children.
   UpdateRenderThrottlingStatus(IsHiddenForThrottling(), IsSubtreeThrottled(),
-                               true);
+                               IsDisplayLocked(), true);
 }
 
 void LocalFrameView::CrossOriginToParentFrameChanged() {
@@ -4514,14 +4516,25 @@ bool LocalFrameView::ShouldThrottleRendering() const {
   if (!throttled_for_global_reasons || needs_forced_compositing_update_)
     return false;
 
-  if (intersection_observation_state_ == kRequired) {
-    auto* local_frame_root_view = GetFrame().LocalFrameRoot().View();
-    // When doing a lifecycle update required by intersection observer, we can
-    // throttle lifecycle states after layout. Outside of lifecycle updates,
-    // the frame should be considered throttled because it is not fully updating
-    // the lifecycle.
-    return !local_frame_root_view->IsUpdatingLifecycle() ||
-           local_frame_root_view->past_layout_lifecycle_update_;
+  // If we're currently running a lifecycle update, and we are required to run
+  // the IntersectionObserver steps at the end of the update, then there are two
+  // courses of action, depending on whether this frame is display locked by its
+  // parent frame:
+  //
+  //   - If it is NOT display locked, then we suppress throttling to force the
+  // lifecycle update to proceed up to the state required to run
+  // IntersectionObserver.
+  //
+  //   - If it IS display locked, then we still need IntersectionObserver to
+  // run; but the display lock status will short-circuit the
+  // IntersectionObserver algorithm and create degenerate "not intersecting"
+  // notifications. Hence, we don't need to force lifecycle phases to run,
+  // because IntersectionObserver will not need access to up-to-date
+  // geometry. So there is no point in suppressing throttling here.
+  auto* local_frame_root_view = GetFrame().LocalFrameRoot().View();
+  if (local_frame_root_view->IsUpdatingLifecycle() &&
+      intersection_observation_state_ == kRequired && !IsDisplayLocked()) {
+    return local_frame_root_view->past_layout_lifecycle_update_;
   }
 
   return true;
@@ -4533,10 +4546,10 @@ bool LocalFrameView::ShouldThrottleRenderingForTest() const {
 }
 
 bool LocalFrameView::CanThrottleRendering() const {
-  if (lifecycle_updates_throttled_)
+  if (lifecycle_updates_throttled_ || IsSubtreeThrottled() ||
+      IsDisplayLocked()) {
     return true;
-  if (IsSubtreeThrottled())
-    return true;
+  }
   // We only throttle hidden cross-origin frames. This is to avoid a situation
   // where an ancestor frame directly depends on the pipeline timing of a
   // descendant and breaks as a result of throttling. The rationale is that
@@ -4548,10 +4561,11 @@ bool LocalFrameView::CanThrottleRendering() const {
 
 void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
                                                   bool subtree_throttled,
+                                                  bool display_locked,
                                                   bool recurse) {
   bool was_throttled = CanThrottleRendering();
-  FrameView::UpdateRenderThrottlingStatus(hidden_for_throttling,
-                                          subtree_throttled, recurse);
+  FrameView::UpdateRenderThrottlingStatus(
+      hidden_for_throttling, subtree_throttled, display_locked, recurse);
   if (was_throttled != CanThrottleRendering())
     RenderThrottlingStatusChanged();
 }

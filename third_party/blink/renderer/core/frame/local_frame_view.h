@@ -617,6 +617,7 @@ class CORE_EXPORT LocalFrameView final
   bool CanThrottleRendering() const override;
   void UpdateRenderThrottlingStatus(bool hidden_for_throttling,
                                     bool subtree_throttled,
+                                    bool display_locked,
                                     bool recurse = false) override;
 
   void BeginLifecycleUpdates();

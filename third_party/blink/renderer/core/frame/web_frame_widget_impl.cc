@@ -489,8 +489,13 @@ void WebFrameWidgetImpl::UpdateRenderThrottlingStatusForSubFrame(
     bool is_throttled,
     bool subtree_throttled) {
   DCHECK(ForSubframe());
+  // TODO(szager,vmpstr): The parent render process currently rolls up
+  // display_locked into the value of subtree throttled here; display_locked
+  // should be maintained as a separate bit and transmitted between render
+  // processes.
   LocalRootImpl()->GetFrameView()->UpdateRenderThrottlingStatus(
-      is_throttled, subtree_throttled, true);
+      is_throttled, subtree_throttled, /*display_locked=*/false,
+      /*recurse=*/true);
 }
 
 #if defined(OS_MAC)

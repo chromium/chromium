@@ -82,7 +82,8 @@ void RemoteFrameView::AttachToLayout() {
   UpdateFrameVisibility(true);
   UpdateRenderThrottlingStatus(
       IsHiddenForThrottling(),
-      ParentFrameView()->CanThrottleRenderingForPropagation());
+      ParentFrameView()->CanThrottleRenderingForPropagation(),
+      IsDisplayLocked());
   needs_frame_rect_propagation_ = true;
   ParentFrameView()->SetNeedsUpdateGeometries();
 }
@@ -328,8 +329,10 @@ void RemoteFrameView::ParentVisibleChanged() {
 
 void RemoteFrameView::VisibilityForThrottlingChanged() {
   TRACE_EVENT0("blink", "RemoteFrameView::VisibilityForThrottlingChanged");
+  // TODO(szager,vmpstr): Send IsSubtreeThrottled() and IsDisplayLocked() as
+  // separate bits.
   remote_frame_->GetRemoteFrameHostRemote().UpdateRenderThrottlingStatus(
-      IsHiddenForThrottling(), IsSubtreeThrottled());
+      IsHiddenForThrottling(), IsSubtreeThrottled() || IsDisplayLocked());
 }
 
 void RemoteFrameView::VisibilityChanged(
@@ -338,7 +341,7 @@ void RemoteFrameView::VisibilityChanged(
 }
 
 bool RemoteFrameView::CanThrottleRendering() const {
-  return IsSubtreeThrottled() || IsHiddenForThrottling();
+  return IsHiddenForThrottling() || IsSubtreeThrottled() || IsDisplayLocked();
 }
 
 void RemoteFrameView::SetIntrinsicSizeInfo(

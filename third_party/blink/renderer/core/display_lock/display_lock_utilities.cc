@@ -415,6 +415,10 @@ bool DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
     const Node& source_node) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
     return false;
+  if (LocalFrameView* frame_view = source_node.GetDocument().View()) {
+    if (frame_view->IsDisplayLocked())
+      return true;
+  }
   const Node* node = &source_node;
   const_cast<Node*>(node)->UpdateDistributionForFlatTreeTraversal();
 

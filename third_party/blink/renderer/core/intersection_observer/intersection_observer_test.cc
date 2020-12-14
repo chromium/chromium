@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/intersection_observer_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -29,57 +30,6 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
-
-namespace {
-
-class TestIntersectionObserverDelegate : public IntersectionObserverDelegate {
- public:
-  TestIntersectionObserverDelegate(Document& document)
-      : document_(document), call_count_(0) {}
-  // TODO(szager): Add tests for the synchronous delivery code path. There is
-  // already some indirect coverage by unit tests exercising features that rely
-  // on it, but we should have some direct coverage in here.
-  LocalFrameUkmAggregator::MetricId GetUkmMetricId() const override {
-    return LocalFrameUkmAggregator::kJavascriptIntersectionObserver;
-  }
-  IntersectionObserver::DeliveryBehavior GetDeliveryBehavior() const override {
-    return IntersectionObserver::kPostTaskToDeliver;
-  }
-  void Deliver(const HeapVector<Member<IntersectionObserverEntry>>& entries,
-               IntersectionObserver&) override {
-    call_count_++;
-    entries_.AppendVector(entries);
-  }
-  ExecutionContext* GetExecutionContext() const override {
-    return document_->GetExecutionContext();
-  }
-  int CallCount() const { return call_count_; }
-  int EntryCount() const { return entries_.size(); }
-  const IntersectionObserverEntry* LastEntry() const { return entries_.back(); }
-  void Clear() {
-    entries_.clear();
-    call_count_ = 0;
-  }
-  PhysicalRect LastIntersectionRect() const {
-    if (entries_.IsEmpty())
-      return PhysicalRect();
-    const IntersectionGeometry& geometry = entries_.back()->GetGeometry();
-    return geometry.IntersectionRect();
-  }
-
-  void Trace(Visitor* visitor) const override {
-    IntersectionObserverDelegate::Trace(visitor);
-    visitor->Trace(document_);
-    visitor->Trace(entries_);
-  }
-
- private:
-  Member<Document> document_;
-  HeapVector<Member<IntersectionObserverEntry>> entries_;
-  int call_count_;
-};
-
-}  // namespace
 
 class IntersectionObserverTest : public SimTest {};
 
