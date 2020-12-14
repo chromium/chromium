@@ -70,6 +70,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                     mContext.getResources().getDimensionPixelSize(R.dimen.y_offset));
             toast.show();
         }
+        // After generation results are communicated to users, cleanup to remove tab listener.
+        cleanup();
     }
 
     public void requestSelector() {
@@ -85,7 +87,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             @Override
             public void call(String selector) {
                 onSelectorReady(selector);
-                cleanup();
             }
         });
     }
