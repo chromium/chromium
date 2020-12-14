@@ -23,7 +23,6 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -57,8 +56,6 @@ class CORE_EXPORT SVGDocumentExtensions final
 
   void DispatchSVGLoadEventToOutermostSVGElements();
 
-  SVGResourcesCache& ResourcesCache() { return resources_cache_; }
-
   void AddSVGRootWithRelativeLengthDescendents(SVGSVGElement*);
   void RemoveSVGRootWithRelativeLengthDescendents(SVGSVGElement*);
   void InvalidateSVGRootsWithRelativeLengthDescendents(SubtreeLayoutScope*);
@@ -77,7 +74,6 @@ class CORE_EXPORT SVGDocumentExtensions final
   HeapHashSet<Member<SVGSVGElement>> time_containers_;
   using SVGElementSet = HeapHashSet<Member<SVGElement>>;
   SVGElementSet web_animations_pending_svg_elements_;
-  SVGResourcesCache resources_cache_;
   // Root SVG elements with relative length descendants.
   HeapHashSet<Member<SVGSVGElement>> relative_length_svg_roots_;
   FloatPoint translate_;

@@ -424,7 +424,7 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
       DynamicTo<SVGFilterElement>(resource ? resource->Target() : nullptr);
   if (!filter_element)
     return nullptr;
-  if (auto* resource_container = resource->ResourceContainer())
+  if (auto* resource_container = resource->ResourceContainerNoCycleCheck())
     resource_container->ClearInvalidationMask();
   FloatRect filter_region =
       SVGLengthContext::ResolveRectangle<SVGFilterElement>(

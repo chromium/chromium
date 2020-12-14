@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 
 namespace blink {
 
@@ -18,24 +17,25 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
   if (!object.IsBoxModelObject() && !object.IsSVGChild())
     return base::nullopt;
 
+  const ComputedStyle& style = object.StyleRef();
   if (object.IsSVG()) {
-    SVGResources* resources =
-        SVGResourcesCache::CachedResourcesForLayoutObject(object);
-    LayoutSVGResourceMasker* masker = resources ? resources->Masker() : nullptr;
-    if (masker) {
-      const FloatRect reference_box =
-          SVGResources::ReferenceBoxForEffects(object);
-      const float reference_box_zoom =
-          object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom() : 1;
-      return EnclosingIntRect(
-          masker->ResourceBoundingBox(reference_box, reference_box_zoom));
+    if (SVGResourceClient* client = SVGResources::GetClient(object)) {
+      auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
+          *client, style.SvgStyle().MaskerResource());
+      if (masker) {
+        const FloatRect reference_box =
+            SVGResources::ReferenceBoxForEffects(object);
+        const float reference_box_zoom =
+            object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom() : 1;
+        return EnclosingIntRect(
+            masker->ResourceBoundingBox(reference_box, reference_box_zoom));
+      }
     }
   }
 
   if (object.IsSVGChild() && !object.IsSVGForeignObject())
     return base::nullopt;
 
-  const ComputedStyle& style = object.StyleRef();
   if (!style.HasMask())
     return base::nullopt;
 
@@ -61,10 +61,11 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
 ColorFilter CSSMaskPainter::MaskColorFilter(const LayoutObject& object) {
   if (!object.IsSVGChild())
     return kColorFilterNone;
-
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(object);
-  LayoutSVGResourceMasker* masker = resources ? resources->Masker() : nullptr;
+  SVGResourceClient* client = SVGResources::GetClient(object);
+  if (!client)
+    return kColorFilterNone;
+  auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
+      *client, object.StyleRef().SvgStyle().MaskerResource());
   if (!masker)
     return kColorFilterNone;
   return masker->StyleRef().SvgStyle().MaskType() == MT_LUMINANCE

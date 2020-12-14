@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 
 namespace blink {
@@ -70,18 +69,19 @@ void LayoutSVGPath::UpdateMarkers() {
   NOT_DESTROYED();
   marker_positions_.clear();
 
-  if (!StyleRef().SvgStyle().HasMarkers() ||
+  const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
+  if (!svg_style.HasMarkers() ||
       !SVGResources::SupportsMarkers(*To<SVGGraphicsElement>(GetElement())))
     return;
-
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(*this);
-  if (!resources)
+  SVGElementResourceClient* client = SVGResources::GetClient(*this);
+  if (!client)
     return;
-
-  LayoutSVGResourceMarker* marker_start = resources->MarkerStart();
-  LayoutSVGResourceMarker* marker_mid = resources->MarkerMid();
-  LayoutSVGResourceMarker* marker_end = resources->MarkerEnd();
+  auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, svg_style.MarkerStartResource());
+  auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, svg_style.MarkerMidResource());
+  auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, svg_style.MarkerEndResource());
   if (!(marker_start || marker_mid || marker_end))
     return;
 

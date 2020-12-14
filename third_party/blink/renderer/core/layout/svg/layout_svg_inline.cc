@@ -22,11 +22,11 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
 
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/line/svg_inline_flow_box.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 
@@ -117,7 +117,6 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
 
 void LayoutSVGInline::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResourcesCache::RemoveResources(*this);
   SVGResources::ClearClipPathFilterMask(To<SVGElement>(*GetNode()), Style());
   SVGResources::ClearPaints(To<SVGElement>(*GetNode()), Style());
   LayoutInline::WillBeDestroyed();
@@ -139,10 +138,8 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
     return;
   if (diff.CompositingReasonsChanged())
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  if (diff.HasDifference()) {
-    SVGResourcesCache::UpdateResources(*this);
+  if (diff.HasDifference())
     LayoutSVGResourceContainer::StyleChanged(*this, diff);
-  }
 }
 
 void LayoutSVGInline::AddChild(LayoutObject* child,
@@ -165,7 +162,7 @@ void LayoutSVGInline::InsertedIntoTree() {
   LayoutInline::InsertedIntoTree();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (SVGResourcesCache::AddResources(*this))
+  if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
@@ -177,7 +174,7 @@ void LayoutSVGInline::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (SVGResourcesCache::RemoveResources(*this))
+  if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   LayoutInline::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=

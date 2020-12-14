@@ -32,9 +32,9 @@
 
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 
@@ -108,7 +108,6 @@ FloatRect LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {
 
 void LayoutSVGModelObject::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResourcesCache::RemoveResources(*this);
   SVGResources::ClearClipPathFilterMask(*GetElement(), Style());
   LayoutObject::WillBeDestroyed();
 }
@@ -159,10 +158,8 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
   }
   if (diff.CompositingReasonsChanged())
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  if (diff.HasDifference()) {
-    SVGResourcesCache::UpdateResources(*this);
+  if (diff.HasDifference())
     LayoutSVGResourceContainer::StyleChanged(*this, diff);
-  }
 }
 
 void LayoutSVGModelObject::InsertedIntoTree() {
@@ -170,7 +167,7 @@ void LayoutSVGModelObject::InsertedIntoTree() {
   LayoutObject::InsertedIntoTree();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (SVGResourcesCache::AddResources(*this))
+  if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
@@ -182,7 +179,7 @@ void LayoutSVGModelObject::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (SVGResourcesCache::RemoveResources(*this))
+  if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   LayoutObject::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=

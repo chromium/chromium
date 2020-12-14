@@ -63,6 +63,7 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
 
  private:
   void CalculateLocalClipBounds();
+  bool FindCycleFromSelf(SVGResourcesCycleSolver&) const override;
 
   // Cache of the clip path when using path clipping.
   enum ClipContentPathValidity {
@@ -87,13 +88,20 @@ struct DowncastTraits<LayoutSVGResourceClipper> {
 };
 
 inline LayoutSVGResourceClipper* GetSVGResourceAsType(
+    SVGResourceClient& client,
+    const ReferenceClipPathOperation& reference_clip) {
+  return GetSVGResourceAsType<LayoutSVGResourceClipper>(
+      client, reference_clip.Resource());
+}
+
+inline LayoutSVGResourceClipper* GetSVGResourceAsType(
+    SVGResourceClient& client,
     const ClipPathOperation* clip_path_operation) {
   const auto* reference_clip =
       DynamicTo<ReferenceClipPathOperation>(clip_path_operation);
   if (!reference_clip)
     return nullptr;
-  return GetSVGResourceAsType<LayoutSVGResourceClipper>(
-      reference_clip->Resource());
+  return GetSVGResourceAsType(client, *reference_clip);
 }
 
 }  // namespace blink

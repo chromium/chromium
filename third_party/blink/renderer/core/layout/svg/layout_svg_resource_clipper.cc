@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/svg/svg_clip_path_element.h"
@@ -276,6 +277,19 @@ FloatRect LayoutSVGResourceClipper::ResourceBoundingBox(
     CalculateLocalClipBounds();
 
   return CalculateClipTransform(reference_box).MapRect(local_clip_bounds_);
+}
+
+bool LayoutSVGResourceClipper::FindCycleFromSelf(
+    SVGResourcesCycleSolver& solver) const {
+  NOT_DESTROYED();
+  // Check nested clip-path.
+  if (auto* reference_clip =
+          DynamicTo<ReferenceClipPathOperation>(StyleRef().ClipPath())) {
+    SVGResourceClient* client = SVGResources::GetClient(*this);
+    if (reference_clip->Resource()->FindCycle(*client, solver))
+      return true;
+  }
+  return LayoutSVGResourceContainer::FindCycleFromSelf(solver);
 }
 
 void LayoutSVGResourceClipper::StyleDidChange(StyleDifference diff,

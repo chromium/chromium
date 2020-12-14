@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_resources_cycle_solver.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -25,35 +26,99 @@ void SVGResource::Trace(Visitor* visitor) const {
 }
 
 void SVGResource::AddClient(SVGResourceClient& client) {
-  clients_.insert(&client);
-  if (LayoutSVGResourceContainer* container = ResourceContainer())
+  auto& entry = clients_.insert(&client, ClientEntry()).stored_value->value;
+  entry.count++;
+  entry.cached_cycle_check = kNeedCheck;
+  if (LayoutSVGResourceContainer* container = ResourceContainerNoCycleCheck())
     container->ClearInvalidationMask();
 }
 
 void SVGResource::RemoveClient(SVGResourceClient& client) {
-  if (!clients_.erase(&client))
+  auto it = clients_.find(&client);
+  DCHECK(it != clients_.end());
+  it->value.count--;
+  if (it->value.count)
     return;
+  clients_.erase(it);
   // The last instance of |client| was removed. Clear its entry in
   // resource's cache.
-  if (LayoutSVGResourceContainer* container = ResourceContainer())
+  if (LayoutSVGResourceContainer* container = ResourceContainerNoCycleCheck())
     container->RemoveClientFromCache(client);
 }
 
+void SVGResource::InvalidateCycleCache() {
+  for (auto& client_entry : clients_.Values())
+    client_entry.cached_cycle_check = kNeedCheck;
+}
+
 void SVGResource::NotifyElementChanged() {
+  InvalidateCycleCache();
+
   HeapVector<Member<SVGResourceClient>> clients;
-  CopyToVector(clients_, clients);
+  CopyKeysToVector(clients_, clients);
 
   for (SVGResourceClient* client : clients)
     client->ResourceElementChanged();
 }
 
-LayoutSVGResourceContainer* SVGResource::ResourceContainer() const {
+LayoutSVGResourceContainer* SVGResource::ResourceContainerNoCycleCheck() const {
   if (!target_)
     return nullptr;
-  LayoutObject* layout_object = target_->GetLayoutObject();
-  if (!layout_object || !layout_object->IsSVGResourceContainer())
+  return DynamicTo<LayoutSVGResourceContainer>(target_->GetLayoutObject());
+}
+
+LayoutSVGResourceContainer* SVGResource::ResourceContainer(
+    SVGResourceClient& client) const {
+  auto it = clients_.find(&client);
+  if (it == clients_.end())
     return nullptr;
-  return To<LayoutSVGResourceContainer>(layout_object);
+  auto* container = ResourceContainerNoCycleCheck();
+  if (!container)
+    return nullptr;
+  ClientEntry& entry = it->value;
+  if (entry.cached_cycle_check == kNeedCheck) {
+    SVGResourcesCycleSolver solver;
+    entry.cached_cycle_check = kPerformingCheck;
+    bool has_cycle = container->FindCycle(solver);
+    DCHECK_EQ(entry.cached_cycle_check, kPerformingCheck);
+    entry.cached_cycle_check = has_cycle ? kHasCycle : kNoCycle;
+  }
+  if (entry.cached_cycle_check == kHasCycle)
+    return nullptr;
+  DCHECK_EQ(entry.cached_cycle_check, kNoCycle);
+  return container;
+}
+
+bool SVGResource::FindCycle(SVGResourceClient& client,
+                            SVGResourcesCycleSolver& solver) const {
+  auto it = clients_.find(&client);
+  if (it == clients_.end())
+    return false;
+  auto* container = ResourceContainerNoCycleCheck();
+  if (!container)
+    return false;
+  ClientEntry& entry = it->value;
+  switch (entry.cached_cycle_check) {
+    case kNeedCheck: {
+      entry.cached_cycle_check = kPerformingCheck;
+      bool has_cycle = container->FindCycle(solver);
+      DCHECK_EQ(entry.cached_cycle_check, kPerformingCheck);
+      // Update our cached state based on the result of FindCycle(), but don't
+      // signal a cycle since ResourceContainer() will consider the resource
+      // invalid if one is present, thus we break the cycle at this resource.
+      entry.cached_cycle_check = has_cycle ? kHasCycle : kNoCycle;
+      return false;
+    }
+    case kPerformingCheck:
+      // If we're on the current checking path, signal a cycle.
+      return true;
+    case kHasCycle:
+    case kNoCycle:
+      // We have a cached result, but don't signal a cycle since
+      // ResourceContainer() will consider the resource invalid if one is
+      // present.
+      return false;
+  }
 }
 
 LocalSVGResource::LocalSVGResource(TreeScope& tree_scope,
@@ -71,8 +136,10 @@ void LocalSVGResource::Unregister() {
 
 void LocalSVGResource::NotifyContentChanged(
     InvalidationModeMask invalidation_mask) {
+  InvalidateCycleCache();
+
   HeapVector<Member<SVGResourceClient>> clients;
-  CopyToVector(clients_, clients);
+  CopyKeysToVector(clients_, clients);
 
   for (SVGResourceClient* client : clients)
     client->ResourceContentChanged(invalidation_mask);
@@ -82,31 +149,10 @@ void LocalSVGResource::NotifyFilterPrimitiveChanged(
     SVGFilterPrimitiveStandardAttributes& primitive,
     const QualifiedName& attribute) {
   HeapVector<Member<SVGResourceClient>> clients;
-  CopyToVector(clients_, clients);
+  CopyKeysToVector(clients_, clients);
 
   for (SVGResourceClient* client : clients)
     client->FilterPrimitiveChanged(primitive, attribute);
-}
-
-void LocalSVGResource::NotifyResourceAttached(
-    LayoutSVGResourceContainer& attached_resource) {
-  // Checking the element here because
-  if (attached_resource.GetElement() != Target())
-    return;
-  NotifyElementChanged();
-}
-
-void LocalSVGResource::NotifyResourceDestroyed(
-    LayoutSVGResourceContainer& destroyed_resource) {
-  if (destroyed_resource.GetElement() != Target())
-    return;
-  destroyed_resource.RemoveAllClientsFromCache();
-
-  HeapVector<Member<SVGResourceClient>> clients;
-  CopyToVector(clients_, clients);
-
-  for (SVGResourceClient* client : clients)
-    client->ResourceDestroyed(&destroyed_resource);
 }
 
 void LocalSVGResource::TargetChanged(const AtomicString& id) {
@@ -115,7 +161,8 @@ void LocalSVGResource::TargetChanged(const AtomicString& id) {
     return;
   // Clear out caches on the old resource, and then notify clients about the
   // change.
-  if (LayoutSVGResourceContainer* old_resource = ResourceContainer())
+  LayoutSVGResourceContainer* old_resource = ResourceContainerNoCycleCheck();
+  if (old_resource)
     old_resource->RemoveAllClientsFromCache();
   target_ = new_target;
   NotifyElementChanged();

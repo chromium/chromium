@@ -2612,7 +2612,8 @@ bool PaintLayer::HitTestClippedOutByClipPath(
                 .Contains(point);
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::REFERENCE);
-  LayoutSVGResourceClipper* clipper = GetSVGResourceAsType(clip_path_operation);
+  LayoutSVGResourceClipper* clipper =
+      GetSVGResourceAsType(*ResourceInfo(), clip_path_operation);
   if (!clipper)
     return false;
   // If the clipPath is using "userspace on use" units, then the origin of

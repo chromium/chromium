@@ -24,8 +24,8 @@
 
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -105,9 +105,11 @@ void ScopedSVGPaintState::ApplyPaintPropertyState(
 }
 
 void ScopedSVGPaintState::ApplyMaskIfNecessary() {
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(object_);
-  if (resources && resources->Masker())
+  SVGResourceClient* client = SVGResources::GetClient(object_);
+  if (!client)
+    return;
+  if (GetSVGResourceAsType<LayoutSVGResourceMasker>(
+          *client, object_.StyleRef().SvgStyle().MaskerResource()))
     should_paint_mask_ = true;
 }
 

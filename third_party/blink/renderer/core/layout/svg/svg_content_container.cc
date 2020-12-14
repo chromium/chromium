@@ -12,20 +12,22 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 
 namespace blink {
 
 static void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(layout_object);
-  if (!resources)
+  SVGElementResourceClient* client = SVGResources::GetClient(layout_object);
+  if (!client)
     return;
-  if (LayoutSVGResourceMarker* marker = resources->MarkerStart())
+  const SVGComputedStyle& svg_style = layout_object.StyleRef().SvgStyle();
+  if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+          *client, svg_style.MarkerStartResource()))
     marker->LayoutIfNeeded();
-  if (LayoutSVGResourceMarker* marker = resources->MarkerMid())
+  if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+          *client, svg_style.MarkerMidResource()))
     marker->LayoutIfNeeded();
-  if (LayoutSVGResourceMarker* marker = resources->MarkerEnd())
+  if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+          *client, svg_style.MarkerEndResource()))
     marker->LayoutIfNeeded();
 }
 

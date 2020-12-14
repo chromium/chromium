@@ -10,8 +10,7 @@
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -20,6 +19,7 @@ class Document;
 class Element;
 class IdTargetObserver;
 class LayoutSVGResourceContainer;
+class SVGResourcesCycleSolver;
 class TreeScope;
 
 // A class tracking a reference to an SVG resource (an element that constitutes
@@ -66,7 +66,16 @@ class SVGResource : public GarbageCollected<SVGResource> {
   virtual void LoadWithoutCSP(Document&) {}
 
   Element* Target() const { return target_; }
-  LayoutSVGResourceContainer* ResourceContainer() const;
+  // Returns the target's LayoutObject (if target exists and is attached to the
+  // layout tree). Also perform cycle-checking, and may thus return nullptr if
+  // this SVGResourceClient -> SVGResource reference would start a cycle.
+  LayoutSVGResourceContainer* ResourceContainer(SVGResourceClient&) const;
+  // Same as the above, minus the cycle-checking.
+  LayoutSVGResourceContainer* ResourceContainerNoCycleCheck() const;
+  // Run cycle-checking for this SVGResourceClient -> SVGResource
+  // reference. Used internally by the cycle-checking, and shouldn't be called
+  // directly in general.
+  bool FindCycle(SVGResourceClient&, SVGResourcesCycleSolver&) const;
 
   void AddClient(SVGResourceClient&);
   void RemoveClient(SVGResourceClient&);
@@ -76,10 +85,22 @@ class SVGResource : public GarbageCollected<SVGResource> {
  protected:
   SVGResource();
 
+  void InvalidateCycleCache();
   void NotifyElementChanged();
 
   Member<Element> target_;
-  HeapHashCountedSet<Member<SVGResourceClient>> clients_;
+
+  enum CycleState {
+    kNeedCheck,
+    kPerformingCheck,
+    kHasCycle,
+    kNoCycle,
+  };
+  struct ClientEntry {
+    int count = 0;
+    CycleState cached_cycle_check = kNeedCheck;
+  };
+  mutable HeapHashMap<Member<SVGResourceClient>, ClientEntry> clients_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SVGResource);
@@ -96,9 +117,6 @@ class LocalSVGResource final : public SVGResource {
   void NotifyFilterPrimitiveChanged(
       SVGFilterPrimitiveStandardAttributes& primitive,
       const QualifiedName& attribute);
-
-  void NotifyResourceAttached(LayoutSVGResourceContainer&);
-  void NotifyResourceDestroyed(LayoutSVGResourceContainer&);
 
   void Trace(Visitor*) const override;
 

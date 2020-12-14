@@ -94,9 +94,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
@@ -4301,10 +4298,9 @@ void LayoutObject::SetNeedsBoundariesUpdate() {
   NOT_DESTROYED();
   if (IsSVGChild()) {
     // The boundaries affect mask clip.
-    auto* resources = SVGResourcesCache::CachedResourcesForLayoutObject(*this);
-    if (resources && resources->Masker())
+    if (StyleRef().SvgStyle().HasMasker())
       SetNeedsPaintPropertyUpdate();
-    if (resources && resources->Clipper())
+    if (StyleRef().ClipPath())
       InvalidateClipPathCache();
   }
   if (LayoutObject* layout_object = Parent())

@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -317,7 +316,6 @@ void LayoutSVGRoot::PaintReplaced(const PaintInfo& paint_info,
 
 void LayoutSVGRoot::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResourcesCache::RemoveResources(*this);
   SVGResources::ClearClipPathFilterMask(To<SVGSVGElement>(*GetNode()), Style());
   LayoutReplaced::WillBeDestroyed();
 }
@@ -375,10 +373,8 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
                                          old_style, StyleRef());
   if (!Parent())
     return;
-  if (diff.HasDifference()) {
-    SVGResourcesCache::UpdateResources(*this);
+  if (diff.HasDifference())
     LayoutSVGResourceContainer::StyleChanged(*this, diff);
-  }
 }
 
 bool LayoutSVGRoot::IsChildAllowed(LayoutObject* child,
@@ -441,7 +437,7 @@ void LayoutSVGRoot::InsertedIntoTree() {
   LayoutReplaced::InsertedIntoTree();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (SVGResourcesCache::AddResources(*this))
+  if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
 }
 
@@ -449,7 +445,7 @@ void LayoutSVGRoot::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (SVGResourcesCache::RemoveResources(*this))
+  if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   LayoutReplaced::WillBeRemovedFromTree();
 }

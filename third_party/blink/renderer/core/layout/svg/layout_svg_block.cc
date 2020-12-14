@@ -24,10 +24,10 @@
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
@@ -47,7 +47,6 @@ SVGElement* LayoutSVGBlock::GetElement() const {
 
 void LayoutSVGBlock::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResourcesCache::RemoveResources(*this);
   SVGResources::ClearClipPathFilterMask(*GetElement(), Style());
   LayoutBlockFlow::WillBeDestroyed();
 }
@@ -57,7 +56,7 @@ void LayoutSVGBlock::InsertedIntoTree() {
   LayoutBlockFlow::InsertedIntoTree();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (SVGResourcesCache::AddResources(*this))
+  if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
       CompositingReason::kNone) {
@@ -69,7 +68,7 @@ void LayoutSVGBlock::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this,
                                                                          false);
-  if (SVGResourcesCache::RemoveResources(*this))
+  if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   LayoutBlockFlow::WillBeRemovedFromTree();
   if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
@@ -141,10 +140,8 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
   }
   if (diff.CompositingReasonsChanged())
     SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  if (diff.HasDifference()) {
-    SVGResourcesCache::UpdateResources(*this);
+  if (diff.HasDifference())
     LayoutSVGResourceContainer::StyleChanged(*this, diff);
-  }
 }
 
 void LayoutSVGBlock::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,

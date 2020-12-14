@@ -44,9 +44,9 @@ class SVGObjectPainter {
 
  private:
   bool ApplyPaintResource(
-      LayoutSVGResourceMode resource_mode,
-      PaintFlags& flags,
-      const AffineTransform* additional_paint_server_transform);
+      const SVGPaint& paint,
+      const AffineTransform* additional_paint_server_transform,
+      PaintFlags& flags);
 
   const LayoutObject& layout_object_;
 };

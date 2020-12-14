@@ -2424,6 +2424,12 @@ class ComputedStyle : public ComputedStyleBase,
            HasWillChangeTransformHint();
   }
 
+  // Return true if this style has properties ('filter', 'clip-path' and 'mask')
+  // that applies an effect to SVG elements.
+  bool HasSVGEffect() const {
+    return HasFilter() || ClipPath() || SvgStyle().HasMasker();
+  }
+
   // Paint utility functions.
   CORE_EXPORT void AddPaintImage(StyleImage*);
 

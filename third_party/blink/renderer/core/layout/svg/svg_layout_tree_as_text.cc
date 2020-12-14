@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/layout/svg/line/svg_root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
@@ -223,7 +222,8 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
 
 static void WriteSVGPaintingResource(WTF::TextStream& ts,
                                      const SVGResource& resource) {
-  const LayoutSVGResourceContainer* container = resource.ResourceContainer();
+  const LayoutSVGResourceContainer* container =
+      resource.ResourceContainerNoCycleCheck();
   DCHECK(container);
   switch (container->ResourceType()) {
     case kPatternResourceType:
@@ -243,14 +243,17 @@ static void WriteSVGPaintingResource(WTF::TextStream& ts,
 }
 
 static bool WriteSVGPaint(WTF::TextStream& ts,
-                          const ComputedStyle& style,
+                          const LayoutObject& object,
                           const SVGPaint& paint,
                           const CSSProperty& property,
                           const char* paint_name) {
   TextStreamSeparator s(" ");
+  const ComputedStyle& style = object.StyleRef();
   if (const StyleSVGResource* resource = paint.Resource()) {
     const SVGResource* paint_resource = resource->Resource();
-    if (GetSVGResourceAsType<LayoutSVGResourcePaintServer>(paint_resource)) {
+    SVGResourceClient* client = SVGResources::GetClient(object);
+    if (GetSVGResourceAsType<LayoutSVGResourcePaintServer>(*client,
+                                                           paint_resource)) {
       ts << " [" << paint_name << "={" << s;
       WriteSVGPaintingResource(ts, *paint_resource);
       return true;
@@ -277,7 +280,7 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
   WriteIfNotDefault(ts, "opacity", style.Opacity(),
                     ComputedStyleInitialValues::InitialOpacity());
   if (object.IsSVGShape()) {
-    if (WriteSVGPaint(ts, style, svg_style.StrokePaint(),
+    if (WriteSVGPaint(ts, object, svg_style.StrokePaint(),
                       GetCSSPropertyStroke(), "stroke")) {
       const LayoutSVGShape& shape = static_cast<const LayoutSVGShape&>(object);
       DCHECK(shape.GetElement());
@@ -301,7 +304,7 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
       ts << "}]";
     }
 
-    if (WriteSVGPaint(ts, style, svg_style.FillPaint(), GetCSSPropertyFill(),
+    if (WriteSVGPaint(ts, object, svg_style.FillPaint(), GetCSSPropertyFill(),
                       "fill")) {
       WriteIfNotDefault(ts, "opacity", svg_style.FillOpacity(), 1.0f);
       WriteIfNotDefault(ts, "fill rule", svg_style.FillRule(), RULE_NONZERO);
@@ -720,29 +723,31 @@ static void WriteSVGResourceReferencePrefix(
 void WriteResources(WTF::TextStream& ts,
                     const LayoutObject& object,
                     int indent) {
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(object);
-  if (!resources)
-    return;
   const FloatRect reference_box = object.ObjectBoundingBox();
   const ComputedStyle& style = object.StyleRef();
   TreeScope& tree_scope = object.GetDocument();
-  if (LayoutSVGResourceMasker* masker = resources->Masker()) {
+  SVGResourceClient* client = SVGResources::GetClient(object);
+  if (!client)
+    return;
+  if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
+          *client, style.SvgStyle().MaskerResource())) {
     WriteSVGResourceReferencePrefix(ts, "masker", masker,
                                     style.SvgStyle().MaskerResource()->Url(),
                                     tree_scope, indent);
     ts << " " << masker->ResourceBoundingBox(reference_box, 1) << "\n";
   }
-  if (LayoutSVGResourceClipper* clipper = resources->Clipper()) {
+  if (LayoutSVGResourceClipper* clipper =
+          GetSVGResourceAsType(*client, style.ClipPath())) {
     DCHECK(style.ClipPath());
     DCHECK_EQ(style.ClipPath()->GetType(), ClipPathOperation::REFERENCE);
-    const ReferenceClipPathOperation& clip_path_reference =
+    const auto& clip_path_reference =
         To<ReferenceClipPathOperation>(*style.ClipPath());
     WriteSVGResourceReferencePrefix(
         ts, "clipPath", clipper, clip_path_reference.Url(), tree_scope, indent);
     ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
   }
-  if (LayoutSVGResourceFilter* filter = GetFilterResourceForSVG(style)) {
+  if (LayoutSVGResourceFilter* filter =
+          GetFilterResourceForSVG(*client, style)) {
     DCHECK(style.HasFilter());
     DCHECK_EQ(style.Filter().size(), 1u);
     const FilterOperation& filter_operation = *style.Filter().at(0);

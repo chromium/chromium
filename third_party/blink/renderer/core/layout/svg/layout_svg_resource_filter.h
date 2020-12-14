@@ -62,7 +62,8 @@ class LayoutSVGResourceFilter final : public LayoutSVGResourceContainer {
 
 // Get the LayoutSVGResourceFilter from the 'filter' property iff the 'filter'
 // is a single url(...) reference.
-LayoutSVGResourceFilter* GetFilterResourceForSVG(const ComputedStyle&);
+LayoutSVGResourceFilter* GetFilterResourceForSVG(SVGResourceClient&,
+                                                 const ComputedStyle&);
 
 template <>
 struct DowncastTraits<LayoutSVGResourceFilter> {

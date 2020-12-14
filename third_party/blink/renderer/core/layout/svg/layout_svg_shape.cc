@@ -30,13 +30,12 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
-#include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/paint/svg_shape_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
@@ -228,22 +227,14 @@ bool LayoutSVGShape::ShapeDependentFillContains(
   return GetPath().Contains(location.TransformedPoint(), fill_rule);
 }
 
-static bool HasPaintServer(const LayoutObject& layout_object,
-                           const ComputedStyle& style,
-                           LayoutSVGResourceMode resource_mode) {
-  const bool apply_to_fill = resource_mode == kApplyToFillMode;
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-  const SVGPaint& paint =
-      apply_to_fill ? svg_style.FillPaint() : svg_style.StrokePaint();
+static bool HasPaintServer(const LayoutObject& object, const SVGPaint& paint) {
   if (paint.HasColor())
     return true;
   if (paint.HasUrl()) {
-    SVGResources* resources =
-        SVGResourcesCache::CachedResourcesForLayoutObject(layout_object);
-    if (resources) {
-      if (apply_to_fill ? resources->Fill() : resources->Stroke())
-        return true;
-    }
+    SVGResourceClient* client = SVGResources::GetClient(object);
+    if (GetSVGResourceAsType<LayoutSVGResourcePaintServer>(*client,
+                                                           paint.Resource()))
+      return true;
   }
   return false;
 }
@@ -255,7 +246,8 @@ bool LayoutSVGShape::FillContains(const HitTestLocation& location,
   if (!fill_bounding_box_.Contains(location.TransformedPoint()))
     return false;
 
-  if (requires_fill && !HasPaintServer(*this, StyleRef(), kApplyToFillMode))
+  if (requires_fill &&
+      !HasPaintServer(*this, StyleRef().SvgStyle().FillPaint()))
     return false;
 
   return ShapeDependentFillContains(location, fill_rule);
@@ -272,7 +264,7 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
     if (!StrokeBoundingBox().Contains(location.TransformedPoint()))
       return false;
 
-    if (!HasPaintServer(*this, StyleRef(), kApplyToStrokeMode))
+    if (!HasPaintServer(*this, StyleRef().SvgStyle().StrokePaint()))
       return false;
   } else {
     if (!HitTestStrokeBoundingBox().Contains(location.TransformedPoint()))

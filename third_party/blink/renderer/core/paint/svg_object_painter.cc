@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
@@ -43,20 +42,17 @@ void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context) {
 }
 
 bool SVGObjectPainter::ApplyPaintResource(
-    LayoutSVGResourceMode resource_mode,
-    PaintFlags& flags,
-    const AffineTransform* additional_paint_server_transform) {
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(layout_object_);
-  if (!resources)
+    const SVGPaint& paint,
+    const AffineTransform* additional_paint_server_transform,
+    PaintFlags& flags) {
+  SVGElementResourceClient* client = SVGResources::GetClient(layout_object_);
+  auto* uri_resource = GetSVGResourceAsType<LayoutSVGResourcePaintServer>(
+      *client, paint.Resource());
+  if (!uri_resource)
     return false;
-  const bool apply_to_fill = resource_mode == kApplyToFillMode;
-  LayoutSVGResourcePaintServer* uri_resource =
-      apply_to_fill ? resources->Fill() : resources->Stroke();
-  if (!uri_resource || !uri_resource->ApplyShader(
-                           *SVGResources::GetClient(layout_object_),
-                           SVGResources::ReferenceBoxForEffects(layout_object_),
-                           additional_paint_server_transform, flags))
+  if (!uri_resource->ApplyShader(
+          *client, SVGResources::ReferenceBoxForEffects(layout_object_),
+          additional_paint_server_transform, flags))
     return false;
   return true;
 }
@@ -82,8 +78,7 @@ bool SVGObjectPainter::PreparePaint(
   const float alpha =
       apply_to_fill ? svg_style.FillOpacity() : svg_style.StrokeOpacity();
   if (paint.HasUrl()) {
-    if (ApplyPaintResource(resource_mode, flags,
-                           additional_paint_server_transform)) {
+    if (ApplyPaintResource(paint, additional_paint_server_transform, flags)) {
       flags.setColor(ScaleAlpha(SK_ColorBLACK, alpha));
       CopyStateFromGraphicsContext(paint_info.context, flags);
       return true;

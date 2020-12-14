@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
@@ -25,22 +25,19 @@ namespace blink {
 
 namespace {
 
+SVGResourceClient* GetResourceClient(const LayoutObject& object) {
+  if (object.IsSVGChild())
+    return SVGResources::GetClient(object);
+  CHECK(object.IsBoxModelObject());
+  return To<LayoutBoxModelObject>(object).Layer()->ResourceInfo();
+}
+
 LayoutSVGResourceClipper* ResolveElementReference(
-    const LayoutObject& layout_object,
+    const LayoutObject& object,
     const ReferenceClipPathOperation& reference_clip_path_operation) {
-  LayoutSVGResourceClipper* resource_clipper = nullptr;
-  if (layout_object.IsSVGChild()) {
-    // The reference will have been resolved in
-    // SVGResources::buildResources, so we can just use the LayoutObject's
-    // SVGResources.
-    SVGResources* resources =
-        SVGResourcesCache::CachedResourcesForLayoutObject(layout_object);
-    resource_clipper = resources ? resources->Clipper() : nullptr;
-  } else {
-    // TODO(fs): Doesn't work with external SVG references (crbug.com/109212.)
-    resource_clipper = GetSVGResourceAsType<LayoutSVGResourceClipper>(
-        reference_clip_path_operation.Resource());
-  }
+  SVGResourceClient* client = GetResourceClient(object);
+  LayoutSVGResourceClipper* resource_clipper =
+      GetSVGResourceAsType(*client, reference_clip_path_operation);
   if (resource_clipper) {
     SECURITY_DCHECK(!resource_clipper->NeedsLayout());
     resource_clipper->ClearInvalidationMask();

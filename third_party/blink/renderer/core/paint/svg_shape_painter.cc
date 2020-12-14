@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_marker_data.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
@@ -200,15 +199,14 @@ void SVGShapePainter::PaintMarkers(const PaintInfo& paint_info) {
       layout_svg_shape_.MarkerPositions();
   if (!marker_positions || marker_positions->IsEmpty())
     return;
-
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(layout_svg_shape_);
-  if (!resources)
-    return;
-
-  LayoutSVGResourceMarker* marker_start = resources->MarkerStart();
-  LayoutSVGResourceMarker* marker_mid = resources->MarkerMid();
-  LayoutSVGResourceMarker* marker_end = resources->MarkerEnd();
+  SVGResourceClient* client = SVGResources::GetClient(layout_svg_shape_);
+  const SVGComputedStyle& svg_style = layout_svg_shape_.StyleRef().SvgStyle();
+  auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, svg_style.MarkerStartResource());
+  auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, svg_style.MarkerMidResource());
+  auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
+      *client, svg_style.MarkerEndResource());
   if (!marker_start && !marker_mid && !marker_end)
     return;
 
