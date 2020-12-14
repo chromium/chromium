@@ -828,6 +828,8 @@ static_library("browser") {
     "metrics/thread_watcher_report_hang.h",
     "metrics/ukm_background_recorder_service.cc",
     "metrics/ukm_background_recorder_service.h",
+    "metrics/usage_scenario_data_store.cc",
+    "metrics/usage_scenario_data_store.h",
     "metrics/variations/chrome_variations_service_client.cc",
     "metrics/variations/chrome_variations_service_client.h",
     "native_file_system/chrome_native_file_system_permission_context.cc",

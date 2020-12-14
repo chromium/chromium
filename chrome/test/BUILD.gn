@@ -3524,6 +3524,7 @@ test("unit_tests") {
     "../browser/metrics/process_memory_metrics_emitter_unittest.cc",
     "../browser/metrics/tab_footprint_aggregator_unittest.cc",
     "../browser/metrics/thread_watcher_unittest.cc",
+    "../browser/metrics/usage_scenario_data_store_unittest.cc",
     "../browser/native_file_system/chrome_native_file_system_permission_context_unittest.cc",
     "../browser/native_file_system/origin_scoped_native_file_system_permission_context_unittest.cc",
     "../browser/navigation_predictor/navigation_predictor_renderer_warmup_client_unittest.cc",
