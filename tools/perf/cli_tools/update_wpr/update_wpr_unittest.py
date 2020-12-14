@@ -280,7 +280,7 @@ class UpdateWprTest(unittest.TestCase):
   def testDoesNotDeleteReusedWpr(self, os_remove):
     self._open.return_value.__enter__.return_value.read.return_value = (
         '{"archives": {"<story>": {"DEFAULT": "<archive>"}, '
-        '"<other>": {"DEFAULT": "foo", "linux": "<arhive>"}}}')
+        '"<other>": {"DEFAULT": "foo", "linux": "<archive>"}}}')
     self.wpr_updater._DeleteExistingWpr()
     os_remove.assert_not_called()
 
