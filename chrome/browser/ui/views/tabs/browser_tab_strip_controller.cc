@@ -223,8 +223,8 @@ BrowserTabStripController::BrowserTabStripController(
   local_pref_registrar_.Init(g_browser_process->local_state());
   local_pref_registrar_.Add(
       prefs::kTabStripStackedLayout,
-      base::Bind(&BrowserTabStripController::UpdateStackedLayout,
-                 base::Unretained(this)));
+      base::BindRepeating(&BrowserTabStripController::UpdateStackedLayout,
+                          base::Unretained(this)));
 }
 
 BrowserTabStripController::~BrowserTabStripController() {

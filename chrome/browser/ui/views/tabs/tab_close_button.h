@@ -18,7 +18,7 @@ class TabCloseButton : public views::ImageButton,
                        public views::MaskedTargeterDelegate {
  public:
   using MouseEventCallback =
-      base::Callback<void(views::View*, const ui::MouseEvent&)>;
+      base::RepeatingCallback<void(views::View*, const ui::MouseEvent&)>;
 
   // The mouse_event callback will be called for every mouse event to allow
   // middle clicks to be handled by the parent.

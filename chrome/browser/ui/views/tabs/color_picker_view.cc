@@ -210,7 +210,8 @@ ColorPickerView::ColorPickerView(
     // references to them. base::Unretained() is safe here since we delete these
     // views in our destructor, ensuring we outlive them.
     elements_.push_back(AddChildView(std::make_unique<ColorPickerElementView>(
-        base::Bind(&ColorPickerView::OnColorSelected, base::Unretained(this)),
+        base::BindRepeating(&ColorPickerView::OnColorSelected,
+                            base::Unretained(this)),
         bubble_view, color.first, color.second)));
     if (initial_color_id == color.first)
       elements_.back()->SetSelected(true);

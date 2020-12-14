@@ -173,8 +173,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   color_selector_ =
       group_modifier_container->AddChildView(std::make_unique<ColorPickerView>(
           this, colors_, initial_color_id,
-          base::Bind(&TabGroupEditorBubbleView::UpdateGroup,
-                     base::Unretained(this))));
+          base::BindRepeating(&TabGroupEditorBubbleView::UpdateGroup,
+                              base::Unretained(this))));
   color_selector_->SetProperty(
       views::kMarginsKey,
       gfx::Insets(0, control_insets.left(), 0, control_insets.right()));
