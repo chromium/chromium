@@ -605,6 +605,38 @@ TEST_F(NGLineBreakerTest, SplitTextZero) {
   EXPECT_EQ("ab", lines[1].first);
 }
 
+TEST_F(NGLineBreakerTest, ForcedBreakFollowedByCloseTag) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="container">
+      <div><span>line<br></span></div>
+      <div>
+        <span>line<br></span>
+      </div>
+      <div>
+        <span>
+          line<br>
+        </span>
+      </div>
+      <div>
+        <span>line<br>  </span>
+      </div>
+      <div>
+        <span>line<br>  </span>&#32;&#32;
+      </div>
+    </div>
+  )HTML");
+  const LayoutObject* container = GetLayoutObjectByElementId("container");
+  for (const LayoutObject* child = container->SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    NGInlineCursor cursor(*To<LayoutBlockFlow>(child));
+    wtf_size_t line_count = 0;
+    for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine())
+      ++line_count;
+    EXPECT_EQ(line_count, 1u);
+  }
+}
+
 TEST_F(NGLineBreakerTest, TableCellWidthCalculationQuirkOutOfFlow) {
   NGInlineNode node = CreateInlineNode(R"HTML(
     <style>

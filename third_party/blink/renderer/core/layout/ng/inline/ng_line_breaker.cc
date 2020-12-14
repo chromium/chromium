@@ -1421,6 +1421,10 @@ void NGLineBreaker::HandleControlItem(const NGInlineItem& item,
         HandleCloseTag(next_item, line_info);
         continue;
       }
+      if (next_item.Type() == NGInlineItem::kText && !next_item.Length()) {
+        HandleEmptyText(next_item, line_info);
+        continue;
+      }
       break;
     }
 
