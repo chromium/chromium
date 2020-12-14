@@ -416,12 +416,6 @@ void HungRendererDialogView::WindowClosing() {
 }
 
 void HungRendererDialogView::ForceCrashHungRenderer() {
-  auto* render_widget_host = hung_pages_table_model_->GetRenderWidgetHost();
-  bool currently_unresponsive =
-      render_widget_host && render_widget_host->IsCurrentlyUnresponsive();
-  UMA_HISTOGRAM_BOOLEAN("Stability.RendererUnresponsiveBeforeTermination",
-                        currently_unresponsive);
-
   content::RenderProcessHost* rph =
       hung_pages_table_model_->GetRenderWidgetHost()->GetProcess();
   if (rph) {

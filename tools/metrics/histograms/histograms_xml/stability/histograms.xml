@@ -515,6 +515,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.RendererUnresponsiveBeforeTermination"
     enum="BooleanUnresponsive" expires_after="2020-04-26">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
   <owner>dtapuska@chromium.org</owner>
   <summary>
     If the renderer is considered unresponsive from the browser's perspective
