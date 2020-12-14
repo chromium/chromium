@@ -538,6 +538,7 @@ class ContentSettingGeolocationBubbleModel
   // Initialize the bubble with the elements specific to the scenario when
   // geolocation is disabled on the system (OS) level.
   void InitializeSystemGeolocationPermissionBubble();
+  void SetCustomLink();
 
   // Whether or not we are showing the bubble UI specific to when geolocation
   // permissions are turned off on a system level.
