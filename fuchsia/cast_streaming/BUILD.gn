@@ -102,6 +102,27 @@ source_set("cast_streaming_test_sender") {
   ]
 }
 
+source_set("cast_streaming_test_receiver") {
+  testonly = true
+  deps = [
+    ":cast_streaming_session",
+    "//base",
+    "//components/openscreen_platform",
+    "//media",
+    "//media/mojo/common",
+    "//mojo/public/cpp/system",
+    "//third_party/openscreen/src/cast/common:public",
+    "//third_party/openscreen/src/cast/streaming:receiver",
+    "//third_party/openscreen/src/platform:api",
+    "//third_party/openscreen/src/util",
+  ]
+  visibility = [ ":*" ]
+  sources = [
+    "test/cast_streaming_test_receiver.cc",
+    "test/cast_streaming_test_receiver.h",
+  ]
+}
+
 test("cast_streaming_unittests") {
   sources = [ "cast_message_port_impl_unittest.cc" ]
   deps = [
