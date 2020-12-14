@@ -35,14 +35,10 @@
   (path "/var/run")
 )
 
-; Local preferences.
-(allow file-read*
-  (path (user-homedir-path (string-append "/Library/Preferences/" (param bundle-id) ".plist")))
-)
-
 ; Certificate databases.
 (allow file-read*
   (path "/Library/Preferences/com.apple.security.plist")
+  (path (user-homedir-path "/Library/Preferences/com.apple.security.plist"))
   ; https://crbug.com/1024000
   (path (user-homedir-path "/Library/Preferences/com.apple.security.revocation.plist"))
   (subpath "/Library/Keychains")

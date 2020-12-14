@@ -152,7 +152,12 @@
 
 ; Reads from /Library.
 (allow file-read-data
+  (path "/Library/Managed Preferences/.GlobalPreferences.plist")
   (path "/Library/Preferences/.GlobalPreferences.plist")
+  (path (string-append "/Library/Managed Preferences/" (param bundle-id) ".plist"))
+  (path (string-append "/Library/Preferences/" (param bundle-id) ".plist"))
+  (regex #"/Library/Managed Preferences/.*/\.GlobalPreferences\.plist")
+  (regex (string-append #"/Library/Managed Preferences/.*/" (regex-quote (param bundle-id)) #"\.plist"))
 )
 
 ; Reads from /System.

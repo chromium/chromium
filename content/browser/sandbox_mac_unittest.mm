@@ -5,16 +5,20 @@
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 
+#include <fcntl.h>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ref_counted.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -279,6 +283,39 @@ MULTIPROCESS_TEST_MAIN(BuiltinAvailable) {
 
 TEST_F(SandboxMacTest, BuiltinAvailable) {
   ExecuteInAllSandboxTypes("BuiltinAvailable", {});
+}
+
+MULTIPROCESS_TEST_MAIN(NetworkProcessPrefs) {
+  CheckCreateSeatbeltServer();
+
+  const std::string kBundleId = base::mac::BaseBundleID();
+  const std::string kUserName = base::SysNSStringToUTF8(NSUserName());
+  const std::vector<std::string> kPaths = {
+      "/Library/Managed Preferences/.GlobalPreferences.plist",
+      base::StrCat({"/Library/Managed Preferences/", kBundleId, ".plist"}),
+      base::StrCat({"/Library/Managed Preferences/", kUserName,
+                    "/.GlobalPreferences.plist"}),
+      base::StrCat({"/Library/Managed Preferences/", kUserName, "/", kBundleId,
+                    ".plist"}),
+      base::StrCat({"/Library/Preferences/", kBundleId, ".plist"}),
+      base::StrCat({"/Users/", kUserName,
+                    "/Library/Preferences/com.apple.security.plist"}),
+      base::StrCat(
+          {"/Users/", kUserName, "/Library/Preferences/", kBundleId, ".plist"}),
+  };
+
+  for (const auto& path : kPaths) {
+    // Use open rather than stat to test file-read-data rules.
+    base::ScopedFD fd(open(path.c_str(), O_RDONLY));
+    PCHECK(fd.is_valid() || errno == ENOENT) << path;
+  }
+
+  return 0;
+}
+
+TEST_F(SandboxMacTest, NetworkProcessPrefs) {
+  ExecuteWithParams("NetworkProcessPrefs",
+                    sandbox::policy::SandboxType::kNetwork);
 }
 
 }  // namespace content
