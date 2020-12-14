@@ -11,6 +11,10 @@
 #include "base/component_export.h"
 #include "components/full_restore/app_restore_data.h"
 
+namespace base {
+class Value;
+}
+
 namespace full_restore {
 
 struct AppLaunchInfo;
@@ -20,10 +24,9 @@ struct AppLaunchInfo;
 // FullRestoreData file.
 //
 // TODO(crbug.com/1146900):
-// 1. Add the interface to convert this struct to JSON format.
-// 2. Add the interface to modify LaunchAndWindowInfo when the window
+// 1. Add the interface to modify LaunchAndWindowInfo when the window
 // information is updated.
-// 3. Add the interface to remove LaunchAndWindowInfo.
+// 2. Add the interface to remove LaunchAndWindowInfo.
 class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
  public:
   // Map from a window id to AppRestoreData.
@@ -37,6 +40,39 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
 
   RestoreData(const RestoreData&) = delete;
   RestoreData& operator=(const RestoreData&) = delete;
+
+  // Converts |app_id_to_launch_list_| to base::Value, e.g.:
+  // {
+  //   "odknhmnlageboeamepcngndbggdpaobj":    // app_id
+  //     {
+  //       "403":                             // id
+  //         {
+  //           "container": 0,
+  //           "disposition": 1,
+  //           "display_id": "22000000",
+  //           "index": 3,
+  //           "desk_id": 1,
+  //           "restored_bounds": { 0, 100, 200, 300 },
+  //           "current_bounds": { 100, 200, 200, 300 },
+  //           "window_state_type": 256,
+  //         },
+  //     },
+  //   "pjibgclleladliembfgfagdaldikeohf":    // app_id
+  //     {
+  //       "413":                             // id
+  //         {
+  //           "container": 0,
+  //           "disposition": 3,
+  //           "display_id": "22000000",
+  //           ...
+  //         },
+  //       "415":                             // id
+  //         {
+  //           ...
+  //         },
+  //     },
+  // }
+  base::Value ConvertToValue() const;
 
   // Add |app_launch_info| to |app_id_to_launch_list_|.
   void AddAppLaunchInfo(std::unique_ptr<AppLaunchInfo> app_launch_info);

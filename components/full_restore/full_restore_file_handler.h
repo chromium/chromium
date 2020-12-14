@@ -1,0 +1,64 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_FULL_RESTORE_FULL_RESTORE_FILE_HANDLER_H_
+#define COMPONENTS_FULL_RESTORE_FULL_RESTORE_FILE_HANDLER_H_
+
+#include <memory>
+
+#include "base/component_export.h"
+#include "base/files/file_path.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/sequenced_task_runner_helpers.h"
+
+namespace {
+class SequencedTaskRunner;
+}
+
+namespace full_restore {
+
+class RestoreData;
+
+// FullRestoreFileHandler is the backend used by FullRestoreSaveHandler and
+// RestoreHandler. It reads and writes RestoreData from and to disk.
+// FullRestoreFileHandler is created on the main thread, and does no IO by
+// the constructor. The real work is done by WriteToFile and ReadFromFile, which
+// must be invoked on a background task runner |owning_task_runner|.
+//
+// TODO(crbug.com/1146900): Add the ReadFromFile interface.
+class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreFileHandler
+    : public base::RefCountedDeleteOnSequence<FullRestoreFileHandler> {
+ public:
+  // Creates a FullRestoreFileHandler. This method is invoked on the main
+  // thread, and does no IO. |path| is the path of the full restore file.
+  FullRestoreFileHandler(const base::FilePath& path);
+
+  FullRestoreFileHandler(const FullRestoreFileHandler&) = delete;
+  FullRestoreFileHandler& operator=(const FullRestoreFileHandler&) = delete;
+
+  base::SequencedTaskRunner* owning_task_runner() {
+    return base::RefCountedDeleteOnSequence<
+        FullRestoreFileHandler>::owning_task_runner();
+  }
+
+  // Writes |restore_data| to the full restore file. This method must be invoked
+  // on a background task runer |owning_task_runner|.
+  void WriteToFile(std::unique_ptr<RestoreData> restore_data);
+
+ private:
+  friend class base::RefCountedDeleteOnSequence<FullRestoreFileHandler>;
+  friend class base::DeleteHelper<FullRestoreFileHandler>;
+
+  virtual ~FullRestoreFileHandler();
+
+  // Performs blocking I/O. Called on a background task runner
+  // |owning_task_runner|.
+  void WriteDataBlocking(const std::string& full_restore_data);
+
+  base::FilePath file_path_;
+};
+
+}  // namespace full_restore
+
+#endif  // COMPONENTS_FULL_RESTORE_FULL_RESTORE_FILE_HANDLER_H_
