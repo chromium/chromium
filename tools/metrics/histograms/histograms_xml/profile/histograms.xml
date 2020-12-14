@@ -578,7 +578,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.UserAction.PerProfile" enum="Profile"
-    expires_after="2020-10-04">
+    expires_after="2022-10-04">
   <owner>msarda@chromium.org</owner>
   <owner>tangltom@chromium.org</owner>
   <summary>
@@ -589,6 +589,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Each profile on a client is assigned a unique bucket, i.e. whenever a user
     action happens in a browser of profile x, an entry is recorded in bucket x.
+
+    This histogram is used in the profile dashboard, see go/profile-metrics and
+    go/profile-metrics-dashboard.
 
     Example: A user has 2 profiles and opens a browser window for each of them.
     When the user adds a new tab in each of the browsers, an entry is recorded
