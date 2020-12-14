@@ -205,6 +205,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="DevTools.IssueCreated" enum="DevToolsIssuesPanelOpenedFrom"
+    expires_after="2021-10-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Records the issue type when an issue is created for the Issues Panel.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.IssuesPanelIssueExpanded"
     enum="DevToolsIssuesPanelIssueExpanded" expires_after="2021-08-27">
   <owner>yangguo@chromium.org</owner>

@@ -17010,6 +17010,72 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="8" label="More than 50"/>
 </enum>
 
+<enum name="DevToolsIssueCreated">
+  <int value="0" label="MixedContentIssue"/>
+  <int value="1" label="ContentSecurityPolicyIssue::kInlineViolation"/>
+  <int value="2" label="ContentSecurityPolicyIssue::kEvalViolation"/>
+  <int value="3" label="ContentSecurityPolicyIssue::kURLViolation"/>
+  <int value="4"
+      label="ContentSecurityPolicyIssue::kTrustedTypesSinkViolation"/>
+  <int value="5"
+      label="ContentSecurityPolicyIssue::kTrustedTypesPolicyViolation"/>
+  <int value="6" label="HeavyAdIssue::NetworkTotalLimit"/>
+  <int value="7" label="HeavyAdIssue::CpuTotalLimit"/>
+  <int value="8" label="HeavyAdIssue::CpuPeakLimit"/>
+  <int value="9"
+      label="CrossOriginEmbedderPolicyIssue::CoepFrameResourceNeedsCoepHeader"/>
+  <int value="10"
+      label="CrossOriginEmbedderPolicyIssue::CoopSandboxedIFrameCannotNavigateToCoopPage"/>
+  <int value="11" label="CrossOriginEmbedderPolicyIssue::CorpNotSameOrigin"/>
+  <int value="12"
+      label="CrossOriginEmbedderPolicyIssue::CorpNotSameOriginAfterDefaultedToSameOriginByCoep"/>
+  <int value="13" label="CrossOriginEmbedderPolicyIssue::CorpNotSameSite"/>
+  <int value="14"
+      label="SameSiteCookieIssue::ExcludeSameSiteNoneInsecure::ReadCookie"/>
+  <int value="15"
+      label="SameSiteCookieIssue::ExcludeSameSiteNoneInsecure::SetCookie"/>
+  <int value="16"
+      label="SameSiteCookieIssue::WarnSameSiteNoneInsecure::ReadCookie"/>
+  <int value="17"
+      label="SameSiteCookieIssue::WarnSameSiteNoneInsecure::SetCookie"/>
+  <int value="18"
+      label="SameSiteCookieIssue::WarnSameSiteStrictLaxDowngradeStrict::Secure"/>
+  <int value="19"
+      label="SameSiteCookieIssue::WarnSameSiteStrictLaxDowngradeStrict::Insecure"/>
+  <int value="20"
+      label="SameSiteCookieIssue::WarnCrossDowngrade::ReadCookie::Secure"/>
+  <int value="21"
+      label="SameSiteCookieIssue::WarnCrossDowngrade::ReadCookie::Insecure"/>
+  <int value="22"
+      label="SameSiteCookieIssue::WarnCrossDowngrade::SetCookie::Secure"/>
+  <int value="23"
+      label="SameSiteCookieIssue::WarnCrossDowngrade::SetCookie::Insecure"/>
+  <int value="24"
+      label="SameSiteCookieIssue::ExcludeNavigationContextDowngrade::Secure"/>
+  <int value="25"
+      label="SameSiteCookieIssue::ExcludeNavigationContextDowngrade::Insecure"/>
+  <int value="26"
+      label="SameSiteCookieIssue::ExcludeContextDowngrade::ReadCookie::Secure"/>
+  <int value="27"
+      label="SameSiteCookieIssue::ExcludeContextDowngrade::ReadCookie::Insecure"/>
+  <int value="28"
+      label="SameSiteCookieIssue::ExcludeContextDowngrade::SetCookie::Secure"/>
+  <int value="29"
+      label="SameSiteCookieIssue::ExcludeContextDowngrade::SetCookie::Insecure"/>
+  <int value="30"
+      label="SameSiteCookieIssue::ExcludeSameSiteUnspecifiedTreatedAsLax::ReadCookie"/>
+  <int value="31"
+      label="SameSiteCookieIssue::ExcludeSameSiteUnspecifiedTreatedAsLax::SetCookie"/>
+  <int value="32"
+      label="SameSiteCookieIssue::WarnSameSiteUnspecifiedLaxAllowUnsafe::ReadCookie"/>
+  <int value="33"
+      label="SameSiteCookieIssue::WarnSameSiteUnspecifiedLaxAllowUnsafe::SetCookie"/>
+  <int value="34"
+      label="SameSiteCookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::ReadCookie"/>
+  <int value="35"
+      label="SameSiteCookieIssue::WarnSameSiteUnspecifiedCrossSiteContext::SetCookie"/>
+</enum>
+
 <enum name="DevToolsIssuesPanelIssueExpanded">
   <int value="0" label="CrossOriginEmbedderPolicy"/>
   <int value="1" label="MixedContent"/>

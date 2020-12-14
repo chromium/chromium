@@ -139,6 +139,7 @@ static const char kDevToolsGridOverlayOpenedFromHistogram[] =
     "DevTools.GridOverlayOpenedFrom";
 static const char kDevToolsCssEditorOpenedHistogram[] =
     "DevTools.CssEditorOpened";
+static const char kDevToolsIssueCreatedHistogram[] = "DevTools.IssueCreated";
 
 static const char kRemotePageActionInspect[] = "inspect";
 static const char kRemotePageActionReload[] = "reload";
@@ -1313,7 +1314,8 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
       name == kDevtoolsIssuesPanelIssueExpandedHistogram ||
       name == kDevtoolsIssuesPanelResourceOpenedHistogram ||
       name == kDevToolsGridOverlayOpenedFromHistogram ||
-      name == kDevToolsCssEditorOpenedHistogram)
+      name == kDevToolsCssEditorOpenedHistogram ||
+      name == kDevToolsIssueCreatedHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else
     frontend_host_->BadMessageReceived();
