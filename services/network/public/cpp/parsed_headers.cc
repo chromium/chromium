@@ -31,8 +31,11 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   parsed_headers->cross_origin_opener_policy = ParseCrossOriginOpenerPolicy(
       *headers, parsed_headers->cross_origin_embedder_policy);
 
+  // TODO(https://crbug.com/1157917): we implement the change at
+  // https://github.com/whatwg/html/pull/6214 but all the class and function
+  // names are not yet updated.
   std::string origin_isolation;
-  if (headers->GetNormalizedHeader("Origin-Isolation", &origin_isolation))
+  if (headers->GetNormalizedHeader("Origin-Agent-Cluster", &origin_isolation))
     parsed_headers->origin_isolation = ParseOriginIsolation(origin_isolation);
 
   std::string accept_ch;

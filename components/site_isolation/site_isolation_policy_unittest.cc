@@ -955,7 +955,7 @@ class OptInOriginIsolationPolicyTest : public BaseSiteIsolationTest {
     // Turn off strict site isolation.  This simulates what would happen on
     // Android.
     SetEnableStrictSiteIsolation(false);
-    // Enable Origin-Isolation header.
+    // Enable Origin-Agent-Cluster header.
     feature_list_.InitAndEnableFeature(::features::kOriginIsolationHeader);
     BaseSiteIsolationTest::SetUp();
   }
@@ -988,7 +988,7 @@ TEST_F(OptInOriginIsolationPolicyTest, BelowThreshold) {
 
   EXPECT_FALSE(content::SiteIsolationPolicy::IsOptInOriginIsolationEnabled());
 
-  // Simulate a navigation to a URL that serves an Origin-Isolation header.
+  // Simulate a navigation to a URL that serves an Origin-Agent-Cluster header.
   // Since we're outside of content/, it's difficult to verify that internal
   // ChildProcessSecurityPolicy state wasn't changed by opt-in origin
   // isolation.  Instead, verify that the resulting SiteInstance doesn't
@@ -1005,7 +1005,7 @@ TEST_F(OptInOriginIsolationPolicyTest, BelowThreshold) {
   simulator->Start();
   auto response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-  response_headers->SetHeader("Origin-Isolation", "?1");
+  response_headers->SetHeader("Origin-Agent-Cluster", "?1");
   simulator->SetResponseHeaders(response_headers);
   simulator->Commit();
 
@@ -1030,7 +1030,7 @@ TEST_F(OptInOriginIsolationPolicyTest, AboveThreshold) {
 
   EXPECT_TRUE(content::SiteIsolationPolicy::IsOptInOriginIsolationEnabled());
 
-  // Simulate a navigation to a URL that serves an Origin-Isolation header.
+  // Simulate a navigation to a URL that serves an Origin-Agent-Cluster header.
   // Verify that the resulting SiteInstance requires a dedicated process.  Note
   // that this test disables strict site isolation, so this would happen only
   // if opt-in isolation took place.
@@ -1044,7 +1044,7 @@ TEST_F(OptInOriginIsolationPolicyTest, AboveThreshold) {
   simulator->Start();
   auto response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-  response_headers->SetHeader("Origin-Isolation", "?1");
+  response_headers->SetHeader("Origin-Agent-Cluster", "?1");
   simulator->SetResponseHeaders(response_headers);
   simulator->Commit();
 

@@ -294,7 +294,7 @@ class OriginIsolationOptInHeaderTest : public OriginIsolationOptInServerTest {
       response->set_content_type("text/html");
 
       if (header_) {
-        response->AddCustomHeader("Origin-Isolation", *header_);
+        response->AddCustomHeader("Origin-Agent-Cluster", *header_);
       }
 
       response->set_content("isolate me!");
@@ -352,7 +352,7 @@ class OriginIsolationOptInHttpServerHeaderTest : public IsolatedOriginTestBase {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
     response->set_content_type("text/html");
-    response->AddCustomHeader("Origin-Isolation", "?1");
+    response->AddCustomHeader("Origin-Agent-Cluster", "?1");
 
     response->set_content("isolate me!");
     return std::move(response);
@@ -1191,7 +1191,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
           const std::string headers =
               "HTTP/1.1 200 OK\n"
               "Content-Type: text/html\n"
-              "Origin-Isolation: ?1\n";
+              "Origin-Agent-Cluster: ?1\n";
           // Note: this call would normally get the headers from
           // isolated_base_origin_with_subframe.html.mock-http-headers,
           // but those are meant for use with a
