@@ -1,0 +1,11 @@
+noparent = True
+
+include_rules = [
+  "+base/android/java/src/org/chromium/base",
+  "!chrome/android/java/src/org/chromium/chrome/browser/browserservices",
+  "+chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences",
+  "+chrome/browser/profiles/android/java/src/org/chromium/chrome/browser/profiles",
+  "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",
+  "+components/externalauth/android/java/src/org/chromium/components/externalauth",
+  "+content/public/android/java/src/org/chromium/content_public/browser",
+]

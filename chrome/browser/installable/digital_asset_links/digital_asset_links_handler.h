@@ -24,7 +24,7 @@ namespace digital_asset_links {
 
 extern const char kDigitalAssetLinksCheckResponseKeyLinked[];
 
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.browserservices
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.browserservices.verification
 enum class RelationshipCheckResult {
   kSuccess = 0,
   kFailure,

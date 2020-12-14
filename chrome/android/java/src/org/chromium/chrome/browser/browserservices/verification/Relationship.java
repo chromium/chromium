@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices;
+package org.chromium.chrome.browser.browserservices.verification;
 
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -18,8 +18,8 @@ public class Relationship {
     public final String signatureFingerprint;
 
     /** Creates a {@link Relationship} to hold relationship details. */
-    public Relationship(String packageName, String signatureFingerprint, Origin origin,
-            int relation) {
+    public Relationship(
+            String packageName, String signatureFingerprint, Origin origin, int relation) {
         this.packageName = packageName;
         this.signatureFingerprint = signatureFingerprint;
         this.origin = origin;

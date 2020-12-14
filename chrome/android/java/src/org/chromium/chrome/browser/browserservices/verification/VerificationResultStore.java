@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices;
+package org.chromium.chrome.browser.browserservices.verification;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -22,23 +22,23 @@ import java.util.Set;
  * Thread safety: Methods can be called on any thread.
  */
 public class VerificationResultStore {
-    /* package */ static void addRelationship(Relationship relationship) {
+    static void addRelationship(Relationship relationship) {
         Set<String> savedLinks = getRelationships();
         savedLinks.add(relationship.toString());
         setRelationships(savedLinks);
     }
 
-    /* package */ static void removeRelationship(Relationship relationship) {
+    static void removeRelationship(Relationship relationship) {
         Set<String> savedLinks = getRelationships();
         savedLinks.remove(relationship.toString());
         setRelationships(savedLinks);
     }
 
-    /* package */ static boolean isRelationshipSaved(Relationship relationship) {
+    static boolean isRelationshipSaved(Relationship relationship) {
         return getRelationships().contains(relationship.toString());
     }
 
-    /* package */ static void clearStoredRelationships() {
+    static void clearStoredRelationships() {
         ThreadUtils.assertOnUiThread();
         setRelationships(Collections.emptySet());
     }

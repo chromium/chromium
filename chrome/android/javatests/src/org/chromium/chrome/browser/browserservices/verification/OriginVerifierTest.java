@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices;
+package org.chromium.chrome.browser.browserservices.verification;
 
 import android.util.Pair;
 
@@ -19,7 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.browserservices.OriginVerifier.OriginVerificationListener;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -80,8 +80,8 @@ public class OriginVerifierTest {
 
     private class TestOriginVerificationListener implements OriginVerificationListener {
         @Override
-        public void onOriginVerified(String packageName, Origin origin, boolean verified,
-                Boolean online) {
+        public void onOriginVerified(
+                String packageName, Origin origin, boolean verified, Boolean online) {
             mLastPackageName = packageName;
             mLastOrigin = origin;
             mLastVerified = verified;
@@ -132,7 +132,8 @@ public class OriginVerifierTest {
     @SmallTest
     public void testOnlyHttpsAllowed() throws InterruptedException {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                () -> mHandleAllUrlsVerifier.start(
+                ()
+                        -> mHandleAllUrlsVerifier.start(
                                 new TestOriginVerificationListener(), mHttpOrigin));
         Assert.assertTrue(
                 mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
@@ -143,19 +144,23 @@ public class OriginVerifierTest {
     @SmallTest
     public void testMultipleRelationships() throws Exception {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                () -> OriginVerifier.addVerificationOverride(PACKAGE_NAME, mHttpsOrigin,
+                ()
+                        -> OriginVerifier.addVerificationOverride(PACKAGE_NAME, mHttpsOrigin,
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
         PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                () -> mUseAsOriginVerifier.start(
+                ()
+                        -> mUseAsOriginVerifier.start(
                                 new TestOriginVerificationListener(), mHttpsOrigin));
         Assert.assertTrue(
                 mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertTrue(mLastVerified);
         Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(
-                () -> OriginVerifier.wasPreviouslyVerified(PACKAGE_NAME, mHttpsOrigin,
+                ()
+                        -> OriginVerifier.wasPreviouslyVerified(PACKAGE_NAME, mHttpsOrigin,
                                 CustomTabsService.RELATION_USE_AS_ORIGIN)));
         Assert.assertFalse(TestThreadUtils.runOnUiThreadBlocking(
-                () -> OriginVerifier.wasPreviouslyVerified(PACKAGE_NAME, mHttpsOrigin,
+                ()
+                        -> OriginVerifier.wasPreviouslyVerified(PACKAGE_NAME, mHttpsOrigin,
                                 CustomTabsService.RELATION_HANDLE_ALL_URLS)));
         Assert.assertEquals(mLastPackageName, PACKAGE_NAME);
         Assert.assertEquals(mLastOrigin, mHttpsOrigin);
