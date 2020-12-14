@@ -3,6 +3,34 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+resources_grd_file = "$target_gen_dir/resources.grd"
+generate_grd("build_grd") {
+  grd_prefix = "emoji_picker"
+  out_grd = resources_grd_file
+  input_files = [
+    "emoji_picker.css",
+    "emoji_picker.html",
+    "emoji_picker.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/emoji_picker_resources.h",
+    "grit/emoji_picker_resources_map.cc",
+    "grit/emoji_picker_resources_map.h",
+    "emoji_picker_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
 
 js_library("emoji_picker") {
   deps = [ "//ui/webui/resources/js:load_time_data.m" ]
