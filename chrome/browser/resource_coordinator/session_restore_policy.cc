@@ -85,7 +85,7 @@ class SysInfoDelegate : public SessionRestorePolicy::Delegate {
         controller.GetEntryAtIndex(controller.GetCurrentEntryIndex());
     DCHECK(nav_entry);
 
-    auto* engagement_svc = SiteEngagementService::Get(
+    auto* engagement_svc = site_engagement::SiteEngagementService::Get(
         Profile::FromBrowserContext(contents->GetBrowserContext()));
     double engagement =
         engagement_svc->GetDetails(nav_entry->GetURL()).total_score;

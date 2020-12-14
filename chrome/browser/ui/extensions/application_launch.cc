@@ -380,7 +380,8 @@ WebContents* OpenEnabledApplication(Profile* profile,
 
     // Record the launch time in the site engagement service. A recent bookmark
     // app launch will provide an engagement boost to the origin.
-    SiteEngagementService* service = SiteEngagementService::Get(profile);
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(profile);
     service->SetLastShortcutLaunchTime(tab, url);
 
     // Refresh the app banner added to homescreen event. The user may have

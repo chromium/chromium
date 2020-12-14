@@ -16,6 +16,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
+namespace site_engagement {
+
 namespace {
 
 int g_seconds_to_pause_engagement_detection = 10;
@@ -262,3 +264,5 @@ void SiteEngagementService::Helper::OnVisibilityChanged(
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SiteEngagementService::Helper)
+
+}  // namespace site_engagement

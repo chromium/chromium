@@ -30,7 +30,7 @@ BackgroundSyncControllerFactory::BackgroundSyncControllerFactory()
           "BackgroundSyncService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ukm::UkmBackgroundRecorderFactory::GetInstance());
-  DependsOn(SiteEngagementServiceFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 
 BackgroundSyncControllerFactory::~BackgroundSyncControllerFactory() = default;

@@ -20,6 +20,8 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+namespace site_engagement {
+
 // Helper methods for important sites.
 // All methods should be used on the UI thread.
 class ImportantSitesUtil {
@@ -110,5 +112,7 @@ class ImportantSitesUtil {
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(ImportantSitesUtil);
 };
+
+}  // namespace site_engagement
 
 #endif  // CHROME_BROWSER_ENGAGEMENT_IMPORTANT_SITES_UTIL_H_

@@ -51,7 +51,7 @@ class LookalikeUrlServiceFactory : public BrowserContextKeyedServiceFactory {
       : BrowserContextKeyedServiceFactory(
             "LookalikeUrlServiceFactory",
             BrowserContextDependencyManager::GetInstance()) {
-    DependsOn(SiteEngagementServiceFactory::GetInstance());
+    DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
   }
 
   ~LookalikeUrlServiceFactory() override {}
@@ -100,7 +100,8 @@ void LookalikeUrlService::ForceUpdateEngagedSites(
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
-          &SiteEngagementService::GetAllDetailsInBackground, clock_->Now(),
+          &site_engagement::SiteEngagementService::GetAllDetailsInBackground,
+          clock_->Now(),
           base::WrapRefCounted(
               HostContentSettingsMapFactory::GetForProfile(profile_))),
       base::BindOnce(&LookalikeUrlService::OnFetchEngagedSites,
@@ -118,10 +119,11 @@ void LookalikeUrlService::SetClockForTesting(base::Clock* clock) {
 
 void LookalikeUrlService::OnFetchEngagedSites(
     EngagedSitesCallback callback,
-    std::vector<mojom::SiteEngagementDetails> details) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile_);
+    std::vector<site_engagement::mojom::SiteEngagementDetails> details) {
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(profile_);
   engaged_sites_.clear();
-  for (const mojom::SiteEngagementDetails& detail : details) {
+  for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
     if (!detail.origin.SchemeIsHTTPOrHTTPS()) {
       continue;
     }

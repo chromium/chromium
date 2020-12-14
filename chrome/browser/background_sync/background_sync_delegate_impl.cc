@@ -19,12 +19,14 @@
 #endif
 
 BackgroundSyncDelegateImpl::BackgroundSyncDelegateImpl(Profile* profile)
-    : SiteEngagementObserver(SiteEngagementService::Get(profile)),
+    : SiteEngagementObserver(
+          site_engagement::SiteEngagementService::Get(profile)),
       profile_(profile),
       ukm_background_service_(
           ukm::UkmBackgroundRecorderFactory::GetForProfile(profile)),
 
-      site_engagement_service_(SiteEngagementService::Get(profile)) {
+      site_engagement_service_(
+          site_engagement::SiteEngagementService::Get(profile)) {
   DCHECK(profile_);
   DCHECK(ukm_background_service_);
   DCHECK(site_engagement_service_);
@@ -117,7 +119,7 @@ void BackgroundSyncDelegateImpl::OnEngagementEvent(
     content::WebContents* web_contents,
     const GURL& url,
     double score,
-    SiteEngagementService::EngagementType engagement_type) {
+    site_engagement::SiteEngagementService::EngagementType engagement_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (score == 0.0)

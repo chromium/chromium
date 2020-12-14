@@ -38,7 +38,7 @@ class OptimizationGuideTopHostProviderTest
     top_host_provider_ = base::WrapUnique(
         new OptimizationGuideTopHostProvider(profile(), &test_clock_));
 
-    service_ = SiteEngagementService::Get(profile());
+    service_ = site_engagement::SiteEngagementService::Get(profile());
     pref_service_ = profile()->GetPrefs();
 
     drp_test_context_ =
@@ -71,8 +71,8 @@ class OptimizationGuideTopHostProviderTest
     for (size_t i = 1; i <= num_hosts; i++) {
       AddEngagedHost(
           GURL(base::StringPrintf("https://domain%zu.com", i)),
-          static_cast<double>(
-              i + SiteEngagementScore::GetFirstDailyEngagementPoints()));
+          static_cast<double>(i + site_engagement::SiteEngagementScore::
+                                      GetFirstDailyEngagementPoints()));
     }
   }
 
@@ -183,7 +183,7 @@ class OptimizationGuideTopHostProviderTest
   std::unique_ptr<OptimizationGuideTopHostProvider> top_host_provider_;
   std::unique_ptr<data_reduction_proxy::DataReductionProxyTestContext>
       drp_test_context_;
-  SiteEngagementService* service_;
+  site_engagement::SiteEngagementService* service_;
   PrefService* pref_service_;
 };
 

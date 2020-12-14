@@ -17,6 +17,8 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace site_engagement {
+
 class ImportantSitesUtilBrowserTest : public AndroidBrowserTest {
  public:
   ImportantSitesUtilBrowserTest() = default;
@@ -96,3 +98,5 @@ IN_PROC_BROWSER_TEST_F(ImportantSitesUtilBrowserTest,
   EXPECT_THAT(GetImportantDomains(profile()),
               ::testing::ElementsAre(kNonDSEOrigin.host()));
 }
+
+}  // namespace site_engagement

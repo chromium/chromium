@@ -132,18 +132,18 @@ void OptimizationGuideTopHostProvider::
              ->empty());
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
-  SiteEngagementService* engagement_service =
-      SiteEngagementService::Get(profile);
+  auto* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile);
 
   std::unique_ptr<base::DictionaryValue> top_host_blacklist =
       std::make_unique<base::DictionaryValue>();
 
-  std::vector<mojom::SiteEngagementDetails> engagement_details =
-      engagement_service->GetAllDetails();
+  std::vector<site_engagement::mojom::SiteEngagementDetails>
+      engagement_details = engagement_service->GetAllDetails();
 
   std::sort(engagement_details.begin(), engagement_details.end(),
-            [](const mojom::SiteEngagementDetails& lhs,
-               const mojom::SiteEngagementDetails& rhs) {
+            [](const site_engagement::mojom::SiteEngagementDetails& lhs,
+               const site_engagement::mojom::SiteEngagementDetails& rhs) {
               return lhs.total_score > rhs.total_score;
             });
 
@@ -280,8 +280,8 @@ std::vector<std::string> OptimizationGuideTopHostProvider::GetTopHosts() {
   }
 
   // Create SiteEngagementService to request site engagement scores.
-  SiteEngagementService* engagement_service =
-      SiteEngagementService::Get(profile);
+  auto* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile);
 
   const base::DictionaryValue* top_host_blacklist = nullptr;
   if (GetCurrentBlacklistState(pref_service_) !=
@@ -308,12 +308,12 @@ std::vector<std::string> OptimizationGuideTopHostProvider::GetTopHosts() {
   // size. Currently utilizes just the first |max_sites| entries. Only HTTPS
   // schemed hosts are included. Hosts are filtered by the blacklist that is
   // populated when DataSaver is first enabled.
-  std::vector<mojom::SiteEngagementDetails> engagement_details =
-      engagement_service->GetAllDetails();
+  std::vector<site_engagement::mojom::SiteEngagementDetails>
+      engagement_details = engagement_service->GetAllDetails();
 
   std::sort(engagement_details.begin(), engagement_details.end(),
-            [](const mojom::SiteEngagementDetails& lhs,
-               const mojom::SiteEngagementDetails& rhs) {
+            [](const site_engagement::mojom::SiteEngagementDetails& lhs,
+               const site_engagement::mojom::SiteEngagementDetails& rhs) {
               return lhs.total_score > rhs.total_score;
             });
 

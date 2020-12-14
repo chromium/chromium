@@ -13,12 +13,13 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_metrics.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/variations/variations_associated_data.h"
+
+namespace site_engagement {
 
 namespace {
 
@@ -400,3 +401,5 @@ double SiteEngagementScore::BonusIfShortcutLaunched() const {
     return GetWebAppInstalledPoints();
   return 0;
 }
+
+}  // namespace site_engagement

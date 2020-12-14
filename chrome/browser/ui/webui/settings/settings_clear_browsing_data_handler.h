@@ -55,7 +55,8 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // Respond to the WebUI callback with the list of installed apps.
   void OnGotInstalledApps(
       const std::string& webui_callback_id,
-      const std::vector<ImportantSitesUtil::ImportantDomainInfo>&
+      const std::vector<
+          site_engagement::ImportantSitesUtil::ImportantDomainInfo>&
           installed_apps);
 
   // Build a filter of sites to include and exclude from site data removal

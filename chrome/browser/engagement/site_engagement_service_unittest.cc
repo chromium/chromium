@@ -51,6 +51,8 @@
 
 using content::NavigationSimulator;
 
+namespace site_engagement {
+
 namespace {
 
 base::FilePath g_temp_history_dir;
@@ -1750,3 +1752,5 @@ TEST_F(SiteEngagementServiceTest, GetAllDetailsIncludesBonusOnlyScores) {
   details = service_->GetAllDetails();
   EXPECT_EQ(2u, details.size());
 }
+
+}  // namespace site_engagement

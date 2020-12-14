@@ -9,7 +9,9 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace site_engagement {
 class SiteEngagementService;
+}
 
 class NavigationMetricsRecorder
     : public content::WebContentsObserver,
@@ -30,7 +32,7 @@ class NavigationMetricsRecorder
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  SiteEngagementService* site_engagement_service_;
+  site_engagement::SiteEngagementService* site_engagement_service_;
   bool is_synthetic_isolation_trial_enabled_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

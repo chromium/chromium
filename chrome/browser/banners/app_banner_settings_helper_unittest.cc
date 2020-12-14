@@ -87,7 +87,8 @@ TEST_F(AppBannerSettingsHelperTest, SingleEvents) {
 
 TEST_F(AppBannerSettingsHelperTest, ShouldShowFromEngagement) {
   GURL url(kTestURL);
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(profile());
 
   // By default the banner should not be shown.
   EXPECT_FALSE(
@@ -189,7 +190,8 @@ TEST_F(AppBannerSettingsHelperTest, OperatesOnOrigins) {
   GURL url(kTestURL);
   GURL otherURL(kSameOriginTestURL);
 
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(profile());
 
   // By default the banner should not be shown.
   EXPECT_FALSE(
@@ -229,7 +231,8 @@ TEST_F(AppBannerSettingsHelperTest, OperatesOnOrigins) {
 TEST_F(AppBannerSettingsHelperTest, ShouldShowWithHigherTotal) {
   AppBannerSettingsHelper::SetTotalEngagementToTrigger(10);
   GURL url(kTestURL);
-  SiteEngagementService* service = SiteEngagementService::Get(profile());
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(profile());
 
   // By default the banner should not be shown.
   EXPECT_FALSE(

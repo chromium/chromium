@@ -248,8 +248,8 @@ class NavigationPasswordMetricsRecorder
   void RecordEngagementLevel(const char* histogram_name) {
     const GURL& main_frame_url = web_contents_->GetLastCommittedURL();
     if (main_frame_url.SchemeIsHTTPOrHTTPS()) {
-      SiteEngagementService* site_engagement_service =
-          SiteEngagementService::Get(
+      site_engagement::SiteEngagementService* site_engagement_service =
+          site_engagement::SiteEngagementService::Get(
               Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
       blink::mojom::EngagementLevel engagement_level =
           site_engagement_service->GetEngagementLevel(main_frame_url);

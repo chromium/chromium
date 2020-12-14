@@ -344,7 +344,7 @@ void BudgetDatabase::AddEngagementBudget(const url::Origin& origin) {
   // Get the current SES score, and calculate the hourly budget for that score.
   double hourly_budget = kMaximumHourlyBudget *
                          GetSiteEngagementScoreForOrigin(origin) /
-                         SiteEngagementService::GetMaxPoints();
+                         site_engagement::SiteEngagementService::GetMaxPoints();
 
   // Update the last_engagement_award to the current time. If the origin wasn't
   // already in the map, this adds a new entry for it.
@@ -396,5 +396,6 @@ double BudgetDatabase::GetSiteEngagementScoreForOrigin(
   if (profile_->IsOffTheRecord())
     return 0;
 
-  return SiteEngagementService::Get(profile_)->GetScore(origin.GetURL());
+  return site_engagement::SiteEngagementService::Get(profile_)->GetScore(
+      origin.GetURL());
 }

@@ -395,8 +395,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   SharingServiceFactory::GetInstance();
   ShortcutsBackendFactory::GetInstance();
   SigninProfileAttributesUpdaterFactory::GetInstance();
-  if (SiteEngagementService::IsEnabled())
-    SiteEngagementServiceFactory::GetInstance();
+  if (site_engagement::SiteEngagementService::IsEnabled())
+    site_engagement::SiteEngagementServiceFactory::GetInstance();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   SigninManagerFactory::GetInstance();
 #endif

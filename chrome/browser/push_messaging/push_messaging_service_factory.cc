@@ -50,7 +50,7 @@ PushMessagingServiceFactory::PushMessagingServiceFactory()
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(PermissionManagerFactory::GetInstance());
-  DependsOn(SiteEngagementServiceFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(chromeos::android_sms::AndroidSmsServiceFactory::GetInstance());
   DependsOn(chromeos::multidevice_setup::MultiDeviceSetupClientFactory::

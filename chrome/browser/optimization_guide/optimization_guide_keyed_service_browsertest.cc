@@ -571,7 +571,7 @@ class OptimizationGuideKeyedServiceDataSaverUserWithInfobarShownTest
   // Seeds the Site Engagement Service with two HTTP and two HTTPS sites for the
   // current profile.
   void SeedSiteEngagementService() {
-    SiteEngagementService* service = SiteEngagementService::Get(
+    auto* service = site_engagement::SiteEngagementService::Get(
         Profile::FromBrowserContext(browser()
                                         ->tab_strip_model()
                                         ->GetActiveWebContents()

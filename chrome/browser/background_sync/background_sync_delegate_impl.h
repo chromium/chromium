@@ -22,7 +22,7 @@ class UkmBackgroundRecorderService;
 // Chrome's customization of the logic in components/background_sync
 class BackgroundSyncDelegateImpl
     : public background_sync::BackgroundSyncDelegate,
-      public SiteEngagementObserver {
+      public site_engagement::SiteEngagementObserver {
  public:
   static const int kEngagementLevelNonePenalty = 0;
   static const int kEngagementLevelHighOrMaxPenalty = 1;
@@ -51,18 +51,18 @@ class BackgroundSyncDelegateImpl
 #endif  // defined(OS_ANDROID)
 
   // SiteEngagementObserver overrides.
-  void OnEngagementEvent(
-      content::WebContents* web_contents,
-      const GURL& url,
-      double score,
-      SiteEngagementService::EngagementType engagement_type) override;
+  void OnEngagementEvent(content::WebContents* web_contents,
+                         const GURL& url,
+                         double score,
+                         site_engagement::SiteEngagementService::EngagementType
+                             engagement_type) override;
 
  private:
   Profile* profile_;
   bool off_the_record_;
   ukm::UkmBackgroundRecorderService* ukm_background_service_;
   // Same lifetime as |profile_|.
-  SiteEngagementService* site_engagement_service_;
+  site_engagement::SiteEngagementService* site_engagement_service_;
   std::set<url::Origin> suspended_periodic_sync_origins_;
 };
 

@@ -945,7 +945,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<security_interstitials::ConnectionHelpUI>;
   }
 
-  if (SiteEngagementService::IsEnabled() &&
+  if (site_engagement::SiteEngagementService::IsEnabled() &&
       url.host_piece() == chrome::kChromeUISiteEngagementHost) {
     return &NewWebUI<SiteEngagementUI>;
   }

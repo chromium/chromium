@@ -10,6 +10,9 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
+
+namespace site_engagement {
+
 class SiteEngagementService;
 
 // Singleton that owns all SiteEngagementServices and associates them with
@@ -40,5 +43,7 @@ class SiteEngagementServiceFactory : public BrowserContextKeyedServiceFactory {
 
   DISALLOW_COPY_AND_ASSIGN(SiteEngagementServiceFactory);
 };
+
+}  // namespace site_engagement
 
 #endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_SERVICE_FACTORY_H_

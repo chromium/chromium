@@ -19,10 +19,12 @@ class SiteEngagementUI : public ui::MojoWebUIController {
   // Instantiates the implementor of the mojom::SiteEngagementDetailsProvider
   // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<mojom::SiteEngagementDetailsProvider> receiver);
+      mojo::PendingReceiver<
+          site_engagement::mojom::SiteEngagementDetailsProvider> receiver);
 
  private:
-  std::unique_ptr<mojom::SiteEngagementDetailsProvider> ui_handler_;
+  std::unique_ptr<site_engagement::mojom::SiteEngagementDetailsProvider>
+      ui_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 

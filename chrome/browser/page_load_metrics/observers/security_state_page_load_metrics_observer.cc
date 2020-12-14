@@ -41,10 +41,11 @@ SecurityStatePageLoadMetricsObserver::MaybeCreateForProfile(
   // If the site engagement service is not enabled, this observer will not track
   // site engagement metrics, but will still track the security level and
   // navigation related metrics.
-  if (!SiteEngagementService::IsEnabled())
+  if (!site_engagement::SiteEngagementService::IsEnabled())
     return std::make_unique<SecurityStatePageLoadMetricsObserver>(nullptr);
-  auto* engagement_service = SiteEngagementServiceFactory::GetForProfile(
-      static_cast<Profile*>(profile));
+  auto* engagement_service =
+      site_engagement::SiteEngagementServiceFactory::GetForProfile(
+          static_cast<Profile*>(profile));
   return std::make_unique<SecurityStatePageLoadMetricsObserver>(
       engagement_service);
 }
@@ -82,7 +83,7 @@ std::string SecurityStatePageLoadMetricsObserver::
 }
 
 SecurityStatePageLoadMetricsObserver::SecurityStatePageLoadMetricsObserver(
-    SiteEngagementService* engagement_service)
+    site_engagement::SiteEngagementService* engagement_service)
     : content::WebContentsObserver(), engagement_service_(engagement_service) {}
 
 SecurityStatePageLoadMetricsObserver::~SecurityStatePageLoadMetricsObserver() =

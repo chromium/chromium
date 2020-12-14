@@ -1272,7 +1272,8 @@ TEST_F(UserActivityManagerTest, DISABLED_BasicTabs) {
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   const ukm::SourceId source_id1 = CreateTestWebContents(
       tab_strip_model, url1_, true /* is_active */, "application/pdf");
-  SiteEngagementService::Get(profile())->ResetBaseScoreForURL(url1_, 95);
+  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
+      url1_, 95);
 
   CreateTestWebContents(tab_strip_model, url2_, false /* is_active */);
 

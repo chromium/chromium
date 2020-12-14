@@ -18,6 +18,8 @@ namespace content {
 class NavigationHandle;
 }
 
+namespace site_engagement {
+
 // Per-WebContents class to handle updating the site engagement scores for
 // origins.
 class SiteEngagementService::Helper
@@ -172,5 +174,7 @@ class SiteEngagementService::Helper
   DISALLOW_COPY_AND_ASSIGN(Helper);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
+
+}  // namespace site_engagement
 
 #endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_HELPER_H_

@@ -622,8 +622,9 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<::mojom::OmniboxPageHandler,
                                          OmniboxUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<::mojom::SiteEngagementDetailsProvider,
-                                         SiteEngagementUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      site_engagement::mojom::SiteEngagementDetailsProvider, SiteEngagementUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<::mojom::UsbInternalsPageHandler,
                                          UsbInternalsUI>(map);

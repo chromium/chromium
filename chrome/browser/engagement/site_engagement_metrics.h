@@ -11,6 +11,8 @@
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "url/gurl.h"
 
+namespace site_engagement {
+
 namespace mojom {
 class SiteEngagementDetails;
 }
@@ -49,5 +51,7 @@ class SiteEngagementMetrics {
 
   static std::vector<std::string> GetEngagementBucketHistogramNames();
 };
+
+}  // namespace site_engagement
 
 #endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_METRICS_H_

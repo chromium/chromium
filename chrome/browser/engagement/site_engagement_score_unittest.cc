@@ -17,6 +17,8 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace site_engagement {
+
 namespace {
 
 const int kLessAccumulationsThanNeededToMaxDailyEngagement = 2;
@@ -482,3 +484,5 @@ TEST_F(SiteEngagementScoreTest, GetDetails) {
   EXPECT_LT(0.0, details.installed_bonus);
   EXPECT_DOUBLE_EQ(0.0, details.base_score);
 }
+
+}  // namespace site_engagement

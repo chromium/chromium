@@ -61,8 +61,9 @@ static void JNI_LaunchMetrics_RecordLaunch(
 
     // Tell the Site Engagement Service about this launch as sites recently
     // launched from a shortcut receive a boost to their engagement.
-    SiteEngagementService* service = SiteEngagementService::Get(
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(
+            Profile::FromBrowserContext(web_contents->GetBrowserContext()));
     service->SetLastShortcutLaunchTime(web_contents, url);
   }
 

@@ -89,7 +89,8 @@ class BudgetDatabaseTest : public ::testing::Test {
   }
 
   void SetSiteEngagementScore(double score) {
-    SiteEngagementService* service = SiteEngagementService::Get(&profile_);
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(&profile_);
     service->ResetBaseScoreForURL(GURL(kTestOrigin), score);
   }
 
@@ -124,7 +125,8 @@ TEST_F(BudgetDatabaseTest, AddEngagementBudgetTest) {
   // The budget should include kDefaultExpirationInDays days worth of
   // engagement.
   double daily_budget =
-      kMaxDailyBudget * (kEngagement / SiteEngagementScore::kMaxPoints);
+      kMaxDailyBudget *
+      (kEngagement / site_engagement::SiteEngagementScore::kMaxPoints);
   GetBudgetDetails();
   ASSERT_TRUE(success_);
   ASSERT_EQ(2U, prediction_.size());
@@ -180,7 +182,8 @@ TEST_F(BudgetDatabaseTest, SpendBudgetTest) {
   // There should still be three chunks of budget of size daily_budget-1,
   // daily_budget, and kDefaultExpirationInDays * daily_budget.
   double daily_budget =
-      kMaxDailyBudget * (kEngagement / SiteEngagementScore::kMaxPoints);
+      kMaxDailyBudget *
+      (kEngagement / site_engagement::SiteEngagementScore::kMaxPoints);
   ASSERT_EQ(4U, prediction_.size());
   ASSERT_DOUBLE_EQ((2 + kDefaultExpirationInDays) * daily_budget - 1,
                    prediction_[0].budget_at);
@@ -267,7 +270,7 @@ TEST_F(BudgetDatabaseTest, CheckBackgroundBudgetHistogram) {
   ASSERT_EQ(2U, buckets.size());
   // First bucket is for full award, which should have 2 entries.
   double full_award = kMaxDailyBudget * kEngagement /
-                      SiteEngagementScore::kMaxPoints *
+                      site_engagement::SiteEngagementScore::kMaxPoints *
                       kDefaultExpirationInDays;
   EXPECT_EQ(floor(full_award), buckets[0].min);
   EXPECT_EQ(2, buckets[0].count);
@@ -282,7 +285,8 @@ TEST_F(BudgetDatabaseTest, CheckEngagementHistograms) {
   // Manipulate the engagement so that the budget is twice the cost of an
   // action.
   double cost = 2;
-  double engagement = 2 * cost * SiteEngagementScore::kMaxPoints /
+  double engagement = 2 * cost *
+                      site_engagement::SiteEngagementScore::kMaxPoints /
                       kDefaultExpirationInDays / kMaxDailyBudget;
   SetSiteEngagementScore(engagement);
 

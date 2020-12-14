@@ -24,6 +24,8 @@ class Clock;
 
 class HostContentSettingsMap;
 
+namespace site_engagement {
+
 class SiteEngagementScore {
  public:
   // The parameters which can be varied via field trial.
@@ -240,5 +242,7 @@ class SiteEngagementScore {
 
   DISALLOW_COPY_AND_ASSIGN(SiteEngagementScore);
 };
+
+}  // namespace site_engagement
 
 #endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_SCORE_H_

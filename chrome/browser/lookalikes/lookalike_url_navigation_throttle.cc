@@ -328,9 +328,9 @@ bool LookalikeUrlNavigationThrottle::IsLookalikeUrl(
 
   // Ensure that this URL is not already engaged. We can't use the synchronous
   // SiteEngagementService::IsEngagementAtLeast as it has side effects. We check
-  // in PerformChecks to ensure we have up-to-date engaged_sites.
-  // This check ignores the scheme which is okay since it's more conservative:
-  // If the user is engaged with http://domain.test, not showing the warning on
+  // in PerformChecks to ensure we have up-to-date engaged_sites. This check
+  // ignores the scheme which is okay since it's more conservative: If the user
+  // is engaged with http://domain.test, not showing the warning on
   // https://domain.test is acceptable.
   const auto already_engaged =
       std::find_if(engaged_sites.begin(), engaged_sites.end(),

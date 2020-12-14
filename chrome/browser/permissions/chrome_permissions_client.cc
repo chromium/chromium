@@ -120,7 +120,7 @@ permissions::PermissionManager* ChromePermissionsClient::GetPermissionManager(
 double ChromePermissionsClient::GetSiteEngagementScore(
     content::BrowserContext* browser_context,
     const GURL& origin) {
-  return SiteEngagementService::Get(
+  return site_engagement::SiteEngagementService::Get(
              Profile::FromBrowserContext(browser_context))
       ->GetScore(origin);
 }
@@ -133,9 +133,10 @@ void ChromePermissionsClient::AreSitesImportant(
   // these sites to the user, we're just using them for our 'clear
   // unimportant' feature in ManageSpaceActivity.java.
   const int kMaxImportantSites = 10;
-  std::vector<ImportantSitesUtil::ImportantDomainInfo> important_domains =
-      ImportantSitesUtil::GetImportantRegisterableDomains(
-          Profile::FromBrowserContext(browser_context), kMaxImportantSites);
+  std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>
+      important_domains =
+          site_engagement::ImportantSitesUtil::GetImportantRegisterableDomains(
+              Profile::FromBrowserContext(browser_context), kMaxImportantSites);
 
   for (auto& entry : *origins) {
     const url::Origin& origin = entry.first;
@@ -148,7 +149,8 @@ void ChromePermissionsClient::AreSitesImportant(
       registerable_domain = host;  // IP address or internal hostname.
     auto important_domain_search =
         [&registerable_domain](
-            const ImportantSitesUtil::ImportantDomainInfo& item) {
+            const site_engagement::ImportantSitesUtil::ImportantDomainInfo&
+                item) {
           return item.registerable_domain == registerable_domain;
         };
     entry.second =

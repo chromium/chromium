@@ -82,7 +82,8 @@ class DurableStoragePermissionContextTest
     : public ChromeRenderViewHostTestHarness {
  protected:
   void MakeOriginImportant(const GURL& origin) {
-    ImportantSitesUtil::MarkOriginAsImportantForTesting(profile(), origin);
+    site_engagement::ImportantSitesUtil::MarkOriginAsImportantForTesting(
+        profile(), origin);
   }
 };
 

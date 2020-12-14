@@ -18,8 +18,11 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-class SecurityStateTabHelper;
+namespace site_engagement {
 class SiteEngagementService;
+}
+
+class SecurityStateTabHelper;
 
 // Tracks the SecurityLevel of the page from the time it commits to the time it
 // completes. This is uses to track metrics keyed on the SecurityLevel of the
@@ -46,7 +49,7 @@ class SecurityStatePageLoadMetricsObserver
       security_state::SafetyTipStatus safety_tip_status);
 
   explicit SecurityStatePageLoadMetricsObserver(
-      SiteEngagementService* engagement_service);
+      site_engagement::SiteEngagementService* engagement_service);
   ~SecurityStatePageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -63,7 +66,7 @@ class SecurityStatePageLoadMetricsObserver
 
  private:
   // If the SiteEngagementService does not exist, this will be null.
-  SiteEngagementService* engagement_service_ = nullptr;
+  site_engagement::SiteEngagementService* engagement_service_ = nullptr;
 
   SecurityStateTabHelper* security_state_tab_helper_ = nullptr;
   double initial_engagement_score_ = 0.0;

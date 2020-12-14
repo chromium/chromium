@@ -182,9 +182,10 @@ TEST_F(BackgroundSyncControllerImplTest, AllParamsSet) {
 TEST_F(BackgroundSyncControllerImplTest, OneShotSyncMultipleAttempts) {
   content::BackgroundSyncParameters sync_parameters;
   url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
-  SiteEngagementScore::SetParamValuesForTesting();
-  SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
-      GURL(kExampleUrl), SiteEngagementScore::GetHighEngagementBoundary());
+  site_engagement::SiteEngagementScore::SetParamValuesForTesting();
+  site_engagement::SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
+      GURL(kExampleUrl),
+      site_engagement::SiteEngagementScore::GetHighEngagementBoundary());
 
   base::TimeDelta delay = controller_->GetNextEventDelay(
       MakeBackgroundSyncRegistration(
@@ -211,9 +212,10 @@ TEST_F(BackgroundSyncControllerImplTest, OneShotSyncMultipleAttempts) {
 TEST_F(BackgroundSyncControllerImplTest, PeriodicSyncMultipleAttempts) {
   content::BackgroundSyncParameters sync_parameters;
   url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
-  SiteEngagementScore::SetParamValuesForTesting();
-  SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
-      GURL(kExampleUrl), SiteEngagementScore::GetHighEngagementBoundary());
+  site_engagement::SiteEngagementScore::SetParamValuesForTesting();
+  site_engagement::SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
+      GURL(kExampleUrl),
+      site_engagement::SiteEngagementScore::GetHighEngagementBoundary());
 
   base::TimeDelta delay = controller_->GetNextEventDelay(
       MakeBackgroundSyncRegistration(
@@ -247,9 +249,10 @@ TEST_F(BackgroundSyncControllerImplTest,
           min_gap_between_periodic_sync_events_ms,
           /*num_attempts= */ 0, blink::mojom::BackgroundSyncType::PERIODIC);
 
-  SiteEngagementScore::SetParamValuesForTesting();
-  SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
-      GURL(kExampleUrl), SiteEngagementScore::GetMediumEngagementBoundary());
+  site_engagement::SiteEngagementScore::SetParamValuesForTesting();
+  site_engagement::SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
+      GURL(kExampleUrl),
+      site_engagement::SiteEngagementScore::GetMediumEngagementBoundary());
 
   // Medium engagement.
   base::TimeDelta delay = controller_->GetNextEventDelay(
@@ -261,9 +264,9 @@ TEST_F(BackgroundSyncControllerImplTest,
           BackgroundSyncDelegateImpl::kEngagementLevelLowOrMediumPenalty));
 
   // Low engagement.
-  SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
+  site_engagement::SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
       GURL(kExampleUrl),
-      SiteEngagementScore::GetMediumEngagementBoundary() - 1);
+      site_engagement::SiteEngagementScore::GetMediumEngagementBoundary() - 1);
   delay = controller_->GetNextEventDelay(registration, &sync_parameters,
                                          base::TimeDelta::Max());
   EXPECT_EQ(
@@ -273,8 +276,8 @@ TEST_F(BackgroundSyncControllerImplTest,
           BackgroundSyncDelegateImpl::kEngagementLevelLowOrMediumPenalty));
 
   // Minimal engagement.
-  SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(GURL(kExampleUrl),
-                                                              0.5);
+  site_engagement::SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
+      GURL(kExampleUrl), 0.5);
   delay = controller_->GetNextEventDelay(registration, &sync_parameters,
                                          base::TimeDelta::Max());
   EXPECT_EQ(delay,
@@ -283,8 +286,8 @@ TEST_F(BackgroundSyncControllerImplTest,
                 BackgroundSyncDelegateImpl::kEngagementLevelMinimalPenalty));
 
   // No engagement.
-  SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(GURL(kExampleUrl),
-                                                              0);
+  site_engagement::SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
+      GURL(kExampleUrl), 0);
   delay = controller_->GetNextEventDelay(registration, &sync_parameters,
                                          base::TimeDelta::Max());
   EXPECT_EQ(delay, base::TimeDelta::Max());
@@ -293,9 +296,10 @@ TEST_F(BackgroundSyncControllerImplTest,
 TEST_F(BackgroundSyncControllerImplTest, MaxFrequencyForOrigin) {
   content::BackgroundSyncParameters sync_parameters;
   url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
-  SiteEngagementScore::SetParamValuesForTesting();
-  SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
-      GURL(kExampleUrl), SiteEngagementScore::GetHighEngagementBoundary());
+  site_engagement::SiteEngagementScore::SetParamValuesForTesting();
+  site_engagement::SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
+      GURL(kExampleUrl),
+      site_engagement::SiteEngagementScore::GetHighEngagementBoundary());
 
   // Periodic Sync: zero attempts.
   // |min_interval| < kMinGapBetweenPeriodicSyncEvents.
@@ -338,9 +342,10 @@ TEST_F(BackgroundSyncControllerImplTest, MaxFrequencyForOrigin) {
 TEST_F(BackgroundSyncControllerImplTest, CrossRegistrationLimitsForOrigin) {
   content::BackgroundSyncParameters sync_parameters;
   url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
-  SiteEngagementScore::SetParamValuesForTesting();
-  SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
-      GURL(kExampleUrl), SiteEngagementScore::GetHighEngagementBoundary());
+  site_engagement::SiteEngagementScore::SetParamValuesForTesting();
+  site_engagement::SiteEngagementService::Get(&profile_)->ResetBaseScoreForURL(
+      GURL(kExampleUrl),
+      site_engagement::SiteEngagementScore::GetHighEngagementBoundary());
 
   // Periodic Sync: zero attempts.
   // |min_interval| < kMinGapBetweenPeriodicSyncEvents.

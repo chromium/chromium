@@ -77,10 +77,11 @@ const char* HistogramEnumIndexToStr(int histogram_index) {
 
 using Histograms = std::bitset<kHistogramMaxValue>;
 
-void ExpectUniqueSamples(const base::HistogramTester& tester,
-                         const Histograms& histograms_mask,
-                         SiteEngagementService::EngagementType type,
-                         base::HistogramBase::Count count) {
+void ExpectUniqueSamples(
+    const base::HistogramTester& tester,
+    const Histograms& histograms_mask,
+    site_engagement::SiteEngagementService::EngagementType type,
+    base::HistogramBase::Count count) {
   for (int h = 0; h < kHistogramMaxValue; ++h) {
     if (histograms_mask[h]) {
       const char* histogram_name = HistogramEnumIndexToStr(h);
@@ -89,10 +90,11 @@ void ExpectUniqueSamples(const base::HistogramTester& tester,
   }
 }
 
-void ExpectBucketCounts(const base::HistogramTester& tester,
-                        const Histograms& histograms_mask,
-                        SiteEngagementService::EngagementType type,
-                        base::HistogramBase::Count count) {
+void ExpectBucketCounts(
+    const base::HistogramTester& tester,
+    const Histograms& histograms_mask,
+    site_engagement::SiteEngagementService::EngagementType type,
+    base::HistogramBase::Count count) {
   for (int h = 0; h < kHistogramMaxValue; ++h) {
     if (histograms_mask[h]) {
       const char* histogram_name = HistogramEnumIndexToStr(h);
@@ -166,9 +168,10 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
 
   void TestEngagementEventWebAppLaunch(const base::HistogramTester& tester,
                                        const Histograms& histograms) {
-    ExpectUniqueSamples(
-        tester, histograms,
-        SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH, 1);
+    ExpectUniqueSamples(tester, histograms,
+                        site_engagement::SiteEngagementService::
+                            ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH,
+                        1);
     ExpectTotalCounts(tester, ~histograms, 0);
   }
 
@@ -180,8 +183,8 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
 
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
-    SiteEngagementService* site_engagement_service =
-        SiteEngagementService::Get(browser->profile());
+    auto* site_engagement_service =
+        site_engagement::SiteEngagementService::Get(browser->profile());
 
     // Simulate 4 events of various types.
     site_engagement_service->HandleMediaPlaying(web_contents, false);
@@ -189,19 +192,23 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
     site_engagement_service->HandleNavigation(web_contents,
                                               ui::PAGE_TRANSITION_TYPED);
     site_engagement_service->HandleUserInput(
-        web_contents, SiteEngagementService::ENGAGEMENT_MOUSE);
+        web_contents, site_engagement::SiteEngagementService::ENGAGEMENT_MOUSE);
 
     ExpectTotalCounts(tester, histograms, 4);
     ExpectTotalCounts(tester, ~histograms, 0);
 
+    ExpectBucketCounts(
+        tester, histograms,
+        site_engagement::SiteEngagementService::ENGAGEMENT_MEDIA_VISIBLE, 1);
+    ExpectBucketCounts(
+        tester, histograms,
+        site_engagement::SiteEngagementService::ENGAGEMENT_MEDIA_HIDDEN, 1);
+    ExpectBucketCounts(
+        tester, histograms,
+        site_engagement::SiteEngagementService::ENGAGEMENT_NAVIGATION, 1);
     ExpectBucketCounts(tester, histograms,
-                       SiteEngagementService::ENGAGEMENT_MEDIA_VISIBLE, 1);
-    ExpectBucketCounts(tester, histograms,
-                       SiteEngagementService::ENGAGEMENT_MEDIA_HIDDEN, 1);
-    ExpectBucketCounts(tester, histograms,
-                       SiteEngagementService::ENGAGEMENT_NAVIGATION, 1);
-    ExpectBucketCounts(tester, histograms,
-                       SiteEngagementService::ENGAGEMENT_MOUSE, 1);
+                       site_engagement::SiteEngagementService::ENGAGEMENT_MOUSE,
+                       1);
   }
 
  protected:
@@ -347,9 +354,10 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, TwoApps) {
   histograms[kHistogramUserInstalled_InWindow] = true;
   histograms[kHistogramUpToThreeUserInstalledApps] = true;
 
-  ExpectUniqueSamples(tester, histograms,
-                      SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH,
-                      3);
+  ExpectUniqueSamples(
+      tester, histograms,
+      site_engagement::SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH,
+      3);
   ExpectTotalCounts(tester, ~histograms, 0);
   ExpectLaunchCounts(tester, /*windowLaunches=*/3, /*tabLaunches=*/0);
 }
@@ -391,9 +399,10 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
   histograms[kHistogramUserInstalled_InWindow] = true;
   histograms[kHistogramMoreThanThreeUserInstalledApps] = true;
 
-  ExpectUniqueSamples(tester, histograms,
-                      SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH,
-                      num_launches);
+  ExpectUniqueSamples(
+      tester, histograms,
+      site_engagement::SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH,
+      num_launches);
   ExpectTotalCounts(tester, ~histograms, 0);
   ExpectLaunchCounts(tester, /*windowLaunches=*/num_launches,
                      /*tabLaunches=*/0);

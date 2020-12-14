@@ -317,7 +317,8 @@ class SessionRestorePolicy {
 };
 
 // Abstracts away testing seams for the policy engine. In production code the
-// default implementation wraps to base::SysInfo and the SiteEngagementService.
+// default implementation wraps to base::SysInfo and the
+// site_engagement::SiteEngagementService.
 class SessionRestorePolicy::Delegate {
  public:
   Delegate();

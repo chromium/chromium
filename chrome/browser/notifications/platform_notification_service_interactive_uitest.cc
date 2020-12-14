@@ -91,7 +91,7 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
         std::make_unique<NotificationDisplayServiceTester>(
             browser()->profile());
 
-    SiteEngagementScore::SetParamValuesForTesting();
+    site_engagement::SiteEngagementScore::SetParamValuesForTesting();
     NavigateToTestPage(std::string("/") + kTestFileName);
   }
 
@@ -138,7 +138,8 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   }
 
   double GetEngagementScore(const GURL& origin) const {
-    return SiteEngagementService::Get(browser()->profile())->GetScore(origin);
+    return site_engagement::SiteEngagementService::Get(browser()->profile())
+        ->GetScore(origin);
   }
 
   GURL GetLastCommittedURL() const {

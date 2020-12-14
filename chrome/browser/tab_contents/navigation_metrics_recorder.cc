@@ -30,7 +30,7 @@
 NavigationMetricsRecorder::NavigationMetricsRecorder(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      site_engagement_service_(SiteEngagementService::Get(
+      site_engagement_service_(site_engagement::SiteEngagementService::Get(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
 #if defined(OS_ANDROID)
   // The site isolation synthetic field trial is only needed on Android, as on

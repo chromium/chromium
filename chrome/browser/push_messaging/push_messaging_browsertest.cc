@@ -170,7 +170,7 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
     content::SetupCrossSiteRedirector(https_server_.get());
     ASSERT_TRUE(https_server_->Start());
 
-    SiteEngagementScore::SetParamValuesForTesting();
+    site_engagement::SiteEngagementScore::SetParamValuesForTesting();
     InProcessBrowserTest::SetUp();
   }
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -350,8 +350,8 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
   PushMessagingServiceImpl* push_service() const { return push_service_; }
 
   void SetSiteEngagementScore(const GURL& url, double score) {
-    SiteEngagementService* service =
-        SiteEngagementService::Get(GetBrowser()->profile());
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(GetBrowser()->profile());
     service->ResetBaseScoreForURL(url, score);
     EXPECT_EQ(score, service->GetScore(url));
   }

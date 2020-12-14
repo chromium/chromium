@@ -28,6 +28,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
+namespace site_engagement {
+
 using ImportantDomainInfo = ImportantSitesUtil::ImportantDomainInfo;
 using content::DOMStorageContext;
 using storage::QuotaManager;
@@ -150,3 +152,5 @@ TEST_F(ImportantSitesUsageCounterTest, PopulateUsage) {
   EXPECT_EQ("somethingelse.com", domain_info()[1].registerable_domain);
   EXPECT_EQ(0, domain_info()[1].usage);
 }
+
+}  // namespace site_engagement

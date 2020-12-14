@@ -99,7 +99,7 @@ void PopulateTabFeaturesFromWebContents(content::WebContents* web_contents,
   tab_features->navigation_entry_count =
       web_contents->GetController().GetEntryCount();
 
-  if (SiteEngagementService::IsEnabled()) {
+  if (site_engagement::SiteEngagementService::IsEnabled()) {
     tab_features->site_engagement_score =
         TabMetricsLogger::GetSiteEngagementScore(web_contents);
   }
@@ -141,11 +141,12 @@ TabMetricsLogger::~TabMetricsLogger() = default;
 // static
 int TabMetricsLogger::GetSiteEngagementScore(
     content::WebContents* web_contents) {
-  if (!SiteEngagementService::IsEnabled())
+  if (!site_engagement::SiteEngagementService::IsEnabled())
     return -1;
 
-  SiteEngagementService* service = SiteEngagementService::Get(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   DCHECK(service);
 
   // Scores range from 0 to 100. Round down to a multiple of 10 to conform to

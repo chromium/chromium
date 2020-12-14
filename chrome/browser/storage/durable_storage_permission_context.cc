@@ -81,7 +81,7 @@ void DurableStoragePermissionContext::DecidePermission(
     registerable_domain = requesting_origin.host();
 
   std::set<std::string> installed_registerable_domains =
-      ImportantSitesUtil::GetInstalledRegisterableDomains(
+      site_engagement::ImportantSitesUtil::GetInstalledRegisterableDomains(
           Profile::FromBrowserContext(browser_context()));
   if (base::Contains(installed_registerable_domains, registerable_domain)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
@@ -91,9 +91,11 @@ void DurableStoragePermissionContext::DecidePermission(
   }
 
   const size_t kMaxImportantResults = 10;
-  std::vector<ImportantSitesUtil::ImportantDomainInfo> important_sites =
-      ImportantSitesUtil::GetImportantRegisterableDomains(
-          Profile::FromBrowserContext(browser_context()), kMaxImportantResults);
+  std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>
+      important_sites =
+          site_engagement::ImportantSitesUtil::GetImportantRegisterableDomains(
+              Profile::FromBrowserContext(browser_context()),
+              kMaxImportantResults);
 
   for (const auto& important_site : important_sites) {
     if (important_site.registerable_domain == registerable_domain) {

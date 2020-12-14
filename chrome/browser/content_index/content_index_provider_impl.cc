@@ -106,7 +106,8 @@ ContentIndexProviderImpl::ContentIndexProviderImpl(Profile* profile)
       aggregator_(
           OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey())),
       site_engagement_service_(
-          SiteEngagementServiceFactory::GetForProfile(profile)) {
+          site_engagement::SiteEngagementServiceFactory::GetForProfile(
+              profile)) {
   aggregator_->RegisterProvider(kProviderNamespace, this);
 }
 
@@ -367,7 +368,7 @@ OfflineItem ContentIndexProviderImpl::EntryToOfflineItem(
   if (site_engagement_service_) {
     item.content_quality_score =
         site_engagement_service_->GetScore(entry.launch_url.GetOrigin()) /
-        SiteEngagementScore::kMaxPoints;
+        site_engagement::SiteEngagementScore::kMaxPoints;
   }
 
   return item;

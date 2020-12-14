@@ -51,8 +51,9 @@ class LookalikeUrlService : public KeyedService {
   void SetClockForTesting(base::Clock* clock);
 
  private:
-  void OnFetchEngagedSites(EngagedSitesCallback callback,
-                           std::vector<mojom::SiteEngagementDetails> details);
+  void OnFetchEngagedSites(
+      EngagedSitesCallback callback,
+      std::vector<site_engagement::mojom::SiteEngagementDetails> details);
 
   Profile* profile_;
   base::Clock* clock_;

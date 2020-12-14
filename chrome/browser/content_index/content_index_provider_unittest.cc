@@ -66,8 +66,8 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
 std::unique_ptr<KeyedService> BuildTestSiteEngagementService(
     content::BrowserContext* context) {
   Profile* profile = static_cast<Profile*>(context);
-  std::unique_ptr<SiteEngagementService> service(
-      std::make_unique<SiteEngagementService>(profile));
+  std::unique_ptr<site_engagement::SiteEngagementService> service(
+      std::make_unique<site_engagement::SiteEngagementService>(profile));
   service->ResetBaseScoreForURL(Origin().GetURL(), kEngagementScore);
   return std::move(service);
 }
@@ -82,7 +82,7 @@ class ContentIndexProviderImplTest : public testing::Test,
     builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
                               base::BindRepeating(&BuildTestHistoryService));
     builder.AddTestingFactory(
-        SiteEngagementServiceFactory::GetInstance(),
+        site_engagement::SiteEngagementServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestSiteEngagementService));
 
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());

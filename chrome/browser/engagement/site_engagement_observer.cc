@@ -6,6 +6,8 @@
 
 #include "chrome/browser/engagement/site_engagement_service.h"
 
+namespace site_engagement {
+
 SiteEngagementObserver::SiteEngagementObserver(SiteEngagementService* service)
     : service_(nullptr) {
   Observe(service);
@@ -34,3 +36,5 @@ void SiteEngagementObserver::Observe(SiteEngagementService* service) {
   if (service_)
     service->AddObserver(this);
 }
+
+}  // namespace site_engagement

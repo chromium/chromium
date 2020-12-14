@@ -459,8 +459,8 @@ TEST_F(TabMetricsTest, TabMetrics) {
   }
 
   // Site engagement score should round down to the nearest 10.
-  SiteEngagementService::Get(profile())->ResetBaseScoreForURL(TestUrls()[1],
-                                                              45);
+  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
+      TestUrls()[1], 45);
   expected_metrics[TabManager_TabMetrics::kSiteEngagementScoreName] = 40;
 
   auto* audible_helper_2 =

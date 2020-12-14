@@ -10,6 +10,8 @@
 #include "chrome/browser/engagement/site_engagement_score.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 
+namespace site_engagement {
+
 namespace {
 
 // These numbers are used as suffixes for the
@@ -130,3 +132,5 @@ SiteEngagementMetrics::GetEngagementBucketHistogramNames() {
 
   return histogram_names;
 }
+
+}  // namespace site_engagement

@@ -198,8 +198,8 @@ bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto score =
-      SiteEngagementService::Get(profile)->GetScore(web_contents->GetURL());
+  auto score = site_engagement::SiteEngagementService::Get(profile)->GetScore(
+      web_contents->GetURL());
   return score > kIphSiteEngagementThresholdParam.Get() &&
          web_app::ShouldShowIph(profile->GetPrefs(), app_id);
 }

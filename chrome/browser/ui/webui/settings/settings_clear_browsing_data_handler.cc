@@ -166,15 +166,16 @@ void ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps(
   browsing_data::TimePeriod time_period =
       static_cast<browsing_data::TimePeriod>(period_selected);
 
-  auto installed_apps = ImportantSitesUtil::GetInstalledRegisterableDomains(
-      time_period, profile_, kMaxInstalledAppsToWarnOf);
+  auto installed_apps =
+      site_engagement::ImportantSitesUtil::GetInstalledRegisterableDomains(
+          time_period, profile_, kMaxInstalledAppsToWarnOf);
 
   OnGotInstalledApps(webui_callback_id, installed_apps);
 }
 
 void ClearBrowsingDataHandler::OnGotInstalledApps(
     const std::string& webui_callback_id,
-    const std::vector<ImportantSitesUtil::ImportantDomainInfo>&
+    const std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>&
         installed_apps) {
   base::ListValue installed_apps_list;
   for (const auto& info : installed_apps) {
@@ -221,9 +222,10 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
     }
   }
   if (!excluded_domains.empty() || !ignored_domains.empty()) {
-    ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
-        profile_->GetOriginalProfile(), excluded_domains,
-        excluded_domain_reasons, ignored_domains, ignored_domain_reasons);
+    site_engagement::ImportantSitesUtil::
+        RecordBlacklistedAndIgnoredImportantSites(
+            profile_->GetOriginalProfile(), excluded_domains,
+            excluded_domain_reasons, ignored_domains, ignored_domain_reasons);
   }
 
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder(

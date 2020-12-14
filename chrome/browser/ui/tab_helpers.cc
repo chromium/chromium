@@ -316,8 +316,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ReputationWebContentsObserver::CreateForWebContents(web_contents);
   SearchEngineTabHelper::CreateForWebContents(web_contents);
   SecurityStateTabHelper::CreateForWebContents(web_contents);
-  if (SiteEngagementService::IsEnabled())
-    SiteEngagementService::Helper::CreateForWebContents(web_contents);
+  if (site_engagement::SiteEngagementService::IsEnabled()) {
+    site_engagement::SiteEngagementService::Helper::CreateForWebContents(
+        web_contents);
+  }
   SoundContentSettingObserver::CreateForWebContents(web_contents);
   subresource_redirect::SubresourceRedirectObserver::MaybeCreateForWebContents(
       web_contents);
@@ -443,7 +445,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
   if (web_app::AreWebAppsEnabled(profile))
     web_app::WebAppTabHelper::CreateForWebContents(web_contents);
-  if (SiteEngagementService::IsEnabled())
+  if (site_engagement::SiteEngagementService::IsEnabled())
     web_app::WebAppMetrics::Get(profile);
 #endif
 

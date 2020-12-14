@@ -12,6 +12,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
 
+namespace site_engagement {
+
 using ImportantDomainInfo = ImportantSitesUtil::ImportantDomainInfo;
 
 // static
@@ -113,3 +115,5 @@ void ImportantSitesUsageCounter::Done() {
     delete this;
   }
 }
+
+}  // namespace site_engagement

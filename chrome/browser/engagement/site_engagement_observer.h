@@ -16,6 +16,8 @@ class WebContents;
 class GURL;
 class SiteEngagementService;
 
+namespace site_engagement {
+
 class SiteEngagementObserver {
  public:
   // Called when the engagement for |url| loaded in |web_contents| is changed
@@ -50,5 +52,7 @@ class SiteEngagementObserver {
 
   DISALLOW_COPY_AND_ASSIGN(SiteEngagementObserver);
 };
+
+}  // namespace site_engagement
 
 #endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_OBSERVER_H_

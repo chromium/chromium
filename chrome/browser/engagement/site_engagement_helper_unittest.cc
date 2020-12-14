@@ -25,6 +25,8 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
+namespace site_engagement {
+
 using content::NavigationSimulator;
 
 class SiteEngagementHelperTest : public ChromeRenderViewHostTestHarness {
@@ -650,3 +652,5 @@ TEST_F(SiteEngagementHelperTest, SingleTabNavigation) {
   EXPECT_TRUE(input_tracker_timer->IsRunning());
   EXPECT_FALSE(IsTrackingInput(helper));
 }
+
+}  // namespace site_engagement

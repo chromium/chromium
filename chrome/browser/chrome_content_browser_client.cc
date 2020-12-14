@@ -1146,8 +1146,8 @@ void MaybeRecordSameSiteCookieEngagementHistogram(
   content::BrowserContext* browser_context =
       WebContents::FromRenderFrameHost(render_frame_host)->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  SiteEngagementService* site_engagement_service =
-      SiteEngagementService::Get(profile);
+  auto* site_engagement_service =
+      site_engagement::SiteEngagementService::Get(profile);
   if (!site_engagement_service)
     return;
 

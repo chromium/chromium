@@ -45,7 +45,10 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
 
+namespace site_engagement {
+
 namespace {
+
 using bookmarks::BookmarkModel;
 using bookmarks::UrlAndTitle;
 using ImportantDomainInfo = ImportantSitesUtil::ImportantDomainInfo;
@@ -598,3 +601,5 @@ void ImportantSitesUtil::MarkOriginAsImportantForTesting(Profile* profile,
   DCHECK(site_engagement_service->IsEngagementAtLeast(
       origin, blink::mojom::EngagementLevel::MEDIUM));
 }
+
+}  // namespace site_engagement

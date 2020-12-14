@@ -219,7 +219,7 @@ AppBannerManager::GetInstallableWebAppCheckResultForTesting() {
 
 AppBannerManager::AppBannerManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      SiteEngagementObserver(SiteEngagementService::Get(
+      SiteEngagementObserver(site_engagement::SiteEngagementService::Get(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       state_(State::INACTIVE),
       manager_(webapps::InstallableManager::FromWebContents(web_contents)),
@@ -686,7 +686,7 @@ void AppBannerManager::OnEngagementEvent(
     content::WebContents* contents,
     const GURL& url,
     double score,
-    SiteEngagementService::EngagementType /*type*/) {
+    site_engagement::SiteEngagementService::EngagementType /*type*/) {
   // Only trigger a banner using site engagement if:
   //  1. engagement increased for the web contents which we are attached to; and
   //  2. there are no currently active media players; and

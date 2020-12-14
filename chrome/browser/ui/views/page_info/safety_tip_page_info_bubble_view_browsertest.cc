@@ -169,7 +169,7 @@ void CloseWarningIgnore(views::Widget::ClosedReason reason) {
 
 // Sets the absolute Site Engagement |score| for the testing origin.
 void SetEngagementScore(Browser* browser, const GURL& url, double score) {
-  SiteEngagementService::Get(browser->profile())
+  site_engagement::SiteEngagementService::Get(browser->profile())
       ->ResetBaseScoreForURL(url, score);
 }
 

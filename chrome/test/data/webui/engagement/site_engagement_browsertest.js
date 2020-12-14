@@ -23,8 +23,8 @@ SiteEngagementBrowserTest.prototype = {
   isAsync: true,
 
   testGenPreamble: function() {
-    GEN('SiteEngagementService* service =');
-    GEN('  SiteEngagementServiceFactory::GetForProfile(browser()->profile());');
+    GEN('site_engagement::SiteEngagementService* service =');
+    GEN('    site_engagement::SiteEngagementServiceFactory::GetForProfile(browser()->profile());');
     GEN('service->ResetBaseScoreForURL(GURL("' + EXAMPLE_URL_1 + '"), 10);');
     GEN('service->ResetBaseScoreForURL(GURL("' + EXAMPLE_URL_2 +
         '"), 3.14159);');

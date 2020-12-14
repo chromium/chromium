@@ -40,7 +40,6 @@ class WebAppMetricsFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
 };
 
 }  // namespace web_app

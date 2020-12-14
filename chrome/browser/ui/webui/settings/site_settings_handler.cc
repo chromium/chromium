@@ -235,8 +235,8 @@ void ConvertSiteGroupMapToListValue(
   DCHECK(profile);
   base::flat_set<std::string> installed_origins =
       GetInstalledAppOrigins(profile, registrar);
-  SiteEngagementService* engagement_service =
-      SiteEngagementService::Get(profile);
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile);
   for (const auto& entry : site_group_map) {
     // eTLD+1 is the effective top level domain + 1.
     base::Value site_group(base::Value::Type::DICTIONARY);

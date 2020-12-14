@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
+namespace site_engagement {
+
 // static
 SiteEngagementService* SiteEngagementServiceFactory::GetForProfile(
     Profile* profile) {
@@ -52,3 +54,5 @@ content::BrowserContext* SiteEngagementServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
+
+}  // namespace site_engagement

@@ -35,6 +35,8 @@
 // dashboard. The root cause is documented in the bug.
 #if !defined(OS_ANDROID)
 
+namespace site_engagement {
+
 namespace {
 using BookmarkModel = bookmarks::BookmarkModel;
 using ImportantDomainInfo = ImportantSitesUtil::ImportantDomainInfo;
@@ -467,5 +469,7 @@ TEST_F(ImportantSitesUtilTest, DialogBlacklisting) {
   // Dialog should be blacklisted.
   EXPECT_TRUE(ImportantSitesUtil::IsDialogDisabled(profile()));
 }
+
+}  // namespace site_engagement
 
 #endif  // !defined(OS_ANDROID)

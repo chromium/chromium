@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.engagement;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.profiles.Profile;
  * Site engagement measures the level of engagement that a user has with an origin. This class
  * allows Java to retrieve and modify engagement scores for URLs.
  */
+@JNINamespace("site_engagement")
 public class SiteEngagementService {
     /** Pointer to the native side SiteEngagementServiceAndroid shim. */
     private long mNativePointer;

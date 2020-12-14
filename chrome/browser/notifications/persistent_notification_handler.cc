@@ -123,7 +123,8 @@ void PersistentNotificationHandler::OnClick(
 
   // Notification clicks are considered a form of engagement with the |origin|,
   // thus we log the interaction with the Site Engagement service.
-  SiteEngagementService::Get(profile)->HandleNotificationInteraction(origin);
+  site_engagement::SiteEngagementService::Get(profile)
+      ->HandleNotificationInteraction(origin);
 
   content::NotificationEventDispatcher::GetInstance()
       ->DispatchNotificationClickEvent(

@@ -246,8 +246,8 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
 
   // Record the launch time in the site engagement service. A recent web
   // app launch will provide an engagement boost to the origin.
-  SiteEngagementService::Get(profile_)->SetLastShortcutLaunchTime(web_contents,
-                                                                  url);
+  site_engagement::SiteEngagementService::Get(profile_)
+      ->SetLastShortcutLaunchTime(web_contents, url);
   provider_->registry_controller().SetAppLastLaunchTime(params.app_id,
                                                         base::Time::Now());
   // Refresh the app banner added to homescreen event. The user may have

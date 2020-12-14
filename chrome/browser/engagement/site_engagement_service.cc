@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_helper.h"
 #include "chrome/browser/engagement/site_engagement_metrics.h"
 #include "chrome/browser/engagement/site_engagement_observer.h"
 #include "chrome/browser/engagement/site_engagement_score.h"
@@ -40,6 +39,8 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/engagement/site_engagement_service_android.h"
 #endif
+
+namespace site_engagement {
 
 namespace {
 
@@ -775,3 +776,5 @@ void SiteEngagementService::UpdateEngagementScores(
 
   SetLastEngagementTime(now);
 }
+
+}  // namespace site_engagement

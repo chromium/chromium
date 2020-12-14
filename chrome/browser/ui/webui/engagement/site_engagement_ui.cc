@@ -26,32 +26,37 @@
 
 namespace {
 
-// Implementation of mojom::SiteEngagementDetailsProvider that gets information
-// from the SiteEngagementService to provide data for the WebUI.
+// Implementation of site_engagement::mojom::SiteEngagementDetailsProvider that
+// gets information from the site_engagement::SiteEngagementService to provide
+// data for the WebUI.
 class SiteEngagementDetailsProviderImpl
-    : public mojom::SiteEngagementDetailsProvider {
+    : public site_engagement::mojom::SiteEngagementDetailsProvider {
  public:
   // Instance is deleted when the supplied pipe is destroyed.
   SiteEngagementDetailsProviderImpl(
       Profile* profile,
-      mojo::PendingReceiver<mojom::SiteEngagementDetailsProvider> receiver)
+      mojo::PendingReceiver<
+          site_engagement::mojom::SiteEngagementDetailsProvider> receiver)
       : profile_(profile), receiver_(this, std::move(receiver)) {
     DCHECK(profile_);
   }
 
   ~SiteEngagementDetailsProviderImpl() override {}
 
-  // mojom::SiteEngagementDetailsProvider overrides:
+  // site_engagement::mojom::SiteEngagementDetailsProvider overrides:
   void GetSiteEngagementDetails(
       GetSiteEngagementDetailsCallback callback) override {
-    SiteEngagementService* service = SiteEngagementService::Get(profile_);
-    std::vector<mojom::SiteEngagementDetails> scores = service->GetAllDetails();
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(profile_);
+    std::vector<site_engagement::mojom::SiteEngagementDetails> scores =
+        service->GetAllDetails();
 
-    std::vector<mojom::SiteEngagementDetailsPtr> engagement_info;
+    std::vector<site_engagement::mojom::SiteEngagementDetailsPtr>
+        engagement_info;
     engagement_info.reserve(scores.size());
     for (const auto& info : scores) {
-      mojom::SiteEngagementDetailsPtr origin_info(
-          mojom::SiteEngagementDetails::New());
+      site_engagement::mojom::SiteEngagementDetailsPtr origin_info(
+          site_engagement::mojom::SiteEngagementDetails::New());
       *origin_info = std::move(info);
       engagement_info.push_back(std::move(origin_info));
     }
@@ -62,11 +67,13 @@ class SiteEngagementDetailsProviderImpl
   void SetSiteEngagementBaseScoreForUrl(const GURL& origin,
                                         double score) override {
     if (!origin.is_valid() || score < 0 ||
-        score > SiteEngagementService::GetMaxPoints() || std::isnan(score)) {
+        score > site_engagement::SiteEngagementService::GetMaxPoints() ||
+        std::isnan(score)) {
       return;
     }
 
-    SiteEngagementService* service = SiteEngagementService::Get(profile_);
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(profile_);
     service->ResetBaseScoreForURL(origin, score);
   }
 
@@ -74,7 +81,8 @@ class SiteEngagementDetailsProviderImpl
   // The Profile* handed to us in our constructor.
   Profile* profile_;
 
-  mojo::Receiver<mojom::SiteEngagementDetailsProvider> receiver_;
+  mojo::Receiver<site_engagement::mojom::SiteEngagementDetailsProvider>
+      receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(SiteEngagementDetailsProviderImpl);
 };
@@ -101,7 +109,8 @@ WEB_UI_CONTROLLER_TYPE_IMPL(SiteEngagementUI)
 SiteEngagementUI::~SiteEngagementUI() {}
 
 void SiteEngagementUI::BindInterface(
-    mojo::PendingReceiver<mojom::SiteEngagementDetailsProvider> receiver) {
+    mojo::PendingReceiver<site_engagement::mojom::SiteEngagementDetailsProvider>
+        receiver) {
   ui_handler_ = std::make_unique<SiteEngagementDetailsProviderImpl>(
       Profile::FromWebUI(web_ui()), std::move(receiver));
 }

@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "url/gurl.h"
 
+namespace site_engagement {
+
 using base::android::JavaParamRef;
 
 // static
@@ -78,3 +80,5 @@ JNI_SiteEngagementService_SiteEngagementServiceForProfile(
   return base::android::ScopedJavaLocalRef<jobject>(
       SiteEngagementServiceAndroid::GetOrCreate(env, service));
 }
+
+}  // namespace site_engagement

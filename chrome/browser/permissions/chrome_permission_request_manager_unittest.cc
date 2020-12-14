@@ -74,8 +74,8 @@ class ChromePermissionRequestManagerTest
     url_ = GURL("http://www.google.com");
     NavigateAndCommit(url_);
 
-    SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
-        url_, kTestEngagementScore);
+    site_engagement::SiteEngagementService::Get(profile())
+        ->ResetBaseScoreForURL(url_, kTestEngagementScore);
 
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     manager_ =

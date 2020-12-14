@@ -86,11 +86,10 @@ double GetSiteEngagementScore(content::WebContents* contents) {
   auto* nav_entry = controller.GetEntryAtIndex(current_entry_index);
   DCHECK(nav_entry);
 
-  auto* engagement_svc = SiteEngagementService::Get(
+  auto* engagement_svc = site_engagement::SiteEngagementService::Get(
       Profile::FromBrowserContext(contents->GetBrowserContext()));
   return engagement_svc->GetDetails(nav_entry->GetURL()).total_score;
 }
-
 
 class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
  public:

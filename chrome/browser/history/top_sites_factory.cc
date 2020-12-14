@@ -125,7 +125,7 @@ TopSitesFactory::TopSitesFactory()
 
   // This dependency is only used when the experimental
   // kTopSitesFromSiteEngagement feature is active.
-  DependsOn(SiteEngagementServiceFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 
 TopSitesFactory::~TopSitesFactory() {

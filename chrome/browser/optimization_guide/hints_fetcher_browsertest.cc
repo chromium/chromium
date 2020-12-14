@@ -231,7 +231,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   // Seeds the Site Engagement Service with two HTTP and two HTTPS sites for the
   // current profile.
   void SeedSiteEngagementService() {
-    SiteEngagementService* service = SiteEngagementService::Get(
+    auto* service = site_engagement::SiteEngagementService::Get(
         Profile::FromBrowserContext(browser()
                                         ->tab_strip_model()
                                         ->GetActiveWebContents()
@@ -287,7 +287,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
   // Adds |host_count| HTTPS origins to site engagement service.
   void AddHostsToSiteEngagementService(size_t host_count) {
-    SiteEngagementService* service = SiteEngagementService::Get(
+    auto* service = site_engagement::SiteEngagementService::Get(
         Profile::FromBrowserContext(browser()
                                         ->tab_strip_model()
                                         ->GetActiveWebContents()
@@ -302,7 +302,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   // Returns the number of hosts known to the site engagement service. The value
   // is obtained by querying the site engagement service.
   size_t GetCountHostsKnownToSiteEngagementService() const {
-    SiteEngagementService* service = SiteEngagementService::Get(
+    auto* service = site_engagement::SiteEngagementService::Get(
         Profile::FromBrowserContext(browser()
                                         ->tab_strip_model()
                                         ->GetActiveWebContents()

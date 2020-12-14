@@ -152,9 +152,10 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
   }
 
   if (!excluding_domains.empty() || !ignoring_domains.empty()) {
-    ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
-        profile, excluding_domains, excluding_domain_reasons, ignoring_domains,
-        ignoring_domain_reasons);
+    site_engagement::ImportantSitesUtil::
+        RecordBlacklistedAndIgnoredImportantSites(
+            profile, excluding_domains, excluding_domain_reasons,
+            ignoring_domains, ignoring_domain_reasons);
   }
 
   base::OnceCallback<void(uint64_t)> callback = base::BindOnce(
@@ -201,15 +202,18 @@ static void JNI_BrowsingDataBridge_FetchImportantSites(
     const JavaParamRef<jobject>& java_callback) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_FetchImportantSites");
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-  std::vector<ImportantSitesUtil::ImportantDomainInfo> important_sites =
-      ImportantSitesUtil::GetImportantRegisterableDomains(
-          profile, ImportantSitesUtil::kMaxImportantSites);
-  bool dialog_disabled = ImportantSitesUtil::IsDialogDisabled(profile);
+  std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>
+      important_sites =
+          site_engagement::ImportantSitesUtil::GetImportantRegisterableDomains(
+              profile, site_engagement::ImportantSitesUtil::kMaxImportantSites);
+  bool dialog_disabled =
+      site_engagement::ImportantSitesUtil::IsDialogDisabled(profile);
 
   std::vector<std::string> important_domains;
   std::vector<int32_t> important_domain_reasons;
   std::vector<std::string> important_domain_examples;
-  for (const ImportantSitesUtil::ImportantDomainInfo& info : important_sites) {
+  for (const site_engagement::ImportantSitesUtil::ImportantDomainInfo& info :
+       important_sites) {
     important_domains.push_back(info.registerable_domain);
     important_domain_reasons.push_back(info.reason_bitfield);
     important_domain_examples.push_back(info.example_origin.spec());
@@ -229,7 +233,7 @@ static void JNI_BrowsingDataBridge_FetchImportantSites(
 
 // This value should not change during a sessions, as it's used for UMA metrics.
 static jint JNI_BrowsingDataBridge_GetMaxImportantSites(JNIEnv* env) {
-  return ImportantSitesUtil::kMaxImportantSites;
+  return site_engagement::ImportantSitesUtil::kMaxImportantSites;
 }
 
 static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
@@ -238,7 +242,7 @@ static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
     const JavaParamRef<jstring>& jorigin) {
   GURL origin(base::android::ConvertJavaStringToUTF8(jorigin));
   CHECK(origin.is_valid());
-  ImportantSitesUtil::MarkOriginAsImportantForTesting(
+  site_engagement::ImportantSitesUtil::MarkOriginAsImportantForTesting(
       ProfileAndroid::FromProfileAndroid(jprofile), origin);
 }
 

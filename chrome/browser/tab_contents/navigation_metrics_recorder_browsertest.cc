@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
   histograms.ExpectBucketCount("Navigation.MainFrame.SiteEngagementLevel",
                                blink::mojom::EngagementLevel::NONE, 1);
 
-  SiteEngagementService::Get(browser()->profile())
+  site_engagement::SiteEngagementService::Get(browser()->profile())
       ->ResetBaseScoreForURL(url, kHighEngagementScore);
   ui_test_utils::NavigateToURL(browser(), url);
   histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 2);
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
   // Submit a form and check the histograms. Before doing so, we set a high site
   // engagement score so that a single form submission doesn't affect the score
   // much.
-  SiteEngagementService::Get(browser()->profile())
+  site_engagement::SiteEngagementService::Get(browser()->profile())
       ->ResetBaseScoreForURL(url, kHighEngagementScore);
   base::HistogramTester histograms;
   content::TestNavigationObserver observer(web_contents);
@@ -125,14 +125,14 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(
       embedded_test_server()->GetURL("/password/password_form.html"));
-  SiteEngagementService::Get(browser()->profile())
+  site_engagement::SiteEngagementService::Get(browser()->profile())
       ->ResetBaseScoreForURL(url, kHighEngagementScore);
   ui_test_utils::NavigateToURL(browser(), url);
 
   // Submit a form and check the histograms. Before doing so, we set a high site
   // engagement score so that a single form submission doesn't affect the score
   // much.
-  SiteEngagementService::Get(browser()->profile())
+  site_engagement::SiteEngagementService::Get(browser()->profile())
       ->ResetBaseScoreForURL(url, kHighEngagementScore);
 
   // Setup handlers:

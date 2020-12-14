@@ -166,7 +166,7 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
 
   void SetUpOnMainThread() override {
     AppBannerSettingsHelper::SetTotalEngagementToTrigger(10);
-    SiteEngagementScore::SetParamValuesForTesting();
+    site_engagement::SiteEngagementScore::SetParamValuesForTesting();
 
     // Make sure app banners are disabled in the browser, otherwise they will
     // interfere with the test.
@@ -189,8 +189,8 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
                          expected_code_for_histogram) {
     base::HistogramTester histograms;
 
-    SiteEngagementService* service =
-        SiteEngagementService::Get(browser->profile());
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(browser->profile());
     service->ResetBaseScoreForURL(url, 10);
 
     // Spin the run loop and wait for the manager to finish.
@@ -447,8 +447,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerNotCreated) {
       CreateAppBannerManager(browser()));
   base::HistogramTester histograms;
 
-  SiteEngagementService* service =
-      SiteEngagementService::Get(browser()->profile());
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(browser()->profile());
   GURL test_url = GetBannerURL();
   service->ResetBaseScoreForURL(test_url, 10);
 
@@ -472,8 +472,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerCancelled) {
       CreateAppBannerManager(browser()));
   base::HistogramTester histograms;
 
-  SiteEngagementService* service =
-      SiteEngagementService::Get(browser()->profile());
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(browser()->profile());
 
   // Explicitly call preventDefault(), but don't call prompt().
   GURL test_url = GetBannerURLWithAction("cancel_prompt");
@@ -501,8 +501,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
       CreateAppBannerManager(browser()));
   base::HistogramTester histograms;
 
-  SiteEngagementService* service =
-      SiteEngagementService::Get(browser()->profile());
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(browser()->profile());
   GURL test_url = GetBannerURLWithAction("stash_event");
   service->ResetBaseScoreForURL(test_url, 10);
 
@@ -530,8 +530,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
       CreateAppBannerManager(browser()));
   base::HistogramTester histograms;
 
-  SiteEngagementService* service =
-      SiteEngagementService::Get(browser()->profile());
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(browser()->profile());
   GURL test_url = GetBannerURLWithAction("stash_event");
   service->ResetBaseScoreForURL(test_url, 0);
 
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   // manager to end up waiting for prompt to be called.
   TriggerBannerFlow(
       browser(), manager.get(),
-      base::BindOnce(&SiteEngagementService::HandleNavigation,
+      base::BindOnce(&site_engagement::SiteEngagementService::HandleNavigation,
                      base::Unretained(service),
                      browser()->tab_strip_model()->GetActiveWebContents(),
                      ui::PageTransition::PAGE_TRANSITION_TYPED),
@@ -568,8 +568,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerReprompt) {
       CreateAppBannerManager(browser()));
   base::HistogramTester histograms;
 
-  SiteEngagementService* service =
-      SiteEngagementService::Get(browser()->profile());
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(browser()->profile());
   GURL test_url = GetBannerURLWithAction("stash_event");
   service->ResetBaseScoreForURL(test_url, 10);
 
@@ -705,8 +705,8 @@ IN_PROC_BROWSER_TEST_F(
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
 
-  SiteEngagementService* service =
-      SiteEngagementService::Get(browser()->profile());
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(browser()->profile());
   GURL test_url = GetBannerURLWithAction("stash_event");
   service->ResetBaseScoreForURL(test_url, 10);
 

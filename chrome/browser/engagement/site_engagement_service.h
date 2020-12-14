@@ -45,6 +45,9 @@ class WebAppEngagementBrowserTest;
 class GURL;
 class HostContentSettingsMap;
 class Profile;
+
+namespace site_engagement {
+
 class SiteEngagementObserver;
 class SiteEngagementScore;
 
@@ -358,5 +361,7 @@ class SiteEngagementService : public KeyedService,
 
   DISALLOW_COPY_AND_ASSIGN(SiteEngagementService);
 };
+
+}  // namespace site_engagement
 
 #endif  // CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_SERVICE_H_

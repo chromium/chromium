@@ -23,6 +23,8 @@ namespace storage {
 class QuotaManager;
 }
 
+namespace site_engagement {
+
 // A helper class for important storage that retrieves the localstorage and
 // quota usage for each domain in |ImportantDomainInfo|, populates
 // |ImportantDomainInfo::usage| in the |sites| entries and return the result via
@@ -77,5 +79,7 @@ class ImportantSitesUsageCounter {
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(ImportantSitesUsageCounter);
 };
+
+}  // namespace site_engagement
 
 #endif  // CHROME_BROWSER_ENGAGEMENT_IMPORTANT_SITES_USAGE_COUNTER_H_

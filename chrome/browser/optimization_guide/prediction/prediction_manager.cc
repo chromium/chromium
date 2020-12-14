@@ -403,8 +403,8 @@ base::Optional<float> PredictionManager::GetValueForClientFeature(
     case proto::CLIENT_MODEL_FEATURE_SITE_ENGAGEMENT_SCORE: {
       Profile* profile = Profile::FromBrowserContext(
           navigation_handle->GetWebContents()->GetBrowserContext());
-      SiteEngagementService* engagement_service =
-          SiteEngagementService::Get(profile);
+      site_engagement::SiteEngagementService* engagement_service =
+          site_engagement::SiteEngagementService::Get(profile);
       // Precision loss is acceptable/expected for prediction models.
       value = static_cast<float>(
           engagement_service->GetScore(navigation_handle->GetURL()));

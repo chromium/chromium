@@ -54,7 +54,7 @@ namespace banners {
 // TODO(https://crbug.com/930612): Refactor this into several simpler classes.
 class AppBannerManager : public content::WebContentsObserver,
                          public blink::mojom::AppBannerService,
-                         public SiteEngagementObserver {
+                         public site_engagement::SiteEngagementObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -330,10 +330,11 @@ class AppBannerManager : public content::WebContentsObserver,
   void WebContentsDestroyed() override;
 
   // SiteEngagementObserver overrides.
-  void OnEngagementEvent(content::WebContents* web_contents,
-                         const GURL& url,
-                         double score,
-                         SiteEngagementService::EngagementType type) override;
+  void OnEngagementEvent(
+      content::WebContents* web_contents,
+      const GURL& url,
+      double score,
+      site_engagement::SiteEngagementService::EngagementType type) override;
 
   // Subclass accessors for private fields which should not be changed outside
   // this class.

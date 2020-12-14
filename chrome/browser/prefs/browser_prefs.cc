@@ -838,7 +838,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   HostContentSettingsMap::RegisterProfilePrefs(registry);
   HttpsImageCompressionInfoBarDecider::RegisterProfilePrefs(registry);
   image_fetcher::ImageCache::RegisterProfilePrefs(registry);
-  ImportantSitesUtil::RegisterProfilePrefs(registry);
+  site_engagement::ImportantSitesUtil::RegisterProfilePrefs(registry);
   IncognitoModePrefs::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   lookalikes::RegisterProfilePrefs(registry);

@@ -30,7 +30,7 @@ ContentIndexProviderFactory::ContentIndexProviderFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(OfflineContentAggregatorFactory::GetInstance());
   DependsOn(ukm::UkmBackgroundRecorderFactory::GetInstance());
-  DependsOn(SiteEngagementServiceFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 
 ContentIndexProviderFactory::~ContentIndexProviderFactory() = default;

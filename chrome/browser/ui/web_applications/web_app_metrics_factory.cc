@@ -29,7 +29,7 @@ WebAppMetricsFactory::WebAppMetricsFactory()
     : BrowserContextKeyedServiceFactory(
           "WebAppMetrics",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(SiteEngagementServiceFactory::GetInstance());
+  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
   DependsOn(WebAppProviderFactory::GetInstance());
 }
 

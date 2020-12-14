@@ -188,7 +188,7 @@ TEST_F(TabMetricsLoggerTest, GetNavigationEntryCount) {
 // Tests site_engagement_score.
 TEST_F(TabMetricsLoggerTest, GetSiteEngagementScore) {
   EXPECT_EQ(CurrentTabFeatures().site_engagement_score, 0);
-  SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
+  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
       GURL(kChromiumUrl), 91);
   EXPECT_EQ(CurrentTabFeatures().site_engagement_score, 90);
 }
@@ -255,7 +255,7 @@ TEST_F(TabMetricsLoggerTest, GetTabFeatures) {
   tab_activity_simulator.Navigate(bg_contents, GURL(kChromiumUrl),
                                   page_transition);
   tab_strip_model->SetTabPinned(1, true);
-  SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
+  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
       GURL(kChromiumUrl), 91);
 
   {

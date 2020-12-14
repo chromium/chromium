@@ -1119,8 +1119,8 @@ UkmPageLoadMetricsObserver::GetRoundedSiteEngagementScore() const {
     return base::nullopt;
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
-  SiteEngagementService* engagement_service =
-      SiteEngagementService::Get(profile);
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile);
 
   // UKM privacy requires the engagement score be rounded to nearest
   // value of 10.
