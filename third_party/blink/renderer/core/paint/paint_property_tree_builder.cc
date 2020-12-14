@@ -991,7 +991,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
 }
 
 static bool MayNeedClipPathClip(const LayoutObject& object) {
-  return !object.IsText() && object.StyleRef().ClipPath();
+  // We only apply clip-path if the LayoutObject has a layer or is an SVG
+  // child. See NeedsEffect() for additional information on the former.
+  return !object.IsText() && object.StyleRef().ClipPath() &&
+         (object.HasLayer() || object.IsSVGChild());
 }
 
 static bool NeedsClipPathClip(const LayoutObject& object) {
