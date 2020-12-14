@@ -20,7 +20,7 @@
     <color name="modern_grey_50" tools:ignore="UnusedResources">#F8F9FA</color>
     <color name="modern_grey_100">#F1F3F4</color>
     <color name="modern_grey_100_alpha_38">#61F1F3F4</color>
-    <color name="modern_grey_200" tools:ignore="UnusedResources">#E8EAED</color>
+    <color name="modern_grey_200">#E8EAED</color>
     <color name="modern_grey_200_alpha_38" tools:ignore="UnusedResources">#61E8EAED</color>
     <color name="modern_grey_300">#DADCE0</color>
     <color name="modern_grey_300_alpha_38">#61DADCE0</color>
