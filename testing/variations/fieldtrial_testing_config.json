@@ -5288,7 +5288,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
+                    "name": "Enabled_20201211",
                     "disable_features": [
                         "PaintHoldingCrossOrigin"
                     ]
