@@ -230,7 +230,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     /* package */ void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {
-        mLocationBarLayout.onSuggestionsChanged();
         // TODO (https://crbug.com/1152501): Refactor the LBM/LBC relationship such that LBM doesn't
         // need to communicate with other coordinators like this.
         mStatusCoordinator.onDefaultMatchClassified(defaultMatchIsSearch);
@@ -239,7 +238,13 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             mUrlCoordinator.setAutocompleteText(userText, autocompleteText);
         }
 
-        mLocationBarLayout.onSuggestionsChanged();
+        // Handle the case where suggestions (in particular zero suggest) are received without the
+        // URL focusing happening.
+        if (mLocationBarLayout.isUrlBarFocusedWithoutAnimations()
+                && mLocationBarLayout.isUrlBarFocused()) {
+            mLocationBarLayout.handleUrlFocusAnimation(/*hasFocus=*/true);
+        }
+
         if (mNativeInitialized
                 && !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_INSTANT)
                 && mPrivacyPreferencesManager.shouldPrerender()
@@ -248,10 +253,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
                     mAutocompleteCoordinator.getCurrentNativeAutocompleteResult(),
                     mProfileSupplier.get(), mLocationBarDataProvider.getTab());
         }
-    }
-
-    /* package */ void onSuggestionsHidden() {
-        mLocationBarLayout.onSuggestionsHidden();
     }
 
     /* package */ void loadUrl(String url, int transition, long inputStart) {

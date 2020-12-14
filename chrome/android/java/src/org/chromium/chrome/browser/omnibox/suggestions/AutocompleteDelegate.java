@@ -25,11 +25,6 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
     void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch);
 
     /**
-     * Notified that the suggestions have been hidden.
-     */
-    void onSuggestionsHidden();
-
-    /**
      * Requests the keyboard visibility update.
      *
      * @param shouldShow When true, keyboard should be made visible.

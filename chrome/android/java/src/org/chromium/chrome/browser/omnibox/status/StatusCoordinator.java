@@ -252,11 +252,6 @@ public class StatusCoordinator implements View.OnClickListener {
         mMediator.setShowIconsWhenUrlFocused(showIconsWithUrlFocused);
     }
 
-    /** Specify whether suggestion for URL bar is a search action. */
-    public void setFirstSuggestionIsSearchType(boolean firstSuggestionIsSearchQuery) {
-        mMediator.setFirstSuggestionIsSearchType(firstSuggestionIsSearchQuery);
-    }
-
     /** Update information required to display the search engine icon. */
     public void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
             boolean isSearchEngineGoogle, String searchEngineUrl) {

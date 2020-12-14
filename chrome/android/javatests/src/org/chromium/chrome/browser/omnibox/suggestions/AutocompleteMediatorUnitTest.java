@@ -94,9 +94,6 @@ public class AutocompleteMediatorUnitTest {
         public void onSuggestionsChanged(String autocompleteText, boolean defaultMatchIsSearch) {}
 
         @Override
-        public void onSuggestionsHidden() {}
-
-        @Override
         public void setKeyboardVisibility(boolean shouldShow, boolean delayHide) {}
 
         @Override

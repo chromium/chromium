@@ -303,11 +303,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     }
 
     @Override
-    public void onSuggestionsHidden() {
-        mLocationBarMediator.onSuggestionsHidden();
-    }
-
-    @Override
     public void setKeyboardVisibility(boolean shouldShow, boolean delayHide) {
         mUrlCoordinator.setKeyboardVisibility(shouldShow, delayHide);
     }
@@ -414,9 +409,16 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarMediator.setUnfocusedWidth(unfocusedWidth);
     }
 
-    /** Returns the {@link StatusCoordiantor} for the LocationBar. */
+    /** Returns the {@link StatusCoordinator} for the LocationBar. */
     public StatusCoordinator getStatusCoordinator() {
         return mStatusCoordinator;
+    }
+
+    /**
+     * @param focusable Whether the url bar should be focusable.
+     */
+    public void setUrlBarFocusable(boolean focusable) {
+        mUrlCoordinator.setAllowFocus(focusable);
     }
 
     public void setVoiceRecognitionHandlerForTesting(

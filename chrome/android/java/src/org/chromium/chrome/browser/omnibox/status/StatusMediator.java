@@ -58,7 +58,6 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     private final PropertyModel mModel;
     private boolean mDarkTheme;
     private boolean mUrlHasFocus;
-    private boolean mFirstSuggestionIsSearchQuery;
     private boolean mVerboseStatusSpaceAvailable;
     private boolean mPageIsPreview;
     private boolean mPageIsPaintPreview;
@@ -341,14 +340,6 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     }
 
     /**
-     * Reports whether the first omnibox suggestion is a search query.
-     */
-    void setFirstSuggestionIsSearchType(boolean firstSuggestionIsSearchQuery) {
-        mFirstSuggestionIsSearchQuery = firstSuggestionIsSearchQuery;
-        updateLocationBarIcon();
-    }
-
-    /**
      * Specify minimum width of an URL field.
      */
     void setUrlMinWidth(int width) {
@@ -487,8 +478,8 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
         mIsSecurityButtonShown = false;
         if (mUrlHasFocus) {
             if (mShowStatusIconWhenUrlFocused) {
-                icon = mFirstSuggestionIsSearchQuery ? R.drawable.ic_suggestion_magnifier
-                                                     : R.drawable.ic_globe_24dp;
+                icon = mUrlBarTextIsSearch ? R.drawable.ic_suggestion_magnifier
+                                           : R.drawable.ic_globe_24dp;
                 tint = mNavigationIconTintRes;
             }
         } else if (mSecurityIconRes != 0) {

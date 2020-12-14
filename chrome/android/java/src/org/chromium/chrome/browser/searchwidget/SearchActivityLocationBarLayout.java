@@ -66,7 +66,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
                 locationBarDataProvider, windowDelegate, windowAndroid, voiceRecognitionHandler,
                 assistantVoiceSearchServiceSupplier);
-        setUrlBarFocusable(true);
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
                 mPendingSearchPromoDecision);

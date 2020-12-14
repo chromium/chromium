@@ -59,11 +59,6 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
         mLocationBarPhone.finishUrlFocusChange(hasFocus, shouldShowKeyboard);
     }
 
-    /** Sets whether the url bar should be focusable. */
-    public void setUrlBarFocusable(boolean focusable) {
-        mLocationBarPhone.setUrlBarFocusable(focusable);
-    }
-
     /**
      * Returns {@link FrameLayout.LayoutParams} of the LocationBar view.
      *

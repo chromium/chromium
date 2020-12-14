@@ -224,12 +224,15 @@ public class LocationBarMediatorTest {
         doReturn(456L).when(mAutocompleteCoordinator).getCurrentNativeAutocompleteResult();
         doReturn("text").when(mUrlCoordinator).getTextWithoutAutocomplete();
         doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
+        doReturn(true).when(mLocationBarLayout).isUrlBarFocusedWithoutAnimations();
+        doReturn(true).when(mLocationBarLayout).isUrlBarFocused();
 
         mMediator.onSuggestionsChanged("textWithAutocomplete", true);
         verify(mPrerenderJni)
                 .prerenderMaybe(123L, omniboxPrerenderCaptor.getValue(), "text", "originalUrl",
                         456L, profile, mTab);
         verify(mUrlCoordinator).setAutocompleteText("text", "textWithAutocomplete");
+        verify(mLocationBarLayout).handleUrlFocusAnimation(true);
     }
 
     @Test

@@ -234,20 +234,6 @@ class LocationBarTablet extends LocationBarLayout {
     }
 
     @Override
-    void onSuggestionsHidden() {
-        super.onSuggestionsHidden();
-        mStatusCoordinator.setFirstSuggestionIsSearchType(false);
-    }
-
-    @Override
-    void onSuggestionsChanged() {
-        super.onSuggestionsChanged();
-        mStatusCoordinator.setFirstSuggestionIsSearchType(
-                mAutocompleteCoordinator.getSuggestionCount() > 0
-                && mAutocompleteCoordinator.getSuggestionAt(0).isSearchSuggestion());
-    }
-
-    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int measuredWidth = getMeasuredWidth();
 

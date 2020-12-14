@@ -224,16 +224,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         mStatusCoordinator.setLocationBarDataProviderForTesting(locationBarDataProvider);
     }
 
-    /* package */ void onSuggestionsHidden() {}
-
-    /* package */ void onSuggestionsChanged() {
-        // Handle the case where suggestions (in particular zero suggest) are received without the
-        // URL focusing happening.
-        if (mUrlFocusedWithoutAnimations && mUrlHasFocus) {
-            handleUrlFocusAnimation(mUrlHasFocus);
-        }
-    }
-
     @Override
     protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
         // Don't restore the state of the location bar, it can lead to all kind of bad states with
@@ -437,20 +427,6 @@ public class LocationBarLayout extends FrameLayout implements OnClickListener {
         setUrlBarText(mLocationBarDataProvider.getUrlBarData(), UrlBar.ScrollType.SCROLL_TO_TLD,
                 SelectionState.SELECT_ALL);
         if (!mLocationBarDataProvider.hasTab()) return;
-    }
-
-    /* package */ void setOmniboxEditingText(String text) {
-        mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(text), UrlBar.ScrollType.NO_SCROLL,
-                UrlBarCoordinator.SelectionState.SELECT_END);
-        updateButtonVisibility();
-    }
-
-    /**
-     * @param focusable Whether the url bar should be focusable.
-     */
-    public void setUrlBarFocusable(boolean focusable) {
-        if (mUrlCoordinator == null) return;
-        mUrlCoordinator.setAllowFocus(focusable);
     }
 
     @CallSuper

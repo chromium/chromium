@@ -181,6 +181,7 @@ public class SearchActivity extends AsyncInitializationActivity
                     loadUrl(url, transition, postDataType, postData);
                     return true;
                 });
+        mLocationBarCoordinator.setUrlBarFocusable(true);
 
         // Kick off everything needed for the user to type into the box.
         beginQuery();
