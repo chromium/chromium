@@ -18,8 +18,7 @@
   TestRunner.addResult('Network Item View: ' + (panel._networkItemView && panel._networkItemView.isShowing()));
 
   TestRunner.addResult('Hiding request');
-  eventSender.keyDown('Escape');
-  await TestRunner.addSnifferPromise(Network.NetworkPanel.ActionDelegate.prototype, 'handleAction')
+  panel._hideRequestPanel();
   TestRunner.addResult('Network Item View: ' + (panel._networkItemView && panel._networkItemView.isShowing()));
 
   TestRunner.completeTest();
