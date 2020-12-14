@@ -47,6 +47,8 @@ constexpr struct {
     {0x056e, 0x0159},  // Elecom Blue LED Mouse 203
     {0x05e0, 0x1200},  // Zebra LS2208 barcode scanner
     {0x0c45, 0x7403},  // RDing FootSwitch1F1
+    {0x1050, 0x0010},  // Yubico.com Yubikey
+    {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
 };
 
