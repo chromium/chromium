@@ -107,7 +107,7 @@ class BaseSearchPrefetchRequest {
   SearchPrefetchStatus current_status_ = SearchPrefetchStatus::kNotStarted;
 
   // The URL to prefetch the search terms from.
-  const GURL prefetch_url_;
+  GURL prefetch_url_;
 
   // Called when there is a network/server error on the prefetch request.
   base::OnceClosure report_error_callback_;

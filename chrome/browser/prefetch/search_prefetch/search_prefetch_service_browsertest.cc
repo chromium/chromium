@@ -173,6 +173,70 @@ class AddHeaderContentBrowserClient : public ChromeContentBrowserClient {
   }
 };
 
+// A delegate to add a custom header to prefetches.
+class AddQueryParamModifyingThrottle : public blink::URLLoaderThrottle {
+ public:
+  AddQueryParamModifyingThrottle() = default;
+  ~AddQueryParamModifyingThrottle() override = default;
+
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override {
+    request->url =
+        net::AppendOrReplaceQueryParameter(request->url, "fakeparam", "0");
+  }
+};
+
+class AddQueryParamContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  AddQueryParamContentBrowserClient() = default;
+  ~AddQueryParamContentBrowserClient() override = default;
+
+  // ContentBrowserClient overrides:
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override {
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+    throttles.push_back(std::make_unique<AddQueryParamModifyingThrottle>());
+    return throttles;
+  }
+};
+
+// A delegate to add a custom header to prefetches.
+class ChangeQueryModifyingThrottle : public blink::URLLoaderThrottle {
+ public:
+  ChangeQueryModifyingThrottle() = default;
+  ~ChangeQueryModifyingThrottle() override = default;
+
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override {
+    request->url =
+        net::AppendOrReplaceQueryParameter(request->url, "q", "modifiedsearch");
+  }
+};
+
+class ChangeQueryContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  ChangeQueryContentBrowserClient() = default;
+  ~ChangeQueryContentBrowserClient() override = default;
+
+  // ContentBrowserClient overrides:
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override {
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+    throttles.push_back(std::make_unique<ChangeQueryModifyingThrottle>());
+    return throttles;
+  }
+};
+
 class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
  public:
   SearchPrefetchBaseBrowserTest() {
@@ -738,6 +802,59 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       base::ASCIIToUTF16(search_terms));
   ASSERT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+  content::SetBrowserClientForTesting(old_client);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       QueryParamAddedInThrottle) {
+  AddQueryParamContentBrowserClient browser_client;
+  auto* old_client = content::SetBrowserClientForTesting(&browser_client);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kInFlight, prefetch_status.value());
+
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+  content::SetBrowserClientForTesting(old_client);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       ChangeQueryCancelsPrefetch) {
+  ChangeQueryContentBrowserClient browser_client;
+  base::HistogramTester histogram_tester;
+  auto* old_client = content::SetBrowserClientForTesting(&browser_client);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason",
+      SearchPrefetchEligibilityReason::kThrottled, 1);
+  EXPECT_FALSE(prefetch_status.has_value());
   content::SetBrowserClientForTesting(old_client);
 }
 

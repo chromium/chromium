@@ -8,8 +8,10 @@
 
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/frame_accept_header.h"
@@ -184,6 +186,18 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
           /*navigation_ui_data=*/nullptr,
           content::RenderFrameHost::kNoFrameTreeNodeId);
 
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  DCHECK(template_url_service);
+  auto* default_search = template_url_service->GetDefaultSearchProvider();
+  DCHECK(default_search);
+
+  base::string16 prefetch_url_search_terms;
+
+  default_search->ExtractSearchTermsFromURL(
+      prefetch_url_, template_url_service->search_terms_data(),
+      &prefetch_url_search_terms);
+
   bool should_defer = false;
   for (auto& throttle : throttles) {
     CheckForCancelledOrPausedDelegate cancel_or_pause_delegate;
@@ -192,11 +206,23 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
     // Make sure throttles are deleted before |cancel_or_pause_delegate| in case
     // they call into the delegate in the destructor.
     throttle.reset();
-    if (should_defer || resource_request->url != prefetch_url_ ||
+
+    base::string16 new_url_search_terms;
+
+    // Check that search terms still match. Google URLs can be changed by
+    // AndroidDarkSearch (and in other cases like safe search). Make sure the
+    // URL still has the same search terms for the DSE.
+    default_search->ExtractSearchTermsFromURL(
+        resource_request->url, template_url_service->search_terms_data(),
+        &new_url_search_terms);
+
+    if (should_defer || new_url_search_terms != prefetch_url_search_terms ||
         cancel_or_pause_delegate.cancelled_or_paused()) {
       return false;
     }
   }
+
+  prefetch_url_ = resource_request->url;
 
   current_status_ = SearchPrefetchStatus::kInFlight;
 
