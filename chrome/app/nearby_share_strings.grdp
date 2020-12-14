@@ -32,13 +32,13 @@
     }
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_ALL" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'All contacts'.">
-    Your contacts can share with you when they are nearby. Transfer won't start until you accept.
+    Your contacts can share with you when they are nearby. Transfers won't start until you accept.
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_NONE" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Hidden'.">
     No one can share with you until you make yourself visible.<ph name="BR">&lt;br&gt;</ph><ph name="BR">&lt;br&gt;</ph>To make yourself visible temporarily, open the status area by selecting the time, then turn on Nearby visibility.
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_SOME" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Some contacts'.">
-    Selected contacts can share with you when nearby. Transfer won't start until you accept.
+    Selected contacts can share with you when nearby. Transfers won't start until you accept.
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_ZERO_STATE_INFO" desc="Help text to learn more about the privacy and visibility settings of the Nearby Share feature.">
     Learn more
