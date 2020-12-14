@@ -49,6 +49,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/aura/env.h"
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -306,6 +307,13 @@ void ExitIgnoreUnloadHandlers() {
   MarkAsCleanShutdown();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Disable window occlusion tracking on exit before closing all browser
+  // windows to make shutdown faster. Note that the occlusion tracking is
+  // paused indefinitely. It is okay do so on Chrome OS because there is
+  // no way to abort shutdown and go back to user sessions at this point.
+  DCHECK(aura::Env::HasInstance());
+  aura::Env::GetInstance()->PauseWindowOcclusionTracking();
+
   // On ChromeOS ExitIgnoreUnloadHandlers() is used to handle SIGTERM.
   // In this case, AreAllBrowsersCloseable()
   // can be false in following cases. a) power-off b) signout from
