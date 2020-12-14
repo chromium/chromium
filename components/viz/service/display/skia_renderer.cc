@@ -1955,9 +1955,11 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 
   if (needs_color_conversion_filter) {
     // Skia won't perform color conversion.
-    DCHECK(!image->colorSpace());
-    sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
-        src_color_space, CurrentRenderPassColorSpace());
+    const gfx::ColorSpace dst_color_space = CurrentRenderPassColorSpace();
+    DCHECK(SkColorSpace::Equals(image->colorSpace(),
+                                dst_color_space.ToSkColorSpace().get()));
+    sk_sp<SkColorFilter> color_filter =
+        GetColorSpaceConversionFilter(src_color_space, dst_color_space);
     paint.setColorFilter(color_filter->makeComposed(paint.refColorFilter()));
   }
 
