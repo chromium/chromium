@@ -227,23 +227,23 @@ def add_hide_third_party(build_gn_path):
     save_file_lines(build_gn_path, build_file_lines)
 
 
-def add_dependency(file_lines, section_first_line, list_name, dependency_line):
+def add_dependency(file_lines, rule_first_line, list_name, dependency_line):
     '''
     Add dependency in BUILD.gn.
     Parameters:
         file_lines: lines of BUILD.gn file.
-        section_first_line: opening line of target to update.
+        rule_first_line: opening line of target to update.
         list_name: name of the dependency list, deps', 'input_files' etc...
         dependency_line: line to add to the dependency list to update.
     '''
     # Find a line that starts with deps.
-    if not section_first_line in file_lines:
-        print 'Unable to find ' + section_first_line
+    if not rule_first_line in file_lines:
+        print 'Unable to find ' + rule_first_line
         return False
 
     # Find index of `list_name`. Get index of 'sources = [' in case `list_name`
     # is not defined.
-    rule_index = file_lines.index(section_first_line)
+    rule_index = file_lines.index(rule_first_line)
     sources_index = -1
     insertion_index = -1
     single_line_dependency_list = False
@@ -281,17 +281,25 @@ def add_dependency(file_lines, section_first_line, list_name, dependency_line):
         insertion_index = index + 1
 
     if single_line_dependency_list:
-        # If one-line dependency is found, rewrite it over 2 lines, as above.
-        existing_dependency = file_lines[insertion_index].split(' ')[-2]
-        file_lines[insertion_index] = '  {} = ['.format(list_name)
-        file_lines[insertion_index + 1] = '    {},'.format(existing_dependency)
-        file_lines[insertion_index + 2] = '  ]'
+        # Use regex to find characters between [].
+        result = re.search('\[(.*)\]', file_lines[insertion_index])
+        existing_dependency = result.group(1).strip()
+        new_lines = '''\
+  {} = [
+    {},
+  ]'''.format(list_name, existing_dependency)
+
+        # Rewrite single-line dependency list.
+        file_lines[insertion_index:insertion_index + 1] = new_lines.split('\n')
+        insertion_index += 1
 
         # Check for already imported dependency after reformatting.
-        if file_lines[insertion_index + 1] == dependency_line:
+        if file_lines[insertion_index] == dependency_line:
             return False
 
-        insertion_index += 2
+        # If there was no existing dependency, remove appropriate line.
+        if existing_dependency == '':
+            del file_lines[insertion_index]
 
     # Insert dependency.
     file_lines.insert(insertion_index, dependency_line)
@@ -535,19 +543,19 @@ def find_dependencies(dir_path, build_gn_path, js_file_path,
 
     file_name = js_file_path.split('/').pop().replace('.js', '')
 
+    # Define the first line of the rule in which the new dependency has
+    # to be added.
+    rule_first_line = 'js_unittest("%s") {' % (
+        file_name) if is_unittest else 'js_library("%s.m") {' % (file_name)
+
     # Special case: classes that extend "cr.EventTarget".
     index = get_index_substr(js_file_lines, ' extends cr.EventTarget')
     if index >= 0:
         if is_unittest:
             js_file_lines[index] = js_file_lines[index].replace(
                 ' extends cr.EventTarget', ' extends EventTarget')
-            add_dependency(build_file_lines,
-                           'js_unittest("%s") {' % (file_name), 'deps',
-                           '    "//ui/webui/resources/js/cr:event_target.m",')
-        else:
-            add_dependency(build_file_lines,
-                           'js_library("%s.m") {' % (file_name), 'deps',
-                           '    "//ui/webui/resources/js/cr:event_target.m",')
+        add_dependency(build_file_lines, rule_first_line, 'deps',
+                       '    "//ui/webui/resources/js/cr:event_target.m",')
         add_import_line(js_file_lines, 'NativeEventTarget as EventTarget',
                         'chrome://resources/js/cr/event_target.m.js',
                         is_unittest)
@@ -555,39 +563,38 @@ def find_dependencies(dir_path, build_gn_path, js_file_path,
     # General case.
     for variable in variables_to_import:
         # First, handle special cases.
-        if is_unittest:
-            # "//chrome/test/data/webui:chai_assert".
-            out, _ = subprocess.Popen([
-                'egrep', '-R', 'export function {}\('.format(variable), '-l',
-                './chrome/test/data/webui/chai_assert.js'
-            ],
-                                      stdout=subprocess.PIPE).communicate()
-            if out.rstrip() != '':
-                add_dependency(build_file_lines,
-                               'js_unittest("%s") {' % (file_name), 'deps',
-                               '    "//chrome/test/data/webui:chai_assert",')
-                add_import_line(js_file_lines, variable,
-                                'chrome://test/chai_assert.js', is_unittest)
-                continue
-        else:
-            # "//ui/webui/resources/js".
-            out, _ = subprocess.Popen([
-                'egrep', '-R', '\/\* #export \*\/ \w+ {}\W'.format(variable),
-                '-l', './ui/webui/resources/js'
-            ],
-                                      stdout=subprocess.PIPE).communicate()
-            path = out.rstrip()
-            if path != '':
-                path = path.replace('./', '//').replace('.js', '.m')
-                dependency = ':'.join(path.rsplit(
-                    '/', 1))  # //ui/webui/resources/js:assert.m.
-                add_dependency(build_file_lines,
-                               'js_library("%s.m") {' % (file_name), 'deps',
-                               '    "{}",'.format(dependency))
-                path = path.replace('//ui/webui/', 'chrome://').replace(
-                    '.m', '.m.js')  # chrome://resources/js/assert.m.js.
-                add_import_line(js_file_lines, variable, path, is_unittest)
-                continue
+
+        # "//chrome/test/data/webui:chai_assert".
+        out, _ = subprocess.Popen([
+            'egrep', '-R', 'export function {}\('.format(variable), '-l',
+            './chrome/test/data/webui/chai_assert.js'
+        ],
+                                  stdout=subprocess.PIPE).communicate()
+        if out.rstrip() != '':
+            add_dependency(build_file_lines, rule_first_line, 'deps',
+                           '    "//chrome/test/data/webui:chai_assert",')
+            add_import_line(js_file_lines, variable,
+                            'chrome://test/chai_assert.js', is_unittest)
+            continue
+
+        # "//ui/webui/resources/js".
+        out, _ = subprocess.Popen([
+            'egrep', '-R', '\/\* #export \*\/ \w+ {}\W'.format(variable), '-l',
+            './ui/webui/resources/js'
+        ],
+                                  stdout=subprocess.PIPE).communicate()
+        path = out.rstrip()
+        print path
+        if path != '':
+            path = path.replace('./', '//').replace('.js', '.m')
+            dependency = ':'.join(path.rsplit(
+                '/', 1))  # //ui/webui/resources/js:assert.m.
+            add_dependency(build_file_lines, rule_first_line, 'deps',
+                           '    "{}",'.format(dependency))
+            path = path.replace('//ui/webui/', 'chrome://').replace(
+                '.m', '.m.js')  # chrome://resources/js/assert.m.js.
+            add_import_line(js_file_lines, variable, path, is_unittest)
+            continue
 
         # Look for exported variables.
         out, _ = subprocess.Popen([
@@ -619,31 +626,16 @@ def find_dependencies(dir_path, build_gn_path, js_file_path,
         if not relative_path.startswith('../'):
             relative_path = './' + relative_path
         add_import_line(js_file_lines, variable, relative_path, is_unittest)
-        if is_unittest:
-            add_dependency(
-                build_file_lines, 'js_unittest("%s") {' % (file_name), 'deps',
-                '    "{}",'.format(get_relative_dependency(path, dir_path)))
-        else:
-            add_dependency(
-                build_file_lines, 'js_library("%s.m") {' % (file_name), 'deps',
-                '    "{}",'.format(get_relative_dependency(path, dir_path)))
+        add_dependency(
+            build_file_lines, rule_first_line, 'deps',
+            '    "{}",'.format(get_relative_dependency(path, dir_path)))
 
     # Save BUILD.gn and JS file contents.
     save_file_lines(build_gn_path, build_file_lines)
     save_file_lines(js_file_path, js_file_lines)
 
 
-def convert_js_file(js_file_path):
-    '''Add exports (/* #export */) and ignore 'use strict'.'''
-    file_lines = get_file_lines(js_file_path)
-
-    # Ignore 'use strict'.
-    index = get_index_substr(file_lines, "'use strict'")
-    if index >= 0:
-        file_lines[index] = file_lines[index].replace(
-            "'use strict'", "/* #ignore */ 'use strict'")
-
-    # Add exports.
+def add_js_file_exports(file_lines):
     for i, line in enumerate(file_lines):
         # Export class.
         if line.startswith('class '):
@@ -711,10 +703,31 @@ def convert_js_file(js_file_path):
                 file_lines.insert(index, new_line)
         # Export function.
         elif line.startswith('function '):
-            if not get_index_substr(file_lines, ' {}('.format(function_name)):
+            # Extract function name.
+            result = re.search('function (.*)\(', line)
+            function_name = result.group(1).strip()
+
+            # Check if the function is used within the current file.
+            filtered_file_lines = filter(lambda x: x != line, file_lines)
+            if get_index_substr(filtered_file_lines,
+                                '{}('.format(function_name)) < 0:
                 # The function has to be used outside the file, so has to be
                 # exported.
                 file_lines[i] = '/* #export */ ' + line
+
+
+def convert_js_file(js_file_path):
+    '''Add exports (/* #export */) and ignore 'use strict'.'''
+    file_lines = get_file_lines(js_file_path)
+
+    # Ignore 'use strict'.
+    index = get_index_substr(file_lines, "'use strict'")
+    if index >= 0:
+        file_lines[index] = file_lines[index].replace(
+            "'use strict'", "/* #ignore */ 'use strict'")
+
+    # Add exports.
+    add_js_file_exports(file_lines)
 
     # Save file contents.
     save_file_lines(js_file_path, file_lines)
@@ -731,7 +744,8 @@ def convert_unittest_file(js_file_path):
 
     # Add exports.
     for i, line in enumerate(file_lines):
-        if line.startswith('function setUp()') or 'function test' in line:
+        if line.startswith('function setUp()') or line.startswith(
+                'function test'):
             file_lines[i] = 'export ' + file_lines[i]
 
     # Save file contents.
@@ -765,12 +779,11 @@ def main():
         compiler_output = sys.argv[3]
         variables_to_import = parse_compiler_output(compiler_output,
                                                     build_gn_path, file_name)
-        if variables_to_import == []:
-            return
         find_dependencies(dir_path, build_gn_path, js_file_path,
                           variables_to_import, is_unittest)
 
 
-print "-----modules.py-----"
-main()
-print "--------------------"
+if __name__ == '__main__':
+    print "-----modules.py-----"
+    main()
+    print "--------------------"
