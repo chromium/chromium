@@ -3029,6 +3029,9 @@ static IntRect InvalidatePaintOfScrollbarIfNeeded(
 
 void PaintLayerScrollableArea::InvalidatePaintOfScrollControlsIfNeeded(
     const PaintInvalidatorContext& context) {
+  if (context.subtree_flags & PaintInvalidatorContext::kSubtreeFullInvalidation)
+    SetScrollControlsNeedFullPaintInvalidation();
+
   LayoutBox& box = *GetLayoutBox();
   bool box_geometry_has_been_invalidated = false;
   horizontal_scrollbar_visual_rect_ = InvalidatePaintOfScrollbarIfNeeded(

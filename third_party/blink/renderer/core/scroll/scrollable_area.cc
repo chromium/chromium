@@ -620,12 +620,18 @@ void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
 }
 
 void ScrollableArea::SetScrollCornerNeedsPaintInvalidation() {
-  if (cc::Layer* layer = LayerForScrollCorner()) {
+  if (cc::Layer* layer = LayerForScrollCorner())
     layer->SetNeedsDisplay();
-    return;
-  }
   scroll_corner_needs_paint_invalidation_ = true;
   ScrollControlWasSetNeedsPaintInvalidation();
+}
+
+void ScrollableArea::SetScrollControlsNeedFullPaintInvalidation() {
+  if (auto* horizontal_scrollbar = HorizontalScrollbar())
+    horizontal_scrollbar->SetNeedsPaintInvalidation(kAllParts);
+  if (auto* vertical_scrollbar = VerticalScrollbar())
+    vertical_scrollbar->SetNeedsPaintInvalidation(kAllParts);
+  SetScrollCornerNeedsPaintInvalidation();
 }
 
 bool ScrollableArea::HasLayerForHorizontalScrollbar() const {

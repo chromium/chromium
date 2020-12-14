@@ -175,12 +175,12 @@ ObjectPaintInvalidatorWithContext::ComputePaintInvalidationReason() {
     return PaintInvalidationReason::kNone;
   }
 
+  if (object_.ShouldDoFullPaintInvalidation())
+    return object_.FullPaintInvalidationReason();
+
   if (context_.subtree_flags &
       PaintInvalidatorContext::kSubtreeFullInvalidation)
     return PaintInvalidationReason::kSubtree;
-
-  if (object_.ShouldDoFullPaintInvalidation())
-    return object_.FullPaintInvalidationReason();
 
   if (context_.fragment_data->PaintOffset() != context_.old_paint_offset)
     return PaintInvalidationReason::kGeometry;

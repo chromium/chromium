@@ -28,10 +28,8 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
           table->GridBordersChanged();
         }
         // Table paints column background. Tell table to repaint.
-        if (StyleRef().HasBackground() || old_style->HasBackground()) {
-          table->SetShouldDoFullPaintInvalidationWithoutGeometryChange(
-              PaintInvalidationReason::kBackground);
-        }
+        if (StyleRef().HasBackground() || old_style->HasBackground())
+          table->SetBackgroundNeedsFullPaintInvalidation();
       }
       if (diff.NeedsLayout()) {
         table->SetIntrinsicLogicalWidthsDirty();
