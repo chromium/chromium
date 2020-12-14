@@ -68,9 +68,6 @@ class GuestViewMessageFilter : public content::BrowserMessageFilter {
   friend class base::DeleteHelper<GuestViewMessageFilter>;
 
   // Message handlers on the UI thread.
-  void OnAttachGuest(int element_instance_id,
-                     int guest_instance_id,
-                     const base::DictionaryValue& attach_params);
   void OnAttachToEmbedderFrame(int embedder_local_render_frame_id,
                                int element_instance_id,
                                int guest_instance_id,

@@ -55,29 +55,6 @@ class GuestViewRequest {
   DISALLOW_COPY_AND_ASSIGN(GuestViewRequest);
 };
 
-// This class represents an AttachGuest request from Javascript. It includes
-// the input parameters and the callback function. The Attach operation may
-// not execute immediately, if the container is not ready or if there are
-// other GuestViewRequests in flight.
-class GuestViewAttachRequest : public GuestViewRequest {
-  public:
-   GuestViewAttachRequest(GuestViewContainer* container,
-                          int guest_instance_id,
-                          std::unique_ptr<base::DictionaryValue> params,
-                          v8::Local<v8::Function> callback,
-                          v8::Isolate* isolate);
-   ~GuestViewAttachRequest() override;
-
-   void PerformRequest() override;
-   void HandleResponse(const IPC::Message& message) override;
-
-  private:
-   const int guest_instance_id_;
-   std::unique_ptr<base::DictionaryValue> params_;
-
-   DISALLOW_COPY_AND_ASSIGN(GuestViewAttachRequest);
-};
-
 }  // namespace guest_view
 
 #endif  // COMPONENTS_GUEST_VIEW_RENDERER_GUEST_VIEW_CONTAINER_H_

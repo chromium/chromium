@@ -111,7 +111,6 @@ void GuestViewMessageFilter::OnDestruct() const {
 bool GuestViewMessageFilter::OnMessageReceived(const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(GuestViewMessageFilter, message)
-    IPC_MESSAGE_HANDLER(GuestViewHostMsg_AttachGuest, OnAttachGuest)
     IPC_MESSAGE_HANDLER(GuestViewHostMsg_AttachToEmbedderFrame,
                         OnAttachToEmbedderFrame)
     IPC_MESSAGE_HANDLER(GuestViewHostMsg_ViewCreated, OnViewCreated)
@@ -137,26 +136,6 @@ void GuestViewMessageFilter::OnViewGarbageCollected(int view_instance_id) {
     return;
   GetOrCreateGuestViewManager()->ViewGarbageCollected(render_process_id_,
                                                       view_instance_id);
-}
-
-void GuestViewMessageFilter::OnAttachGuest(
-    int element_instance_id,
-    int guest_instance_id,
-    const base::DictionaryValue& params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  // We should have a GuestViewManager at this point. If we don't then the
-  // embedder is misbehaving.
-  auto* manager = GetGuestViewManagerOrKill();
-  if (!manager)
-    return;
-
-  manager->AttachGuest(render_process_id_,
-                       element_instance_id,
-                       guest_instance_id,
-                       params);
 }
 
 void GuestViewMessageFilter::OnAttachToEmbedderFrame(

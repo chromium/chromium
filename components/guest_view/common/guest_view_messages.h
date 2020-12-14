@@ -26,13 +26,6 @@ IPC_MESSAGE_CONTROL2(GuestViewMsg_GuestAttached,
 
 // Messages sent from the renderer to the browser.
 
-// Sent by the renderer to set initialization parameters of a Browser Plugin
-// that is identified by |element_instance_id|.
-IPC_MESSAGE_CONTROL3(GuestViewHostMsg_AttachGuest,
-                     int /* element_instance_id */,
-                     int /* guest_instance_id */,
-                     base::DictionaryValue /* attach_params */)
-
 // We have a RenderFrame with routing id of |embedder_local_frame_routing_id|.
 // We want this local frame to be replaced with a remote frame that points
 // to a GuestView. This message will attach the local frame to the guest.
