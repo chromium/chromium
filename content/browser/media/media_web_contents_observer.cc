@@ -158,6 +158,13 @@ void MediaWebContentsObserver::WebContentsDestroyed() {
 
   // Remove all players so that the experiment manager is notified.
   player_info_map_.clear();
+
+  // Remove all the mojo receivers and remotes associated to the media players
+  // handled by this WebContents to prevent from handling/sending any more
+  // messages after this point, plus properly cleaning things up.
+  media_player_hosts_.clear();
+  media_player_observer_hosts_.clear();
+  media_player_remotes_.clear();
 }
 
 void MediaWebContentsObserver::RenderFrameDeleted(
@@ -167,6 +174,29 @@ void MediaWebContentsObserver::RenderFrameDeleted(
       player_info_map_,
       [render_frame_host](const PlayerInfoMap::value_type& id_and_player_info) {
         return render_frame_host == id_and_player_info.first.render_frame_host;
+      });
+
+  base::EraseIf(media_player_hosts_,
+                [render_frame_host](const MediaPlayerHostImplMap::value_type&
+                                        media_player_hosts_value_type) {
+                  return render_frame_host ==
+                         media_player_hosts_value_type.first;
+                });
+
+  base::EraseIf(
+      media_player_observer_hosts_,
+      [render_frame_host](const MediaPlayerObserverHostImplMap::value_type&
+                              media_player_observer_hosts_value_type) {
+        return render_frame_host ==
+               media_player_observer_hosts_value_type.first.render_frame_host;
+      });
+
+  base::EraseIf(
+      media_player_remotes_,
+      [render_frame_host](const MediaPlayerRemotesMap::value_type&
+                              media_player_remotes_value_type) {
+        return render_frame_host ==
+               media_player_remotes_value_type.first.render_frame_host;
       });
 
   session_controllers_manager_.RenderFrameDeleted(render_frame_host);
