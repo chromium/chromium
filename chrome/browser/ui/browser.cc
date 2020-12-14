@@ -75,6 +75,7 @@
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -474,6 +475,12 @@ Browser::Browser(const CreateParams& params)
           std::make_unique<extensions::ExtensionBrowserWindowHelper>(this))
 #endif
 {
+  if (!profile_->IsOffTheRecord()) {
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        params.profile->GetOriginalProfile(),
+        ProfileKeepAliveOrigin::kBrowserWindow);
+  }
+
   tab_strip_model_->AddObserver(this);
 
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
@@ -587,9 +594,11 @@ Browser::~Browser() {
   // is destroyed to make sure the chrome.windows.onRemoved event is sent.
   extension_window_controller_.reset();
 
-  // Destroy BrowserInstantController before the incongnito profile is destroyed
-  // because the InstantController destructor depends on this profile.
+  // Destroy BrowserInstantController and ScopedProfileKeepAlive before the
+  // incognito profile is destroyed, because their destructors depend on this
+  // profile.
   instant_controller_.reset();
+  profile_keep_alive_.reset();
 
   // The system incognito profile should not try be destroyed using
   // ProfileDestroyer::DestroyProfileWhenAppropriate(). This profile can be
@@ -602,6 +611,9 @@ Browser::~Browser() {
   //
   // Non-primary OffTheRecord profiles should not be destroyed directly by
   // Browser (e.g. for offscreen tabs, https://crbug.com/664351).
+  //
+  // TODO(crbug.com/1153922): Use ScopedProfileKeepAlive for Incognito too,
+  // instead of separate logic for Incognito and regular profiles.
   if (profile_->IsIncognitoProfile() &&
       !BrowserList::IsOffTheRecordBrowserInUse(profile_) &&
       !profile_->IsSystemProfile()) {

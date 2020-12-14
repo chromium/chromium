@@ -34,7 +34,9 @@
 
 class ProfileAttributesStorage;
 class ProfileInfoCache;
+enum class ProfileKeepAliveOrigin;
 class ProfileManagerObserver;
+class ScopedProfileKeepAlive;
 
 // Manages the lifecycle of Profile objects.
 //
@@ -285,6 +287,10 @@ class ProfileManager : public content::NotificationObserver,
   friend class TestingProfileManager;
   FRIEND_TEST_ALL_PREFIXES(ProfileManagerBrowserTest, DeleteAllProfiles);
   FRIEND_TEST_ALL_PREFIXES(ProfileManagerBrowserTest, SwitchToProfile);
+  FRIEND_TEST_ALL_PREFIXES(ProfileManagerTest, ScopedProfileKeepAlive);
+
+  // For AddKeepAlive() and RemoveKeepAlive().
+  friend class ScopedProfileKeepAlive;
 
   // This struct contains information about profiles which are being loaded or
   // were loaded.
@@ -295,12 +301,20 @@ class ProfileManager : public content::NotificationObserver,
     ~ProfileInfo();
 
     std::unique_ptr<Profile> profile;
+    // Strong references to this Profile once it's been created (e.g. a Browser
+    // object, a BackgroundModeManager, ...)
+    std::map<ProfileKeepAliveOrigin, int> keep_alives;
     // Whether profile has been fully loaded (created and initialized).
     bool created;
     // List of callbacks to run when profile initialization is done. Note, when
     // profile is fully loaded this vector will be empty.
     std::vector<CreateCallback> callbacks;
   };
+
+  // Increments/decrements the refcount on a |profile|. (it must not be an
+  // off-the-record profile)
+  void AddKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
+  void RemoveKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
 
   // Does final initial actions.
   void DoFinalInit(ProfileInfo* profile_info, bool go_off_the_record);

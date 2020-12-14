@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -1105,6 +1106,9 @@ class Browser : public TabStripModelObserver,
 
   // This Browser's profile.
   Profile* const profile_;
+
+  // Prevent Profile deletion until this browser window is closed.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // This Browser's window.
   BrowserWindow* window_;

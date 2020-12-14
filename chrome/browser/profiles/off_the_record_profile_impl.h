@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data_handle.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/domain_reliability/clear_mode.h"
 #include "content/public/browser/content_browser_client.h"
 
@@ -152,6 +153,8 @@ class OffTheRecordProfileImpl : public Profile {
 
   // The real underlying profile.
   Profile* profile_;
+  // Prevent |profile_| from being destroyed first.
+  ScopedProfileKeepAlive profile_keep_alive_;
 
   const OTRProfileID otr_profile_id_;
 

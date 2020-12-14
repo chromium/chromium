@@ -40,7 +40,9 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
@@ -122,11 +124,27 @@ void BackgroundModeManager::BackgroundModeData::SetTracker(
   force_installed_tracker_observer_.Add(tracker);
 }
 
+void BackgroundModeManager::BackgroundModeData::UpdateProfileKeepAlive() {
+  bool background_mode =
+      (HasPersistentBackgroundClient() && manager_->IsBackgroundModeActive() &&
+       !manager_->background_mode_suspended_);
+  if (!background_mode) {
+    profile_keep_alive_.reset();
+    return;
+  }
+  if (profile_keep_alive_)
+    return;
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kBackgroundMode);
+}
+
 void BackgroundModeManager::BackgroundModeData::OnProfileWillBeDestroyed(
     Profile* profile) {
   DCHECK_EQ(profile_, profile);
   profile_observer_.RemoveAll();
   force_installed_tracker_observer_.RemoveAll();
+  DCHECK(!profile_keep_alive_);
+  profile_ = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -720,6 +738,9 @@ void BackgroundModeManager::ResumeBackgroundMode() {
 }
 
 void BackgroundModeManager::UpdateKeepAliveAndTrayIcon() {
+  for (const auto& entry : background_mode_data_)
+    entry.second->UpdateProfileKeepAlive();
+
   if (in_background_mode_ && !background_mode_suspended_) {
     if (!keep_alive_) {
       keep_alive_ = std::make_unique<ScopedKeepAlive>(
@@ -768,7 +789,7 @@ void BackgroundModeManager::OnClientsChanged(
       StartBackgroundMode();
     }
 
-    // List of clients changed so update the UI.
+    // List of clients changed so update the UI and keep alive references.
     UpdateStatusTrayIconContextMenu();
 
     // Notify the user about any new clients.

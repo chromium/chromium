@@ -59,6 +59,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_info_cache.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -1266,6 +1267,45 @@ std::unique_ptr<Profile> ProfileManager::CreateProfileAsyncHelper(
                                 Profile::CREATE_MODE_ASYNCHRONOUS);
 }
 
+void ProfileManager::AddKeepAlive(const Profile* profile,
+                                  ProfileKeepAliveOrigin origin) {
+  DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
+  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
+    return;
+
+  DCHECK(profile);
+  DCHECK(!profile->IsOffTheRecord());
+
+  ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
+  DCHECK(info);
+  info->keep_alives[origin]++;
+
+  int& waiting_for_first_browser_window =
+      info->keep_alives[ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow];
+  if (waiting_for_first_browser_window != 0)
+    waiting_for_first_browser_window = 0;
+}
+
+void ProfileManager::RemoveKeepAlive(const Profile* profile,
+                                     ProfileKeepAliveOrigin origin) {
+  DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
+  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
+    return;
+
+  DCHECK(profile);
+  DCHECK(!profile->IsOffTheRecord());
+
+  ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
+  DCHECK(info);
+  DCHECK(base::Contains(info->keep_alives, origin));
+  info->keep_alives[origin]--;
+  DCHECK_LE(0, info->keep_alives[origin]);
+
+  // TODO(crbug.com/88586): Delete the Profile here instead of in
+  // OnBrowserClosed(), if DestroyProfileOnBrowserClose is enabled. Don't
+  // destroy the original guest profile and system profile.
+}
+
 void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
                                  bool go_off_the_record) {
   TRACE_EVENT0("browser", "ProfileManager::DoFinalInit");
@@ -1431,7 +1471,11 @@ void ProfileManager::DoFinalInitLogging(Profile* profile) {
 
 ProfileManager::ProfileInfo::ProfileInfo(std::unique_ptr<Profile> profile,
                                          bool created)
-    : profile(std::move(profile)), created(created) {}
+    : profile(std::move(profile)), created(created) {
+  // The profile should have a refcount >=1 until AddKeepAlive() is called.
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
+    keep_alives[ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow] = 1;
+}
 
 ProfileManager::ProfileInfo::~ProfileInfo() {
   ProfileDestroyer::DestroyProfileWhenAppropriate(profile.release());

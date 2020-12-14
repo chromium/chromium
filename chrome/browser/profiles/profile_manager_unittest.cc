@@ -30,8 +30,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_info_cache.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -1841,5 +1843,42 @@ TEST_F(ProfileManagerTest, CannotCreateProfileOusideUserDirAsync) {
       base::BindRepeating(&MockObserver::OnProfileCreated,
                           base::Unretained(&mock_observer)),
       base::UTF8ToUTF16(profile_name), profiles::GetDefaultAvatarIconUrl(0));
+  content::RunAllTasksUntilIdle();
+}
+
+TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  base::FilePath dest_path = temp_dir_.GetPath().AppendASCII("New Profile");
+  Profile* profile = profile_manager->GetProfile(dest_path);
+
+  EXPECT_THAT(profile_manager->GetProfileInfoByPath(dest_path)->keep_alives,
+              ::testing::ElementsAre(std::pair<ProfileKeepAliveOrigin, int>(
+                  ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 1)));
+  {
+    // Set |profile| refcount to 1. This will cause the profile to get deleted
+    // at the end of this block.
+    ScopedProfileKeepAlive keep_alive(profile,
+                                      ProfileKeepAliveOrigin::kBrowserWindow);
+    EXPECT_THAT(
+        profile_manager->GetProfileInfoByPath(dest_path)->keep_alives,
+        ::testing::UnorderedElementsAre(
+            std::pair<ProfileKeepAliveOrigin, int>(
+                ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 0),
+            std::pair<ProfileKeepAliveOrigin, int>(
+                ProfileKeepAliveOrigin::kBrowserWindow, 1)));
+  }
+  EXPECT_THAT(profile_manager->GetProfileInfoByPath(dest_path)->keep_alives,
+              ::testing::UnorderedElementsAre(
+                  std::pair<ProfileKeepAliveOrigin, int>(
+                      ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 0),
+                  std::pair<ProfileKeepAliveOrigin, int>(
+                      ProfileKeepAliveOrigin::kBrowserWindow, 0)));
+  // TODO(crbug.com/88586): EXPECT() that |profile1| was destroyed here, once
+  // the TODO in ProfileManager::RemoveKeepAlive() is implemented.
+
   content::RunAllTasksUntilIdle();
 }

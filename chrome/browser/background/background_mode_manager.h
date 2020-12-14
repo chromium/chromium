@@ -35,6 +35,7 @@ class BackgroundModeOptimizer;
 class Browser;
 class PrefRegistrySimple;
 class Profile;
+class ScopedProfileKeepAlive;
 class StatusIcon;
 class StatusTray;
 
@@ -213,6 +214,13 @@ class BackgroundModeManager : public content::NotificationObserver,
     // the last call to GetNewBackgroundApps()).
     std::set<const extensions::Extension*> GetNewBackgroundApps();
 
+    // Acquires or releases a strong ref to the Profile, preventing/allowing it
+    // to be deleted.
+    //
+    // Acquires the ref if background mode is active, and this profile has
+    // persistent background apps. Releases it otherwise.
+    void UpdateProfileKeepAlive();
+
     // ProfileObserver overrides:
     void OnProfileWillBeDestroyed(Profile* profile) override;
 
@@ -231,7 +239,11 @@ class BackgroundModeManager : public content::NotificationObserver,
     base::string16 name_;
 
     // The profile associated with this background app data.
-    Profile* const profile_;
+    Profile* profile_;
+
+    // Prevents |profile_| from being deleted. Created or reset by
+    // UpdateProfileKeepAlive().
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
     // Weak ref vector owned by BackgroundModeManager where the indices
     // correspond to Command IDs and values correspond to their handlers.
