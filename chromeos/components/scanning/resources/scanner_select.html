@@ -2,7 +2,6 @@
   #scanHelp {
     color: var(--google-grey-700);
     font-size: 10px;
-    padding-top: 8px;
   }
 
   #scanHelpLink {
@@ -35,10 +34,11 @@
         </option>
       </template>
     </select>
-    <span id="scanHelp" hidden$="[[shouldHideScanHelpLink_(loaded, scanners)]]">
-      [[i18n('noScannersHelpText')]]
-      <!-- TODO(joonbug): Add href to the help link when available -->
-      <a id="scanHelpLink" href="#">[[i18n('noScannersHelpLinkLabel')]]</a>
-    </span>
+  </div>
+  <div id="scanHelp" slot="error"
+      hidden$="[[shouldHideScanHelpLink_(loaded, scanners)]]">
+    [[i18n('noScannersHelpText')]]
+    <!-- TODO(gavinwill): Add href to the help link when available -->
+    <a id="scanHelpLink" href="#">[[i18n('noScannersHelpLinkLabel')]]</a>
   </div>
 </scan-settings-section>

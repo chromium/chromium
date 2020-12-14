@@ -1,5 +1,5 @@
 <style include="scanning-shared scanning-fonts">
-  :host {
+  #selectDiv {
     align-items: center;
     display: flex;
     height: 48px;
@@ -31,6 +31,18 @@
     flex-shrink: 0;
     width: 192px;
   }
+
+  ::slotted([slot=error]) {
+    display: block;
+    margin-bottom: 8px;
+    margin-inline-end: 40px;
+    margin-inline-start: 120px;
+    margin-top: -8px;
+    width: 192px;
+  }
 </style>
-<slot name="label"></slot>
-<slot name="settings"></slot>
+<div id="selectDiv">
+  <slot name="label"></slot>
+  <slot name="settings"></slot>
+</div>
+<slot name="error"></slot>
