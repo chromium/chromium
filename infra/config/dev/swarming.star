@@ -18,6 +18,7 @@ swarming.pool_realm(
     projects = [
         "infra",
         "infra-experimental",
+        "v8",
     ],
 )
 
