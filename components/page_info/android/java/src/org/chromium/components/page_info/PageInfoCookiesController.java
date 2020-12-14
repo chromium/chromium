@@ -101,7 +101,9 @@ public class PageInfoCookiesController
 
         mWebsite = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
                 address, result);
-        mSubPage.setStorageUsage(mWebsite.getTotalUsage());
+        if (mSubPage != null) {
+            mSubPage.setStorageUsage(mWebsite.getTotalUsage());
+        }
     }
 
     private void onCheckedChangedCallback(boolean state) {
