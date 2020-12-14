@@ -190,11 +190,11 @@ ClientDiscardableSharedMemoryManager::ClientDiscardableSharedMemoryManager(
     mojo::PendingRemote<mojom::DiscardableSharedMemoryManager> manager,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> periodic_purge_task_runner)
-    : heap_(std::make_unique<DiscardableSharedMemoryHeap>()),
-      periodic_purge_task_runner_(std::move(periodic_purge_task_runner)),
-      io_task_runner_(std::move(io_task_runner)),
-      manager_mojo_(std::make_unique<
-                    mojo::Remote<mojom::DiscardableSharedMemoryManager>>()) {
+    : ClientDiscardableSharedMemoryManager(
+          std::move(io_task_runner),
+          std::move(periodic_purge_task_runner)) {
+  manager_mojo_ =
+      std::make_unique<mojo::Remote<mojom::DiscardableSharedMemoryManager>>();
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ClientDiscardableSharedMemoryManager",
       base::ThreadTaskRunnerHandle::Get());
@@ -206,7 +206,9 @@ ClientDiscardableSharedMemoryManager::ClientDiscardableSharedMemoryManager(
 ClientDiscardableSharedMemoryManager::ClientDiscardableSharedMemoryManager(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> periodic_purge_task_runner)
-    : heap_(std::make_unique<DiscardableSharedMemoryHeap>()),
+    : RefCountedDeleteOnSequence<ClientDiscardableSharedMemoryManager>(
+          base::ThreadTaskRunnerHandle::Get()),
+      heap_(std::make_unique<DiscardableSharedMemoryHeap>()),
       periodic_purge_task_runner_(std::move(periodic_purge_task_runner)),
       io_task_runner_(std::move(io_task_runner)) {}
 
