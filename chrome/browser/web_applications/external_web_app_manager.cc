@@ -313,12 +313,17 @@ void ExternalWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
     return;
   }
 
+  base::FilePath config_dir = GetConfigDir();
+  if (config_dir.empty()) {
+    std::move(callback).Run({});
+    return;
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&LoadConfigsBlocking, GetConfigDir()),
-      std::move(callback));
+      base::BindOnce(&LoadConfigsBlocking, config_dir), std::move(callback));
 }
 
 void ExternalWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
