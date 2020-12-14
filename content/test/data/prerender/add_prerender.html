@@ -12,6 +12,15 @@ function add_prerender(url) {
   document.head.appendChild(link);
 }
 
+// Adds <link rel=next> for the URL that triggers prerendering like <link
+// rel=prerender>.
+function add_next(url) {
+  const link = document.createElement('link');
+  link.rel = 'next';
+  link.href = url;
+  document.head.appendChild(link);
+}
+
 // Creates a new iframe with the URL.
 async function add_iframe(url) {
   const frame = document.createElement('iframe');
