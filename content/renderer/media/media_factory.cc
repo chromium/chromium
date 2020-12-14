@@ -193,6 +193,11 @@ void LogRoughness(
     // score we want.  For now, don't record anything so we don't have a mis-
     // match of UMA values.
   }
+
+  TRACE_EVENT2("media", "VideoPlaybackRoughness", "id", media_log->id(),
+               "roughness", measurement.roughness);
+  TRACE_EVENT2("media", "VideoPlaybackFreezing", "id", media_log->id(),
+               "freezing", measurement.freezing.InMilliseconds());
 }
 
 std::unique_ptr<media::DefaultRendererFactory> CreateDefaultRendererFactory(
