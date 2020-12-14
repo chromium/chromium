@@ -5,6 +5,7 @@
 import platform
 import sys
 import util
+import psutil
 
 import command_executor
 from command_executor import Command
@@ -127,21 +128,38 @@ class ChromeDriver(object):
   retry_count = 0
   retried_tests = []
 
-  def __init__(self, *args, **kwargs):
+  def __init__(self, server_url, server_pid, **kwargs):
     try:
-      self._InternalInit(*args, **kwargs)
+      self._InternalInit(server_url, **kwargs)
     except Exception as e:
       if not e.message.startswith('timed out'):
         raise
       else:
+        # Kill ChromeDriver child processes recursively
+        # (i.e. browsers and their child processes etc)
+        # when there is a timeout for launching browser
+        if server_pid:
+          processes = psutil.Process(server_pid).children(recursive=True)
+          if len(processes):
+            print 'Terminating ', len(processes), ' processes'
+            for p in processes:
+              p.terminate()
+
+            gone, alive = psutil.wait_procs(processes, timeout=3)
+            if len(alive):
+              print 'Killing ', len(alive), ' processes'
+              for p in alive:
+                p.kill()
+
         if ChromeDriver.retry_count < MAX_RETRY_COUNT:
           ChromeDriver.retry_count = ChromeDriver.retry_count + 1
           ChromeDriver.retried_tests.append(kwargs.get('test_name'))
-          self._InternalInit(*args, **kwargs)
+          self._InternalInit(server_url, **kwargs)
         else:
           raise
 
-  def _InternalInit(self, server_url, chrome_binary=None, android_package=None,
+  def _InternalInit(self, server_url,
+      chrome_binary=None, android_package=None,
       android_activity=None, android_process=None,
       android_use_running_app=None, chrome_switches=None,
       chrome_extensions=None, chrome_log_path=None,

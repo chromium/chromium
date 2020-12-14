@@ -67,6 +67,7 @@ class Server(object):
         chromedriver_args.extend([arg])
 
     self._process = subprocess.Popen(chromedriver_args)
+    self._pid = self._process.pid
     self._host = '127.0.0.1'
     self._port = port
     self._url = 'http://%s:%d' % (self._host, port)
@@ -98,6 +99,9 @@ class Server(object):
 
   def GetUrl(self):
     return self._url
+
+  def GetPid(self):
+    return self._pid
 
   def GetHost(self):
     return self._host

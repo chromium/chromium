@@ -305,9 +305,12 @@ class ChromeDriverBaseTest(unittest.TestCase):
       except:
         pass
 
-  def CreateDriver(self, server_url=None, download_dir=None, **kwargs):
+  def CreateDriver(self, server_url=None, server_pid=None,
+                   download_dir=None, **kwargs):
     if server_url is None:
       server_url = _CHROMEDRIVER_SERVER_URL
+    if server_pid is None:
+      server_pid = _CHROMEDRIVER_SERVER_PID
 
     if (not _ANDROID_PACKAGE_KEY and 'debugger_address' not in kwargs and
           '_MINIDUMP_PATH' in globals() and _MINIDUMP_PATH):
@@ -328,7 +331,7 @@ class ChromeDriverBaseTest(unittest.TestCase):
         android_activity = constants.PACKAGE_INFO[_ANDROID_PACKAGE_KEY].activity
         android_process = '%s:main' % android_package
 
-    driver = chromedriver.ChromeDriver(server_url,
+    driver = chromedriver.ChromeDriver(server_url, server_pid,
                                        chrome_binary=_CHROME_BINARY,
                                        android_package=android_package,
                                        android_activity=android_activity,
@@ -4509,7 +4512,8 @@ class ChromeDriverLogTest(ChromeDriverBaseTest):
         _CHROMEDRIVER_BINARY, log_path=tmp_log_path)
     try:
       driver = chromedriver.ChromeDriver(
-          chromedriver_server.GetUrl(), chrome_binary=_CHROME_BINARY,
+          chromedriver_server.GetUrl(), chromedriver_server.GetPid(),
+          chrome_binary=_CHROME_BINARY,
           experimental_options={ self.UNEXPECTED_CHROMEOPTION_CAP : 1 })
       driver.Quit()
     except chromedriver.ChromeDriverException, e:
@@ -4724,6 +4728,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
       exception_raised = False
       try:
         driver = chromedriver.ChromeDriver(_CHROMEDRIVER_SERVER_URL,
+                                           _CHROMEDRIVER_SERVER_PID,
                                            chrome_binary=path,
                                            test_name=self.id())
       except Exception as e:
@@ -4747,6 +4752,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
     try:
       driver = chromedriver.ChromeDriver(
           _CHROMEDRIVER_SERVER_URL,
+          _CHROMEDRIVER_SERVER_PID,
           chrome_binary=os.path.join(temp_dir, 'this_file_should_not_exist'),
           test_name=self.id())
     except Exception as e:
@@ -5035,6 +5041,10 @@ if __name__ == '__main__':
   global chromedriver_server
   chromedriver_server = server.Server(_CHROMEDRIVER_BINARY, options.log_path,
                                       replayable=options.replayable)
+
+  global _CHROMEDRIVER_SERVER_PID
+  _CHROMEDRIVER_SERVER_PID = chromedriver_server.GetPid()
+
   global _CHROMEDRIVER_SERVER_URL
   _CHROMEDRIVER_SERVER_URL = chromedriver_server.GetUrl()
 
