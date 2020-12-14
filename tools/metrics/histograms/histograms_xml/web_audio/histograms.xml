@@ -72,6 +72,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebAudio.AudioContext.latencyHintCategory" units="units"
+    expires_after="2021-06-30">
+  <owner>rtoy@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <summary>
+    If provided, the latencyHint option category of &quot;interactive&quot;,
+    &quot;balanced&quot;, &quot;playback&quot;, or &quot;exact&quot;, in that
+    order where &quot;exact&quot; means an explicit floating point value was
+    provided. Recorded for every AudioContext that is constructed with a
+    latencyHint.
+  </summary>
+</histogram>
+
+<histogram name="WebAudio.AudioContext.latencyHintMilliSeconds" units="ms"
+    expires_after="2021-06-30">
+  <owner>rtoy@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <summary>
+    If the latencyHint is provided and is a floating-point number, the value in
+    milliseconds is recorded. This is recorded for every AudioContext that is
+    constructed with a floating-point latencyHint value.
+  </summary>
+</histogram>
+
 <histogram name="WebAudio.AudioContext.MaxChannelsAvailable" units="units"
     expires_after="2021-07-06">
   <owner>rtoy@chromium.org</owner>

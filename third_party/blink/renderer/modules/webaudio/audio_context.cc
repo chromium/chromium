@@ -74,7 +74,15 @@ AudioContext* AudioContext::Create(Document& document,
     // into account double buffering (same as baseLatency).
     latency_hint =
         WebAudioLatencyHint(context_options->latencyHint().GetAsDouble());
+
+    base::UmaHistogramTimes(
+        "WebAudio.AudioContext.latencyHintMilliSeconds",
+        base::TimeDelta::FromSecondsD(latency_hint.Seconds()));
   }
+
+  base::UmaHistogramEnumeration(
+      "WebAudio.AudioContext.latencyHintCategory", latency_hint.Category(),
+      WebAudioLatencyHint::AudioContextLatencyCategory::kLastValue);
 
   base::Optional<float> sample_rate;
   if (context_options->hasSampleRate()) {

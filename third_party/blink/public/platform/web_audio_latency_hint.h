@@ -17,7 +17,8 @@ class WebAudioLatencyHint {
     kCategoryInteractive,
     kCategoryBalanced,
     kCategoryPlayback,
-    kCategoryExact
+    kCategoryExact,
+    kLastValue
   };
 
   explicit WebAudioLatencyHint(const WebString& category) {

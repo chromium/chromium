@@ -48,6 +48,8 @@ blink::WebAudioDeviceSourceType GetLatencyHintSourceType(
       return blink::WebAudioDeviceSourceType::kWebAudioPlayback;
     case WebAudioLatencyHint::kCategoryExact:
       return blink::WebAudioDeviceSourceType::kWebAudioExact;
+    case WebAudioLatencyHint::kLastValue:
+      NOTREACHED();
   }
   NOTREACHED();
   return blink::WebAudioDeviceSourceType::kWebAudioInteractive;
