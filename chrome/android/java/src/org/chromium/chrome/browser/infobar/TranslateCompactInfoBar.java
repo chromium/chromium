@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.infobar;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -306,8 +307,15 @@ public class TranslateCompactInfoBar extends InfoBar
         if (mTabLayout != null) {
             mTabLayout.hideProgressBar();
             if (errorType != 0) {
-                Toast.makeText(getContext(), R.string.translate_infobar_error, Toast.LENGTH_SHORT)
-                        .show();
+                Toast toast = Toast.makeText(
+                        getContext(), R.string.translate_infobar_error, Toast.LENGTH_SHORT);
+                int[] location = new int[2];
+                mTabLayout.getLocationOnScreen(location);
+                int yOffset = location[1] - mTabLayout.getHeight()
+                        - getContext().getResources().getDimensionPixelSize(
+                                R.dimen.translate_toast_y_offset);
+                toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, yOffset);
+                toast.show();
                 errorUIShown = true;
                 silentlySelectTabAt(SOURCE_TAB_INDEX);
             }

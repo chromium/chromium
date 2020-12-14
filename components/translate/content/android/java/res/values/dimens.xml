@@ -5,4 +5,5 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
     <dimen name="infobar_translate_menu_width">260dp</dimen>
+    <dimen name="translate_toast_y_offset">24dp</dimen>
 </resources>
