@@ -134,6 +134,8 @@ namespace chromeos {
 namespace {
 
 const test::UIPath kConfigNetwork = {"app-launch-splash", "configNetwork"};
+const test::UIPath kAutolaunchConfirmButton = {"autolaunch", "confirmButton"};
+const test::UIPath kAutolaunchCancelButton = {"autolaunch", "cancelButton"};
 
 // This is a simple test app that creates an app window and immediately closes
 // it again. Webstore data json is in
@@ -805,7 +807,7 @@ class KioskTest : public OobeBaseTest {
     }
   }
 
-  void WaitForAuthLaunchWarning(bool visibility) {
+  void WaitForAutoLaunchWarning(bool visibility) {
     test::OobeJS().CreateVisibilityWaiter(visibility, {"autolaunch"})->Wait();
   }
 
@@ -1137,12 +1139,11 @@ IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningCancel) {
   wizard_controller->SkipToLoginForTesting();
 
   // Wait for the auto launch warning come up.
-  WaitForAuthLaunchWarning(/*visibility=*/true);
-  test::ExecuteOobeJS(
-      "login.AutolaunchScreen.confirmAutoLaunchForTesting(false);");
+  WaitForAutoLaunchWarning(/*visibility=*/true);
+  test::OobeJS().ClickOnPath(kAutolaunchCancelButton);
 
   // Wait for the auto launch warning to go away.
-  WaitForAuthLaunchWarning(/*visibility=*/false);
+  WaitForAutoLaunchWarning(/*visibility=*/false);
 
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
 }
@@ -1164,13 +1165,12 @@ IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningConfirm) {
   wizard_controller->SkipToLoginForTesting();
 
   // Wait for the auto launch warning come up.
-  WaitForAuthLaunchWarning(/*visibility=*/true);
+  WaitForAutoLaunchWarning(/*visibility=*/true);
 
-  test::ExecuteOobeJS(
-      "login.AutolaunchScreen.confirmAutoLaunchForTesting(true);");
+  test::OobeJS().ClickOnPath(kAutolaunchConfirmButton);
 
   // Wait for the auto launch warning to go away.
-  WaitForAuthLaunchWarning(/*visibility=*/false);
+  WaitForAutoLaunchWarning(/*visibility=*/false);
 
   EXPECT_FALSE(KioskAppManager::Get()->GetAutoLaunchApp().empty());
   EXPECT_TRUE(KioskAppManager::Get()->IsAutoLaunchEnabled());
@@ -1323,14 +1323,13 @@ IN_PROC_BROWSER_TEST_F(KioskTest, NoConsumerAutoLaunchWhenUntrusted) {
   wizard_controller->AdvanceToScreen(WelcomeView::kScreenId);
   ReloadAutolaunchKioskApps();
   wizard_controller->SkipToLoginForTesting();
-  WaitForAuthLaunchWarning(/*visibility=*/true);
+  WaitForAutoLaunchWarning(/*visibility=*/true);
 
   // Make cros settings untrusted.
   settings_helper_.SetTrustedStatus(
       CrosSettingsProvider::PERMANENTLY_UNTRUSTED);
 
-  test::ExecuteOobeJS(
-      "login.AutolaunchScreen.confirmAutoLaunchForTesting(true);");
+  test::OobeJS().ClickOnPath(kAutolaunchConfirmButton);
 
   // Check that the attempt to auto-launch a kiosk app fails with an error.
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
@@ -2786,7 +2785,7 @@ IN_PROC_BROWSER_TEST_F(KioskHiddenWebUITest, AutolaunchWarning) {
   EXPECT_FALSE(KioskAppManager::Get()->IsAutoLaunchEnabled());
 
   // Wait for the auto launch warning come up.
-  WaitForAuthLaunchWarning(/*visibility=*/true);
+  WaitForAutoLaunchWarning(/*visibility=*/true);
 
   // Wait for the wallpaper to load.
   WaitForWallpaper();

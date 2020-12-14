@@ -1,11 +1,30 @@
-<div class="step hidden" id="autolaunch" hidden>
-  <div class="step-contents">
-    <div id="autolaunch-warning-title" i18n-content="autolaunchTitle"></div>
-    <div id="autolaunch-app-container">
-       <img id="autolaunch-app-icon" alt="">
-       <div id="autolaunch-app-name"></div>
-    </div>
-    <div id="autolaunch-warning" i18n-content="autolaunchWarning"></div>
-  </div>
-  <div id="autolaunch-controls" class="step-controls"></div>
-</div>
+<dom-module id="autolaunch-element">
+  <template>
+    <style include="oobe-dialog-host">
+      #warning{
+        color: #606060;
+      }
+
+      #appName {
+        color: #404040;
+        font-size: 22px;
+      }
+    </style>
+    <oobe-dialog id="autolaunch" role="dialog" title-key="autolaunchTitle"
+        aria-label$="[[i18nDynamic(locale, 'autolaunchTitle')]]" has-buttons>
+      <div id="footer" slot="footer">
+        <img id="appIcon" src="[[appIcon_]]" alt="">
+        <div id="appName">[[appName_]]</div>
+        <div id="warning" slot="subtitle">[[i18nDynamic(locale, 'autolaunchWarning')]]</div>
+      </div>
+      <div slot="bottom-buttons" class="layout horizontal end-justified">
+        <oobe-text-button id="cancelButton" on-click="onCancel_" text-key="autolaunchCancelButton"
+            class="focus-on-show">
+        </oobe-text-button>
+        <oobe-text-button id="confirmButton" on-click="onConfirm_"
+            text-key="autolaunchConfirmButton" inverse>
+        </oobe-text-button>
+      </div>
+    </oobe-dialog>
+  </template>
+</dom-module>

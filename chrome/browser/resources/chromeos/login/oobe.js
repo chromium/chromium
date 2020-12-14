@@ -20,7 +20,6 @@
 // <include
 // src="../../../../../ui/login/account_picker/chromeos_user_pod_row.js">
 // <include src="cr_ui.js">
-// <include src="oobe_screen_autolaunch.js">
 // <include src="oobe_select.js">
 
 // <include src="screen_error_message.js">
@@ -39,7 +38,6 @@ HTMLImports.whenReady(() => {
        */
       initialize() {
         cr.ui.login.DisplayManager.initialize();
-        login.AutolaunchScreen.register();
         login.AccountPickerScreen.register();
         login.ErrorMessageScreen.register();
         login.DiscoverScreen.register();

@@ -6,81 +6,56 @@
  * @fileoverview Oobe reset screen implementation.
  */
 
-login.createScreen('AutolaunchScreen', 'autolaunch', function() {
-  return {
-    EXTERNAL_API: ['updateApp', 'confirmAutoLaunchForTesting'],
+Polymer({
+  is: 'autolaunch-element',
 
-    /**
-     * Buttons in oobe wizard's button strip.
-     * @type {array} Array of Buttons.
-     */
-    get buttons() {
-      var buttons = [];
+  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 
-      var confirmButton = this.ownerDocument.createElement('button');
-      confirmButton.id = 'autolaunch-confirm-button';
-      confirmButton.textContent =
-          loadTimeData.getString('autolaunchConfirmButton');
-      confirmButton.addEventListener('click', function(e) {
-        chrome.send('autolaunchOnConfirm');
-        e.stopPropagation();
-      });
-      buttons.push(confirmButton);
+  EXTERNAL_API: [
+    'updateApp',
+  ],
 
-      var cancelButton = this.ownerDocument.createElement('button');
-      cancelButton.id = 'autolaunch-cancel-button';
-      cancelButton.textContent =
-          loadTimeData.getString('autolaunchCancelButton');
-      cancelButton.addEventListener('click', function(e) {
-        chrome.send('autolaunchOnCancel');
-        e.stopPropagation();
-      });
-      buttons.push(cancelButton);
-      return buttons;
-    },
+  properties: {
+    appName_: {type: String, value: ''},
+    appIconUrl_: {type: String, value: ''},
+  },
 
-    /**
-     * Event handler invoked when the page is shown and ready.
-     */
-    onBeforeShow() {
-      chrome.send('autolaunchVisible');
-    },
 
-    /**
-     * Returns a control which should receive an initial focus.
-     */
-    get defaultControl() {
-      return $('autolaunch-cancel-button');
-    },
+  ready() {
+    this.initializeLoginScreen('AutolaunchScreen', {
+      resetAllowed: true,
+    });
+  },
 
-    /**
-     * Cancels the reset and drops the user back to the login screen.
-     */
-    cancel() {
-      chrome.send('autolaunchOnCancel');
-    },
+  onConfirm_() {
+    chrome.send('autolaunchOnConfirm');
+  },
 
-    /**
-     * Sets app to be displayed in the auto-launch warning.
-     * @param {!Object} app An dictionary with app info.
-     */
-    updateApp(app) {
-      if (app.appIconUrl && app.appIconUrl.length)
-        $('autolaunch-app-icon').src = app.appIconUrl;
+  onCancel_() {
+    chrome.send('autolaunchOnCancel');
+  },
 
-      $('autolaunch-app-name').innerText = app.appName;
-    },
+  /**
+   * Event handler invoked when the page is shown and ready.
+   */
+  onBeforeShow() {
+    chrome.send('autolaunchVisible');
+  },
 
-    /**
-     * Initiates confirm/cancel response for testing.
-     * @param {boolean} confirm True if the screen should confirm auto-launch.
-     */
-    confirmAutoLaunchForTesting(confirm) {
-      var button = confirm ? $('autolaunch-confirm-button') :
-                             $('autolaunch-cancel-button');
-      var clickEvent = document.createEvent('Event');
-      clickEvent.initEvent('click', true, true);
-      button.dispatchEvent(clickEvent);
-    }
-  };
+  /**
+   * Cancels the reset and drops the user back to the login screen.
+   */
+  cancel() {
+    chrome.send('autolaunchOnCancel');
+  },
+
+  /**
+   * Sets app to be displayed in the auto-launch warning.
+   * @param {!Object} app An dictionary with app info.
+   */
+  updateApp(app) {
+    this.appName_ = app.appName;
+    if (app.appIconUrl && app.appIconUrl.length)
+      this.appIconUrl_ = app.appIconUrl;
+  },
 });
