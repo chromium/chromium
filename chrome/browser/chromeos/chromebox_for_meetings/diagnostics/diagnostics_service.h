@@ -28,6 +28,13 @@ class DiagnosticsService : public CfmObserver,
   static DiagnosticsService* Get();
   static bool IsInitialized();
 
+  // mojom::MeetDevicesDiagnostics overrides:
+  void GetCrosHealthdTelemetry(
+      GetCrosHealthdTelemetryCallback callback) override;
+  void GetCrosHealthdProcessInfo(
+      uint32_t pid,
+      GetCrosHealthdProcessInfoCallback callback) override;
+
  protected:
   // Forward |CfmObserver| implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;

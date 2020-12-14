@@ -4,9 +4,12 @@
 
 #include "chrome/browser/chromeos/chromebox_for_meetings/diagnostics/diagnostics_service.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
@@ -39,6 +42,28 @@ DiagnosticsService* DiagnosticsService::Get() {
 // static
 bool DiagnosticsService::IsInitialized() {
   return g_info_service;
+}
+
+void DiagnosticsService::GetCrosHealthdTelemetry(
+    GetCrosHealthdTelemetryCallback callback) {
+  cros_healthd::ServiceConnection::GetInstance()->ProbeTelemetryInfo(
+      {cros_healthd::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices,
+       cros_healthd::mojom::ProbeCategoryEnum::kCpu,
+       cros_healthd::mojom::ProbeCategoryEnum::kTimezone,
+       cros_healthd::mojom::ProbeCategoryEnum::kMemory,
+       cros_healthd::mojom::ProbeCategoryEnum::kFan,
+       cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition,
+       cros_healthd::mojom::ProbeCategoryEnum::kBluetooth,
+       cros_healthd::mojom::ProbeCategoryEnum::kSystem,
+       cros_healthd::mojom::ProbeCategoryEnum::kNetwork},
+      std::move(callback));
+}
+
+void DiagnosticsService::GetCrosHealthdProcessInfo(
+    uint32_t pid,
+    GetCrosHealthdProcessInfoCallback callback) {
+  cros_healthd::ServiceConnection::GetInstance()->ProbeProcessInfo(
+      static_cast<pid_t>(pid), std::move(callback));
 }
 
 bool DiagnosticsService::ServiceRequestReceived(

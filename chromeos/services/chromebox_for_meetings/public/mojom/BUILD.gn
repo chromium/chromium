@@ -12,5 +12,8 @@ mojom("mojom") {
     "meet_devices_info.mojom",
     "meet_devices_logger.mojom",
   ]
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//chromeos/services/cros_healthd/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
 }

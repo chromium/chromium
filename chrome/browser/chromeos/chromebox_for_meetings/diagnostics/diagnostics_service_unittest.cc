@@ -16,11 +16,14 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
+#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_diagnostics.mojom.h"
+#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,6 +43,7 @@ class CfmDiagnosticsServiceTest : public ::testing::Test {
       delete;
 
   void SetUp() override {
+    CrosHealthdClient::InitializeFake();
     CfmHotlineClient::InitializeFake();
     ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
@@ -49,6 +53,11 @@ class CfmDiagnosticsServiceTest : public ::testing::Test {
   void TearDown() override {
     DiagnosticsService::Shutdown();
     CfmHotlineClient::Shutdown();
+    CrosHealthdClient::Shutdown();
+
+    // Wait for cros_healthd's ServiceConnection to observe the destruction of
+    // the client.
+    cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
   }
 
   FakeCfmHotlineClient* GetClient() {
@@ -123,6 +132,38 @@ TEST_F(CfmDiagnosticsServiceTest, GetDiagnosticsRemote) {
 TEST_F(CfmDiagnosticsServiceTest, GetDeviceInfoService) {
   const auto& details_remote = GetDiagnosticsRemote();
   ASSERT_TRUE(details_remote.is_connected());
+}
+
+// This test ensure that the diagnostics service can retrieve telemetry
+// information from cros_healthd.
+TEST_F(CfmDiagnosticsServiceTest, GetCrosHealthdTelemetry) {
+  auto response = cros_healthd::mojom::TelemetryInfo::New();
+  cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(response);
+  base::RunLoop run_loop;
+  DiagnosticsService::Get()->GetCrosHealthdTelemetry(base::BindLambdaForTesting(
+      [&](cros_healthd::mojom::TelemetryInfoPtr info) {
+        EXPECT_EQ(info, response);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// This test ensure that the diagnostics service can retrieve process-specific
+// information from cros_healthd.
+TEST_F(CfmDiagnosticsServiceTest, GetCrosHealthdProcessInfo) {
+  auto response = cros_healthd::mojom::ProcessResult::NewProcessInfo(
+      cros_healthd::mojom::ProcessInfo::New());
+  cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeProcessInfoResponseForTesting(response);
+  base::RunLoop run_loop;
+  DiagnosticsService::Get()->GetCrosHealthdProcessInfo(
+      /*pid=*/10, base::BindLambdaForTesting(
+                      [&](cros_healthd::mojom::ProcessResultPtr info) {
+                        EXPECT_EQ(info, response);
+                        run_loop.Quit();
+                      }));
+  run_loop.Run();
 }
 
 }  // namespace

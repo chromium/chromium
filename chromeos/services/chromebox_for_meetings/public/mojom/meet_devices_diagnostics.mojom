@@ -4,7 +4,17 @@
 
 module chromeos.cfm.mojom;
 
+import "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
+
 // Interface defined by chromium specifically for the ChromeboxForMeetings
 // platform to query system diagnostics of devices in the fleet.
-interface MeetDevicesDiagnostics {};
+interface MeetDevicesDiagnostics {
+  // Retrieves and forwards device telemetry from cros_healthd.
+  GetCrosHealthdTelemetry()
+      => (chromeos.cros_healthd.mojom.TelemetryInfo telemetry);
+
+  // Retrieves information about a specific process from cros_healthd.
+  GetCrosHealthdProcessInfo(uint32 pid)
+      => (chromeos.cros_healthd.mojom.ProcessResult process_info);
+};
 
