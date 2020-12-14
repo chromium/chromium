@@ -372,18 +372,6 @@ bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
   else
     cookie_options->unset_return_excluded_cookies();
 
-  base::Optional<std::vector<net::SchemefulSite>> mojo_full_party_context;
-  if (!mojo_options.ReadFullPartyContext(&mojo_full_party_context))
-    return false;
-  base::Optional<std::set<net::SchemefulSite>> full_party_context;
-  if (mojo_full_party_context.has_value()) {
-    full_party_context.emplace(mojo_full_party_context->begin(),
-                               mojo_full_party_context->end());
-    if (mojo_full_party_context->size() != full_party_context->size())
-      return false;
-  }
-  cookie_options->set_full_party_context(full_party_context);
-
   net::CookieOptions::SamePartyCookieContextType same_party_cookie_context_type;
   if (!mojo_options.ReadSamePartyCookieContextType(
           &same_party_cookie_context_type))

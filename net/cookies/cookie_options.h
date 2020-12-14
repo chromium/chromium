@@ -12,7 +12,6 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
-#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "url/gurl.h"
 
@@ -109,7 +108,6 @@ class NET_EXPORT CookieOptions {
   // * |set_{include,exclude}_httponly()|
   // * |set_same_site_cookie_context()|
   // * |set_do_not_update_access_time()|
-  // * |set_full_party_context()|
   // * |set_same_party_cookie_context_type()|
   CookieOptions();
   CookieOptions(const CookieOptions& other);
@@ -141,14 +139,6 @@ class NET_EXPORT CookieOptions {
   void unset_return_excluded_cookies() { return_excluded_cookies_ = false; }
   bool return_excluded_cookies() const { return return_excluded_cookies_; }
 
-  void set_full_party_context(
-      const base::Optional<std::set<SchemefulSite>>& full_party_context) {
-    full_party_context_ = full_party_context;
-  }
-  const base::Optional<std::set<SchemefulSite>>& full_party_context() const {
-    return full_party_context_;
-  }
-
   // How trusted is the current browser environment when it comes to accessing
   // SameParty cookies. Default is not trusted, e.g. kCrossParty.
   void set_same_party_cookie_context_type(
@@ -178,7 +168,6 @@ class NET_EXPORT CookieOptions {
   SameSiteCookieContext same_site_cookie_context_;
   bool update_access_time_;
   bool return_excluded_cookies_ = false;
-  base::Optional<std::set<SchemefulSite>> full_party_context_;
 
   SamePartyCookieContextType same_party_cookie_context_type_ =
       SamePartyCookieContextType::kCrossParty;
