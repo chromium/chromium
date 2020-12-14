@@ -166,7 +166,7 @@ void ExecutionContextCSPDelegate::PostViolationReport(
     const Vector<String>& report_endpoints,
     bool use_reporting_api) {
   DCHECK_EQ(is_frame_ancestors_violation,
-            ContentSecurityPolicy::DirectiveType::kFrameAncestors ==
+            network::mojom::blink::CSPDirectiveName::FrameAncestors ==
                 ContentSecurityPolicy::GetDirectiveType(
                     violation_data.effectiveDirective()));
 

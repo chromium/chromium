@@ -53,7 +53,7 @@ bool CSPSourceListIsHashOrNoncePresent(
 
 CORE_EXPORT
 bool CSPSourceListAllowAllInline(
-    ContentSecurityPolicy::DirectiveType directive_type,
+    CSPDirectiveName directive_type,
     const network::mojom::blink::CSPSourceList& source_list);
 
 CORE_EXPORT

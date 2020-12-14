@@ -27,7 +27,7 @@ class ContentSecurityPolicy;
 enum class ResourceType : uint8_t;
 
 struct CSPOperativeDirective {
-  ContentSecurityPolicy::DirectiveType type;
+  CSPDirectiveName type;
   const network::mojom::blink::CSPSourceList* source_list;
 };
 
@@ -80,7 +80,7 @@ class CORE_EXPORT CSPDirectiveList final
                        const KURL&,
                        ReportingDisposition) const;
 
-  bool AllowFromSource(ContentSecurityPolicy::DirectiveType,
+  bool AllowFromSource(CSPDirectiveName,
                        const KURL&,
                        const KURL& url_before_redirects,
                        ResourceRequest::RedirectStatus,
@@ -95,7 +95,7 @@ class CORE_EXPORT CSPDirectiveList final
       ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details)
       const;
 
-  bool AllowDynamic(ContentSecurityPolicy::DirectiveType) const;
+  bool AllowDynamic(CSPDirectiveName) const;
   bool AllowDynamicWorker() const;
 
   bool AllowTrustedTypeAssignmentFailure(const String& message,
@@ -121,8 +121,7 @@ class CORE_EXPORT CSPDirectiveList final
     return header_type_ == network::mojom::ContentSecurityPolicyType::kReport;
   }
   bool IsActiveForConnections() const {
-    return OperativeDirective(ContentSecurityPolicy::DirectiveType::kConnectSrc)
-        .source_list;
+    return OperativeDirective(CSPDirectiveName::ConnectSrc).source_list;
   }
   const Vector<String>& ReportEndpoints() const { return report_endpoints_; }
   bool UseReportingApi() const { return use_reporting_api_; }
@@ -196,12 +195,11 @@ class CORE_EXPORT CSPDirectiveList final
   void AddTrustedTypes(const String& name, const String& value);
   void RequireTrustedTypesFor(const String& name, const String& value);
 
-  ContentSecurityPolicy::DirectiveType FallbackDirective(
-      ContentSecurityPolicy::DirectiveType current_directive,
-      ContentSecurityPolicy::DirectiveType original_directive) const;
+  CSPDirectiveName FallbackDirective(CSPDirectiveName current_directive,
+                                     CSPDirectiveName original_directive) const;
   void ReportViolation(
       const String& directive_text,
-      ContentSecurityPolicy::DirectiveType,
+      CSPDirectiveName,
       const String& console_message,
       const KURL& blocked_url,
       ResourceRequest::RedirectStatus,
@@ -210,7 +208,7 @@ class CORE_EXPORT CSPDirectiveList final
       const String& sample = String(),
       const String& sample_prefix = String()) const;
   void ReportViolationWithLocation(const String& directive_text,
-                                   ContentSecurityPolicy::DirectiveType,
+                                   CSPDirectiveName,
                                    const String& console_message,
                                    const KURL& blocked_url,
                                    const String& context_url,
@@ -218,7 +216,7 @@ class CORE_EXPORT CSPDirectiveList final
                                    Element*,
                                    const String& source) const;
   void ReportEvalViolation(const String& directive_text,
-                           ContentSecurityPolicy::DirectiveType,
+                           CSPDirectiveName,
                            const String& message,
                            const KURL& blocked_url,
                            const ContentSecurityPolicy::ExceptionStatus,
@@ -228,7 +226,7 @@ class CORE_EXPORT CSPDirectiveList final
   bool CheckWasmEval(
       const network::mojom::blink::CSPSourceList* directive) const;
   bool CheckDynamic(const network::mojom::blink::CSPSourceList* directive,
-                    ContentSecurityPolicy::DirectiveType) const;
+                    CSPDirectiveName effective_type) const;
   bool IsMatchingNoncePresent(
       const network::mojom::blink::CSPSourceList* directive,
       const String&) const;
@@ -256,20 +254,19 @@ class CORE_EXPORT CSPDirectiveList final
   bool CheckWasmEvalAndReportViolation(const String& console_message,
                                        ContentSecurityPolicy::ExceptionStatus,
                                        const String& script_content) const;
-  bool CheckInlineAndReportViolation(
-      CSPOperativeDirective directive,
-      const String& console_message,
-      Element*,
-      const String& source,
-      const String& context_url,
-      const WTF::OrdinalNumber& context_line,
-      bool is_script,
-      const String& hash_value,
-      ContentSecurityPolicy::DirectiveType effective_type) const;
+  bool CheckInlineAndReportViolation(CSPOperativeDirective directive,
+                                     const String& console_message,
+                                     Element*,
+                                     const String& source,
+                                     const String& context_url,
+                                     const WTF::OrdinalNumber& context_line,
+                                     bool is_script,
+                                     const String& hash_value,
+                                     CSPDirectiveName effective_type) const;
 
   bool CheckSourceAndReportViolation(CSPOperativeDirective directive,
                                      const KURL&,
-                                     ContentSecurityPolicy::DirectiveType,
+                                     CSPDirectiveName,
                                      const KURL& url_before_redirects,
                                      ResourceRequest::RedirectStatus) const;
   bool CheckMediaTypeAndReportViolation(MediaListDirective*,
@@ -279,17 +276,16 @@ class CORE_EXPORT CSPDirectiveList final
 
   bool DenyIfEnforcingPolicy() const { return IsReportOnly(); }
 
-  // Return the operative type and CSPSourceList for a given directive type,
-  // falling back to general directives according to Content Security Policies
-  // rules. For example, if 'default-src' is defined but 'media-src' is not,
-  // OperativeDirective(DirectiveType::kMediaSrc) will return type
-  // DirectiveType::kDefaultSrc and the corresponding CSPSourceList. If no
+  // Return the operative directive name and CSPSourceList for a given directive
+  // name, falling back to generic directives according to Content Security
+  // Policies rules. For example, if 'default-src' is defined but 'media-src' is
+  // not, OperativeDirective(CSPDirectiveName::MediaSrc) will return type
+  // CSPDirectiveName::DefaultSrc and the corresponding CSPSourceList. If no
   // operative directive for the given type is defined, this will return
-  // DirectiveType::kUndefined and nullptr.
+  // CSPDirectiveName::Unknown and nullptr.
   CSPOperativeDirective OperativeDirective(
-      ContentSecurityPolicy::DirectiveType type,
-      ContentSecurityPolicy::DirectiveType original_type =
-          ContentSecurityPolicy::DirectiveType::kUndefined) const;
+      CSPDirectiveName type,
+      CSPDirectiveName original_type = CSPDirectiveName::Unknown) const;
 
   Member<ContentSecurityPolicy> policy_;
 
@@ -297,7 +293,7 @@ class CORE_EXPORT CSPDirectiveList final
   network::mojom::ContentSecurityPolicyType header_type_;
   network::mojom::ContentSecurityPolicySource header_source_;
 
-  HashMap<ContentSecurityPolicy::DirectiveType, String> raw_directives_;
+  HashMap<CSPDirectiveName, String> raw_directives_;
 
   bool has_sandbox_policy_;
 

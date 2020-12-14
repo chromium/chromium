@@ -321,33 +321,32 @@ TEST_F(SourceListDirectiveTest, AllowAllInline) {
   // Script-src and style-src differently handle presence of 'strict-dynamic'.
   network::mojom::blink::CSPSourceListPtr script_src = CSPSourceListParse(
       "script-src", "'strict-dynamic' 'unsafe-inline'", csp.Get());
-  EXPECT_FALSE(CSPSourceListAllowAllInline(
-      ContentSecurityPolicy::DirectiveType::kScriptSrc, *script_src));
+  EXPECT_FALSE(
+      CSPSourceListAllowAllInline(CSPDirectiveName::ScriptSrc, *script_src));
 
   network::mojom::blink::CSPSourceListPtr style_src = CSPSourceListParse(
       "style-src", "'strict-dynamic' 'unsafe-inline'", csp.Get());
-  EXPECT_TRUE(CSPSourceListAllowAllInline(
-      ContentSecurityPolicy::DirectiveType::kStyleSrc, *style_src));
+  EXPECT_TRUE(
+      CSPSourceListAllowAllInline(CSPDirectiveName::StyleSrc, *style_src));
 
   for (const auto& test : cases) {
     network::mojom::blink::CSPSourceListPtr script_src =
         CSPSourceListParse("script-src", test.sources, csp.Get());
     EXPECT_EQ(
-        CSPSourceListAllowAllInline(
-            ContentSecurityPolicy::DirectiveType::kScriptSrc, *script_src),
+        CSPSourceListAllowAllInline(CSPDirectiveName::ScriptSrc, *script_src),
         test.expected);
 
     network::mojom::blink::CSPSourceListPtr style_src =
         CSPSourceListParse("style-src", test.sources, csp.Get());
-    EXPECT_EQ(CSPSourceListAllowAllInline(
-                  ContentSecurityPolicy::DirectiveType::kStyleSrc, *style_src),
-              test.expected);
+    EXPECT_EQ(
+        CSPSourceListAllowAllInline(CSPDirectiveName::StyleSrc, *style_src),
+        test.expected);
 
     // If source list doesn't have a valid type, it must not allow all inline.
     network::mojom::blink::CSPSourceListPtr img_src =
         CSPSourceListParse("img-src", test.sources, csp.Get());
-    EXPECT_FALSE(CSPSourceListAllowAllInline(
-        ContentSecurityPolicy::DirectiveType::kImgSrc, *img_src));
+    EXPECT_FALSE(
+        CSPSourceListAllowAllInline(CSPDirectiveName::ImgSrc, *img_src));
   }
 }
 

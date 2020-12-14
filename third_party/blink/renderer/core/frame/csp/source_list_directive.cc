@@ -485,7 +485,7 @@ network::mojom::blink::CSPSourceListPtr Parse(const UChar* begin,
       String token(begin_source,
                    static_cast<wtf_size_t>(position - begin_source));
       if (ContentSecurityPolicy::GetDirectiveType(token) !=
-          ContentSecurityPolicy::DirectiveType::kUndefined) {
+          CSPDirectiveName::Unknown) {
         policy->ReportDirectiveAsSourceExpression(
             directive_name,
             source_list->sources[source_list->sources.size() - 1]->host);
@@ -605,9 +605,9 @@ bool CSPSourceListAllowsURLBasedMatching(
 }
 
 bool CSPSourceListAllowAllInline(
-    ContentSecurityPolicy::DirectiveType directive_type,
+    CSPDirectiveName directive_type,
     const network::mojom::blink::CSPSourceList& source_list) {
-  if (directive_type != ContentSecurityPolicy::DirectiveType::kDefaultSrc &&
+  if (directive_type != CSPDirectiveName::DefaultSrc &&
       !ContentSecurityPolicy::IsScriptDirective(directive_type) &&
       !ContentSecurityPolicy::IsStyleDirective(directive_type)) {
     return false;

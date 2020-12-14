@@ -3197,7 +3197,7 @@ void LocalFrame::ReportContentSecurityPolicyViolation(
   auto directive_type =
       ContentSecurityPolicy::GetDirectiveType(violation->effective_directive);
   LocalFrame* context_frame =
-      directive_type == ContentSecurityPolicy::DirectiveType::kFrameAncestors
+      directive_type == network::mojom::blink::CSPDirectiveName::FrameAncestors
           ? this
           : nullptr;
 

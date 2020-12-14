@@ -80,6 +80,7 @@ typedef HeapVector<Member<ConsoleMessage>> ConsoleMessageVector;
 typedef std::pair<String, network::mojom::ContentSecurityPolicyType>
     CSPHeaderAndType;
 using RedirectStatus = ResourceRequest::RedirectStatus;
+using network::mojom::blink::CSPDirectiveName;
 
 //  A delegate interface to implement violation reporting, support for some
 //  directives and other miscellaneous functionality.
@@ -162,40 +163,6 @@ class CORE_EXPORT ContentSecurityPolicy final
     kScriptAttribute,
     kStyle,
     kStyleAttribute
-  };
-
-  enum class DirectiveType {
-    kBaseURI,
-    kBlockAllMixedContent,
-    kChildSrc,
-    kConnectSrc,
-    kDefaultSrc,
-    kFontSrc,
-    kFormAction,
-    kFrameAncestors,
-    kFrameSrc,
-    kImgSrc,
-    kManifestSrc,
-    kMediaSrc,
-    kNavigateTo,
-    kObjectSrc,
-    kPluginTypes,
-    kPrefetchSrc,
-    kReportTo,
-    kReportURI,
-    kRequireTrustedTypesFor,
-    kSandbox,
-    kScriptSrc,
-    kScriptSrcAttr,
-    kScriptSrcElem,
-    kStyleSrc,
-    kStyleSrcAttr,
-    kStyleSrcElem,
-    kTreatAsPublicAddress,
-    kTrustedTypes,
-    kUndefined,
-    kUpgradeInsecureRequests,
-    kWorkerSrc,
   };
 
   // CheckHeaderType can be passed to Allow*FromSource methods to control which
@@ -396,7 +363,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   // If |sourceLocation| is not set, the source location will be the context's
   // current location.
   void ReportViolation(const String& directive_text,
-                       const DirectiveType& effective_type,
+                       CSPDirectiveName effective_type,
                        const String& console_message,
                        const KURL& blocked_url,
                        const Vector<String>& report_endpoints,
@@ -466,8 +433,8 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   static bool IsNonceableElement(const Element*);
 
-  static const char* GetDirectiveName(const DirectiveType&);
-  static DirectiveType GetDirectiveType(const String& name);
+  static const char* GetDirectiveName(CSPDirectiveName type);
+  static CSPDirectiveName GetDirectiveType(const String& name);
 
   bool HasHeaderDeliveredPolicy() const { return header_delivered_; }
 
@@ -492,21 +459,16 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   bool HasPolicyFromSource(network::mojom::ContentSecurityPolicySource) const;
 
-  static bool IsScriptDirective(
-      ContentSecurityPolicy::DirectiveType directive_type) {
-    return (
-        directive_type == ContentSecurityPolicy::DirectiveType::kScriptSrc ||
-        directive_type ==
-            ContentSecurityPolicy::DirectiveType::kScriptSrcAttr ||
-        directive_type == ContentSecurityPolicy::DirectiveType::kScriptSrcElem);
+  static bool IsScriptDirective(CSPDirectiveName directive_type) {
+    return (directive_type == CSPDirectiveName::ScriptSrc ||
+            directive_type == CSPDirectiveName::ScriptSrcAttr ||
+            directive_type == CSPDirectiveName::ScriptSrcElem);
   }
 
-  static bool IsStyleDirective(
-      ContentSecurityPolicy::DirectiveType directive_type) {
-    return (
-        directive_type == ContentSecurityPolicy::DirectiveType::kStyleSrc ||
-        directive_type == ContentSecurityPolicy::DirectiveType::kStyleSrcAttr ||
-        directive_type == ContentSecurityPolicy::DirectiveType::kStyleSrcElem);
+  static bool IsStyleDirective(CSPDirectiveName directive_type) {
+    return (directive_type == CSPDirectiveName::StyleSrc ||
+            directive_type == CSPDirectiveName::StyleSrcAttr ||
+            directive_type == CSPDirectiveName::StyleSrcElem);
   }
 
   void Count(WebFeature feature) const;
@@ -541,7 +503,7 @@ class CORE_EXPORT ContentSecurityPolicy final
                            const Vector<String>& report_endpoints,
                            bool use_reporting_api);
 
-  bool AllowFromSource(ContentSecurityPolicy::DirectiveType,
+  bool AllowFromSource(CSPDirectiveName,
                        const KURL&,
                        const KURL& url_before_redirects,
                        RedirectStatus,

@@ -587,46 +587,43 @@ TEST_F(ContentSecurityPolicyTest, NonceMultiplePolicy) {
 
 TEST_F(ContentSecurityPolicyTest, DirectiveType) {
   struct TestCase {
-    ContentSecurityPolicy::DirectiveType type;
+    CSPDirectiveName type;
     const String& name;
   } cases[] = {
-      {ContentSecurityPolicy::DirectiveType::kBaseURI, "base-uri"},
-      {ContentSecurityPolicy::DirectiveType::kBlockAllMixedContent,
-       "block-all-mixed-content"},
-      {ContentSecurityPolicy::DirectiveType::kChildSrc, "child-src"},
-      {ContentSecurityPolicy::DirectiveType::kConnectSrc, "connect-src"},
-      {ContentSecurityPolicy::DirectiveType::kDefaultSrc, "default-src"},
-      {ContentSecurityPolicy::DirectiveType::kFrameAncestors,
-       "frame-ancestors"},
-      {ContentSecurityPolicy::DirectiveType::kFrameSrc, "frame-src"},
-      {ContentSecurityPolicy::DirectiveType::kFontSrc, "font-src"},
-      {ContentSecurityPolicy::DirectiveType::kFormAction, "form-action"},
-      {ContentSecurityPolicy::DirectiveType::kImgSrc, "img-src"},
-      {ContentSecurityPolicy::DirectiveType::kManifestSrc, "manifest-src"},
-      {ContentSecurityPolicy::DirectiveType::kMediaSrc, "media-src"},
-      {ContentSecurityPolicy::DirectiveType::kNavigateTo, "navigate-to"},
-      {ContentSecurityPolicy::DirectiveType::kObjectSrc, "object-src"},
-      {ContentSecurityPolicy::DirectiveType::kPluginTypes, "plugin-types"},
-      {ContentSecurityPolicy::DirectiveType::kReportURI, "report-uri"},
-      {ContentSecurityPolicy::DirectiveType::kSandbox, "sandbox"},
-      {ContentSecurityPolicy::DirectiveType::kScriptSrc, "script-src"},
-      {ContentSecurityPolicy::DirectiveType::kScriptSrcAttr, "script-src-attr"},
-      {ContentSecurityPolicy::DirectiveType::kScriptSrcElem, "script-src-elem"},
-      {ContentSecurityPolicy::DirectiveType::kStyleSrc, "style-src"},
-      {ContentSecurityPolicy::DirectiveType::kStyleSrcAttr, "style-src-attr"},
-      {ContentSecurityPolicy::DirectiveType::kStyleSrcElem, "style-src-elem"},
-      {ContentSecurityPolicy::DirectiveType::kUpgradeInsecureRequests,
-       "upgrade-insecure-requests"},
-      {ContentSecurityPolicy::DirectiveType::kWorkerSrc, "worker-src"},
+      {CSPDirectiveName::BaseURI, "base-uri"},
+      {CSPDirectiveName::BlockAllMixedContent, "block-all-mixed-content"},
+      {CSPDirectiveName::ChildSrc, "child-src"},
+      {CSPDirectiveName::ConnectSrc, "connect-src"},
+      {CSPDirectiveName::DefaultSrc, "default-src"},
+      {CSPDirectiveName::FrameAncestors, "frame-ancestors"},
+      {CSPDirectiveName::FrameSrc, "frame-src"},
+      {CSPDirectiveName::FontSrc, "font-src"},
+      {CSPDirectiveName::FormAction, "form-action"},
+      {CSPDirectiveName::ImgSrc, "img-src"},
+      {CSPDirectiveName::ManifestSrc, "manifest-src"},
+      {CSPDirectiveName::MediaSrc, "media-src"},
+      {CSPDirectiveName::NavigateTo, "navigate-to"},
+      {CSPDirectiveName::ObjectSrc, "object-src"},
+      {CSPDirectiveName::PluginTypes, "plugin-types"},
+      {CSPDirectiveName::ReportURI, "report-uri"},
+      {CSPDirectiveName::Sandbox, "sandbox"},
+      {CSPDirectiveName::ScriptSrc, "script-src"},
+      {CSPDirectiveName::ScriptSrcAttr, "script-src-attr"},
+      {CSPDirectiveName::ScriptSrcElem, "script-src-elem"},
+      {CSPDirectiveName::StyleSrc, "style-src"},
+      {CSPDirectiveName::StyleSrcAttr, "style-src-attr"},
+      {CSPDirectiveName::StyleSrcElem, "style-src-elem"},
+      {CSPDirectiveName::UpgradeInsecureRequests, "upgrade-insecure-requests"},
+      {CSPDirectiveName::WorkerSrc, "worker-src"},
   };
 
-  EXPECT_EQ(ContentSecurityPolicy::DirectiveType::kUndefined,
+  EXPECT_EQ(CSPDirectiveName::Unknown,
             ContentSecurityPolicy::GetDirectiveType("random"));
 
   for (const auto& test : cases) {
     const String& name_from_type =
         ContentSecurityPolicy::GetDirectiveName(test.type);
-    ContentSecurityPolicy::DirectiveType type_from_name =
+    CSPDirectiveName type_from_name =
         ContentSecurityPolicy::GetDirectiveType(test.name);
     EXPECT_EQ(name_from_type, test.name);
     EXPECT_EQ(type_from_name, test.type);
@@ -1210,20 +1207,14 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
                                    "application/x-type-1", example_url,
                                    ReportingDisposition::kSuppressReporting));
 
-  ContentSecurityPolicy::DirectiveType types_to_test[] = {
-      ContentSecurityPolicy::DirectiveType::kBaseURI,
-      ContentSecurityPolicy::DirectiveType::kConnectSrc,
-      ContentSecurityPolicy::DirectiveType::kFontSrc,
-      ContentSecurityPolicy::DirectiveType::kFormAction,
-      ContentSecurityPolicy::DirectiveType::kFrameSrc,
-      ContentSecurityPolicy::DirectiveType::kImgSrc,
-      ContentSecurityPolicy::DirectiveType::kManifestSrc,
-      ContentSecurityPolicy::DirectiveType::kMediaSrc,
-      ContentSecurityPolicy::DirectiveType::kObjectSrc,
-      ContentSecurityPolicy::DirectiveType::kPrefetchSrc,
-      ContentSecurityPolicy::DirectiveType::kScriptSrcElem,
-      ContentSecurityPolicy::DirectiveType::kStyleSrcElem,
-      ContentSecurityPolicy::DirectiveType::kWorkerSrc};
+  CSPDirectiveName types_to_test[] = {
+      CSPDirectiveName::BaseURI,       CSPDirectiveName::ConnectSrc,
+      CSPDirectiveName::FontSrc,       CSPDirectiveName::FormAction,
+      CSPDirectiveName::FrameSrc,      CSPDirectiveName::ImgSrc,
+      CSPDirectiveName::ManifestSrc,   CSPDirectiveName::MediaSrc,
+      CSPDirectiveName::ObjectSrc,     CSPDirectiveName::PrefetchSrc,
+      CSPDirectiveName::ScriptSrcElem, CSPDirectiveName::StyleSrcElem,
+      CSPDirectiveName::WorkerSrc};
   for (auto type : types_to_test) {
     EXPECT_TRUE(
         csp->AllowFromSource(type, example_url, example_url,

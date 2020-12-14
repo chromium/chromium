@@ -222,10 +222,8 @@ void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
 
   for (const auto& policy : policies_) {
     Count(GetUseCounterHelperType(policy->HeaderType()));
-    if (policy->AllowDynamic(
-            ContentSecurityPolicy::DirectiveType::kScriptSrcAttr) ||
-        policy->AllowDynamic(
-            ContentSecurityPolicy::DirectiveType::kScriptSrcElem)) {
+    if (policy->AllowDynamic(CSPDirectiveName::ScriptSrcAttr) ||
+        policy->AllowDynamic(CSPDirectiveName::ScriptSrcElem)) {
       Count(WebFeature::kCSPWithStrictDynamic);
     }
 
@@ -264,8 +262,7 @@ void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
                 ? WebFeature::kCSPWithReasonableRestrictions
                 : WebFeature::kCSPROWithReasonableRestrictions);
 
-      if (!policy->AllowDynamic(
-              ContentSecurityPolicy::DirectiveType::kScriptSrcElem)) {
+      if (!policy->AllowDynamic(CSPDirectiveName::ScriptSrcElem)) {
         Count(policy->HeaderType() == ContentSecurityPolicyType::kEnforce
                   ? WebFeature::kCSPWithBetterThanReasonableRestrictions
                   : WebFeature::kCSPROWithBetterThanReasonableRestrictions);
@@ -606,14 +603,13 @@ bool ContentSecurityPolicy::AllowPluginType(
   return true;
 }
 
-static base::Optional<ContentSecurityPolicy::DirectiveType>
-GetDirectiveTypeFromRequestContextType(
+static base::Optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     mojom::blink::RequestContextType context) {
   switch (context) {
     case mojom::blink::RequestContextType::AUDIO:
     case mojom::blink::RequestContextType::TRACK:
     case mojom::blink::RequestContextType::VIDEO:
-      return ContentSecurityPolicy::DirectiveType::kMediaSrc;
+      return CSPDirectiveName::MediaSrc;
 
     case mojom::blink::RequestContextType::BEACON:
     case mojom::blink::RequestContextType::EVENT_SOURCE:
@@ -621,45 +617,45 @@ GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::PING:
     case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
     case mojom::blink::RequestContextType::SUBRESOURCE:
-      return ContentSecurityPolicy::DirectiveType::kConnectSrc;
+      return CSPDirectiveName::ConnectSrc;
 
     case mojom::blink::RequestContextType::EMBED:
     case mojom::blink::RequestContextType::OBJECT:
-      return ContentSecurityPolicy::DirectiveType::kObjectSrc;
+      return CSPDirectiveName::ObjectSrc;
 
     case mojom::blink::RequestContextType::PREFETCH:
-      return ContentSecurityPolicy::DirectiveType::kPrefetchSrc;
+      return CSPDirectiveName::PrefetchSrc;
 
     case mojom::blink::RequestContextType::FAVICON:
     case mojom::blink::RequestContextType::IMAGE:
     case mojom::blink::RequestContextType::IMAGE_SET:
-      return ContentSecurityPolicy::DirectiveType::kImgSrc;
+      return CSPDirectiveName::ImgSrc;
 
     case mojom::blink::RequestContextType::FONT:
-      return ContentSecurityPolicy::DirectiveType::kFontSrc;
+      return CSPDirectiveName::FontSrc;
 
     case mojom::blink::RequestContextType::FORM:
-      return ContentSecurityPolicy::DirectiveType::kFormAction;
+      return CSPDirectiveName::FormAction;
 
     case mojom::blink::RequestContextType::FRAME:
     case mojom::blink::RequestContextType::IFRAME:
-      return ContentSecurityPolicy::DirectiveType::kFrameSrc;
+      return CSPDirectiveName::FrameSrc;
 
     case mojom::blink::RequestContextType::IMPORT:
     case mojom::blink::RequestContextType::SCRIPT:
     case mojom::blink::RequestContextType::XSLT:
-      return ContentSecurityPolicy::DirectiveType::kScriptSrcElem;
+      return CSPDirectiveName::ScriptSrcElem;
 
     case mojom::blink::RequestContextType::MANIFEST:
-      return ContentSecurityPolicy::DirectiveType::kManifestSrc;
+      return CSPDirectiveName::ManifestSrc;
 
     case mojom::blink::RequestContextType::SERVICE_WORKER:
     case mojom::blink::RequestContextType::SHARED_WORKER:
     case mojom::blink::RequestContextType::WORKER:
-      return ContentSecurityPolicy::DirectiveType::kWorkerSrc;
+      return CSPDirectiveName::WorkerSrc;
 
     case mojom::blink::RequestContextType::STYLE:
-      return ContentSecurityPolicy::DirectiveType::kStyleSrcElem;
+      return CSPDirectiveName::StyleSrcElem;
 
     case mojom::blink::RequestContextType::CSP_REPORT:
     case mojom::blink::RequestContextType::DOWNLOAD:
@@ -683,7 +679,7 @@ bool ContentSecurityPolicy::AllowRequest(
     RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
     CheckHeaderType check_header_type) const {
-  base::Optional<ContentSecurityPolicy::DirectiveType> type =
+  base::Optional<CSPDirectiveName> type =
       GetDirectiveTypeFromRequestContextType(context);
 
   if (!type)
@@ -702,7 +698,7 @@ void ContentSecurityPolicy::UsesStyleHashAlgorithms(uint8_t algorithms) {
 }
 
 bool ContentSecurityPolicy::AllowFromSource(
-    ContentSecurityPolicy::DirectiveType type,
+    CSPDirectiveName type,
     const KURL& url,
     const KURL& url_before_redirects,
     RedirectStatus redirect_status,
@@ -712,13 +708,13 @@ bool ContentSecurityPolicy::AllowFromSource(
     const IntegrityMetadataSet& hashes,
     ParserDisposition parser_disposition) const {
   SchemeRegistry::PolicyAreas area = SchemeRegistry::kPolicyAreaAll;
-  if (type == ContentSecurityPolicy::DirectiveType::kImgSrc)
+  if (type == CSPDirectiveName::ImgSrc)
     area = SchemeRegistry::kPolicyAreaImage;
-  else if (type == ContentSecurityPolicy::DirectiveType::kStyleSrcElem)
+  else if (type == CSPDirectiveName::StyleSrcElem)
     area = SchemeRegistry::kPolicyAreaStyle;
 
   if (ShouldBypassContentSecurityPolicy(url, area)) {
-    if (type != ContentSecurityPolicy::DirectiveType::kScriptSrcElem)
+    if (type != CSPDirectiveName::ScriptSrcElem)
       return true;
 
     Count(parser_disposition == kParserInserted
@@ -757,8 +753,8 @@ bool ContentSecurityPolicy::AllowBaseURI(const KURL& url) const {
   // `base-uri` isn't affected by 'upgrade-insecure-requests', so we use
   // CheckHeaderType::kCheckAll to check both report-only and enforce headers
   // here.
-  return AllowFromSource(ContentSecurityPolicy::DirectiveType::kBaseURI, url,
-                         url, RedirectStatus::kNoRedirect);
+  return AllowFromSource(CSPDirectiveName::BaseURI, url, url,
+                         RedirectStatus::kNoRedirect);
 }
 
 bool ContentSecurityPolicy::AllowConnectToSource(
@@ -767,14 +763,14 @@ bool ContentSecurityPolicy::AllowConnectToSource(
     RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
     CheckHeaderType check_header_type) const {
-  return AllowFromSource(ContentSecurityPolicy::DirectiveType::kConnectSrc, url,
+  return AllowFromSource(CSPDirectiveName::ConnectSrc, url,
                          url_before_redirects, redirect_status,
                          reporting_disposition, check_header_type);
 }
 
 bool ContentSecurityPolicy::AllowFormAction(const KURL& url) const {
-  return AllowFromSource(ContentSecurityPolicy::DirectiveType::kFormAction, url,
-                         url, RedirectStatus::kNoRedirect);
+  return AllowFromSource(CSPDirectiveName::FormAction, url, url,
+                         RedirectStatus::kNoRedirect);
 }
 
 bool ContentSecurityPolicy::AllowImageFromSource(
@@ -783,19 +779,19 @@ bool ContentSecurityPolicy::AllowImageFromSource(
     RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
     CheckHeaderType check_header_type) const {
-  return AllowFromSource(ContentSecurityPolicy::DirectiveType::kImgSrc, url,
-                         url_before_redirects, redirect_status,
-                         reporting_disposition, check_header_type);
+  return AllowFromSource(CSPDirectiveName::ImgSrc, url, url_before_redirects,
+                         redirect_status, reporting_disposition,
+                         check_header_type);
 }
 
 bool ContentSecurityPolicy::AllowMediaFromSource(const KURL& url) const {
-  return AllowFromSource(ContentSecurityPolicy::DirectiveType::kMediaSrc, url,
-                         url, RedirectStatus::kNoRedirect);
+  return AllowFromSource(CSPDirectiveName::MediaSrc, url, url,
+                         RedirectStatus::kNoRedirect);
 }
 
 bool ContentSecurityPolicy::AllowObjectFromSource(const KURL& url) const {
-  return AllowFromSource(ContentSecurityPolicy::DirectiveType::kObjectSrc, url,
-                         url, RedirectStatus::kNoRedirect);
+  return AllowFromSource(CSPDirectiveName::ObjectSrc, url, url,
+                         RedirectStatus::kNoRedirect);
 }
 
 bool ContentSecurityPolicy::AllowScriptFromSource(
@@ -807,16 +803,16 @@ bool ContentSecurityPolicy::AllowScriptFromSource(
     RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
     CheckHeaderType check_header_type) const {
-  return AllowFromSource(ContentSecurityPolicy::DirectiveType::kScriptSrcElem,
-                         url, url_before_redirects, redirect_status,
+  return AllowFromSource(CSPDirectiveName::ScriptSrcElem, url,
+                         url_before_redirects, redirect_status,
                          reporting_disposition, check_header_type, nonce,
                          hashes, parser_disposition);
 }
 
 bool ContentSecurityPolicy::AllowWorkerContextFromSource(
     const KURL& url) const {
-  return AllowFromSource(ContentSecurityPolicy::DirectiveType::kWorkerSrc, url,
-                         url, RedirectStatus::kNoRedirect);
+  return AllowFromSource(CSPDirectiveName::WorkerSrc, url, url,
+                         RedirectStatus::kNoRedirect);
 }
 
 // The return value indicates whether the policy is allowed or not.
@@ -898,11 +894,10 @@ void ContentSecurityPolicy::UpgradeInsecureRequests() {
       mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests;
 }
 
-static String StripURLForUseInReport(
-    const SecurityOrigin* security_origin,
-    const KURL& url,
-    RedirectStatus redirect_status,
-    const ContentSecurityPolicy::DirectiveType& effective_type) {
+static String StripURLForUseInReport(const SecurityOrigin* security_origin,
+                                     const KURL& url,
+                                     RedirectStatus redirect_status,
+                                     CSPDirectiveName effective_type) {
   if (!url.IsValid())
     return String();
   if (!url.IsHierarchical() || url.ProtocolIs("file"))
@@ -914,8 +909,8 @@ static String StripURLForUseInReport(
   bool can_safely_expose_url =
       security_origin->CanRequest(url) ||
       (redirect_status == RedirectStatus::kNoRedirect &&
-       effective_type != ContentSecurityPolicy::DirectiveType::kFrameSrc &&
-       effective_type != ContentSecurityPolicy::DirectiveType::kObjectSrc);
+       effective_type != CSPDirectiveName::FrameSrc &&
+       effective_type != CSPDirectiveName::ObjectSrc);
 
   if (can_safely_expose_url) {
     // 'KURL::strippedForUseAsReferrer()' dumps 'String()' for non-webby URLs.
@@ -931,7 +926,7 @@ static void GatherSecurityPolicyViolationEventData(
     SecurityPolicyViolationEventInit* init,
     ContentSecurityPolicyDelegate* delegate,
     const String& directive_text,
-    const ContentSecurityPolicy::DirectiveType& effective_type,
+    CSPDirectiveName effective_type,
     const KURL& blocked_url,
     const String& header,
     RedirectStatus redirect_status,
@@ -940,20 +935,19 @@ static void GatherSecurityPolicyViolationEventData(
     std::unique_ptr<SourceLocation> source_location,
     const String& script_source,
     const String& sample_prefix) {
-  if (effective_type == ContentSecurityPolicy::DirectiveType::kFrameAncestors) {
+  if (effective_type == CSPDirectiveName::FrameAncestors) {
     // If this load was blocked via 'frame-ancestors', then the URL of
     // |document| has not yet been initialized. In this case, we'll set both
     // 'documentURI' and 'blockedURI' to the blocked document's URL.
     String stripped_url = StripURLForUseInReport(
         delegate->GetSecurityOrigin(), blocked_url, RedirectStatus::kNoRedirect,
-        ContentSecurityPolicy::DirectiveType::kDefaultSrc);
+        CSPDirectiveName::DefaultSrc);
     init->setDocumentURI(stripped_url);
     init->setBlockedURI(stripped_url);
   } else {
     String stripped_url = StripURLForUseInReport(
         delegate->GetSecurityOrigin(), delegate->Url(),
-        RedirectStatus::kNoRedirect,
-        ContentSecurityPolicy::DirectiveType::kDefaultSrc);
+        RedirectStatus::kNoRedirect, CSPDirectiveName::DefaultSrc);
     init->setDocumentURI(stripped_url);
     switch (violation_type) {
       case ContentSecurityPolicy::kInlineViolation:
@@ -1061,7 +1055,7 @@ static void GatherSecurityPolicyViolationEventData(
 
 void ContentSecurityPolicy::ReportViolation(
     const String& directive_text,
-    const DirectiveType& effective_type,
+    CSPDirectiveName effective_type,
     const String& console_message,
     const KURL& blocked_url,
     const Vector<String>& report_endpoints,
@@ -1081,15 +1075,16 @@ void ContentSecurityPolicy::ReportViolation(
   // https://crbug.com/611232 (or move CSP child-src and frame-src checks to the
   // browser process - see https://crbug.com/376522).
   if (!delegate_ && !context_frame) {
-    DCHECK(effective_type == DirectiveType::kChildSrc ||
-           effective_type == DirectiveType::kFrameSrc ||
-           effective_type == DirectiveType::kPluginTypes ||
-           effective_type == DirectiveType::kTrustedTypes ||
-           effective_type == DirectiveType::kRequireTrustedTypesFor);
+    DCHECK(effective_type == CSPDirectiveName::ChildSrc ||
+           effective_type == CSPDirectiveName::FrameSrc ||
+           effective_type == CSPDirectiveName::PluginTypes ||
+           effective_type == CSPDirectiveName::TrustedTypes ||
+           effective_type == CSPDirectiveName::RequireTrustedTypesFor);
     return;
   }
-  DCHECK((delegate_ && !context_frame) ||
-         ((effective_type == DirectiveType::kFrameAncestors) && context_frame));
+  DCHECK(
+      (delegate_ && !context_frame) ||
+      ((effective_type == CSPDirectiveName::FrameAncestors) && context_frame));
 
   SecurityPolicyViolationEventInit* violation_data =
       SecurityPolicyViolationEventInit::Create();
@@ -1267,7 +1262,7 @@ void ContentSecurityPolicy::ReportUnsupportedDirective(const String& name) {
     message = kOptionsMessage;
   } else if (EqualIgnoringASCIICase(name, kPolicyURI)) {
     message = kPolicyURIMessage;
-  } else if (GetDirectiveType(name) != DirectiveType::kUndefined) {
+  } else if (GetDirectiveType(name) != CSPDirectiveName::Unknown) {
     message = "The Content-Security-Policy directive '" + name +
               "' is implemented behind a flag which is currently disabled.\n";
     level = mojom::ConsoleMessageLevel::kInfo;
@@ -1543,70 +1538,70 @@ void ContentSecurityPolicy::DidSendViolationReport(const String& report) {
   violation_reports_sent_.insert(report.Impl()->GetHash());
 }
 
-const char* ContentSecurityPolicy::GetDirectiveName(const DirectiveType& type) {
+const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
   switch (type) {
-    case DirectiveType::kBaseURI:
+    case CSPDirectiveName::BaseURI:
       return "base-uri";
-    case DirectiveType::kBlockAllMixedContent:
+    case CSPDirectiveName::BlockAllMixedContent:
       return "block-all-mixed-content";
-    case DirectiveType::kChildSrc:
+    case CSPDirectiveName::ChildSrc:
       return "child-src";
-    case DirectiveType::kConnectSrc:
+    case CSPDirectiveName::ConnectSrc:
       return "connect-src";
-    case DirectiveType::kDefaultSrc:
+    case CSPDirectiveName::DefaultSrc:
       return "default-src";
-    case DirectiveType::kFontSrc:
+    case CSPDirectiveName::FontSrc:
       return "font-src";
-    case DirectiveType::kFormAction:
+    case CSPDirectiveName::FormAction:
       return "form-action";
-    case DirectiveType::kFrameAncestors:
+    case CSPDirectiveName::FrameAncestors:
       return "frame-ancestors";
-    case DirectiveType::kFrameSrc:
+    case CSPDirectiveName::FrameSrc:
       return "frame-src";
-    case DirectiveType::kImgSrc:
+    case CSPDirectiveName::ImgSrc:
       return "img-src";
-    case DirectiveType::kManifestSrc:
+    case CSPDirectiveName::ManifestSrc:
       return "manifest-src";
-    case DirectiveType::kMediaSrc:
+    case CSPDirectiveName::MediaSrc:
       return "media-src";
-    case DirectiveType::kNavigateTo:
+    case CSPDirectiveName::NavigateTo:
       return "navigate-to";
-    case DirectiveType::kObjectSrc:
+    case CSPDirectiveName::ObjectSrc:
       return "object-src";
-    case DirectiveType::kPluginTypes:
+    case CSPDirectiveName::PluginTypes:
       return "plugin-types";
-    case DirectiveType::kPrefetchSrc:
+    case CSPDirectiveName::PrefetchSrc:
       return "prefetch-src";
-    case DirectiveType::kReportTo:
+    case CSPDirectiveName::ReportTo:
       return "report-to";
-    case DirectiveType::kReportURI:
+    case CSPDirectiveName::ReportURI:
       return "report-uri";
-    case DirectiveType::kRequireTrustedTypesFor:
+    case CSPDirectiveName::RequireTrustedTypesFor:
       return "require-trusted-types-for";
-    case DirectiveType::kSandbox:
+    case CSPDirectiveName::Sandbox:
       return "sandbox";
-    case DirectiveType::kScriptSrc:
+    case CSPDirectiveName::ScriptSrc:
       return "script-src";
-    case DirectiveType::kScriptSrcAttr:
+    case CSPDirectiveName::ScriptSrcAttr:
       return "script-src-attr";
-    case DirectiveType::kScriptSrcElem:
+    case CSPDirectiveName::ScriptSrcElem:
       return "script-src-elem";
-    case DirectiveType::kStyleSrc:
+    case CSPDirectiveName::StyleSrc:
       return "style-src";
-    case DirectiveType::kStyleSrcAttr:
+    case CSPDirectiveName::StyleSrcAttr:
       return "style-src-attr";
-    case DirectiveType::kStyleSrcElem:
+    case CSPDirectiveName::StyleSrcElem:
       return "style-src-elem";
-    case DirectiveType::kTreatAsPublicAddress:
+    case CSPDirectiveName::TreatAsPublicAddress:
       return "treat-as-public-address";
-    case DirectiveType::kTrustedTypes:
+    case CSPDirectiveName::TrustedTypes:
       return "trusted-types";
-    case DirectiveType::kUpgradeInsecureRequests:
+    case CSPDirectiveName::UpgradeInsecureRequests:
       return "upgrade-insecure-requests";
-    case DirectiveType::kWorkerSrc:
+    case CSPDirectiveName::WorkerSrc:
       return "worker-src";
 
-    case DirectiveType::kUndefined:
+    case CSPDirectiveName::Unknown:
       NOTREACHED();
       return "";
   }
@@ -1615,70 +1610,69 @@ const char* ContentSecurityPolicy::GetDirectiveName(const DirectiveType& type) {
   return "";
 }
 
-ContentSecurityPolicy::DirectiveType ContentSecurityPolicy::GetDirectiveType(
-    const String& name) {
+CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {
   if (name == "base-uri")
-    return DirectiveType::kBaseURI;
+    return CSPDirectiveName::BaseURI;
   if (name == "block-all-mixed-content")
-    return DirectiveType::kBlockAllMixedContent;
+    return CSPDirectiveName::BlockAllMixedContent;
   if (name == "child-src")
-    return DirectiveType::kChildSrc;
+    return CSPDirectiveName::ChildSrc;
   if (name == "connect-src")
-    return DirectiveType::kConnectSrc;
+    return CSPDirectiveName::ConnectSrc;
   if (name == "default-src")
-    return DirectiveType::kDefaultSrc;
+    return CSPDirectiveName::DefaultSrc;
   if (name == "font-src")
-    return DirectiveType::kFontSrc;
+    return CSPDirectiveName::FontSrc;
   if (name == "form-action")
-    return DirectiveType::kFormAction;
+    return CSPDirectiveName::FormAction;
   if (name == "frame-ancestors")
-    return DirectiveType::kFrameAncestors;
+    return CSPDirectiveName::FrameAncestors;
   if (name == "frame-src")
-    return DirectiveType::kFrameSrc;
+    return CSPDirectiveName::FrameSrc;
   if (name == "img-src")
-    return DirectiveType::kImgSrc;
+    return CSPDirectiveName::ImgSrc;
   if (name == "manifest-src")
-    return DirectiveType::kManifestSrc;
+    return CSPDirectiveName::ManifestSrc;
   if (name == "media-src")
-    return DirectiveType::kMediaSrc;
+    return CSPDirectiveName::MediaSrc;
   if (name == "navigate-to")
-    return DirectiveType::kNavigateTo;
+    return CSPDirectiveName::NavigateTo;
   if (name == "object-src")
-    return DirectiveType::kObjectSrc;
+    return CSPDirectiveName::ObjectSrc;
   if (name == "plugin-types")
-    return DirectiveType::kPluginTypes;
+    return CSPDirectiveName::PluginTypes;
   if (name == "prefetch-src")
-    return DirectiveType::kPrefetchSrc;
+    return CSPDirectiveName::PrefetchSrc;
   if (name == "report-to")
-    return DirectiveType::kReportTo;
+    return CSPDirectiveName::ReportTo;
   if (name == "report-uri")
-    return DirectiveType::kReportURI;
+    return CSPDirectiveName::ReportURI;
   if (name == "require-trusted-types-for")
-    return DirectiveType::kRequireTrustedTypesFor;
+    return CSPDirectiveName::RequireTrustedTypesFor;
   if (name == "sandbox")
-    return DirectiveType::kSandbox;
+    return CSPDirectiveName::Sandbox;
   if (name == "script-src")
-    return DirectiveType::kScriptSrc;
+    return CSPDirectiveName::ScriptSrc;
   if (name == "script-src-attr")
-    return DirectiveType::kScriptSrcAttr;
+    return CSPDirectiveName::ScriptSrcAttr;
   if (name == "script-src-elem")
-    return DirectiveType::kScriptSrcElem;
+    return CSPDirectiveName::ScriptSrcElem;
   if (name == "style-src")
-    return DirectiveType::kStyleSrc;
+    return CSPDirectiveName::StyleSrc;
   if (name == "style-src-attr")
-    return DirectiveType::kStyleSrcAttr;
+    return CSPDirectiveName::StyleSrcAttr;
   if (name == "style-src-elem")
-    return DirectiveType::kStyleSrcElem;
+    return CSPDirectiveName::StyleSrcElem;
   if (name == "treat-as-public-address")
-    return DirectiveType::kTreatAsPublicAddress;
+    return CSPDirectiveName::TreatAsPublicAddress;
   if (name == "trusted-types")
-    return DirectiveType::kTrustedTypes;
+    return CSPDirectiveName::TrustedTypes;
   if (name == "upgrade-insecure-requests")
-    return DirectiveType::kUpgradeInsecureRequests;
+    return CSPDirectiveName::UpgradeInsecureRequests;
   if (name == "worker-src")
-    return DirectiveType::kWorkerSrc;
+    return CSPDirectiveName::WorkerSrc;
 
-  return DirectiveType::kUndefined;
+  return CSPDirectiveName::Unknown;
 }
 
 bool ContentSecurityPolicy::ShouldBypassContentSecurityPolicy(
