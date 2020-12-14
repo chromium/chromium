@@ -326,10 +326,12 @@ class CSSProperties(object):
             assert 'resolver' in group, 'resolver option is required'
             logicals = {
                 'block', 'inline', 'block-start', 'block-end', 'inline-start',
-                'inline-end'
+                'inline-end', 'start-start', 'start-end', 'end-start',
+                'end-end'
             }
             physicals = {
-                'vertical', 'horizontal', 'top', 'bottom', 'left', 'right'
+                'vertical', 'horizontal', 'top', 'bottom', 'left', 'right',
+                'top-left', 'top-right', 'bottom-right', 'bottom-left'
             }
             if group['resolver'] in logicals:
                 group['is_logical'] = True

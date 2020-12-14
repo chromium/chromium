@@ -66,7 +66,11 @@ const CSSValue* StyleValueToCSSValue(
     case CSSPropertyID::kBorderBottomLeftRadius:
     case CSSPropertyID::kBorderBottomRightRadius:
     case CSSPropertyID::kBorderTopLeftRadius:
-    case CSSPropertyID::kBorderTopRightRadius: {
+    case CSSPropertyID::kBorderTopRightRadius:
+    case CSSPropertyID::kBorderEndEndRadius:
+    case CSSPropertyID::kBorderEndStartRadius:
+    case CSSPropertyID::kBorderStartEndRadius:
+    case CSSPropertyID::kBorderStartStartRadius: {
       // level 1 only accept single <length-percentages>, but border-radius-*
       // expects pairs.
       const auto* value = style_value.ToCSSValue();

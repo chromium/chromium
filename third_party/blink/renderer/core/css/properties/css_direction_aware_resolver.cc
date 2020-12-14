@@ -17,6 +17,12 @@ using PhysicalMapping = CSSDirectionAwareResolver::PhysicalMapping<size>;
 
 enum PhysicalAxis { kPhysicalAxisX, kPhysicalAxisY };
 enum PhysicalBoxSide { kTopSide, kRightSide, kBottomSide, kLeftSide };
+enum PhiscalRadiusCorner {
+  kTopLeftCorner,
+  kTopRightCorner,
+  kBottomRightCorner,
+  kBottomLeftCorner
+};
 
 }  // namespace
 
@@ -98,6 +104,19 @@ LogicalMapping<4> CSSDirectionAwareResolver::LogicalBorderWidthMapping() {
       &GetCSSPropertyBorderInlineStartWidth(),
       &GetCSSPropertyBorderInlineEndWidth()};
   return LogicalMapping<4>(kProperties);
+}
+
+LogicalMapping<4> CSSDirectionAwareResolver::LogicalBorderRadiusMapping() {
+  static const CSSProperty* kProperties[] = {
+      &GetCSSPropertyBorderStartStartRadius(),
+      &GetCSSPropertyBorderStartEndRadius(),
+      &GetCSSPropertyBorderEndStartRadius(),
+      &GetCSSPropertyBorderEndEndRadius()};
+  return LogicalMapping<4>(kProperties);
+}
+
+PhysicalMapping<4> CSSDirectionAwareResolver::PhysicalBorderRadiusMapping() {
+  return PhysicalMapping<4>(borderRadiusShorthand());
 }
 
 PhysicalMapping<4> CSSDirectionAwareResolver::PhysicalBorderWidthMapping() {
@@ -308,6 +327,74 @@ const CSSProperty& CSSDirectionAwareResolver::ResolveBlock(
   if (IsHorizontalWritingMode(writing_mode))
     return group.GetProperty(kPhysicalAxisY);
   return group.GetProperty(kPhysicalAxisX);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveStartStart(
+    TextDirection direction,
+    WritingMode writing_mode,
+    const PhysicalMapping<4>& group) {
+  if (direction == TextDirection::kLtr) {
+    if (IsHorizontalWritingMode(writing_mode) ||
+        IsFlippedLinesWritingMode(writing_mode))
+      return group.GetProperty(kTopLeftCorner);
+    return group.GetProperty(kTopRightCorner);
+  }
+  if (IsHorizontalWritingMode(writing_mode))
+    return group.GetProperty(kTopRightCorner);
+  if (IsFlippedLinesWritingMode(writing_mode))
+    return group.GetProperty(kBottomLeftCorner);
+  return group.GetProperty(kBottomRightCorner);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveStartEnd(
+    TextDirection direction,
+    WritingMode writing_mode,
+    const PhysicalMapping<4>& group) {
+  if (direction == TextDirection::kLtr) {
+    if (IsHorizontalWritingMode(writing_mode))
+      return group.GetProperty(kTopRightCorner);
+    if (IsFlippedLinesWritingMode(writing_mode))
+      return group.GetProperty(kBottomLeftCorner);
+    return group.GetProperty(kBottomRightCorner);
+  }
+  if (IsHorizontalWritingMode(writing_mode) ||
+      IsFlippedLinesWritingMode(writing_mode))
+    return group.GetProperty(kTopLeftCorner);
+  return group.GetProperty(kTopRightCorner);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveEndStart(
+    TextDirection direction,
+    WritingMode writing_mode,
+    const PhysicalMapping<4>& group) {
+  if (direction == TextDirection::kLtr) {
+    if (IsHorizontalWritingMode(writing_mode))
+      return group.GetProperty(kBottomLeftCorner);
+    if (IsFlippedLinesWritingMode(writing_mode))
+      return group.GetProperty(kTopRightCorner);
+    return group.GetProperty(kTopLeftCorner);
+  }
+  if (IsHorizontalWritingMode(writing_mode) ||
+      IsFlippedLinesWritingMode(writing_mode))
+    return group.GetProperty(kBottomRightCorner);
+  return group.GetProperty(kBottomLeftCorner);
+}
+
+const CSSProperty& CSSDirectionAwareResolver::ResolveEndEnd(
+    TextDirection direction,
+    WritingMode writing_mode,
+    const PhysicalMapping<4>& group) {
+  if (direction == TextDirection::kLtr) {
+    if (IsHorizontalWritingMode(writing_mode) ||
+        IsFlippedLinesWritingMode(writing_mode))
+      return group.GetProperty(kBottomRightCorner);
+    return group.GetProperty(kBottomLeftCorner);
+  }
+  if (IsHorizontalWritingMode(writing_mode))
+    return group.GetProperty(kBottomLeftCorner);
+  if (IsFlippedLinesWritingMode(writing_mode))
+    return group.GetProperty(kTopRightCorner);
+  return group.GetProperty(kTopLeftCorner);
 }
 
 }  // namespace blink

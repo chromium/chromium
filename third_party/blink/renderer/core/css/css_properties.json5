@@ -378,10 +378,11 @@
       //   properties of the group with a physical mapping logic.
       name: {
         valid_type: "str",
-        valid_values: ["border", "border-color", "border-style", "border-width",
-                       "inset", "margin", "max-size",
-                       "min-size", "overflow", "padding", "scroll-margin",
-                       "scroll-padding", "size", "visited-border-color"],
+        valid_values: ["border", "border-color", "border-radius",
+                       "border-style", "border-width", "inset", 
+                       "margin", "max-size", "min-size", "overflow", "padding",
+                       "scroll-margin", "scroll-padding", "size",
+                       "visited-border-color"],
       },
       // The name of the mapping function used to convert between equivalent
       // logical and physical properties within the same group. Corresponds to
@@ -396,9 +397,11 @@
           // Mapping logic: flow-relative (logical)
           "block", "inline",
           "block-start", "block-end", "inline-start", "inline-end",
+          "start-start", "start-end", "end-start", "end-end",
           // Mapping logic: physical
           "vertical", "horizontal",
           "top", "bottom", "left", "right",
+          "top-left", "top-right", "bottom-right", "bottom-left",
         ],
       },
     },
@@ -1348,6 +1351,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-radius",
+        resolver: "bottom-left",
+      },
     },
     {
       name: "border-bottom-right-radius",
@@ -1363,6 +1370,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-radius",
+        resolver: "bottom-right",
+      },
     },
     {
       name: "border-bottom-style",
@@ -1636,6 +1647,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-radius",
+        resolver: "top-left",
+      },
     },
     {
       name: "border-top-right-radius",
@@ -1651,6 +1666,10 @@
       valid_for_first_letter: true,
       is_border: true,
       computed_value_comparable: true,
+      logical_property_group: {
+        name: "border-radius",
+        resolver: "top-right",
+      },
     },
     {
       name: "border-top-style",
@@ -5138,6 +5157,46 @@
         resolver: "block-end",
       },
       typedom_types: ["Length", "Percentage"]
+    },
+    {
+      name: "border-start-start-radius",
+      property_methods: ["ParseSingleValue"],
+      logical_property_group: {
+        name: "border-radius",
+        resolver: "start-start",
+      },
+      typedom_types: ["Length", "Percentage"],
+      valid_for_first_letter: true,
+    },
+    {
+      name: "border-start-end-radius",
+      property_methods: ["ParseSingleValue"],
+      logical_property_group: {
+        name: "border-radius",
+        resolver: "start-end",
+      },
+      typedom_types: ["Length", "Percentage"],
+      valid_for_first_letter: true,
+    },
+    {
+      name: "border-end-start-radius",
+      property_methods: ["ParseSingleValue"],
+      logical_property_group: {
+        name: "border-radius",
+        resolver: "end-start",
+      },
+      typedom_types: ["Length", "Percentage"],
+      valid_for_first_letter: true,
+    },
+    {
+      name: "border-end-end-radius",
+      property_methods: ["ParseSingleValue"],
+      logical_property_group: {
+        name: "border-radius",
+        resolver: "end-end",
+      },
+      typedom_types: ["Length", "Percentage"],
+      valid_for_first_letter: true,
     },
 
     // Non-standard direction aware properties

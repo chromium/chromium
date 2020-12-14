@@ -47939,6 +47939,10 @@ Called by update_use_counter_css.py.-->
   <int value="688" label="symbols"/>
   <int value="689" label="additive-symbols"/>
   <int value="690" label="speak-as"/>
+  <int value="691" label="border-start-start-radius"/>
+  <int value="692" label="border-start-end-radius"/>
+  <int value="693" label="border-end-start-radius"/>
+  <int value="694" label="border-end-end-radius"/>
 </enum>
 
 <enum name="MappedEditingCommands">

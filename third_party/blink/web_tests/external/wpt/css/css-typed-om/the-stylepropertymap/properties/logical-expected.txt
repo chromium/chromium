@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 548 tests; 436 PASS, 112 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 548 tests; 452 PASS, 96 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Can set 'margin-block-start' to CSS-wide keywords
 PASS Can set 'margin-block-start' to var() references
 PASS Can set 'margin-block-start' to a percent
@@ -504,10 +504,10 @@ PASS Setting 'border-inline-style' to a number throws TypeError
 PASS Setting 'border-inline-style' to a position throws TypeError
 PASS Setting 'border-inline-style' to a URL throws TypeError
 PASS Setting 'border-inline-style' to a transform throws TypeError
-FAIL Can set 'border-start-start-radius' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-start-start-radius
-FAIL Can set 'border-start-start-radius' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-start-start-radius
-FAIL Can set 'border-start-start-radius' to a percent Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-start-start-radius
-FAIL Can set 'border-start-start-radius' to a length Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-start-start-radius
+PASS Can set 'border-start-start-radius' to CSS-wide keywords
+PASS Can set 'border-start-start-radius' to var() references
+PASS Can set 'border-start-start-radius' to a percent
+PASS Can set 'border-start-start-radius' to a length
 PASS Setting 'border-start-start-radius' to a time throws TypeError
 PASS Setting 'border-start-start-radius' to an angle throws TypeError
 PASS Setting 'border-start-start-radius' to a flexible length throws TypeError
@@ -515,10 +515,10 @@ PASS Setting 'border-start-start-radius' to a number throws TypeError
 PASS Setting 'border-start-start-radius' to a position throws TypeError
 PASS Setting 'border-start-start-radius' to a URL throws TypeError
 PASS Setting 'border-start-start-radius' to a transform throws TypeError
-FAIL Can set 'border-start-end-radius' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-start-end-radius
-FAIL Can set 'border-start-end-radius' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-start-end-radius
-FAIL Can set 'border-start-end-radius' to a percent Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-start-end-radius
-FAIL Can set 'border-start-end-radius' to a length Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-start-end-radius
+PASS Can set 'border-start-end-radius' to CSS-wide keywords
+PASS Can set 'border-start-end-radius' to var() references
+PASS Can set 'border-start-end-radius' to a percent
+PASS Can set 'border-start-end-radius' to a length
 PASS Setting 'border-start-end-radius' to a time throws TypeError
 PASS Setting 'border-start-end-radius' to an angle throws TypeError
 PASS Setting 'border-start-end-radius' to a flexible length throws TypeError
@@ -526,10 +526,10 @@ PASS Setting 'border-start-end-radius' to a number throws TypeError
 PASS Setting 'border-start-end-radius' to a position throws TypeError
 PASS Setting 'border-start-end-radius' to a URL throws TypeError
 PASS Setting 'border-start-end-radius' to a transform throws TypeError
-FAIL Can set 'border-end-start-radius' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-end-start-radius
-FAIL Can set 'border-end-start-radius' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-end-start-radius
-FAIL Can set 'border-end-start-radius' to a percent Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-end-start-radius
-FAIL Can set 'border-end-start-radius' to a length Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-end-start-radius
+PASS Can set 'border-end-start-radius' to CSS-wide keywords
+PASS Can set 'border-end-start-radius' to var() references
+PASS Can set 'border-end-start-radius' to a percent
+PASS Can set 'border-end-start-radius' to a length
 PASS Setting 'border-end-start-radius' to a time throws TypeError
 PASS Setting 'border-end-start-radius' to an angle throws TypeError
 PASS Setting 'border-end-start-radius' to a flexible length throws TypeError
@@ -537,10 +537,10 @@ PASS Setting 'border-end-start-radius' to a number throws TypeError
 PASS Setting 'border-end-start-radius' to a position throws TypeError
 PASS Setting 'border-end-start-radius' to a URL throws TypeError
 PASS Setting 'border-end-start-radius' to a transform throws TypeError
-FAIL Can set 'border-end-end-radius' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-end-end-radius
-FAIL Can set 'border-end-end-radius' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-end-end-radius
-FAIL Can set 'border-end-end-radius' to a percent Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-end-end-radius
-FAIL Can set 'border-end-end-radius' to a length Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: border-end-end-radius
+PASS Can set 'border-end-end-radius' to CSS-wide keywords
+PASS Can set 'border-end-end-radius' to var() references
+PASS Can set 'border-end-end-radius' to a percent
+PASS Can set 'border-end-end-radius' to a length
 PASS Setting 'border-end-end-radius' to a time throws TypeError
 PASS Setting 'border-end-end-radius' to an angle throws TypeError
 PASS Setting 'border-end-end-radius' to a flexible length throws TypeError

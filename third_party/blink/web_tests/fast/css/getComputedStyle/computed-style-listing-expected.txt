@@ -91,6 +91,8 @@ border-bottom-right-radius: 0px
 border-bottom-style: none
 border-bottom-width: 0px
 border-collapse: separate
+border-end-end-radius: 0px
+border-end-start-radius: 0px
 border-image-outset: 0
 border-image-repeat: stretch
 border-image-slice: 100%
@@ -109,6 +111,8 @@ border-right-color: rgb(0, 0, 0)
 border-right-style: none
 border-right-width: 0px
 border-spacing: 0px 0px
+border-start-end-radius: 0px
+border-start-start-radius: 0px
 border-top-color: rgb(0, 0, 0)
 border-top-left-radius: 0px
 border-top-right-radius: 0px

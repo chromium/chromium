@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL Custom properties are included in computed style assert_equals: Should show up in .length expected 338 but got 337
+FAIL Custom properties are included in computed style assert_equals: Should show up in .length expected 342 but got 341
 Harness: the test ran to completion.
 

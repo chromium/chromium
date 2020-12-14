@@ -56,6 +56,7 @@ class CSSDirectionAwareResolver {
 
   static LogicalMapping<4> LogicalBorderMapping();
   static LogicalMapping<4> LogicalBorderColorMapping();
+  static LogicalMapping<4> LogicalBorderRadiusMapping();
   static LogicalMapping<4> LogicalBorderStyleMapping();
   static LogicalMapping<4> LogicalBorderWidthMapping();
   static LogicalMapping<4> LogicalInsetMapping();
@@ -72,6 +73,7 @@ class CSSDirectionAwareResolver {
 
   static PhysicalMapping<4> PhysicalBorderMapping();
   static PhysicalMapping<4> PhysicalBorderColorMapping();
+  static PhysicalMapping<4> PhysicalBorderRadiusMapping();
   static PhysicalMapping<4> PhysicalBorderStyleMapping();
   static PhysicalMapping<4> PhysicalBorderWidthMapping();
   static PhysicalMapping<4> PhysicalInsetMapping();
@@ -135,6 +137,37 @@ class CSSDirectionAwareResolver {
   static const CSSProperty& ResolveVertical(TextDirection,
                                             WritingMode,
                                             const LogicalMapping<2>&);
+
+  // These resolvers expect a a PhysicalMapping with box corners, in the
+  // following order: top-left, top-right, bottom-right, bottom-left.
+  static const CSSProperty& ResolveStartStart(TextDirection,
+                                              WritingMode,
+                                              const PhysicalMapping<4>&);
+  static const CSSProperty& ResolveStartEnd(TextDirection,
+                                            WritingMode,
+                                            const PhysicalMapping<4>&);
+  static const CSSProperty& ResolveEndStart(TextDirection,
+                                            WritingMode,
+                                            const PhysicalMapping<4>&);
+  static const CSSProperty& ResolveEndEnd(TextDirection,
+                                          WritingMode,
+                                          const PhysicalMapping<4>&);
+
+  // These resolvers expect a a LogicalMapping with box corners, in the
+  // following order: start-start, start-end, end-start, end-end.
+  // TODO(layout-dev): Implement them, if needed.
+  static const CSSProperty& ResolveTopLeft(TextDirection,
+                                           WritingMode,
+                                           const LogicalMapping<4>&);
+  static const CSSProperty& ResolveTopRight(TextDirection,
+                                            WritingMode,
+                                            const LogicalMapping<4>&);
+  static const CSSProperty& ResolveBottomRight(TextDirection,
+                                               WritingMode,
+                                               const LogicalMapping<4>&);
+  static const CSSProperty& ResolveBottomLeft(TextDirection,
+                                              WritingMode,
+                                              const LogicalMapping<4>&);
 };
 
 }  // namespace blink

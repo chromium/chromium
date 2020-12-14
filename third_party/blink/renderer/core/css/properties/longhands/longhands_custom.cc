@@ -912,6 +912,20 @@ const CSSValue* BorderCollapse::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(CSSValueID::kSeparate);
 }
 
+const CSSValue* BorderEndEndRadius::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ParseBorderRadiusCorner(range, context);
+}
+
+const CSSValue* BorderEndStartRadius::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ParseBorderRadiusCorner(range, context);
+}
+
 const CSSValue* BorderImageOutset::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -1196,6 +1210,20 @@ const CSSValue* BorderRightWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return ZoomAdjustedPixelValue(style.BorderRightWidth(), style);
+}
+
+const CSSValue* BorderStartStartRadius::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ParseBorderRadiusCorner(range, context);
+}
+
+const CSSValue* BorderStartEndRadius::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ParseBorderRadiusCorner(range, context);
 }
 
 const CSSValue* BorderTopColor::ParseSingleValue(

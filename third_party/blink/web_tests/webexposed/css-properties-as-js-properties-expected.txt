@@ -61,6 +61,8 @@ borderBottomStyle
 borderBottomWidth
 borderCollapse
 borderColor
+borderEndEndRadius
+borderEndStartRadius
 borderImage
 borderImageOutset
 borderImageRepeat
@@ -89,6 +91,8 @@ borderRightColor
 borderRightStyle
 borderRightWidth
 borderSpacing
+borderStartEndRadius
+borderStartStartRadius
 borderStyle
 borderTop
 borderTopColor

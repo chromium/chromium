@@ -99,6 +99,8 @@ All changes to this list should go through Blink's feature review process: http:
     border-bottom-style
     border-bottom-width
     border-collapse
+    border-end-end-radius
+    border-end-start-radius
     border-image-outset
     border-image-repeat
     border-image-slice
@@ -116,6 +118,8 @@ All changes to this list should go through Blink's feature review process: http:
     border-right-color
     border-right-style
     border-right-width
+    border-start-end-radius
+    border-start-start-radius
     border-top-color
     border-top-left-radius
     border-top-right-radius
