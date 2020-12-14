@@ -18,7 +18,7 @@
 #include "components/password_manager/ios/test_helpers.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -115,7 +115,7 @@ class SharedPasswordControllerTest : public PlatformTest {
   }
 
  protected:
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   testing::StrictMock<MockPasswordManager> password_manager_;
   id form_helper_;
   id suggestion_helper_;

@@ -17,7 +17,7 @@
 #include "components/password_manager/ios/account_select_fill_data.h"
 #include "components/password_manager/ios/test_helpers.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#include "ios/web/public/test/fakes/test_web_client.h"
+#include "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +58,7 @@ NSString* GetPageScript(NSString* script_file_name) {
   return content;
 }
 
-class TestWebClientWithScript : public web::TestWebClient {
+class FakeWebClientWithScript : public web::FakeWebClient {
  public:
   NSString* GetDocumentStartScriptForMainFrame(
       web::BrowserState* browser_state) const override {
@@ -69,7 +69,7 @@ class TestWebClientWithScript : public web::TestWebClient {
 class PasswordFormHelperTest : public web::WebTestWithWebState {
  public:
   PasswordFormHelperTest()
-      : web::WebTestWithWebState(std::make_unique<TestWebClientWithScript>()) {}
+      : web::WebTestWithWebState(std::make_unique<FakeWebClientWithScript>()) {}
 
   ~PasswordFormHelperTest() override = default;
 
