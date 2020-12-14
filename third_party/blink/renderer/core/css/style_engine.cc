@@ -688,7 +688,8 @@ void StyleEngine::DidDetach() {
   environment_variables_ = nullptr;
 }
 
-bool StyleEngine::ClearFontFaceCacheAndAddUserFonts() {
+bool StyleEngine::ClearFontFaceCacheAndAddUserFonts(
+    const ActiveStyleSheetVector& user_sheets) {
   bool fonts_changed = false;
 
   if (font_selector_ &&
@@ -699,9 +700,9 @@ bool StyleEngine::ClearFontFaceCacheAndAddUserFonts() {
   }
 
   // Rebuild the font cache with @font-face rules from user style sheets.
-  for (unsigned i = 0; i < active_user_style_sheets_.size(); ++i) {
-    DCHECK(active_user_style_sheets_[i].second);
-    if (AddUserFontFaceRules(*active_user_style_sheets_[i].second))
+  for (unsigned i = 0; i < user_sheets.size(); ++i) {
+    DCHECK(user_sheets[i].second);
+    if (AddUserFontFaceRules(*user_sheets[i].second))
       fonts_changed = true;
   }
 
@@ -1541,7 +1542,8 @@ void StyleEngine::ApplyUserRuleSetChanges(
       scoped_resolver->SetNeedsAppendAllSheets();
       MarkDocumentDirty();
     } else {
-      has_rebuilt_font_face_cache = ClearFontFaceCacheAndAddUserFonts();
+      has_rebuilt_font_face_cache =
+          ClearFontFaceCacheAndAddUserFonts(new_style_sheets);
     }
   }
 
@@ -1662,8 +1664,10 @@ void StyleEngine::ApplyRuleSetChanges(
   }
 
   bool has_rebuilt_font_face_cache = false;
-  if (rebuild_font_face_cache)
-    has_rebuilt_font_face_cache = ClearFontFaceCacheAndAddUserFonts();
+  if (rebuild_font_face_cache) {
+    has_rebuilt_font_face_cache =
+        ClearFontFaceCacheAndAddUserFonts(active_user_style_sheets_);
+  }
 
   unsigned append_start_index = 0;
   if (scoped_resolver) {

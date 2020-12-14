@@ -652,6 +652,29 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
       t11->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, InjectedUserNoAuthorFontFace) {
+  UpdateAllLifecyclePhases();
+
+  FontDescription font_description;
+  FontFaceCache* cache = GetStyleEngine().GetFontSelector()->GetFontFaceCache();
+  EXPECT_FALSE(cache->Get(font_description, "User"));
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(
+      "@font-face {"
+      "  font-family: 'User';"
+      "  src: url(font.ttf);"
+      "}");
+
+  StyleSheetKey user_key("user");
+  GetStyleEngine().InjectSheet(user_key, user_sheet, WebDocument::kUserOrigin);
+
+  UpdateAllLifecyclePhases();
+
+  EXPECT_TRUE(cache->Get(font_description, "User"));
+}
+
 TEST_F(StyleEngineTest, InjectedFontFace) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

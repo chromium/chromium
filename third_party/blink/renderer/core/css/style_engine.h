@@ -515,7 +515,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateStyleSheetList(TreeScope&);
 
   // Returns true if any @font-face rules are added or removed.
-  bool ClearFontFaceCacheAndAddUserFonts();
+  bool ClearFontFaceCacheAndAddUserFonts(
+      const ActiveStyleSheetVector& user_sheets);
 
   void ClearKeyframeRules() { keyframes_rule_map_.clear(); }
   void ClearPropertyRules();
