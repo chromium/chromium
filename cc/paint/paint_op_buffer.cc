@@ -1529,13 +1529,6 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     // we should draw nothing.
     if (!params.image_provider)
       return;
-    // TODO(crbug.com/1157152): We shouldn't need this check, QuickRejectDraw
-    // should have done the job.
-    const SkRect& clip_rect = SkRect::Make(canvas->getDeviceClipBounds());
-    const SkMatrix& ctm = canvas->getTotalMatrix();
-    gfx::Rect local_op_rect = PaintOp::ComputePaintRect(op, clip_rect, ctm);
-    if (local_op_rect.IsEmpty())
-      return;
     ImageProvider::ScopedResult result =
         params.image_provider->GetRasterContent(DrawImage(op->image));
 
@@ -2450,6 +2443,15 @@ bool PaintOp::QuickRejectDraw(const PaintOp* op, const SkCanvas* canvas) {
     SkPaint paint = static_cast<const PaintOpWithFlags*>(op)->flags.ToSkPaint();
     if (!paint.canComputeFastBounds())
       return false;
+    // canvas->quickReject tried to be very fast, and sometimes give a false
+    // but conservative result. That's why we need the additional check for
+    // |local_op_rect| because it could quickReject could return false even if
+    // |local_op_rect| is empty.
+    const SkRect& clip_rect = SkRect::Make(canvas->getDeviceClipBounds());
+    const SkMatrix& ctm = canvas->getTotalMatrix();
+    gfx::Rect local_op_rect = PaintOp::ComputePaintRect(op, clip_rect, ctm);
+    if (local_op_rect.IsEmpty())
+      return true;
     paint.computeFastBounds(rect, &rect);
   }
 

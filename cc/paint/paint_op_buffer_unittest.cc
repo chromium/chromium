@@ -727,6 +727,31 @@ class PaintOpBufferOffsetsTest : public ::testing::Test {
   PaintOpBuffer buffer_;
 };
 
+TEST_F(PaintOpBufferOffsetsTest, EmptyClipRectShouldRejectAnOp) {
+  SkCanvas device(0, 0);
+  SkCanvas* canvas = &device;
+  canvas->translate(-254, 0);
+  SkIRect bounds = canvas->getDeviceClipBounds();
+  EXPECT_TRUE(bounds.isEmpty());
+  SkMatrix ctm = canvas->getTotalMatrix();
+  EXPECT_EQ(ctm[2], -254);
+
+  scoped_refptr<TestPaintWorkletInput> input =
+      base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(32.0f, 32.0f));
+  PaintImage image = CreatePaintWorkletPaintImage(input);
+  SkRect src = SkRect::MakeLTRB(0, 0, 100, 100);
+  SkRect dst = SkRect::MakeLTRB(168, -23, 268, 77);
+  push_op<DrawImageRectOp>(image, src, dst, nullptr,
+                           SkCanvas::kStrict_SrcRectConstraint);
+  std::vector<size_t> offsets = Select({0});
+  for (PaintOpBuffer::PlaybackFoldingIterator iter(&buffer_, &offsets); iter;
+       ++iter) {
+    const PaintOp* op = *iter;
+    EXPECT_EQ(op->GetType(), PaintOpType::DrawImageRect);
+    EXPECT_TRUE(PaintOp::QuickRejectDraw(op, canvas));
+  }
+}
+
 TEST_F(PaintOpBufferOffsetsTest, ContiguousIndices) {
   testing::StrictMock<MockCanvas> canvas;
 

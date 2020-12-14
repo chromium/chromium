@@ -8,8 +8,11 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 #include <string>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/check_op.h"
@@ -1312,7 +1315,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     base::Optional<Iterator> iter_;
   };
 
-  class PlaybackFoldingIterator {
+  class CC_PAINT_EXPORT PlaybackFoldingIterator {
    public:
     PlaybackFoldingIterator(const PaintOpBuffer* buffer,
                             const std::vector<size_t>* offsets);
