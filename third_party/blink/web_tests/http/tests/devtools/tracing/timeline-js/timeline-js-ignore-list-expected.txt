@@ -1,0 +1,32 @@
+Tests JS ignore list for timeline
+
+
+Ignore listed url: lib_script.js
+  Other: 300 @ 200
+    level1: 10 @ 208
+      level2: 10 @ 208
+        level3: 1 @ 209
+        On ignore list: 6 @ 211
+          level4user: 1 @ 211
+          level6user: 3 @ 213
+            On ignore list: 3 @ 213
+              level8user: 3 @ 213
+    On ignore list: 3 @ 230
+    On ignore list: 3 @ 235
+
+Unignored url: lib_script.js
+  Other: 300 @ 200
+    level1: 10 @ 208
+      level2: 10 @ 208
+        level3: 1 @ 209
+        level3ignoreListed: 6 @ 211
+          level4user: 1 @ 211
+          level4ignoreListed: 3 @ 213
+            level5ignoreListed: 3 @ 213
+              level6user: 3 @ 213
+                level7ignoreListed: 3 @ 213
+                  level8user: 3 @ 213
+    level1ignoreListed: 3 @ 230
+    level1ignoreListed: 3 @ 235
+      level2ignoreListed: 1 @ 236
+

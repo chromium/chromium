@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  TestRunner.addResult(`Tests JS blackboxing for timeline\n`);
+  TestRunner.addResult(`Tests JS ignore list for timeline\n`);
   await TestRunner.loadModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
@@ -83,7 +83,7 @@
       'tts': 1758056
     },
     {
-      'args': {'data': {'functionName': 'level3blackboxed', 'url': 'lib_script.js'}},
+      'args': {'data': {'functionName': 'level3ignoreListed', 'url': 'lib_script.js'}},
       'cat': 'disabled-by-default-devtools.timeline',
       'name': 'JSFrame',
       'ph': 'X',
@@ -105,7 +105,7 @@
       'tts': 1758056
     },
     {
-      'args': {'data': {'functionName': 'level4blackboxed', 'url': 'lib_script.js'}},
+      'args': {'data': {'functionName': 'level4ignoreListed', 'url': 'lib_script.js'}},
       'cat': 'disabled-by-default-devtools.timeline',
       'name': 'JSFrame',
       'ph': 'X',
@@ -116,7 +116,7 @@
       'tts': 1758056
     },
     {
-      'args': {'data': {'functionName': 'level5blackboxed', 'url': 'lib_script.js'}},
+      'args': {'data': {'functionName': 'level5ignoreListed', 'url': 'lib_script.js'}},
       'cat': 'disabled-by-default-devtools.timeline',
       'name': 'JSFrame',
       'ph': 'X',
@@ -138,7 +138,7 @@
       'tts': 1758056
     },
     {
-      'args': {'data': {'functionName': 'level7blackboxed', 'url': 'lib_script.js'}},
+      'args': {'data': {'functionName': 'level7ignoreListed', 'url': 'lib_script.js'}},
       'cat': 'disabled-by-default-devtools.timeline',
       'name': 'JSFrame',
       'ph': 'X',
@@ -160,7 +160,7 @@
       'tts': 1758056
     },
     {
-      'args': {'data': {'functionName': 'level1blackboxed', 'url': 'lib_script.js'}},
+      'args': {'data': {'functionName': 'level1ignoreListed', 'url': 'lib_script.js'}},
       'cat': 'disabled-by-default-devtools.timeline',
       'name': 'JSFrame',
       'ph': 'X',
@@ -171,7 +171,7 @@
       'tts': 1758056
     },
     {
-      'args': {'data': {'functionName': 'level1blackboxed', 'url': 'lib_script.js'}},
+      'args': {'data': {'functionName': 'level1ignoreListed', 'url': 'lib_script.js'}},
       'cat': 'disabled-by-default-devtools.timeline',
       'name': 'JSFrame',
       'ph': 'X',
@@ -182,7 +182,7 @@
       'tts': 1758056
     },
     {
-      'args': {'data': {'functionName': 'level2blackboxed', 'url': 'lib_script.js'}},
+      'args': {'data': {'functionName': 'level2ignoreListed', 'url': 'lib_script.js'}},
       'cat': 'disabled-by-default-devtools.timeline',
       'name': 'JSFrame',
       'ph': 'X',
@@ -218,11 +218,11 @@
   const dataProvider = new Timeline.TimelineFlameChartDataProvider();
   dataProvider.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
-  TestRunner.addResult('\nBlackboxed url: lib_script.js');
+  TestRunner.addResult('\nIgnore listed url: lib_script.js');
   Bindings.blackboxManager._blackboxURL('lib_script.js');
   printTimelineData(dataProvider);
 
-  TestRunner.addResult('\nUnblackboxed url: lib_script.js');
+  TestRunner.addResult('\nUnignored url: lib_script.js');
   Bindings.blackboxManager._unblackboxURL('lib_script.js');
   printTimelineData(dataProvider);
   TestRunner.completeTest();
