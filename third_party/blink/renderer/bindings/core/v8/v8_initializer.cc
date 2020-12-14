@@ -92,8 +92,7 @@ namespace blink {
 
 static void ReportFatalErrorInMainThread(const char* location,
                                          const char* message) {
-  DVLOG(1) << "V8 error: " << message << " (" << location << ").";
-  LOG(FATAL);
+  LOG(FATAL)  << "V8 error: " << message << " (" << location << ").";
 }
 
 static void ReportOOMErrorInMainThread(const char* location, bool is_js_heap) {
