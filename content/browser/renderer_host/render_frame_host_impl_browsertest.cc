@@ -4510,6 +4510,7 @@ class RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
 namespace {
 
 constexpr char kDefaultPath[] = "/defaultresponse";
@@ -4973,24 +4974,114 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
-    IframeInheritsAddressSpaceForAboutBlankFromPublic) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+namespace {
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
+// Executes |script| to add a new child iframe to the given |parent| document.
+//
+// |parent| must not be nullptr.
+// |script| must return true / resolve to true upon success.
+//
+// Returns nullptr in case of error, otherwise returns a pointer to the child
+// frame host.
+RenderFrameHostImpl* AddChildWithScript(RenderFrameHostImpl* parent,
+                                        const std::string& script) {
+  size_t initial_child_count = parent->child_count();
+
+  EvalJsResult result = EvalJs(parent, script);
+  EXPECT_EQ(true, result);  // For the error message.
+
+  if (parent->child_count() != initial_child_count + 1) {
+    return nullptr;
+  }
+
+  return parent->child_at(initial_child_count)->current_frame_host();
+}
+
+RenderFrameHostImpl* AddChildFromAboutBlank(RenderFrameHostImpl* parent) {
+  return AddChildWithScript(parent, R"(
     new Promise((resolve) => {
       const iframe = document.createElement("iframe");
       iframe.src = "about:blank";  // Superfluous, but being explicit is nice.
       iframe.onload = _ => { resolve(true); };
       document.body.appendChild(iframe);
     })
-  )"));
+  )");
+}
 
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+RenderFrameHostImpl* AddChildFromSrcdoc(RenderFrameHostImpl* parent) {
+  return AddChildWithScript(parent, R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.srcdoc = "foo";
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )");
+}
+
+RenderFrameHostImpl* AddChildFromDataURL(RenderFrameHostImpl* parent) {
+  return AddChildWithScript(parent, R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.src = "data:text/html,foo";
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )");
+}
+
+RenderFrameHostImpl* AddChildFromBlob(RenderFrameHostImpl* parent) {
+  return AddChildWithScript(parent, R"(
+    new Promise((resolve) => {
+      const blob = new Blob(["foo"], {type: "text/html"});
+      const iframe = document.createElement("iframe");
+      iframe.src = URL.createObjectURL(blob);
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )");
+}
+
+RenderFrameHostImpl* AddChildFromFilesystem(RenderFrameHostImpl* parent) {
+  return AddChildWithScript(parent, R"(
+    // It seems anonymous async functions are not available yet, so we cannot
+    // use an immediately-invoked function expression.
+    async function run() {
+      const fs = await new Promise((resolve, reject) => {
+        window.webkitRequestFileSystem(window.TEMPORARY, 1024, resolve, reject);
+      });
+      const file = await new Promise((resolve, reject) => {
+        fs.root.getFile('hello.html', {create: true}, resolve, reject);
+      });
+      const writer = await new Promise((resolve, reject) => {
+        file.createWriter(resolve, reject);
+      });
+      await new Promise((resolve) => {
+        writer.onwriteend = resolve;
+        writer.write(new Blob(["foo"], {type: "text/html"}));
+      });
+      await new Promise((resolve) => {
+        const iframe = document.createElement("iframe");
+        iframe.src = file.toURL();
+        iframe.onload = resolve;
+        document.body.appendChild(iframe);
+      });
+      return true;
+    }
+    run()
+  )");
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsAddressSpaceForAboutBlankFromPublic) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
@@ -5007,18 +5098,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
-    new Promise((resolve) => {
-      const iframe = document.createElement("iframe");
-      iframe.src = "about:blank";  // Superfluous, but being explicit is nice.
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )"));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
@@ -5035,18 +5116,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
-    new Promise((resolve) => {
-      const iframe = document.createElement("iframe");
-      iframe.srcdoc = "foo";
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )"));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
@@ -5063,18 +5134,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
-    new Promise((resolve) => {
-      const iframe = document.createElement("iframe");
-      iframe.srcdoc = "foo";
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )"));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
@@ -5091,18 +5152,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
-    new Promise((resolve) => {
-      const iframe = document.createElement("iframe");
-      iframe.src = "data:text/html,foo";
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )"));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
@@ -5119,18 +5170,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
-    new Promise((resolve) => {
-      const iframe = document.createElement("iframe");
-      iframe.src = "data:text/html,foo";
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )"));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
@@ -5147,19 +5188,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
-    new Promise((resolve) => {
-      const blob = new Blob(["foo"], {type: "text/html"});
-      const iframe = document.createElement("iframe");
-      iframe.src = URL.createObjectURL(blob);
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )"));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
@@ -5176,19 +5206,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
-    new Promise((resolve) => {
-      const blob = new Blob(["foo"], {type: "text/html"});
-      const iframe = document.createElement("iframe");
-      iframe.src = URL.createObjectURL(blob);
-      iframe.onload = _ => { resolve(true); };
-      document.body.appendChild(iframe);
-    })
-  )"));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
@@ -5205,37 +5224,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
-    // It seems anonymous async functions are not available yet, so we cannot
-    // use an immediately-invoked function expression.
-    async function run() {
-      const fs = await new Promise((resolve, reject) => {
-        window.webkitRequestFileSystem(window.TEMPORARY, 1024, resolve, reject);
-      });
-      const file = await new Promise((resolve, reject) => {
-        fs.root.getFile('hello.html', {create: true}, resolve, reject);
-      });
-      const writer = await new Promise((resolve, reject) => {
-        file.createWriter(resolve, reject);
-      });
-      await new Promise((resolve) => {
-        writer.onwriteend = resolve;
-        writer.write(new Blob(["foo"], {type: "text/html"}));
-      });
-      await new Promise((resolve) => {
-        const iframe = document.createElement("iframe");
-        iframe.src = file.toURL();
-        iframe.onload = resolve;
-        document.body.appendChild(iframe);
-      });
-      return true;
-    }
-    run()
-  )"));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
@@ -5252,37 +5242,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
-  EXPECT_EQ(true, EvalJs(root_frame_host(), R"(
-    // It seems anonymous async functions are not available yet, so we cannot
-    // use an immediately-invoked function expression.
-    async function run() {
-      const fs = await new Promise((resolve, reject) => {
-        window.webkitRequestFileSystem(window.TEMPORARY, 1024, resolve, reject);
-      });
-      const file = await new Promise((resolve, reject) => {
-        fs.root.getFile('hello.html', {create: true}, resolve, reject);
-      });
-      const writer = await new Promise((resolve, reject) => {
-        file.createWriter(resolve, reject);
-      });
-      await new Promise((resolve) => {
-        writer.onwriteend = resolve;
-        writer.write(new Blob(["foo"], {type: "text/html"}));
-      });
-      await new Promise((resolve) => {
-        const iframe = document.createElement("iframe");
-        iframe.src = file.toURL();
-        iframe.onload = resolve;
-        document.body.appendChild(iframe);
-      });
-      return true;
-    }
-    run()
-  )"));
-
-  ASSERT_EQ(1ul, root_frame_host()->child_count());
-  RenderFrameHostImpl* child_frame =
-      root_frame_host()->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
 
   const network::mojom::ClientSecurityStatePtr& security_state =
       child_frame->last_committed_client_security_state();
