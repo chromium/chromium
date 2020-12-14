@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 // Tests that tapping in a textfield brings up the insertion handle, but not the
 // quick menu, initially. Then, successive taps on the insertion handle toggle
 // the quick menu visibility.
-IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
                        BasicInsertionFollowedByTapsOnHandle) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
@@ -1017,8 +1017,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool());
 
 // Tests that insertion handles are properly positioned at 2x DSF.
-IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
-                       InsertionHandleCoordinates) {
+IN_PROC_BROWSER_TEST_P(
+    TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest,
+    InsertionHandleCoordinates) {
   // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController();

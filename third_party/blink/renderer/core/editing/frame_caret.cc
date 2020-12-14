@@ -173,6 +173,9 @@ bool FrameCaret::ShouldPaintCaret(const LayoutBlock& block) const {
 void FrameCaret::PaintCaret(GraphicsContext& context,
                             const PhysicalOffset& paint_offset) const {
   display_item_client_->PaintCaret(context, paint_offset, DisplayItem::kCaret);
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+      frame_->Selection().IsHandleVisible() && !frame_->Selection().IsHidden())
+    display_item_client_->RecordSelection(context, paint_offset);
 }
 
 bool FrameCaret::ShouldShowCaret() const {

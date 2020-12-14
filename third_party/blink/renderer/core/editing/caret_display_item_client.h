@@ -66,6 +66,8 @@ class CORE_EXPORT CaretDisplayItemClient final : public DisplayItemClient {
                   const PhysicalOffset& paint_offset,
                   DisplayItem::Type) const;
 
+  void RecordSelection(GraphicsContext&, const PhysicalOffset& paint_offset);
+
   // DisplayItemClient.
   String DebugName() const final;
 
