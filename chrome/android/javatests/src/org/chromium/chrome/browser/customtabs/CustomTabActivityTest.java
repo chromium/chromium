@@ -2254,17 +2254,6 @@ public class CustomTabActivityTest {
         intent.putExtra(CustomTabsIntent.EXTRA_COLOR_SCHEME, colorScheme);
     }
 
-    @Test
-    @MediumTest
-    public void testLaunchIncognitoCustomTabForPaymentRequest() {
-        Intent intent = createMinimalCustomTabIntent();
-        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        CustomTabIntentDataProvider.addPaymentRequestUIExtras(intent);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        Assert.assertTrue(mCustomTabActivityTestRule.getActivity().getActivityTab().isIncognito());
-    }
-
     /** Maybe prerenders a URL with a referrer, then launch it with another one. */
     private void maybeSpeculateAndLaunchWithReferrers(String url, boolean useHiddenTab,
             String speculationReferrer, String launchReferrer) throws Exception {

@@ -275,21 +275,6 @@
         <category android:name="com.google.intent.category.DAYDREAM"/>
       </intent-filter>  # DIFF-ANCHOR: dea53031
     </activity>  # DIFF-ANCHOR: 44266a6a
-    <activity  # DIFF-ANCHOR: 70dc8b5c
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
-        android:exported="false"
-        android:hardwareAccelerated="false"
-        android:name="org.chromium.chrome.browser.customtabs.PaymentHandlerActivity"
-        android:resizeableActivity="true"
-        android:supportsPictureInPicture="true"
-        android:theme="@style/Theme.Chromium.Activity.Translucent"
-        android:windowSoftInputMode="adjustResize">
-      <intent-filter>  # DIFF-ANCHOR: dea53031
-        <action android:name="org.chromium.chrome.browser.dummy.action"/>
-        <category android:name="com.google.intent.category.CARDBOARD"/>
-        <category android:name="com.google.intent.category.DAYDREAM"/>
-      </intent-filter>  # DIFF-ANCHOR: dea53031
-    </activity>  # DIFF-ANCHOR: 70dc8b5c
     <activity  # DIFF-ANCHOR: 4d923622
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
         android:exported="false"

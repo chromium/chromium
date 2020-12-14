@@ -35,19 +35,17 @@ import java.util.List;
  */
 public abstract class BrowserServicesIntentDataProvider {
     // The type of UI for Custom Tab to use.
-    @IntDef({CustomTabsUiType.DEFAULT, CustomTabsUiType.MEDIA_VIEWER,
-            CustomTabsUiType.PAYMENT_REQUEST, CustomTabsUiType.INFO_PAGE,
+    @IntDef({CustomTabsUiType.DEFAULT, CustomTabsUiType.MEDIA_VIEWER, CustomTabsUiType.INFO_PAGE,
             CustomTabsUiType.READER_MODE, CustomTabsUiType.MINIMAL_UI_WEBAPP,
             CustomTabsUiType.OFFLINE_PAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsUiType {
         int DEFAULT = 0;
         int MEDIA_VIEWER = 1;
-        int PAYMENT_REQUEST = 2;
-        int INFO_PAGE = 3;
-        int READER_MODE = 4;
-        int MINIMAL_UI_WEBAPP = 5;
-        int OFFLINE_PAGE = 6;
+        int INFO_PAGE = 2;
+        int READER_MODE = 3;
+        int MINIMAL_UI_WEBAPP = 4;
+        int OFFLINE_PAGE = 5;
     }
 
     // The type of Disclosure for TWAs to use.
@@ -482,13 +480,6 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public final boolean isInfoPage() {
         return getUiType() == CustomTabsUiType.INFO_PAGE;
-    }
-
-    /**
-     * @return Whether the Activity is for payment request.
-     */
-    public final boolean isForPaymentRequest() {
-        return getUiType() == CustomTabsUiType.PAYMENT_REQUEST;
     }
 
     @Nullable

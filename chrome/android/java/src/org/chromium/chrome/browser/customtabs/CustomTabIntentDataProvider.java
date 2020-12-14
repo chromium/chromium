@@ -269,15 +269,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final int[] mGsaExperimentIds;
 
     /**
-     * Add extras to customize menu items for opening payment request UI custom tab from Chrome.
-     */
-    public static void addPaymentRequestUIExtras(Intent intent) {
-        intent.putExtra(EXTRA_UI_TYPE, CustomTabsUiType.PAYMENT_REQUEST);
-        intent.putExtra(EXTRA_IS_OPENED_BY_CHROME, true);
-        IntentHandler.addTrustedIntentExtras(intent);
-    }
-
-    /**
      * Add extras to customize menu items for opening Reader Mode UI custom tab from Chrome.
      */
     public static void addReaderModeUIExtras(Intent intent) {
@@ -473,12 +464,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (!isTrustedIntent()) {
             if (ChromeVersionInfo.isLocalBuild()) Log.w(TAG, FIRST_PARTY_PITFALL_MSG);
             return CustomTabsUiType.DEFAULT;
-        }
-
-        if (requestedUiType == CustomTabsUiType.PAYMENT_REQUEST) {
-            if (!mIsOpenedByChrome) {
-                return CustomTabsUiType.DEFAULT;
-            }
         }
 
         return requestedUiType;
@@ -716,7 +701,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean shouldEnableUrlBarHiding() {
-        return mEnableUrlBarHiding && !isForPaymentRequest();
+        return mEnableUrlBarHiding;
     }
 
     @Override

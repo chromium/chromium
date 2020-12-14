@@ -138,14 +138,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItemVisible = false;
                 requestDesktopSiteVisible = false;
                 addToHomeScreenVisible = false;
-            } else if (mUiType == CustomTabsUiType.PAYMENT_REQUEST) {
-                // Only the icon row and 'find in page' are shown for opening payment request UI
-                // from Chrome.
-                openInChromeItemVisible = false;
-                requestDesktopSiteVisible = false;
-                addToHomeScreenVisible = false;
-                downloadItemVisible = false;
-                bookmarkItemVisible = false;
             } else if (mUiType == CustomTabsUiType.READER_MODE) {
                 // Only 'find in page' and the reader mode preference are shown for Reader Mode UI.
                 menu.findItem(R.id.icon_row_menu_id).setVisible(false);

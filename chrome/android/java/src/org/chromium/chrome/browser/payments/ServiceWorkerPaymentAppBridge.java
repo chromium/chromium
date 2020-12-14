@@ -14,12 +14,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentFeatureList;
-import org.chromium.components.payments.SslValidityChecker;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentEventResponseType;
@@ -97,38 +93,6 @@ public class ServiceWorkerPaymentAppBridge {
             return;
         }
         ServiceWorkerPaymentAppBridgeJni.get().getServiceWorkerPaymentAppsInfo(callback);
-    }
-
-    /**
-     * Add observer for the opened payment app window tab so as to validate whether the web
-     * contents is secure.
-     *
-     * @param tab The opened payment app window tab.
-     */
-    public static void addTabObserverForPaymentRequestTab(Tab tab) {
-        tab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                // Notify closing payment app window so as to abort payment if unsecure.
-                WebContents paymentRequestWebContents = tab.getWebContents();
-                if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(
-                            paymentRequestWebContents)) {
-                    onClosingPaymentAppWindow(paymentRequestWebContents,
-                            PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
-                }
-            }
-
-            @Override
-            public void onSSLStateUpdated(Tab tab) {
-                // Notify closing payment app window so as to abort payment if unsecure.
-                WebContents paymentRequestWebContents = tab.getWebContents();
-                if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(
-                            paymentRequestWebContents)) {
-                    onClosingPaymentAppWindow(paymentRequestWebContents,
-                            PaymentEventResponseType.PAYMENT_HANDLER_INSECURE_NAVIGATION);
-                }
-            }
-        });
     }
 
     /**

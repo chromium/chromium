@@ -99,7 +99,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     private static @CustomTabsUiType int getUiType(Intent intent) {
-        if (isForPaymentsFlow(intent)) return CustomTabsUiType.PAYMENT_REQUEST;
         if (isForReaderMode(intent)) return CustomTabsUiType.READER_MODE;
 
         return CustomTabsUiType.DEFAULT;
@@ -108,13 +107,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private static boolean isIncognitoRequested(Intent intent) {
         return IntentUtils.safeGetBooleanExtra(
                 intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
-    }
-
-    private static boolean isForPaymentsFlow(Intent intent) {
-        final int requestedUiType =
-                IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
-        return (isIntentFromChrome(intent)
-                && (requestedUiType == CustomTabsUiType.PAYMENT_REQUEST));
     }
 
     private static boolean isForReaderMode(Intent intent) {
@@ -174,10 +166,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     public static boolean isValidIncognitoIntent(Intent intent) {
         if (!isIncognitoRequested(intent)) return false;
         if (!isTrustedIntent(intent)) return false;
-        // Incognito requests for payments flow are supported without
-        // INCOGNITO_CCT flag as an exceptional case that can use Chrome
-        // incognito profile.
-        if (isForPaymentsFlow(intent)) return true;
         assert ChromeFeatureList.isInitialized();
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO);
     }
