@@ -3,7 +3,7 @@
 ChromeDriver uses 3 types of threads:
 
 * One command thread. This is the primary thread that executes 
-  the `main` function and starts the ChromeDriver process.
+  the `main` function and starts the ChromeDriver process.\
   It is also responsible for parsing each incoming command to determine its
   target session and dispatch it accordingly.
 
@@ -22,9 +22,9 @@ Each thread in ChromeDriver is wrapped by a
 [`base::Thread`](https://source.chromium.org/chromium/chromium/src/+/master:base/threading/thread.h?q=%22class%20BASE_EXPORT%20Thread%22) object.
 This object exposes a
 [`base::TaskRunner`](https://source.chromium.org/chromium/chromium/src/+/master:base/task_runner.h?q=base::TaskRunner),
-which provides the ability to post tasks to that thread.
+which provides the ability to post tasks to that thread.\
 When thread A wants to call a function on thread B, it finds the `TaskRunner`
-object corresponding to thread B, and calls its `TaskRunner::PostTask` method.
+object corresponding to thread B, and calls its `TaskRunner::PostTask` method.\
 This will cause a task to be posted to thread B. When thread B is not busy,
 it will execute tasks posted to it, in the order they were queued.
 
@@ -86,7 +86,8 @@ Then several activities happen on the command thread.
 
 If the command is global (i.e., affecting all sessions), it is executed directly
 on the command thread. Most commands, however, target specific sessions,
-and are dispatched to the appropriate session thread to execute.
+and are dispatched to the appropriate session thread to execute.\
+New session command (details below) does not target a specific session; instead it creates a new session thread for the session so that it can later be targeted by other commands. 
 
 Regardless of which thread executes the command, when the command finishes,
 [`HttpHandler::PrepareResponse`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/server/http_handler.cc?q="void%20HttpHandler::PrepareResponse")
