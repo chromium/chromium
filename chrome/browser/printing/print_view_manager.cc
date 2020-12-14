@@ -162,8 +162,11 @@ void PrintViewManager::PrintPreviewDone() {
   // dispatch 'afterprint' event.
   bool send_message = !is_switching_to_system_dialog_;
 #endif
-  if (send_message)
-    GetPrintRenderFrame(print_preview_rfh_)->OnPrintPreviewDialogClosed();
+  if (send_message) {
+    // Only send a message about having closed if it is still connected.
+    if (IsPrintRenderFrameConnected(print_preview_rfh_))
+      GetPrintRenderFrame(print_preview_rfh_)->OnPrintPreviewDialogClosed();
+  }
   is_switching_to_system_dialog_ = false;
 
   if (print_preview_state_ == SCRIPTED_PREVIEW) {

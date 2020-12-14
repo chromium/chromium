@@ -134,6 +134,14 @@ void PrintManager::PrintingFailed(int32_t cookie) {
 #endif
 }
 
+bool PrintManager::IsPrintRenderFrameConnected(content::RenderFrameHost* rfh) {
+  auto it = print_render_frames_.find(rfh);
+  if (it == print_render_frames_.end())
+    return false;
+
+  return it->second.is_bound() && it->second.is_connected();
+}
+
 const mojo::AssociatedRemote<printing::mojom::PrintRenderFrame>&
 PrintManager::GetPrintRenderFrame(content::RenderFrameHost* rfh) {
   auto it = print_render_frames_.find(rfh);

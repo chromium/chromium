@@ -62,6 +62,10 @@ class PrintManager : public content::WebContentsObserver,
  protected:
   explicit PrintManager(content::WebContents* contents);
 
+  // Helper method to determine if PrintRenderFrame associated remote interface
+  // is still connected.
+  bool IsPrintRenderFrameConnected(content::RenderFrameHost* rfh);
+
   // Helper method to fetch the PrintRenderFrame associated remote interface
   // pointer.
   const mojo::AssociatedRemote<printing::mojom::PrintRenderFrame>&
