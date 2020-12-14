@@ -58,10 +58,12 @@ class Expected {
   // Unsafe access to the underlying value. Use only if you know |this| is in
   // the requested state.
   T& Value() { return absl::get<T>(storage_); }
+  const T& Value() const { return absl::get<T>(storage_); }
 
   // Unsafe access to the underlying error. Use only if you know |this| is in
   // the requested state.
   E& Error() { return absl::get<E>(storage_); }
+  const E& Error() const { return absl::get<E>(storage_); }
 
   // Safe access to the underlying value, or nullptr;
   T* MaybeValue() { return absl::get_if<T>(&storage_); }

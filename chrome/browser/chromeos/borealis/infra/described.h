@@ -20,9 +20,9 @@ class Described {
   Described(E error, std::string description)
       : error_(error), description_(std::move(description)) {}
 
-  E error() { return error_; }
+  E error() const { return error_; }
 
-  const std::string& description() { return description_; }
+  const std::string& description() const { return description_; }
 
   // Converts a Described error from |E| to |F|, by prepending |prefix| to
   // |this|'s description.

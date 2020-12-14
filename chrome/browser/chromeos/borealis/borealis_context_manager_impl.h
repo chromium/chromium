@@ -11,6 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
+#include "chrome/browser/chromeos/borealis/infra/described.h"
+#include "chrome/browser/chromeos/borealis/infra/transition.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace borealis {
@@ -36,28 +38,55 @@ class BorealisContextManagerImpl : public BorealisContextManager {
   virtual base::queue<std::unique_ptr<BorealisTask>> GetTasks();
 
  private:
+  // TODO(b/): remove this once the context manager impl is a
+  // BorealisStateManager.
+  struct NotRunning {};
+
+  // The startup transition is used to move the context manager from
+  // "not-running" to "running".
+  class Startup : public Transition<NotRunning,
+                                    BorealisContext,
+                                    Described<BorealisStartupResult>> {
+   public:
+    Startup(Profile* profile,
+            base::queue<std::unique_ptr<BorealisTask>> task_queue);
+    ~Startup() override;
+
+    // Cancel this in-progress startup. Returns the partially-constructed
+    // context, which can be used for cleaning up the incomplete startup.
+    std::unique_ptr<BorealisContext> Abort();
+
+   private:
+    void NextTask();
+    void TaskCallback(BorealisStartupResult result, std::string error);
+
+    // Transition overrides.
+    void Start(std::unique_ptr<NotRunning> current_state) override;
+
+    Profile* const profile_;
+    base::TimeTicks start_tick_;
+    std::unique_ptr<BorealisContext> context_;
+    base::queue<std::unique_ptr<BorealisTask>> task_queue_;
+    base::WeakPtrFactory<BorealisContextManagerImpl::Startup> weak_factory_;
+  };
+
   void AddCallback(ResultCallback callback);
-  void NextTask();
-  void TaskCallback(BorealisStartupResult result, std::string error);
 
   // Completes the startup with the given |result| and error messgae, invoking
   // all callbacks with the result. For any result except kSuccess the state of
   // the system will be as though StartBorealis() had not been called.
-  void Complete(BorealisStartupResult result, std::string error_or_empty);
+  void Complete(Startup::Result completion_result);
 
   // Returns the result of the startup (i.e. the context if it succeeds, or an
   // error if it doesn't).
-  BorealisContextManager::Result GetResult();
+  BorealisContextManager::Result GetResult(
+      const Startup::Result& completion_result);
 
-  Profile* profile_ = nullptr;
-  BorealisStartupResult startup_result_ = BorealisStartupResult::kSuccess;
-  base::TimeTicks startup_start_tick_;
-  std::string startup_error_;
+  Profile* const profile_;
+  std::unique_ptr<Startup> in_progress_startup_;
   std::unique_ptr<BorealisContext> context_;
   base::queue<ResultCallback> callback_queue_;
-  base::queue<std::unique_ptr<BorealisTask>> task_queue_;
-
-  base::WeakPtrFactory<BorealisContextManagerImpl> weak_factory_{this};
+  base::WeakPtrFactory<BorealisContextManagerImpl> weak_factory_;
 };
 
 }  // namespace borealis
