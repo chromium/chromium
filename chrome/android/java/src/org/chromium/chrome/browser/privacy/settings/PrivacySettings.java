@@ -53,9 +53,10 @@ public class PrivacySettings
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
     private static final String PREF_SYNC_AND_SERVICES_LINK = "sync_and_services_link";
     private static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
+    private static final String PREF_PRIVACY_SANDBOX = "privacy_sandbox";
     private static final String[] NEW_PRIVACY_PREFERENCE_ORDER = {PREF_CLEAR_BROWSING_DATA,
             PREF_SAFE_BROWSING, PREF_CAN_MAKE_PAYMENT, PREF_NETWORK_PREDICTIONS, PREF_USAGE_STATS,
-            PREF_SECURE_DNS, PREF_DO_NOT_TRACK, PREF_SYNC_AND_SERVICES_LINK};
+            PREF_SECURE_DNS, PREF_DO_NOT_TRACK, PREF_PRIVACY_SANDBOX, PREF_SYNC_AND_SERVICES_LINK};
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
 
@@ -74,6 +75,11 @@ public class PrivacySettings
             for (int i = 0; i < NEW_PRIVACY_PREFERENCE_ORDER.length; i++) {
                 findPreference(NEW_PRIVACY_PREFERENCE_ORDER[i]).setOrder(i);
             }
+        }
+
+        // Remove Privacy Sandbox settings if the corresponding flag is disabled.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS)) {
+            getPreferenceScreen().removePreference(findPreference(PREF_PRIVACY_SANDBOX));
         }
 
         // If the flag for adding a "Safe Browsing" section UI is enabled, a "Safe Browsing" section

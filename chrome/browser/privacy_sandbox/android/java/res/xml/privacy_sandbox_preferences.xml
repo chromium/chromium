@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="privacy_sandbox_toggle"
+        android:title="@string/privacy_sandbox_title"
+        android:persistent="false"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="subtitle"
+        android:title="@string/privacy_sandbox_subtitle"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:summary="@string/privacy_sandbox_bullet_one"
+        android:icon="@drawable/ic_people_24dp"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:summary="@string/privacy_sandbox_bullet_two"
+        android:icon="@drawable/ic_data_viz_grey"
+        app:iconTint="@color/default_icon_color_tint_list"
+        app:allowDividerBelow="false" />
+
+</PreferenceScreen>

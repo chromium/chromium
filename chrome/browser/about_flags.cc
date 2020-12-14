@@ -5684,7 +5684,8 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
     {"privacy-sandbox-settings", flag_descriptions::kPrivacySandboxSettingsName,
-     flag_descriptions::kPrivacySandboxSettingsDescription, kOsDesktop,
+     flag_descriptions::kPrivacySandboxSettingsDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kPrivacySandboxSettings)},
 
     {"privacy-settings-redesign",

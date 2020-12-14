@@ -1,0 +1,38 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+    "//chrome/android:chrome_java",
+  ]
+  sources = [ "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragment.java" ]
+  deps = [
+    ":java_resources",
+    "//components/browser_ui/settings/android:java",
+    "//third_party/android_deps:androidx_fragment_fragment_java",
+    "//third_party/android_deps:androidx_preference_preference_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.privacy_sandbox"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable-night/privacy_sandbox_illustration.xml",
+    "java/res/drawable/privacy_sandbox_illustration.xml",
+    "java/res/layout/privacy_sandbox_header.xml",
+    "java/res/values/dimens.xml",
+    "java/res/xml/privacy_sandbox_preferences.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+    "//third_party/android_deps:material_design_java",
+  ]
+}

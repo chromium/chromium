@@ -792,6 +792,23 @@ For example, some websites may respond to this request by showing you ads that a
         Access payment methods
       </message>
 
+      <!-- Privacy Sandbox Settings. Used by //chrome/browser/privacy/settings. -->
+      <message name="IDS_PREFS_PRIVACY_SANDBOX" desc="Title for the 'Privacy sandbox' page.">
+        Privacy sandbox
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_TITLE" desc="Title for the Privacy Sandbox toggle.">
+        Web crowd and ad measurement
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_SUBTITLE" desc="Description for the privacy sandbox toggle.">
+        By joining a Web Crowd, you allow websites to make your web experience relevant without using personally identifiable information. Similar to a crowd in a concert, websites and advertisers can only know thousands of users share a similar interest.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_BULLET_ONE" desc="First bullet point of the Privacy Sandbox description.">
+        Allow websites and apps to give you a more relevant experience using a non-identifiable alias.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_BULLET_TWO" desc="Second bullet point of the Privacy Sandbox description">
+        Allow advertisers to study ad campaigns using non-identifiable information.
+      </message>
+
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
       <message name="IDS_SETTINGS_CUSTOM" desc="Label for a custom option in a dropdown menu.">
         Custom

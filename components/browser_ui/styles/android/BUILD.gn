@@ -159,6 +159,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_music_note_24dp.xml",
     "java/res/drawable/ic_offline_pin_24dp_on_dark_bg.xml",
     "java/res/drawable/ic_offline_pin_24dp_on_light_bg.xml",
+    "java/res/drawable/ic_people_24dp.xml",
     "java/res/drawable/ic_permission_location_filled.xml",
     "java/res/drawable/ic_play_circle_filled_24dp_on_dark_bg.xml",
     "java/res/drawable/ic_play_circle_filled_24dp_on_light_bg.xml",

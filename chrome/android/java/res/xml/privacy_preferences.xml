@@ -45,9 +45,14 @@
         android:summary="@string/prefs_safe_browsing_summary"
         android:fragment="org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment"
         android:order="6"/>
+    <Preference
+        android:key="privacy_sandbox"
+        android:title="@string/prefs_privacy_sandbox"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment"
+        android:order="7"/>
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="sync_and_services_link"
         android:summary="@string/privacy_sync_and_services_link_legacy"
         app:allowDividerBelow="false"
-        android:order="7"/>
+        android:order="8"/>
 </PreferenceScreen>

@@ -331,6 +331,7 @@ android_library("chrome_java") {
     "//chrome/browser/policy/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/privacy:java",
+    "//chrome/browser/privacy_sandbox/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
     "//chrome/browser/safety_check/android:java",
