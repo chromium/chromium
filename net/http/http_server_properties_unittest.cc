@@ -82,6 +82,8 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
   HttpServerPropertiesTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        // Many tests assume partitioning is disabled by default.
+        feature_list_(CreateFeatureListWithPartitioningDisabled()),
         test_tick_clock_(GetMockTickClock()),
         impl_(nullptr /* pref_delegate */,
               nullptr /* net_log */,
@@ -94,6 +96,17 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
     network_isolation_key1_ = NetworkIsolationKey(site1, site1);
     SchemefulSite site2(GURL("https://bar.test/"));
     network_isolation_key2_ = NetworkIsolationKey(site2, site2);
+  }
+
+  // This is a little awkward, but need to create and configure the
+  // ScopedFeatureList before creating the HttpServerProperties.
+  static std::unique_ptr<base::test::ScopedFeatureList>
+  CreateFeatureListWithPartitioningDisabled() {
+    std::unique_ptr<base::test::ScopedFeatureList> feature_list =
+        std::make_unique<base::test::ScopedFeatureList>();
+    feature_list->InitAndDisableFeature(
+        features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+    return feature_list;
   }
 
   bool HasAlternativeService(const url::SchemeHostPort& origin,
@@ -120,6 +133,8 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
   void MarkBrokenAndLetExpireAlternativeServiceNTimes(
       const AlternativeService& alternative_service,
       int num_times) {}
+
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 
   const base::TickClock* test_tick_clock_;
   base::SimpleTestClock test_clock_;

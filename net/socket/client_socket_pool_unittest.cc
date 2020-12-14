@@ -152,38 +152,30 @@ TEST(ClientSocketPool, GroupIdToString) {
 }
 
 TEST(ClientSocketPool, PartitionConnectionsByNetworkIsolationKeyDisabled) {
-  // Partitioning connections by NetworkIsolationKey is disabled by default, so
-  // test both the explicitly and implicitly disabled cases.
   const SchemefulSite kSiteFoo(GURL("https://foo.com"));
   const SchemefulSite kSiteBar(GURL("https://bar.com"));
-  for (bool explicitly_disabled : {false, true}) {
-    base::test::ScopedFeatureList feature_list;
-    if (explicitly_disabled) {
-      feature_list.InitAndDisableFeature(
-          features::kPartitionConnectionsByNetworkIsolationKey);
-    }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
-    ClientSocketPool::GroupId group_id1(HostPortPair("foo", 443),
-                                        ClientSocketPool::SocketType::kSsl,
-                                        PrivacyMode::PRIVACY_MODE_DISABLED,
-                                        NetworkIsolationKey(kSiteFoo, kSiteFoo),
-                                        false /* disable_secure_dns */);
+  ClientSocketPool::GroupId group_id1(
+      HostPortPair("foo", 443), ClientSocketPool::SocketType::kSsl,
+      PrivacyMode::PRIVACY_MODE_DISABLED,
+      NetworkIsolationKey(kSiteFoo, kSiteFoo), false /* disable_secure_dns */);
 
-    ClientSocketPool::GroupId group_id2(HostPortPair("foo", 443),
-                                        ClientSocketPool::SocketType::kSsl,
-                                        PrivacyMode::PRIVACY_MODE_DISABLED,
-                                        NetworkIsolationKey(kSiteBar, kSiteBar),
-                                        false /* disable_secure_dns */);
+  ClientSocketPool::GroupId group_id2(
+      HostPortPair("foo", 443), ClientSocketPool::SocketType::kSsl,
+      PrivacyMode::PRIVACY_MODE_DISABLED,
+      NetworkIsolationKey(kSiteBar, kSiteBar), false /* disable_secure_dns */);
 
-    EXPECT_FALSE(group_id1.network_isolation_key().IsFullyPopulated());
-    EXPECT_FALSE(group_id2.network_isolation_key().IsFullyPopulated());
-    EXPECT_EQ(group_id1.network_isolation_key(),
-              group_id2.network_isolation_key());
-    EXPECT_EQ(group_id1, group_id2);
+  EXPECT_FALSE(group_id1.network_isolation_key().IsFullyPopulated());
+  EXPECT_FALSE(group_id2.network_isolation_key().IsFullyPopulated());
+  EXPECT_EQ(group_id1.network_isolation_key(),
+            group_id2.network_isolation_key());
+  EXPECT_EQ(group_id1, group_id2);
 
-    EXPECT_EQ("ssl/foo:443", group_id1.ToString());
-    EXPECT_EQ("ssl/foo:443", group_id2.ToString());
-  }
+  EXPECT_EQ("ssl/foo:443", group_id1.ToString());
+  EXPECT_EQ("ssl/foo:443", group_id2.ToString());
 }
 
 }  // namespace
