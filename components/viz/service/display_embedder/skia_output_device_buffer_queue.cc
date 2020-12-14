@@ -217,6 +217,16 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
                                      image == submitted_image_);
   } else {
     current_frame_has_no_primary_plane_ = true;
+    // Even if there is no primary plane, |current_image_| may be non-null if
+    // an overlay just transitioned from an underlay strategy to a fullscreen
+    // strategy (e.g. a the media controls disappearing on a fullscreen video).
+    // In this case, there is still damage which triggers a render pass, but
+    // since we promote via fullscreen, we remove the primary plane in the end.
+    // We need to recycle |current_image_| to avoid a use-after-free error.
+    if (current_image_) {
+      available_images_.push_back(current_image_);
+      current_image_ = nullptr;
+    }
   }
 }
 
