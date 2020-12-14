@@ -1616,8 +1616,8 @@ void ServiceWorkerRegistry::DidRecover() {
   connection_state_ = ConnectionState::kNormal;
 
   // Retry inflight calls.
-  if (inflight_calls_.size() > 0)
-    inflight_calls_.begin()->second->Run(this);
+  for (auto& call : inflight_calls_)
+    call.second->Run(this);
 }
 
 uint64_t ServiceWorkerRegistry::GetNextCallId() {
@@ -1629,19 +1629,14 @@ void ServiceWorkerRegistry::StartRemoteCall(
     std::unique_ptr<InflightCall> call) {
   DCHECK(!base::Contains(inflight_calls_, call_id));
   inflight_calls_[call_id] = std::move(call);
-  if (connection_state_ == ConnectionState::kNormal &&
-      inflight_calls_.size() == 1) {
-    // There are no inflight calls. Start the current one.
-    inflight_calls_.begin()->second->Run(this);
+  if (connection_state_ == ConnectionState::kNormal) {
+    inflight_calls_[call_id]->Run(this);
   }
 }
 
 void ServiceWorkerRegistry::FinishRemoteCall(uint64_t call_id) {
   DCHECK(base::Contains(inflight_calls_, call_id));
   inflight_calls_.erase(call_id);
-  // Start the next call if any.
-  if (inflight_calls_.size() > 0)
-    inflight_calls_.begin()->second->Run(this);
 }
 
 template <typename T>
