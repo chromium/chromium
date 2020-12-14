@@ -103,9 +103,11 @@ class ToolbarButton : public views::LabelButton,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  base::string16 GetTooltipText(const gfx::Point& p) const override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
+  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
   views::InkDrop* GetInkDrop() override;
   SkColor GetInkDropBaseColor() const override;
 
@@ -113,6 +115,9 @@ class ToolbarButton : public views::LabelButton,
   void ShowContextMenuForViewImpl(View* source,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
+
+  // ui::PropertyHandler:
+  void AfterPropertyChange(const void* key, int64_t old_value) override;
 
   ui::MenuModel* menu_model_for_test() { return model_.get(); }
 
@@ -233,6 +238,11 @@ class ToolbarButton : public views::LabelButton,
   // instead which sets an optional color as well.
   void SetText(const base::string16& text) override;
 
+  // Sets the in product help promo. Called after the kHasInProductHelpPromoKey
+  // property changes. When this button has an in product help promo, the button
+  // gets a blue highlight that pulses.
+  void SetHasInProductHelpPromo(bool has_in_product_help_promo);
+
   // The model that populates the attached menu.
   std::unique_ptr<ui::MenuModel> model_;
 
@@ -244,6 +254,9 @@ class ToolbarButton : public views::LabelButton,
   // Whether the menu should be shown when there is a long mouse press or a drag
   // event.
   const bool trigger_menu_on_long_press_;
+
+  // Determines whether to highlight the button for in-product help.
+  bool has_in_product_help_promo_ = false;
 
   // Y position of mouse when left mouse button is pressed.
   int y_position_on_lbuttondown_ = 0;

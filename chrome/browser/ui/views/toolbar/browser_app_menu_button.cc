@@ -19,14 +19,11 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_colors.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,7 +31,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -43,7 +39,6 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/metrics.h"
@@ -53,89 +48,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-namespace {
-
-// Cycle duration of ink drop pulsing animation used for in-product help.
-constexpr base::TimeDelta kFeaturePromoPulseDuration =
-    base::TimeDelta::FromMilliseconds(800);
-
-// Max inset for pulsing animation.
-constexpr float kFeaturePromoPulseInsetDip = 3.0f;
-
-// An InkDropMask used to animate the size of the BrowserAppMenuButton's ink
-// drop. This is used when showing in-product help.
-class PulsingInkDropMask : public views::AnimationDelegateViews,
-                           public views::InkDropMask {
- public:
-  PulsingInkDropMask(views::View* layer_container,
-                     const gfx::Size& layer_size,
-                     const gfx::Insets& margins,
-                     float normal_corner_radius,
-                     float max_inset)
-      : AnimationDelegateViews(layer_container),
-        views::InkDropMask(layer_size),
-        layer_container_(layer_container),
-        margins_(margins),
-        normal_corner_radius_(normal_corner_radius),
-        max_inset_(max_inset),
-        throb_animation_(this) {
-    throb_animation_.SetThrobDuration(kFeaturePromoPulseDuration);
-    throb_animation_.StartThrobbing(-1);
-  }
-
- private:
-  // views::InkDropMask:
-  void OnPaintLayer(const ui::PaintContext& context) override {
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setAntiAlias(true);
-
-    ui::PaintRecorder recorder(context, layer()->size());
-
-    gfx::RectF bounds(layer()->bounds());
-    bounds.Inset(margins_);
-
-    const float current_inset =
-        throb_animation_.CurrentValueBetween(0.0f, max_inset_);
-    bounds.Inset(gfx::InsetsF(current_inset));
-    const float corner_radius = normal_corner_radius_ - current_inset;
-
-    recorder.canvas()->DrawRoundRect(bounds, corner_radius, flags);
-  }
-
-  // views::AnimationDelegateViews:
-  void AnimationProgressed(const gfx::Animation* animation) override {
-    DCHECK_EQ(animation, &throb_animation_);
-    layer()->SchedulePaint(gfx::Rect(layer()->size()));
-
-    // This is a workaround for crbug.com/935808: for scale factors >1,
-    // invalidating the mask layer doesn't cause the whole layer to be repainted
-    // on screen. TODO(crbug.com/935808): remove this workaround once the bug is
-    // fixed.
-    layer_container_->SchedulePaint();
-  }
-
-  // The View that contains the InkDrop layer we're masking. This must outlive
-  // our instance.
-  views::View* const layer_container_;
-
-  // Margins between the layer bounds and the visible ink drop. We use this
-  // because sometimes the View we're masking is larger than the ink drop we
-  // want to show.
-  const gfx::Insets margins_;
-
-  // Normal corner radius of the ink drop without animation. This is also the
-  // corner radius at the largest instant of the animation.
-  const float normal_corner_radius_;
-
-  // Max inset, used at the smallest instant of the animation.
-  const float max_inset_;
-
-  gfx::ThrobAnimation throb_animation_;
-};
-
-}  // namespace
 
 // static
 bool BrowserAppMenuButton::g_open_app_immediately_for_testing = false;
@@ -218,16 +130,6 @@ void BrowserAppMenuButton::HandleMenuClosed() {
   reopen_tab_promo_handle_.reset();
 }
 
-void BrowserAppMenuButton::AfterPropertyChange(const void* key,
-                                               int64_t old_value) {
-  if (key != kHasInProductHelpPromoKey)
-    return;
-  // FeaturePromoControllerViews sets the following property when a
-  // bubble is showing. When the state changes, update our highlight for
-  // the promo.
-  SetHasInProductHelpPromo(GetProperty(kHasInProductHelpPromoKey));
-}
-
 void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   int tooltip_message_id;
   base::string16 text;
@@ -270,49 +172,8 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   SetHighlight(text, color);
 }
 
-void BrowserAppMenuButton::SetHasInProductHelpPromo(
-    bool has_in_product_help_promo) {
-  if (has_in_product_help_promo_ == has_in_product_help_promo)
-    return;
-
-  has_in_product_help_promo_ = has_in_product_help_promo;
-
-  // We override GetInkDropBaseColor() and CreateInkDropMask(), returning the
-  // promo values if we are showing an in-product help promo. Calling
-  // HostSizeChanged() will force the new mask and color to be fetched.
-  //
-  // TODO(collinbaker): Consider adding explicit way to recreate mask instead of
-  // relying on HostSizeChanged() to do so.
-  GetInkDrop()->HostSizeChanged(size());
-
-  views::InkDropState next_state;
-  if (has_in_product_help_promo_ || IsMenuShowing()) {
-    // If we are showing a promo, we must use the ACTIVATED state to show the
-    // highlight. Otherwise, if the menu is currently showing, we need to keep
-    // the ink drop in the ACTIVATED state.
-    next_state = views::InkDropState::ACTIVATED;
-  } else {
-    // If we are not showing a promo and the menu is hidden, we use the
-    // DEACTIVATED state.
-    next_state = views::InkDropState::DEACTIVATED;
-    // TODO(collinbaker): this is brittle since we don't know if something else
-    // should keep this ACTIVATED or in some other state. Consider adding code
-    // to track the correct state and restore to that.
-  }
-  GetInkDrop()->AnimateToState(next_state);
-
-  UpdateIcon();
-  SchedulePaint();
-}
-
 const char* BrowserAppMenuButton::GetClassName() const {
   return "BrowserAppMenuButton";
-}
-
-SkColor BrowserAppMenuButton::GetForegroundColor(ButtonState state) const {
-  return has_in_product_help_promo_
-             ? GetFeaturePromoHighlightColorForToolbar(GetThemeProvider())
-             : ToolbarButton::GetForegroundColor(state);
 }
 
 bool BrowserAppMenuButton::GetDropFormats(
@@ -364,37 +225,6 @@ int BrowserAppMenuButton::OnPerformDrop(const ui::DropTargetEvent& event) {
 std::unique_ptr<views::InkDropHighlight>
 BrowserAppMenuButton::CreateInkDropHighlight() const {
   return CreateToolbarInkDropHighlight(this);
-}
-
-std::unique_ptr<views::InkDropMask> BrowserAppMenuButton::CreateInkDropMask()
-    const {
-  if (has_in_product_help_promo_) {
-    // This gets the latest ink drop insets. |SetTrailingMargin()| is called
-    // whenever our margins change (i.e. due to the window maximizing or
-    // minimizing) and updates our internal padding property accordingly.
-    const gfx::Insets ink_drop_insets = GetToolbarInkDropInsets(this);
-    const float corner_radius =
-        (height() - ink_drop_insets.top() - ink_drop_insets.bottom()) / 2.0f;
-    return std::make_unique<PulsingInkDropMask>(ink_drop_container(), size(),
-                                                ink_drop_insets, corner_radius,
-                                                kFeaturePromoPulseInsetDip);
-  }
-
-  return AppMenuButton::CreateInkDropMask();
-}
-
-SkColor BrowserAppMenuButton::GetInkDropBaseColor() const {
-  return has_in_product_help_promo_
-             ? GetFeaturePromoHighlightColorForToolbar(GetThemeProvider())
-             : AppMenuButton::GetInkDropBaseColor();
-}
-
-base::string16 BrowserAppMenuButton::GetTooltipText(const gfx::Point& p) const {
-  // Suppress tooltip when IPH is showing.
-  if (has_in_product_help_promo_)
-    return base::string16();
-
-  return AppMenuButton::GetTooltipText(p);
 }
 
 void BrowserAppMenuButton::OnTouchUiChanged() {

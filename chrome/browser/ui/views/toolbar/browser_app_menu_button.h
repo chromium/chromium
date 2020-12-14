@@ -55,22 +55,10 @@ class BrowserAppMenuButton : public AppMenuButton {
   int OnPerformDrop(const ui::DropTargetEvent& event) override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
-  SkColor GetInkDropBaseColor() const override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
   void OnThemeChanged() override;
   // Updates the presentation according to |severity_| and the theme provider.
   void UpdateIcon() override;
   void HandleMenuClosed() override;
-
-  // ui::PropertyHandler:
-  void AfterPropertyChange(const void* key, int64_t old_value) override;
-
- protected:
-  // If the button is being used as an anchor for a promo, returns the best
-  // promo color given the current background color. Otherwise, returns the
-  // standard ToolbarButton foreground color for the given |state|.
-  SkColor GetForegroundColor(ButtonState state) const override;
 
  private:
   void OnTouchUiChanged();
@@ -85,9 +73,6 @@ class BrowserAppMenuButton : public AppMenuButton {
 
   // Our owning toolbar view.
   ToolbarView* const toolbar_view_;
-
-  // Determines whether to highlight the button for in-product help.
-  bool has_in_product_help_promo_ = false;
 
   base::Optional<FeaturePromoController::PromoHandle> reopen_tab_promo_handle_;
 
