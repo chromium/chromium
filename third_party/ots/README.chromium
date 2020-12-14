@@ -12,3 +12,6 @@ Local Modifications:
 - fuzz/: Added.
 - ots.cc: Allow CFF2 outlines, upstreamed in
   https://github.com/khaledhosny/ots/pull/161
+- glyf.h, glyf.cc - Backport of "Sanitise values for fonts with invalid
+  maxPoints and maxComponentPoints"
+  https://github.com/khaledhosny/ots/pull/227
