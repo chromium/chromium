@@ -213,6 +213,7 @@ source_set("browser_sources") {
     "mhtml_extra_parts.h",
     "mhtml_generation_result.cc",
     "mhtml_generation_result.h",
+    "mojo_binder_policy_map.h",
     "native_file_system_entry_factory.h",
     "native_file_system_permission_context.h",
     "native_file_system_permission_grant.cc",

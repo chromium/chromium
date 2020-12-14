@@ -30,6 +30,7 @@
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/generated_code_cache_settings.h"
+#include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
@@ -1050,6 +1051,21 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void RegisterBrowserInterfaceBindersForFrame(
       RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<RenderFrameHost*>* map) {}
+
+  // Allows the embedder to control when Mojo interface binders are run for a
+  // frame that is being prerendered.
+  //
+  // Prerender2 limits inactivated pages' capabilities by controlling when to
+  // bind Mojo interfaces. See content/browser/prerender/README.md for more
+  // about capability control.
+  //
+  // This function is called at most once, when the first RenderFrameHost is
+  // created that does a prerender. The embedder can add entries to `policy_map`
+  // for interfaces that it registers in
+  // `RegisterBrowserInterfaceBindersForFrame()`. It should not change or remove
+  // existing entries.
+  virtual void RegisterMojoBinderPoliciesForPrerendering(
+      MojoBinderPolicyMap& policy_map) {}
 
   // Content was unable to bind a receiver for this associated interface, so the
   // embedder should try. Returns true if the |handle| was actually taken and

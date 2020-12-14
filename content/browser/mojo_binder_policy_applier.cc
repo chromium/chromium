@@ -7,7 +7,7 @@
 namespace content {
 
 MojoBinderPolicyApplier::MojoBinderPolicyApplier(
-    const MojoBinderPolicyMap* policy_map,
+    const MojoBinderPolicyMapImpl* policy_map,
     base::OnceClosure cancel_closure)
     : policy_map_(*policy_map), cancel_closure_(std::move(cancel_closure)) {}
 
@@ -52,11 +52,7 @@ void MojoBinderPolicyApplier::GrantAll() {
 
 MojoBinderPolicy MojoBinderPolicyApplier::GetMojoBinderPolicy(
     const std::string& interface_name) const {
-  MojoBinderPolicy policy = default_policy_;
-  const auto& found = policy_map_.find(interface_name);
-  if (found != policy_map_.end())
-    policy = found->second;
-  return policy;
+  return policy_map_.GetMojoBinderPolicy(interface_name, default_policy_);
 }
 
 }  // namespace content

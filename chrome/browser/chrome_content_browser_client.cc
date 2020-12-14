@@ -47,6 +47,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
+#include "chrome/browser/chrome_content_browser_client_binder_policies.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -3864,6 +3865,14 @@ bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
 }
 
 #endif  // defined(OS_WIN)
+
+void ChromeContentBrowserClient::RegisterMojoBinderPoliciesForPrerendering(
+    content::MojoBinderPolicyMap& policy_map) {
+  // Changes to `policy_map` should be made in
+  // RegisterChromeMojoBinderPoliciesForPrerendering() which requires security
+  // review.
+  RegisterChromeMojoBinderPoliciesForPrerendering(policy_map);
+}
 
 void ChromeContentBrowserClient::OpenURL(
     content::SiteInstance* site_instance,

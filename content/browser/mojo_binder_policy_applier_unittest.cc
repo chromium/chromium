@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
-#include "content/browser/mojo_binder_policy_map.h"
+#include "content/browser/mojo_binder_policy_map_impl.h"
 #include "content/test/test_mojo_binder_policy_applier_unittest.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -79,7 +79,7 @@ class MojoBinderPolicyApplierTest : public testing::Test {
   MojoBinderPolicyApplierTest() = default;
 
  protected:
-  const MojoBinderPolicyMap policy_map_{
+  const MojoBinderPolicyMapImpl policy_map_{
       {{"content.mojom.TestInterfaceForDefer", MojoBinderPolicy::kDefer},
        {"content.mojom.TestInterfaceForGrant", MojoBinderPolicy::kGrant},
        {"content.mojom.TestInterfaceForCancel", MojoBinderPolicy::kCancel}}};

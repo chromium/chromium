@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "content/browser/mojo_binder_policy_map.h"
+#include "content/browser/mojo_binder_policy_map_impl.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -29,7 +29,7 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   // `policy_map` must outlive `this` and must not be null.
   // `cancel_closure` will be executed when ApplyPolicyToBinder() processes a
   // kCancel interface.
-  MojoBinderPolicyApplier(const MojoBinderPolicyMap* policy_map,
+  MojoBinderPolicyApplier(const MojoBinderPolicyMapImpl* policy_map,
                           base::OnceClosure cancel_closure);
   ~MojoBinderPolicyApplier();
 
@@ -59,7 +59,7 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
 
   const MojoBinderPolicy default_policy_ = MojoBinderPolicy::kDefer;
   // Maps Mojo interface name to its policy.
-  const MojoBinderPolicyMap& policy_map_;
+  const MojoBinderPolicyMapImpl& policy_map_;
   // Will be executed upon a request for a kCancel interface.
   base::OnceClosure cancel_closure_;
   // Indicates if MojoBinderPolicyApplier grants all binding requests regardless

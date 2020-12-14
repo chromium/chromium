@@ -1879,6 +1879,7 @@ test("content_unittests") {
     "../browser/media/webaudio/audio_context_manager_impl_unittest.cc",
     "../browser/memory/swap_metrics_driver_impl_unittest.cc",
     "../browser/mojo_binder_policy_applier_unittest.cc",
+    "../browser/mojo_binder_policy_map_impl_unittest.cc",
     "../browser/native_io/native_io_context_unittest.cc",
     "../browser/net/cross_origin_embedder_policy_reporter_unittest.cc",
     "../browser/net/cross_origin_opener_policy_reporter_unittest.cc",
