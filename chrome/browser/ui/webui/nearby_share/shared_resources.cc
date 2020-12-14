@@ -102,6 +102,8 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
        IDS_NEARBY_HIGH_VISIBILITY_SUB_TITLE_SECONDS},
       {"nearbyShareHighVisibilityHelpText",
        IDS_NEARBY_HIGH_VISIBILITY_HELP_TEXT},
+      {"nearbyShareHighVisibilityTimeoutText",
+       IDS_NEARBY_HIGH_VISIBILITY_TIMEOUT_TEXT},
       {"nearbyShareReceiveConfirmPageTitle",
        IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE},
       {"nearbyShareReceiveConfirmPageConnectionId",

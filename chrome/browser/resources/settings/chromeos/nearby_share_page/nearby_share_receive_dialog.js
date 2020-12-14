@@ -126,11 +126,13 @@ Polymer({
 
   /**
    * Mojo callback when high visibility changes. If high visibility is false
-   * we force this dialog to close as well.
+   * due to a user cancel, we force this dialog to close as well.
    * @param {boolean} inHighVisibility
    */
   onHighVisibilityChanged(inHighVisibility) {
-    if (inHighVisibility === false) {
+    const now = new Date().getTime();
+    if (inHighVisibility === false &&
+        now < this.highVisibilityShutoffTimestamp_) {
       // TODO(crbug/1134745): Exiting high visibility can happen for multiple
       // reasons (timeout, user cancel, etc). During a receive transfer, it
       // happens before we start connecting (because we need to stop

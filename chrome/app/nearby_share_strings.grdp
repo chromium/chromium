@@ -196,6 +196,9 @@
   <message name="IDS_NEARBY_HIGH_VISIBILITY_HELP_TEXT" desc="Describes to the user that their device is visible to nearby devices with a specific device name. This is used on the sub-title of the of high visibility receive dialog for the Nearby Share feature.">
     Make sure both devices are unlocked, close together, and have Bluetooth turned on. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_NEARBY_HIGH_VISIBILITY_TIMEOUT_TEXT" desc="Describes to the user that their device is visible to nearby devices with a specific device name. This is used on the sub-title of the of high visibility receive dialog for the Nearby Share feature.">
+    No available devices sharing nearby. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
 
   <!-- Receive Confirmation Page Strings -->
   <message name="IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE" desc="The title of the recieve confirmation page which askign the user to confirm receving a share from a specific device.">
