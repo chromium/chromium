@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.AssistantCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantClient;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
@@ -42,6 +44,7 @@ public class AssistantTriggerScriptBridge {
     private WebContents mWebContents;
     private ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
 
     /** Interface for delegates of the {@code start} method. */
     public interface Delegate {
@@ -55,7 +58,8 @@ public class AssistantTriggerScriptBridge {
      */
     public void start(BottomSheetController bottomSheetController, Context context,
             ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            ApplicationViewportInsetSupplier bottomInsetProvider, @NonNull WebContents webContents,
+            ApplicationViewportInsetSupplier bottomInsetProvider,
+            ActivityTabProvider activityTabProvider, @NonNull WebContents webContents,
             @NonNull String initialUrl, Map<String, String> scriptParameters, String experimentIds,
             Delegate delegate) {
         mDelegate = delegate;
@@ -94,6 +98,15 @@ public class AssistantTriggerScriptBridge {
         }
         mKeyboardVisibilityListener = this::safeNativeOnKeyboardVisibilityChanged;
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+
+        mActivityTabObserver =
+                new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider, true) {
+                    @Override
+                    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                        safeNativeOnTabInteractabilityChanged(isInteractable);
+                    }
+                };
+
         // Request the client to start the trigger script. Native will then bind itself to this java
         // instance via setNativePtr.
         AutofillAssistantClient.fromWebContents(webContents)
@@ -172,6 +185,7 @@ public class AssistantTriggerScriptBridge {
         mNativeBridge = 0;
         mTriggerScript.destroy();
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        mActivityTabObserver.destroy();
     }
 
     private void safeNativeOnTriggerScriptAction(int action) {
@@ -203,6 +217,13 @@ public class AssistantTriggerScriptBridge {
         }
     }
 
+    private void safeNativeOnTabInteractabilityChanged(boolean interactable) {
+        if (mNativeBridge != 0) {
+            AssistantTriggerScriptBridgeJni.get().onTabInteractabilityChanged(
+                    mNativeBridge, AssistantTriggerScriptBridge.this, interactable);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onTriggerScriptAction(long nativeTriggerScriptBridgeAndroid,
@@ -213,5 +234,7 @@ public class AssistantTriggerScriptBridge {
                 long nativeTriggerScriptBridgeAndroid, AssistantTriggerScriptBridge caller);
         void onKeyboardVisibilityChanged(long nativeTriggerScriptBridgeAndroid,
                 AssistantTriggerScriptBridge caller, boolean visible);
+        void onTabInteractabilityChanged(long nativeTriggerScriptBridgeAndroid,
+                AssistantTriggerScriptBridge caller, boolean interactable);
     }
 }

@@ -57,6 +57,12 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
   bool OnBackButtonPressed(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jcaller);
 
+  // Called by the UI when the tab's interactability has changed.
+  void OnTabInteractabilityChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      jboolean jinteractable);
+
   // Access to the last shown trigger script.
   base::Optional<TriggerScriptUIProto> GetLastShownTriggerScript() const;
 
@@ -74,7 +80,7 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
   void OnTriggerScriptShown(const TriggerScriptUIProto& proto) override;
   void OnTriggerScriptHidden() override;
   void OnTriggerScriptFinished(Metrics::LiteScriptFinishedState state) override;
-  void OnWebContentsVisibilityChanged(bool visible) override;
+  void OnVisibilityChanged(bool visible) override;
 
   // Reference to the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

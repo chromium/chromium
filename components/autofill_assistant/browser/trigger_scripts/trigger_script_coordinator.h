@@ -46,7 +46,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
     virtual void OnTriggerScriptHidden() = 0;
     virtual void OnTriggerScriptFinished(
         Metrics::LiteScriptFinishedState state) = 0;
-    virtual void OnWebContentsVisibilityChanged(bool visible) = 0;
+    virtual void OnVisibilityChanged(bool visible) = 0;
   };
 
   // |client| and |web_contents| must outlive this instance.
@@ -88,6 +88,11 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // switching from CCT to regular tab.
   void OnTriggerScriptShown(bool success);
 
+  // Called when the tab's interactability has changed. A tab may be
+  // non-interactable while invisible and/or while the user is in the
+  // tab-switcher.
+  void OnTabInteractabilityChanged(bool interactable);
+
   // Called when the proactive help Chrome setting has changed.
   void OnProactiveHelpSettingChanged(bool proactive_help_enabled);
 
@@ -112,6 +117,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void OnGetTriggerScripts(int http_status, const std::string& response);
   void Stop(Metrics::LiteScriptFinishedState state);
   GURL GetCurrentURL() const;
+  void OnEffectiveVisibilityChanged();
 
   // Can be invoked to trigger an immediate check of the trigger condition,
   // reusing the dynamic results of the last time. Does nothing if there are no
@@ -135,10 +141,16 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // to allow pausing and resuming the same trigger flow.
   std::unique_ptr<TriggerContext> trigger_context_;
 
-  // Keeps track of whether the tab is currently visible or not. While
-  // invisible, trigger scripts are hidden and condition evaluation is
-  // suspended.
+  // Whether the tab is currently visible or not. While invisible or
+  // non-interactable (e.g., during tab switching), trigger scripts are hidden
+  // and condition evaluation is suspended (see also
+  // |web_contents_interactable_|).
   bool web_contents_visible_ = true;
+
+  // Whether the tab is currently interactable or not. While invisible or
+  // non-interactable (e.g., during tab switching), trigger scripts are hidden
+  // and condition evaluation is suspended (see also |web_contents_visible_|).
+  bool web_contents_interactable_ = true;
 
   // Whether the coordinator is currently checking trigger conditions.
   bool is_checking_trigger_conditions_ = false;

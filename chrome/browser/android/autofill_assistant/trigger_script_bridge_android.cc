@@ -125,6 +125,16 @@ bool TriggerScriptBridgeAndroid::OnBackButtonPressed(
   return trigger_script_coordinator_->OnBackButtonPressed();
 }
 
+void TriggerScriptBridgeAndroid::OnTabInteractabilityChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jboolean jinteractable) {
+  if (!trigger_script_coordinator_) {
+    return;
+  }
+  trigger_script_coordinator_->OnTabInteractabilityChanged(jinteractable);
+}
+
 void TriggerScriptBridgeAndroid::OnKeyboardVisibilityChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
@@ -220,7 +230,7 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptFinished(
   StopTriggerScript();
 }
 
-void TriggerScriptBridgeAndroid::OnWebContentsVisibilityChanged(bool visible) {
+void TriggerScriptBridgeAndroid::OnVisibilityChanged(bool visible) {
   if (!visible || !trigger_script_coordinator_) {
     return;
   }
