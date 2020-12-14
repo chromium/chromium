@@ -130,7 +130,8 @@ Polymer({
    * @param {boolean} inHighVisibility
    */
   onHighVisibilityChanged(inHighVisibility) {
-    const now = new Date().getTime();
+    const now = performance.now();
+
     if (inHighVisibility === false &&
         now < this.highVisibilityShutoffTimestamp_) {
       // TODO(crbug/1134745): Exiting high visibility can happen for multiple
@@ -254,9 +255,9 @@ Polymer({
       return;
     }
 
-    // Date().getTime() returns current time in milliseconds since unix epoch.
+    // performance.now() returns DOMHighResTimeStamp in milliseconds.
     this.highVisibilityShutoffTimestamp_ =
-        new Date().getTime() + (shutoffTimeoutInSeconds * 1000);
+        performance.now() + (shutoffTimeoutInSeconds * 1000);
 
     // Register a receive surface to enter high visibility and show the page.
     this.receiveManager_.registerForegroundReceiveSurface();

@@ -254,6 +254,12 @@ suite('NearbyShare', function() {
   });
 
   test('show high visibility dialog', function() {
+    // Mock performance.now to return a constant 0 for testing.
+    const originalNow = performance.now;
+    performance.now = () => {
+      return 0;
+    };
+
     const params = new URLSearchParams;
     params.append('receive', '1');
     params.append('timeout', '600');  // 10 minutes
@@ -266,6 +272,9 @@ suite('NearbyShare', function() {
 
     const highVisibilityDialog = dialog.$$('nearby-share-high-visibility-page');
     assertTrue(test_util.isVisible(highVisibilityDialog));
-    assertGT(highVisibilityDialog.shutoffTimestamp, new Date().getTime());
+    assertEquals(highVisibilityDialog.shutoffTimestamp, 600 * 1000);
+
+    // Restore mock
+    performance.now = originalNow;
   });
 });

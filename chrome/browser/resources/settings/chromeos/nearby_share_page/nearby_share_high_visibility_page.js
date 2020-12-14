@@ -23,8 +23,8 @@ Polymer({
     },
 
     /**
-     * Timestamp in milliseconds since unix epoch of when high visibility will
-     * be turned off.
+     * DOMHighResTimeStamp in milliseconds of when high visibility will be
+     * turned off.
      * @type {number}
      */
     shutoffTimestamp: {
@@ -64,8 +64,7 @@ Polymer({
 
   /** @private */
   calculateRemainingTime_() {
-    const now = new Date().getTime();
-
+    const now = performance.now();
     const remainingTimeInMs =
         this.shutoffTimestamp > now ? this.shutoffTimestamp - now : 0;
     this.remainingTimeInSeconds_ = Math.trunc(remainingTimeInMs / 1000);
