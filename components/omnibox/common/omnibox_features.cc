@@ -129,11 +129,6 @@ const base::Feature kDebounceDocumentProvider{
 const base::Feature kOmniboxDemoteByType{"OmniboxDemoteByType",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// A special flag, enabled by default, that can be used to disable all new
-// search features (e.g. zero suggest).
-const base::Feature kNewSearchFeatures{"OmniboxNewSearchFeatures",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Feature used to reduce entity latency by sharing a decoder. Param values will
 // configure other optimizations as well.
 const base::Feature kEntitySuggestionsReduceLatency{

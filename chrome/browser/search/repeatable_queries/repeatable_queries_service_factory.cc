@@ -43,10 +43,8 @@ RepeatableQueriesServiceFactory::~RepeatableQueriesServiceFactory() = default;
 
 KeyedService* RepeatableQueriesServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpRepeatableQueries) ||
-      !base::FeatureList::IsEnabled(omnibox::kNewSearchFeatures)) {
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpRepeatableQueries))
     return nullptr;
-  }
 
   Profile* profile = Profile::FromBrowserContext(context);
   signin::IdentityManager* identity_manager =

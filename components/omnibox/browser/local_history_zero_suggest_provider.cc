@@ -58,17 +58,6 @@ base::string16 GetSearchTermsFromURL(const GURL& url,
 // Whether zero suggest suggestions are allowed in the given context.
 // Invoked early, confirms all the conditions for zero suggestions are met.
 bool AllowLocalHistoryZeroSuggestSuggestions(const AutocompleteInput& input) {
-  // TODO: The default-enabling on Android predated the
-  // omnibox::kNewSearchFeatures flag, so Android is not gated by it. Because
-  // of that, the new kLocalHistoryZeroSuggest flag can't control Android
-  // behavior. Once the kNewSearchFeatures flag is removed,
-  // kLocalHistoryZeroSuggest can control the feature on all plattforms.
-#if defined(OS_ANDROID)  // Default-enabled on Android.
-  return true;
-#else
-  if (!base::FeatureList::IsEnabled(omnibox::kNewSearchFeatures))
-    return false;
-
   // Flag is default-enabled on Android and Desktop.
   if (base::FeatureList::IsEnabled(omnibox::kLocalHistoryZeroSuggest)) {
     return true;
@@ -88,7 +77,6 @@ bool AllowLocalHistoryZeroSuggestSuggestions(const AutocompleteInput& input) {
   }
 
   return false;
-#endif
 }
 
 }  // namespace

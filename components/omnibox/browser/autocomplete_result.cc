@@ -78,11 +78,6 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
                 "kMaxAutocompletePositionValue must be larger than the largest "
                 "possible autocomplete result size.");
 
-  // If new search features are disabled, ignore the other parameters and use
-  // the default value.
-  if (!base::FeatureList::IsEnabled(omnibox::kNewSearchFeatures))
-    return kDefaultMaxAutocompleteMatches;
-
   // If we're interested in the zero suggest match limit, and one has been
   // specified, return it.
   if (is_zero_suggest) {
@@ -655,7 +650,6 @@ size_t AutocompleteResult::CalculateNumMatches(
     const CompareWithDemoteByType<AutocompleteMatch>& comparing_object) {
   // Use alternative CalculateNumMatchesPerUrlCount if applicable.
   if (!is_zero_suggest &&
-      base::FeatureList::IsEnabled(omnibox::kNewSearchFeatures) &&
       base::FeatureList::IsEnabled(omnibox::kDynamicMaxAutocomplete))
     return CalculateNumMatchesPerUrlCount(matches, comparing_object);
   // In the process of trimming, drop all matches with a demoted relevance

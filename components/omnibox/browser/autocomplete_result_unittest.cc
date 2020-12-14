@@ -1914,8 +1914,7 @@ TEST_F(AutocompleteResultTest, CalculateNumMatchesPerUrlCountTest) {
            {OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam,
             increased_limit}}},
          {omnibox::kUIExperimentMaxAutocompleteMatches,
-          {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, base_limit}}},
-         {omnibox::kNewSearchFeatures, {}}},
+          {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, base_limit}}}},
         {});
 
     ACMatches matches;

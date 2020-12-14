@@ -121,19 +121,9 @@ TEST_F(OnDeviceHeadProviderTest, TestIfIncognitoIsAllowed) {
   EXPECT_CALL(*client_.get(), SearchSuggestEnabled())
       .WillRepeatedly(Return(true));
 
-  // By default incognito request will be accepted.
+  // By default Incognito request will be accepted.
   {
     ASSERT_TRUE(IsOnDeviceHeadProviderAllowed(input));
-  }
-
-  // Disable omnibox::kNewSearchFeatures and now all modes should be disabled.
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {omnibox::kOnDeviceHeadProviderNonIncognito,
-         omnibox::kOnDeviceHeadProviderIncognito},
-        {omnibox::kNewSearchFeatures});
-    ASSERT_FALSE(IsOnDeviceHeadProviderAllowed(input));
   }
 }
 

@@ -31,10 +31,6 @@ extern const base::Feature kDebounceDocumentProvider;
 // TODO(tommycli): There are more flags above that belong in this category.
 extern const base::Feature kOmniboxDemoteByType;
 
-// A special flag, enabled by default, that can be used to disable all new
-// search features (e.g. zero suggest).
-extern const base::Feature kNewSearchFeatures;
-
 // Features below this line should be sorted alphabetically by their comments.
 
 // Entity suggestion features.
@@ -42,8 +38,6 @@ extern const base::Feature kEntitySuggestionsReduceLatency;
 
 // Num suggestions - these affect how many suggestions are shown based on e.g.
 // focus, page context, provider, or URL v non-URL.
-// Note that all of these are overridden and default values used instead if
-// kNewSearchFeatures is disabled.
 extern const base::Feature kMaxZeroSuggestMatches;
 extern const base::Feature kUIExperimentMaxAutocompleteMatches;
 // The default value is established here as a bool so it can be referred to in

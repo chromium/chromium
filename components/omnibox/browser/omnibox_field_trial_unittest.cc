@@ -377,16 +377,6 @@ TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
   age_threshold = OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
   EXPECT_EQ(history::kLowQualityMatchAgeLimitInDays,
             base::TimeDelta(base::Time::Now() - age_threshold).InDays());
-
-  // If new search features are disabled, the default value is used.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-        {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "7"}}}},
-      {omnibox::kNewSearchFeatures});
-  age_threshold = OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(history::kLowQualityMatchAgeLimitInDays,
-            base::TimeDelta(base::Time::Now() - age_threshold).InDays());
 }
 
 TEST_F(OmniboxFieldTrialTest, HUPNewScoringFieldTrial) {
