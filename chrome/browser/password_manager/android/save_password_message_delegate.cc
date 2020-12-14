@@ -26,6 +26,11 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save) {
   DCHECK_NE(nullptr, web_contents);
   DCHECK(form_to_save);
+
+  // Dismiss previous message if it is displayed.
+  DismissSavePasswordPrompt();
+  DCHECK(message_ == nullptr);
+
   // is_saving_google_account indicates whether the user is syncing
   // passwords to their Google Account.
   const bool is_saving_google_account =
@@ -39,12 +44,14 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
   CreateMessage(web_contents, std::move(form_to_save),
                 is_saving_google_account);
 
-  messages::MessageDispatcherBridge::EnqueueMessage(*message_, web_contents_);
+  messages::MessageDispatcherBridge::EnqueueMessage(message_.get(),
+                                                    web_contents_);
 }
 
 void SavePasswordMessageDelegate::DismissSavePasswordPrompt() {
   if (message_ != nullptr) {
-    messages::MessageDispatcherBridge::DismissMessage(*message_, web_contents_);
+    messages::MessageDispatcherBridge::DismissMessage(message_.get(),
+                                                      web_contents_);
   }
 }
 

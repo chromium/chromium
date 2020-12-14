@@ -17,9 +17,9 @@ namespace messages {
 // enqueue/dismiss messages with MessageDispatcher.java.
 class MessageDispatcherBridge {
  public:
-  static void EnqueueMessage(const MessageWrapper& message,
+  static void EnqueueMessage(MessageWrapper* message,
                              content::WebContents* web_contents);
-  static void DismissMessage(const MessageWrapper& message,
+  static void DismissMessage(MessageWrapper* message,
                              content::WebContents* web_contents);
 };
 
