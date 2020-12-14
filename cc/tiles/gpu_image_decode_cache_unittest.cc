@@ -14,6 +14,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "cc/base/switches.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_image_builder.h"
@@ -379,7 +380,8 @@ class GpuImageDecodeCacheTest
                      bool /* do_yuv_decode */,
                      bool /* allow_accelerated_jpeg_decoding */,
                      bool /* allow_accelerated_webp_decoding */,
-                     bool /* advertise_accelerated_decoding */>> {
+                     bool /* advertise_accelerated_decoding */,
+                     bool /* enable_clipped_image_scaling */>> {
  public:
   void SetUp() override {
     std::vector<base::Feature> enabled_features;
@@ -392,6 +394,12 @@ class GpuImageDecodeCacheTest
     feature_list_.InitWithFeatures(enabled_features,
                                    {} /* disabled_features */);
     advertise_accelerated_decoding_ = std::get<5>(GetParam());
+    enable_clipped_image_scaling_ = std::get<6>(GetParam());
+    if (enable_clipped_image_scaling_) {
+      auto* command_line = base::CommandLine::ForCurrentProcess();
+      ASSERT_TRUE(command_line != nullptr);
+      command_line->AppendSwitch(switches::kEnableClippedImageScaling);
+    }
     context_provider_ = GPUImageDecodeTestMockContextProvider::Create(
         &discardable_manager_, &transfer_cache_helper_,
         advertise_accelerated_decoding_);
@@ -673,6 +681,7 @@ class GpuImageDecodeCacheTest
   bool allow_accelerated_jpeg_decoding_;
   bool allow_accelerated_webp_decoding_;
   bool advertise_accelerated_decoding_;
+  bool enable_clipped_image_scaling_;
   int max_texture_size_ = 0;
 };
 
@@ -3518,6 +3527,41 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeNeedsDarkModeFilter) {
   cache->UnrefImage(draw_image_with_dark_mode);
 }
 
+TEST_P(GpuImageDecodeCacheTest, ClippedAndScaledDrawImageRemovesCacheEntry) {
+  auto cache = CreateCache();
+  cache->SetWorkingSetLimitsForTesting(0 /* max_bytes */, 0 /* max_items */);
+
+  PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
+  DrawImage draw_image =
+      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)));
+
+  // Must hold context lock before calling GetDecodedImageForDraw /
+  // DrawWithImageFinished.
+  viz::ContextProvider::ScopedContextLock context_lock(context_provider());
+  DecodedDrawImage decoded_draw_image =
+      EnsureImageBacked(cache->GetDecodedImageForDraw(draw_image));
+  EXPECT_TRUE(decoded_draw_image.image());
+  EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
+  EXPECT_FALSE(cache->DiscardableIsLockedForTesting(draw_image));
+
+  cache->DrawWithImageFinished(draw_image, decoded_draw_image);
+  // One entry should be cached
+  EXPECT_EQ(cache->GetNumCacheEntriesForTesting(), 1u);
+
+  // Get task for clipped and scaled image.
+  auto clipped_rect = SkIRect::MakeWH(image.width() * 0.9f, image.height());
+  DrawImage clipped_draw_image =
+      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)),
+                              nullptr, kMedium_SkFilterQuality, &clipped_rect);
+  ImageDecodeCache::TaskResult clipped_result = cache->GetTaskForImageAndRef(
+      clipped_draw_image, ImageDecodeCache::TracingInfo());
+
+  // Unless |enable_clipped_image_scaling_| is true, we throw away the
+  // previously cached entry.
+  EXPECT_EQ(cache->GetNumCacheEntriesForTesting(),
+            enable_clipped_image_scaling_ ? 1u : 0u);
+}
+
 SkColorType test_color_types[] = {kN32_SkColorType, kARGB_4444_SkColorType,
                                   kRGBA_F16_SkColorType};
 bool false_array[] = {false};
@@ -3532,7 +3576,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool() /* do_yuv_decode */,
         testing::ValuesIn(false_array) /* allow_accelerated_jpeg_decoding */,
         testing::ValuesIn(false_array) /* allow_accelerated_webp_decoding */,
-        testing::ValuesIn(false_array) /* advertise_accelerated_decoding */));
+        testing::ValuesIn(false_array) /* advertise_accelerated_decoding */,
+        testing::Bool() /* enable_clipped_image_scaling */));
 
 INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheTestsOOPR,
@@ -3543,7 +3588,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool() /* do_yuv_decode */,
         testing::ValuesIn(false_array) /* allow_accelerated_jpeg_decoding */,
         testing::ValuesIn(false_array) /* allow_accelerated_webp_decoding */,
-        testing::ValuesIn(false_array) /* advertise_accelerated_decoding */));
+        testing::ValuesIn(false_array) /* advertise_accelerated_decoding */,
+        testing::ValuesIn(false_array) /* enable_clipped_image_scaling */));
 
 class GpuImageDecodeCacheWithAcceleratedDecodesTest
     : public GpuImageDecodeCacheTest {
@@ -3858,7 +3904,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool() /* do_yuv_decode */,
         testing::ValuesIn(true_array) /* allow_accelerated_jpeg_decoding */,
         testing::ValuesIn(true_array) /* allow_accelerated_webp_decoding */,
-        testing::ValuesIn(true_array) /* advertise_accelerated_decoding */));
+        testing::ValuesIn(true_array) /* advertise_accelerated_decoding */,
+        testing::ValuesIn(false_array) /* enable_clipped_image_scaling */));
 
 class GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest
     : public GpuImageDecodeCacheWithAcceleratedDecodesTest {};
@@ -3994,12 +4041,14 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
 INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheTestsOOPR,
     GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
-    testing::Combine(testing::Values(kN32_SkColorType),
-                     testing::ValuesIn(true_array) /* use_transfer_cache */,
-                     testing::Bool() /* do_yuv_decode */,
-                     testing::Bool() /* allow_accelerated_jpeg_decoding */,
-                     testing::Bool() /* allow_accelerated_webp_decoding */,
-                     testing::Bool() /* advertise_accelerated_decoding */));
+    testing::Combine(
+        testing::Values(kN32_SkColorType),
+        testing::ValuesIn(true_array) /* use_transfer_cache */,
+        testing::Bool() /* do_yuv_decode */,
+        testing::Bool() /* allow_accelerated_jpeg_decoding */,
+        testing::Bool() /* allow_accelerated_webp_decoding */,
+        testing::Bool() /* advertise_accelerated_decoding */,
+        testing::ValuesIn(false_array) /* enable_clipped_image_scaling */));
 
 #undef EXPECT_TRUE_IF_NOT_USING_TRANSFER_CACHE
 #undef EXPECT_FALSE_IF_NOT_USING_TRANSFER_CACHE
