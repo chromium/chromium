@@ -661,6 +661,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     this histogram, about:, chrome: and chrome-native: are considered
     chrome-internal; everything else is not.
 
+    The user action Navigation.Home.NotChromeInternal is also logged in the case
+    that false is logged to this histogram.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>

@@ -121,6 +121,11 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
                 || homePageUrl.startsWith(UrlConstants.CHROME_NATIVE_URL_SHORT_PREFIX);
         RecordHistogram.recordBooleanHistogram(
                 "Navigation.Home.IsChromeInternal", is_chrome_internal);
+        // Log a user action for the !is_chrome_internal case. This value is used as part of a
+        // high-level guiding metric, which is being migrated to user actions.
+        if (!is_chrome_internal) {
+            RecordUserAction.record("Navigation.Home.NotChromeInternal");
+        }
 
         recordHomeButtonUseForIPH(homePageUrl);
         currentTab.loadUrl(new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));

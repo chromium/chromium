@@ -16208,6 +16208,25 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Navigation.Home.NotChromeInternal">
+  <owner>mpearson@chromium.org</owner>
+  <owner>amaralp@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <description>
+    Emitted every time a user uses a Home button to go to their home page and
+    their the page is not chrome-internal (such as an actual web site instead of
+    the New Tab Page or about:blank). For the purpose of this action, about:,
+    chrome: and chrome-native: are considered chrome-internal; everything else
+    is not.
+
+    This is logged at the same time that the Navigation.Home.IsChromeInternal
+    histogram is logged.
+
+    This action is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </description>
+</action>
+
 <action name="Net.URLRequest_StartJob_InvalidReferrer">
   <obsolete>Deprecated 6/2018.</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

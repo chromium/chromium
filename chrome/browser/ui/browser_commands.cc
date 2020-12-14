@@ -561,6 +561,13 @@ void Home(Browser* browser, WindowOpenDisposition disposition) {
                             url.SchemeIs(chrome::kChromeNativeScheme);
   base::UmaHistogramBoolean("Navigation.Home.IsChromeInternal",
                             is_chrome_internal);
+  // Log a user action for the !is_chrome_internal case. This value is used as
+  // part of a high-level guiding metric, which is being migrated to user
+  // actions.
+  if (!is_chrome_internal) {
+    base::RecordAction(
+        base::UserMetricsAction("Navigation.Home.NotChromeInternal"));
+  }
   OpenURLParams params(
       url, Referrer(), disposition,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK |
