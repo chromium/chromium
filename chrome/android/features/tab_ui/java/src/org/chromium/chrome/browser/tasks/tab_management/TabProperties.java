@@ -13,6 +13,7 @@ import android.view.View.AccessibilityDelegate;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,7 +29,7 @@ import java.lang.annotation.RetentionPolicy;
 public class TabProperties {
     /** IDs for possible types of UI in the tab list. */
     @IntDef({UiType.SELECTABLE, UiType.CLOSABLE, UiType.STRIP, UiType.MESSAGE, UiType.DIVIDER,
-            UiType.NEW_TAB_TILE})
+            UiType.NEW_TAB_TILE, UiType.PRICE_WELCOME})
     @Retention(RetentionPolicy.SOURCE)
     public @interface UiType {
         int SELECTABLE = 0;
@@ -37,6 +38,7 @@ public class TabProperties {
         int MESSAGE = 3;
         int DIVIDER = 4;
         int NEW_TAB_TILE = 5;
+        int PRICE_WELCOME = 6;
     }
 
     public static final PropertyModel.WritableIntPropertyKey TAB_ID =
@@ -118,6 +120,9 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<String> CLOSE_BUTTON_DESCRIPTION_STRING =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop> PRICE_DROP =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS_TAB_GRID = new PropertyKey[] {TAB_ID,
             TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON, THUMBNAIL_FETCHER, IPH_PROVIDER,
             TITLE, IS_SELECTED, CHECKED_DRAWABLE_STATE_LIST, CREATE_GROUP_LISTENER, CARD_ALPHA,
@@ -127,7 +132,7 @@ public class TabProperties {
             SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND, URL_DOMAIN, ACCESSIBILITY_DELEGATE,
             SEARCH_QUERY, PAGE_INFO_LISTENER, PAGE_INFO_ICON_DRAWABLE_ID, CARD_TYPE,
             CONTENT_DESCRIPTION_STRING, CLOSE_BUTTON_DESCRIPTION_STRING,
-            SHOPPING_PERSISTED_TAB_DATA_FETCHER};
+            SHOPPING_PERSISTED_TAB_DATA_FETCHER, PRICE_DROP};
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
             new PropertyKey[] {TAB_ID, TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON,

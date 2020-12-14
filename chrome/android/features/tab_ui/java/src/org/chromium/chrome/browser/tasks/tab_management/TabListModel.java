@@ -19,6 +19,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageService.PriceTabData;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -202,5 +203,19 @@ class TabListModel extends ModelList {
         if (get(index).model.get(TabProperties.CARD_ANIMATION_STATUS) == status) return;
 
         get(index).model.set(TabProperties.CARD_ANIMATION_STATUS, status);
+    }
+
+    /**
+     * Get the first tab showing price card.
+     */
+    public PriceTabData getFirstTabShowingPriceCard() {
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if ((model.get(CARD_TYPE) == TAB) && (model.get(TabProperties.PRICE_DROP) != null)) {
+                return new PriceTabData(
+                        model.get(TabProperties.TAB_ID), model.get(TabProperties.PRICE_DROP));
+            }
+        }
+        return null;
     }
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_grid_price_welcome_message_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/message_card_background_with_inset">
+    <LinearLayout
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+        <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
+            android:id="@+id/price_info_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:gravity="center_horizontal" />
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_marginStart ="24dp"
+            android:layout_marginEnd="24dp" />
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/action_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/FilledButton.Flat"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart ="24dp"
+            android:layout_marginEnd="24dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
+    </LinearLayout>
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/close_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@string/close"
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:tint="@color/default_icon_color"/>
+</org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageCardView>
