@@ -222,8 +222,6 @@ struct PredictionDecisionParams {
 };
 
 PredictionManager::PredictionManager(
-    const std::vector<optimization_guide::proto::OptimizationTarget>&
-        optimization_targets_at_initialization,
     const base::FilePath& profile_path,
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     TopHostProvider* top_host_provider,
@@ -231,7 +229,6 @@ PredictionManager::PredictionManager(
     PrefService* pref_service,
     Profile* profile)
     : PredictionManager(
-          optimization_targets_at_initialization,
           std::make_unique<OptimizationGuideStore>(
               database_provider,
               profile_path.AddExtensionASCII(
@@ -245,8 +242,6 @@ PredictionManager::PredictionManager(
           profile) {}
 
 PredictionManager::PredictionManager(
-    const std::vector<optimization_guide::proto::OptimizationTarget>&
-        optimization_targets_at_initialization,
     std::unique_ptr<OptimizationGuideStore> model_and_features_store,
     TopHostProvider* top_host_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -269,7 +264,7 @@ PredictionManager::PredictionManager(
       clock_(base::DefaultClock::GetInstance()) {
   if (prediction_model_download_manager_)
     prediction_model_download_manager_->AddObserver(this);
-  Initialize(optimization_targets_at_initialization);
+  Initialize();
 }
 
 PredictionManager::~PredictionManager() {
@@ -279,9 +274,7 @@ PredictionManager::~PredictionManager() {
       ->RemoveEffectiveConnectionTypeObserver(this);
 }
 
-void PredictionManager::Initialize(const std::vector<proto::OptimizationTarget>&
-                                       optimization_targets_at_initialization) {
-  RegisterOptimizationTargets(optimization_targets_at_initialization);
+void PredictionManager::Initialize() {
   g_browser_process->network_quality_tracker()
       ->AddEffectiveConnectionTypeObserver(this);
   model_and_features_store_->Initialize(

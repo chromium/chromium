@@ -136,14 +136,12 @@ void OptimizationGuideKeyedService::Initialize() {
   }
 
   hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
-      pre_initialized_optimization_types_,
       g_browser_process->optimization_guide_service(), profile, profile_path,
       profile->GetPrefs(), proto_db_provider, top_host_provider_.get(),
       url_loader_factory);
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
-      pre_initialized_optimization_targets_, profile_path, proto_db_provider,
-      top_host_provider_.get(), url_loader_factory, profile->GetPrefs(),
-      profile);
+      profile_path, proto_db_provider, top_host_provider_.get(),
+      url_loader_factory, profile->GetPrefs(), profile);
 }
 
 OptimizationGuideHintsManager*
@@ -158,22 +156,17 @@ void OptimizationGuideKeyedService::OnNavigationStartOrRedirect(
   OptimizationGuideNavigationData* navigation_data =
       OptimizationGuideNavigationData::GetFromNavigationHandle(
           navigation_handle);
-  if (hints_manager_) {
-    base::flat_set<optimization_guide::proto::OptimizationType>
-        registered_optimization_types =
-            hints_manager_->registered_optimization_types();
-
-    if (!registered_optimization_types.empty()) {
-      hints_manager_->OnNavigationStartOrRedirect(navigation_handle,
-                                                  base::DoNothing());
-    }
-    if (navigation_data) {
-      navigation_data->set_registered_optimization_types(
-          hints_manager_->registered_optimization_types());
-    }
+  base::flat_set<optimization_guide::proto::OptimizationType>
+      registered_optimization_types =
+          hints_manager_->registered_optimization_types();
+  if (!registered_optimization_types.empty()) {
+    hints_manager_->OnNavigationStartOrRedirect(navigation_handle,
+                                                base::DoNothing());
   }
 
-  if (prediction_manager_ && navigation_data) {
+  if (navigation_data) {
+    navigation_data->set_registered_optimization_types(
+        hints_manager_->registered_optimization_types());
     navigation_data->set_registered_optimization_targets(
         prediction_manager_->registered_optimization_targets());
   }
@@ -183,23 +176,13 @@ void OptimizationGuideKeyedService::OnNavigationFinish(
     const std::vector<GURL>& navigation_redirect_chain) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (hints_manager_)
-    hints_manager_->OnNavigationFinish(navigation_redirect_chain);
+  hints_manager_->OnNavigationFinish(navigation_redirect_chain);
 }
 
 void OptimizationGuideKeyedService::RegisterOptimizationTargets(
     const std::vector<optimization_guide::proto::OptimizationTarget>&
         optimization_targets) {
-  if (prediction_manager_) {
-    prediction_manager_->RegisterOptimizationTargets(optimization_targets);
-  } else {
-    // If the service has not been initialized yet, keep track of the
-    // optimization targets that are registered, so that we can pass them to the
-    // prediction manager at initialization.
-    pre_initialized_optimization_targets_.insert(
-        pre_initialized_optimization_targets_.begin(),
-        optimization_targets.begin(), optimization_targets.end());
-  }
+  prediction_manager_->RegisterOptimizationTargets(optimization_targets);
 }
 
 void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
@@ -211,13 +194,6 @@ void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(navigation_handle->IsInMainFrame());
 
-  if (!prediction_manager_) {
-    // We are not initialized yet, so just return unknown.
-    std::move(callback).Run(
-        optimization_guide::OptimizationGuideDecision::kUnknown);
-    return;
-  }
-
   optimization_guide::OptimizationTargetDecision target_decision =
       prediction_manager_->ShouldTargetNavigation(
           navigation_handle, optimization_target, client_model_feature_values);
@@ -228,48 +204,21 @@ void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
 void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-  // Add this as a DCHECK since in reality, this keyed service is registered at
-  // browser initialization before anything can call it. If this is not the
-  // right assumption, then we need to add in facilities to store the registered
-  // observers and pass it in to the prediction manager constructor at this
-  // service's initialization.
-  DCHECK(prediction_manager_);
-
-  if (prediction_manager_) {
     prediction_manager_->AddObserverForOptimizationTargetModel(
         optimization_target, observer);
-  }
 }
 
 void OptimizationGuideKeyedService::RemoveObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-  // Add this as a DCHECK since in reality, this keyed service is registered at
-  // browser initialization before anything can call it. If this is not the
-  // right assumption, then we need to add in facilities to store the registered
-  // observers and pass it in to the prediction manager constructor at this
-  // service's initialization.
-  DCHECK(prediction_manager_);
-
-  if (prediction_manager_) {
     prediction_manager_->RemoveObserverForOptimizationTargetModel(
         optimization_target, observer);
-  }
 }
 
 void OptimizationGuideKeyedService::RegisterOptimizationTypes(
     const std::vector<optimization_guide::proto::OptimizationType>&
         optimization_types) {
-  if (hints_manager_) {
     hints_manager_->RegisterOptimizationTypes(optimization_types);
-  } else {
-    // If the service has not been initialized yet, keep track of the
-    // optimization types that are registered, so that we can pass them to the
-    // hints manager at initialization.
-    pre_initialized_optimization_types_.insert(
-        pre_initialized_optimization_types_.begin(), optimization_types.begin(),
-        optimization_types.end());
-  }
 }
 
 optimization_guide::OptimizationGuideDecision
@@ -278,11 +227,6 @@ OptimizationGuideKeyedService::CanApplyOptimization(
     optimization_guide::proto::OptimizationType optimization_type,
     optimization_guide::OptimizationMetadata* optimization_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!hints_manager_) {
-    // We are not initialized yet, just return unknown.
-    return optimization_guide::OptimizationGuideDecision::kUnknown;
-  }
 
   optimization_guide::OptimizationTypeDecision optimization_type_decision =
       hints_manager_->CanApplyOptimization(url, /*navigation_id=*/base::nullopt,
@@ -327,38 +271,28 @@ void OptimizationGuideKeyedService::AddHintForTesting(
 }
 
 void OptimizationGuideKeyedService::ClearData() {
-  if (hints_manager_)
-    hints_manager_->ClearFetchedHints();
-  if (prediction_manager_)
-    prediction_manager_->ClearHostModelFeatures();
+  hints_manager_->ClearFetchedHints();
+  prediction_manager_->ClearHostModelFeatures();
 }
 
 void OptimizationGuideKeyedService::Shutdown() {
-  if (hints_manager_) {
-    hints_manager_->Shutdown();
-    hints_manager_ = nullptr;
-  }
+  hints_manager_->Shutdown();
 }
 
 void OptimizationGuideKeyedService::UpdateSessionFCP(base::TimeDelta fcp) {
-  if (prediction_manager_)
     prediction_manager_->UpdateFCPSessionStatistics(fcp);
 }
 
 void OptimizationGuideKeyedService::OverrideTargetDecisionForTesting(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationGuideDecision optimization_guide_decision) {
-  if (prediction_manager_) {
     prediction_manager_->OverrideTargetDecisionForTesting(
         optimization_target, optimization_guide_decision);
-  }
 }
 
 void OptimizationGuideKeyedService::OverrideTargetModelFileForTesting(
     optimization_guide::proto::OptimizationTarget optimization_target,
     const base::FilePath& file_path) {
-  if (prediction_manager_) {
     prediction_manager_->OverrideTargetModelFileForTesting(optimization_target,
                                                            file_path);
-  }
 }

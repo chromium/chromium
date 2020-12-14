@@ -72,8 +72,6 @@ class PredictionManager
       public PredictionModelDownloadObserver {
  public:
   PredictionManager(
-      const std::vector<optimization_guide::proto::OptimizationTarget>&
-          optimization_targets_at_initialization,
       const base::FilePath& profile_path,
       leveldb_proto::ProtoDatabaseProvider* database_provider,
       TopHostProvider* top_host_provider,
@@ -82,8 +80,6 @@ class PredictionManager
       Profile* profile);
 
   PredictionManager(
-      const std::vector<optimization_guide::proto::OptimizationTarget>&
-          optimization_targets_at_initialization,
       std::unique_ptr<OptimizationGuideStore> model_and_features_store,
       TopHostProvider* top_host_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -229,11 +225,9 @@ class PredictionManager
           prediction_models);
 
  private:
-  // Called on construction to register optimization targets, initialize the
-  // prediction model and host model features store, and register as an observer
-  // to the network quality tracker.
-  void Initialize(const std::vector<proto::OptimizationTarget>&
-                      optimization_targets_at_intialization);
+  // Called on construction to initialize the prediction model and host model
+  // features store, and register as an observer to the network quality tracker.
+  void Initialize();
 
   // Construct and return a map containing the current feature values for the
   // requested set of model features. The host model features cache is updated
