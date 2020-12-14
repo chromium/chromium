@@ -65,5 +65,14 @@ std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer() {
 #endif
 }
 
+bool CanUsePipeWire() {
+#if defined(WEBRTC_USE_PIPEWIRE)
+  return webrtc::DesktopCapturer::IsRunningUnderWayland() &&
+         base::FeatureList::IsEnabled(features::kWebRtcPipeWireCapturer);
+#else
+  return false;
+#endif
+}
+
 }  // namespace desktop_capture
 }  // namespace content

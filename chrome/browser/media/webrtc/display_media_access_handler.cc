@@ -216,6 +216,14 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
       content::DesktopMediaID::TYPE_SCREEN,
       content::DesktopMediaID::TYPE_WINDOW,
       content::DesktopMediaID::TYPE_WEB_CONTENTS};
+
+  // Avoid offering window-capture as a separate source, since PipeWire's
+  // content-picker will offer both screen and window sources.
+  // See crbug.com/1157006.
+  if (content::desktop_capture::CanUsePipeWire()) {
+    base::Erase(media_types, content::DesktopMediaID::TYPE_WINDOW);
+  }
+
   auto source_lists = picker_factory_->CreateMediaList(media_types);
 
   DesktopMediaPicker::DoneCallback done_callback =
