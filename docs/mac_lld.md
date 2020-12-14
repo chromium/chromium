@@ -56,7 +56,7 @@ different platforms.
 - LLD does not yet have any ARM support
   ([in-progress patch](https://reviews.llvm.org/D88629))
 - LLD-linked binaries don't work on macOS 10.13 or older
-  ([bug](https://llvm.org/PR48395))
+  ([bug](https://llvm.org/PR48395), fixed on llvm trunk)
 - LLD cannot yet link swiftshader binaries ([bug](https://llvm.org/PR48332)) --
   but other than that, all targets build
 - LLD likely produces bad debug info, and LLD-linked binaries likely don't
@@ -66,16 +66,20 @@ different platforms.
 - We haven't tried actually running any other binaries, so chances are many
   other tests fail
 - LLD doesn't yet implement `-dead_strip`, leading to many linker warnings
-- LLD doesn't yet implement deduplication (aka "ICF").
+- LLD doesn't yet implement deduplication (aka "ICF")
+- LLD doesn't yet call graph profile sort
 - LLD doesn't yet implement `-exported_symbol` or `-exported_symbols_list`,
   leading to some linker warnings
+- LLD-linked `protoc` crashes when it runs as part of the build
+  ([bug](https://llvm.org/PR48491))
 
 ## Opting in
 
 1. First, obtain lld. Do either of:
 
-   1. build `lld` locally and copy it to
-      `third_party/llvm-build/Relase+Asserts/bin`
+   1. build `lld` and `llvm-ar` locally and copy it to
+      `third_party/llvm-build/Relase+Asserts/bin`. Also run
+      `ln -s lld third_party/llvm-build/Release+Asserts/bin/ld64.lld.darwinnew`.
    2. run `src/tools/clang/scripts/update.py --package=lld_mac` to download a
       prebuilt lld binary.
 
@@ -87,10 +91,7 @@ different platforms.
 
 2. Add `use_lld = true` to your args.gn
 
-3. Add `fatal_linker_warnings = false` to your args.gn -- builds that use LLD
-   currently emit all kinds of warnings (see "Known issues" above).
-
-4. Then just build normally.
+3. Then just build normally.
 
 `use_lld = true` makes the build use thin archives. For that reason, `use_lld`
 also switches from `libtool` to `llvm-ar`.

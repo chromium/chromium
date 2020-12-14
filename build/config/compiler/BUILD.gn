@@ -62,7 +62,9 @@ declare_args() {
 
   # Enable fatal linker warnings. Building Chromium with certain versions
   # of binutils can cause linker warning.
-  fatal_linker_warnings = true
+  # TODO(thakis): Set this to true unconditionally once lld/MachO bring-up
+  # is along far enough that it no longer emits linker warnings.
+  fatal_linker_warnings = !(is_apple && use_lld)
 
   # Build with C++ RTTI enabled. Chromium builds without RTTI by default,
   # but some sanitizers are known to require it, like CFI diagnostics
@@ -723,7 +725,9 @@ config("compiler") {
   if (use_lld && !enable_call_graph_profile_sort) {
     if (is_win) {
       ldflags += [ "/call-graph-profile-sort:no" ]
-    } else {
+    } else if (!is_apple) {
+      # TODO(thakis): Once LLD's Mach-O port basically works, implement call
+      # graph profile sorting for it, add an opt-out flag, and pass it here.
       ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
     }
   }
