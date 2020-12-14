@@ -304,9 +304,8 @@ TEST_F('SelectToSpeakNavigationControlTest', 'PrevSentence', function() {
       });
 });
 
-// TODO(https://crbug.com/1157817): Fix Flaky Test.
 TEST_F(
-    'SelectToSpeakNavigationControlTest', 'DISABLED_ChangeSpeedWhilePlaying',
+    'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePlaying',
     function() {
       chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
       const bodyHtml = `
@@ -337,11 +336,12 @@ TEST_F(
             // asserting that TTS resumed with the proper rate.
             setTimeout(
                 this.newCallback(() => {
+                  // Should resume TTS at the sentence boundary.
                   assertTrue(this.mockTts.currentlySpeaking());
                   assertEquals(this.mockTts.getOptions().rate, 1.5);
                   assertEquals(this.mockTts.pendingUtterances().length, 1);
                   this.assertEqualsCollapseWhitespace(
-                      this.mockTts.pendingUtterances()[0], '1');
+                      this.mockTts.pendingUtterances()[0], 'Paragraph 1');
                 }),
                 0);
           });
