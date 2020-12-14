@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
-import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -238,15 +237,9 @@ public class TabPersistentStoreTest {
                 }
 
                 @Override
-                protected TabModelOrchestrator createTabModelOrchestrator() {
+                protected TabModelSelector createTabModelSelector() {
                     return null;
                 }
-
-                @Override
-                protected void createTabModels() {}
-
-                @Override
-                protected void destroyTabModels() {}
 
                 @Override
                 protected BrowserControlsManager createBrowserControlsManager() {

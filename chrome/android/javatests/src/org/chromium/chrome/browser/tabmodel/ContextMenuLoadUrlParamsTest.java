@@ -67,7 +67,8 @@ public class ContextMenuLoadUrlParamsTest {
 
         public RecordingTabModelSelector(Activity activity, TabCreatorManager tabCreatorManager,
                 TabModelFilterFactory tabModelFilterFactory, int selectorIndex) {
-            super(null, tabCreatorManager, tabModelFilterFactory,
+            super(activity, null, tabCreatorManager,
+                    new TabbedModeTabPersistencePolicy(selectorIndex, false), tabModelFilterFactory,
                     ()
                             -> NextTabPolicy.HIERARCHICAL,
                     AsyncTabParamsManagerSingleton.getInstance(), false, false, false);

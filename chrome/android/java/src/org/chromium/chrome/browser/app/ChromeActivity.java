@@ -69,7 +69,6 @@ import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -240,7 +239,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             new TabModelSelectorProfileSupplier(mTabModelSelectorSupplier);
     protected ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
             new ObservableSupplierImpl<>();
-    private TabModelOrchestrator mTabModelOrchestrator;
+    private TabModelSelector mTabModelSelector;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private TabCreator mRegularTabCreator;
     private TabCreator mIncognitoTabCreator;
@@ -262,6 +261,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Whether or not {@link #postDeferredStartupIfNeeded()} has already successfully run. */
     private boolean mDeferredStartupPosted;
 
+    private boolean mTabModelsInitialized;
     private boolean mNativeInitialized;
     private boolean mRemoveWindowBackgroundDone;
     protected AccessibilityVisibilityHandler mAccessibilityVisibilityHandler;
@@ -353,9 +353,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // Create component before calling super to give its members a chance to catch
         // onPreInflationStartup event.
         mComponent = createComponent();
-
-        // Create the orchestrator that manages Tab models and persistence
-        mTabModelOrchestrator = createTabModelOrchestrator();
 
         // There's no corresponding call to removeObserver() for this addObserver() because
         // mTabModelProfileSupplier has the same lifecycle as this activity.
@@ -482,10 +479,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     mCompositorViewHolder.getCompositorView());
 
             initializeTabModels();
-            TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
             setTabContentManager(new TabContentManager(this, getContentOffsetProvider(),
                     !SysUtils.isLowEndDevice(),
-                    tabModelSelector != null ? tabModelSelector::getTabById : null));
+                    mTabModelSelector != null ? mTabModelSelector::getTabById : null));
 
             if (!isFinishing()) {
                 getBrowserControlsManager().initialize(
@@ -647,28 +643,28 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * this activity.
      */
     public final void initializeTabModels() {
-        if (mTabModelOrchestrator.areTabModelsInitialized()) return;
+        if (mTabModelsInitialized) return;
 
-        createTabModels();
-        TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
+        mTabModelSelector = createTabModelSelector();
 
-        if (tabModelSelector == null) {
+        if (mTabModelSelector == null) {
             assert isFinishing();
+            mTabModelsInitialized = true;
             return;
         }
 
-        mTabModelSelectorSupplier.set(tabModelSelector);
-        mActivityTabProvider.setTabModelSelector(tabModelSelector);
-        getStatusBarColorController().setTabModelSelector(tabModelSelector);
+        mTabModelSelectorSupplier.set(mTabModelSelector);
+        mActivityTabProvider.setTabModelSelector(mTabModelSelector);
+        getStatusBarColorController().setTabModelSelector(mTabModelSelector);
 
         Pair<? extends TabCreator, ? extends TabCreator> tabCreators = createTabCreators();
         mRegularTabCreator = tabCreators.first;
         mIncognitoTabCreator = tabCreators.second;
 
-        OfflinePageUtils.observeTabModelSelector(this, tabModelSelector);
+        OfflinePageUtils.observeTabModelSelector(this, mTabModelSelector);
         if (mTabModelSelectorTabObserver != null) mTabModelSelectorTabObserver.destroy();
 
-        mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(tabModelSelector) {
+        mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
             @Override
             public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
                 postDeferredStartupIfNeeded();
@@ -685,6 +681,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 postDeferredStartupIfNeeded();
             }
         };
+
+        mTabModelsInitialized = true;
     }
 
     /**
@@ -700,19 +698,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * @return The {@link TabModelOrchestrator} owned by this {@link ChromeActivity}.
+     * @return The {@link TabModelSelector} owned by this {@link ChromeActivity}.
      */
-    protected abstract TabModelOrchestrator createTabModelOrchestrator();
-
-    /**
-     * Call the {@link TabModelOrchestrator} to initialize its members.
-     */
-    protected abstract void createTabModels();
-
-    /**
-     * Call the {@link TabModelOrchestrator} to destroy its members.
-     */
-    protected abstract void destroyTabModels();
+    protected abstract TabModelSelector createTabModelSelector();
 
     /**
      * @return The {@link TabCreator}s owned
@@ -839,8 +827,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         VrModuleProvider.getDelegate().onActivityHidden(this);
 
         Tab tab = getActivityTab();
-        TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
-        if (tabModelSelector != null && !tabModelSelector.isReparentingInProgress()
+        if (mTabModelSelector != null && !mTabModelSelector.isReparentingInProgress()
                 && tab != null) {
             tab.hide(TabHidingType.ACTIVITY_HIDDEN);
         }
@@ -1302,7 +1289,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mActivityTabStartupMetricsTracker = null;
         }
 
-        destroyTabModels();
+        if (mTabModelsInitialized) {
+            TabModelSelector selector = getTabModelSelector();
+            if (selector != null) selector.destroy();
+        }
 
         if (mBookmarkBridgeSupplier != null) {
             BookmarkBridge bookmarkBridge = mBookmarkBridgeSupplier.get();
@@ -1573,7 +1563,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @return Whether the tab models have been fully initialized.
      */
     public boolean areTabModelsInitialized() {
-        return mTabModelOrchestrator.areTabModelsInitialized();
+        return mTabModelsInitialized;
     }
 
     /**
@@ -1582,11 +1572,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @return The {@link TabModelSelector}, possibly null.
      */
     public TabModelSelector getTabModelSelector() {
-        if (!mTabModelOrchestrator.areTabModelsInitialized()) {
+        if (!mTabModelsInitialized) {
             throw new IllegalStateException(
                     "Attempting to access TabModelSelector before initialization");
         }
-        return mTabModelOrchestrator.getTabModelSelector();
+        return mTabModelSelector;
     }
 
     /**
@@ -1607,7 +1597,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public TabCreator getTabCreator(boolean incognito) {
-        if (!mTabModelOrchestrator.areTabModelsInitialized()) {
+        if (!mTabModelsInitialized) {
             throw new IllegalStateException(
                     "Attempting to access TabCreator before initialization");
         }
@@ -1674,7 +1664,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * null if the Tab does not exist or the system is not initialized.
      */
     public Tab getActivityTab() {
-        if (!mTabModelOrchestrator.areTabModelsInitialized()) {
+        if (!mTabModelsInitialized) {
             return null;
         }
         return TabModelUtils.getCurrentTab(getCurrentTabModel());
@@ -1685,7 +1675,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      *         WebContents.
      */
     public WebContents getCurrentWebContents() {
-        if (!mTabModelOrchestrator.areTabModelsInitialized()) {
+        if (!mTabModelsInitialized) {
             return null;
         }
         return TabModelUtils.getCurrentWebContents(getCurrentTabModel());
@@ -2008,7 +1998,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (id == R.id.help_id) {
             String url = currentTab != null ? currentTab.getUrlString() : "";
-            Profile profile = getTabModelSelector().isIncognitoSelected()
+            Profile profile = mTabModelSelector.isIncognitoSelected()
                     ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile()
                     : Profile.getLastUsedRegularProfile();
             startHelpAndFeedback(url, "MobileMenuFeedback", profile);
