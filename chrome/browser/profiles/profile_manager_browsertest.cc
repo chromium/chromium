@@ -567,7 +567,8 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
       profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
-      path_profile2, base::Bind(&OnUnblockOnProfileCreation, &run_loop),
+      path_profile2,
+      base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop),
       base::string16(), std::string());
   // Run the message loop to allow profile creation to take place; the loop is
   // terminated by OnUnblockOnProfileCreation when the profile is created.
