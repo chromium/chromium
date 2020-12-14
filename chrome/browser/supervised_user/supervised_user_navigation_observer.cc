@@ -199,7 +199,7 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
       /*nav_entry_id=*/0, /*referrer=*/url, history::RedirectList(),
       ui::PAGE_TRANSITION_BLOCKED, /*hidden=*/false, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
-      /*publicly_routable=*/false);
+      /*floc_allowed=*/false);
 
   // Add the entry to the history database.
   Profile* profile =

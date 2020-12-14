@@ -66,7 +66,7 @@ void TemplateURLServiceClientImpl::AddKeywordGeneratedVisit(const GURL& url) {
         url, base::Time::Now(), /*context_id=*/nullptr, /*nav_entry_id=*/0,
         /*referrer=*/GURL(), history::RedirectList(),
         ui::PAGE_TRANSITION_KEYWORD_GENERATED, history::SOURCE_BROWSED,
-        /*did_replace_entry=*/false, /*publicly_routable=*/false);
+        /*did_replace_entry=*/false, /*floc_allowed=*/false);
   }
 }
 

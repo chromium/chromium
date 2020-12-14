@@ -1744,11 +1744,22 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
   // The version should have been updated.
   ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 43);
 
-  // After the migration, the publicly_routable value should be false.
+  // Confirm that publicly_routable (corresponding to VisitRow::floc_allowed)
+  // column has a default value "false".
+  {
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT publicly_routable FROM visits"));
+    EXPECT_TRUE(s.Step());
+
+    EXPECT_FALSE(s.ColumnBool(1));
+    EXPECT_FALSE(s.Step());
+  }
+
+  // The VisitRow::floc_allowed should also have the default value "false".
   {
     VisitRow visit_row;
     db_->GetRowForVisit(visit_id1, &visit_row);
-    EXPECT_FALSE(visit_row.publicly_routable);
+    EXPECT_FALSE(visit_row.floc_allowed);
   }
 }
 
