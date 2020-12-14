@@ -429,7 +429,9 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void onInstrumentDetailsLoading() {
-        assert mPaymentUiService.getSelectedPaymentAppType() == PaymentAppType.AUTOFILL;
+        assert mPaymentUiService.getSelectedPaymentApp() == null
+                || mPaymentUiService.getSelectedPaymentApp().getPaymentAppType()
+                        == PaymentAppType.AUTOFILL;
         mPaymentUiService.showProcessingMessage();
     }
 

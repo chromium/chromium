@@ -442,12 +442,12 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /** Get the contact editor on PaymentRequest UI. */
-    public ContactEditor getContactEditor() {
+    private ContactEditor getContactEditor() {
         return mContactEditor;
     }
 
     /** @return The autofill profiles. */
-    public List<AutofillProfile> getAutofillProfiles() {
+    private List<AutofillProfile> getAutofillProfiles() {
         return mAutofillProfiles;
     }
 
@@ -733,13 +733,13 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /** @return The selected payment app type. */
-    public @PaymentAppType int getSelectedPaymentAppType() {
+    private @PaymentAppType int getSelectedPaymentAppType() {
         PaymentApp paymentApp = getSelectedPaymentApp();
         return paymentApp == null ? PaymentAppType.UNDEFINED : paymentApp.getPaymentAppType();
     }
 
     /** Sets the modifier for the order summary based on the given app, if any. */
-    public void updateOrderSummary(@Nullable PaymentApp app) {
+    private void updateOrderSummary(@Nullable PaymentApp app) {
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_MODIFIERS)) return;
         if (mParams.hasClosed()) return;
         PaymentDetailsModifier modifier = getModifier(app);
@@ -779,7 +779,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /** Updates the modifiers for payment apps and order summary. */
-    public void updateAppModifiedTotals() {
+    private void updateAppModifiedTotals() {
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_MODIFIERS)) return;
         if (mParams.hasClosed() || mParams.getMethodData().isEmpty()) return;
         if (mPaymentMethodsSection == null) return;
@@ -802,7 +802,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      *
      * @param amount The given payment amount.
      */
-    public CurrencyFormatter getOrCreateCurrencyFormatter(PaymentCurrencyAmount amount) {
+    private CurrencyFormatter getOrCreateCurrencyFormatter(PaymentCurrencyAmount amount) {
         String key = amount.currency;
         CurrencyFormatter formatter = mCurrencyFormatterMap.get(key);
         if (formatter == null) {
@@ -818,7 +818,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      * @param items The payment items to parse. Can be null.
      * @return A list of valid line items.
      */
-    public List<LineItem> getLineItems(@Nullable List<PaymentItem> items) {
+    private List<LineItem> getLineItems(@Nullable List<PaymentItem> items) {
         // Line items are optional.
         if (items == null) return new ArrayList<>();
 
@@ -879,7 +879,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      * @param options The raw shipping options to parse. Can be null.
      * @return The UI representation of the shipping options.
      */
-    public SectionInformation getShippingOptions(@Nullable PaymentShippingOption[] options) {
+    private SectionInformation getShippingOptions(@Nullable PaymentShippingOption[] options) {
         // Shipping options are optional.
         if (options == null || options.length == 0) {
             return new SectionInformation(PaymentRequestUI.DataType.SHIPPING_OPTIONS);
@@ -903,7 +903,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /** Destroy the currency formatters. */
-    public void destroyCurrencyFormatters() {
+    private void destroyCurrencyFormatters() {
         for (CurrencyFormatter formatter : mCurrencyFormatterMap.values()) {
             assert formatter != null;
             // Ensures the native implementation of currency formatter does not leak.
@@ -915,7 +915,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     /**
      * Notifies the UI about the changes in selected payment method.
      */
-    public void onSelectedPaymentMethodUpdated() {
+    private void onSelectedPaymentMethodUpdated() {
         mPaymentRequestUI.selectedPaymentMethodUpdated(
                 new PaymentInformation(mUiShoppingCart, mShippingAddressesSection,
                         mUiShippingOptions, mContactSection, mPaymentMethodsSection));
@@ -1057,7 +1057,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      * Edit the contact information on the PaymentRequest UI.
      * @param toEdit The information to edit, allowed to be null.
      **/
-    public void editContactOnPaymentRequestUI(@Nullable final AutofillContact toEdit) {
+    private void editContactOnPaymentRequestUI(@Nullable final AutofillContact toEdit) {
         mContactEditor.edit(toEdit, new Callback<AutofillContact>() {
             @Override
             public void onResult(AutofillContact editedContact) {
@@ -1098,7 +1098,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      * Edit the address on the PaymentRequest UI.
      * @param toEdit The address to be updated with, allowed to be null.
      */
-    public void editAddress(@Nullable final AutofillAddress toEdit) {
+    private void editAddress(@Nullable final AutofillAddress toEdit) {
         mAddressEditor.edit(toEdit, new Callback<AutofillAddress>() {
             @Override
             public void onResult(AutofillAddress editedAddress) {
@@ -1355,7 +1355,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
      * @param toEdit The AutofillPaymentInstrument whose credit card is to replace those on the UI,
      *         allowed to be null.
      */
-    public void editCard(@Nullable final AutofillPaymentInstrument toEdit) {
+    private void editCard(@Nullable final AutofillPaymentInstrument toEdit) {
         mCardEditor.edit(toEdit, new Callback<AutofillPaymentInstrument>() {
             @Override
             public void onResult(AutofillPaymentInstrument editedCard) {
@@ -1486,7 +1486,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /** Set a change observer for the shipping address section on the PaymentRequest UI. */
-    public void setShippingAddressSectionFocusChangedObserverForPaymentRequestUI() {
+    private void setShippingAddressSectionFocusChangedObserverForPaymentRequestUI() {
         mPaymentRequestUI.setShippingAddressSectionFocusChangedObserver(this);
     }
 
@@ -1516,7 +1516,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /** Removes all of the observers that observe users leaving the tab. */
-    public void removeLeavingTabObservers() {
+    private void removeLeavingTabObservers() {
         if (mObservedTabModelSelector != null) {
             mObservedTabModelSelector.removeObserver(mSelectorObserver);
             mObservedTabModelSelector = null;
