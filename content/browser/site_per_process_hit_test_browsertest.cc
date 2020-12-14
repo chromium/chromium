@@ -885,7 +885,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
 
   // Wait until renderer's compositor thread is synced. Otherwise the non fast
   // scrollable regions won't be set when the event arrives.
-  RunUntilInputProcessed(rwhv_nested->GetRenderWidgetHost());
+  MainThreadFrameObserver observer(rwhv_nested->GetRenderWidgetHost());
+  observer.Wait();
 
   // Send a wheel to scroll the div.
   gfx::Point location(point_f.x(), point_f.y());
@@ -901,9 +902,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
       blink::WebInputEvent::Type::kGestureScrollUpdate);
   rwhv_root->OnScrollEvent(&scroll_event);
   ack_observer.Wait();
-
-  // Wait until renderer's main thread is synced.
-  RunUntilInputProcessed(rwhv_nested->GetRenderWidgetHost());
 
   // Verify the div scrolled.
   double div_scroll_top = div_scroll_top_start;
