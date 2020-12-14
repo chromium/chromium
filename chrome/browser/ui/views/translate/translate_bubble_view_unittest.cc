@@ -281,6 +281,11 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxShortcut) {
   EXPECT_TRUE(mock_model_->should_always_translate_);
   EXPECT_EQ(1, mock_model_->set_always_translate_called_count_);
   EXPECT_TRUE(bubble_->always_translate_checkbox_->GetChecked());
+  EXPECT_TRUE(mock_model_->translate_called_);
+  EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_TRANSLATING,
+            bubble_->GetViewState());
+  EXPECT_EQ(bubble_->tabbed_pane_->GetSelectedTabIndex(),
+            static_cast<size_t>(1));
 }
 
 TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxAndCloseButton) {

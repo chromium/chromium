@@ -572,8 +572,13 @@ void TranslateBubbleView::AlwaysTranslatePressed() {
                                 : translate::ALWAYS_TRANSLATE_UNCHECKED);
   // In the tab UI the always translate button should apply immediately
   // except for in an advanced view.
-  if (GetViewState() != TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE)
+  if (GetViewState() != TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE) {
     model_->SetAlwaysTranslate(should_always_translate_);
+    if (!model_->IsPageTranslatedInCurrentLanguages() &&
+        should_always_translate_) {
+      Translate();
+    }
+  }
 }
 
 void TranslateBubbleView::UpdateChildVisibilities() {
