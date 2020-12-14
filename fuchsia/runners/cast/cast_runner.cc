@@ -21,6 +21,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "fuchsia/base/agent_manager.h"
@@ -435,7 +436,8 @@ void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
   }
 
   auto cast_component = std::make_unique<CastComponent>(
-      component_owner, std::move(params), is_headless_);
+      base::StrCat({"cast:", pending_component->app_id()}), component_owner,
+      std::move(params), is_headless_);
 
   // Start the component, which creates and configures the web.Frame, and load
   // the specified web content into it.

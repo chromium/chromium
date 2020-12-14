@@ -69,10 +69,12 @@ bool CastComponent::Params::AreComplete() const {
   return true;
 }
 
-CastComponent::CastComponent(WebContentRunner* runner,
+CastComponent::CastComponent(base::StringPiece debug_name,
+                             WebContentRunner* runner,
                              CastComponent::Params params,
                              bool is_headless)
-    : WebComponent(runner,
+    : WebComponent(debug_name,
+                   runner,
                    std::move(params.startup_context),
                    std::move(params.controller_request)),
       is_headless_(is_headless),

@@ -50,6 +50,8 @@ class PendingCastComponent {
   PendingCastComponent(const PendingCastComponent&) = delete;
   PendingCastComponent& operator=(const PendingCastComponent&) = delete;
 
+  const base::StringPiece app_id() const { return app_id_; }
+
  private:
   void RequestCorsExemptHeaders();
 
@@ -65,6 +67,9 @@ class PendingCastComponent {
 
   // Reference to the Delegate which manages |this|.
   Delegate* const delegate_;
+
+  // Id of the Cast application that this instance describes.
+  const std::string app_id_;
 
   // Parameters required to construct the CastComponent.
   CastComponent::Params params_;

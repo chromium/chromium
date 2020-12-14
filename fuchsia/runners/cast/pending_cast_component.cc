@@ -15,7 +15,7 @@ PendingCastComponent::PendingCastComponent(
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         controller_request,
     base::StringPiece app_id)
-    : delegate_(delegate) {
+    : delegate_(delegate), app_id_(app_id.as_string()) {
   DCHECK(startup_context);
   DCHECK(controller_request);
 

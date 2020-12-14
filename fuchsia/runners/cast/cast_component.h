@@ -59,7 +59,15 @@ class CastComponent : public WebComponent,
     base::Optional<uint64_t> media_session_id;
   };
 
-  CastComponent(WebContentRunner* runner, Params params, bool is_headless);
+  // See WebComponent documentation for details of |debug_name| and |runner|.
+  // |params| provides the Cast application configuration to use.
+  // |is_headless| must match the headless setting of the specfied |runner|, to
+  //   have CreateView() operations trigger enabling & disabling of off-screen
+  //   rendering.
+  CastComponent(base::StringPiece debug_name,
+                WebContentRunner* runner,
+                Params params,
+                bool is_headless);
   ~CastComponent() final;
 
   void SetOnDestroyedCallback(base::OnceClosure on_destroyed);

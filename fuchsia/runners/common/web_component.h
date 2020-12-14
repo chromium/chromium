@@ -32,12 +32,17 @@ class WebComponent : public fuchsia::sys::ComponentController,
                      public fuchsia::ui::app::ViewProvider,
                      public fuchsia::web::NavigationEventListener {
  public:
-  // Creates a WebComponent encapsulating a web.Frame. A ViewProvider service
-  // will be published to the service-directory specified by |startup_context|,
-  // and if |controller_request| is valid then it will be bound to this
-  // component, and the component configured to teardown if that channel closes.
-  // |runner| must outlive this component.
-  WebComponent(WebContentRunner* runner,
+  // Creates a WebComponent encapsulating a web.Frame.
+  // |debug_name| may be empty, or specified a name to use to uniquely identify
+  //   the Frame in log output.
+  // |runner| must out-live |this|.
+  // [context| will be retained to provide component-specific services.
+  //   If |context| includes an outgoing-directory request then the component
+  //   will publish ViewProvider and Lifecycle services.
+  // |controller_request| may optionally be supplied and used to control the
+  //   lifetime of this component instance.
+  WebComponent(base::StringPiece debug_name,
+               WebContentRunner* runner,
                std::unique_ptr<base::fuchsia::StartupContext> context,
                fidl::InterfaceRequest<fuchsia::sys::ComponentController>
                    controller_request);
@@ -96,7 +101,13 @@ class WebComponent : public fuchsia::sys::ComponentController,
                                 fuchsia::sys::TerminationReason reason);
 
  private:
+  // Optional name with which to tag console log output from the Frame.
+  const std::string debug_name_;
+
+  // Refers to the owner of the web.Context hosting this component instance.
   WebContentRunner* const runner_ = nullptr;
+
+  // Component context for this instance, including incoming services.
   const std::unique_ptr<base::fuchsia::StartupContext> startup_context_;
 
   fuchsia::web::FramePtr frame_;

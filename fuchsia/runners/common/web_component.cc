@@ -4,6 +4,7 @@
 
 #include "fuchsia/runners/common/web_component.h"
 
+#include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
@@ -18,11 +19,13 @@
 #include "fuchsia/runners/common/web_content_runner.h"
 
 WebComponent::WebComponent(
+    base::StringPiece debug_name,
     WebContentRunner* runner,
     std::unique_ptr<base::fuchsia::StartupContext> context,
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         controller_request)
-    : runner_(runner),
+    : debug_name_(debug_name.as_string()),
+      runner_(runner),
       startup_context_(std::move(context)),
       controller_binding_(this),
       module_context_(
@@ -66,6 +69,8 @@ void WebComponent::StartComponent() {
 
   // Create the underlying Frame and get its NavigationController.
   fuchsia::web::CreateFrameParams create_params;
+  if (!debug_name_.empty())
+    create_params.set_debug_name(debug_name_);
   create_params.set_enable_remote_debugging(enable_remote_debugging_);
   create_params.set_autoplay_policy(
       fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
