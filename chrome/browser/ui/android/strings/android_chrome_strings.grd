@@ -1315,7 +1315,7 @@ Your Google account may have other forms of browsing history like searches and a
         Browse faster. Use less data.
       </message>
       <message name="IDS_DATA_REDUCTION_PROMO_SUMMARY_LITE_MODE" desc="Description for the promo inviting users to enable Lite mode. This informs users that their web traffic will sent to Google to optimize data usage. The Learn more link goes to the help center article for Lite mode." meaning="The translation of percent should be spelled out instead of using the percent symbol.">
-        In Lite mode, BrowserX loads pages faster and uses up to 60 percent less data. To optimize the pages that you visit, Chrome sends your web traffic to Google. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
+        In Lite mode, BrowserX loads pages faster and uses up to 60 percent less data. To optimize the pages that you visit, BrowserX sends your web traffic to Google. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_DATA_REDUCTION_PROMO_LEARN_MORE_URL" desc="URL for Lite mode help center article" translateable="false">
         https://support.google.com/chrome/?p=lite_mode
