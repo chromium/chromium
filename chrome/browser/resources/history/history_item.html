@@ -166,8 +166,9 @@
               on-mousedown="onCheckboxClick_" on-keydown="onCheckboxClick_"
               on-change="onCheckboxChange_" class="no-label"
               hidden="[[selectionNotAllowed_]]"
-              disabled="[[selectionNotAllowed_]]"
-              aria-label$="[[getEntrySummary_(item)]]"></cr-checkbox>
+              disabled="[[selectionNotAllowed_]]">
+            [[getEntrySummary_(item)]]
+          </cr-checkbox>
         </div>
         <!-- ARIA hidden to avoid redundancy since timestamp is already part of
              |getEntrySummary_|. -->
