@@ -28,6 +28,7 @@ body {
 
 table {
     width: max-content;
+    min-width: 100vw;
     border-spacing: 0;
     white-space: pre;
     margin: 0;
