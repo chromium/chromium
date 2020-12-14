@@ -473,21 +473,27 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   if (IsLink())
     return false;
 
-  // If it has a focusable child, we definitely can't leave out children.
-  if (HasFocusableNonOptionChild())
-    return false;
-
   BrowserAccessibilityManagerAndroid* manager_android =
       static_cast<BrowserAccessibilityManagerAndroid*>(manager());
   if (manager_android->prune_tree_for_screen_reader()) {
     // Headings with text can drop their children.
     base::string16 name = GetInnerText();
-    if (GetRole() == ax::mojom::Role::kHeading && !name.empty())
-      return true;
+    if (GetRole() == ax::mojom::Role::kHeading && !name.empty()) {
+      if (HasFocusableNonOptionChild()) {
+        return false;
+      } else {
+        return true;
+      }
+    }
 
     // Focusable nodes with text can drop their children.
-    if (HasState(ax::mojom::State::kFocusable) && !name.empty())
-      return true;
+    if (HasState(ax::mojom::State::kFocusable) && !name.empty()) {
+      if (HasFocusableNonOptionChild()) {
+        return false;
+      } else {
+        return true;
+      }
+    }
 
     // Nodes with only static text as children can drop their children.
     if (HasOnlyTextChildren())
