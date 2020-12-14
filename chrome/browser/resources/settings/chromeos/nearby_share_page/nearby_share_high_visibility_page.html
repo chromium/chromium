@@ -11,8 +11,8 @@
   <template>
     <style>
       #content {
-        background: radial-gradient(160% 50% at 0 100%,
-            rgba(138, 180, 248, 0.25),rgba(255, 255, 255, 0));
+        background: linear-gradient(to top, var(--google-blue-50) 5%,
+                                    rgba(255, 255, 255, 0) 50%);
         display: flex;
         flex-direction: column-reverse;
         height: 100%;
@@ -62,14 +62,19 @@
       cr-lottie {
         bottom: 0;
         height: 100px;
+        left: 0;
         pointer-events: none;
         position: absolute;
+        right: 0;
       }
     </style>
     <nearby-page-template title="$i18n{nearbyShareFeatureName}"
         sub-title="[[getSubTitle_(deviceName, remainingTimeInSeconds_)]]"
         cancel-button-label="$i18n{cancel}">
       <div id="content" slot="content">
+        <cr-lottie animation-url="nearby_share_pulse_animation.json"
+            autoplay="true">
+        </cr-lottie>
         <div id="help">
           <template is="dom-if" if="[[!highVisibilityTimedOut_(
               remainingTimeInSeconds_, shutoffTimestamp)]]">
@@ -101,9 +106,6 @@
             </div>
           </template>
         </div>
-        <cr-lottie animation-url="nearby_share_pulse_animation.json"
-            autoplay="true">
-        </cr-lottie>
       </div>
     </nearby-page-template>
   </template>
