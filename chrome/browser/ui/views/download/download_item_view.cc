@@ -683,7 +683,7 @@ void DownloadItemView::UpdateMode(Mode mode) {
   // notifications would be redundant.
 
   if (mode_ == Mode::kNormal) {
-    UpdateAccessibleAlertAndTimersForNormalMode();
+    UpdateAccessibleAlertAndAnimationsForNormalMode();
   } else if (is_download_warning(mode_)) {
     const auto danger_type = model_->GetDangerType();
     RecordDangerousDownloadWarningShown(danger_type);
@@ -800,7 +800,7 @@ void DownloadItemView::UpdateButtons() {
   dropdown_button_->SetVisible(model_->ShouldShowDropdown());
 }
 
-void DownloadItemView::UpdateAccessibleAlertAndTimersForNormalMode() {
+void DownloadItemView::UpdateAccessibleAlertAndAnimationsForNormalMode() {
   using State = download::DownloadItem::DownloadState;
   const State state = model_->GetState();
   if ((state == State::IN_PROGRESS) && !model_->IsPaused()) {
@@ -810,6 +810,11 @@ void DownloadItemView::UpdateAccessibleAlertAndTimersForNormalMode() {
       indeterminate_progress_start_time_ = base::TimeTicks::Now();
       indeterminate_progress_timer_.Reset();
     }
+
+    // For determinate progress, this function is called each time more data is
+    // received, which should result in updating the progress indicator.
+    if (model_->PercentComplete() > 0)
+      SchedulePaint();
     return;
   }
 

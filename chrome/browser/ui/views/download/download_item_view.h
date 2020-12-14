@@ -131,8 +131,8 @@ class DownloadItemView : public views::View,
   // Updates the visible and enabled state of all buttons.
   void UpdateButtons();
 
-  // Updates the accessible alert and timers for normal mode.
-  void UpdateAccessibleAlertAndTimersForNormalMode();
+  // Updates the accessible alert and animation-related state for normal mode.
+  void UpdateAccessibleAlertAndAnimationsForNormalMode();
 
   // Update accessible status text, and announce it if desired.
   void UpdateAccessibleAlert(const base::string16& alert);
