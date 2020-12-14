@@ -207,7 +207,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        width: 390px;
       }
 
       .contact-toggle {
@@ -237,6 +236,12 @@
         height: 100px;
         margin-block-end: 8px;
         width: 100%;
+      }
+
+      .contact-row {
+        display: flex;
+        flex: 1;
+        justify-content: space-between;
       }
     </style>
     <div id="main">
@@ -373,19 +378,23 @@
                   <iron-icon icon="cr:person"
                       class="padded-icon grey-icon contact-icon">
                   </iron-icon>
-                  <div>
-                    <div class="cr-title-text elide">[[item.name]]</div>
-                    <div class="cr-secondary-text elide">
-                      [[item.description]]
+                  <div class="contact-row">
+                    <div>
+                      <div class="cr-title-text elide">[[item.name]]</div>
+                      <div class="cr-secondary-text elide">
+                        [[item.description]]
+                      </div>
                     </div>
+                    <template is="dom-if"
+                        if="[[showContactCheckBoxes_(selectedVisibility)]]">
+                      <cr-toggle class="contact-toggle"
+                          checked="{{item.checked}}"
+                          disabled="[[!isVisibility_(
+                            selectedVisibility,'some')]]"
+                          on-click="syncContactToggleState_">
+                      </cr-toggle>
+                    </template>
                   </div>
-                  <template is="dom-if"
-                      if="[[showContactCheckBoxes_(selectedVisibility)]]">
-                    <cr-toggle class="contact-toggle" checked="{{item.checked}}"
-                        disabled="[[!isVisibility_(selectedVisibility,'some')]]"
-                        on-click="syncContactToggleState_">
-                    </cr-toggle>
-                  </template>
                 </div>
               </template>
             </div>
