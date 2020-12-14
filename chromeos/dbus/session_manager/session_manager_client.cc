@@ -95,10 +95,8 @@ void LogPolicyResponseUma(login_manager::PolicyAccountType account_type,
       UMA_HISTOGRAM_ENUMERATION("Enterprise.RetrievePolicyResponse.User",
                                 response, RetrievePolicyResponseType::COUNT);
       break;
-    case login_manager::ACCOUNT_TYPE_SESSIONLESS_USER:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Enterprise.RetrievePolicyResponse.UserDuringLogin", response,
-          RetrievePolicyResponseType::COUNT);
+    default:
+      NOTREACHED();
       break;
   }
 }
@@ -447,15 +445,6 @@ class SessionManagerClientImpl : public SessionManagerClient {
     login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
         login_manager::ACCOUNT_TYPE_USER, cryptohome_id.account_id());
     return BlockingRetrievePolicy(descriptor, policy_out);
-  }
-
-  void RetrievePolicyForUserWithoutSession(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      RetrievePolicyCallback callback) override {
-    login_manager::PolicyDescriptor descriptor =
-        MakeChromePolicyDescriptor(login_manager::ACCOUNT_TYPE_SESSIONLESS_USER,
-                                   cryptohome_id.account_id());
-    CallRetrievePolicy(descriptor, std::move(callback));
   }
 
   void RetrieveDeviceLocalAccountPolicy(

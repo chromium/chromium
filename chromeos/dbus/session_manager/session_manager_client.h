@@ -298,13 +298,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
       const cryptohome::AccountIdentifier& cryptohome_id,
       std::string* policy_out) = 0;
 
-  // Fetches the user policy blob for a hidden user home mount. |callback| is
-  // invoked upon completition.
-  // DEPRECATED, use RetrievePolicy() instead.
-  virtual void RetrievePolicyForUserWithoutSession(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      RetrievePolicyCallback callback) = 0;
-
   // Fetches the policy blob associated with the specified device-local account
   // from session manager.  |callback| is invoked up on completion.
   // DEPRECATED, use RetrievePolicy() instead.

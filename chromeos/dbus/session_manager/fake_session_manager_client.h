@@ -92,9 +92,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   RetrievePolicyResponseType BlockingRetrievePolicyForUser(
       const cryptohome::AccountIdentifier& cryptohome_id,
       std::string* policy_out) override;
-  void RetrievePolicyForUserWithoutSession(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      RetrievePolicyCallback callback) override;
   void RetrieveDeviceLocalAccountPolicy(
       const std::string& account_id,
       RetrievePolicyCallback callback) override;
@@ -186,9 +183,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       const cryptohome::AccountIdentifier& cryptohome_id) const;
   void set_user_policy(const cryptohome::AccountIdentifier& cryptohome_id,
                        const std::string& policy_blob);
-  void set_user_policy_without_session(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      const std::string& policy_blob);
 
   // Accessors for device local account policy. Only available for
   // PolicyStorageType::kInMemory.

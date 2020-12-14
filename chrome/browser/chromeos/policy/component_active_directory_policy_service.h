@@ -41,8 +41,8 @@ class ComponentActiveDirectoryPolicyService : public SchemaRegistry::Observer {
   //
   // |account_type| and |account_id| specify the Session Manager store from
   // which policy is retrieved. |account_id| must be the user's cryptohome id
-  // for ACCOUNT_TYPE_USER and empty for ACCOUNT_TYPE_DEVICE. Not suppored yet
-  // are ACCOUNT_TYPE_SESSIONLESS_USER and ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT.
+  // for ACCOUNT_TYPE_USER and empty for ACCOUNT_TYPE_DEVICE.
+  // ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT is not yet supported.
   //
   // Usually, |scope|, |domain|, |account_type| and |account_id| are coupled:
   // For user-level policy, use:
