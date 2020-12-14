@@ -130,11 +130,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
 
   std::unique_ptr<WebApp> web_app;
-
   if (existing_web_app) {
-    // There is an existing app from other source(s). Preserve
-    // |user_display_mode| and any user-controllable fields here, do not modify
-    // them. Prepare copy-on-write:
+    // Prepare copy-on-write:
     DCHECK_EQ(web_app_info.start_url, existing_web_app->start_url());
     web_app = std::make_unique<WebApp>(*existing_web_app);
 
@@ -148,11 +145,18 @@ void WebAppInstallFinalizer::FinalizeInstall(
     web_app = std::make_unique<WebApp>(app_id);
     web_app->SetStartUrl(web_app_info.start_url);
     web_app->SetIsLocallyInstalled(options.locally_installed);
+    if (options.locally_installed)
+      web_app->SetInstallTime(base::Time::Now());
+  }
+
+  // Set |user_display_mode| and any user-controllable fields here if this
+  // install is user initiated or it's a new app.
+  if (webapps::InstallableMetrics::IsUserInitiatedInstallSource(
+          options.install_source) ||
+      !existing_web_app) {
     web_app->SetUserDisplayMode(web_app_info.open_as_window
                                     ? DisplayMode::kStandalone
                                     : DisplayMode::kBrowser);
-    if (options.locally_installed)
-      web_app->SetInstallTime(base::Time::Now());
   }
 
   // `WebApp::chromeos_data` has a default value already. Only override if the

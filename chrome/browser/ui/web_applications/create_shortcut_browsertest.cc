@@ -29,8 +29,8 @@ namespace web_app {
 
 class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
  public:
-  AppId InstallShortcutAppForCurrentUrl() {
-    chrome::SetAutoAcceptWebAppDialogForTesting(true, false);
+  AppId InstallShortcutAppForCurrentUrl(bool open_as_window = false) {
+    chrome::SetAutoAcceptWebAppDialogForTesting(true, open_as_window);
     WebAppInstallObserver observer(profile());
     CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
     AppId app_id = observer.AwaitNextInstall();
@@ -193,6 +193,22 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
   NavigateToURLAndWait(browser(), url);
   AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppStartUrl(app_id), url);
+}
+
+IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
+                       CreateShortcutAgainOverwriteUserDisplayMode) {
+  base::UserActionTester user_action_tester;
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+
+  AppId app_id = InstallShortcutAppForCurrentUrl();
+  EXPECT_EQ(registrar().GetAppShortName(app_id), GetInstallableAppName());
+  // Shortcut apps to PWAs should launch in a tab.
+  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id), DisplayMode::kBrowser);
+
+  InstallShortcutAppForCurrentUrl(/*open_as_window=*/true);
+  // Re-install with enabling open_as_window should update user display mode.
+  EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
+            DisplayMode::kStandalone);
 }
 
 }  // namespace web_app

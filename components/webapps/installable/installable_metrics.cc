@@ -5,6 +5,7 @@
 #include "components/webapps/installable/installable_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/webapps/webapps_client.h"
 #include "content/public/browser/web_contents.h"
@@ -36,6 +37,36 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
          source == WebappInstallSource::SYSTEM_DEFAULT ||
          source == WebappInstallSource::OMNIBOX_INSTALL_ICON ||
          source == WebappInstallSource::MENU_CREATE_SHORTCUT;
+}
+
+// static
+bool InstallableMetrics::IsUserInitiatedInstallSource(
+    WebappInstallSource source) {
+  switch (source) {
+    case WebappInstallSource::MENU_BROWSER_TAB:
+    case WebappInstallSource::MENU_CUSTOM_TAB:
+    case WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
+    case WebappInstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
+    case WebappInstallSource::API_BROWSER_TAB:
+    case WebappInstallSource::API_CUSTOM_TAB:
+    case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
+    case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+    case WebappInstallSource::ARC:
+    case WebappInstallSource::OMNIBOX_INSTALL_ICON:
+    case WebappInstallSource::MENU_CREATE_SHORTCUT:
+      return true;
+    case WebappInstallSource::DEVTOOLS:
+    case WebappInstallSource::MANAGEMENT_API:
+    case WebappInstallSource::INTERNAL_DEFAULT:
+    case WebappInstallSource::EXTERNAL_DEFAULT:
+    case WebappInstallSource::EXTERNAL_POLICY:
+    case WebappInstallSource::SYSTEM_DEFAULT:
+    case WebappInstallSource::SYNC:
+      return false;
+    case WebappInstallSource::COUNT:
+      NOTREACHED();
+      return false;
+  }
 }
 
 // static

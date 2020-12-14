@@ -1633,7 +1633,9 @@ TEST_F(WebAppInstallManagerTest,
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_TRUE(registrar().IsLocallyInstalled(app_id));
-  EXPECT_EQ(DisplayMode::kStandalone,
+  // InstallWebAppFromManifestWithFallback sets user_display_mode to kBrowser
+  // because TestAcceptDialogCallback doesn't set open_as_window to true.
+  EXPECT_EQ(DisplayMode::kBrowser,
             registrar().GetAppEffectiveDisplayMode(app_id));
 }
 

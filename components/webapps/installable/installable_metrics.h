@@ -112,6 +112,9 @@ class InstallableMetrics {
   // TrackInstallEvent.
   static bool IsReportableInstallSource(WebappInstallSource source);
 
+  // Returns whether the install initiated by the user based on install source.
+  static bool IsUserInitiatedInstallSource(WebappInstallSource source);
+
   // Returns the appropriate WebappInstallSource for |web_contents| when the
   // install originates from |trigger|.
   static WebappInstallSource GetInstallSource(
