@@ -3509,6 +3509,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "omnibox-local-history-zero-suggest",
+    "owners": ["rkgibson@google.com", "stkhapugin", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 92
+  },
+  {
     "name": "omnibox-local-zero-suggest-frecency-ranking",
     "owners": [ "mahmadi", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 89

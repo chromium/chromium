@@ -80,7 +80,7 @@ class LocalHistoryZeroSuggestProviderTest
 #if defined(OS_IOS)  // Only needed for iOS.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitAndEnableFeature(
-        omnibox::kReactiveZeroSuggestionsOnNTPRealbox);
+        omnibox::kLocalHistoryZeroSuggest);
 #endif
 
     // Add the fallback default search provider to the TemplateURLService so
@@ -452,7 +452,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
   // With frecency ranking disabled, more recent searches are ranked higher.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitWithFeatures(
-      {omnibox::kReactiveZeroSuggestionsOnNTPRealbox},  // Enables the provider.
+      {omnibox::kLocalHistoryZeroSuggest},  // Enables the provider on iOS.
       {omnibox::kOmniboxLocalZeroSuggestFrecencyRanking});
 
   StartProviderAndWaitUntilDone();
@@ -462,7 +462,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
   // searches are just as frequent.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitWithFeatures(
-      {omnibox::kReactiveZeroSuggestionsOnNTPRealbox,  // Enables the provider.
+      {omnibox::kLocalHistoryZeroSuggest,  // Enables the provider on iOS.
        omnibox::kOmniboxLocalZeroSuggestFrecencyRanking},
       {});
 
@@ -492,8 +492,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Freshness) {
   // Override the age threshold to 7 days.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitWithFeaturesAndParameters(
-      {{omnibox::kReactiveZeroSuggestionsOnNTPRealbox,  // Enables the provider.
-        {}},
+
+      {{omnibox::kLocalHistoryZeroSuggest, {}},  // Enables the provider on iOS.
        {omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
         {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "7"}}}},
       {});

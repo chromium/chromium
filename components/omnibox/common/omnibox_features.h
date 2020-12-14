@@ -66,6 +66,7 @@ extern const base::Feature kOnFocusSuggestionsContextualWeb;
 extern const base::Feature kOnFocusSuggestionsContextualWebOnContent;
 extern const base::Feature kReactiveZeroSuggestionsOnNTPOmnibox;
 extern const base::Feature kReactiveZeroSuggestionsOnNTPRealbox;
+extern const base::Feature kLocalHistoryZeroSuggest;
 // Related, kMaxZeroSuggestMatches.
 
 // On Device Head Suggest.

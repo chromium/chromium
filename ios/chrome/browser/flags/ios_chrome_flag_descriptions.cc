@@ -356,6 +356,12 @@ const char kPageInfoRefactoringName[] = "New design of the page info";
 const char kPageInfoRefactoringDescription[] =
     "Uses the new design for the page security info.";
 
+const char kOmniboxLocalHistoryZeroSuggestName[] =
+    "Omnibox local zero-prefix suggestions";
+const char kOmniboxLocalHistoryZeroSuggestDescription[] =
+    "Configures the omnibox zero-prefix suggestion to use local search "
+    "history.";
+
 #if defined(__IPHONE_13_4)
 const char kPointerSupportName[] = "Enables pointer support on tablets";
 const char kPointerSupportDescription[] =

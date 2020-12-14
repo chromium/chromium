@@ -246,6 +246,10 @@ const base::Feature kReactiveZeroSuggestionsOnNTPRealbox{
     "OmniboxReactiveZeroSuggestionsOnNTPRealbox",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows the LocalHistoryZeroSuggestProvider to use local search history.
+const base::Feature kLocalHistoryZeroSuggest{
+    "LocalHistoryZeroSuggest", enabled_by_default_desktop_android};
+
 // Features to provide non personalized head search suggestion from a compact
 // on device model. More specifically, feature name with suffix Incognito /
 // NonIncognito will only controls behaviors under incognito / non-incognito

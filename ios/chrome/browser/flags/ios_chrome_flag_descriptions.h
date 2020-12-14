@@ -321,6 +321,11 @@ extern const char kOmniboxOnFocusSuggestionsDescription[];
 extern const char kPageInfoRefactoringName[];
 extern const char kPageInfoRefactoringDescription[];
 
+// Title and description for the flag to control Omnibox Local zero-prefix
+// suggestions.
+extern const char kOmniboxLocalHistoryZeroSuggestName[];
+extern const char kOmniboxLocalHistoryZeroSuggestDescription[];
+
 #if defined(__IPHONE_13_4)
 // Title and description for the flag to enable pointer support on tablets.
 extern const char kPointerSupportName[];
