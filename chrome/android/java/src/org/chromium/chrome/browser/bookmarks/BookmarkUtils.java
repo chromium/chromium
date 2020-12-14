@@ -98,6 +98,7 @@ public class BookmarkUtils {
             Activity activity, boolean fromCustomTab, Callback<BookmarkId> callback) {
         BookmarkBottomSheetCoordinator bookmarkBottomSheet =
                 new BookmarkBottomSheetCoordinator(activity, bottomSheetController, bookmarkModel);
+        RecordUserAction.record("Android.Bookmarks.BottomSheet.Open");
         bookmarkBottomSheet.show((selectedBookmarkItem) -> {
             if (selectedBookmarkItem == null) {
                 callback.onResult(null);
@@ -113,6 +114,8 @@ public class BookmarkUtils {
                 newBookmarkId = addBookmarkAndShowSnackbar(
                         bookmarkModel, tab, snackbarManager, activity, fromCustomTab);
             }
+            RecordHistogram.recordEnumeratedHistogram("Bookmarks.BottomSheet.DestinationFolder",
+                    selectedBookmarkItem.getId().getType(), BookmarkType.LAST + 1);
             callback.onResult(newBookmarkId);
         });
     }

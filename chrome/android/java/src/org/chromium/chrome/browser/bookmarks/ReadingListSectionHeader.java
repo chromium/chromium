@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.components.bookmarks.BookmarkType;
 
@@ -44,6 +46,7 @@ class ReadingListSectionHeader {
         // If we have no read/unread elements, exit.
         if (readingListStartIndex == listItems.size()) return;
         sort(listItems, readingListStartIndex);
+        recordMetrics(listItems);
 
         // Add a section header at the top. If it is for read, exit right away.
         assert listItems.get(readingListStartIndex).getBookmarkItem().getId().getType()
@@ -81,5 +84,24 @@ class ReadingListSectionHeader {
         return BookmarkListEntry.createSectionHeader(
                 read ? R.string.reading_list_read : R.string.reading_list_unread,
                 read ? null : R.string.reading_list_ready_for_offline, context);
+    }
+
+    private static void recordMetrics(List<BookmarkListEntry> listItems) {
+        int numUnreadItems = 0;
+        int numReadItems = 0;
+        for (int i = 0; i < listItems.size(); i++) {
+            // Skip the headers.
+            if (listItems.get(i).getBookmarkItem() == null) continue;
+            if (listItems.get(i).getBookmarkItem().isRead()) {
+                numReadItems++;
+            } else {
+                numUnreadItems++;
+            }
+        }
+        RecordUserAction.record("Android.BookmarkPage.ReadingList.OpenReadingList");
+        RecordHistogram.recordCountHistogram(
+                "Bookmarks.ReadingList.NumberOfReadItems", numReadItems);
+        RecordHistogram.recordCountHistogram(
+                "Bookmarks.ReadingList.NumberOfUnreadItems", numUnreadItems);
     }
 }
