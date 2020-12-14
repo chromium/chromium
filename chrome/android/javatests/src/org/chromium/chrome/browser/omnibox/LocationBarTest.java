@@ -25,7 +25,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -98,10 +97,10 @@ public class LocationBarTest {
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         mActivityTestRule.prepareUrlIntent(intent, "about:blank");
         mActivityTestRule.launchActivity(intent);
-        ChromeActivity chromeActivity = mActivityTestRule.getActivity();
-        if (!chromeActivity.isInitialLayoutInflationComplete()) {
+        mActivity = mActivityTestRule.getActivity();
+        if (!mActivity.isInitialLayoutInflationComplete()) {
             AtomicBoolean isInflated = new AtomicBoolean();
-            chromeActivity.getLifecycleDispatcher().register(new InflationObserver() {
+            mActivity.getLifecycleDispatcher().register(new InflationObserver() {
                 @Override
                 public void onPreInflationStartup() {}
 
@@ -112,7 +111,7 @@ public class LocationBarTest {
             });
             CriteriaHelper.pollUiThread(isInflated::get);
         }
-        doPostActivitySetup(chromeActivity);
+        doPostActivitySetup(mActivity);
     }
 
     private void triggerAndWaitForDeferredNativeInitialization() {
@@ -155,7 +154,6 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1157659")
     public void testSetSearchQueryFocusesUrlBar_preNative() {
         startActivityWithDeferredNativeInitialization();
         final String query = "testing query";
