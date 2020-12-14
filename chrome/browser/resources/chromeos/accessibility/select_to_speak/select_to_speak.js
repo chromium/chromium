@@ -1541,10 +1541,22 @@ class SelectToSpeak {
     if (!this.visible_) {
       return;
     }
-    const node = nodeGroupItem.hasInlineText && this.currentNodeWord_ ?
-        ParagraphUtils.findInlineTextNodeByCharacterIndex(
-            nodeGroupItem.node, this.currentNodeWord_.start) :
-        nodeGroupItem.node;
+    let node;
+    if (nodeGroupItem.hasInlineText && this.currentNodeWord_) {
+      node = ParagraphUtils.findInlineTextNodeByCharacterIndex(
+          nodeGroupItem.node, this.currentNodeWord_.start);
+    } else if (
+        nodeGroupItem.hasInlineText && this.shouldShowNavigationControls_()) {
+      // If navigation controls are enabled, but word highlighting is disabled
+      // (currentNodeWord_ === null), still find the inline text node so the
+      // focus ring will highlight the whole block.
+      node = ParagraphUtils.findInlineTextNodeByCharacterIndex(
+          nodeGroupItem.node, 0);
+    } else {
+      // No inline text or word highlighting and navigation controls are
+      // disabled.
+      node = nodeGroupItem.node;
+    }
     if (this.scrollToSpokenNode_ && node.state.offscreen) {
       node.makeVisible();
     }
