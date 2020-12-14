@@ -33,6 +33,7 @@ class BrowserTabsModelController;
 class BrowserTabsModelProvider;
 class ConnectionManager;
 class CrosStateSender;
+class InvalidConnectionDisconnector;
 class MessageSender;
 class MessageReceiver;
 class MultideviceSetupStateUpdater;
@@ -88,6 +89,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<BrowserTabsModelController> browser_tabs_model_controller_;
   std::unique_ptr<MultideviceSetupStateUpdater>
       multidevice_setup_state_updater_;
+  std::unique_ptr<InvalidConnectionDisconnector>
+      invalid_connection_disconnector_;
 };
 
 }  // namespace phonehub

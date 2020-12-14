@@ -13,6 +13,7 @@
 #include "chromeos/components/phonehub/do_not_disturb_controller_impl.h"
 #include "chromeos/components/phonehub/feature_status_provider_impl.h"
 #include "chromeos/components/phonehub/find_my_device_controller_impl.h"
+#include "chromeos/components/phonehub/invalid_connection_disconnector.h"
 #include "chromeos/components/phonehub/message_receiver_impl.h"
 #include "chromeos/components/phonehub/message_sender_impl.h"
 #include "chromeos/components/phonehub/multidevice_setup_state_updater.h"
@@ -105,7 +106,11 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<MultideviceSetupStateUpdater>(
               pref_service,
               multidevice_setup_client,
-              notification_access_manager_.get())) {}
+              notification_access_manager_.get())),
+      invalid_connection_disconnector_(
+          std::make_unique<InvalidConnectionDisconnector>(
+              connection_manager_.get(),
+              phone_model_.get())) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 
@@ -152,6 +157,7 @@ UserActionRecorder* PhoneHubManagerImpl::GetUserActionRecorder() {
 // These should be destroyed in the opposite order of how these objects are
 // initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {
+  invalid_connection_disconnector_.reset();
   multidevice_setup_state_updater_.reset();
   browser_tabs_model_controller_.reset();
   browser_tabs_model_provider_.reset();
