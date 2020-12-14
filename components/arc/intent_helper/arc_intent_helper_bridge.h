@@ -126,6 +126,8 @@ class ArcIntentHelperBridge : public KeyedService,
       const std::vector<uint8_t>& data,
       arc::mojom::IntentHelperInstance::HandleCameraResultCallback callback);
 
+  void SendNewCaptureBroadcast(bool is_video, std::string file_path);
+
   // Returns false if |package_name| is for the intent_helper apk.
   static bool IsIntentHelperPackage(const std::string& package_name);
 

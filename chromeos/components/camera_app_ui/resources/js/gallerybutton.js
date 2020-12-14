@@ -13,6 +13,7 @@ import {
 // eslint-disable-next-line no-unused-vars
 import {ResultSaver} from './models/result_saver.js';
 import {VideoSaver} from './models/video_saver.js';
+import {ChromeHelper} from './mojo/chrome_helper.js';
 import * as util from './util.js';
 
 /**
@@ -181,6 +182,9 @@ export class GalleryButton {
    */
   async savePhoto(blob, name) {
     const file = await filesystem.saveBlob(blob, name);
+
+    ChromeHelper.getInstance().sendNewCaptureBroadcast(
+        {isVideo: false, name: file.name});
     await this.updateCover_(file);
   }
 
@@ -198,6 +202,9 @@ export class GalleryButton {
   async finishSaveVideo(video) {
     const file = await video.endWrite();
     assert(file !== null);
+
+    ChromeHelper.getInstance().sendNewCaptureBroadcast(
+        {isVideo: true, name: file.name});
     await this.updateCover_(file);
   }
 }

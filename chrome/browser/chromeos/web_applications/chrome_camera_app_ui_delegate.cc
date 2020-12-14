@@ -110,22 +110,17 @@ bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {
 }
 
 void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
-  // Check to avoid directory traversal attack.
-  base::FilePath name_component(name);
-  if (name_component.ReferencesParent())
+  base::FilePath path = GetFilePathByName(name);
+  if (path.empty()) {
     return;
+  }
 
-  Profile* profile = Profile::FromWebUI(web_ui_);
-
-  base::FilePath path = file_manager::util::GetMyFilesFolderForProfile(profile)
-                            .Append("Camera")
-                            .Append(name_component);
   auto&& file_paths = std::vector<base::FilePath>({path});
   apps::mojom::FilePathsPtr launch_files =
       apps::mojom::FilePaths::New(file_paths);
 
   apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+      apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_));
   proxy->LaunchAppWithFiles(
       web_app::kMediaAppId,
       apps::mojom::LaunchContainer::kLaunchContainerWindow,
@@ -148,4 +143,33 @@ void ChromeCameraAppUIDelegate::OpenFeedbackDialog(
                            placeholder /* description_placeholder_text */,
                            "chromeos-camera-app" /* category_tag */,
                            std::string() /* extra_diagnostics */);
+}
+
+std::string ChromeCameraAppUIDelegate::GetFilePathInArcByName(
+    const std::string& name) {
+  base::FilePath path = GetFilePathByName(name);
+  if (path.empty()) {
+    return std::string();
+  }
+
+  GURL arc_url_out;
+  if (!file_manager::util::ConvertPathToArcUrl(path, &arc_url_out) ||
+      !arc_url_out.is_valid()) {
+    return std::string();
+  }
+  return arc_url_out.spec();
+}
+
+base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
+    const std::string& name) {
+  // Check to avoid directory traversal attack.
+  base::FilePath name_component(name);
+  if (name_component.ReferencesParent())
+    return base::FilePath();
+
+  Profile* profile = Profile::FromWebUI(web_ui_);
+
+  return file_manager::util::GetMyFilesFolderForProfile(profile)
+      .Append("Camera")
+      .Append(name_component);
 }

@@ -34,6 +34,9 @@ class CameraAppUIDelegate {
   // Opens the native chrome feedback dialog scoped to chrome://camera-app and
   // show |placeholder| in the description field.
   virtual void OpenFeedbackDialog(const std::string& placeholder) = 0;
+
+  // Gets the file path in ARC file system by given file |name|.
+  virtual std::string GetFilePathInArcByName(const std::string& name) = 0;
 };
 
 #endif  // CHROMEOS_COMPONENTS_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_

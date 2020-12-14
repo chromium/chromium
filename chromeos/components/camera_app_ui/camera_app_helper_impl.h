@@ -31,6 +31,8 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
                                    arc::mojom::CameraIntentAction,
                                    const std::vector<uint8_t>&,
                                    HandleCameraResultCallback)>;
+  using SendBroadcastCallback =
+      base::RepeatingCallback<void(bool, std::string)>;
   using TabletModeMonitor = mojom::TabletModeMonitor;
   using ScreenStateMonitor = mojom::ScreenStateMonitor;
   using ExternalScreenMonitor = mojom::ExternalScreenMonitor;
@@ -38,6 +40,7 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
 
   CameraAppHelperImpl(chromeos::CameraAppUI* camera_app_ui,
                       CameraResultCallback camera_result_callback,
+                      SendBroadcastCallback send_broadcast_callback,
                       aura::Window* window);
   ~CameraAppHelperImpl() override;
   void Bind(mojo::PendingReceiver<mojom::CameraAppHelper> receiver);
@@ -66,6 +69,7 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
       SetCameraUsageMonitorCallback callback) override;
   void GetWindowStateController(
       GetWindowStateControllerCallback callback) override;
+  void SendNewCaptureBroadcast(bool is_video, const std::string& name) override;
 
  private:
   void CheckExternalScreenState();
@@ -88,6 +92,8 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   chromeos::CameraAppUI* camera_app_ui_;
 
   CameraResultCallback camera_result_callback_;
+
+  SendBroadcastCallback send_broadcast_callback_;
 
   bool has_external_screen_;
 

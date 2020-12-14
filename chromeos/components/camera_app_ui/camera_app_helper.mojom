@@ -142,4 +142,9 @@ interface CameraAppHelper {
   // Gets the controller to control and monitor the window state of app.
   GetWindowStateController()
       => (pending_remote<WindowStateController> controller);
+
+  // Sends broadcast when a picture/video is captured. |is_video| is true if a
+  // video is captured and false for a picture. |name| is the file name which
+  // will be used to generate the URI for the broadcast.
+  SendNewCaptureBroadcast(bool is_video, string name);
 };

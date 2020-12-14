@@ -253,6 +253,15 @@ export class ChromeHelper {
   }
 
   /**
+   * Sends the broadcast to ARC to notify the new photo/video is captured.
+   * @param {{isVideo: boolean, name: string}} info
+   * @return {!Promise}
+   */
+  async sendNewCaptureBroadcast({isVideo, name}) {
+    this.remote_.sendNewCaptureBroadcast(isVideo, name);
+  }
+
+  /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
    *     exist instance.
    * @return {!ChromeHelper} The singleton instance.

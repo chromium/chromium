@@ -122,6 +122,14 @@ void HandleCameraResult(
                                     std::move(callback));
 }
 
+void SendNewCaptureBroadcast(content::BrowserContext* context,
+                             bool is_video,
+                             std::string file_path) {
+  auto* intent_helper =
+      arc::ArcIntentHelperBridge::GetForBrowserContext(context);
+  intent_helper->SendNewCaptureBroadcast(is_video, file_path);
+}
+
 std::unique_ptr<media::CameraAppDeviceProviderImpl>
 CreateCameraAppDeviceProvider(const url::Origin& security_origin,
                               content::BrowserContext* context) {
@@ -149,9 +157,12 @@ std::unique_ptr<chromeos_camera::CameraAppHelperImpl> CreateCameraAppHelper(
   DCHECK_NE(window, nullptr);
   auto handle_result_callback =
       base::BindRepeating(&HandleCameraResult, browser_context);
+  auto send_broadcast_callback =
+      base::BindRepeating(&SendNewCaptureBroadcast, browser_context);
 
   return std::make_unique<chromeos_camera::CameraAppHelperImpl>(
-      camera_app_ui, std::move(handle_result_callback), window);
+      camera_app_ui, std::move(handle_result_callback),
+      std::move(send_broadcast_callback), window);
 }
 
 }  // namespace
