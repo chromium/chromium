@@ -31,11 +31,9 @@ DrmWindow::DrmWindow(gfx::AcceleratedWidget widget,
                      ScreenManager* screen_manager)
     : widget_(widget),
       device_manager_(device_manager),
-      screen_manager_(screen_manager) {
-}
+      screen_manager_(screen_manager) {}
 
-DrmWindow::~DrmWindow() {
-}
+DrmWindow::~DrmWindow() = default;
 
 void DrmWindow::Initialize() {
   TRACE_EVENT1("drm", "DrmWindow::Initialize", "widget", widget_);
@@ -97,7 +95,10 @@ void DrmWindow::SchedulePageFlip(
   if (controller_) {
     const DrmDevice* drm = controller_->GetDrmDevice().get();
     for (const auto& plane : planes) {
-      if (plane.buffer && plane.buffer->drm_device() != drm) {
+      if (plane.buffer &&
+          (plane.buffer->drm_device() != drm ||
+           controller_->IsModifierBad(plane.buffer->framebuffer_pixel_format(),
+                                      plane.buffer->format_modifier()))) {
         // Although |force_buffer_reallocation_| is set to true during window
         // bounds update, this may still be needed because of in-flight buffers.
         force_buffer_reallocation_ = true;

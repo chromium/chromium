@@ -37,7 +37,7 @@ namespace {
 bool FillModesetBuffer(const scoped_refptr<DrmDevice>& drm,
                        HardwareDisplayController* controller,
                        SkSurface* surface,
-                       uint32_t fourcc_format) {
+                       const std::vector<uint64_t>& modifiers) {
   DCHECK(!controller->crtc_controllers().empty());
   CrtcController* first_crtc = controller->crtc_controllers()[0].get();
   ScopedDrmCrtcPtr saved_crtc(drm->GetCrtc(first_crtc->crtc()));
@@ -46,7 +46,6 @@ bool FillModesetBuffer(const scoped_refptr<DrmDevice>& drm,
     return false;
   }
 
-  const auto& modifiers = controller->GetFormatModifiers(fourcc_format);
   for (const uint64_t modifier : modifiers) {
     // A value of 0 means DRM_FORMAT_MOD_NONE. If the CRTC has any other
     // modifier (tiling, compression, etc.) we can't read the fb and assume it's
@@ -92,13 +91,6 @@ CrtcController* GetCrtcController(HardwareDisplayController* controller,
 
   NOTREACHED();
   return nullptr;
-}
-
-std::vector<uint64_t> GetModifiersForPrimaryFormat(
-    HardwareDisplayController* controller) {
-  gfx::BufferFormat format = display::DisplaySnapshot::PrimaryFormat();
-  uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(format);
-  return controller->GetFormatModifiersForModesetting(fourcc_format);
 }
 
 bool AreAllStatusesTrue(base::flat_map<int64_t, bool>& display_statuses) {
@@ -259,21 +251,26 @@ base::flat_map<int64_t, bool> ScreenManager::ConfigureDisplayControllers(
 
 base::flat_map<int64_t, bool> ScreenManager::TestAndModeset(
     const ControllerConfigsList& controllers_params) {
-  if (!TestModeset(controllers_params)) {
-    base::flat_map<int64_t, bool> statuses;
-    for (const auto& params : controllers_params)
-      statuses.insert(std::make_pair(params.display_id, false));
-    return statuses;
+  TRACE_EVENT0("drm", "ScreenManager::TestAndModeset");
+
+  if (TestAndSetPreferredModifiers(controllers_params) ||
+      TestAndSetLinearModifier(controllers_params)) {
+    return Modeset(controllers_params);
   }
 
-  return Modeset(controllers_params);
+  // If we fail to test even with the base modifier, report a failure.
+  base::flat_map<int64_t, bool> statuses;
+  for (const auto& params : controllers_params)
+    statuses.insert(std::make_pair(params.display_id, false));
+  return statuses;
 }
 
-bool ScreenManager::TestModeset(
+bool ScreenManager::TestAndSetPreferredModifiers(
     const ControllerConfigsList& controllers_params) {
-  TRACE_EVENT1("drm", "ScreenManager::TestModeset", "display_count",
-               controllers_params.size());
+  TRACE_EVENT1("drm", "ScreenManager::TestAndSetPreferredModifiers",
+               "display_count", controllers_params.size());
 
+  CrtcPreferredModifierMap crtcs_preferred_modifier;
   CommitRequest commit_request;
   auto drm = controllers_params[0].drm;
 
@@ -283,9 +280,69 @@ bool ScreenManager::TestModeset(
     HardwareDisplayController* controller = it->get();
 
     if (params.mode) {
+      uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(
+          display::DisplaySnapshot::PrimaryFormat());
+      std::vector<uint64_t> modifiers =
+          controller->GetFormatModifiersForTestModeset(fourcc_format);
+
       DrmOverlayPlane primary_plane = GetModesetBuffer(
           controller, gfx::Rect(params.origin, ModeSize(*params.mode)),
-          GetModifiersForPrimaryFormat(controller));
+          modifiers);
+      if (!primary_plane.buffer) {
+        return false;
+      }
+
+      crtcs_preferred_modifier[params.crtc] = std::make_pair(
+          modifiers.empty(), primary_plane.buffer->format_modifier());
+
+      GetModesetControllerProps(&commit_request, controller, params.origin,
+                                *params.mode, primary_plane);
+    } else {
+      controller->GetDisableProps(&commit_request);
+    }
+  }
+
+  if (!drm->plane_manager()->Commit(
+          std::move(commit_request),
+          DRM_MODE_ATOMIC_TEST_ONLY | DRM_MODE_ATOMIC_ALLOW_MODESET)) {
+    return false;
+  }
+
+  SetPreferredModifiers(controllers_params, crtcs_preferred_modifier);
+  return true;
+}
+
+bool ScreenManager::TestAndSetLinearModifier(
+    const ControllerConfigsList& controllers_params) {
+  TRACE_EVENT1("drm", "ScreenManager::TestAndSetLinearModifier",
+               "display_count", controllers_params.size());
+
+  CrtcPreferredModifierMap crtcs_preferred_modifier;
+  CommitRequest commit_request;
+  auto drm = controllers_params[0].drm;
+
+  for (const auto& params : controllers_params) {
+    auto it = FindDisplayController(params.drm, params.crtc);
+    DCHECK(controllers_.end() != it);
+    HardwareDisplayController* controller = it->get();
+
+    uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(
+        display::DisplaySnapshot::PrimaryFormat());
+    std::vector<uint64_t> modifiers =
+        controller->GetFormatModifiersForTestModeset(fourcc_format);
+    // Test with an empty list if no preferred modifiers are advertised.
+    // Platforms might not support gbm_bo_create_with_modifiers(). If the
+    // platform doesn't expose modifiers, do not attempt to explicitly request
+    // LINEAR otherwise we might CHECK() when trying to allocate buffers.
+    if (!modifiers.empty())
+      modifiers = std::vector<uint64_t>{DRM_FORMAT_MOD_LINEAR};
+    crtcs_preferred_modifier[params.crtc] =
+        std::make_pair(modifiers.empty(), DRM_FORMAT_MOD_LINEAR);
+
+    if (params.mode) {
+      DrmOverlayPlane primary_plane = GetModesetBuffer(
+          controller, gfx::Rect(params.origin, ModeSize(*params.mode)),
+          modifiers);
       if (!primary_plane.buffer)
         return false;
 
@@ -296,9 +353,36 @@ bool ScreenManager::TestModeset(
     }
   }
 
-  return drm->plane_manager()->Commit(
-      std::move(commit_request),
-      DRM_MODE_ATOMIC_TEST_ONLY | DRM_MODE_ATOMIC_ALLOW_MODESET);
+  if (!drm->plane_manager()->Commit(
+          std::move(commit_request),
+          DRM_MODE_ATOMIC_TEST_ONLY | DRM_MODE_ATOMIC_ALLOW_MODESET)) {
+    return false;
+  }
+
+  SetPreferredModifiers(controllers_params, crtcs_preferred_modifier);
+  return true;
+}
+
+void ScreenManager::SetPreferredModifiers(
+    const ControllerConfigsList& controllers_params,
+    const CrtcPreferredModifierMap& crtcs_preferred_modifier) {
+  for (const auto& params : controllers_params) {
+    if (params.mode) {
+      bool was_modifiers_list_empty =
+          crtcs_preferred_modifier.at(params.crtc).first;
+      // No preferred modifiers should be saved as some platforms might not have
+      // bo_create_with_modifiers implemented, this will send the preferred
+      // modifiers list as an empty list.
+      if (!was_modifiers_list_empty) {
+        uint64_t picked_modifier =
+            crtcs_preferred_modifier.at(params.crtc).second;
+        auto it = FindDisplayController(params.drm, params.crtc);
+        DCHECK(*it);
+        it->get()->UpdatePreferredModiferForFormat(
+            display::DisplaySnapshot::PrimaryFormat(), picked_modifier);
+      }
+    }
+  }
 }
 
 base::flat_map<int64_t, bool> ScreenManager::Modeset(
@@ -316,9 +400,14 @@ base::flat_map<int64_t, bool> ScreenManager::Modeset(
       DCHECK(controllers_.end() != it);
       HardwareDisplayController* controller = it->get();
 
+      uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
+          display::DisplaySnapshot::PrimaryFormat());
+      std::vector<uint64_t> modifiers =
+          controller->GetSupportedModifiers(fourcc_format);
+
       DrmOverlayPlane primary_plane = GetModesetBuffer(
           controller, gfx::Rect(params.origin, ModeSize(*params.mode)),
-          GetModifiersForPrimaryFormat(controller));
+          modifiers);
       if (primary_plane.buffer) {
         SetDisplayControllerForEnableAndGetProps(
             &commit_request, params.drm, params.crtc, params.connector,
@@ -552,10 +641,14 @@ void ScreenManager::UpdateControllerToWindowMapping() {
     // otherwise the controller may be waiting for a page flip while the window
     // tries to schedule another buffer.
     if (should_enable) {
+      uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(
+          display::DisplaySnapshot::PrimaryFormat());
+      std::vector<uint64_t> modifiers =
+          controller->GetSupportedModifiers(fourcc_format);
       DrmOverlayPlane primary_plane = GetModesetBuffer(
           controller,
           gfx::Rect(controller->origin(), controller->GetModeSize()),
-          GetModifiersForPrimaryFormat(controller));
+          modifiers);
       DCHECK(primary_plane.buffer);
 
       CommitRequest commit_request;
@@ -606,8 +699,7 @@ DrmOverlayPlane ScreenManager::GetModesetBuffer(
   sk_sp<SkSurface> surface = buffer->GetSurface();
   if (!surface) {
     VLOG(2) << "Can't get a SkSurface from the modeset gbm buffer.";
-  } else if (!FillModesetBuffer(drm, controller, surface.get(),
-                                buffer->GetFormat())) {
+  } else if (!FillModesetBuffer(drm, controller, surface.get(), modifiers)) {
     // If we fail to fill the modeset buffer, clear it black to avoid displaying
     // an uninitialized framebuffer.
     surface->getCanvas()->clear(SK_ColorBLACK);
