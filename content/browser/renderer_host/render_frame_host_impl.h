@@ -2598,6 +2598,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // TODO(https://crbug.com/1146573): Remove this when the bug is closed.
   void ValidateStateForBug1146573();
+  void DumpWithoutCrashingIfRenderFrameCreatedBug1146573();
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
