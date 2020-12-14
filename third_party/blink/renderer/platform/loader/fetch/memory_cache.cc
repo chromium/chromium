@@ -447,7 +447,8 @@ bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
   return true;
 }
 
-void MemoryCache::OnMemoryPressure(WebMemoryPressureLevel level) {
+void MemoryCache::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
   PruneAll();
 }
 

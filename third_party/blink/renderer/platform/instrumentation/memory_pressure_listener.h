@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_MEMORY_PRESSURE_LISTENER_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/platform/web_memory_pressure_level.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
@@ -19,7 +19,8 @@ class PLATFORM_EXPORT MemoryPressureListener : public GarbageCollectedMixin {
  public:
   virtual ~MemoryPressureListener() = default;
 
-  virtual void OnMemoryPressure(WebMemoryPressureLevel) {}
+  virtual void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel) {}
 
   virtual void OnPurgeMemory() {}
 };
@@ -55,7 +56,7 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   void RegisterClient(MemoryPressureListener*);
   void UnregisterClient(MemoryPressureListener*);
 
-  void OnMemoryPressure(WebMemoryPressureLevel);
+  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel);
 
   void OnPurgeMemory();
 

@@ -229,22 +229,6 @@ static_assert(
         v8::MemoryPressureLevel::kCritical,
     "critical level not align");
 
-// WebMemoryPressureLevel should correspond to base::MemoryPressureListener.
-static_assert(static_cast<blink::WebMemoryPressureLevel>(
-                  base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) ==
-                  blink::kWebMemoryPressureLevelNone,
-              "blink::WebMemoryPressureLevelNone not align");
-static_assert(
-    static_cast<blink::WebMemoryPressureLevel>(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) ==
-        blink::kWebMemoryPressureLevelModerate,
-    "blink::WebMemoryPressureLevelModerate not align");
-static_assert(
-    static_cast<blink::WebMemoryPressureLevel>(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) ==
-        blink::kWebMemoryPressureLevelCritical,
-    "blink::WebMemoryPressureLevelCritical not align");
-
 void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
   if (min <= 0)
     min = 1;
@@ -1785,10 +1769,8 @@ void RenderThreadImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   TRACE_EVENT1("memory", "RenderThreadImpl::OnMemoryPressure", "level",
                memory_pressure_level);
-  if (blink_platform_impl_) {
-    blink::WebMemoryPressureListener::OnMemoryPressure(
-        static_cast<blink::WebMemoryPressureLevel>(memory_pressure_level));
-  }
+  if (blink_platform_impl_)
+    blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
   if (memory_pressure_level ==
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     ReleaseFreeMemory();

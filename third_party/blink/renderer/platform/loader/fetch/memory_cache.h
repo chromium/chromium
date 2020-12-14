@@ -151,7 +151,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // Take memory usage snapshot for tracing.
   bool OnMemoryDump(WebMemoryDumpLevelOfDetail, WebProcessMemoryDump*) override;
 
-  void OnMemoryPressure(WebMemoryPressureLevel) override;
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel) override;
 
  private:
   enum PruneStrategy {

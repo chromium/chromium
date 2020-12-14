@@ -9,6 +9,7 @@ include_rules = [
     "+base/logging.h",
     "+base/macros.h",
     "+base/mac/scoped_cftyperef.h",
+    "+base/memory/memory_pressure_listener.h",
     "+base/memory/ref_counted.h",
     "+base/memory/scoped_refptr.h",
     "+base/memory/weak_ptr.h",
