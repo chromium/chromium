@@ -233,7 +233,7 @@ net::StreamSocket* AndroidUsbDevice::CreateSocket(const std::string& command) {
   uint32_t socket_id = ++last_socket_id_;
   sockets_[socket_id] = new AndroidUsbSocket(
       this, socket_id, command,
-      base::Bind(&AndroidUsbDevice::SocketDeleted, this, socket_id));
+      base::BindOnce(&AndroidUsbDevice::SocketDeleted, this, socket_id));
   return sockets_[socket_id];
 }
 
