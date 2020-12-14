@@ -287,6 +287,12 @@ const MitigationFlags MITIGATION_IMAGE_LOAD_PREFER_SYS32 = 0x00100000;
 const MitigationFlags MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION =
     0x00200000;
 
+// Turns off CET for the process. This allows chrome.exe to
+// be turned 'on' using IFEO or through build settings but children we know to
+// have issues can be turned off. Corresponds to
+// PROCESS_CREATION_MITIGATION_POLICY2_CET_USER_SHADOW_STACKS_ALWAYS_OFF.
+const MitigationFlags MITIGATION_CET_DISABLED = 0x00400000;
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_SRC_SECURITY_LEVEL_H_

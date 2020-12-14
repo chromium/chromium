@@ -494,12 +494,20 @@ void ConvertProcessMitigationsToPolicy(MitigationFlags flags,
     //       2018 security updates and any applicable firmware updates from the
     //       OEM device manufacturer.
     // Note: Applying this mitigation attribute on creation will succeed, even
-    // if
-    //       the underlying hardware does not support the implementation.
+    //       if the underlying hardware does not support the implementation.
     //       Windows just does its best under the hood for the given hardware.
     if (flags & MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION) {
       *policy_value_2 |=
           PROCESS_CREATION_MITIGATION_POLICY2_RESTRICT_INDIRECT_BRANCH_PREDICTION_ALWAYS_ON;
+    }
+  }
+
+  // Mitigations >= Win10 20H1
+  //----------------------------------------------------------------------------
+  if (version >= base::win::Version::WIN10_20H1) {
+    if (flags & MITIGATION_CET_DISABLED) {
+      *policy_value_2 |=
+          PROCESS_CREATION_MITIGATION_POLICY2_CET_USER_SHADOW_STACKS_ALWAYS_OFF;
     }
   }
 

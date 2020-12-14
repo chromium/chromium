@@ -368,6 +368,22 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
       // UpdateProcThreadAttribute() with this mitigation succeeded.
       break;
     }
+    //--------------------------------------------------
+    // MITIGATION_CET_DISABLED
+    //--------------------------------------------------
+    case (TESTPOLICY_CETDISABLED): {
+      PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY policy = {};
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
+                                         ProcessUserShadowStackPolicy, &policy,
+                                         sizeof(policy))) {
+        return SBOX_TEST_NOT_FOUND;
+      }
+      // We wish to disable the policy.
+      if (policy.EnableUserShadowStack)
+        return SBOX_TEST_FAILED;
+
+      break;
+    }
     default:
       return SBOX_TEST_INVALID_PARAMETER;
   }
@@ -1048,6 +1064,55 @@ TEST(ProcessMitigationsTest,
 
   EXPECT_EQ(policy->SetProcessMitigations(
                 MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION),
+            SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+
+  //---------------------------------
+  // 2) Test setting post-startup.
+  //    ** Post-startup not supported.  Must be enabled on creation.
+  //---------------------------------
+}
+
+//------------------------------------------------------------------------------
+// Hardware shadow stack / Control(flow) Enforcement Technology / CETCOMPAT
+// (MITIGATION_CET_DISABLED)
+// >= Win10 2004
+//------------------------------------------------------------------------------
+
+// This test validates that setting the
+// MITIGATION_CET_DISABLED mitigation disables CET in child processes. The test
+// only makes sense where the parent was launched with CET enabled, hence we
+// bail out early on systems that do not support CET.
+TEST(ProcessMitigationsTest, CetDisablePolicy) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_20H1)
+    return;
+
+  // Verify policy is available and set for this process (i.e. CET is
+  // enabled via IFEO or through the CETCOMPAT bit on the executable).
+  auto get_process_mitigation_policy =
+      reinterpret_cast<decltype(&GetProcessMitigationPolicy)>(::GetProcAddress(
+          ::GetModuleHandleA("kernel32.dll"), "GetProcessMitigationPolicy"));
+
+  PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY uss_policy;
+  if (!get_process_mitigation_policy(GetCurrentProcess(),
+                                     ProcessUserShadowStackPolicy, &uss_policy,
+                                     sizeof(uss_policy))) {
+    return;
+  }
+
+  if (!uss_policy.EnableUserShadowStack)
+    return;
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += std::to_wstring(TESTPOLICY_CETDISABLED);
+
+  //---------------------------------
+  // 1) Test setting pre-startup.
+  //---------------------------------
+  TestRunner runner;
+  sandbox::TargetPolicy* policy = runner.GetPolicy();
+
+  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_CET_DISABLED),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 
