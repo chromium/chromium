@@ -285,9 +285,12 @@ bool LayoutSVGResourceClipper::FindCycleFromSelf(
   // Check nested clip-path.
   if (auto* reference_clip =
           DynamicTo<ReferenceClipPathOperation>(StyleRef().ClipPath())) {
-    SVGResourceClient* client = SVGResources::GetClient(*this);
-    if (reference_clip->Resource()->FindCycle(*client, solver))
-      return true;
+    // The resource can be null if the reference is external but external
+    // references are not allowed.
+    if (SVGResource* resource = reference_clip->Resource()) {
+      if (resource->FindCycle(*SVGResources::GetClient(*this), solver))
+        return true;
+    }
   }
   return LayoutSVGResourceContainer::FindCycleFromSelf(solver);
 }

@@ -110,7 +110,9 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
   // This performs a depth-first search for a back-edge in all the
   // (potentially disjoint) graphs formed by the referenced resources.
   for (const auto& local_resource : resources) {
-    if (local_resource->FindCycle(*client, solver))
+    // The resource can be null if the reference is external but external
+    // references are not allowed.
+    if (local_resource && local_resource->FindCycle(*client, solver))
       return true;
   }
   return false;
