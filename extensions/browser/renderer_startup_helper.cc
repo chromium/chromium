@@ -318,9 +318,10 @@ RendererStartupHelper::BindNewRendererRemote(
 
 mojom::Renderer* RendererStartupHelper::GetRenderer(
     content::RenderProcessHost* process) {
-  if (!base::Contains(process_mojo_map_, process))
+  auto it = process_mojo_map_.find(process);
+  if (it == process_mojo_map_.end())
     return nullptr;
-  return process_mojo_map_.find(process)->second.get();
+  return it->second.get();
 }
 //////////////////////////////////////////////////////////////////////////////
 
