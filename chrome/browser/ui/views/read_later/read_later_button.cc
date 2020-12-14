@@ -11,36 +11,49 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 ReadLaterButton::ReadLaterButton(Browser* browser)
-    : ToolbarButton(base::BindRepeating(&ReadLaterButton::ButtonPressed,
-                                        base::Unretained(this))),
+    : LabelButton(base::BindRepeating(&ReadLaterButton::ButtonPressed,
+                                      base::Unretained(this)),
+                  l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE)),
       browser_(browser),
       webui_bubble_manager_(std::make_unique<WebUIBubbleManager<ReadLaterUI>>(
           this,
           browser->profile(),
           GURL(chrome::kChromeUIReadLaterURL))) {
+  SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+
+  views::InstallPillHighlightPathGenerator(this);
+  SetInkDropMode(InkDropMode::ON);
+  SetHasInkDropActionOnClick(true);
+  SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
+
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // We don't want to use ToolbarButton::SetHighlight here because it adds a
-  // border around the button.
-  LabelButton::SetText(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
 }
 
 ReadLaterButton::~ReadLaterButton() = default;
@@ -49,19 +62,36 @@ const char* ReadLaterButton::GetClassName() const {
   return "ReadLaterButton";
 }
 
-void ReadLaterButton::UpdateIcon() {
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(
-                    kReadLaterIcon,
-                    GetThemeProvider()->GetColor(
-                        ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON),
-                    GetIconSize()));
+std::unique_ptr<views::InkDrop> ReadLaterButton::CreateInkDrop() {
+  std::unique_ptr<views::InkDropImpl> ink_drop =
+      CreateDefaultFloodFillInkDropImpl();
+  ink_drop->SetShowHighlightOnFocus(false);
+  return std::move(ink_drop);
 }
 
-int ReadLaterButton::GetIconSize() const {
-  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  return (touch_ui && !browser_->app_controller()) ? kDefaultTouchableIconSize
-                                                   : kDefaultIconSize;
+std::unique_ptr<views::InkDropHighlight>
+ReadLaterButton::CreateInkDropHighlight() const {
+  return CreateToolbarInkDropHighlight(this);
+}
+
+SkColor ReadLaterButton::GetInkDropBaseColor() const {
+  return GetToolbarInkDropBaseColor(this);
+}
+
+void ReadLaterButton::OnThemeChanged() {
+  // We don't always have a theme provider (ui tests, for example).
+  const ui::ThemeProvider* theme_provider = GetThemeProvider();
+  if (!theme_provider)
+    return;
+  const SkColor color =
+      theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
+  SetEnabledTextColors(color);
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          kReadLaterIcon, color_utils::DeriveDefaultIconColor(color)));
+
+  LabelButton::OnThemeChanged();
 }
 
 void ReadLaterButton::ButtonPressed() {
