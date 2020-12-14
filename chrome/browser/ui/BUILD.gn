@@ -2766,6 +2766,8 @@ static_library("ui") {
     sources += [
       "views/chrome_browser_main_extra_parts_views_lacros.cc",
       "views/chrome_browser_main_extra_parts_views_lacros.h",
+      "views/frame/browser_frame_lacros.cc",
+      "views/frame/browser_frame_lacros.h",
       "views/frame/immersive_mode_controller_chromeos.cc",
       "views/frame/immersive_mode_controller_chromeos.h",
       "window_sizer/window_sizer_chromeos.cc",
