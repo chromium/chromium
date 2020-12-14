@@ -47,7 +47,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 #include "url/url_util.h"
 
 #if !defined(OFFICIAL_BUILD)
@@ -220,7 +220,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   // are set in Javascript.
   static constexpr webui::ResourcePath kImages[] = {
       {omnibox::kGoogleGIconResourceName,
-       IDR_WEBUI_IMAGES_200_LOGO_GOOGLE_G_PNG},
+       IDR_WEBUI_IMAGES_200_LOGO_GOOGLEG_PNG},
       {omnibox::kBookmarkIconResourceName, IDR_LOCAL_NTP_ICONS_BOOKMARK},
       {omnibox::kCalculatorIconResourceName, IDR_LOCAL_NTP_ICONS_CALCULATOR},
       {omnibox::kClockIconResourceName, IDR_LOCAL_NTP_ICONS_CLOCK},

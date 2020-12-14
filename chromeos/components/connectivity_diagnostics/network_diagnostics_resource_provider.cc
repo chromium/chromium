@@ -7,7 +7,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -108,15 +108,15 @@ struct WebUiResource {
 
 constexpr WebUiResource kResources[] = {
     {"test_canceled.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_CANCELED_ICON},
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_CANCELED_PNG},
     {"test_failed.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_FAILED_ICON},
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_FAILED_PNG},
     {"test_not_run.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_NOT_RUN_ICON},
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_NOT_RUN_PNG},
     {"test_passed.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_PASSED_ICON},
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_PASSED_PNG},
     {"test_warning.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_DIAGNOSTICS_WARNING_ICON},
+     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_WARNING_PNG},
 };
 
 struct StringMap {

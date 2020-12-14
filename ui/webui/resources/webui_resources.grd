@@ -24,60 +24,6 @@ without changes to the corresponding grd file. -->
         <include name="IDR_WEBUI_ROBOTO_ROBOTO_MEDIUM_WOFF2" file="roboto/roboto-medium.woff2" type="BINDATA" />
         <include name="IDR_WEBUI_ROBOTO_ROBOTO_BOLD_WOFF2" file="roboto/roboto-bold.woff2" type="BINDATA" />
       </if>
-
-      <!-- Component apps common image resources - 1x -->
-      <!-- Misc buttons -->
-      <include name="IDR_WEBUI_IMAGES_APPS_TOPBAR_BUTTON_CLOSE_PNG"
-               file="images/apps/topbar_button_close.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_TOPBAR_BUTTON_MAXIMIZE_PNG"
-               file="images/apps/topbar_button_maximize.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_TOPBAR_BUTTON_MINIMIZE_PNG"
-               file="images/apps/topbar_button_minimize.png" type="BINDATA" />
-
-      <!-- Component apps common image resources - 2x -->
-      <!-- Misc buttons -->
-      <include name="IDR_WEBUI_IMAGES_APPS_TOPBAR_BUTTON_2X_CLOSE_PNG"
-               file="images/2x/apps/topbar_button_close.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_TOPBAR_BUTTON_2X_MAXIMIZE_PNG"
-               file="images/2x/apps/topbar_button_maximize.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_TOPBAR_BUTTON_2X_MINIMIZE_PNG"
-               file="images/2x/apps/topbar_button_minimize.png" type="BINDATA" />
-
-      <!-- Non-apps images -->
-      <include name="IDR_WEBUI_IMAGES_ADD_SVG"
-               file="images/add.svg" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_CANCEL_RED_SVG"
-               file="images/cancel_red.svg" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_CHECK_CIRCLE_GREEN_SVG"
-               file="images/check_circle_green.svg" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_CHECK_PNG"
-               file="images/check.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_CHECKBOX_BLACK_PNG"
-               file="images/checkbox_black.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_CHECKBOX_WHITE_PNG"
-               file="images/checkbox_white.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_DISABLED_SELECT_PNG"
-               file="images/disabled_select.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_ERROR_SVG"
-               file="images/error.svg" type="BINDATA" />
-      <!-- Similar to IDR_WEBUI_IMAGES_ERROR except that it is white-filled instead of transparent-filled. Useful for badging images where the background may be red. -->
-      <include name="IDR_WEBUI_IMAGES_ERROR_BADGE_SVG"
-               file="images/error_badge.svg" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_ICON_SEARCH_SVG"
-               file="images/icon_search.svg" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_ICON_REFRESH_SVG"
-               file="images/icon_refresh.svg" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_SELECT_PNG"
-               file="images/select.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_THROBBER_MEDIUM_SVG"
-               file="images/throbber_medium.svg" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_THROBBER_SMALL_SVG"
-               file="images/throbber_small.svg" type="BINDATA" />
-
-      <if expr="not is_android">
-        <part file="cr_components/cr_components_images.grdp" />
-        <part file="cr_elements_images.grdp" />
-      </if>
     </includes>
     <structures>
       <structure name="IDR_WEBUI_CSS_MENU_CSS"

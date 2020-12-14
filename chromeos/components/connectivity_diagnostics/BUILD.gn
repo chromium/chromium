@@ -40,7 +40,7 @@ source_set("network_diagnostics_resource_provider") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
-    "//ui/resources:webui_resources_grd",
+    "//ui/resources:webui_generated_resources_grd",
     "//ui/webui",
   ]
 }

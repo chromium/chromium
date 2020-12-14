@@ -19,6 +19,48 @@ generate_grd("build_grdp") {
   grd_prefix = "cr_components"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
   deps = [ ":preprocess" ]
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "customize_themes/colorize.svg",
+    "customize_themes/brush.svg",
+  ]
+  if (is_chromeos) {
+    input_files += [
+      "chromeos/multidevice_setup/start_setup_icon_1x.png",
+      "chromeos/multidevice_setup/start_setup_icon_2x.png",
+      "chromeos/multidevice_setup/setup_succeeded_icon_1x.png",
+      "chromeos/multidevice_setup/setup_succeeded_icon_2x.png",
+      "chromeos/cellular_setup/error_1x.png",
+      "chromeos/cellular_setup/error_2x.png",
+      "chromeos/cellular_setup/final_page_success_1x.png",
+      "chromeos/cellular_setup/final_page_success_2x.png",
+      "chromeos/cellular_setup/psim_1x.png",
+      "chromeos/cellular_setup/psim_2x.png",
+      "chromeos/cellular_setup/esim_1x.png",
+      "chromeos/cellular_setup/esim_2x.png",
+      "chromeos/network/cellular_0_with_x.svg",
+      "chromeos/network/cellular_0.svg",
+      "chromeos/network/cellular_1.svg",
+      "chromeos/network/cellular_2.svg",
+      "chromeos/network/cellular_3.svg",
+      "chromeos/network/cellular_4.svg",
+      "chromeos/network/cellular_off.svg",
+      "chromeos/network/ethernet.svg",
+      "chromeos/network/vpn.svg",
+      "chromeos/network/wifi_0_with_x.svg",
+      "chromeos/network/wifi_0.svg",
+      "chromeos/network/wifi_1.svg",
+      "chromeos/network/wifi_2.svg",
+      "chromeos/network/wifi_3.svg",
+      "chromeos/network/wifi_4.svg",
+      "chromeos/network/wifi_off.svg",
+      "chromeos/network_health/test_canceled.png",
+      "chromeos/network_health/test_failed.png",
+      "chromeos/network_health/test_not_run.png",
+      "chromeos/network_health/test_passed.png",
+      "chromeos/network_health/test_warning.png",
+    ]
+  }
   manifest_files = [
     "$target_gen_dir/$preprocess_gen_manifest",
     "$target_gen_dir/$preprocess_mojom_manifest",
