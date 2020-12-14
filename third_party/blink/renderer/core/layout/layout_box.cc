@@ -4101,7 +4101,7 @@ void LayoutBox::ComputeLogicalWidth(
       ContainerWidthInInlineDirection();
   LayoutBlock* cb = ContainingBlock();
 
-  if (StyleRef().LogicalWidth().IsAuto() &&
+  if (StyleRef().LogicalWidth().IsAuto() && !treat_as_replaced &&
       ComputeLogicalWidthFromAspectRatio(&computed_values.extent_)) {
     /* we're good */
   } else if (treat_as_replaced) {
@@ -4621,12 +4621,13 @@ void LayoutBox::ComputeLogicalHeight(
     }
 
     bool check_min_max_height = false;
+    bool compute_size_as_replaced = ShouldComputeSizeAsReplaced();
 
     // The parent box is flexing us, so it has increased or decreased our
     // height. We have to grab our cached flexible height.
     if (HasOverrideLogicalHeight()) {
       h = Length::Fixed(OverrideLogicalHeight());
-    } else if (ShouldComputeSizeAsReplaced()) {
+    } else if (compute_size_as_replaced) {
       h = Length::Fixed(ComputeReplacedLogicalHeight() +
                         BorderAndPaddingLogicalHeight());
     } else {
@@ -4636,7 +4637,8 @@ void LayoutBox::ComputeLogicalHeight(
 
     LayoutUnit height_result;
     if (check_min_max_height) {
-      if (ShouldComputeLogicalHeightFromAspectRatio()) {
+      if (!compute_size_as_replaced &&
+          ShouldComputeLogicalHeightFromAspectRatio()) {
         NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
                                   BorderEnd() + ComputedCSSPaddingEnd(),
                                   BorderBefore() + ComputedCSSPaddingBefore(),
