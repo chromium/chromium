@@ -915,14 +915,6 @@ SupportsType MimeUtil::IsCodecSupported(const std::string& mime_type_lower_case,
       return IsNotSupported;
   }
 
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if (codec == MimeUtil::HEVC && is_encrypted &&
-      (video_profile == HEVCPROFILE_MAIN ||
-       video_profile == HEVCPROFILE_MAIN10)) {
-    return IsSupported;
-  }
-#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-
   if (video_codec != kUnknownVideoCodec) {
     if (!IsSupportedVideoType(
             {video_codec, video_profile, video_level, color_space})) {

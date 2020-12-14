@@ -19,6 +19,7 @@
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_permission.h"
 #include "media/base/mime_util.h"
+#include "media/media_buildflags.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -159,6 +160,32 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 
   std::vector<std::string> codec_vector;
   SplitCodecs(codecs, &codec_vector);
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  // EME HEVC is supported on CrOS under these build flags, but it is not
+  // supported for clear playback. Remove the HEVC codec strings to avoid asking
+  // IsSupported*MediaFormat() about HEVC. EME support for HEVC profiles
+  // is described via KeySystemProperties::GetSupportedCodecs().
+  // TODO(1156282): Decouple the rest of clear vs EME codec support.
+  if (base::ToLowerASCII(container_mime_type) == "video/mp4" &&
+      !codec_vector.empty()) {
+    auto it = codec_vector.begin();
+    while (it != codec_vector.end()) {
+      VideoCodecProfile profile;
+      uint8_t level_idc;
+      if (ParseHEVCCodecId(*it, &profile, &level_idc))
+        codec_vector.erase(it);
+      else
+        ++it;
+    }
+
+    // Avoid calling IsSupported*MediaFormat() with an empty vector. For
+    // "video/mp4", this will return MaybeSupported, which we would otherwise
+    // consider "false" below.
+    if (codec_vector.empty())
+      return true;
+  }
+#endif
 
   // AesDecryptor decrypts the stream in the demuxer before it reaches the
   // decoder so check whether the media format is supported when clear.
