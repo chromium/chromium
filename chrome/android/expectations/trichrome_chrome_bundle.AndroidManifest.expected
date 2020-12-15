@@ -164,11 +164,15 @@
         android:theme="@android:style/Theme.Translucent">
     </activity>  # DIFF-ANCHOR: 50c7105b
     <activity  # DIFF-ANCHOR: aeab60ac
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:exported="false"
         android:name="org.chromium.chrome.browser.app.video_tutorials.VideoPlayerActivity"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
+        android:screenOrientation="portrait"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        tools:ignore="LockedOrientationActivity">
     </activity>  # DIFF-ANCHOR: aeab60ac
     <activity  # DIFF-ANCHOR: 170e9f21
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:exported="false"
         android:name="org.chromium.chrome.browser.app.video_tutorials.VideoTutorialListActivity"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen">
