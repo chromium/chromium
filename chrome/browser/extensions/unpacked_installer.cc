@@ -226,8 +226,11 @@ int UnpackedInstaller::GetFlags() {
   bool allow_file_access =
       Manifest::ShouldAlwaysAllowFileAccess(Manifest::UNPACKED);
   ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
-  if (prefs->HasAllowFileAccessSetting(id))
+  if (allow_file_access_.has_value()) {
+    allow_file_access = *allow_file_access_;
+  } else if (prefs->HasAllowFileAccessSetting(id)) {
     allow_file_access = prefs->AllowFileAccess(id);
+  }
 
   int result = Extension::FOLLOW_SYMLINKS_ANYWHERE;
   if (allow_file_access)
@@ -354,6 +357,19 @@ void UnpackedInstaller::InstallExtension() {
   if (!service_weak_.get()) {
     callback_.Reset();
     return;
+  }
+
+  // Force file access and/or incognito state and set install param if
+  // requested.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
+  if (allow_file_access_.has_value()) {
+    prefs->SetAllowFileAccess(extension()->id(), *allow_file_access_);
+  }
+  if (allow_incognito_access_.has_value()) {
+    prefs->SetIsIncognitoEnabled(extension()->id(), *allow_incognito_access_);
+  }
+  if (install_param_.has_value()) {
+    prefs->SetInstallParam(extension()->id(), *install_param_);
   }
 
   PermissionsUpdater perms_updater(service_weak_->profile());

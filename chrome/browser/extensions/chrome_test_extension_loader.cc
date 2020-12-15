@@ -89,6 +89,7 @@ ChromeTestExtensionLoader::~ChromeTestExtensionLoader() {
 scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
     const base::FilePath& path) {
   scoped_refptr<const Extension> extension;
+  bool is_unpacked = false;
   if (path.MatchesExtension(FILE_PATH_LITERAL(".crx"))) {
     extension = LoadCrx(path);
   } else if (pack_extension_) {
@@ -97,6 +98,7 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
       return nullptr;
     extension = LoadCrx(crx_path);
   } else {
+    is_unpacked = true;
     extension = LoadUnpacked(path);
   }
 
@@ -110,31 +112,42 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
 
   extension_id_ = extension->id();
 
-  // Trying to reload a shared module (as we do when adjusting extension
-  // permissions) causes ExtensionService to crash. Only adjust permissions for
-  // non-shared modules.
-  // TODO(devlin): That's not good; we shouldn't be crashing.
-  if (!SharedModuleInfo::IsSharedModule(extension.get())) {
-    CheckPermissions(extension.get());
-    // Make |extension| null since it may have been reloaded invalidating
-    // pointers to it.
-    extension = nullptr;
-  }
+  // Permissions and the install param are handled by the unpacked installer
+  // before the extension is installed.
+  // TODO(https://crbug.com/1157606): Fix CrxInstaller to enable this for
+  // packed extensions.
+  if (!is_unpacked) {
+    // Trying to reload a shared module (as we do when adjusting extension
+    // permissions) causes ExtensionService to crash. Only adjust permissions
+    // for non-shared modules.
+    // TODO(devlin): That's not good; we shouldn't be crashing.
+    if (!SharedModuleInfo::IsSharedModule(extension.get())) {
+      CheckPermissions(extension.get());
+      // Make |extension| null since it may have been reloaded invalidating
+      // pointers to it.
+      extension = nullptr;
+    }
 
-  if (!install_param_.empty()) {
-    ExtensionPrefs::Get(browser_context_)
-        ->SetInstallParam(extension_id_, install_param_);
-    // Reload the extension so listeners of the loaded notification have access
-    // to the install param.
-    TestExtensionRegistryObserver registry_observer(extension_registry_,
-                                                    extension_id_);
-    extension_service_->ReloadExtension(extension_id_);
-    registry_observer.WaitForExtensionLoaded();
+    if (install_param_.has_value()) {
+      DCHECK(!install_param_->empty());
+      ExtensionPrefs::Get(browser_context_)
+          ->SetInstallParam(extension_id_, *install_param_);
+      // Reload the extension so listeners of the loaded notification have
+      // access to the install param.
+      TestExtensionRegistryObserver registry_observer(extension_registry_,
+                                                      extension_id_);
+      extension_service_->ReloadExtension(extension_id_);
+      registry_observer.WaitForExtensionLoaded();
+    }
   }
 
   extension = extension_registry_->enabled_extensions().GetByID(extension_id_);
   if (!extension)
     return nullptr;
+  if (!VerifyPermissions(extension.get())) {
+    ADD_FAILURE() << "The extension did not get the requested permissions.";
+    return nullptr;
+  }
   if (!CheckInstallWarnings(*extension))
     return nullptr;
 
@@ -295,12 +308,26 @@ void ChromeTestExtensionLoader::CheckPermissions(const Extension* extension) {
     registry_observer.WaitForExtensionLoaded();
   }
 
-  if (allow_incognito_access_ !=
-      util::IsIncognitoEnabled(id, browser_context_)) {
+  if (allow_incognito_access_.has_value() &&
+      *allow_incognito_access_ !=
+          util::IsIncognitoEnabled(id, browser_context_)) {
     TestExtensionRegistryObserver registry_observer(extension_registry_, id);
     util::SetIsIncognitoEnabled(id, browser_context_, true);
     registry_observer.WaitForExtensionLoaded();
   }
+}
+
+bool ChromeTestExtensionLoader::VerifyPermissions(const Extension* extension) {
+  const ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+  if (allow_file_access_.has_value() &&
+      prefs->AllowFileAccess(extension->id()) != *allow_file_access_) {
+    return false;
+  }
+  if (allow_incognito_access_.has_value() &&
+      prefs->IsIncognitoEnabled(extension->id()) != *allow_incognito_access_) {
+    return false;
+  }
+  return true;
 }
 
 scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
@@ -311,6 +338,15 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
       UnpackedInstaller::Create(extension_service_);
   installer->set_require_modern_manifest_version(
       require_modern_manifest_version_);
+  if (allow_file_access_.has_value()) {
+    installer->set_allow_file_access(*allow_file_access_);
+  }
+  if (allow_incognito_access_.has_value()) {
+    installer->set_allow_incognito_access(*allow_incognito_access_);
+  }
+  if (install_param_.has_value()) {
+    installer->set_install_param(*install_param_);
+  }
   installer->Load(file_path);
   if (!should_fail_) {
     extension = registry_observer.WaitForExtensionLoaded();

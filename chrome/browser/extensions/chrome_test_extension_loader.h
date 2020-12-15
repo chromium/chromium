@@ -94,8 +94,13 @@ class ChromeTestExtensionLoader {
   scoped_refptr<const Extension> LoadUnpacked(
       const base::FilePath& unpacked_path);
 
-  // Checks that the permissions of the loaded extension are correct.
+  // Checks that the permissions of the loaded extension are correct
+  // and updates them if necessary.
   void CheckPermissions(const Extension* extension);
+
+  // Verifies that the permissions of the loaded extension are correct.
+  // Returns false if they are not.
+  bool VerifyPermissions(const Extension* extension);
 
   // Checks for any install warnings associated with the extension.
   bool CheckInstallWarnings(const Extension& extension);
@@ -123,7 +128,7 @@ class ChromeTestExtensionLoader {
   std::string expected_id_;
 
   // An install param to use with the loaded extension.
-  std::string install_param_;
+  base::Optional<std::string> install_param_;
 
   // Any creation flags (see Extension::InitFromValueFlags) to use for the
   // extension. Only used for crx installs.
@@ -152,7 +157,7 @@ class ChromeTestExtensionLoader {
   base::Optional<bool> allow_file_access_;
 
   // Whether or not to allow incognito access by default to the extension.
-  bool allow_incognito_access_ = false;
+  base::Optional<bool> allow_incognito_access_;
 
   // Whether or not to ignore manifest warnings during installation.
   bool ignore_manifest_warnings_ = false;

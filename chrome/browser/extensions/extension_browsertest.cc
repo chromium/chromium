@@ -318,7 +318,9 @@ const Extension* ExtensionBrowserTest::LoadExtensionWithInstallParam(
   loader.set_ignore_manifest_warnings(flags & kFlagIgnoreManifestWarnings);
   loader.set_allow_incognito_access(flags & kFlagEnableIncognito);
   loader.set_allow_file_access(flags & kFlagEnableFileAccess);
-  loader.set_install_param(install_param);
+  if (!install_param.empty()) {
+    loader.set_install_param(install_param);
+  }
 
   // Note: Rely on the default value to wait for renderers unless otherwise
   // specified.
