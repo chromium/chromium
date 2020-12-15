@@ -9,8 +9,8 @@
 #include "base/memory/ptr_util.h"
 #import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #import "ios/web/js_messaging/page_script_util.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/test/fakes/fake_wk_configuration_provider_observer.h"
@@ -44,7 +44,7 @@ namespace {
 class WKWebViewConfigurationProviderTest : public PlatformTest {
  public:
   WKWebViewConfigurationProviderTest()
-      : web_client_(std::make_unique<TestWebClient>()) {}
+      : web_client_(std::make_unique<FakeWebClient>()) {}
 
  protected:
   // Returns WKWebViewConfigurationProvider associated with |browser_state_|.
@@ -57,13 +57,13 @@ class WKWebViewConfigurationProviderTest : public PlatformTest {
     return WKWebViewConfigurationProvider::FromBrowserState(browser_state);
   }
 
-  TestWebClient* GetWebClient() {
-    return static_cast<TestWebClient*>(web_client_.Get());
+  FakeWebClient* GetWebClient() {
+    return static_cast<FakeWebClient*>(web_client_.Get());
   }
 
   // BrowserState required for WKWebViewConfigurationProvider creation.
   web::ScopedTestingWebClient web_client_;
-  TestBrowserState browser_state_;
+  FakeBrowserState browser_state_;
 };
 
 // Tests that each WKWebViewConfigurationProvider has own, non-nil
@@ -80,7 +80,7 @@ TEST_F(WKWebViewConfigurationProviderTest, ConfigurationOwnerhip) {
             provider.GetWebViewConfiguration().processPool);
 
   // Different WKProcessPools for different providers.
-  TestBrowserState other_browser_state;
+  FakeBrowserState other_browser_state;
   WKWebViewConfigurationProvider& other_provider =
       GetProvider(&other_browser_state);
   EXPECT_NE(provider.GetWebViewConfiguration().processPool,
@@ -113,7 +113,7 @@ TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
       [config userContentController];
 
   // Change the properties of returned configuration object.
-  TestBrowserState other_browser_state;
+  FakeBrowserState other_browser_state;
   WKWebViewConfiguration* other_wk_web_view_configuration =
       GetProvider(&other_browser_state).GetWebViewConfiguration();
   ASSERT_TRUE(other_wk_web_view_configuration);
@@ -192,7 +192,7 @@ TEST_F(WKWebViewConfigurationProviderTest, UserScript) {
 // Tests that configuration's userContentController has different scripts after
 // the scripts are updated.
 TEST_F(WKWebViewConfigurationProviderTest, UpdateScripts) {
-  TestWebClient* client = GetWebClient();
+  FakeWebClient* client = GetWebClient();
   client->SetEarlyPageScript(@"var test = 4;");
 
   WKUserContentController* user_content_controller =
@@ -226,8 +226,7 @@ TEST_F(WKWebViewConfigurationProviderTest, UpdateScripts) {
 // Tests that observers methods are correctly triggered when observing the
 // WKWebViewConfigurationProvider
 TEST_F(WKWebViewConfigurationProviderTest, Observers) {
-  std::unique_ptr<TestBrowserState> browser_state =
-      std::make_unique<TestBrowserState>();
+  auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
 
   FakeWKConfigurationProviderObserver observer(provider);
@@ -243,8 +242,7 @@ TEST_F(WKWebViewConfigurationProviderTest, Observers) {
 // Tests that if -[ResetWithWebViewConfiguration:] copies and applies Chrome's
 // initialization logic to the |config| that passed into that method
 TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
-  std::unique_ptr<TestBrowserState> browser_state =
-      std::make_unique<TestBrowserState>();
+  auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
 
   FakeWKConfigurationProviderObserver observer(provider);
@@ -270,8 +268,7 @@ TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
 }
 
 TEST_F(WKWebViewConfigurationProviderTest, GetContentRuleListProvider) {
-  std::unique_ptr<TestBrowserState> browser_state =
-      std::make_unique<TestBrowserState>();
+  auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider& provider = GetProvider(browser_state.get());
 
   EXPECT_NE(nil, provider.GetContentRuleListProvider());

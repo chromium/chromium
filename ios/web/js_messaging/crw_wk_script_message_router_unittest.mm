@@ -6,10 +6,10 @@
 
 #include "base/memory/ptr_util.h"
 #import "ios/web/common/web_view_creation_util.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_test.h"
+#import "ios/web/public/web_client.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -89,7 +89,7 @@ class CRWWKScriptMessageRouterTest : public web::WebTest {
  private:
   // WebClient and BrowserState for testing.
   web::ScopedTestingWebClient web_client_;
-  web::TestBrowserState browser_state_;
+  web::FakeBrowserState browser_state_;
 };
 
 // Tests CRWWKScriptMessageRouter designated initializer.

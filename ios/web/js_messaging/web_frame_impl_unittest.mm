@@ -13,7 +13,7 @@
 #include "base/test/ios/wait_util.h"
 #include "base/values.h"
 #include "crypto/aead.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -91,12 +91,12 @@ typedef web::WebTest WebFrameImplTest;
 
 // Tests creation of a WebFrame for the main frame without an encryption key.
 TEST_F(WebFrameImplTest, CreateWebFrameForMainFrame) {
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/true, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
 
-  EXPECT_EQ(&test_web_state, web_frame.GetWebState());
+  EXPECT_EQ(&fake_web_state, web_frame.GetWebState());
   EXPECT_TRUE(web_frame.IsMainFrame());
   EXPECT_TRUE(web_frame.CanCallJavaScriptFunction());
   EXPECT_EQ(security_origin, web_frame.GetSecurityOrigin());
@@ -105,13 +105,13 @@ TEST_F(WebFrameImplTest, CreateWebFrameForMainFrame) {
 
 // Tests creation of a WebFrame for the main frame with an encryption key.
 TEST_F(WebFrameImplTest, CreateWebFrameForMainFrameWithKey) {
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/true, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
   web_frame.SetEncryptionKey(CreateKey());
 
-  EXPECT_EQ(&test_web_state, web_frame.GetWebState());
+  EXPECT_EQ(&fake_web_state, web_frame.GetWebState());
   EXPECT_TRUE(web_frame.IsMainFrame());
   EXPECT_TRUE(web_frame.CanCallJavaScriptFunction());
   EXPECT_EQ(security_origin, web_frame.GetSecurityOrigin());
@@ -121,12 +121,12 @@ TEST_F(WebFrameImplTest, CreateWebFrameForMainFrameWithKey) {
 // Tests creation of a WebFrame for a frame which is not the main frame without
 // an encryption key.
 TEST_F(WebFrameImplTest, CreateWebFrameForIFrame) {
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/false, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
 
-  EXPECT_EQ(&test_web_state, web_frame.GetWebState());
+  EXPECT_EQ(&fake_web_state, web_frame.GetWebState());
   EXPECT_FALSE(web_frame.IsMainFrame());
   EXPECT_FALSE(web_frame.CanCallJavaScriptFunction());
   EXPECT_EQ(security_origin, web_frame.GetSecurityOrigin());
@@ -136,13 +136,13 @@ TEST_F(WebFrameImplTest, CreateWebFrameForIFrame) {
 // Tests creation of a WebFrame for a frame which is not the main frame with an
 // encryption key.
 TEST_F(WebFrameImplTest, CreateWebFrameForIFrameWithKey) {
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/false, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
   web_frame.SetEncryptionKey(CreateKey());
 
-  EXPECT_EQ(&test_web_state, web_frame.GetWebState());
+  EXPECT_EQ(&fake_web_state, web_frame.GetWebState());
   EXPECT_FALSE(web_frame.IsMainFrame());
   EXPECT_TRUE(web_frame.CanCallJavaScriptFunction());
   EXPECT_EQ(security_origin, web_frame.GetSecurityOrigin());
@@ -152,10 +152,10 @@ TEST_F(WebFrameImplTest, CreateWebFrameForIFrameWithKey) {
 // Tests that |CallJavaScriptFunction| encrypts the message and passes it to
 // __gCrWeb.message.routeMessage in the main frame.
 TEST_F(WebFrameImplTest, CallJavaScriptFunction) {
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/false, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
   web_frame.SetEncryptionKey(CreateKey());
 
   std::vector<base::Value> function_params;
@@ -164,7 +164,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunction) {
       web_frame.CallJavaScriptFunction("functionName", function_params));
 
   NSString* last_script =
-      base::SysUTF16ToNSString(test_web_state.GetLastExecutedJavascript());
+      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   EXPECT_TRUE([last_script hasPrefix:@"__gCrWeb.message.routeMessage"]);
   // Verify the message does not contain the plaintext function name or
   // parameters.
@@ -208,10 +208,10 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunction) {
 // Tests that the WebFrame uses different initialization vectors for two
 // sequential calls to |CallJavaScriptFunction|.
 TEST_F(WebFrameImplTest, CallJavaScriptFunctionUniqueInitializationVector) {
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/false, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
   web_frame.SetEncryptionKey(CreateKey());
 
   std::vector<base::Value> function_params;
@@ -220,7 +220,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionUniqueInitializationVector) {
       web_frame.CallJavaScriptFunction("functionName", function_params));
 
   NSString* last_script1 =
-      base::SysUTF16ToNSString(test_web_state.GetLastExecutedJavascript());
+      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   RouteMessageParameters params1 =
       ParametersFromFunctionCallString(last_script1);
 
@@ -229,7 +229,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionUniqueInitializationVector) {
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   NSString* last_script2 =
-      base::SysUTF16ToNSString(test_web_state.GetLastExecutedJavascript());
+      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   RouteMessageParameters params2 =
       ParametersFromFunctionCallString(last_script2);
 
@@ -247,10 +247,10 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMessageProperlyEncoded) {
   // value by chance.
   const int initial_message_id = 11;
 
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/false, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
   web_frame.SetEncryptionKey(std::move(key));
   web_frame.SetNextMessageId(initial_message_id);
 
@@ -261,7 +261,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMessageProperlyEncoded) {
       web_frame.CallJavaScriptFunction("functionName", function_params));
 
   NSString* last_script =
-      base::SysUTF16ToNSString(test_web_state.GetLastExecutedJavascript());
+      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   RouteMessageParameters params = ParametersFromFunctionCallString(last_script);
 
   std::string decoded_function_ciphertext;
@@ -336,10 +336,10 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionRespondWithResult) {
   // value by chance.
   const int initial_message_id = 11;
 
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/false, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
   web_frame.SetEncryptionKey(std::move(key));
   web_frame.SetNextMessageId(initial_message_id);
 
@@ -353,7 +353,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionRespondWithResult) {
       base::TimeDelta::FromSeconds(5)));
 
   NSString* last_script =
-      base::SysUTF16ToNSString(test_web_state.GetLastExecutedJavascript());
+      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   RouteMessageParameters params = ParametersFromFunctionCallString(last_script);
 
   std::string decoded_message_ciphertext;
@@ -386,24 +386,24 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionRespondWithResult) {
 // Tests that the WebFrame properly creates JavaScript for the main frame when
 // there is no encryption key.
 TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrameWithoutKey) {
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/true, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
 
   std::vector<base::Value> function_params;
 
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   NSString* last_script =
-      base::SysUTF16ToNSString(test_web_state.GetLastExecutedJavascript());
+      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   EXPECT_NSEQ(@"__gCrWeb.functionName()", last_script);
 
   function_params.push_back(base::Value("param1"));
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   last_script =
-      base::SysUTF16ToNSString(test_web_state.GetLastExecutedJavascript());
+      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\")", last_script);
 
   function_params.push_back(base::Value(true));
@@ -412,17 +412,17 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMainFrameWithoutKey) {
   EXPECT_TRUE(
       web_frame.CallJavaScriptFunction("functionName", function_params));
   last_script =
-      base::SysUTF16ToNSString(test_web_state.GetLastExecutedJavascript());
+      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   EXPECT_NSEQ(@"__gCrWeb.functionName(\"param1\",true,27,3.14)", last_script);
 }
 
 // Tests that the WebFrame does not create JavaScript for an iframe when there
 // is no encryption key.
 TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrameFrameWithoutKey) {
-  TestWebState test_web_state;
+  FakeWebState fake_web_state;
   GURL security_origin;
   WebFrameImpl web_frame(kFrameId, /*is_main_frame=*/false, security_origin,
-                         &test_web_state);
+                         &fake_web_state);
 
   std::vector<base::Value> function_params;
   function_params.push_back(base::Value("plaintextParam"));
@@ -430,7 +430,7 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrameFrameWithoutKey) {
       web_frame.CallJavaScriptFunction("functionName", function_params));
 
   NSString* last_script =
-      base::SysUTF16ToNSString(test_web_state.GetLastExecutedJavascript());
+      base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   EXPECT_EQ(last_script.length, 0ul);
 }
 

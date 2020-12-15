@@ -4,7 +4,6 @@
 
 #import "ios/web/public/web_state_delegate_bridge.h"
 
-#include "ios/web/public/test/fakes/test_browser_state.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/test/web_test_with_web_controller.h"

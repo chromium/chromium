@@ -21,9 +21,9 @@
 #include "ios/web/public/security/ssl_status.h"
 #include "ios/web/public/test/element_selector.h"
 #import "ios/web/public/test/error_test_util.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
-#include "ios/web/public/test/fakes/test_web_state_observer.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#include "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
@@ -124,7 +124,7 @@ class TestWebStatePolicyDecider : public WebStatePolicyDecider {
 // test for PrepareErrorPage WebClient method.
 class ErrorPageTest : public WebTestWithWebState {
  protected:
-  ErrorPageTest() : WebTestWithWebState(std::make_unique<TestWebClient>()) {
+  ErrorPageTest() : WebTestWithWebState(std::make_unique<FakeWebClient>()) {
     RegisterDefaultHandlers(&server_);
     server_.RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/echo-query",
@@ -141,7 +141,7 @@ class ErrorPageTest : public WebTestWithWebState {
   void SetUp() override {
     WebTestWithWebState::SetUp();
 
-    web_state_observer_ = std::make_unique<TestWebStateObserver>(web_state());
+    web_state_observer_ = std::make_unique<FakeWebStateObserver>(web_state());
     ASSERT_TRUE(server_.Start());
   }
 
@@ -153,7 +153,7 @@ class ErrorPageTest : public WebTestWithWebState {
   bool server_responds_with_content_ = false;
 
  private:
-  std::unique_ptr<TestWebStateObserver> web_state_observer_;
+  std::unique_ptr<FakeWebStateObserver> web_state_observer_;
   DISALLOW_COPY_AND_ASSIGN(ErrorPageTest);
 };
 
@@ -386,7 +386,7 @@ TEST_F(ErrorPageTest, ErrorPageInIFrame) {
 
 // Loads the URL with off the record browser state.
 TEST_F(ErrorPageTest, OtrError) {
-  TestBrowserState browser_state;
+  FakeBrowserState browser_state;
   browser_state.SetOffTheRecord(true);
   WebState::CreateParams params(&browser_state);
   auto web_state = WebState::Create(params);

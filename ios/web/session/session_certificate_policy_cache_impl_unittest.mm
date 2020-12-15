@@ -9,7 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #include "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -69,7 +69,7 @@ class SessionCertificatePolicyCacheImplTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  web::TestBrowserState browser_state_;
+  web::FakeBrowserState browser_state_;
   web::SessionCertificatePolicyCacheImpl cache_;
   scoped_refptr<net::X509Certificate> cert_;
   std::string host_;

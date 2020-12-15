@@ -11,7 +11,7 @@
 
 #import "base/test/ios/wait_util.h"
 #include "ios/net/cookies/system_cookie_store_unittest_template.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
@@ -99,7 +99,7 @@ class API_AVAILABLE(ios(11.0)) WKHTTPSystemCookieStoreTestDelegate {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  web::TestBrowserState browser_state_;
+  web::FakeBrowserState browser_state_;
   WKHTTPCookieStore* shared_store_ = nil;
   std::unique_ptr<web::WKHTTPSystemCookieStore> store_;
 };

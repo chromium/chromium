@@ -34,12 +34,12 @@
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/fakes/crw_fake_web_view_content_view.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/fakes/fake_download_controller_delegate.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#include "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/fakes/fake_web_state_policy_decider.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
 #import "ios/web/public/test/fakes/test_web_state_delegate.h"
-#include "ios/web/public/test/fakes/test_web_state_observer.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/security/wk_web_view_security_util.h"
@@ -137,7 +137,7 @@ enum PageScalabilityType {
 class CRWWebControllerTest : public WebTestWithWebController {
  protected:
   CRWWebControllerTest()
-      : WebTestWithWebController(std::make_unique<TestWebClient>()) {}
+      : WebTestWithWebController(std::make_unique<FakeWebClient>()) {}
 
   void SetUp() override {
     WebTestWithWebController::SetUp();
@@ -160,8 +160,8 @@ class CRWWebControllerTest : public WebTestWithWebController {
     WebTestWithWebController::TearDown();
   }
 
-  TestWebClient* GetWebClient() override {
-    return static_cast<TestWebClient*>(
+  FakeWebClient* GetWebClient() override {
+    return static_cast<FakeWebClient*>(
         WebTestWithWebController::GetWebClient());
   }
 
@@ -315,7 +315,7 @@ TEST_F(CRWWebControllerTest, WebViewCreatedAfterEnsureWebViewCreated) {
   scoped_feature_list.InitAndEnableFeature(
       features::kUseDefaultUserAgentInWebClient);
 
-  TestWebClient* web_client = static_cast<TestWebClient*>(GetWebClient());
+  FakeWebClient* web_client = static_cast<FakeWebClient*>(GetWebClient());
 
   [web_controller() removeWebView];
   WKWebView* web_view = [web_controller() ensureWebViewCreated];
@@ -470,7 +470,7 @@ typedef WebTestWithWebState CRWWebStateSecurityStateTest;
 
 // Tests that loading HTTP page updates the SSLStatus.
 TEST_F(CRWWebStateSecurityStateTest, LoadHttpPage) {
-  TestWebStateObserver observer(web_state());
+  FakeWebStateObserver observer(web_state());
   ASSERT_FALSE(observer.did_change_visible_security_state_info());
   LoadHtml(@"<html><body></body></html>", GURL("http://chromium.test"));
   NavigationManager* nav_manager = web_state()->GetNavigationManager();
@@ -875,7 +875,7 @@ class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
   // Return an owned BrowserState in order to set off the record state.
   BrowserState* GetBrowserState() override { return &browser_state_; }
 
-  TestBrowserState browser_state_;
+  FakeBrowserState browser_state_;
 };
 
 // Tests that App specific URLs in iframes are allowed if the main frame is App
@@ -1282,8 +1282,8 @@ TEST_F(CRWWebControllerWebProcessTest, Crash) {
   ASSERT_FALSE(web_state()->IsCrashed());
   ASSERT_FALSE(web_state()->IsEvicted());
 
-  TestWebStateObserver observer(web_state());
-  TestWebStateObserver* observer_ptr = &observer;
+  FakeWebStateObserver observer(web_state());
+  FakeWebStateObserver* observer_ptr = &observer;
   SimulateWKWebViewCrash(web_view_);
   base::test::ios::WaitUntilCondition(^bool() {
     return observer_ptr->render_process_gone_info();
@@ -1315,7 +1315,7 @@ class CRWWebControllerWebViewTest : public WebTestWithWebController {
  protected:
   void SetUp() override {
     WebTestWithWebController::SetUp();
-    web::TestBrowserState browser_state;
+    FakeBrowserState browser_state;
     web_view_ = [[CRWFakeWKWebViewObserverCount alloc] init];
     CRWFakeWebViewContentView* webViewContentView =
         [[CRWFakeWebViewContentView alloc]

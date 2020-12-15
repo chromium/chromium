@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
 #include "ios/web/test/mojo_test.mojom.h"
 #include "ios/web/web_state/web_state_impl.h"
@@ -47,14 +47,14 @@ id GetObject(const std::string& json) {
                                            error:nil];
 }
 
-class FakeWebStateWithMojoFacade : public TestWebState {
+class FakeWebStateWithMojoFacade : public FakeWebState {
  public:
   void SetWatchId(int watch_id) { watch_id_ = watch_id; }
 
   void SetFacade(MojoFacade* facade) { facade_ = facade; }
 
   void ExecuteJavaScript(const base::string16& javascript) override {
-    TestWebState::ExecuteJavaScript(javascript);
+    FakeWebState::ExecuteJavaScript(javascript);
     // Cancel the watch immediately to ensure there are no additional
     // notifications.
     // NOTE: This must be done as a side effect of executing the JavaScript.

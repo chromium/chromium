@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,7 +25,7 @@ class WebTestRenderProcessCrashObserver : public GlobalWebStateObserver {
 };
 
 WebTest::WebTest(WebTaskEnvironment::Options options)
-    : WebTest(base::WrapUnique(new TestWebClient), options) {}
+    : WebTest(std::make_unique<FakeWebClient>(), options) {}
 
 WebTest::WebTest(std::unique_ptr<web::WebClient> web_client,
                  WebTaskEnvironment::Options options)

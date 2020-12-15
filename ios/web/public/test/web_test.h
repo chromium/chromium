@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
@@ -50,7 +50,7 @@ class WebTest : public PlatformTest {
   // The threads used for testing.
   web::WebTaskEnvironment task_environment_;
   // The browser state used in tests.
-  TestBrowserState browser_state_;
+  FakeBrowserState browser_state_;
 
   // Triggers test failures if a render process dies during the test.
   std::unique_ptr<WebTestRenderProcessCrashObserver> crash_observer_;

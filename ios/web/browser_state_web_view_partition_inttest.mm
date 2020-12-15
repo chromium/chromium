@@ -117,7 +117,7 @@ class BrowserStateWebViewPartitionTest : public WebIntTest {
 
  protected:
   net::EmbeddedTestServer server_;
-  TestBrowserState otr_browser_state_;
+  FakeBrowserState otr_browser_state_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserStateWebViewPartitionTest);
 };

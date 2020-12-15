@@ -9,8 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #import "ios/web/common/web_view_creation_util.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 #include "ios/web/public/test/web_test.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
@@ -27,7 +26,7 @@ namespace {
 const CGRect kTestFrame = CGRectMake(5.0f, 10.0f, 15.0f, 20.0f);
 
 // A WebClient that stubs PreWebViewCreation call for testing purposes.
-class CreationUtilsWebClient : public web::TestWebClient {
+class CreationUtilsWebClient : public web::FakeWebClient {
  public:
   MOCK_CONST_METHOD0(PreWebViewCreation, void());
 };

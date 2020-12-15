@@ -13,7 +13,7 @@
 #import "ios/web/public/test/fakes/fake_find_in_page_manager_delegate.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,17 +31,17 @@ namespace web {
 class FindInPageManagerImplTest : public WebTest {
  protected:
   FindInPageManagerImplTest() {
-    test_web_state_ = std::make_unique<TestWebState>();
+    fake_web_state_ = std::make_unique<FakeWebState>();
     auto frames_manager = std::make_unique<FakeWebFramesManager>();
     fake_web_frames_manager_ = frames_manager.get();
-    test_web_state_->SetWebFramesManager(std::move(frames_manager));
-    FindInPageManagerImpl::CreateForWebState(test_web_state_.get());
+    fake_web_state_->SetWebFramesManager(std::move(frames_manager));
+    FindInPageManagerImpl::CreateForWebState(fake_web_state_.get());
     GetFindInPageManager()->SetDelegate(&fake_delegate_);
   }
 
-  // Returns the FindInPageManager associated with |test_web_state_|.
+  // Returns the FindInPageManager associated with |fake_web_state_|.
   FindInPageManager* GetFindInPageManager() {
-    return FindInPageManager::FromWebState(test_web_state_.get());
+    return FindInPageManager::FromWebState(fake_web_state_.get());
   }
   // Returns a FakeWebFrame that is the main frame with id |frame_id| that will
   // return |js_result| for the JavaScript function call
@@ -65,16 +65,16 @@ class FindInPageManagerImplTest : public WebTest {
   void AddWebFrame(std::unique_ptr<WebFrame> frame) {
     WebFrame* frame_ptr = frame.get();
     fake_web_frames_manager_->AddWebFrame(std::move(frame));
-    test_web_state_->OnWebFrameDidBecomeAvailable(frame_ptr);
+    fake_web_state_->OnWebFrameDidBecomeAvailable(frame_ptr);
   }
 
   void RemoveWebFrame(const std::string& frame_id) {
     WebFrame* frame_ptr = fake_web_frames_manager_->GetFrameWithId(frame_id);
-    test_web_state_->OnWebFrameWillBecomeUnavailable(frame_ptr);
+    fake_web_state_->OnWebFrameWillBecomeUnavailable(frame_ptr);
     fake_web_frames_manager_->RemoveWebFrame(frame_id);
   }
 
-  std::unique_ptr<TestWebState> test_web_state_;
+  std::unique_ptr<FakeWebState> fake_web_state_;
   FakeWebFramesManager* fake_web_frames_manager_;
   FakeFindInPageManagerDelegate fake_delegate_;
   base::UserActionTester user_action_tester_;
@@ -175,7 +175,7 @@ TEST_F(FindInPageManagerImplTest, DestroyWebStateDuringFind) {
 
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
 
-  test_web_state_.reset();
+  fake_web_state_.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_delegate_.state());
 }
@@ -613,11 +613,11 @@ TEST_F(FindInPageManagerImplTest, FindDidNotResponseAfterFrameDisappears) {
 // Tests that Find in Page SetContentIsHTML() returns true if the web state's
 // content is HTML and returns false if the web state's content is not HTML.
 TEST_F(FindInPageManagerImplTest, FindInPageCanSearchContent) {
-  test_web_state_->SetContentIsHTML(false);
+  fake_web_state_->SetContentIsHTML(false);
 
   EXPECT_FALSE(GetFindInPageManager()->CanSearchContent());
 
-  test_web_state_->SetContentIsHTML(true);
+  fake_web_state_->SetContentIsHTML(true);
 
   EXPECT_TRUE(GetFindInPageManager()->CanSearchContent());
 }

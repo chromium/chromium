@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -151,15 +151,15 @@ class BrowsingDataRemoverTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  TestBrowserState browser_state_;
+  FakeBrowserState browser_state_;
   // The key window's original root view controller, to be  restored at the end
   // of the test.
   UIViewController* original_root_view_controller_;
 };
 
 TEST_F(BrowsingDataRemoverTest, DifferentRemoverForDifferentBrowserState) {
-  TestBrowserState browser_state_1;
-  TestBrowserState browser_state_2;
+  FakeBrowserState browser_state_1;
+  FakeBrowserState browser_state_2;
 
   BrowsingDataRemover* remover_1 =
       BrowsingDataRemover::FromBrowserState(&browser_state_1);

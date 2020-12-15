@@ -8,7 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/test/web_int_test.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -33,8 +33,8 @@ class CRWKNavigationHandlerIntTest : public WebIntTest {
     WebIntTest::SetUp();
   }
 
-  TestWebClient* GetWebClient() override {
-    return static_cast<TestWebClient*>(WebIntTest::GetWebClient());
+  FakeWebClient* GetWebClient() override {
+    return static_cast<FakeWebClient*>(WebIntTest::GetWebClient());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -49,7 +49,7 @@ TEST_F(CRWKNavigationHandlerIntTest, ReloadWithDifferentUserAgent) {
     return;
   }
 
-  TestWebClient* web_client = GetWebClient();
+  FakeWebClient* web_client = GetWebClient();
   web_client->SetDefaultUserAgent(UserAgentType::MOBILE);
 
   ASSERT_TRUE(server_.Start());

@@ -18,9 +18,9 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/reload_type.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #include "ios/web/test/test_url_constants.h"
@@ -172,8 +172,8 @@ class NavigationManagerTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
 
  protected:
-  TestBrowserState browser_state_;
-  TestWebState web_state_;
+  FakeBrowserState browser_state_;
+  FakeWebState web_state_;
   MockNavigationManagerDelegate delegate_;
   std::unique_ptr<NavigationManagerImpl> manager_;
 
@@ -2832,7 +2832,7 @@ TEST_F(NavigationManagerDetachedModeTest, NotSerializable) {
 
 class NavigationManagerImplUtilTest : public PlatformTest {
  protected:
-  web::TestNavigationManager nav_manager_;
+  web::FakeNavigationManager nav_manager_;
 };
 
 // Tests that empty navigation manager returns nullptr.

@@ -15,8 +15,8 @@
 #import "ios/web/public/session/crw_session_storage.h"
 #include "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/test/error_test_util.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
-#include "ios/web/public/test/fakes/test_web_state_observer.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#include "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
@@ -40,7 +40,7 @@ namespace web {
 class BadSslResponseTest : public WebTestWithWebState {
  protected:
   BadSslResponseTest()
-      : WebTestWithWebState(std::make_unique<TestWebClient>()),
+      : WebTestWithWebState(std::make_unique<FakeWebClient>()),
         https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
     RegisterDefaultHandlers(&https_server_);
   }
@@ -48,12 +48,12 @@ class BadSslResponseTest : public WebTestWithWebState {
   void SetUp() override {
     WebTestWithWebState::SetUp();
 
-    web_state_observer_ = std::make_unique<TestWebStateObserver>(web_state());
+    web_state_observer_ = std::make_unique<FakeWebStateObserver>(web_state());
     ASSERT_TRUE(https_server_.Start());
   }
 
-  TestWebClient* web_client() {
-    return static_cast<TestWebClient*>(GetWebClient());
+  FakeWebClient* web_client() {
+    return static_cast<FakeWebClient*>(GetWebClient());
   }
 
   TestDidChangeVisibleSecurityStateInfo* security_state_info() {
@@ -62,7 +62,7 @@ class BadSslResponseTest : public WebTestWithWebState {
 
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestWebStateObserver> web_state_observer_;
+  std::unique_ptr<FakeWebStateObserver> web_state_observer_;
   DISALLOW_COPY_AND_ASSIGN(BadSslResponseTest);
 };
 

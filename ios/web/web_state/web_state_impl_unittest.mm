@@ -28,12 +28,12 @@
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/test/fakes/async_web_state_policy_decider.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/fakes/test_java_script_dialog_presenter.h"
 #import "ios/web/public/test/fakes/test_web_state_delegate.h"
-#import "ios/web/public/test/fakes/test_web_state_observer.h"
 #include "ios/web/public/test/web_test.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
@@ -235,8 +235,7 @@ TEST_F(WebStateImplTest, WebUsageEnabled) {
 
 // Tests forwarding to WebStateObserver callbacks.
 TEST_F(WebStateImplTest, ObserverTest) {
-  std::unique_ptr<TestWebStateObserver> observer(
-      new TestWebStateObserver(web_state_.get()));
+  auto observer = std::make_unique<FakeWebStateObserver>(web_state_.get());
   EXPECT_EQ(web_state_.get(), observer->web_state());
 
   // Test that WasShown() is called.
@@ -248,7 +247,7 @@ TEST_F(WebStateImplTest, ObserverTest) {
   EXPECT_TRUE(web_state_->IsVisible());
 
   // Test that WasShown() callback is not called for the second time.
-  observer = std::make_unique<TestWebStateObserver>(web_state_.get());
+  observer = std::make_unique<FakeWebStateObserver>(web_state_.get());
   web_state_->WasShown();
   EXPECT_FALSE(observer->was_shown_info());
 
@@ -261,7 +260,7 @@ TEST_F(WebStateImplTest, ObserverTest) {
   EXPECT_FALSE(web_state_->IsVisible());
 
   // Test that WasHidden() callback is not called for the second time.
-  observer = std::make_unique<TestWebStateObserver>(web_state_.get());
+  observer = std::make_unique<FakeWebStateObserver>(web_state_.get());
   web_state_->WasHidden();
   EXPECT_FALSE(observer->was_hidden_info());
 
@@ -381,7 +380,7 @@ TEST_F(WebStateImplTest, ObserverTest) {
   EXPECT_TRUE(observer->load_page_info()->success);
 
   // Test that OnTitleChanged() is called.
-  observer = std::make_unique<TestWebStateObserver>(web_state_.get());
+  observer = std::make_unique<FakeWebStateObserver>(web_state_.get());
   ASSERT_FALSE(observer->title_was_set_info());
   web_state_->OnTitleChanged();
   ASSERT_TRUE(observer->title_was_set_info());
@@ -400,7 +399,7 @@ TEST_F(WebStateImplTest, PlaceholderNavigationNotExposedToObservers) {
   if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage))
     return;
 
-  TestWebStateObserver observer(web_state_.get());
+  FakeWebStateObserver observer(web_state_.get());
   GURL placeholder_url =
       wk_navigation_util::CreatePlaceholderUrlForUrl(GURL("chrome://newtab"));
   std::unique_ptr<NavigationContextImpl> context =
@@ -922,7 +921,7 @@ TEST_F(WebStateImplTest, CreatedWithOpener) {
 // Tests that WebStateObserver::FaviconUrlUpdated is called for same-document
 // navigations.
 TEST_F(WebStateImplTest, FaviconUpdateForSameDocumentNavigations) {
-  auto observer = std::make_unique<TestWebStateObserver>(web_state_.get());
+  auto observer = std::make_unique<FakeWebStateObserver>(web_state_.get());
 
   // No callback if icons has not been fetched yet.
   std::unique_ptr<NavigationContextImpl> context =
@@ -935,7 +934,7 @@ TEST_F(WebStateImplTest, FaviconUpdateForSameDocumentNavigations) {
   EXPECT_FALSE(observer->update_favicon_url_candidates_info());
 
   // Callback is called when icons were fetched.
-  observer = std::make_unique<TestWebStateObserver>(web_state_.get());
+  observer = std::make_unique<FakeWebStateObserver>(web_state_.get());
   web::FaviconURL favicon_url(GURL("https://chromium.test/"),
                               web::FaviconURL::IconType::kTouchIcon,
                               {gfx::Size(5, 6)});
@@ -943,7 +942,7 @@ TEST_F(WebStateImplTest, FaviconUpdateForSameDocumentNavigations) {
   EXPECT_TRUE(observer->update_favicon_url_candidates_info());
 
   // Callback is now called after same-document navigation.
-  observer = std::make_unique<TestWebStateObserver>(web_state_.get());
+  observer = std::make_unique<FakeWebStateObserver>(web_state_.get());
   web_state_->OnNavigationFinished(context.get());
   ASSERT_TRUE(observer->update_favicon_url_candidates_info());
   ASSERT_EQ(1U,
@@ -960,7 +959,7 @@ TEST_F(WebStateImplTest, FaviconUpdateForSameDocumentNavigations) {
             actual_favicon_url.icon_sizes[0].height());
 
   // Document change navigation does not call callback.
-  observer = std::make_unique<TestWebStateObserver>(web_state_.get());
+  observer = std::make_unique<FakeWebStateObserver>(web_state_.get());
   context->SetIsSameDocument(false);
   web_state_->OnNavigationFinished(context.get());
   EXPECT_FALSE(observer->update_favicon_url_candidates_info());
@@ -1076,7 +1075,7 @@ TEST_F(WebStateImplTest, ShowAndClearInterstitialWithNoCommittedItems) {
   ASSERT_TRUE(web_state_->IsShowingWebInterstitial());
 
   // Clear the interstitial.
-  TestWebStateObserver observer(web_state_.get());
+  FakeWebStateObserver observer(web_state_.get());
   ASSERT_FALSE(observer.did_change_visible_security_state_info());
   web_state_->ClearTransientContent();
 
@@ -1110,7 +1109,7 @@ TEST_F(WebStateImplTest, DISABLED_ShowAndClearInterstitialWithCommittedItem) {
   ASSERT_EQ(interstitial, web_state_->GetWebInterstitial());
 
   // Clear the interstitial.
-  TestWebStateObserver observer(web_state_.get());
+  FakeWebStateObserver observer(web_state_.get());
   ASSERT_FALSE(observer.did_change_visible_security_state_info());
   web_state_->ClearTransientContent();
 
@@ -1141,7 +1140,7 @@ TEST_F(WebStateImplTest,
   ASSERT_EQ(interstitial, web_state_->GetWebInterstitial());
 
   // Clear the interstitial.
-  TestWebStateObserver observer(web_state_.get());
+  FakeWebStateObserver observer(web_state_.get());
   ASSERT_FALSE(observer.did_change_visible_security_state_info());
   web_state_->ClearTransientContent();
 
@@ -1186,8 +1185,7 @@ TEST_F(WebStateImplTest, VisibilitychangeEventFired) {
   // Mark the WebState as visibile before adding the observer.
   web_state_->WasShown();
 
-  std::unique_ptr<TestWebStateObserver> observer(
-      new TestWebStateObserver(web_state_.get()));
+  auto observer = std::make_unique<FakeWebStateObserver>(web_state_.get());
 
   // Add the WebState to the view hierarchy so the visibilitychange event is
   // fired.

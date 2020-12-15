@@ -23,7 +23,7 @@
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/error_test_util.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/test_web_state_delegate.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
@@ -64,7 +64,7 @@ NSError* CreateUnsupportedURLError() {
 using wk_navigation_util::IsWKInternalUrl;
 
 // Test fixture for web::WebTest class.
-class WebStateTest : public TestWebClient, public WebTestWithWebState {
+class WebStateTest : public FakeWebClient, public WebTestWithWebState {
  protected:
   base::HistogramTester histogram_tester_;
 };

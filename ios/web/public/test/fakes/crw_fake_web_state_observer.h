@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_STATE_OBSERVER_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_STATE_OBSERVER_H_
 
-#include "ios/web/public/test/fakes/test_web_state_observer_util.h"
+#include "ios/web/public/test/fakes/fake_web_state_observer_util.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
 // Test implementation of CRWWebStateObserver protocol.

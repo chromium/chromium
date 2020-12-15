@@ -9,7 +9,7 @@
 #include "base/supports_user_data.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/web/public/browsing_data/cookie_blocking_mode.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -43,7 +43,7 @@ TEST_F(BrowserStateTest, FromSupportsUserData_NonBrowserState) {
 }
 
 TEST_F(BrowserStateTest, FromSupportsUserData) {
-  web::TestBrowserState browser_state;
+  web::FakeBrowserState browser_state;
   DCHECK_EQ(&browser_state,
             web::BrowserState::FromSupportsUserData(&browser_state));
 }
@@ -51,7 +51,7 @@ TEST_F(BrowserStateTest, FromSupportsUserData) {
 // Tests that changing the cookie blocking mode causes the injected Javascript
 // to change.
 TEST_F(BrowserStateTest, SetCookieBlockingMode) {
-  web::TestBrowserState browser_state;
+  web::FakeBrowserState browser_state;
   __block bool success = false;
   browser_state.SetCookieBlockingMode(web::CookieBlockingMode::kAllow,
                                       base::BindOnce(^{

@@ -30,7 +30,7 @@
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/async_web_state_policy_decider.h"
-#include "ios/web/public/test/fakes/test_web_state_observer.h"
+#include "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
@@ -2279,9 +2279,9 @@ TEST_F(WebStateObserverTest, StopNavigationAfterPolicyDeciderCallback) {
                                                       &context, &nav_id));
 
   // Load the page and wait for DidFinishNavigation callback.
-  TestWebStateObserver page_loaded_observer(web_state());
+  FakeWebStateObserver page_loaded_observer(web_state());
   test::LoadUrl(web_state(), url);
-  TestWebStateObserver* page_loaded_observer_ptr = &page_loaded_observer;
+  FakeWebStateObserver* page_loaded_observer_ptr = &page_loaded_observer;
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
     return page_loaded_observer_ptr->did_finish_navigation_info();
   }));

@@ -10,7 +10,7 @@
 #include "components/crash/core/common/objc_zombie.h"
 #include "ios/testing/verify_custom_webkit.h"
 #include "ios/web/public/navigation/url_schemes.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -22,7 +22,7 @@ namespace web {
 
 WebTestSuite::WebTestSuite(int argc, char** argv)
     : base::TestSuite(argc, argv),
-      web_client_(base::WrapUnique(new TestWebClient)) {
+      web_client_(std::make_unique<FakeWebClient>()) {
   CHECK(IsCustomWebKitLoadedIfRequested());
 #if TARGET_IPHONE_SIMULATOR
   DCHECK(ObjcEvilDoers::ZombieEnable(true, 10000));

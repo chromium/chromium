@@ -9,8 +9,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ios/web/public/test/fakes/fake_download_controller_delegate.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/test/web_test.h"
 #include "net/url_request/url_fetcher_response_writer.h"
@@ -37,7 +36,7 @@ class DownloadControllerImplTest : public WebTest {
     web_state_.SetBrowserState(GetBrowserState());
   }
 
-  TestWebState web_state_;
+  FakeWebState web_state_;
   std::unique_ptr<DownloadControllerImpl> download_controller_;
   FakeDownloadControllerDelegate delegate_;
 };

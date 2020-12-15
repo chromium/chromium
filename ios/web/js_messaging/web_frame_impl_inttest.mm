@@ -8,7 +8,6 @@
 #include "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/test/web_test_with_web_state.h"

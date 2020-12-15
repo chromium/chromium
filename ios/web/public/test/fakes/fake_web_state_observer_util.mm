@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/test/fakes/test_web_state_observer_util.h"
+#import "ios/web/public/test/fakes/fake_web_state_observer_util.h"
 
 #import "ios/web/public/navigation/navigation_context.h"
 #include "ios/web/public/security/ssl_status.h"

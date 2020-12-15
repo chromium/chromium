@@ -12,8 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/web_view_creation_util.h"
 #include "ios/web/public/browsing_data/cookie_blocking_mode.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/test/fakes/test_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/test/web_test.h"
 #import "testing/gtest_mac.h"
@@ -31,10 +30,10 @@ namespace {
 // A test fixture for testing the page_script_util methods.
 class PageScriptUtilTest : public WebTest {
  protected:
-  PageScriptUtilTest() : WebTest(std::make_unique<TestWebClient>()) {}
+  PageScriptUtilTest() : WebTest(std::make_unique<FakeWebClient>()) {}
 
-  TestWebClient* GetWebClient() override {
-    return static_cast<TestWebClient*>(WebTest::GetWebClient());
+  FakeWebClient* GetWebClient() override {
+    return static_cast<FakeWebClient*>(WebTest::GetWebClient());
   }
 };
 

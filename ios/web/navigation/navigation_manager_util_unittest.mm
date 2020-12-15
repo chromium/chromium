@@ -10,7 +10,7 @@
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/test/fakes/fake_navigation_manager_delegate.h"
 #include "testing/platform_test.h"
@@ -40,7 +40,7 @@ class NavigationManagerUtilTest : public PlatformTest {
   CRWFakeBackForwardList* mock_wk_list_ = nil;
 
  private:
-  TestBrowserState browser_state_;
+  FakeBrowserState browser_state_;
 };
 
 // Tests GetCommittedItemWithUniqueID, GetCommittedItemIndexWithUniqueID and

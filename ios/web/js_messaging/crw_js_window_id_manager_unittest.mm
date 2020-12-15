@@ -7,7 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "ios/web/js_messaging/page_script_util.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -43,7 +43,7 @@ class JSWindowIDManagerTest : public PlatformTest {
     return web_view;
   }
 
-  TestBrowserState browser_state_;
+  FakeBrowserState browser_state_;
 };
 
 // Tests that window ID injection by a second manager results in a different

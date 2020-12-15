@@ -19,7 +19,7 @@
 #import "ios/web/net/cookies/wk_cookie_util.h"
 #import "ios/web/public/download/download_task_observer.h"
 #include "ios/web/public/test/fakes/fake_cookie_store.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
 #import "ios/web/test/fakes/crw_fake_nsurl_session_task.h"
 #include "net/base/net_errors.h"
@@ -215,8 +215,8 @@ class DownloadTaskImplTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  TestBrowserState browser_state_;
-  TestWebState web_state_;
+  FakeBrowserState browser_state_;
+  FakeWebState web_state_;
   FakeCookieStore cookie_store_;
   testing::StrictMock<FakeDownloadTaskImplDelegate> task_delegate_;
   std::unique_ptr<DownloadTaskImpl> task_;

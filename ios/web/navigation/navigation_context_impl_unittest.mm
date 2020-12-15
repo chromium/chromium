@@ -5,7 +5,7 @@
 #import "ios/web/navigation/navigation_context_impl.h"
 
 #import "ios/web/navigation/navigation_item_impl.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -30,7 +30,7 @@ class NavigationContextImplTest : public PlatformTest {
         response_headers_(new net::HttpResponseHeaders(
             std::string(kRawResponseHeaders, sizeof(kRawResponseHeaders)))) {}
 
-  TestWebState web_state_;
+  FakeWebState web_state_;
   GURL url_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 };
