@@ -252,4 +252,78 @@ TEST_F(CounterStyleTest, PadLengthLimit) {
   EXPECT_EQ("0", foo.GenerateRepresentation(0));
 }
 
+TEST_F(CounterStyleTest, SymbolicWithExtendedRange) {
+  InsertStyleElement(R"CSS(
+    @counter-style base {
+      system: symbolic;
+      symbols: A B;
+    }
+
+    @counter-style custom {
+      system: extends base;
+      range: infinite -2, 0 infinite;
+    }
+
+    @counter-style extended {
+      system: extends custom;
+    }
+  )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Getting custom 'range' directly from descriptor value.
+  const CounterStyle& custom = GetCounterStyle("custom");
+  EXPECT_EQ("-AA", custom.GenerateRepresentation(-3));
+  EXPECT_EQ("-B", custom.GenerateRepresentation(-2));
+  // -1 is out of 'range' value. Fallback to 'decimal'
+  EXPECT_EQ("-1", custom.GenerateRepresentation(-1));
+  // 0 is within 'range' but not representable. Fallback to 'decimal'.
+  EXPECT_EQ("0", custom.GenerateRepresentation(0));
+  EXPECT_EQ("A", custom.GenerateRepresentation(1));
+
+  // Getting custom 'range' indirectly by extending a counter style.
+  const CounterStyle& extended = GetCounterStyle("extended");
+  EXPECT_EQ("-AA", extended.GenerateRepresentation(-3));
+  EXPECT_EQ("-B", extended.GenerateRepresentation(-2));
+  EXPECT_EQ("-1", extended.GenerateRepresentation(-1));
+  EXPECT_EQ("0", extended.GenerateRepresentation(0));
+  EXPECT_EQ("A", extended.GenerateRepresentation(1));
+}
+
+TEST_F(CounterStyleTest, AdditiveWithExtendedRange) {
+  InsertStyleElement(R"CSS(
+    @counter-style base {
+      system: additive;
+      additive-symbols: 2 B, 1 A;
+    }
+
+    @counter-style custom {
+      system: extends base;
+      range: infinite -2, 0 infinite;
+    }
+
+    @counter-style extended {
+      system: extends custom;
+    }
+  )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Getting custom 'range' directly from descriptor value.
+  const CounterStyle& custom = GetCounterStyle("custom");
+  EXPECT_EQ("-BA", custom.GenerateRepresentation(-3));
+  EXPECT_EQ("-B", custom.GenerateRepresentation(-2));
+  // -1 is out of 'range' value. Fallback to 'decimal'.
+  EXPECT_EQ("-1", custom.GenerateRepresentation(-1));
+  // 0 is within 'range' but not representable. Fallback to 'decimal'.
+  EXPECT_EQ("0", custom.GenerateRepresentation(0));
+  EXPECT_EQ("A", custom.GenerateRepresentation(1));
+
+  // Getting custom 'range' indirectly by extending a counter style.
+  const CounterStyle& extended = GetCounterStyle("extended");
+  EXPECT_EQ("-BA", extended.GenerateRepresentation(-3));
+  EXPECT_EQ("-B", extended.GenerateRepresentation(-2));
+  EXPECT_EQ("-1", extended.GenerateRepresentation(-1));
+  EXPECT_EQ("0", extended.GenerateRepresentation(0));
+  EXPECT_EQ("A", extended.GenerateRepresentation(1));
+}
+
 }  // namespace blink

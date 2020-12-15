@@ -101,6 +101,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   // Additive weights, for the 'additive' system only.
   Vector<wtf_size_t> additive_weights_;
 
+  // Value of 'range' descriptor. Empty vector means 'auto'.
+  Vector<std::pair<int, int>> range_;
+
   String negative_prefix_ = "-";
   String negative_suffix_;
 

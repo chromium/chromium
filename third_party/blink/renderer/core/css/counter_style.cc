@@ -87,6 +87,27 @@ String SymbolToString(const CSSValue& value) {
   return To<CSSCustomIdentValue>(value).Value();
 }
 
+std::pair<int, int> BoundsToIntegerPair(const CSSValuePair& bounds) {
+  int lower_bound, upper_bound;
+  if (bounds.First().IsIdentifierValue()) {
+    DCHECK_EQ(CSSValueID::kInfinite,
+              To<CSSIdentifierValue>(bounds.First()).GetValueID());
+    lower_bound = std::numeric_limits<int>::min();
+  } else {
+    DCHECK(bounds.First().IsPrimitiveValue());
+    lower_bound = To<CSSPrimitiveValue>(bounds.First()).GetIntValue();
+  }
+  if (bounds.Second().IsIdentifierValue()) {
+    DCHECK_EQ(CSSValueID::kInfinite,
+              To<CSSIdentifierValue>(bounds.Second()).GetValueID());
+    upper_bound = std::numeric_limits<int>::max();
+  } else {
+    DCHECK(bounds.Second().IsPrimitiveValue());
+    upper_bound = To<CSSPrimitiveValue>(bounds.Second()).GetIntValue();
+  }
+  return std::make_pair(lower_bound, upper_bound);
+}
+
 // https://drafts.csswg.org/css-counter-styles/#cyclic-system
 Vector<wtf_size_t> CyclicAlgorithm(int value, wtf_size_t num_symbols) {
   DCHECK(num_symbols);
@@ -253,6 +274,16 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
     pad_symbol_ = SymbolToString(pair.Second());
   }
 
+  if (const CSSValue* range = rule.GetRange()) {
+    if (range->IsIdentifierValue()) {
+      DCHECK_EQ(CSSValueID::kAuto, To<CSSIdentifierValue>(range)->GetValueID());
+      // Empty |range_| already means 'auto'.
+    } else {
+      for (const CSSValue* bounds : To<CSSValueList>(*range))
+        range_.push_back(BoundsToIntegerPair(To<CSSValuePair>(*bounds)));
+    }
+  }
+
   // TODO(crbug.com/687225): Implement and populate other fields.
 }
 
@@ -281,6 +312,9 @@ void CounterStyle::ResolveExtends(const CounterStyle& extended) {
     pad_symbol_ = extended.pad_symbol_;
   }
 
+  if (!style_rule_->GetRange())
+    range_ = extended.range_;
+
   // TODO(crbug.com/687225): Implement and populate other fields.
 }
 
@@ -299,7 +333,13 @@ void CounterStyle::ResetFallback() {
 }
 
 bool CounterStyle::RangeContains(int value) const {
-  // TODO(crbug.com/687225): Implement non-auto values of 'range'
+  if (range_.size()) {
+    for (const auto& bounds : range_) {
+      if (value >= bounds.first && value <= bounds.second)
+        return true;
+    }
+    return false;
+  }
 
   // 'range' value is auto
   switch (system_) {
