@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
@@ -24,15 +25,18 @@
 namespace {
 // The width and height of the favicon ImageView.
 const CGFloat kFaviconWidth = 16;
+// The legacy width and height of the favicon container view.
+const CGFloat kFaviconContainerLegacyWidth = 28;
 // The width and height of the favicon container view.
-const CGFloat kFaviconContainerWidth = 28;
+const CGFloat kFaviconContainerWidth = 30;
 // Default delimiter to use between the hostname and the supplemental URL text
 // if text is specified but not the delimiter.
 const char kDefaultSupplementalURLTextDelimiter[] = "•";
-}
-
-#pragma mark - TableViewURLCellFaviconBadgeView
-
+// Corner radius of the favicon ImageView.
+const CGFloat kFavIconCornerRadius = 7.0;
+// Width of the favicon border ImageView.
+const CGFloat kFavIconBorderWidth = 1.5;
+}  // namespace
 
 #pragma mark - TableViewURLItem
 
@@ -134,14 +138,24 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+
   if (self) {
-    UIImage* containerBackground =
-        [[UIImage imageNamed:@"table_view_cell_favicon_background"]
-            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _faviconContainerView =
-        [[UIImageView alloc] initWithImage:containerBackground];
-    _faviconContainerView.tintColor =
-        [UIColor colorNamed:kFaviconBackgroundColor];
+    if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
+      _faviconContainerView = [[UIView alloc] init];
+      _faviconContainerView.layer.borderColor =
+          [UIColor colorNamed:kFaviconBackgroundColor].CGColor;
+      _faviconContainerView.layer.borderWidth = kFavIconBorderWidth;
+      _faviconContainerView.layer.cornerRadius = kFavIconCornerRadius;
+      _faviconContainerView.layer.masksToBounds = YES;
+    } else {
+      UIImage* containerBackground =
+          [[UIImage imageNamed:@"table_view_cell_favicon_background"]
+              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      _faviconContainerView =
+          [[UIImageView alloc] initWithImage:containerBackground];
+      _faviconContainerView.tintColor =
+          [UIColor colorNamed:kFaviconBackgroundColor];
+    }
 
     _faviconView = [[FaviconView alloc] init];
     _faviconView.contentMode = UIViewContentModeScaleAspectFit;
@@ -220,9 +234,12 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
       [_faviconView.centerXAnchor
           constraintEqualToAnchor:_faviconContainerView.centerXAnchor],
       [_faviconContainerView.heightAnchor
-          constraintEqualToConstant:kFaviconContainerWidth],
+          constraintEqualToConstant:base::FeatureList::IsEnabled(
+                                        kSettingsRefresh)
+                                        ? kFaviconContainerWidth
+                                        : kFaviconContainerLegacyWidth],
       [_faviconContainerView.widthAnchor
-          constraintEqualToConstant:kFaviconContainerWidth],
+          constraintEqualToAnchor:_faviconContainerView.heightAnchor],
       [_faviconContainerView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
