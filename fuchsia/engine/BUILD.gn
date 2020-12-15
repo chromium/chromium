@@ -307,7 +307,6 @@ test("web_engine_browsertests") {
     "browser/cast_streaming_browsertest.cc",
     "browser/content_directory_browsertest.cc",
     "browser/context_impl_browsertest.cc",
-    "browser/explicit_sites_filter_browsertest.cc",
     "browser/fake_navigation_policy_provider.cc",
     "browser/fake_navigation_policy_provider.h",
     "browser/fake_semantic_tree.cc",
@@ -322,6 +321,11 @@ test("web_engine_browsertests") {
     "browser/navigation_policy_browsertest.cc",
     "browser/theme_manager_browsertest.cc",
   ]
+
+  # TODO(crbug.com/1157909): Move to the list above when the bug is fixed.
+  if (!is_component_build) {
+    sources += [ "browser/explicit_sites_filter_browsertest.cc" ]
+  }
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
     ":browsertest_core",
