@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_util.h"
 #include "components/query_tiles/switches.h"
 
 namespace query_tiles {
@@ -94,11 +95,11 @@ constexpr int kDefaultMaxTrendingTileImpressions = 2;
 namespace {
 
 // For testing. Json string for single tier experiment tag.
-const char kQueryTilesSingleTierExperimentTag[] = "{\"maxLevels\": \"1\"}";
+const char kQueryTilesSingleTierExperimentTag[] = "\"maxLevels\": \"1\"";
 
 // Json Experiment tag for enabling trending queries.
 const char kQueryTilesEnableTrendingExperimentTag[] =
-    "{\"enableTrending\": \"true\"}";
+    "\"enableTrending\": \"true\"";
 
 const GURL BuildGetQueryTileURL(const GURL& base_url, const char* path) {
   GURL::Replacements replacements;
@@ -128,14 +129,19 @@ bool TileConfig::GetIsUnMeteredNetworkRequired() {
 
 // static
 std::string TileConfig::GetExperimentTag() {
+  std::vector<std::string> experiment_tag;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kQueryTilesSingleTier)) {
-    return kQueryTilesSingleTierExperimentTag;
+    experiment_tag.emplace_back(kQueryTilesSingleTierExperimentTag);
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kQueryTilesEnableTrending)) {
-    return kQueryTilesEnableTrendingExperimentTag;
+    experiment_tag.emplace_back(kQueryTilesEnableTrendingExperimentTag);
+  }
+
+  if (!experiment_tag.empty()) {
+    return "{" + base::JoinString(experiment_tag, ",") + "}";
   }
 
   return base::GetFieldTrialParamValueByFeature(features::kQueryTiles,
