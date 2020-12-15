@@ -89,7 +89,6 @@
 /gemmlowp/src
 /gles2_conform
 /glfw/src
-/glslang/src
 /gn/
 /gnu_binutils/
 /google_android_play_core/core-*.aar
@@ -218,9 +217,6 @@
 /snappy/src
 /soda
 /speex
-/spirv-cross/spirv-cross
-/spirv-headers/src
-/SPIRV-Tools/src
 /sqlite/src
 /sqlite4java/lib/
 /subresource-filter-ruleset/data/UnindexedRules
@@ -239,6 +235,7 @@
 /usrsctp/usrsctplib
 /v8-i18n
 /valgrind
+/vulkan-deps
 /vulkan_memory_allocator
 /wayland/src
 /wayland-protocols/src
