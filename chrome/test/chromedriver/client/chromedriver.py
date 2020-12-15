@@ -364,7 +364,7 @@ class ChromeDriver(object):
     # Can't issue a new command without session_id
     if not hasattr(self, '_session_id') or self._session_id == None:
       return
-    tempDriver = ChromeDriver(self._server_url,
+    tempDriver = ChromeDriver(self._server_url, None,
       debugger_address=self.debuggerAddress, test_name='_forceCrash')
     try:
       tempDriver.SendCommandAndGetResult("Page.crash", {})
