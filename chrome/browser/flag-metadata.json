@@ -5078,9 +5078,12 @@
   {
     "name": "zero-copy-video-capture",
     "owners": [
+      // For CrOS
       "chromeos-camera-eng@google.com",
-      "chromeos-gfx-video@google.com"
+      "chromeos-gfx-video@google.com",
+      // For MacOS and Windows
+      "video-cmi-mpp@google.com"
     ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   }
 ]
