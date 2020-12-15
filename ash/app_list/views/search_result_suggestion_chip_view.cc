@@ -33,7 +33,6 @@ namespace ash {
 
 namespace {
 
-constexpr SkColor kRippleColor = SkColorSetA(gfx::kGoogleGrey100, 0x0F);
 constexpr int kMaxTextWidth = 192;
 constexpr int kBlurRadius = 5;
 constexpr int kIconMarginDip = 8;
@@ -164,7 +163,8 @@ SearchResultSuggestionChipView::CreateInkDropRipple() const {
                    2 * ripple_radius, 2 * ripple_radius);
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), GetLocalBounds().InsetsFrom(bounds),
-      GetInkDropCenterBasedOnLastEvent(), kRippleColor, 1.0f);
+      GetInkDropCenterBasedOnLastEvent(),
+      AppListColorProvider::Get()->GetSuggestionChipInkDropColor(), 1.0f);
 }
 
 std::unique_ptr<ui::Layer> SearchResultSuggestionChipView::RecreateLayer() {

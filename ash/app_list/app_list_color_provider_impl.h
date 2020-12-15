@@ -26,6 +26,7 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetSearchBoxTextColor(SkColor default_color) const override;
   SkColor GetSuggestionChipBackgroundColor() const override;
   SkColor GetSuggestionChipTextColor() const override;
+  SkColor GetSuggestionChipInkDropColor() const override;
   SkColor GetAppListItemTextColor(bool is_in_folder) const override;
   SkColor GetPageSwitcherButtonColor(
       bool is_root_app_grid_page_switcher) const override;

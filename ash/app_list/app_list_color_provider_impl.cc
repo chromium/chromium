@@ -104,6 +104,11 @@ SkColor AppListColorProviderImpl::GetSuggestionChipTextColor() const {
       /*default_color*/ gfx::kGoogleGrey100);
 }
 
+SkColor AppListColorProviderImpl::GetSuggestionChipInkDropColor() const {
+  return DeprecatedGetInkDropRippleColor(
+      /*default_color*/ SkColorSetA(gfx::kGoogleGrey100, 0x0F));
+}
+
 SkColor AppListColorProviderImpl::GetAppListItemTextColor(
     bool is_in_folder) const {
   if (is_in_folder && !features::IsDarkLightModeEnabled())
