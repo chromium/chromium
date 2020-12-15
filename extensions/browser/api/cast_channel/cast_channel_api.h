@@ -75,7 +75,8 @@ class CastChannelAPI : public BrowserContextKeyedAPI,
   // Defines a callback used to send events to the extension's
   // EventRouter.
   //     Parameter #0 is a unique pointer to the event payload.
-  using EventDispatchCallback = base::Callback<void(std::unique_ptr<Event>)>;
+  using EventDispatchCallback =
+      base::RepeatingCallback<void(std::unique_ptr<Event>)>;
 
   // Receives incoming messages and errors and provides additional API context.
   // Created on the UI thread. All methods, including the destructor, must be
