@@ -9761,14 +9761,30 @@ void RenderFrameHostImpl::
                              params.base_url.possibly_invalid_spec());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "base_url_exp_match",
                         base_url_expectations_match);
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "prev_ldwb",
+                        is_loaded_from_load_data_with_base_url_);
+  SCOPED_CRASH_KEY_BOOL(
+      "VerifyDidCommit", "prev_ldwbu",
+      is_loaded_from_load_data_with_base_url_and_unreachable_url_);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "b_base_url_valid",
                         browser_base_url.is_valid());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "b_base_url_empty",
                         browser_base_url.is_empty());
+  SCOPED_CRASH_KEY_BOOL(
+      "VerifyDidCommit", "b_hist_url_empty",
+      request->common_params().history_url_for_data_url.is_empty());
+#if defined(OS_ANDROID)
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "b_data_url_empty",
+                        request->commit_params().data_url_as_string.empty());
+#endif
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "r_base_url_empty",
                         params.base_url.is_empty());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "r_base_url_is_error",
                         params.base_url == kUnreachableWebDataURL);
+  SCOPED_CRASH_KEY_BOOL(
+      "VerifyDidCommit", "r_history_url_empty",
+      request->common_params().history_url_for_data_url.is_empty());
 
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "browser_post_id",
                           browser_post_id);
@@ -9792,7 +9808,7 @@ void RenderFrameHostImpl::
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_document",
                         is_same_document_navigation);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_doc_history",
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_history_api",
                         is_same_document_history_api_navigation);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_initiated",
                         request->IsRendererInitiated());
@@ -9802,24 +9818,22 @@ void RenderFrameHostImpl::
                         request->IsFormSubmission());
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "net_error",
                           request->GetNetErrorCode());
+
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_server_redirect",
                         request->WasServerRedirect());
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "redirects_size",
                           params.redirects.size());
+
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "entry_offset",
                           request->GetNavigationEntryOffset());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_reload",
                         request->GetReloadType() != ReloadType::NONE);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_restore",
                         request->GetRestoreType() == RestoreType::kRestored);
-
-  auto* last_committed_entry = NavigationEntryImpl::FromNavigationEntry(
-      frame_tree()->controller()->GetLastCommittedEntry());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "lce_exists",
-                        !!last_committed_entry);
-  SCOPED_CRASH_KEY_NUMBER(
-      "VerifyDidCommit", "last_post_id",
-      last_committed_entry ? last_committed_entry->GetPostID() : -1);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "has_gesture",
+                        request->HasUserGesture());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "was_click",
+                        request->WasInitiatedByLinkClick());
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "navigation_url",
                              params.url.possibly_invalid_spec());
@@ -9829,28 +9843,39 @@ void RenderFrameHostImpl::
                         params.url.IsAboutSrcdoc());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_blocked",
                         params.url == kBlockedURL);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_error",
+                        params.url == kUnreachableWebDataURL);
+
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "original_req_url",
+                             params.original_request_url.spec());
+  SCOPED_CRASH_KEY_BOOL(
+      "VerifyDidCommit", "original_same_doc",
+      params.original_request_url.EqualsIgnoringRef(GetLastCommittedURL()));
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_committed_url",
                              GetLastCommittedURL().spec());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_empty",
+                        GetLastCommittedURL().is_empty());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_blank",
                         GetLastCommittedURL().IsAboutBlank());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_srcdoc",
                         GetLastCommittedURL().IsAboutSrcdoc());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "last_url_error",
+                        GetLastCommittedURL() == kUnreachableWebDataURL);
+
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_method",
+                             last_http_method_);
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "last_code",
+                          last_http_status_code_);
+
   bool has_original_url =
       GetSiteInstance() && !GetSiteInstance()->IsDefaultSiteInstance();
   SCOPED_CRASH_KEY_STRING256(
-      "VerifyDidCommit", "original_url",
+      "VerifyDidCommit", "si_url",
       has_original_url
           ? GetSiteInstance()->original_url().possibly_invalid_spec()
           : "");
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "original_url_blank",
-                        has_original_url
-                            ? GetSiteInstance()->original_url().IsAboutBlank()
-                            : false);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "original_url_srcdoc",
-                        has_original_url
-                            ? GetSiteInstance()->original_url().IsAboutSrcdoc()
-                            : false);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "has_si_url", has_original_url);
 
   // These DCHECKs ensure that tests will fail if we got here, as
   // DumpWithoutCrashing won't fail tests.

@@ -56,32 +56,69 @@ const char* const kWebViewCrashKeyAllowList[] = {
     // Navigation
     "VerifyDidCommit-browser_intended",
     "VerifyDidCommit-renderer_intended",
+
     "VerifyDidCommit-browser_method",
     "VerifyDidCommit-renderer_method",
     "VerifyDidCommit-original_method",
+
     "VerifyDidCommit-browser_unreachable",
     "VerifyDidCommit-renderer_unreachable",
+
     "VerifyDidCommit-base_url_exp_match",
+    "VerifyDidCommit-prev_ldwb",
+    "VerifyDidCommit-prev_ldwbu",
     "VerifyDidCommit-b_base_url_valid",
     "VerifyDidCommit-b_base_url_empty",
+    "VerifyDidCommit-b_hist_url_empty",
+    "VerifyDidCommit-b_data_url_empty",
     "VerifyDidCommit-r_base_url_empty",
     "VerifyDidCommit-r_base_url_error",
+    "VerifyDidCommit-r_history_url_empty",
+
     "VerifyDidCommit-browser_post_id",
     "VerifyDidCommit-renderer_post_id",
+
     "VerifyDidCommit-browser_override_ua",
     "VerifyDidCommit-renderer_override_ua",
+
+    "VerifyDidCommit-browser_code",
+    "VerifyDidCommit-renderer_code",
+
+    "VerifyDidCommit-browser_suh",
+    "VerifyDidCommit-renderer_suh",
+
     "VerifyDidCommit-is_same_document",
+    "VerifyDidCommit-is_history_api",
     "VerifyDidCommit-renderer_initiated",
     "VerifyDidCommit-is_subframe",
     "VerifyDidCommit-is_form_submission",
     "VerifyDidCommit-net_error",
+
     "VerifyDidCommit-is_server_redirect",
+    "VerifyDidCommit-redirects_size",
+
+    "VerifyDidCommit-entry_offset",
+    "VerifyDidCommit-is_reload",
+    "VerifyDidCommit-is_restore",
+    "VerifyDidCommit-has_gesture",
+    "VerifyDidCommit-was_click",
+
     "VerifyDidCommit-nav_url_blank",
     "VerifyDidCommit-nav_url_srcdoc",
+    "VerifyDidCommit-nav_url_blocked",
+    "VerifyDidCommit-nav_url_error",
+
+    "VerifyDidCommit-original_same_doc",
+
+    "VerifyDidCommit-last_url_empty",
     "VerifyDidCommit-last_url_blank",
     "VerifyDidCommit-last_url_srcdoc",
-    "VerifyDidCommit-original_url_blank",
-    "VerifyDidCommit-original_url_srcdoc",
+    "VerifyDidCommit-last_url_error",
+
+    "VerifyDidCommit-last_method",
+    "VerifyDidCommit-last_code",
+
+    "VerifyDidCommit-has_si_url",
 
     // services/network
     "network_deserialization",
