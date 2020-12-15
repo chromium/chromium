@@ -67,6 +67,8 @@ if (!use_system_libwayland) {
       "src/src/wayland-shm.c",
     ]
 
+    include_dirs = [ "include/" ]
+
     deps = [
       ":wayland_private",
       ":wayland_protocol",
