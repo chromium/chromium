@@ -12780,9 +12780,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="PageLoad.Clients.NoServiceWorker.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
-      name="PageLoad.Clients.NoServiceWorker.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
+      name="PageLoad.Clients.NoServiceWorker.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
+    <obsolete>
+      Removed in December 2020.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram
-      name="PageLoad.Clients.NoServiceWorker.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint"/>
+      name="PageLoad.Clients.NoServiceWorker.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint">
+    <obsolete>
+      Removed in December 2020.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram
       name="PageLoad.Clients.NoServiceWorker.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
@@ -12956,15 +12964,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
+      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
+    <obsolete>
+      Removed Dec 2020.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint"/>
+      name="PageLoad.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint">
+    <obsolete>
+      Removed Dec 2020.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay2"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay3"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.PaintTiming.NavigationToFirstPaint"/>
+  <affected-histogram
+      name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"/>
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
@@ -12986,9 +13004,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
-      name="PageLoad.Clients.ServiceWorker.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
+      name="PageLoad.Clients.ServiceWorker.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
+    <obsolete>
+      Removed in December 2020.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram
-      name="PageLoad.Clients.ServiceWorker.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint"/>
+      name="PageLoad.Clients.ServiceWorker.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint">
+    <obsolete>
+      Removed in December 2020.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
@@ -13000,9 +13026,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
-      name="PageLoad.Clients.ServiceWorker2.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
+      name="PageLoad.Clients.ServiceWorker2.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
+    <obsolete>
+      Removed in December 2020.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram
-      name="PageLoad.Clients.ServiceWorker2.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint"/>
+      name="PageLoad.Clients.ServiceWorker2.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint">
+    <obsolete>
+      Removed in December 2020.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
