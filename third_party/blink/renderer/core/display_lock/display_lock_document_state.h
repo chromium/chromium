@@ -126,6 +126,8 @@ class CORE_EXPORT DisplayLockDocumentState final
     Member<DisplayLockUtilities::ScopedForcedUpdate::Impl> chain;
   };
 
+  void NotifyPrintingOrPreviewChanged();
+
  private:
   IntersectionObserver& EnsureIntersectionObserver();
 
@@ -150,6 +152,8 @@ class CORE_EXPORT DisplayLockDocumentState final
   // Contains all of the currently forced node infos, each of which represents
   // the node that caused the scope to be created.
   HeapVector<ForcedNodeInfo> forced_node_info_;
+
+  bool printing_ = false;
 };
 
 }  // namespace blink

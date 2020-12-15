@@ -1648,15 +1648,18 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetFindInPageActiveMatchNode(Node*);
   const Node* GetFindInPageActiveMatchNode() const;
 
-  class PaintPreviewScope {
+  class CORE_EXPORT PaintPreviewScope {
     STACK_ALLOCATED();
 
    public:
-    explicit PaintPreviewScope(Document& document)
-        : is_painting_preview_(&document.is_painting_preview_, true) {}
+    explicit PaintPreviewScope(Document& document);
+    ~PaintPreviewScope();
+
+    PaintPreviewScope(PaintPreviewScope&) = delete;
+    PaintPreviewScope& operator=(PaintPreviewScope&) = delete;
 
    private:
-    base::AutoReset<bool> is_painting_preview_;
+    Document& document_;
   };
 
  protected:

@@ -3379,4 +3379,42 @@ TEST_F(DisplayLockContextTest, GraphicsLayerBitsNotCheckedInLockedSubtree) {
   EXPECT_FALSE(
       target_layer->GetCompositedLayerMapping()->NeedsGraphicsLayerUpdate());
 }
+
+TEST_F(DisplayLockContextTest, PrintingUnlocksAutoLocks) {
+  ResizeAndFocus();
+
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    .spacer { height: 30000px; }
+    .auto { content-visibility: auto; }
+    </style>
+    <div class=spacer></div>
+    <div id=target class=auto>
+      <div id=nested class=auto></div>
+    </div>
+  )HTML");
+
+  auto* target = GetDocument().getElementById("target");
+  auto* nested = GetDocument().getElementById("nested");
+  ASSERT_TRUE(target->GetDisplayLockContext());
+  EXPECT_TRUE(target->GetDisplayLockContext()->IsLocked());
+  // Nested should not have a display lock since we would have skipped style.
+  EXPECT_FALSE(nested->GetDisplayLockContext());
+
+  {
+    // Create a paint preview scope.
+    Document::PaintPreviewScope scope(GetDocument());
+    UpdateAllLifecyclePhasesForTest();
+
+    EXPECT_FALSE(target->GetDisplayLockContext()->IsLocked());
+    // Nested should have created a context...
+    ASSERT_TRUE(nested->GetDisplayLockContext());
+    // ... but it should be unlocked.
+    EXPECT_FALSE(nested->GetDisplayLockContext()->IsLocked());
+  }
+
+  EXPECT_TRUE(target->GetDisplayLockContext()->IsLocked());
+  EXPECT_TRUE(nested->GetDisplayLockContext()->IsLocked());
+}
+
 }  // namespace blink

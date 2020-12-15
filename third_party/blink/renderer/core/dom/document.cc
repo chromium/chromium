@@ -3301,6 +3301,8 @@ void Document::SetPrinting(PrintingState state) {
   bool is_printing = Printing();
 
   if (was_printing != is_printing) {
+    GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
+
     // We force the color-scheme to light for printing.
     ColorSchemeChanged();
     // StyleResolver::InitialStyleForElement uses different zoom for printing.
@@ -8447,6 +8449,17 @@ const Node* Document::GetFindInPageActiveMatchNode() const {
 bool Document::InStyleRecalc() const {
   return lifecycle_.GetState() == DocumentLifecycle::kInStyleRecalc ||
          style_engine_->InContainerQueryStyleRecalc();
+}
+
+Document::PaintPreviewScope::PaintPreviewScope(Document& document)
+    : document_(document) {
+  document_.is_painting_preview_ = true;
+  document_.GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
+}
+
+Document::PaintPreviewScope::~PaintPreviewScope() {
+  document_.is_painting_preview_ = false;
+  document_.GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;

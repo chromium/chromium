@@ -215,6 +215,9 @@ class CORE_EXPORT DisplayLockContext final
     return had_lifecycle_update_since_last_unlock_;
   }
 
+  // We unlock auto locks for printing, which is set here.
+  void SetShouldUnlockAutoForPrint(bool);
+
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
   // |NotifyForcedUpdateScopeEnded()|.
@@ -398,6 +401,7 @@ class CORE_EXPORT DisplayLockContext final
     kSubtreeHasFocus,
     kSubtreeHasSelection,
     kAutoStateUnlockedUntilLifecycle,
+    kAutoUnlockedForPrint,
     kNumRenderAffectingStates
   };
   void SetRenderAffectingState(RenderAffectingState state, bool flag);

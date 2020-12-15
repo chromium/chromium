@@ -1064,7 +1064,8 @@ void DisplayLockContext::NotifyRenderAffectingStateChanged() {
        (!state(RenderAffectingState::kIntersectsViewport) &&
         !state(RenderAffectingState::kSubtreeHasFocus) &&
         !state(RenderAffectingState::kSubtreeHasSelection) &&
-        !state(RenderAffectingState::kAutoStateUnlockedUntilLifecycle)));
+        !state(RenderAffectingState::kAutoStateUnlockedUntilLifecycle) &&
+        !state(RenderAffectingState::kAutoUnlockedForPrint)));
 
   if (should_be_locked && !IsLocked())
     Lock();
@@ -1076,6 +1077,10 @@ void DisplayLockContext::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(document_);
   visitor->Trace(whitespace_reattach_set_);
+}
+
+void DisplayLockContext::SetShouldUnlockAutoForPrint(bool flag) {
+  SetRenderAffectingState(RenderAffectingState::kAutoUnlockedForPrint, flag);
 }
 
 const char* DisplayLockContext::RenderAffectingStateName(int state) const {
@@ -1090,6 +1095,8 @@ const char* DisplayLockContext::RenderAffectingStateName(int state) const {
       return "SubtreeHasSelection";
     case RenderAffectingState::kAutoStateUnlockedUntilLifecycle:
       return "AutoStateUnlockedUntilLifecycle";
+    case RenderAffectingState::kAutoUnlockedForPrint:
+      return "AutoUnlockedForPrint";
     case RenderAffectingState::kNumRenderAffectingStates:
       break;
   }

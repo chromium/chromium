@@ -27,6 +27,7 @@ void DisplayLockDocumentState::Trace(Visitor* visitor) const {
 void DisplayLockDocumentState::AddDisplayLockContext(
     DisplayLockContext* context) {
   display_lock_contexts_.insert(context);
+  context->SetShouldUnlockAutoForPrint(printing_);
 }
 
 void DisplayLockDocumentState::RemoveDisplayLockContext(
@@ -237,6 +238,16 @@ DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
     return;
   DCHECK(state_->activatable_display_locks_forced_);
   --state_->activatable_display_locks_forced_;
+}
+
+void DisplayLockDocumentState::NotifyPrintingOrPreviewChanged() {
+  bool was_printing = printing_;
+  printing_ = document_->IsPrintingOrPaintingPreview();
+  if (printing_ == was_printing)
+    return;
+
+  for (auto& context : display_lock_contexts_)
+    context->SetShouldUnlockAutoForPrint(printing_);
 }
 
 }  // namespace blink
