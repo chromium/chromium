@@ -701,7 +701,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/infobar/IPHInfoBarSupport.java",
   "java/src/org/chromium/chrome/browser/infobar/InfoBarContainer.java",
   "java/src/org/chromium/chrome/browser/infobar/InfoBarContainerView.java",
-  "java/src/org/chromium/chrome/browser/infobar/InstallableAmbientBadgeInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/InstantAppsInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/InstantAppsInfoBarDelegate.java",
   "java/src/org/chromium/chrome/browser/infobar/KnownInterceptionDisclosureInfoBar.java",

@@ -10,7 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/installable/installable_ambient_badge_infobar_delegate.h"
+#include "components/webapps/android/installable/installable_ambient_badge_infobar_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 

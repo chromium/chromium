@@ -320,6 +320,7 @@
       <part file="tab_groups_strings.grdp" />
       <part file="undo_strings.grdp" />
       <part file="version_ui_strings.grdp" />
+      <part file="webapps_strings.grdp" />
 
       <if expr="not is_android and not is_ios">
         <part file="management_strings.grdp" />

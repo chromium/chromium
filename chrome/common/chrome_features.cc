@@ -30,11 +30,6 @@ const base::Feature kAdaptiveScreenBrightnessLogging{
     "AdaptiveScreenBrightnessLogging", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_ANDROID)
-const base::Feature kAddToHomescreenMessaging{
-    "AddToHomescreenMessaging", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Shows a setting that allows disabling mouse acceleration.
 const base::Feature kAllowDisableMouseAcceleration{

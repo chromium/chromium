@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/infobars/installable_ambient_badge_infobar.h"
+#include "components/webapps/android/installable/installable_ambient_badge_infobar.h"
 
 #include <utility>
 
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "chrome/android/chrome_jni_headers/InstallableAmbientBadgeInfoBar_jni.h"
-#include "chrome/browser/installable/installable_ambient_badge_infobar_delegate.h"
+#include "components/webapps/android/installable/installable_ambient_badge_infobar_delegate.h"
+#include "components/webapps/android/webapps_jni_headers/InstallableAmbientBadgeInfoBar_jni.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 namespace webapps {

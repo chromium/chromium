@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/installable/installable_ambient_badge_infobar_delegate.h"
+#include "components/webapps/android/installable/installable_ambient_badge_infobar_delegate.h"
 
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/ui/android/infobars/installable_ambient_badge_infobar.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/webapps/android/features.h"
+#include "components/webapps/android/installable/installable_ambient_badge_infobar.h"
 #include "components/webapps/webapps_client.h"
 #include "ui/base/l10n/l10n_util.h"
 

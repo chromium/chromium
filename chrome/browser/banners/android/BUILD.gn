@@ -71,6 +71,7 @@ android_library("javatests") {
     "//components/infobars/android:java",
     "//components/signin/core/browser/android:java",
     "//components/signin/core/browser/android:signin_java_test_support",
+    "//components/webapps/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",

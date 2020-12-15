@@ -5,28 +5,6 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
-source_set("android") {
-  sources = [
-    "shortcut_info.cc",
-    "shortcut_info.h",
-    "webapps_icon_utils.cc",
-    "webapps_icon_utils.h",
-    "webapps_utils.cc",
-    "webapps_utils.h",
-  ]
-
-  public_deps = [ ":webapps_jni_headers" ]
-
-  deps = [
-    "//base",
-    "//services/device/public/mojom",
-    "//skia",
-    "//third_party/blink/public/common:common",
-    "//ui/gfx",
-    "//url",
-  ]
-}
-
 android_library("java") {
   resources_package = "org.chromium.components.webapps"
   deps = [
@@ -34,6 +12,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//components/browser_ui/widget/android:java",
+    "//components/infobars/android:java",
     "//components/webapk/android/libs/client:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -41,6 +20,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
+    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
   ]
   srcjar_deps = [ ":webapps_java_enums_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -50,6 +30,7 @@ generate_jni("webapps_jni_headers") {
   sources = [
     "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
+    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
   ]
 }
 
@@ -73,8 +54,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "shortcut_info_unittest.cc" ]
   deps = [
-    ":android",
     "//base",
+    "//components/webapps",
     "//testing/gtest",
     "//third_party/blink/public/common:common",
     "//url",
