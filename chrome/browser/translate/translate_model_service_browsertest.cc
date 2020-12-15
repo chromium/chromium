@@ -7,11 +7,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/translate/translate_model_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/optimization_guide/optimization_guide_features.h"
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -59,8 +61,31 @@ using TranslateModelServiceDisabledBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceDisabledBrowserTest,
                        TranslateModelServiceDisabled) {
-  EXPECT_FALSE(
-      TranslateModelServiceFactory::GetForProfile(browser()->profile()));
+  EXPECT_FALSE(TranslateModelServiceFactory::GetOrBuildForKey(
+      browser()->profile()->GetProfileKey()));
+}
+
+class TranslateModelServiceWithoutOptimizationGuideBrowserTest
+    : public TranslateModelServiceDisabledBrowserTest {
+ public:
+  TranslateModelServiceWithoutOptimizationGuideBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {translate::kTFLiteLanguageDetectionEnabled}, {});
+  }
+
+  ~TranslateModelServiceWithoutOptimizationGuideBrowserTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This test confirms the translate model service is not available if
+// the optimization guide does not exist.
+IN_PROC_BROWSER_TEST_F(TranslateModelServiceWithoutOptimizationGuideBrowserTest,
+                       TranslateModelServiceEnabled) {
+  EXPECT_FALSE(TranslateModelServiceFactory::GetOrBuildForKey(
+      browser()->profile()->GetProfileKey()));
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceDisabledBrowserTest,
@@ -77,8 +102,11 @@ class TranslateModelServiceBrowserTest
     : public TranslateModelServiceDisabledBrowserTest {
  public:
   TranslateModelServiceBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        translate::kTFLiteLanguageDetectionEnabled);
+    scoped_feature_list_.InitWithFeatures(
+        {translate::kTFLiteLanguageDetectionEnabled,
+         optimization_guide::features::kOptimizationHints,
+         optimization_guide::features::kRemoteOptimizationGuideFetching},
+        {});
   }
 
   ~TranslateModelServiceBrowserTest() override = default;
@@ -89,14 +117,14 @@ class TranslateModelServiceBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        TranslateModelServiceEnabled) {
-  EXPECT_TRUE(
-      TranslateModelServiceFactory::GetForProfile(browser()->profile()));
+  EXPECT_TRUE(TranslateModelServiceFactory::GetOrBuildForKey(
+      browser()->profile()->GetProfileKey()));
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        TranslateModelServiceEnabled_OffTheRecord) {
-  EXPECT_TRUE(TranslateModelServiceFactory::GetForProfile(
-      browser()->profile()->GetPrimaryOTRProfile()));
+  EXPECT_TRUE(TranslateModelServiceFactory::GetOrBuildForKey(
+      browser()->profile()->GetPrimaryOTRProfile()->GetProfileKey()));
 }
 
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,

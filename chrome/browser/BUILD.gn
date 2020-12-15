@@ -1845,8 +1845,6 @@ static_library("browser") {
     "translate/translate_accept_languages_factory.h",
     "translate/translate_model_service_factory.cc",
     "translate/translate_model_service_factory.h",
-    "translate/translate_model_service_impl.cc",
-    "translate/translate_model_service_impl.h",
     "translate/translate_ranker_factory.cc",
     "translate/translate_ranker_factory.h",
     "translate/translate_ranker_metrics_provider.cc",

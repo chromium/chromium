@@ -7,24 +7,22 @@
 
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/simple_keyed_service_factory.h"
+#include "components/translate/content/browser/translate_model_service.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
-class TranslateModelServiceImpl;
-class Profile;
+class SimpleFactoryKey;
 
 // LazyInstance that owns all TranslateModelService(s) and associates
 // them with Profiles.
-class TranslateModelServiceFactory : public BrowserContextKeyedServiceFactory {
+class TranslateModelServiceFactory : public SimpleKeyedServiceFactory {
  public:
   // Gets the TranslateModelService for the profile.
   //
   // Returns null if the features that allow for this to provide useful
-  // information are disabled.
-  static TranslateModelServiceImpl* GetForProfile(Profile* profile);
+  // information are disabled. Importantly, only available when the
+  // optimization guide service is.
+  static translate::TranslateModelService* GetOrBuildForKey(
+      SimpleFactoryKey* key);
 
   // Gets the LazyInstance that owns all TranslateModelService(s).
   static TranslateModelServiceFactory* GetInstance();
@@ -35,11 +33,10 @@ class TranslateModelServiceFactory : public BrowserContextKeyedServiceFactory {
   TranslateModelServiceFactory();
   ~TranslateModelServiceFactory() override;
 
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
+  // SimpleKeyedServiceFactory overrides:
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      SimpleFactoryKey* key) const override;
+  SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
 };
 
 #endif  //  CHROME_BROWSER_TRANSLATE_TRANSLATE_MODEL_SERVICE_FACTORY_H_
