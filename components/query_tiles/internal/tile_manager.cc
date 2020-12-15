@@ -20,6 +20,7 @@
 #include "components/query_tiles/internal/tile_iterator.h"
 #include "components/query_tiles/internal/tile_manager.h"
 #include "components/query_tiles/internal/tile_utils.h"
+#include "components/query_tiles/internal/trending_tile_handler.h"
 #include "components/query_tiles/switches.h"
 
 namespace query_tiles {
@@ -27,45 +28,6 @@ namespace {
 
 // A special tile group for tile stats.
 constexpr char kTileStatsGroup[] = "tile_stats";
-
-// Class for handling trending tiles. It checks whether a
-// trending tile should be displayed, or removed. Construct
-// a new instance each time when the caller has a list of
-// trending tiles to be displayed.
-class TrendingTilesHandler {
- public:
-  // Map between tile ID and tile impression.
-  using ImpressionMap = std::map<std::string, int>;
-  explicit TrendingTilesHandler(ImpressionMap* impression_map)
-      : impression_map_(impression_map) {}
-
-  // Add a new trending tile for display, returns true if
-  // allowed, or returns false otherwise.
-  bool AddTrendingTileForDisplay(const std::string& tile_id) {
-    if (base::FeatureList::IsEnabled(
-            features::kQueryTilesRemoveTrendingTilesAfterInactivity) &&
-        (*impression_map_)[tile_id] >=
-            TileConfig::GetMaxTrendingTileImpressions()) {
-      tiles_to_remove_.push_back(tile_id);
-      return false;
-    }
-
-    if (++trending_tiles_count_ > TileConfig::GetNumTrendingTilesToDisplay())
-      return false;
-
-    ++(*impression_map_)[tile_id];
-    return true;
-  }
-
-  const std::vector<std::string>& tiles_to_remove() const {
-    return tiles_to_remove_;
-  }
-
- private:
-  std::vector<std::string> tiles_to_remove_;
-  int trending_tiles_count_ = 0;
-  ImpressionMap* impression_map_;
-};
 
 class TileManagerImpl : public TileManager {
  public:
@@ -106,23 +68,22 @@ class TileManagerImpl : public TileManager {
       return;
     }
 
-    std::vector<Tile> tiles;
-    TrendingTilesHandler handler(&tile_impressions_);
-    for (const auto& tile : tile_group_->tiles) {
-      if (IsTrendingTile(tile->id)) {
-        // Return a limited number of trending tiles, filter out the rest.
-        if (!handler.AddTrendingTileForDisplay(tile->id))
-          continue;
-      }
-      tiles.emplace_back(*tile.get());
-    }
-
+    // First remove the inactive trending tiles.
+    RemoveIdleTrendingTiles();
+    // Now build the tiles to return. Don't filter the subtiles, as they are
+    // only used for UMA purpose now.
+    // TODO(qinmin): remove all subtiles before returning the result, as they
+    // are not used.
+    std::vector<Tile> tiles =
+        trending_tile_handler_.FilterExtraTrendingTiles(tile_group_->tiles);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(tiles)));
-    RemoveTiles(handler.tiles_to_remove());
   }
 
   void GetTile(const std::string& tile_id, TileCallback callback) override {
+    // First remove the inactive trending tiles.
+    RemoveIdleTrendingTiles();
+    // Find the tile.
     const Tile* result = nullptr;
     if (tile_group_) {
       TileIterator it(*tile_group_, TileIterator::kAllTiles);
@@ -136,23 +97,21 @@ class TileManagerImpl : public TileManager {
       }
     }
     auto result_tile = result ? base::make_optional(*result) : base::nullopt;
-    TrendingTilesHandler handler(&tile_impressions_);
     if (result_tile.has_value()) {
-      std::vector<std::unique_ptr<Tile>> tiles_to_display;
-      for (auto& tile : result_tile->sub_tiles) {
-        if (IsTrendingTile(tile->id)) {
-          // Return a limited number of trending subtiles, filter out the rest.
-          if (!handler.AddTrendingTileForDisplay(tile->id))
-            continue;
-        }
-        // Moving the tile to a temporary vector first, and will then
-        // use the temporary vector to replace |result_tile->sub_tiles|.
-        tiles_to_display.emplace_back(std::move(tile));
+      // Get the tiles to display, and convert the result vector.
+      // TODO(qinmin): make GetTile() return a vector of sub tiles, rather than
+      // the parent tile so we don't need the conversion below.
+      std::vector<Tile> sub_tiles =
+          trending_tile_handler_.FilterExtraTrendingTiles(
+              result_tile->sub_tiles);
+      if (!sub_tiles.empty()) {
+        std::vector<std::unique_ptr<Tile>> sub_tile_ptrs;
+        for (auto& tile : sub_tiles)
+          sub_tile_ptrs.emplace_back(std::make_unique<Tile>(std::move(tile)));
+        result_tile->sub_tiles = std::move(sub_tile_ptrs);
       }
-      result_tile->sub_tiles = std::move(tiles_to_display);
     }
 
-    RemoveTiles(handler.tiles_to_remove());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(result_tile)));
   }
@@ -237,6 +196,7 @@ class TileManagerImpl : public TileManager {
                                      &tile_stats_group_->tile_stats);
       }
     }
+    trending_tile_handler_.Reset();
 
     // Deletes other groups.
     for (const auto& group_to_delete : loaded_groups)
@@ -283,8 +243,10 @@ class TileManagerImpl : public TileManager {
     }
 
     // Only swap the in memory tile group when there is no existing tile group.
-    if (!tile_group_)
+    if (!tile_group_) {
       tile_group_ = std::move(group);
+      trending_tile_handler_.Reset();
+    }
 
     std::move(callback).Run(TileGroupStatus::kSuccess);
   }
@@ -310,7 +272,7 @@ class TileManagerImpl : public TileManager {
     // be passed to Update().
     store_->Update(kTileStatsGroup, *tile_stats_group_, base::DoNothing());
 
-    tile_impressions_.erase(tile_id);
+    trending_tile_handler_.OnTileClicked(tile_id);
   }
 
   void OnQuerySelected(const base::Optional<std::string>& parent_tile_id,
@@ -338,14 +300,14 @@ class TileManagerImpl : public TileManager {
     }
   }
 
-  void RemoveTiles(const std::vector<std::string>& tile_ids) {
+  void RemoveIdleTrendingTiles() {
     if (!tile_group_)
       return;
-
-    if (tile_ids.empty())
+    std::vector<std::string> tiles_to_remove =
+        trending_tile_handler_.GetInactiveTrendingTiles();
+    if (tiles_to_remove.empty())
       return;
-
-    tile_group_->RemoveTiles(tile_ids);
+    tile_group_->RemoveTiles(tiles_to_remove);
     store_->Update(tile_group_->id, *tile_group_, base::DoNothing());
   }
 
@@ -370,9 +332,8 @@ class TileManagerImpl : public TileManager {
   // the same language.
   std::string accept_languages_;
 
-  // Map tracking how many times tiles are requested.
-  // TODO(qinmin): move this to |tile_stats_group_|.
-  std::map<std::string, int> tile_impressions_;
+  // Object for managing trending tiles.
+  TrendingTileHandler trending_tile_handler_;
 
   base::WeakPtrFactory<TileManagerImpl> weak_ptr_factory_{this};
 };

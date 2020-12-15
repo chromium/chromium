@@ -33,7 +33,7 @@ public class TileUmaLoggerTest {
 
     @Test
     public void testTileClicked() {
-        mTileProvider.getQueryTiles(tiles -> {
+        mTileProvider.getQueryTiles(null, tiles -> {
             mTileUmaLogger.recordTilesLoaded(tiles);
 
             // Click top level tiles.

@@ -378,7 +378,32 @@ TEST_F(TileManagerTest, GetTilesWithTrendingTiles) {
   GetTiles(std::move(expected));
 }
 
-// Check that the right number of trending subtiles are returned.
+// Check that the getTiles() will return all trending subtiles.
+TEST_F(TileManagerTest, GetTilesWithTrendingSubTiles) {
+  EXPECT_CALL(*tile_store(), Update(_, _, _))
+      .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
+                          MockTileStore::UpdateCallback callback) {
+        std::move(callback).Run(true);
+      }));
+  EXPECT_CALL(*tile_store(), Delete(_, _)).Times(0);
+  Init(TileGroupStatus::kNoTiles);
+
+  auto parent_tile = std::make_unique<Tile>();
+  parent_tile->id = "parent";
+  parent_tile->sub_tiles = test::GetTestTrendingTileList();
+
+  // The last subtile will be removed from the result.
+  std::vector<Tile> expected;
+  expected.emplace_back(*parent_tile.get());
+
+  std::vector<std::unique_ptr<Tile>> tiles_to_save;
+  tiles_to_save.emplace_back(std::move(parent_tile));
+  SaveTiles(std::move(tiles_to_save), TileGroupStatus::kSuccess);
+  GetTiles(std::move(expected));
+}
+
+// Check that GetSingleTile() will filter and return the right number of
+// trending subtiles.
 TEST_F(TileManagerTest, GetSingleTileWithTrendingSubTiles) {
   EXPECT_CALL(*tile_store(), Update(_, _, _))
       .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
@@ -404,7 +429,7 @@ TEST_F(TileManagerTest, GetSingleTileWithTrendingSubTiles) {
 }
 
 // Check that trending tiles get removed after inactivity.
-TEST_F(TileManagerTest, TrendingTilesRemovedAfterInactivity) {
+TEST_F(TileManagerTest, TrendingTopTilesRemovedAfterInactivity) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kQueryTilesRemoveTrendingTilesAfterInactivity);
@@ -450,6 +475,116 @@ TEST_F(TileManagerTest, TrendingTilesRemovedAfterInactivity) {
         std::move(callback).Run(true);
       }));
   GetTiles(expected);
+}
+
+// Check that trending subtiles will not be removed if they are not displayed.
+TEST_F(TileManagerTest, UnshownTrendingSubTilesNotRemoved) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kQueryTilesRemoveTrendingTilesAfterInactivity);
+  EXPECT_CALL(*tile_store(), Update(_, _, _))
+      .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
+                          MockTileStore::UpdateCallback callback) {
+        std::move(callback).Run(true);
+      }));
+  EXPECT_CALL(*tile_store(), Delete(_, _)).Times(0);
+  Init(TileGroupStatus::kNoTiles);
+
+  auto parent_tile = std::make_unique<Tile>();
+  parent_tile->id = "parent";
+  parent_tile->sub_tiles = test::GetTestTrendingTileList();
+
+  // The last subtile will be removed from the result.
+  std::vector<Tile> expected;
+  expected.emplace_back(*parent_tile.get());
+
+  std::vector<std::unique_ptr<Tile>> tiles_to_save;
+  tiles_to_save.emplace_back(std::move(parent_tile));
+
+  SaveTiles(std::move(tiles_to_save), TileGroupStatus::kSuccess);
+  GetTiles(expected);
+
+  // Click the parent tile and then get top level tiles.
+  OnTileClicked("parent");
+  GetTiles(expected);
+
+  // Get top level tiles again. Since sub tiles were never shown,
+  // they will not be removed.
+  OnTileClicked("parent");
+  GetTiles(expected);
+}
+
+// Check that if OnTileClicked() is followed by GetTile(), impression is
+// correctly counted.
+TEST_F(TileManagerTest, GetSingleTileAfterOnTileClicked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kQueryTilesRemoveTrendingTilesAfterInactivity);
+  EXPECT_CALL(*tile_store(), Update(_, _, _))
+      .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
+                          MockTileStore::UpdateCallback callback) {
+        std::move(callback).Run(true);
+      }));
+  EXPECT_CALL(*tile_store(), Delete(_, _)).Times(0);
+  Init(TileGroupStatus::kNoTiles);
+
+  auto parent_tile = std::make_unique<Tile>();
+  parent_tile->id = "parent";
+  parent_tile->sub_tiles = test::GetTestTrendingTileList();
+
+  // The last subtile will be removed from the result.
+  std::vector<Tile> expected;
+  expected.emplace_back(*parent_tile.get());
+  Tile trending_3 = *(expected[0].sub_tiles[2]).get();
+
+  base::Optional<Tile> get_single_tile_expected =
+      base::make_optional(*parent_tile.get());
+  get_single_tile_expected->sub_tiles.pop_back();
+
+  std::vector<std::unique_ptr<Tile>> tiles_to_save;
+  tiles_to_save.emplace_back(std::move(parent_tile));
+
+  SaveTiles(std::move(tiles_to_save), TileGroupStatus::kSuccess);
+  GetTiles(expected);
+
+  // Click the parent tile to show the subtiles.
+  OnTileClicked("parent");
+  GetSingleTile("parent", get_single_tile_expected);
+
+  // Click the parent tile to show the subtiles.
+  OnTileClicked("parent");
+  GetSingleTile("parent", get_single_tile_expected);
+
+  // Click a trending tile to reset its impression.
+  OnTileClicked("trending_1");
+
+  // The 2nd tile will get removed.
+  expected[0].sub_tiles.erase(expected[0].sub_tiles.begin() + 1);
+  EXPECT_CALL(*tile_store(), Update(_, _, _))
+      .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
+                          MockTileStore::UpdateCallback callback) {
+        std::move(callback).Run(true);
+      }));
+  GetTiles(expected);
+
+  get_single_tile_expected->sub_tiles.pop_back();
+  get_single_tile_expected->sub_tiles.emplace_back(
+      std::make_unique<Tile>(std::move(trending_3)));
+  OnTileClicked("parent");
+  GetSingleTile("parent", get_single_tile_expected);
+
+  OnTileClicked("parent");
+  GetSingleTile("parent", get_single_tile_expected);
+
+  // Finally all tiles are removed.
+  get_single_tile_expected->sub_tiles.clear();
+  OnTileClicked("parent");
+  EXPECT_CALL(*tile_store(), Update(_, _, _))
+      .WillOnce(Invoke([](const std::string& id, const TileGroup& group,
+                          MockTileStore::UpdateCallback callback) {
+        std::move(callback).Run(true);
+      }));
+  GetSingleTile("parent", get_single_tile_expected);
 }
 
 }  // namespace

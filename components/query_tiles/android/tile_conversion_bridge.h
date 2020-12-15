@@ -20,6 +20,10 @@ class TileConversionBridge {
   static ScopedJavaLocalRef<jobject> CreateJavaTiles(
       JNIEnv* env,
       const std::vector<Tile>& tiles);
+
+  static ScopedJavaLocalRef<jobject> CreateJavaTiles(
+      JNIEnv* env,
+      const std::vector<std::unique_ptr<Tile>>& tiles);
 };
 
 }  // namespace query_tiles

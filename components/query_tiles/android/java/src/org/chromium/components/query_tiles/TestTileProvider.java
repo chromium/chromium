@@ -31,7 +31,7 @@ public class TestTileProvider implements TileProvider {
      * matching purposes.
      */
     public TestTileProvider(TileProvider realProvider) {
-        realProvider.getQueryTiles(tiles -> { mTiles = tiles; });
+        realProvider.getQueryTiles(null, tiles -> { mTiles = tiles; });
     }
 
     /**
@@ -63,10 +63,18 @@ public class TestTileProvider implements TileProvider {
         return tile == null ? mTiles : tile.children;
     }
 
-    // TileProvider implementation.
     @Override
-    public void getQueryTiles(Callback<List<QueryTile>> callback) {
-        callback.onResult(mTiles);
+    public void getQueryTiles(String tileId, Callback<List<QueryTile>> callback) {
+        if (tileId == null) {
+            callback.onResult(mTiles);
+            return;
+        }
+        for (QueryTile tile : mTiles) {
+            if (tile.id.equals(tileId)) {
+                callback.onResult(tile.children);
+                return;
+            }
+        }
     }
 
     @Override

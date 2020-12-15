@@ -50,4 +50,15 @@ ScopedJavaLocalRef<jobject> TileConversionBridge::CreateJavaTiles(
   return jlist;
 }
 
+ScopedJavaLocalRef<jobject> TileConversionBridge::CreateJavaTiles(
+    JNIEnv* env,
+    const std::vector<std::unique_ptr<Tile>>& tiles) {
+  ScopedJavaLocalRef<jobject> jlist = Java_TileConversionBridge_createList(env);
+
+  for (const auto& tile : tiles)
+    CreateJavaTileAndMaybeAddToList(env, jlist, *tile);
+
+  return jlist;
+}
+
 }  // namespace query_tiles

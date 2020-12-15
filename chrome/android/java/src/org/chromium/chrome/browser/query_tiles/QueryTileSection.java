@@ -60,6 +60,7 @@ public class QueryTileSection {
     private ImageFetcher mImageFetcher;
     private Integer mTileWidth;
     private float mAnimationPercent;
+    private boolean mNeedReload = true;
 
     /**
      * Represents the information needed to launch a search query when clicking on a tile.
@@ -110,8 +111,15 @@ public class QueryTileSection {
      * Called to clear the state and reload the top level tiles. Any chip selected will be cleared.
      */
     public void reloadTiles() {
-        mTileProvider.getQueryTiles(this::setTiles);
+        if (!mNeedReload) {
+            // No tile changes, just refresh the display.
+            mTileCoordinator.refreshTiles();
+            return;
+        }
+        // TODO(qinmin): don't return all tiles, just return the top-level tiles.
+        mTileProvider.getQueryTiles(null, this::setTiles);
         mSearchBoxCoordinator.setChipText(null);
+        mNeedReload = false;
     }
 
     private void onTileClicked(ImageTile tile) {
@@ -121,6 +129,7 @@ public class QueryTileSection {
             mTileProvider.onTileClicked(queryTile.id);
         }
 
+        // TODO(qinmin): make isLastLevelTile a member variable of ImageTile.
         boolean isLastLevelTile = queryTile.children.isEmpty();
         if (isLastLevelTile) {
             if (QueryTileUtils.isQueryEditingEnabled()) {
@@ -132,7 +141,8 @@ public class QueryTileSection {
             return;
         }
 
-        setTiles(queryTile.children);
+        mNeedReload = true;
+        mTileProvider.getQueryTiles(tile.id, this::setTiles);
         showQueryChip(queryTile);
     }
 

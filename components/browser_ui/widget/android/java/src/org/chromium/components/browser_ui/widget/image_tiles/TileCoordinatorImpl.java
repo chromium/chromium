@@ -46,4 +46,10 @@ class TileCoordinatorImpl implements ImageTileCoordinator {
         mView.scrollToBeginning();
         mView.showAnimation(shouldAnimate);
     }
+
+    @Override
+    public void refreshTiles() {
+        mView.scrollToBeginning();
+        mView.showAnimation(false);
+    }
 }
