@@ -62,22 +62,23 @@ export function colorModeSelectTest() {
         [ColorMode.GRAYSCALE, ColorMode.BLACK_AND_WHITE, ColorMode.COLOR];
     flush();
 
-    // Verify the color modes are sorted alphabetically and that black and white
-    // is selected by default.
+    // Verify the color modes are sorted alphabetically and that color is
+    // selected by default.
     assertOrderedAlphabetically(
         colorModeSelect.colorModes,
         (colorMode) => getColorModeString(colorMode));
-    assertEquals(
-        ColorMode.BLACK_AND_WHITE.toString(),
-        colorModeSelect.selectedColorMode);
+    assertEquals(ColorMode.COLOR.toString(), colorModeSelect.selectedColorMode);
   });
 
   test('firstColorModeUsedWhenDefaultNotAvailable', () => {
-    colorModeSelect.colorModes = [ColorMode.GRAYSCALE, ColorMode.COLOR];
+    colorModeSelect.colorModes =
+        [ColorMode.GRAYSCALE, ColorMode.BLACK_AND_WHITE];
     flush();
 
     // Verify the first color mode in the sorted color mode array is selected by
-    // default when black and white is not an available option.
-    assertEquals(ColorMode.COLOR.toString(), colorModeSelect.selectedColorMode);
+    // default when color is not an available option.
+    assertEquals(
+        ColorMode.BLACK_AND_WHITE.toString(),
+        colorModeSelect.selectedColorMode);
   });
 }

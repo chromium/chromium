@@ -13,7 +13,7 @@ import {alphabeticalCompare, getColorModeString} from './scanning_app_util.js';
 import {SelectBehavior} from './select_behavior.js';
 
 /** @type {chromeos.scanning.mojom.ColorMode} */
-const DEFAULT_COLOR_MODE = chromeos.scanning.mojom.ColorMode.kBlackAndWhite;
+const DEFAULT_COLOR_MODE = chromeos.scanning.mojom.ColorMode.kColor;
 
 /**
  * @fileoverview

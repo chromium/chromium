@@ -419,8 +419,7 @@ export function scanningAppTest() {
               firstCapabilities.sources[1].name, scanningApp.selectedSource);
           assertEquals(FileType.PDF.toString(), scanningApp.selectedFileType);
           assertEquals(
-              firstCapabilities.colorModes[0].toString(),
-              scanningApp.selectedColorMode);
+              ColorMode.COLOR.toString(), scanningApp.selectedColorMode);
           assertEquals(
               firstCapabilities.sources[0].pageSizes[1].toString(),
               scanningApp.selectedPageSize);
