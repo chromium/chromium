@@ -9,9 +9,11 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -40,6 +42,10 @@ std::string GetStringForKeyboardCode(ui::KeyboardCode key_code) {
     if (key_code_to_compare != key_code || !dom_key.IsValid() ||
         dom_key.IsDeadKey()) {
       continue;
+    }
+    // Make sure the space key is rendered as "Space" instead of " ".
+    if (key_code == ui::VKEY_SPACE) {
+      return l10n_util::GetStringUTF8(IDS_SETTINGS_SWITCH_ASSIGN_OPTION_SPACE);
     }
     return ui::KeycodeConverter::DomKeyToKeyString(dom_key);
   }
