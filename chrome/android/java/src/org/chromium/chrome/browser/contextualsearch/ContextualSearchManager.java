@@ -482,8 +482,7 @@ public class ContextualSearchManager
         mReceivedContextualCardsEntityData = false;
 
         String selection = mSelectionController.getSelectedText();
-        boolean canResolve = mSelectionController.getSelectionType() == SelectionType.TAP
-                || mSelectionController.getSelectionType() == SelectionType.RESOLVING_LONG_PRESS;
+        boolean canResolve = mPolicy.isResolvingGesture();
         if (canResolve) {
             // If we can resolve then we should not delay before loading content.
             mShouldLoadDelayedSearch = false;
@@ -1586,7 +1585,8 @@ public class ContextualSearchManager
                     // Also clear any tap-based selection unless the Tap IPH is showing. In the
                     // latter case we preserve the selection so the help bubble has something to
                     // point to.
-                    if (mSelectionController.getSelectionType() == SelectionType.TAP
+                    if (!mPolicy.isLiteralSearchTapEnabled()
+                            && mSelectionController.getSelectionType() == SelectionType.TAP
                             && !mInProductHelp.isShowingForTappedButShouldLongpress()) {
                         mSelectionController.clearSelection();
                     }
@@ -1603,10 +1603,7 @@ public class ContextualSearchManager
                     }
                 };
 
-                boolean isResolvingGesture =
-                        mSelectionController.getSelectionType() == SelectionType.TAP
-                        || mSelectionController.getSelectionType()
-                                == SelectionType.RESOLVING_LONG_PRESS;
+                boolean isResolvingGesture = mPolicy.isResolvingGesture();
                 if (isResolvingGesture && mPolicy.shouldPreviousGestureResolve()) {
                     ContextualSearchInteractionPersister.PersistedInteraction interaction =
                             mInteractionRecorder.getInteractionPersister()
@@ -1765,12 +1762,13 @@ public class ContextualSearchManager
             }
 
             @Override
-            public void showContextualSearchLongpressUi() {
-                mInternalStateController.notifyStartingWorkOn(
-                        InternalState.SHOWING_LONGPRESS_SEARCH);
-                showContextualSearch(StateChangeReason.TEXT_SELECT_LONG_PRESS);
-                mInternalStateController.notifyFinishedWorkOn(
-                        InternalState.SHOWING_LONGPRESS_SEARCH);
+            public void showContextualSearchLiteralSearchUi() {
+                mInternalStateController.notifyStartingWorkOn(InternalState.SHOWING_LITERAL_SEARCH);
+                showContextualSearch(
+                        mSelectionController.getSelectionType() == SelectionType.LONG_PRESS
+                                ? StateChangeReason.TEXT_SELECT_LONG_PRESS
+                                : StateChangeReason.TEXT_SELECT_TAP);
+                mInternalStateController.notifyFinishedWorkOn(InternalState.SHOWING_LITERAL_SEARCH);
             }
         };
     }

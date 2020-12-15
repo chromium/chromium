@@ -41,7 +41,7 @@ public class ContextualSearchInternalStateTest {
         }
 
         @Override
-        public void showContextualSearchLongpressUi() {
+        public void showContextualSearchLiteralSearchUi() {
             mDidShow = true;
         }
 
@@ -156,7 +156,7 @@ public class ContextualSearchInternalStateTest {
         mocksForLongpress();
         mInternalStateController.enter(InternalState.LONG_PRESS_RECOGNIZED);
         assertFalse("A Resolve should not be done on Long-press!", mHandlerStub.didResolve());
-        assertThat(mInternalStateController.getState(), is(InternalState.SHOWING_LONGPRESS_SEARCH));
+        assertThat(mInternalStateController.getState(), is(InternalState.SHOWING_LITERAL_SEARCH));
     }
 
     @Test

@@ -24,10 +24,10 @@ public interface ContextualSearchInternalStateHandler {
     void showContextualSearchResolvingUi();
 
     /**
-     * Shows the Contextual Search user interface for a Long-press.
-     * @see ContextualSearchInternalStateController.InternalState#SHOWING_LONGPRESS_SEARCH
+     * Shows the Contextual Search user interface for a literal search.
+     * @see ContextualSearchInternalStateController.InternalState#SHOWING_LITERAL_SEARCH
      */
-    void showContextualSearchLongpressUi();
+    void showContextualSearchLiteralSearchUi();
 
     /**
      * The first state in the Tap-gesture processing pipeline where we know we're processing

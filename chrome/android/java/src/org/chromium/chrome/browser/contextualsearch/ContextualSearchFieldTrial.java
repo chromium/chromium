@@ -22,13 +22,6 @@ import java.lang.annotation.RetentionPolicy;
  * Provides Field Trial support for the Contextual Search application within Chrome for Android.
  */
 public class ContextualSearchFieldTrial {
-    //==========================================================================================
-    // Public settings synchronized with src/components/contextual_search/core/browser/public.cc
-    //==========================================================================================
-    public static final String LONGPRESS_RESOLVE_PARAM_NAME = "longpress_resolve_variation";
-    public static final String LONGPRESS_RESOLVE_PRESERVE_TAP = "1";
-
-    //==========================================================================================
     private static final String FIELD_TRIAL_NAME = "ContextualSearch";
     private static final String DISABLED_PARAM = "disabled";
     private static final String ENABLED_VALUE = "true";
