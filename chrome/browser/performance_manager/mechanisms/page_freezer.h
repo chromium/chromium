@@ -15,15 +15,15 @@ namespace mechanism {
 class PageFreezer {
  public:
   PageFreezer() = default;
-  ~PageFreezer() = default;
+  virtual ~PageFreezer() = default;
   PageFreezer(const PageFreezer& other) = delete;
   PageFreezer& operator=(const PageFreezer&) = delete;
 
-  // Attempt to freeze |page_node|.
-  void MaybeFreezePageNode(const PageNode* page_node);
+  // Attempt to freeze |page_node|. Virtual for testing.
+  virtual void MaybeFreezePageNode(const PageNode* page_node);
 
-  // Unfreeze |page_node|.
-  void UnfreezePageNode(const PageNode* page_node);
+  // Unfreeze |page_node|. Virtual for testing.
+  virtual void UnfreezePageNode(const PageNode* page_node);
 };
 
 }  // namespace mechanism

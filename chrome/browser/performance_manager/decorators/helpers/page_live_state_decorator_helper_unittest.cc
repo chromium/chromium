@@ -70,7 +70,9 @@ void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
     base::Optional<media::mojom::DisplayMediaInformationPtr> display_media_info,
     bool (PageLiveStateDecorator::Data::*pm_getter)() const) {
   // By default all properties are set to false.
-  testing::TestPageNodePropertyOnPMSequence(web_contents(), pm_getter, false);
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      pm_getter, false);
 
   // Create the fake stream device and start it, this should set the property to
   // true.
@@ -82,11 +84,15 @@ void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
   ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
                 /*label=*/std::string(), /*screen_capture_ids=*/{},
                 content::MediaStreamUI::StateChangeCallback());
-  testing::TestPageNodePropertyOnPMSequence(web_contents(), pm_getter, true);
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      pm_getter, true);
 
   // Switch back to the default state.
   ui.reset();
-  testing::TestPageNodePropertyOnPMSequence(web_contents(), pm_getter, false);
+  testing::TestPageNodePropertyOnPMSequence(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      pm_getter, false);
 }
 
 }  // namespace
@@ -130,17 +136,17 @@ TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingDisplayChanged) {
 
 TEST_F(PageLiveStateDecoratorHelperTest, IsConnectedToBluetoothDevice) {
   testing::TestPageNodePropertyOnPMSequence(
-      web_contents(),
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice, false);
   content::WebContentsTester::For(web_contents())
       ->TestIncrementBluetoothConnectedDeviceCount();
   testing::TestPageNodePropertyOnPMSequence(
-      web_contents(),
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice, true);
   content::WebContentsTester::For(web_contents())
       ->TestDecrementBluetoothConnectedDeviceCount();
   testing::TestPageNodePropertyOnPMSequence(
-      web_contents(),
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice, false);
 }
 

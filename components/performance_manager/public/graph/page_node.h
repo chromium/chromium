@@ -251,7 +251,9 @@ class PageNodeObserver {
   virtual void OnFaviconUpdated(const PageNode* page_node) = 0;
 
   // Called every time the aggregated freezing vote changes or gets invalidated.
-  virtual void OnFreezingVoteChanged(const PageNode* page_node) = 0;
+  virtual void OnFreezingVoteChanged(
+      const PageNode* page_node,
+      base::Optional<freezing::FreezingVote> previous_vote) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PageNodeObserver);
@@ -284,7 +286,9 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnHadFormInteractionChanged(const PageNode* page_node) override {}
   void OnTitleUpdated(const PageNode* page_node) override {}
   void OnFaviconUpdated(const PageNode* page_node) override {}
-  void OnFreezingVoteChanged(const PageNode* page_node) override {}
+  void OnFreezingVoteChanged(
+      const PageNode* page_node,
+      base::Optional<freezing::FreezingVote> previous_vote) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);

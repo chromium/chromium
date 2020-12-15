@@ -28,6 +28,7 @@ using FreezingVoteObserver = voting::VoteObserver<FreezingVote>;
 using FreezingVotingChannel = voting::VotingChannel<FreezingVote>;
 using FreezingVoteConsumerDefaultImpl =
     voting::VoteConsumerDefaultImpl<FreezingVote>;
+using FreezingVotingChannelWrapper = voting::VotingChannelWrapper<FreezingVote>;
 
 }  // namespace freezing
 }  // namespace performance_manager

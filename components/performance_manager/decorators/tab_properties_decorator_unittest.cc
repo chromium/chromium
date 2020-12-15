@@ -32,7 +32,8 @@ class TabPropertiesDecoratorTest : public PerformanceManagerTestHarness {
 
 TEST_F(TabPropertiesDecoratorTest, SetIsTab) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &TabPropertiesDecorator::Data::IsInTabStrip,
+      web_contents(), &TabPropertiesDecorator::Data::GetOrCreateForTesting,
+      &TabPropertiesDecorator::Data::IsInTabStrip,
       &TabPropertiesDecorator::SetIsTab);
 }
 

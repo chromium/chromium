@@ -88,7 +88,7 @@ const TabPropertiesDecorator::Data* TabPropertiesDecorator::Data::FromPageNode(
 }
 
 TabPropertiesDecorator::Data*
-TabPropertiesDecorator::Data::GetOrCreateForTesting(PageNode* page_node) {
+TabPropertiesDecorator::Data::GetOrCreateForTesting(const PageNode* page_node) {
   return TabPropertiesDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node));
 }
 

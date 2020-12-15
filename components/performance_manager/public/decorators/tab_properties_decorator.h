@@ -57,7 +57,7 @@ class TabPropertiesDecorator::Data {
   virtual bool IsInTabStrip() const = 0;
 
   static const Data* FromPageNode(const PageNode* page_node);
-  static Data* GetOrCreateForTesting(PageNode* page_node);
+  static Data* GetOrCreateForTesting(const PageNode* page_node);
 };
 
 }  // namespace performance_manager

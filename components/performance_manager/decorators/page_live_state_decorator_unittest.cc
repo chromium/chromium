@@ -109,7 +109,7 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
                TestPageLiveStateObserver* observer,
                base::OnceClosure quit_closure) {
               EXPECT_TRUE(page_node);
-              PageLiveStateDecorator::Data::GetOrCreateForTesting(
+              PageLiveStateDecorator::Data::GetOrCreateForPageNode(
                   page_node.get())
                   ->AddObserver(observer);
               std::move(quit_closure).Run();
@@ -129,7 +129,7 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
                TestPageLiveStateObserver* observer,
                base::OnceClosure quit_closure) {
               EXPECT_TRUE(page_node);
-              PageLiveStateDecorator::Data::GetOrCreateForTesting(
+              PageLiveStateDecorator::Data::GetOrCreateForPageNode(
                   page_node.get())
                   ->RemoveObserver(observer);
               std::move(quit_closure).Run();
@@ -171,7 +171,8 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
 
 TEST_F(PageLiveStateDecoratorTest, OnIsConnectedToUSBDeviceChanged) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::IsConnectedToUSBDevice,
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsConnectedToUSBDevice,
       &PageLiveStateDecorator::OnIsConnectedToUSBDeviceChanged);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::
@@ -180,7 +181,7 @@ TEST_F(PageLiveStateDecoratorTest, OnIsConnectedToUSBDeviceChanged) {
 
 TEST_F(PageLiveStateDecoratorTest, OnIsConnectedToBluetoothDeviceChanged) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(),
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToBluetoothDevice,
       &PageLiveStateDecorator::OnIsConnectedToBluetoothDeviceChanged);
   VerifyObserverExpectationOnPMSequence(
@@ -190,7 +191,8 @@ TEST_F(PageLiveStateDecoratorTest, OnIsConnectedToBluetoothDeviceChanged) {
 
 TEST_F(PageLiveStateDecoratorTest, OnIsCapturingVideoChanged) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::IsCapturingVideo,
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsCapturingVideo,
       &PageLiveStateDecorator::OnIsCapturingVideoChanged);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnIsCapturingVideoChanged);
@@ -198,7 +200,8 @@ TEST_F(PageLiveStateDecoratorTest, OnIsCapturingVideoChanged) {
 
 TEST_F(PageLiveStateDecoratorTest, OnIsCapturingAudioChanged) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::IsCapturingAudio,
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsCapturingAudio,
       &PageLiveStateDecorator::OnIsCapturingAudioChanged);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnIsCapturingAudioChanged);
@@ -206,7 +209,8 @@ TEST_F(PageLiveStateDecoratorTest, OnIsCapturingAudioChanged) {
 
 TEST_F(PageLiveStateDecoratorTest, OnIsBeingMirroredChanged) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::IsBeingMirrored,
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsBeingMirrored,
       &PageLiveStateDecorator::OnIsBeingMirroredChanged);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnIsBeingMirroredChanged);
@@ -214,7 +218,8 @@ TEST_F(PageLiveStateDecoratorTest, OnIsBeingMirroredChanged) {
 
 TEST_F(PageLiveStateDecoratorTest, OnIsCapturingWindowChanged) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::IsCapturingWindow,
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsCapturingWindow,
       &PageLiveStateDecorator::OnIsCapturingWindowChanged);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnIsCapturingWindowChanged);
@@ -222,7 +227,8 @@ TEST_F(PageLiveStateDecoratorTest, OnIsCapturingWindowChanged) {
 
 TEST_F(PageLiveStateDecoratorTest, OnIsCapturingDisplayChanged) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::IsCapturingDisplay,
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsCapturingDisplay,
       &PageLiveStateDecorator::OnIsCapturingDisplayChanged);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::
@@ -231,7 +237,8 @@ TEST_F(PageLiveStateDecoratorTest, OnIsCapturingDisplayChanged) {
 
 TEST_F(PageLiveStateDecoratorTest, SetIsAutoDiscardable) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::IsAutoDiscardable,
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsAutoDiscardable,
       &PageLiveStateDecorator::SetIsAutoDiscardable,
       /*default_state=*/true);
   VerifyObserverExpectationOnPMSequence(
@@ -240,7 +247,8 @@ TEST_F(PageLiveStateDecoratorTest, SetIsAutoDiscardable) {
 
 TEST_F(PageLiveStateDecoratorTest, OnWasDiscardedChanged) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::WasDiscarded,
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::WasDiscarded,
       &PageLiveStateDecorator::SetWasDiscarded,
       /*default_state=*/false);
   VerifyObserverExpectationOnPMSequence(

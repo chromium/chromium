@@ -20,7 +20,6 @@ class PageNode;
 namespace freezing {
 
 using FreezingVoteReceipt = voting::VoteReceipt<FreezingVote>;
-using FreezingVotingChannelWrapper = voting::VotingChannelWrapper<FreezingVote>;
 
 // An aggregator for freezing votes. It upstreams an aggregated vote to an
 // upstream channel every time the freezing decision changes for a PageNode. It

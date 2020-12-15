@@ -61,6 +61,8 @@ TEST_F(UsbTabHelperTest, IncrementDecrementConnectionCount) {
   performance_manager::testing::TestPageNodePropertyOnPMSequence(
       web_contents(),
       &performance_manager::PageLiveStateDecorator::Data::
+          GetOrCreateForPageNode,
+      &performance_manager::PageLiveStateDecorator::Data::
           IsConnectedToUSBDevice,
       false);
 
@@ -70,6 +72,8 @@ TEST_F(UsbTabHelperTest, IncrementDecrementConnectionCount) {
   EXPECT_TRUE(helper->IsDeviceConnected());
   performance_manager::testing::TestPageNodePropertyOnPMSequence(
       web_contents(),
+      &performance_manager::PageLiveStateDecorator::Data::
+          GetOrCreateForPageNode,
       &performance_manager::PageLiveStateDecorator::Data::
           IsConnectedToUSBDevice,
       true);
@@ -81,6 +85,8 @@ TEST_F(UsbTabHelperTest, IncrementDecrementConnectionCount) {
   performance_manager::testing::TestPageNodePropertyOnPMSequence(
       web_contents(),
       &performance_manager::PageLiveStateDecorator::Data::
+          GetOrCreateForPageNode,
+      &performance_manager::PageLiveStateDecorator::Data::
           IsConnectedToUSBDevice,
       true);
 
@@ -91,6 +97,8 @@ TEST_F(UsbTabHelperTest, IncrementDecrementConnectionCount) {
   performance_manager::testing::TestPageNodePropertyOnPMSequence(
       web_contents(),
       &performance_manager::PageLiveStateDecorator::Data::
+          GetOrCreateForPageNode,
+      &performance_manager::PageLiveStateDecorator::Data::
           IsConnectedToUSBDevice,
       true);
 
@@ -100,6 +108,8 @@ TEST_F(UsbTabHelperTest, IncrementDecrementConnectionCount) {
   EXPECT_FALSE(helper->IsDeviceConnected());
   performance_manager::testing::TestPageNodePropertyOnPMSequence(
       web_contents(),
+      &performance_manager::PageLiveStateDecorator::Data::
+          GetOrCreateForPageNode,
       &performance_manager::PageLiveStateDecorator::Data::
           IsConnectedToUSBDevice,
       false);

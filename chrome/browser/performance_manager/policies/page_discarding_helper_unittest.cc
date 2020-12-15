@@ -119,7 +119,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageWithInvalidURL) {
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageProtectedByExtension) {
-  PageLiveStateDecorator::Data::GetOrCreateForTesting(page_node())
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsAutoDiscardableForTesting(false);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
@@ -127,7 +127,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageProtectedByExtension) {
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingVideo) {
-  PageLiveStateDecorator::Data::GetOrCreateForTesting(page_node())
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingVideoForTesting(true);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
@@ -135,7 +135,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingVideo) {
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingAudio) {
-  PageLiveStateDecorator::Data::GetOrCreateForTesting(page_node())
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingAudioForTesting(true);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
@@ -143,7 +143,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingAudio) {
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageBeingMirrored) {
-  PageLiveStateDecorator::Data::GetOrCreateForTesting(page_node())
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsBeingMirroredForTesting(true);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
@@ -151,7 +151,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageBeingMirrored) {
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingWindow) {
-  PageLiveStateDecorator::Data::GetOrCreateForTesting(page_node())
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingWindowForTesting(true);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
@@ -159,7 +159,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingWindow) {
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingDisplay) {
-  PageLiveStateDecorator::Data::GetOrCreateForTesting(page_node())
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsCapturingDisplayForTesting(true);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
@@ -168,7 +168,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingDisplay) {
 
 TEST_F(PageDiscardingHelperTest,
        TestCannotDiscardPageConnectedToBluetoothDevice) {
-  PageLiveStateDecorator::Data::GetOrCreateForTesting(page_node())
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsConnectedToBluetoothDeviceForTesting(true);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
@@ -176,7 +176,7 @@ TEST_F(PageDiscardingHelperTest,
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsConnectedToUSBDevice) {
-  PageLiveStateDecorator::Data::GetOrCreateForTesting(page_node())
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsConnectedToUSBDeviceForTesting(true);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
@@ -185,7 +185,7 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsConnectedToUSBDevice) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageMultipleTimes) {
-  PageLiveStateDecorator::Data::GetOrCreateForTesting(page_node())
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetWasDiscardedForTesting(true);
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(

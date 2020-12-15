@@ -9,7 +9,6 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
 
@@ -28,7 +27,6 @@ class PageLiveStateObserver;
 // PageNode on the Performance Manager's sequence.
 class PageLiveStateDecorator
     : public GraphOwnedDefaultImpl,
-      public GraphRegisteredImpl<PageLiveStateDecorator>,
       public NodeDataDescriberDefaultImpl {
  public:
   class Data;
@@ -98,7 +96,7 @@ class PageLiveStateDecorator::Data {
   virtual bool WasDiscarded() const = 0;
 
   static const Data* FromPageNode(const PageNode* page_node);
-  static Data* GetOrCreateForTesting(PageNode* page_node);
+  static Data* GetOrCreateForPageNode(const PageNode* page_node);
 
   virtual void SetIsConnectedToUSBDeviceForTesting(bool value) = 0;
   virtual void SetIsConnectedToBluetoothDeviceForTesting(bool value) = 0;

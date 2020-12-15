@@ -120,6 +120,10 @@ class PageNodeImpl
     SetIsHoldingWebLock(is_holding_weblock);
   }
 
+  void SetIsHoldingIndexedDBLockForTesting(bool is_holding_weblock) {
+    SetIsHoldingIndexedDBLock(is_holding_weblock);
+  }
+
   void SetHadFormInteractionForTesting(bool had_form_interaction) {
     SetHadFormInteraction(had_form_interaction);
   }
@@ -307,7 +311,8 @@ class PageNodeImpl
   // The freezing vote associated with this page, see the comment of to
   // Page::GetFreezingVote for a description of the different values this can
   // take.
-  ObservedProperty::NotifiesOnlyOnChanges<
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      base::Optional<freezing::FreezingVote>,
       base::Optional<freezing::FreezingVote>,
       &PageNodeObserver::OnFreezingVoteChanged>
       freezing_vote_;

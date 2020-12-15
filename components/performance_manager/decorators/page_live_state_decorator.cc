@@ -6,7 +6,6 @@
 
 #include "base/sequence_checker.h"
 #include "components/performance_manager/decorators/decorators_utils.h"
-#include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
@@ -244,12 +243,10 @@ void PageLiveStateDecorator::SetWasDiscarded(content::WebContents* contents,
 void PageLiveStateDecorator::OnPassedToGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
-  graph->RegisterObject(this);
 }
 
 void PageLiveStateDecorator::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
-  graph->UnregisterObject(this);
 }
 
 base::Value PageLiveStateDecorator::DescribePageNodeData(
@@ -294,7 +291,8 @@ const PageLiveStateDecorator::Data* PageLiveStateDecorator::Data::FromPageNode(
 }
 
 PageLiveStateDecorator::Data*
-PageLiveStateDecorator::Data::GetOrCreateForTesting(PageNode* page_node) {
+PageLiveStateDecorator::Data::GetOrCreateForPageNode(
+    const PageNode* page_node) {
   return PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node));
 }
 

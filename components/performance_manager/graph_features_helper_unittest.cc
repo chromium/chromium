@@ -60,13 +60,12 @@ TEST(GraphFeaturesHelperTest, EnableDefault) {
   features.EnableDefault();
   features.ConfigureGraph(&graph);
   EXPECT_EQ(graph_owned_count, graph.GraphOwnedCountForTesting());
-  EXPECT_EQ(3u, graph.GraphRegisteredCountForTesting());
+  EXPECT_EQ(2u, graph.GraphRegisteredCountForTesting());
   EXPECT_EQ(8u, graph.NodeDataDescriberCountForTesting());
   // Ensure the GraphRegistered objects can be queried directly.
   EXPECT_TRUE(
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));
   EXPECT_TRUE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
-  EXPECT_TRUE(PageLiveStateDecorator::GetFromGraph(&graph));
 
   graph.TearDown();
 }

@@ -240,7 +240,8 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD1(OnTitleUpdated, void(const PageNode*));
   MOCK_METHOD1(OnFaviconUpdated, void(const PageNode*));
   MOCK_METHOD1(OnHadFormInteractionChanged, void(const PageNode*));
-  MOCK_METHOD1(OnFreezingVoteChanged, void(const PageNode*));
+  MOCK_METHOD2(OnFreezingVoteChanged,
+               void(const PageNode*, base::Optional<freezing::FreezingVote>));
 
   void SetNotifiedPageNode(const PageNode* page_node) {
     notified_page_node_ = page_node;
@@ -326,8 +327,9 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   page_node->OnFaviconUpdated();
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
-  EXPECT_CALL(obs, OnFreezingVoteChanged(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  EXPECT_CALL(obs, OnFreezingVoteChanged(_, testing::Eq(base::nullopt)))
+      .WillOnce(testing::WithArg<0>(
+          Invoke(&obs, &MockObserver::SetNotifiedPageNode)));
   page_node->set_freezing_vote(kFreezingVote);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
