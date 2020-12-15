@@ -36,23 +36,18 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& workarounds,
     const VideoDecoderConfig& config,
+    uint8_t bit_depth,
     MediaLog* media_log) {
-  bool supports_nv12_decode_swap_chain =
+  const bool supports_nv12_decode_swap_chain =
       gl::DirectCompositionSurfaceWin::IsDecodeSwapChainSupported();
-
-  // Note: All profiles of AV1 can contain 8 or 10 bit content. The professional
-  // profile may contain up to 12-bits. Eventually we will need a way to defer
-  // the output format selection until we've parsed the bitstream.
-  DXGI_FORMAT decoder_dxgi_format =
-      config.color_space_info().ToGfxColorSpace().IsHDR() ? DXGI_FORMAT_P010
-                                                          : DXGI_FORMAT_NV12;
+  const auto decoder_dxgi_format =
+      bit_depth == 8 ? DXGI_FORMAT_NV12 : DXGI_FORMAT_P010;
   GUID decoder_guid = {};
   if (config.codec() == kCodecH264) {
     decoder_guid = D3D11_DECODER_PROFILE_H264_VLD_NOFGT;
   } else if (config.profile() == VP9PROFILE_PROFILE0) {
     decoder_guid = D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0;
   } else if (config.profile() == VP9PROFILE_PROFILE2) {
-    decoder_dxgi_format = DXGI_FORMAT_P010;  // Profile2 is always 10-bit.
     decoder_guid = D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2;
   } else if (config.profile() == AV1PROFILE_PROFILE_MAIN) {
     decoder_guid = DXVA_ModeAV1_VLD_Profile0;

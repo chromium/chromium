@@ -195,12 +195,22 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
 
 StatusOr<std::tuple<ComD3D11VideoDecoder>>
 D3D11VideoDecoder::CreateD3D11Decoder() {
-  HRESULT hr;
+  // By default we assume outputs are 8-bit for SDR color spaces and 10 bit for
+  // HDR color spaces (or VP9.2). We'll get a config change once we know the
+  // real bit depth if this turns out to be wrong.
+  bit_depth_ =
+      accelerated_video_decoder_
+          ? accelerated_video_decoder_->GetBitDepth()
+          : (config_.profile() == VP9PROFILE_PROFILE2 ||
+                     config_.color_space_info().ToGfxColorSpace().IsHDR()
+                 ? 10
+                 : 8);
 
   // TODO: supported check?
 
-  decoder_configurator_ = D3D11DecoderConfigurator::Create(
-      gpu_preferences_, gpu_workarounds_, config_, media_log_.get());
+  decoder_configurator_ =
+      D3D11DecoderConfigurator::Create(gpu_preferences_, gpu_workarounds_,
+                                       config_, bit_depth_, media_log_.get());
   if (!decoder_configurator_)
     return StatusCode::kDecoderUnsupportedProfile;
 
@@ -226,7 +236,7 @@ D3D11VideoDecoder::CreateD3D11Decoder() {
     return StatusCode::kCreateTextureSelectorFailed;
 
   UINT config_count = 0;
-  hr = video_device_->GetVideoDecoderConfigCount(
+  auto hr = video_device_->GetVideoDecoderConfigCount(
       decoder_configurator_->DecoderDescriptor(), &config_count);
   if (FAILED(hr)) {
     return Status(StatusCode::kGetDecoderConfigCountFailed)
@@ -600,6 +610,7 @@ void D3D11VideoDecoder::DoDecode() {
       // Otherwise, stop here.  We'll restart when a picture comes back.
       if (picture_buffers_.size())
         return;
+
       CreatePictureBuffers();
     } else if (result == media::AcceleratedVideoDecoder::kConfigChange) {
       // Before the first frame, we get a config change that we should ignore.
@@ -608,10 +619,12 @@ void D3D11VideoDecoder::DoDecode() {
       // don't, so that init can fail rather than decoding if there's a problem
       // creating it.  We could also unconditionally re-allocate the decoder,
       // but we keep it if it's ready to go.
+      const auto new_bit_depth = accelerated_video_decoder_->GetBitDepth();
       const auto new_profile = accelerated_video_decoder_->GetProfile();
       const auto new_coded_size = accelerated_video_decoder_->GetPicSize();
       if (new_profile == config_.profile() &&
-          new_coded_size == config_.coded_size()) {
+          new_coded_size == config_.coded_size() &&
+          new_bit_depth == bit_depth_) {
         continue;
       }
 

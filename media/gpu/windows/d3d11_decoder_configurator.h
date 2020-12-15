@@ -36,6 +36,7 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& workarounds,
       const VideoDecoderConfig& config,
+      uint8_t bit_depth,
       MediaLog* media_log);
 
   bool SupportsDevice(ComD3D11VideoDevice video_device);

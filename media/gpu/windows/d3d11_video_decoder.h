@@ -300,6 +300,10 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // accelerator.  Needed for config changes.
   SetAcceleratorDecoderCB set_accelerator_decoder_cb_;
 
+  // The currently configured bit depth for the decoder. When this changes we
+  // need to recreate the decoder.
+  uint8_t bit_depth_ = 8u;
+
   base::WeakPtrFactory<D3D11VideoDecoder> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(D3D11VideoDecoder);
