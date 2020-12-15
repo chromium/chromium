@@ -38,15 +38,13 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
 
   std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const std::vector<uint8_t>& last_trusted_vault_key,
-      int last_trusted_vault_key_version,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       RegisterAuthenticationFactorCallback callback) override;
 
   std::unique_ptr<Request> DownloadKeys(
       const CoreAccountInfo& account_info,
-      const std::vector<uint8_t>& last_trusted_vault_key,
-      int last_trusted_vault_key_version,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadKeysCallback callback) override;
 

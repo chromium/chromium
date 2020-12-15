@@ -87,19 +87,21 @@ std::vector<ExtractedSharedKey> ExtractAndSortSharedKeys(
 }
 
 // Validates |key_proof| starting from the key next to
-// |last_known_trusted_vault_key|, returns false if validation fails or |keys|
-// doesn't have a key next to |last_known_trusted_vault_key|.
-bool IsValidKeyChain(const std::vector<ExtractedSharedKey>& key_chain,
-                     const std::vector<uint8_t>& last_known_trusted_vault_key,
-                     const int last_known_trusted_vault_key_version) {
+// last known trusted vault key, returns false if validation fails or |keys|
+// doesn't have a key next to last known trusted vault key.
+bool IsValidKeyChain(
+    const std::vector<ExtractedSharedKey>& key_chain,
+    const TrustedVaultKeyAndVersion& last_known_trusted_vault_key_and_version) {
   DCHECK(!key_chain.empty());
-  if (key_chain.back().version <= last_known_trusted_vault_key_version) {
+  if (key_chain.back().version <=
+      last_known_trusted_vault_key_and_version.version) {
     // |keys| doesn't contain any new key. Note: this may mean that key rotation
     // happened, but state corresponding to the current member wasn't updated.
     return false;
   }
-  int last_valid_key_version = last_known_trusted_vault_key_version;
-  std::vector<uint8_t> last_valid_key = last_known_trusted_vault_key;
+  int last_valid_key_version = last_known_trusted_vault_key_and_version.version;
+  std::vector<uint8_t> last_valid_key =
+      last_known_trusted_vault_key_and_version.key;
   for (const ExtractedSharedKey& next_key : key_chain) {
     if (next_key.version <= last_valid_key_version) {
       continue;
@@ -144,11 +146,9 @@ DownloadKeysResponseHandler::ProcessedResponse::operator=(
 DownloadKeysResponseHandler::ProcessedResponse::~ProcessedResponse() = default;
 
 DownloadKeysResponseHandler::DownloadKeysResponseHandler(
-    const std::vector<uint8_t>& last_trusted_vault_key,
-    int last_trusted_vault_key_version,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair)
-    : last_trusted_vault_key_(last_trusted_vault_key),
-      last_trusted_vault_key_version_(last_trusted_vault_key_version),
+    : last_trusted_vault_key_and_version_(last_trusted_vault_key_and_version),
       device_key_pair_(std::move(device_key_pair)) {
   DCHECK(device_key_pair_);
 }
@@ -187,18 +187,17 @@ DownloadKeysResponseHandler::ProcessResponse(
   std::vector<ExtractedSharedKey> extracted_keys = ExtractAndSortSharedKeys(
       *current_member, device_key_pair_->private_key());
   if (extracted_keys.empty() ||
-      !IsValidKeyChain(extracted_keys, last_trusted_vault_key_,
-                       last_trusted_vault_key_version_)) {
+      !IsValidKeyChain(extracted_keys, last_trusted_vault_key_and_version_)) {
     return ProcessedResponse(
         /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
   }
 
   std::vector<std::vector<uint8_t>> new_keys;
   for (const ExtractedSharedKey& key : extracted_keys) {
-    if (key.version >= last_trusted_vault_key_version_) {
+    if (key.version >= last_trusted_vault_key_and_version_.version) {
       // Don't include previous keys into the result, because they weren't
-      // validated using |last_trusted_vault_key_| and client should be already
-      // aware of them.
+      // validated using |last_trusted_vault_key_and_version| and client should
+      // be already aware of them.
       new_keys.push_back(key.trusted_vault_key);
     }
   }

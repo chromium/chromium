@@ -46,31 +46,29 @@ void ProcessRegisterDeviceResponse(
 }
 
 sync_pb::SharedKey CreateMemberSharedKey(
-    int trusted_vault_key_version,
-    const std::vector<uint8_t>& trusted_vault_key,
+    const TrustedVaultKeyAndVersion& trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key) {
   sync_pb::SharedKey shared_key;
-  shared_key.set_epoch(trusted_vault_key_version);
+  shared_key.set_epoch(trusted_vault_key_and_version.version);
+  AssignBytesToProtoString(ComputeTrustedVaultWrappedKey(
+                               public_key, trusted_vault_key_and_version.key),
+                           shared_key.mutable_wrapped_key());
   AssignBytesToProtoString(
-      ComputeTrustedVaultWrappedKey(public_key, trusted_vault_key),
-      shared_key.mutable_wrapped_key());
-  AssignBytesToProtoString(
-      ComputeTrustedVaultHMAC(/*key=*/trusted_vault_key,
+      ComputeTrustedVaultHMAC(/*key=*/trusted_vault_key_and_version.key,
                               /*data=*/public_key.ExportToBytes()),
       shared_key.mutable_member_proof());
   return shared_key;
 }
 
 sync_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
-    int last_trusted_vault_key_version,
-    const std::vector<uint8_t>& last_trusted_vault_key,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key) {
   sync_pb::SecurityDomain::Member member;
   const std::vector<uint8_t> public_key_bytes = public_key.ExportToBytes();
   AssignBytesToProtoString(public_key.ExportToBytes(),
                            member.mutable_public_key());
-  *member.add_keys() = CreateMemberSharedKey(
-      last_trusted_vault_key_version, last_trusted_vault_key, public_key);
+  *member.add_keys() =
+      CreateMemberSharedKey(last_trusted_vault_key_and_version, public_key);
 
   sync_pb::SecurityDomain security_domain;
   security_domain.set_name(kSecurityDomainName);
@@ -110,16 +108,15 @@ TrustedVaultConnectionImpl::~TrustedVaultConnectionImpl() = default;
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
     const CoreAccountInfo& account_info,
-    const std::vector<uint8_t>& last_trusted_vault_key,
-    int last_trusted_vault_key_version,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key,
     RegisterAuthenticationFactorCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
       TrustedVaultRequest::HttpMethod::kPost,
       GURL(trusted_vault_service_url_.spec() + kJoinSecurityDomainsURLPath),
       /*serialized_request_proto=*/
-      CreateJoinSecurityDomainsRequest(last_trusted_vault_key_version,
-                                       last_trusted_vault_key, public_key)
+      CreateJoinSecurityDomainsRequest(last_trusted_vault_key_and_version,
+                                       public_key)
           .SerializeAsString());
   request->FetchAccessTokenAndSendRequest(
       account_info.account_id, GetOrCreateURLLoaderFactory(),
@@ -131,8 +128,7 @@ TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadKeys(
     const CoreAccountInfo& account_info,
-    const std::vector<uint8_t>& last_trusted_vault_key,
-    int last_trusted_vault_key_version,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
     DownloadKeysCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
@@ -144,12 +140,12 @@ TrustedVaultConnectionImpl::DownloadKeys(
   request->FetchAccessTokenAndSendRequest(
       account_info.account_id, GetOrCreateURLLoaderFactory(),
       access_token_fetcher_.get(),
-      base::BindOnce(ProcessDownloadKeysResponse,
-                     /*response_processor=*/
-                     std::make_unique<DownloadKeysResponseHandler>(
-                         last_trusted_vault_key, last_trusted_vault_key_version,
-                         std::move(device_key_pair)),
-                     std::move(callback)));
+      base::BindOnce(
+          ProcessDownloadKeysResponse,
+          /*response_processor=*/
+          std::make_unique<DownloadKeysResponseHandler>(
+              last_trusted_vault_key_and_version, std::move(device_key_pair)),
+          std::move(callback)));
 
   return request;
 }

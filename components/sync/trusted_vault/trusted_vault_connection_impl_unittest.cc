@@ -144,7 +144,8 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendJoinSecurityDomainsRequest) {
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(), kTrustedVaultKey, kLastKeyVersion,
+          /*account_info=*/CoreAccountInfo(),
+          TrustedVaultKeyAndVersion(kTrustedVaultKey, kLastKeyVersion),
           key_pair->public_key(),
           TrustedVaultConnection::RegisterAuthenticationFactorCallback());
   EXPECT_THAT(request, NotNull());
@@ -204,9 +205,9 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(), kTrustedVaultKey,
-          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
-          callback.Get());
+          /*account_info=*/CoreAccountInfo(),
+          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
+          key_pair->public_key(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kSuccess)));
@@ -224,9 +225,9 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(), kTrustedVaultKey,
-          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
-          callback.Get());
+          /*account_info=*/CoreAccountInfo(),
+          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
+          key_pair->public_key(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError)));
@@ -245,13 +246,13 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(), kTrustedVaultKey,
-          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
-          callback.Get());
+          /*account_info=*/CoreAccountInfo(),
+          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
+          key_pair->public_key(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // In particular, HTTP_BAD_REQUEST indicates that
-  // |last_trusted_vault_key_version| is not actually the last on the server
+  // |last_trusted_vault_key_and_version| is not actually the last on the server
   // side.
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kLocalDataObsolete)));
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(net::HTTP_BAD_REQUEST));
@@ -276,9 +277,9 @@ TEST_F(
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError)));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(), kTrustedVaultKey,
-          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
-          callback.Get());
+          /*account_info=*/CoreAccountInfo(),
+          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
+          key_pair->public_key(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // No requests should be sent to the network.
@@ -295,9 +296,9 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldCancelJoinSecurityDomainsRequest) {
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RegisterAuthenticationFactor(
-          /*account_info=*/CoreAccountInfo(), kTrustedVaultKey,
-          /*last_trusted_vault_key_version=*/1, key_pair->public_key(),
-          callback.Get());
+          /*account_info=*/CoreAccountInfo(),
+          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
+          key_pair->public_key(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run).Times(0);
@@ -311,8 +312,8 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendListSecurityDomainsRequest) {
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->DownloadKeys(
           /*account_info=*/CoreAccountInfo(),
-          /*last_trusted_vault_key=*/std::vector<uint8_t>(),
-          /*last_trusted_vault_key_version=*/0,
+          TrustedVaultKeyAndVersion(/*key=*/std::vector<uint8_t>(),
+                                    /*version=*/0),
           /*device_key_pair=*/MakeTestKeyPair(), base::DoNothing());
   EXPECT_THAT(request, NotNull());
 
@@ -336,8 +337,8 @@ TEST_F(TrustedVaultConnectionImplTest,
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->DownloadKeys(
           /*account_info=*/CoreAccountInfo(),
-          /*last_trusted_vault_key=*/std::vector<uint8_t>(),
-          /*last_trusted_vault_key_version=*/0,
+          TrustedVaultKeyAndVersion(/*key=*/std::vector<uint8_t>(),
+                                    /*version=*/0),
           /*device_key_pair=*/MakeTestKeyPair(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
@@ -360,8 +361,9 @@ TEST_F(TrustedVaultConnectionImplTest,
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->DownloadKeys(
           /*account_info=*/CoreAccountInfo(),
-          /*last_trusted_vault_key=*/std::vector<uint8_t>(),
-          /*last_trusted_vault_key_version=*/0,
+          TrustedVaultKeyAndVersion(
+              /*key=*/std::vector<uint8_t>(),
+              /*version=*/0),
           /*device_key_pair=*/MakeTestKeyPair(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
@@ -375,8 +377,9 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldCancelListSecurityDomainsRequest) {
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->DownloadKeys(
           /*account_info=*/CoreAccountInfo(),
-          /*last_trusted_vault_key=*/std::vector<uint8_t>(),
-          /*last_trusted_vault_key_version=*/0,
+          TrustedVaultKeyAndVersion(
+              /*key=*/std::vector<uint8_t>(),
+              /*version=*/0),
           /*device_key_pair=*/MakeTestKeyPair(), callback.Get());
   ASSERT_THAT(request, NotNull());
 

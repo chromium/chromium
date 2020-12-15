@@ -33,6 +33,8 @@ std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
   return SecureBoxKeyPair::CreateByPrivateKeyImport(private_key_bytes);
 }
 
+// TODO(crbug.com/1113598): consider using TrustedVaultKeyAndVersion instead of
+// |trusted_vault_key| and |trusted_vault_keys_versions|.
 void FillSecurityDomainMember(
     const SecureBoxPublicKey& public_key,
     const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
@@ -77,8 +79,8 @@ std::string CreateListSecurityDomainsResponseWithSingleSyncMember(
 class DownloadKeysResponseHandlerTest : public testing::Test {
  public:
   DownloadKeysResponseHandlerTest()
-      : handler_(kKnownTrustedVaultKey,
-                 kKnownTrustedVaultKeyVersion,
+      : handler_(TrustedVaultKeyAndVersion(kKnownTrustedVaultKey,
+                                           kKnownTrustedVaultKeyVersion),
                  MakeTestKeyPair()) {}
 
   ~DownloadKeysResponseHandlerTest() override = default;

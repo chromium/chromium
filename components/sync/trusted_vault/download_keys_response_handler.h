@@ -38,20 +38,19 @@ class DownloadKeysResponseHandler {
     // isn't valid serialized ListSecurityDomainsResponse proto.
     TrustedVaultRequestStatus status;
 
-    // Contains new keys and potentially |last_trusted_vault_key| if it wasn't
-    // removed server-side. Doesn't contain keys that predate
-    // |last_trusted_vault_key|, because it's impossible to validate them and
-    // the client should be aware of them already.
+    // Contains new keys and potentially previously known trusted vault key if
+    // it wasn't removed server-side. Doesn't contain keys that predate
+    // last known trusted vault key, because it's impossible to validate them
+    // and the client should be aware of them already.
     std::vector<std::vector<uint8_t>> keys;
     int last_key_version;
   };
 
   // |device_key_pair| must not be null. This class doesn't make an assumption
-  // of |last_trusted_vault_key| being non-empty or
-  // |last_trusted_vault_key_version| being non-negative.
+  // of |last_trusted_vault_key_and_version.key| being non-empty or
+  // |last_trusted_vault_key_version_and_version.version| being non-negative.
   DownloadKeysResponseHandler(
-      const std::vector<uint8_t>& last_trusted_vault_key,
-      int last_trusted_vault_key_version,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair);
   DownloadKeysResponseHandler(const DownloadKeysResponseHandler& other) =
       delete;
@@ -63,8 +62,7 @@ class DownloadKeysResponseHandler {
                                     const std::string& response_body) const;
 
  private:
-  const std::vector<uint8_t> last_trusted_vault_key_;
-  const int last_trusted_vault_key_version_;
+  const TrustedVaultKeyAndVersion last_trusted_vault_key_and_version_;
   const std::unique_ptr<SecureBoxKeyPair> device_key_pair_;
 };
 

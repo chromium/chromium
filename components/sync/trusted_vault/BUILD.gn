@@ -19,6 +19,7 @@ static_library("trusted_vault") {
     "trusted_vault_access_token_fetcher_frontend.h",
     "trusted_vault_access_token_fetcher_impl.cc",
     "trusted_vault_access_token_fetcher_impl.h",
+    "trusted_vault_connection.cc",
     "trusted_vault_connection.h",
     "trusted_vault_connection_impl.cc",
     "trusted_vault_connection_impl.h",

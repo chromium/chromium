@@ -27,6 +27,16 @@ enum class TrustedVaultRequestStatus {
   kOtherError
 };
 
+struct TrustedVaultKeyAndVersion {
+  TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);
+  TrustedVaultKeyAndVersion(const TrustedVaultKeyAndVersion& other);
+  TrustedVaultKeyAndVersion& operator=(const TrustedVaultKeyAndVersion& other);
+  ~TrustedVaultKeyAndVersion();
+
+  std::vector<uint8_t> key;
+  int version;
+};
+
 // Supports interaction with vault service, all methods must called on trusted
 // vault backend sequence.
 class TrustedVaultConnection {
@@ -61,8 +71,7 @@ class TrustedVaultConnection {
   // object until |callback| call or until request needs to be cancelled.
   virtual std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const std::vector<uint8_t>& last_trusted_vault_key,
-      int last_trusted_vault_key_version,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
       RegisterAuthenticationFactorCallback callback) WARN_UNUSED_RESULT = 0;
 
@@ -71,8 +80,7 @@ class TrustedVaultConnection {
   // or until request needs to be cancelled.
   virtual std::unique_ptr<Request> DownloadKeys(
       const CoreAccountInfo& account_info,
-      const std::vector<uint8_t>& last_trusted_vault_key,
-      int last_trusted_vault_key_version,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadKeysCallback callback) WARN_UNUSED_RESULT = 0;
 };
