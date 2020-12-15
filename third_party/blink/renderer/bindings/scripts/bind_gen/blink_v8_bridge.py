@@ -254,10 +254,9 @@ def native_value_tag(idl_type, argument=None):
     assert isinstance(idl_type, web_idl.IdlType)
     assert argument is None or isinstance(argument, web_idl.Argument)
 
-    if (idl_type.is_optional
-            and not (idl_type.is_nullable or
-                     (argument and argument.default_value) or
-                     (argument and argument == argument.owner.arguments[-1]))):
+    if (idl_type.is_optional and argument
+            and not (idl_type.is_nullable or argument.default_value
+                     or argument == argument.owner.arguments[-1])):
         return "IDLOptional<{}>".format(_native_value_tag_impl(idl_type))
 
     return _native_value_tag_impl(idl_type)
