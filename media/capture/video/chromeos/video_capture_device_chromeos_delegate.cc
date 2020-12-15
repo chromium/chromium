@@ -181,7 +181,7 @@ void VideoCaptureDeviceChromeOSDelegate::AllocateAndStart(
 void VideoCaptureDeviceChromeOSDelegate::StopAndDeAllocate(
     ClientType client_type) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
-  DCHECK(!camera_device_delegate_);
+  DCHECK(camera_device_delegate_);
   device_context_->RemoveClient(client_type);
   if (!HasDeviceClient()) {
     CloseDevice(base::UnguessableToken());
