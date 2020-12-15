@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/login/login_auth_recorder.h"
 
 #include "ash/public/cpp/tablet_mode.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace chromeos {
@@ -118,11 +118,11 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
   // Record usage of the authentication method in lock screen.
   const bool is_tablet_mode = ash::TabletMode::Get()->InTabletMode();
   if (is_tablet_mode) {
-    UMA_HISTOGRAM_ENUMERATION("Ash.Login.Lock.AuthMethod.Used.TabletMode",
-                              method);
+    base::UmaHistogramEnumeration("Ash.Login.Lock.AuthMethod.Used.TabletMode",
+                                  method);
   } else {
-    UMA_HISTOGRAM_ENUMERATION("Ash.Login.Lock.AuthMethod.Used.ClamShellMode",
-                              method);
+    base::UmaHistogramEnumeration(
+        "Ash.Login.Lock.AuthMethod.Used.ClamShellMode", method);
   }
 
   if (last_auth_method_ != method) {
@@ -130,27 +130,29 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
     const base::Optional<AuthMethodSwitchType> switch_type =
         FindSwitchType(last_auth_method_, method);
     if (switch_type) {
-      UMA_HISTOGRAM_ENUMERATION("Ash.Login.Lock.AuthMethod.Switched",
-                                *switch_type);
+      base::UmaHistogramEnumeration("Ash.Login.Lock.AuthMethod.Switched",
+                                    *switch_type);
     }
 
     last_auth_method_ = method;
   }
 }
 
-void LoginAuthRecorder::RecordFingerprintAuthSuccess(
-    bool success,
+void LoginAuthRecorder::RecordFingerprintUnlockResult(
+    FingerprintUnlockResult result,
     const base::Optional<int>& num_attempts) {
   if (session_manager::SessionManager::Get()->session_state() !=
       session_manager::SessionState::LOCKED) {
     return;
   }
+  base::UmaHistogramEnumeration("Fingerprint.Unlock.Result", result);
 
-  UMA_HISTOGRAM_BOOLEAN("Fingerprint.Unlock.AuthSuccessful", success);
+  const bool success = (result == FingerprintUnlockResult::kSuccess);
+  base::UmaHistogramBoolean("Fingerprint.Unlock.AuthSuccessful", success);
   if (success) {
     DCHECK(num_attempts);
-    UMA_HISTOGRAM_COUNTS_100("Fingerprint.Unlock.AttemptsCountBeforeSuccess",
-                             num_attempts.value());
+    base::UmaHistogramCounts100("Fingerprint.Unlock.AttemptsCountBeforeSuccess",
+                                num_attempts.value());
   }
 }
 

@@ -32290,6 +32290,14 @@ Called by update_feature_policy_enum.py.-->
   </int>
 </enum>
 
+<enum name="FingerprintUnlockResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Fingerprint auth not available"/>
+  <int value="2" label="Authentication is temporarily disabled"/>
+  <int value="3" label="Fingerprint match failed"/>
+  <int value="4" label="Fingerprint match is not of the the primary user"/>
+</enum>
+
 <enum name="FingerprintUpdaterReason">
   <int value="0" label="None"/>
   <int value="1" label="Mismatched RW Version"/>

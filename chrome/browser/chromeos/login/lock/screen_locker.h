@@ -91,13 +91,14 @@ class ScreenLocker
   void OnPasswordAuthSuccess(const UserContext& user_context);
 
   // Disables authentication for the user with `account_id`. Notifies lock
-  // screen UI.
-  void EnableAuthForUser(const AccountId& account_id);
+  // screen UI. `auth_disabled_data` is used to display information in the UI.
+  void TemporarilyDisableAuthForUser(
+      const AccountId& account_id,
+      const ash::AuthDisabledData& auth_disabled_data);
 
-  // Enables authentication for the user with `account_id`. Notifies lock screen
-  // UI. `auth_disabled_data` is used to display information in the UI.
-  void DisableAuthForUser(const AccountId& account_id,
-                          const ash::AuthDisabledData& auth_disabled_data);
+  // Reenables authentication for the user with `account_id` previously disabled
+  // by `TemporarilyDisableAuthForUser`. Notifies lock screen UI.
+  void ReenableAuthForUser(const AccountId& account_id);
 
   // Authenticates the user with given `user_context`.
   void Authenticate(const UserContext& user_context,
@@ -159,9 +160,9 @@ class ScreenLocker
   // `user_context`.
   void SaveSyncPasswordHash(const UserContext& user_context);
 
-  // Ruturns true if authentication is enabled on the lock screen for the given
+  // Returns true if authentication is enabled on the lock screen for the given
   // user.
-  bool IsAuthEnabledForUser(const AccountId& account_id);
+  bool IsAuthTemporarilyDisabledForUser(const AccountId& account_id);
 
   // Change the authenticators; should only be used by tests.
   void SetAuthenticatorsForTesting(
@@ -257,9 +258,10 @@ class ScreenLocker
   // Users that can unlock the device.
   user_manager::UserList users_;
 
-  // Set of users that have authentication disabled on lock screen. Has to be
-  // subset of `users_`.
-  std::set<AccountId> users_with_disabled_auth_;
+  // Set of users that have authentication temporarily disabled on lock screen
+  // (for example because of too much screen time). Has to be subset of
+  // `users_`.
+  std::set<AccountId> users_with_temporarily_disabled_auth_;
 
   // Used to authenticate the user to unlock.
   scoped_refptr<Authenticator> authenticator_;

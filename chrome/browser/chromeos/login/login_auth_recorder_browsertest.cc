@@ -52,9 +52,12 @@ class LoginAuthRecorderTest : public InProcessBrowserTest {
     metrics_recorder()->RecordAuthMethod(auth_method);
   }
 
-  void SetFingerprintAuthSuccess(bool success) {
-    metrics_recorder()->RecordFingerprintAuthSuccess(
-        success, success ? base::Optional<int>(1) : base::nullopt);
+  void SetFingerprintUnlockResult(
+      LoginAuthRecorder::FingerprintUnlockResult result) {
+    metrics_recorder()->RecordFingerprintUnlockResult(
+        result, result == LoginAuthRecorder::FingerprintUnlockResult::kSuccess
+                    ? base::Optional<int>(1)
+                    : base::nullopt);
   }
 
   void ExpectBucketCount(const std::string& name,
@@ -191,15 +194,26 @@ IN_PROC_BROWSER_TEST_F(LoginAuthRecorderTest, AuthMethodSwitch) {
 IN_PROC_BROWSER_TEST_F(LoginAuthRecorderTest, FingerprintAuthSuccess) {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
-  SetFingerprintAuthSuccess(true /*success*/);
+  SetFingerprintUnlockResult(
+      LoginAuthRecorder::FingerprintUnlockResult::kSuccess);
   histogram_tester_->ExpectBucketCount(kFingerprintSuccessHistogramName,
                                        1 /*success*/, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Fingerprint.Unlock.Result",
+      static_cast<int>(LoginAuthRecorder::FingerprintUnlockResult::kSuccess),
+      1);
   histogram_tester_->ExpectTotalCount(
       kFingerprintAttemptsCountBeforeSuccessHistogramName, 1);
 
-  SetFingerprintAuthSuccess(false /*success*/);
+  SetFingerprintUnlockResult(
+      LoginAuthRecorder::FingerprintUnlockResult::kMatchFailed);
   histogram_tester_->ExpectBucketCount(kFingerprintSuccessHistogramName,
                                        0 /*success*/, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Fingerprint.Unlock.Result",
+      static_cast<int>(
+          LoginAuthRecorder::FingerprintUnlockResult::kMatchFailed),
+      1);
   histogram_tester_->ExpectTotalCount(
       kFingerprintAttemptsCountBeforeSuccessHistogramName, 1);
 }

@@ -166,6 +166,9 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FingerprintNotTimedOutTest) {
   EXPECT_TRUE(HasStrongAuth());
   base::TimeDelta expiration_time = GetExpirationTime();
   AdvanceTime(expiration_time / 2, base::TimeDelta::FromSeconds(0));
+  ScreenLocker::default_screen_locker()->RefreshPinAndFingerprintTimeout();
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(HasStrongAuth());
 
   // Verify that fingerprint unlock is possible and the user can log in.
@@ -192,6 +195,9 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FingerprintTimedOutTest) {
   EXPECT_TRUE(HasStrongAuth());
   base::TimeDelta expiration_time = GetExpirationTime();
   AdvanceTime(expiration_time, base::TimeDelta::FromSeconds(0));
+  ScreenLocker::default_screen_locker()->RefreshPinAndFingerprintTimeout();
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(HasStrongAuth());
 
   // Verify that fingerprint unlock is not possible and the user cannot log in.
@@ -218,6 +224,9 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, TimeoutIncludesSuspendedTime) {
   EXPECT_TRUE(HasStrongAuth());
   base::TimeDelta expiration_time = GetExpirationTime();
   AdvanceTime(expiration_time, expiration_time / 2);
+  ScreenLocker::default_screen_locker()->RefreshPinAndFingerprintTimeout();
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(HasStrongAuth());
 
   // Verify that fingerprint unlock is not possible and the user cannot log in.

@@ -113,8 +113,9 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
   }
 
   bool IsAuthEnabled() {
-    return ScreenLocker::default_screen_locker()->IsAuthEnabledForUser(
-        logged_in_user_mixin_.GetAccountId());
+    return !ScreenLocker::default_screen_locker()
+                ->IsAuthTemporarilyDisabledForUser(
+                    logged_in_user_mixin_.GetAccountId());
   }
 
   const AccountId& GetAccountId() {

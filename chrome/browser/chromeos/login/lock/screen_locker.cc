@@ -260,7 +260,7 @@ void ScreenLocker::OnAuthFailure(const AuthFailure& error) {
 }
 
 void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
-  CHECK(!base::Contains(users_with_disabled_auth_, user_context.GetAccountId()))
+  CHECK(!IsAuthTemporarilyDisabledForUser(user_context.GetAccountId()))
       << "Authentication is disabled for this user.";
 
   incorrect_passwords_count_ = 0;
@@ -329,21 +329,27 @@ void ScreenLocker::OnPasswordAuthSuccess(const UserContext& user_context) {
   SaveSyncPasswordHash(user_context);
 }
 
-void ScreenLocker::EnableAuthForUser(const AccountId& account_id) {
+void ScreenLocker::ReenableAuthForUser(const AccountId& account_id) {
+  if (!IsAuthTemporarilyDisabledForUser(account_id))
+    return;
+
   const user_manager::User* user = FindUnlockUser(account_id);
   CHECK(user) << "Invalid user - cannot enable authentication.";
 
-  users_with_disabled_auth_.erase(account_id);
+  users_with_temporarily_disabled_auth_.erase(account_id);
   ash::LoginScreen::Get()->GetModel()->EnableAuthForUser(account_id);
 }
 
-void ScreenLocker::DisableAuthForUser(
+void ScreenLocker::TemporarilyDisableAuthForUser(
     const AccountId& account_id,
     const ash::AuthDisabledData& auth_disabled_data) {
+  if (IsAuthTemporarilyDisabledForUser(account_id))
+    return;
+
   const user_manager::User* user = FindUnlockUser(account_id);
   CHECK(user) << "Invalid user - cannot disable authentication.";
 
-  users_with_disabled_auth_.insert(account_id);
+  users_with_temporarily_disabled_auth_.insert(account_id);
   ash::LoginScreen::Get()->GetModel()->DisableAuthForUser(account_id,
                                                           auth_disabled_data);
 }
@@ -354,7 +360,7 @@ void ScreenLocker::Authenticate(const UserContext& user_context,
       << "Invalid user trying to unlock.";
 
   // Do not attempt authentication if it is disabled for the user.
-  if (base::Contains(users_with_disabled_auth_, user_context.GetAccountId())) {
+  if (IsAuthTemporarilyDisabledForUser(user_context.GetAccountId())) {
     VLOG(1) << "Authentication disabled for user.";
     if (auth_status_consumer_) {
       auth_status_consumer_->OnAuthFailure(
@@ -396,7 +402,7 @@ void ScreenLocker::AuthenticateWithChallengeResponse(
   LOG_ASSERT(IsUserLoggedIn(account_id)) << "Invalid user trying to unlock.";
 
   // Do not attempt authentication if it is disabled for the user.
-  if (base::Contains(users_with_disabled_auth_, account_id)) {
+  if (IsAuthTemporarilyDisabledForUser(account_id)) {
     VLOG(1) << "Authentication disabled for user.";
     if (auth_status_consumer_) {
       auth_status_consumer_->OnAuthFailure(
@@ -671,8 +677,9 @@ void ScreenLocker::SaveSyncPasswordHash(const UserContext& user_context) {
     login::SaveSyncPasswordDataToProfile(user_context, profile);
 }
 
-bool ScreenLocker::IsAuthEnabledForUser(const AccountId& account_id) {
-  return !base::Contains(users_with_disabled_auth_, account_id);
+bool ScreenLocker::IsAuthTemporarilyDisabledForUser(
+    const AccountId& account_id) {
+  return base::Contains(users_with_temporarily_disabled_auth_, account_id);
 }
 
 void ScreenLocker::SetAuthenticatorsForTesting(
@@ -783,8 +790,19 @@ void ScreenLocker::OnAuthScanDone(
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       quick_unlock::QuickUnlockFactory::GetForUser(primary_user);
   if (!quick_unlock_storage ||
-      !quick_unlock_storage->IsFingerprintAuthenticationAvailable() ||
-      base::Contains(users_with_disabled_auth_, primary_user->GetAccountId())) {
+      !quick_unlock_storage->IsFingerprintAuthenticationAvailable()) {
+    // In theory this should be very rare. The auth session should be ended when
+    // fingerprint becomes unavaliable.
+    LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
+        LoginAuthRecorder::FingerprintUnlockResult::kFingerprintUnavailable,
+        base::nullopt);
+    return;
+  }
+
+  if (IsAuthTemporarilyDisabledForUser(primary_user->GetAccountId())) {
+    LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
+        LoginAuthRecorder::FingerprintUnlockResult::kAuthTemporarilyDisabled,
+        base::nullopt);
     return;
   }
 
@@ -795,6 +813,9 @@ void ScreenLocker::OnAuthScanDone(
     LOG(ERROR) << "Fingerprint unlock failed because scan_result="
                << scan_result;
     OnFingerprintAuthFailure(*primary_user);
+    LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
+        LoginAuthRecorder::FingerprintUnlockResult::kMatchFailed,
+        base::nullopt);
     return;
   }
 
@@ -803,14 +824,17 @@ void ScreenLocker::OnAuthScanDone(
     LOG(ERROR) << "Fingerprint unlock failed because it does not match primary"
                << " user's record";
     OnFingerprintAuthFailure(*primary_user);
+    LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
+        LoginAuthRecorder::FingerprintUnlockResult::kMatchNotForPrimaryUser,
+        base::nullopt);
     return;
   }
+  LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
+      LoginAuthRecorder::FingerprintUnlockResult::kSuccess,
+      quick_unlock_storage->fingerprint_storage()->unlock_attempt_count());
   ash::LoginScreen::Get()->GetModel()->NotifyFingerprintAuthResult(
       primary_user->GetAccountId(), true /*success*/);
   VLOG(1) << "Fingerprint unlock is successful.";
-  LoginScreenClient::Get()->auth_recorder()->RecordFingerprintAuthSuccess(
-      true /*success*/,
-      quick_unlock_storage->fingerprint_storage()->unlock_attempt_count());
   OnAuthSuccess(user_context);
 }
 
@@ -827,8 +851,6 @@ void ScreenLocker::ActiveUserChanged(user_manager::User* active_user) {
 void ScreenLocker::OnFingerprintAuthFailure(const user_manager::User& user) {
   UMA_HISTOGRAM_ENUMERATION("ScreenLocker.AuthenticationFailure",
                             unlock_attempt_type_, UnlockType::AUTH_COUNT);
-  LoginScreenClient::Get()->auth_recorder()->RecordFingerprintAuthSuccess(
-      false /*success*/, base::nullopt /*num_attempts*/);
   ash::LoginScreen::Get()->GetModel()->NotifyFingerprintAuthResult(
       user.GetAccountId(), false /*success*/);
 
@@ -889,6 +911,11 @@ void ScreenLocker::MaybeDisablePinAndFingerprintFromTimeout(
         VLOG(1) << "Require strong auth to make fingerprint unlock available.";
         ash::LoginScreen::Get()->GetModel()->SetFingerprintState(
             account_id, ash::FingerprintState::DISABLED_FROM_TIMEOUT);
+        fp_service_->EndCurrentAuthSession(base::BindOnce([](bool success) {
+          if (success)
+            return;
+          DLOG(ERROR) << "Failed to end fingerprint auth session";
+        }));
       }
     }
   }

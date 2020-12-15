@@ -20,7 +20,7 @@ namespace {
 
 // Path of an enroll session. There should only be one enroll session at a
 // given time.
-const char kEnrollSessionObjectPath[] = "/EnrollSession/";
+const char kEnrollSessionObjectPath[] = "/EnrollSession";
 
 // Header of the path of an record. A unique number will be appended when an
 // record is created.
@@ -28,7 +28,7 @@ const char kRecordObjectPathPrefix[] = "/Record/";
 
 // Path of an auth session. There should only be one auth sesion at a given
 // time.
-const char kAuthSessionObjectPath[] = "/AuthSession/";
+const char kAuthSessionObjectPath[] = "/AuthSession";
 
 FakeBiodClient* g_instance = nullptr;
 

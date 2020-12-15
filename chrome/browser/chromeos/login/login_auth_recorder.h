@@ -49,16 +49,28 @@ class LoginAuthRecorder : public session_manager::SessionManagerObserver {
     kMaxValue = kPasswordToChallengeResponse,
   };
 
+  // The result of fingerprint auth attempt on the lock screen. These values are
+  // persisted to logs. Entries should not be renumbered and numeric values
+  // should never be reused.
+  enum class FingerprintUnlockResult {
+    kSuccess = 0,
+    kFingerprintUnavailable = 1,
+    kAuthTemporarilyDisabled = 2,
+    kMatchFailed = 3,
+    kMatchNotForPrimaryUser = 4,
+    kMaxValue = kMatchNotForPrimaryUser,
+  };
+
   LoginAuthRecorder();
   ~LoginAuthRecorder() override;
 
   // Called when user attempts authentication using AuthMethod `type`.
   void RecordAuthMethod(AuthMethod type);
 
-  // Called after a fingerprint attempt to record the auth result.
+  // Called after a fingerprint unlock attempt to record the result.
   // `num_attempts`:  Only valid when auth success to record number of attempts.
-  void RecordFingerprintAuthSuccess(bool success,
-                                    const base::Optional<int>& num_attempts);
+  void RecordFingerprintUnlockResult(FingerprintUnlockResult result,
+                                     const base::Optional<int>& num_attempts);
 
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;

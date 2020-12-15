@@ -274,7 +274,7 @@ void ScreenTimeController::OnScreenLockByPolicy(
       chromeos::ProfileHelper::Get()
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
-  ScreenLocker::default_screen_locker()->DisableAuthForUser(
+  ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
       account_id,
       ash::AuthDisabledData(ConvertLockReason(active_policy), next_unlock_time,
                             GetScreenTimeDuration(),
@@ -293,7 +293,7 @@ void ScreenTimeController::OnScreenLockByPolicyEnd() {
       chromeos::ProfileHelper::Get()
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
-  ScreenLocker::default_screen_locker()->EnableAuthForUser(account_id);
+  ScreenLocker::default_screen_locker()->ReenableAuthForUser(account_id);
 
   // TODO(agawronska): Move showing shelf button to ash.
   ash::LoginScreen::Get()->ShowParentAccessButton(false);
