@@ -265,17 +265,7 @@ bool VulkanInstance::CollectInfo() {
     auto& info = vulkan_info_.physical_devices.back();
     info.device = device;
 
-    info.driver_properties = VkPhysicalDeviceDriverProperties{
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES,
-    };
-
-    VkPhysicalDeviceProperties2 properties2 = {
-        .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
-        .pNext = &info.driver_properties,
-    };
-
-    vkGetPhysicalDeviceProperties2(device, &properties2);
-    info.properties = properties2.properties;
+    vkGetPhysicalDeviceProperties(device, &info.properties);
 
     count = 0;
     result = vkEnumerateDeviceExtensionProperties(
@@ -292,9 +282,20 @@ bool VulkanInstance::CollectInfo() {
     // The API version of the VkInstance might be different than the supported
     // API version of the VkPhysicalDevice, so we need to check the GPU's
     // API version instead of just testing to see if
-    // vkGetPhysicalDeviceFeatures2 is non-null.
+    // vkGetPhysicalDeviceProperties2 and vkGetPhysicalDeviceFeatures2 are
+    // non-null.
     static_assert(kVulkanRequiredApiVersion >= VK_API_VERSION_1_1, "");
     if (info.properties.apiVersion >= kVulkanRequiredApiVersion) {
+      info.driver_properties = VkPhysicalDeviceDriverProperties{
+          .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES,
+      };
+
+      VkPhysicalDeviceProperties2 properties2 = {
+          .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
+          .pNext = &info.driver_properties,
+      };
+      vkGetPhysicalDeviceProperties2(device, &properties2);
+
       VkPhysicalDeviceSamplerYcbcrConversionFeatures ycbcr_conversion_features =
           {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES};
       VkPhysicalDeviceProtectedMemoryFeatures protected_memory_feature = {
