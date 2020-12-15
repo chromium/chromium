@@ -2179,8 +2179,8 @@ INSTANTIATE_TEST_SUITE_P(
                            /*switch_name=*/base::nullopt,
                            /*switch_value_ascii=*/base::nullopt,
                            /*url_arg=*/GURL("https://www.foo.com/")},
-        // Picker should be shown also in session restore.
-        ProfilePickerSetup{/*expected_to_show=*/true,
+        // Picker should also not be shown in session restore.
+        ProfilePickerSetup{/*expected_to_show=*/false,
                            /*switch_name=*/base::nullopt,
                            /*switch_value_ascii=*/base::nullopt,
                            /*url_arg=*/base::nullopt,

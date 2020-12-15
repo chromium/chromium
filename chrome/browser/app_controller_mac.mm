@@ -578,19 +578,23 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 - (void)didEndMainMessageLoop {
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
     // With DestroyProfileOnBrowserClose, Profiles get deleted earlier. So
-    // _lastProfile is already null, and [self lastProfile] below would load it
-    // from disk (which we can't do).
+    // _lastProfile is already null, and and we cannot load it from disk now.
     DCHECK_EQ(nullptr, _lastProfile);
     return;
   }
-  DCHECK_EQ(0u, chrome::GetBrowserCount([self lastProfile]));
-  if (!chrome::GetBrowserCount([self lastProfile])) {
+  if (!_lastProfile) {
+    // If only the profile picker is open and closed again, there is no profile
+    // loaded when main message loop ends and we cannot load it from disk now.
+    return;
+  }
+  DCHECK_EQ(0u, chrome::GetBrowserCount(_lastProfile));
+  if (!chrome::GetBrowserCount(_lastProfile)) {
     // As we're shutting down, we need to nuke the TabRestoreService, which
     // will start the shutdown of the NavigationControllers and allow for
     // proper shutdown. If we don't do this, Chrome won't shut down cleanly,
     // and may end up crashing when some thread tries to use the IO thread (or
     // another thread) that is no longer valid.
-    TabRestoreServiceFactory::ResetForProfile([self lastProfile]);
+    TabRestoreServiceFactory::ResetForProfile(_lastProfile);
   }
 }
 
@@ -1305,12 +1309,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     // manager is still shown).
     UserManager::Show(base::FilePath(),
                       profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
-  } else if (ProfilePicker::ShouldShowAtLaunch(
-                 // Pass an empty command line, because this is not application
-                 // startup. The original arguments (e.g. --incognito) are no
-                 // longer relevant.
-                 base::CommandLine(base::CommandLine::NO_PROGRAM),
-                 /*urls_to_launch=*/std::vector<GURL>())) {
+  } else if (ProfilePicker::ShouldShowAtLaunch()) {
     ProfilePicker::Show(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
   } else {

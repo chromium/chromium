@@ -164,12 +164,6 @@ class StartupBrowserCreator {
       Profile* last_used_profile,
       const Profiles& last_opened_profiles);
 
-  // Returns the list of URLs to open from the command line.
-  static std::vector<GURL> GetURLsFromCommandLine(
-      const base::CommandLine& command_line,
-      const base::FilePath& cur_dir,
-      Profile* profile);
-
   // This function performs command-line handling and is invoked only after
   // start up (for example when we get a start request for another process).
   // |command_line| holds the command line being processed.
@@ -205,6 +199,11 @@ class StartupBrowserCreator {
   static bool in_synchronous_profile_launch_;
 };
 
+// Returns the list of URLs to open from the command line.
+std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
+                                         const base::FilePath& cur_dir,
+                                         Profile* profile);
+
 // Returns true if |profile| has exited uncleanly and has not been launched
 // after the unclean exit.
 bool HasPendingUncleanExit(Profile* profile);
@@ -222,6 +221,7 @@ base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
 // opening the user manager, returns null if either the guest profile or the
 // system profile cannot be opened.
 Profile* GetStartupProfile(const base::FilePath& user_data_dir,
+                           const base::FilePath& cur_dir,
                            const base::CommandLine& command_line);
 
 // Returns the profile that should be loaded on process startup when
