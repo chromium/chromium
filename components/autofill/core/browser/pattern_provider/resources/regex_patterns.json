@@ -292,7 +292,7 @@
         "match_field_input_types": 1
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_company_preserving",
         "positive_pattern": "单位|公司",
@@ -436,21 +436,13 @@
         "match_field_input_types": 1
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_address_line_1_preserving",
         "positive_pattern": "地址",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
-        "match_field_input_types": 1
-      },
-      {
-        "pattern_identifier": "zh_address_line_1_label_preserving",
-        "positive_pattern": "地址",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": 1,
         "match_field_input_types": 1
       }
     ],
@@ -597,7 +589,7 @@
         "match_field_input_types": 1
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_address_line_2_preserving",
         "positive_pattern": "地址2",
@@ -729,7 +721,7 @@
         "match_field_input_types": 137
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_country_preserving",
         "positive_pattern": "国家",
@@ -883,10 +875,20 @@
         "match_field_input_types": 69
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_zip_code_preserving",
-        "positive_pattern": "邮政编码|邮编|郵遞區號",
+        "positive_pattern": "邮政编码|邮编",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
+    ],
+    "zh-TW": [
+      {
+        "pattern_identifier": "zh_tw_zip_code_preserving",
+        "positive_pattern": "郵遞區號",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -1049,7 +1051,7 @@
         "match_field_input_types": 137
       }
     ],
-    "zh": [
+    "zh-TW": [
       {
         "pattern_identifier": "zh_city_preserving",
         "positive_pattern": "市|分區",
@@ -1151,7 +1153,7 @@
         "match_field_input_types": 137
       }
     ],
-    "zh": [
+    "zh-TW": [
       {
         "pattern_identifier": "zh_state_preserving",
         "positive_pattern": "省|地區",
@@ -1233,7 +1235,7 @@
         "match_field_input_types": 145
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_search_term_preserving",
         "positive_pattern": "搜索",
@@ -1407,7 +1409,7 @@
         "match_field_input_types": 1
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_name_on_card_preserving",
         "positive_pattern": "信用卡开户名|开户名|持卡人姓名|持卡人姓名",
@@ -1471,10 +1473,20 @@
         "match_field_input_types": 101
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_card_number_preserving",
-        "positive_pattern": "信用卡号|信用卡号码|信用卡卡號",
+        "positive_pattern": "信用卡号|信用卡号码",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 101
+      }
+    ],
+    "zh-TW": [
+      {
+        "pattern_identifier": "zh_card_number_preserving",
+        "positive_pattern": "信用卡卡號",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -1615,7 +1627,7 @@
         "match_field_input_types": 205
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_card_exp_month_preserving",
         "positive_pattern": "月",
@@ -1697,7 +1709,7 @@
         "match_field_input_types": 205
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_card_exp_year_preserving",
         "positive_pattern": "年|有效期",
@@ -1937,10 +1949,20 @@
         "match_field_input_types": 3
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_email_preserving",
-        "positive_pattern": "邮件|邮箱|電郵地址",
+        "positive_pattern": "邮件|邮箱",
+        "positive_score": 1.4,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 3
+      }
+    ],
+    "zh-TW": [
+      {
+        "pattern_identifier": "zh_email_preserving",
+        "positive_pattern": "電郵地址",
         "positive_score": 1.4,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -2029,7 +2051,7 @@
         "match_field_input_types": 137
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_name_ignored_preserving",
         "positive_pattern": "用户名",
@@ -2111,7 +2133,7 @@
         "match_field_input_types": 1
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_full_name_preserving",
         "positive_pattern": "姓名",
@@ -2649,7 +2671,7 @@
         "match_field_input_types": 69
       }
     ],
-    "zh": [
+    "zh-CN": [
       {
         "pattern_identifier": "zh_phone_preserving",
         "positive_pattern": "电话",

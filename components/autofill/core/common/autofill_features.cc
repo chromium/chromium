@@ -191,6 +191,11 @@ const base::Feature kAutofillMetadataUploads{"AutofillMetadataUploads",
 const base::Feature kAutofillOffNoServerData{"AutofillOffNoServerData",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, Autofill will load remote patterns via the component updater.
+// TODO(crbug/1121990): Remove once launched.
+extern const base::Feature kAutofillParsingPatternsFromRemote{
+    "AutofillParsingPatternsFromRemote", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether negative patterns are used to parse the field type.
 // TODO(crbug.com/1132831): Remove once launched.
 const base::Feature kAutofillParsingPatternsNegativeMatching{
@@ -301,11 +306,6 @@ const base::Feature kAutofillUseImprovedLabelDisambiguation{
 // implementation for section splitting or not. See https://crbug.com/1076175.
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// When enabled, Autofill will load remote patterns via the component updater.
-// TODO(crbug/1121990): Remove once launched.
-extern const base::Feature kAutofillParsingPatternsFromRemote{
-    "AutofillParsingPatternsFromRemote", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
 // Controls whether the Autofill manual fallback for Addresses and Payments is
