@@ -1531,24 +1531,6 @@
             ]
         }
     ],
-    "ChromeOSEmojiSuggestion": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "UseMap4_20200922",
-                    "params": {
-                        "map": "4"
-                    },
-                    "enable_features": [
-                        "EmojiSuggestAddition"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSHeuristicPalm": [
         {
             "platforms": [
