@@ -34,7 +34,6 @@
 #endif
 
 #if defined(OS_WIN)
-#include "ui/base/cursor/cursor_loader_win.h"
 #include "ui/platform_window/win/win_window.h"
 #endif
 
@@ -184,11 +183,6 @@ void WindowTreeHostPlatform::SetCursorNative(gfx::NativeCursor cursor) {
   if (cursor == current_cursor_)
     return;
   current_cursor_ = cursor;
-
-#if defined(OS_WIN)
-  ui::CursorLoaderWin cursor_loader;
-  cursor_loader.SetPlatformCursor(&cursor);
-#endif
 
   platform_window_->SetCursor(cursor.platform());
 }
