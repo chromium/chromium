@@ -63,6 +63,7 @@ public class TabSwitcherButtonCoordinator {
 
     public void setTabCountProvider(TabCountProvider tabCountProvider) {
         mTabCountProvider = tabCountProvider;
+        updateButtonState();
         mTabCountObserver = new TabCountObserver() {
             @Override
             public void onTabCountChanged(int tabCount, boolean isIncognito) {
