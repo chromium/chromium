@@ -52,8 +52,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
     virtual void OnIdleTimeout() = 0;
 
     // Called when external controls are activated.
-    virtual void OnPlay() = 0;
-    virtual void OnPause() = 0;
     virtual void OnSetAudioSink(const std::string& sink_id) = 0;
 
     // Called to control audio ducking. Output volume should be set to

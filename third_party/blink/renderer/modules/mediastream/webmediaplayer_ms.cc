@@ -1080,16 +1080,6 @@ void WebMediaPlayerMS::OnFrameShown() {
 
 void WebMediaPlayerMS::OnIdleTimeout() {}
 
-void WebMediaPlayerMS::OnPlay() {
-  // TODO(perkj, magjed): It's not clear how WebRTC should work with an
-  // MediaSession, until these issues are resolved, disable session controls.
-  // https://crbug.com/595297.
-}
-
-void WebMediaPlayerMS::OnPause() {
-  // TODO(perkj, magjed): See TODO in OnPlay().
-}
-
 void WebMediaPlayerMS::OnSetAudioSink(const std::string& sink_id) {
   SetSinkId(WebString::FromASCII(sink_id),
             base::DoNothing::Once<base::Optional<blink::WebSetSinkIdError>>());

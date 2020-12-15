@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/media/video_wake_lock.h"
 
 #include "cc/layers/layer.h"
+#include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -63,6 +64,7 @@ class VideoWakeLockPictureInPictureService
 
   void StartSession(
       uint32_t,
+      mojo::PendingRemote<media::mojom::blink::MediaPlayer>,
       const base::Optional<viz::SurfaceId>&,
       const gfx::Size&,
       bool,

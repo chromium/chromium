@@ -57,6 +57,12 @@ class FakeAudioFocusDelegate : public content::AudioFocusDelegate {
 // real one used in production which would be owned by HTMLMediaElement instead.
 class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
  public:
+  enum class PauseRequestType {
+    kNone,
+    kTriggeredByUser,
+    kNotTriggeredByUser,
+  };
+
   explicit MockMediaPlayerReceiverForTesting(
       MediaWebContentsObserver* media_web_contents_observer,
       const MediaPlayerId& player_id) {
@@ -78,6 +84,18 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
   void SetMediaPlayerObserver(
       mojo::PendingRemote<media::mojom::MediaPlayerObserver>) override {}
 
+  void RequestPlay() override {
+    received_play_ = true;
+    run_loop_->Quit();
+  }
+
+  void RequestPause(bool triggered_by_user) override {
+    received_pause_type_ = triggered_by_user
+                               ? PauseRequestType::kTriggeredByUser
+                               : PauseRequestType::kNotTriggeredByUser;
+    run_loop_->Quit();
+  }
+
   void RequestSeekForward(base::TimeDelta seek_time) override {
     received_seek_forward_time_ = seek_time;
     run_loop_->Quit();
@@ -93,6 +111,10 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
   void RequestExitPictureInPicture() override {}
 
   // Getters used from MediaSessionControllerTest.
+  bool received_play() const { return received_play_; }
+
+  PauseRequestType received_pause() const { return received_pause_type_; }
+
   const base::TimeDelta& received_seek_forward_time() const {
     return received_seek_forward_time_;
   }
@@ -104,6 +126,9 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   mojo::Receiver<media::mojom::MediaPlayer> receiver_{this};
+
+  bool received_play_{false};
+  PauseRequestType received_pause_type_{PauseRequestType::kNone};
   base::TimeDelta received_seek_forward_time_;
   base::TimeDelta received_seek_backward_time_;
 };
@@ -153,10 +178,12 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
 
   void Suspend() {
     controller_->OnSuspend(controller_->get_player_id_for_testing());
+    media_player_receiver_->WaitUntilReceivedMessage();
   }
 
   void Resume() {
     controller_->OnResume(controller_->get_player_id_for_testing());
+    media_player_receiver_->WaitUntilReceivedMessage();
   }
 
   void SeekForward(base::TimeDelta seek_time) {
@@ -177,6 +204,17 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   }
 
   // Helpers to check the results of using the basic controls.
+  bool ReceivedMessagePlay() { return media_player_receiver_->received_play(); }
+
+  bool ReceivedMessagePause(bool triggered_by_user) {
+    MockMediaPlayerReceiverForTesting::PauseRequestType expected_pause_request =
+        triggered_by_user ? MockMediaPlayerReceiverForTesting::
+                                PauseRequestType::kTriggeredByUser
+                          : MockMediaPlayerReceiverForTesting::
+                                PauseRequestType::kNotTriggeredByUser;
+    return media_player_receiver_->received_pause() == expected_pause_request;
+  }
+
   bool ReceivedMessageSeekForward(base::TimeDelta expected_seek_time) {
     return expected_seek_time ==
            media_player_receiver_->received_seek_forward_time();
@@ -189,40 +227,6 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
 
   // Legacy IPC-based helpers to check the results of using the basic controls.
   // TODO: Remove these ones as more legacy IPC messages get migrated to mojo.
-  template <typename T>
-  bool ReceivedMessagePlay() {
-    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(T::ID);
-    if (!msg)
-      return false;
-
-    std::tuple<int> result;
-    if (!T::Read(msg, &result))
-      return false;
-
-    EXPECT_EQ(id_.delegate_id, std::get<0>(result));
-    test_sink().ClearMessages();
-    return id_.delegate_id == std::get<0>(result);
-  }
-
-  template <typename T>
-  bool ReceivedMessagePause(bool triggered_by_user) {
-    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(T::ID);
-    if (!msg)
-      return false;
-
-    std::tuple<int, bool> result;
-    if (!T::Read(msg, &result))
-      return false;
-
-    EXPECT_EQ(id_.delegate_id, std::get<0>(result));
-    test_sink().ClearMessages();
-    if (id_.delegate_id != std::get<0>(result))
-      return false;
-
-    EXPECT_EQ(triggered_by_user, std::get<1>(result));
-    test_sink().ClearMessages();
-    return triggered_by_user == std::get<1>(result);
-  }
 
   template <typename T>
   bool ReceivedMessageVolumeMultiplierUpdate(double expected_multiplier) {
@@ -271,12 +275,11 @@ TEST_F(MediaSessionControllerTest, BasicControls) {
 
   // Verify suspend notifies the renderer and maintains its session.
   Suspend();
-  EXPECT_TRUE(ReceivedMessagePause<MediaPlayerDelegateMsg_Pause>(
-      true /* triggered_by_user */));
+  EXPECT_TRUE(ReceivedMessagePause(/*triggered_by_user=*/true));
 
   // Likewise verify the resume behavior.
   Resume();
-  EXPECT_TRUE(ReceivedMessagePlay<MediaPlayerDelegateMsg_Play>());
+  EXPECT_TRUE(ReceivedMessagePlay());
 
   // ...as well as the seek behavior.
   const base::TimeDelta kTestSeekForwardTime = base::TimeDelta::FromSeconds(1);
@@ -347,12 +350,11 @@ TEST_F(MediaSessionControllerTest, Reinitialize) {
 
   // Verify suspend notifies the renderer and maintains its session.
   Suspend();
-  EXPECT_TRUE(ReceivedMessagePause<MediaPlayerDelegateMsg_Pause>(
-      true /* triggered_by_user */));
+  EXPECT_TRUE(ReceivedMessagePause(/*triggered_by_user=*/true));
 
   // Likewise verify the resume behavior.
   Resume();
-  EXPECT_TRUE(ReceivedMessagePlay<MediaPlayerDelegateMsg_Play>());
+  EXPECT_TRUE(ReceivedMessagePlay());
 }
 
 TEST_F(MediaSessionControllerTest, PositionState) {

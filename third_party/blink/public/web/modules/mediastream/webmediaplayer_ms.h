@@ -177,8 +177,6 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void OnFrameClosed() override;
   void OnFrameShown() override;
   void OnIdleTimeout() override;
-  void OnPlay() override;
-  void OnPause() override;
   void OnSetAudioSink(const std::string& sink_id) override;
   void OnVolumeMultiplierUpdate(double multiplier) override;
   void OnBecamePersistentVideo(bool value) override;

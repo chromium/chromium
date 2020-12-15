@@ -16,6 +16,12 @@ interface MediaPlayer {
   // as there is a HeapMojoRemoteSet class available for its use in Blink.
   SetMediaPlayerObserver(pending_remote<MediaPlayerObserver> observer);
 
+  // Requests the media player to start or resume media playback.
+  RequestPlay();
+
+  // Requests the media player to pause media playback.
+  RequestPause(bool triggered_by_user);
+
   // Requests the media player to move forward the media playback position.
   RequestSeekForward(mojo_base.mojom.TimeDelta seek_time);
 

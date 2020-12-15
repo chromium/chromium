@@ -15,6 +15,8 @@
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "media/mojo/mojom/media_player.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 
@@ -96,6 +98,7 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   PictureInPictureResult StartSession(
       PictureInPictureServiceImpl* service,
       const MediaPlayerId&,
+      mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
       const viz::SurfaceId& surface_id,
       const gfx::Size& natural_size,
       bool show_play_pause_button,
