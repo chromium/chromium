@@ -9,13 +9,11 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class NGBlockBreakToken;
 class NGConstraintSpace;
 class NGInlineChildLayoutContext;
 class NGInlineNodeLegacy;
@@ -53,8 +51,6 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
     LayoutBlockFlow* block_flow = GetLayoutBlockFlow();
     block_flow->ResetNGInlineNodeData();
     DCHECK(!IsPrepareLayoutFinished());
-    // There shouldn't be paint fragment if NGInlineNodeData does not exist.
-    block_flow->SetPaintFragment(nullptr, nullptr);
   }
 
   const NGInlineItemsData& ItemsData(bool is_first_line) const {
@@ -74,12 +70,6 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   // same as |items_data.text_content|, except when sticky images quirk is
   // needed.
   static String TextContentForStickyImagesQuirk(const NGInlineItemsData&);
-
-  // Clear associated fragments for LayoutObjects.
-  // They are associated when NGPaintFragment is constructed, but when clearing,
-  // NGInlineItem provides easier and faster logic.
-  static void ClearAssociatedFragments(const NGPhysicalFragment& fragment,
-                                       const NGBlockBreakToken* break_token);
 
   // Returns true if we don't need to collect inline items after replacing
   // |layout_text| after deleting replacing subtext from |offset| to |length|

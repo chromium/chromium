@@ -268,36 +268,6 @@ scoped_refptr<NGPaintFragment> NGPaintFragment::CreateOrReuse(
   return new_instance;
 }
 
-scoped_refptr<NGPaintFragment> NGPaintFragment::Create(
-    scoped_refptr<const NGPhysicalFragment> fragment,
-    const NGBlockBreakToken* block_break_token,
-    scoped_refptr<NGPaintFragment> previous_instance) {
-  DCHECK(fragment);
-
-  bool has_previous_instance = previous_instance.get();
-  CreateContext context(std::move(previous_instance), fragment->IsContainer());
-  scoped_refptr<NGPaintFragment> paint_fragment =
-      CreateOrReuse(std::move(fragment), PhysicalOffset(), &context);
-
-  if (context.populate_children) {
-    if (has_previous_instance) {
-      NGInlineNode::ClearAssociatedFragments(paint_fragment->PhysicalFragment(),
-                                             block_break_token);
-    }
-    HashMap<const LayoutObject*, NGPaintFragment*> last_fragment_map;
-    context.last_fragment_map = &last_fragment_map;
-    paint_fragment->PopulateDescendants(&context);
-  }
-
-  context.DestroyPreviousInstances();
-  if (context.painting_layer_needs_repaint) {
-    ObjectPaintInvalidator(*paint_fragment->GetLayoutObject())
-        .SlowSetPaintingLayerNeedsRepaint();
-  }
-
-  return paint_fragment;
-}
-
 scoped_refptr<NGPaintFragment>* NGPaintFragment::Find(
     scoped_refptr<NGPaintFragment>* fragment,
     const NGBlockBreakToken* break_token) {

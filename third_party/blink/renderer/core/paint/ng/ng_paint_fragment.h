@@ -46,11 +46,6 @@ class CORE_EXPORT NGPaintFragment : public RefCounted<NGPaintFragment>,
                   NGPaintFragment*);
   ~NGPaintFragment() override;
 
-  static scoped_refptr<NGPaintFragment> Create(
-      scoped_refptr<const NGPhysicalFragment>,
-      const NGBlockBreakToken* break_token,
-      scoped_refptr<NGPaintFragment> previous_instance = nullptr);
-
   const NGPhysicalFragment& PhysicalFragment() const {
     CHECK(IsAlive());
     return *physical_fragment_;

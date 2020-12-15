@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
@@ -1396,56 +1395,6 @@ void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {
   }
 }
 
-void NGInlineNode::ClearAssociatedFragments(
-    const NGPhysicalFragment& fragment,
-    const NGBlockBreakToken* block_break_token) {
-  auto* block_flow = To<LayoutBlockFlow>(fragment.GetMutableLayoutObject());
-  if (!block_flow->ChildrenInline())
-    return;
-  DCHECK(AreNGBlockFlowChildrenInline(block_flow));
-  NGInlineNode node = NGInlineNode(block_flow);
-
-  DCHECK(node.IsPrepareLayoutFinished());
-  const Vector<NGInlineItem>& items = node.MaybeDirtyData().items;
-
-  unsigned start_index;
-  if (!block_break_token) {
-    start_index = 0;
-  } else {
-    // TODO(kojii): Not fully supported, need more logic when the block is
-    // fragmented, because one inline LayoutObject may span across
-    // fragmentainers.
-    // TODO(kojii): Not sure if using |block_break_token->InputNode()| is
-    // correct for multicol. Should verify and somehow get NGInlineNode from it.
-    // Also change |InlineBreakTokenFor| to receive NGInlineNode instead of
-    // NGLayoutInputNode once this is done.
-    const NGInlineBreakToken* inline_break_token =
-        block_break_token->InlineBreakTokenFor(block_break_token->InputNode());
-    // TODO(kojii): This needs to investigate in what case this happens. It's
-    // probably wrong to create NGPaintFragment when there's no inline break
-    // token.
-    if (!inline_break_token)
-      return;
-    start_index = inline_break_token->ItemIndex();
-  }
-
-  LayoutObject* last_object = nullptr;
-  for (unsigned i = start_index; i < items.size(); i++) {
-    const NGInlineItem& item = items[i];
-    if (item.Type() == NGInlineItem::kFloating ||
-        item.Type() == NGInlineItem::kOutOfFlowPositioned) {
-      // These items are not associated and that no need to clear.
-      DCHECK(!item.GetLayoutObject()->FirstInlineFragment());
-      continue;
-    }
-    LayoutObject* object = item.GetLayoutObject();
-    if (!object || object == last_object)
-      continue;
-    object->SetFirstInlineFragment(nullptr);
-    last_object = object;
-  }
-}
-
 scoped_refptr<const NGLayoutResult> NGInlineNode::Layout(
     const NGConstraintSpace& constraint_space,
     const NGBreakToken* break_token,
@@ -1455,27 +1404,7 @@ scoped_refptr<const NGLayoutResult> NGInlineNode::Layout(
   const auto* inline_break_token = To<NGInlineBreakToken>(break_token);
   NGInlineLayoutAlgorithm algorithm(*this, constraint_space, inline_break_token,
                                     context);
-  auto layout_result = algorithm.Layout();
-
-#if defined(OS_ANDROID)
-  if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    // Cached position data is crucial for line breaking performance and is
-    // preserved across layouts to speed up subsequent layout passes due to
-    // reflow, page zoom, window resize, etc. On Android though reflows are less
-    // common, page zoom isn't used (instead uses pinch-zoom), and the window
-    // typically can't be resized (apart from rotation). To reduce memory usage
-    // discard the cached position data after layout.
-    // TODO(crbug.com/1042604): FragmentItem should save memory enough to re-
-    // enable the position cache.
-    NGInlineNodeData* data = MutableData();
-    for (auto& item : data->items) {
-      if (item.shape_result_)
-        item.shape_result_->DiscardPositionData();
-    }
-  }
-#endif  // defined(OS_ANDROID)
-
-  return layout_result;
+  return algorithm.Layout();
 }
 
 namespace {

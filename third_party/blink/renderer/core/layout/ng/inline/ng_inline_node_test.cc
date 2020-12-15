@@ -691,14 +691,12 @@ TEST_P(StyleChangeTest, NeedsCollectInlinesOnStyle) {
   EXPECT_FALSE(previous->GetLayoutObject()->NeedsCollectInlines());
   EXPECT_FALSE(next->GetLayoutObject()->NeedsCollectInlines());
 
-  if (data.is_line_dirty &&
-      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+  if (data.is_line_dirty) {
     TestAnyItemsAreDirty(*To<LayoutBlockFlow>(container->GetLayoutObject()),
                          *data.is_line_dirty);
   }
 
-  if (data.invalidate_ink_overflow &&
-      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+  if (data.invalidate_ink_overflow) {
     const LayoutObject* parent_layout_object = parent->GetLayoutObject();
     for (const LayoutObject* child = parent_layout_object->SlowFirstChild();
          child; child = child->NextInPreOrder(parent_layout_object)) {
@@ -886,12 +884,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesShouldNotClearFirstInlineFragment) {
 
   // Running |CollectInlines| should not clear |FirstInlineFragment|.
   LayoutObject* first_child = container->firstChild()->GetLayoutObject();
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    // TODO(yosin): We should use |FirstInlineItemFragmentIndex()| once we
-    // implement it.
-  } else {
-    EXPECT_NE(first_child->FirstInlineFragment(), nullptr);
-  }
+  EXPECT_TRUE(first_child->HasInlineFragments());
 }
 
 TEST_F(NGInlineNodeTest, SegmentBidiChangeSetsNeedsLayout) {
@@ -1136,8 +1129,6 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   NGInlineCursor before_split;
   before_split.MoveTo(*text->GetLayoutObject());
   EXPECT_TRUE(before_split);
-  scoped_refptr<const NGPaintFragment> text_fragment_before_split =
-      before_split.Current().PaintFragment();
 
   // Append <div> to <span>. causing SplitFlow().
   Element* outer_span = GetElementById("outer_span");
@@ -1160,10 +1151,6 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   NGInlineCursor after_layout;
   after_layout.MoveTo(*text->GetLayoutObject());
   EXPECT_TRUE(after_layout);
-  if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    EXPECT_NE(text_fragment_before_split.get(),
-              after_layout.Current().PaintFragment());
-  }
 
   // Check it is the one owned by the new root inline formatting context.
   LayoutBlock* anonymous_block =
@@ -1175,10 +1162,6 @@ TEST_F(NGInlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   EXPECT_TRUE(anonymous_block_cursor);
   EXPECT_EQ(anonymous_block_cursor.Current().GetLayoutObject(),
             text->GetLayoutObject());
-  if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    EXPECT_EQ(anonymous_block_cursor.Current().PaintFragment(),
-              after_layout.Current().PaintFragment());
-  }
 }
 
 TEST_F(NGInlineNodeTest, AddChildToSVGRoot) {
