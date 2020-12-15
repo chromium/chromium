@@ -15,12 +15,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/scopes/scope_lock.h"
@@ -70,31 +72,46 @@ enum class V2SchemaCorruptionStatus {
   kYes = 2,
 };
 
-// All interaction with this class should be done on the task runner given to
-// Open.
+// This class is not thread-safe.
+// All accessses to one instance must occur on the same sequence. Currently,
+// this must be the IndexedDB task runner's sequence.
 class CONTENT_EXPORT IndexedDBBackingStore {
  public:
+  // This class is not thread-safe.
+  // All accessses to one instance must occur on the same sequence.
   class CONTENT_EXPORT RecordIdentifier {
    public:
-    RecordIdentifier(const std::string& primary_key, int64_t version);
     RecordIdentifier();
+    RecordIdentifier(std::string primary_key, int64_t version);
+
+    RecordIdentifier(const RecordIdentifier&) = delete;
+    RecordIdentifier& operator=(const RecordIdentifier&) = delete;
+
     ~RecordIdentifier();
 
-    const std::string& primary_key() const { return primary_key_; }
-    int64_t version() const { return version_; }
-    void Reset(const std::string& primary_key, int64_t version) {
-      primary_key_ = primary_key;
-      version_ = version;
+    const std::string& primary_key() const {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      return primary_key_;
     }
+    int64_t version() const {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      return version_;
+    }
+
+    void Reset(std::string primary_key, int64_t version);
 
    private:
     // TODO(jsbell): Make it more clear that this is the *encoded* version of
     // the key.
-    std::string primary_key_;
-    int64_t version_;
-    DISALLOW_COPY_AND_ASSIGN(RecordIdentifier);
+    std::string primary_key_ GUARDED_BY_CONTEXT(sequence_checker_);
+    int64_t version_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
+
+    // Data members must be immutable or GUARDED_BY_CONTEXT(sequence_checker_).
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
+  // This class is not thread-safe.
+  // All accessses to one instance must occur on the same sequence.
   class CONTENT_EXPORT Transaction {
    public:
     struct BlobWriteState {
@@ -108,6 +125,10 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     Transaction(base::WeakPtr<IndexedDBBackingStore> backing_store,
                 blink::mojom::IDBTransactionDurability durability,
                 blink::mojom::IDBTransactionMode mode);
+
+    Transaction(const Transaction&) = delete;
+    Transaction& operator=(const Transaction&) = delete;
+
     virtual ~Transaction();
 
     virtual void Begin(std::vector<ScopeLock> locks);
@@ -140,6 +161,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
                             std::vector<IndexedDBExternalObject>*);
 
     TransactionalLevelDBTransaction* transaction() {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return transaction_.get();
     }
 
@@ -154,7 +176,10 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
     blink::mojom::IDBTransactionMode mode() const { return mode_; }
 
-    IndexedDBBackingStore* backing_store() { return backing_store_.get(); }
+    IndexedDBBackingStore* backing_store() {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      return backing_store_.get();
+    }
 
    private:
     // Called by CommitPhaseOne: Identifies the blob entries to write and adds
@@ -178,62 +203,69 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     void PartitionBlobsToRemove(BlobJournalType* dead_blobs,
                                 BlobJournalType* live_blobs) const;
 
-    SEQUENCE_CHECKER(idb_sequence_checker_);
-
     // This does NOT mean that this class can outlive the IndexedDBBackingStore.
     // This is only to protect against security issues before this class is
     // refactored away and this isn't necessary.
     // https://crbug.com/1012918
-    base::WeakPtr<IndexedDBBackingStore> backing_store_;
+    base::WeakPtr<IndexedDBBackingStore> backing_store_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+
     TransactionalLevelDBFactory* const transactional_leveldb_factory_;
-    scoped_refptr<TransactionalLevelDBTransaction> transaction_;
+
+    scoped_refptr<TransactionalLevelDBTransaction> transaction_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-        external_object_change_map_;
+        external_object_change_map_ GUARDED_BY_CONTEXT(sequence_checker_);
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-        incognito_external_object_map_;
-    int64_t database_id_;
+        incognito_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+    int64_t database_id_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
 
     // List of blob files being newly written as part of this transaction.
     // These will be added to the recovery blob journal prior to commit, then
     // removed after a successful commit.
-    BlobJournalType blobs_to_write_;
+    BlobJournalType blobs_to_write_ GUARDED_BY_CONTEXT(sequence_checker_);
 
     // List of blob files being deleted as part of this transaction. These will
     // be added to either the recovery or live blob journal as appropriate
     // following a successful commit.
-    BlobJournalType blobs_to_remove_;
+    BlobJournalType blobs_to_remove_ GUARDED_BY_CONTEXT(sequence_checker_);
 
     // Populated when blobs are being written to disk. This is saved here (as
     // opposed to being ephemeral and owned by the WriteBlobToFile callbacks)
     // because the transaction needs to be able to cancel this operation in
     // Rollback().
-    base::Optional<BlobWriteState> write_state_;
+    base::Optional<BlobWriteState> write_state_
+        GUARDED_BY_CONTEXT(sequence_checker_);
 
     // Set to true between CommitPhaseOne and CommitPhaseTwo/Rollback, to
     // indicate that the committing_transaction_count_ on the backing store
     // has been bumped, and journal cleaning should be deferred.
-    bool committing_;
+    bool committing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
     // This flag is passed to LevelDBScopes as |sync_on_commit|, converted
     // via ShouldSyncOnCommit.
-    blink::mojom::IDBTransactionDurability durability_;
+    const blink::mojom::IDBTransactionDurability durability_;
     const blink::mojom::IDBTransactionMode mode_;
 
-    base::WeakPtrFactory<Transaction> ptr_factory_{this};
+    // Data members must be immutable or GUARDED_BY_CONTEXT(sequence_checker_).
+    SEQUENCE_CHECKER(sequence_checker_);
 
-    DISALLOW_COPY_AND_ASSIGN(Transaction);
+    base::WeakPtrFactory<Transaction> weak_ptr_factory_
+        GUARDED_BY_CONTEXT(sequence_checker_){this};
   };
 
+  // This class is not thread-safe.
+  // All accessses to one instance must occur on the same sequence.
   class Cursor {
    public:
     enum IteratorState { READY = 0, SEEK };
-
-    virtual ~Cursor();
 
     struct CursorOptions {
       CursorOptions();
       CursorOptions(const CursorOptions& other);
       ~CursorOptions();
+
       int64_t database_id;
       int64_t object_store_id;
       int64_t index_id;
@@ -247,7 +279,16 @@ class CONTENT_EXPORT IndexedDBBackingStore {
           blink::mojom::IDBTransactionMode::ReadWrite;
     };
 
-    const blink::IndexedDBKey& key() const { return *current_key_; }
+    Cursor(const Cursor&) = delete;
+    Cursor& operator=(const Cursor&) = delete;
+
+    virtual ~Cursor();
+
+    const blink::IndexedDBKey& key() const {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      return *current_key_;
+    }
+
     bool Continue(leveldb::Status* s) {
       return Continue(nullptr, nullptr, SEEK, s);
     }
@@ -288,18 +329,22 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     bool IsPastBounds() const;
     bool HaveEnteredRange() const;
 
-    SEQUENCE_CHECKER(idb_sequence_checker_);
-
     // This does NOT mean that this class can outlive the Transaction.
     // This is only to protect against security issues before this class is
     // refactored away and this isn't necessary.
     // https://crbug.com/1012918
-    base::WeakPtr<Transaction> transaction_;
-    int64_t database_id_;
+    const base::WeakPtr<Transaction> transaction_;
+    const int64_t database_id_;
     const CursorOptions cursor_options_;
-    std::unique_ptr<TransactionalLevelDBIterator> iterator_;
-    std::unique_ptr<blink::IndexedDBKey> current_key_;
-    IndexedDBBackingStore::RecordIdentifier record_identifier_;
+    std::unique_ptr<TransactionalLevelDBIterator> iterator_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+    std::unique_ptr<blink::IndexedDBKey> current_key_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+    IndexedDBBackingStore::RecordIdentifier record_identifier_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+
+    // Data members must be immutable or GUARDED_BY_CONTEXT(sequence_checker_).
+    SEQUENCE_CHECKER(sequence_checker_);
 
    private:
     enum class ContinueResult { LEVELDB_ERROR, DONE, OUT_OF_BOUNDS };
@@ -317,9 +362,8 @@ class CONTENT_EXPORT IndexedDBBackingStore {
                                     IteratorState state,
                                     leveldb::Status*);
 
-    base::WeakPtrFactory<Cursor> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Cursor);
+    base::WeakPtrFactory<Cursor> weak_factory_
+        GUARDED_BY_CONTEXT(sequence_checker_){this};
   };
 
   using BlobFilesCleanedCallback = base::RepeatingClosure;
@@ -366,6 +410,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     return idb_task_runner_.get();
   }
   IndexedDBActiveBlobRegistry* active_blob_registry() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return active_blob_registry_.get();
   }
 
@@ -499,12 +544,17 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   int64_t GetInMemoryBlobSize() const;
 
 #if DCHECK_IS_ON()
-  int NumBlobFilesDeletedForTesting() { return num_blob_files_deleted_; }
+  int NumBlobFilesDeletedForTesting() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return num_blob_files_deleted_;
+  }
   int NumAggregatedJournalCleaningRequestsForTesting() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return num_aggregated_journal_cleaning_requests_;
   }
 #endif
   void SetExecuteJournalCleaningOnNoTransactionsForTesting() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     execute_journal_cleaning_on_no_txns_ = true;
   }
 
@@ -527,6 +577,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       blink::mojom::IDBTransactionMode mode);
 
   base::WeakPtr<IndexedDBBackingStore> AsWeakPtr() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return weak_factory_.GetWeakPtr();
   }
 
@@ -608,23 +659,21 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Can run a journal cleaning job if one is pending.
   void DidCommitTransaction();
 
-  SEQUENCE_CHECKER(idb_sequence_checker_);
-
-  Mode backing_store_mode_;
+  const Mode backing_store_mode_;
   TransactionalLevelDBFactory* const transactional_leveldb_factory_;
   const url::Origin origin_;
-  base::FilePath blob_path_;
+  const base::FilePath blob_path_;
 
   // IndexedDB can store blobs and native file system handles. These mojo
   // interfaces are used to make this possible by communicating with the
   // relevant subsystems.
   // Raw pointers are safe because the bindings are owned by
   // IndexedDBContextImpl.
-  storage::mojom::BlobStorageContext* blob_storage_context_;
-  storage::mojom::NativeFileSystemContext* native_file_system_context_;
+  storage::mojom::BlobStorageContext* const blob_storage_context_;
+  storage::mojom::NativeFileSystemContext* const native_file_system_context_;
 
   // Filesystem proxy to use for file operations.  nullptr if in memory.
-  std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;
+  const std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;
 
   // The origin identifier is a key prefix unique to the origin used in the
   // leveldb backing store to partition data by origin. It is a normalized
@@ -634,37 +683,47 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // provides for future flexibility.
   const std::string origin_identifier_;
 
-  scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
-  std::set<int> child_process_ids_granted_;
+  const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-      incognito_external_object_map_;
+      incognito_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool execute_journal_cleaning_on_no_txns_ = false;
-  int num_aggregated_journal_cleaning_requests_ = 0;
-  base::OneShotTimer journal_cleaning_timer_;
-  base::TimeTicks journal_cleaning_timer_window_start_;
+  bool execute_journal_cleaning_on_no_txns_
+      GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  int num_aggregated_journal_cleaning_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  base::OneShotTimer journal_cleaning_timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::TimeTicks journal_cleaning_timer_window_start_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
 #if DCHECK_IS_ON()
-  mutable int num_blob_files_deleted_ = 0;
+  mutable int num_blob_files_deleted_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 #endif
 
-  std::unique_ptr<TransactionalLevelDBDatabase> db_;
+  const std::unique_ptr<TransactionalLevelDBDatabase> db_;
 
-  BlobFilesCleanedCallback blob_files_cleaned_;
+  const BlobFilesCleanedCallback blob_files_cleaned_;
 
   // Whenever blobs are registered in active_blob_registry_,
   // indexed_db_factory_ will hold a reference to this backing store.
-  std::unique_ptr<IndexedDBActiveBlobRegistry> active_blob_registry_;
+  std::unique_ptr<IndexedDBActiveBlobRegistry> active_blob_registry_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Incremented whenever a transaction starts committing, decremented when
   // complete. While > 0, temporary journal entries may exist so out-of-band
   // journal cleaning must be deferred.
-  size_t committing_transaction_count_ = 0;
+  size_t committing_transaction_count_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      0;
 
 #if DCHECK_IS_ON()
-  bool initialized_ = false;
+  bool initialized_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 #endif
-  base::WeakPtrFactory<IndexedDBBackingStore> weak_factory_{this};
+
+  // Data members must be immutable or GUARDED_BY_CONTEXT(sequence_checker_).
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<IndexedDBBackingStore> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content
