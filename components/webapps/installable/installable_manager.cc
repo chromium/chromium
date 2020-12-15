@@ -730,13 +730,22 @@ void InstallableManager::OnDidCheckHasServiceWorker(
             (blink::features::kCheckOfflineCapabilityParam.Get() ==
              blink::features::CheckOfflineCapabilityMode::kEnforce);
 
+        if (!manifest().start_url.is_valid()) {
+          worker_->has_worker = false;
+          worker_->error = NO_URL_FOR_SERVICE_WORKER;
+          worker_->fetched = true;
+          WorkOnTask();
+          return;
+        }
+
+        // Dispatch a fetch event to `start_url` while simulating an offline
+        // environment and see if the site supports an offline page.
         service_worker_context_->CheckOfflineCapability(
-            manifest().scope,
+            manifest().start_url,
             base::BindOnce(&InstallableManager::OnDidCheckOfflineCapability,
                            weak_factory_.GetWeakPtr(),
                            check_service_worker_start_time,
                            enforce_offline_capability));
-
         return;
       }
       worker_->has_worker = true;
