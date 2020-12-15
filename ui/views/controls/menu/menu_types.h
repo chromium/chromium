@@ -18,6 +18,7 @@ enum class MenuAnchorPosition {
   kBubbleAbove,
   kBubbleLeft,
   kBubbleRight,
+  kBubbleBelow,
 };
 
 }  // namespace views

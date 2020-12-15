@@ -67,7 +67,6 @@ ClipboardHistoryMenuModelAdapter::~ClipboardHistoryMenuModelAdapter() = default;
 
 void ClipboardHistoryMenuModelAdapter::Run(
     const gfx::Rect& anchor_rect,
-    views::MenuAnchorPosition menu_anchor_position,
     ui::MenuSourceType source_type) {
   DCHECK(!root_view_);
   DCHECK(model_);
@@ -103,7 +102,7 @@ void ClipboardHistoryMenuModelAdapter::Run(
                       views::MenuRunner::FIXED_ANCHOR);
   menu_runner_->RunMenuAt(
       /*widget_owner=*/nullptr, /*menu_button_controller=*/nullptr, anchor_rect,
-      menu_anchor_position, source_type);
+      views::MenuAnchorPosition::kBubbleBelow, source_type);
 }
 
 bool ClipboardHistoryMenuModelAdapter::IsRunning() const {

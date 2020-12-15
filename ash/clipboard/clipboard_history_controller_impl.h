@@ -16,10 +16,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 
-namespace views {
-enum class MenuAnchorPosition;
-}  // namespace views
-
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -82,7 +78,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // ClipboardHistoryController:
   bool CanShowMenu() const override;
   void ShowMenu(const gfx::Rect& anchor_rect,
-                views::MenuAnchorPosition menu_anchor_position,
                 ui::MenuSourceType source_type) override;
   std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() override;
 

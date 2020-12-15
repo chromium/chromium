@@ -221,8 +221,7 @@ void ClipboardHistoryControllerImpl::ShowMenuByAccelerator() {
     ExecuteSelectedMenuItem(ui::EF_COMMAND_DOWN);
     return;
   }
-  ShowMenu(CalculateAnchorRect(), views::MenuAnchorPosition::kBubbleRight,
-           ui::MENU_SOURCE_KEYBOARD);
+  ShowMenu(CalculateAnchorRect(), ui::MENU_SOURCE_KEYBOARD);
 }
 
 gfx::Rect ClipboardHistoryControllerImpl::GetMenuBoundsInScreenForTest() const {
@@ -231,7 +230,6 @@ gfx::Rect ClipboardHistoryControllerImpl::GetMenuBoundsInScreenForTest() const {
 
 void ClipboardHistoryControllerImpl::ShowMenu(
     const gfx::Rect& anchor_rect,
-    views::MenuAnchorPosition menu_anchor_position,
     ui::MenuSourceType source_type) {
   if (IsMenuShowing() || !CanShowMenu())
     return;
@@ -247,7 +245,7 @@ void ClipboardHistoryControllerImpl::ShowMenu(
       base::BindRepeating(&ClipboardHistoryControllerImpl::OnMenuClosed,
                           base::Unretained(this)),
       clipboard_history_.get(), resource_manager_.get());
-  context_menu_->Run(anchor_rect, menu_anchor_position, source_type);
+  context_menu_->Run(anchor_rect, source_type);
 
   DCHECK(IsMenuShowing());
   accelerator_target_->OnMenuShown();

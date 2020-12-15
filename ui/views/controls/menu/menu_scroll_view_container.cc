@@ -351,6 +351,7 @@ BubbleBorder::Arrow MenuScrollViewContainer::BubbleBorderTypeFromAnchor(
     MenuAnchorPosition anchor) {
   switch (anchor) {
     case MenuAnchorPosition::kBubbleAbove:
+    case MenuAnchorPosition::kBubbleBelow:
     case MenuAnchorPosition::kBubbleLeft:
     case MenuAnchorPosition::kBubbleRight:
       return BubbleBorder::FLOAT;

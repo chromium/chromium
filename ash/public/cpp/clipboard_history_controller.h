@@ -15,10 +15,6 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace views {
-enum class MenuAnchorPosition;
-}  // namespace views
-
 namespace ash {
 
 class ScopedClipboardHistoryPause;
@@ -47,7 +43,6 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // Shows the clipboard history menu triggered by `source_type` at the
   // specified position.
   virtual void ShowMenu(const gfx::Rect& anchor_rect,
-                        views::MenuAnchorPosition menu_anchor_position,
                         ui::MenuSourceType source_type) = 0;
 
   // Creates a ScopedClipboardHistoryPause, which pauses ClipboardHistory for

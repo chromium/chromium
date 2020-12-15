@@ -223,7 +223,6 @@
 #include "chrome/browser/chromeos/arc/intent_helper/start_smart_selection_action_menu.h"
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "ui/views/controls/menu/menu_types.h"
 #endif
 
 using base::UserMetricsAction;
@@ -2499,8 +2498,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         source_type = ui::MENU_SOURCE_KEYBOARD;
 
       ash::ClipboardHistoryController::Get()->ShowMenu(
-          gfx::Rect(anchor_point_in_screen, gfx::Size()),
-          views::MenuAnchorPosition::kTopLeft, source_type);
+          gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type);
 #else
       NOTREACHED();
 #endif

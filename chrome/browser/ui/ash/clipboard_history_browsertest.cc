@@ -441,10 +441,10 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   const gfx::Point menu_origin =
       GetClipboardHistoryMenuBoundsInScreen().origin();
-  EXPECT_EQ(mouse_location.x() +
+  EXPECT_EQ(mouse_location.x(), menu_origin.x());
+  EXPECT_EQ(mouse_location.y() +
                 views::MenuConfig::instance().touchable_anchor_offset,
-            menu_origin.x());
-  EXPECT_EQ(mouse_location.y(), menu_origin.y());
+            menu_origin.y());
 }
 
 // Verifies that the selected item should be deleted by the backspace key.
