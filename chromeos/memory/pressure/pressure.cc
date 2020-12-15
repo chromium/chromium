@@ -18,6 +18,12 @@ namespace pressure {
 
 namespace {
 
+const base::Feature kCrOSLowMemoryNotificationPSI{
+    "CrOSLowMemoryNotificationPSI", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kCrOSLowMemoryPSIThreshold{
+    &kCrOSLowMemoryNotificationPSI, "CrOSLowMemoryPSIThreshold", 20};
+
 // The reserved file cache.
 constexpr char kMinFilelist[] = "/proc/sys/vm/min_filelist_kbytes";
 
@@ -57,6 +63,41 @@ uint64_t ReadFileToUint64(const base::FilePath& file) {
   if (!base::StringToUint64(file_contents, &file_contents_uint64))
     return 0;
   return file_contents_uint64;
+}
+
+uint64_t GetReservedMemoryKB() {
+  std::string file_contents;
+  if (!base::ReadFileToStringNonBlocking(base::FilePath("/proc/zoneinfo"),
+                                         &file_contents)) {
+    PLOG(ERROR) << "Couldn't get /proc/zoneinfo";
+    return 0;
+  }
+
+  // Reserve free pages is high watermark + lowmem_reserve and extra_free_kbytes
+  // raises the high watermark.  Nullify the effect of extra_free_kbytes by
+  // excluding it from the reserved pages.  The default extra_free_kbytes value
+  // is 0 if the file couldn't be accessed.
+  return CalculateReservedFreeKB(file_contents) -
+         ReadFileToUint64(base::FilePath(kExtraFree));
+}
+
+bool SupportsPSI() {
+  static bool supports_psi =
+      base::PathExists(base::FilePath("/proc/pressure/"));
+  return supports_psi;
+}
+
+// Returns the percentage of the recent 10 seconds that some process is blocked
+// by memory.
+double GetPSIMemoryPressure10Seconds() {
+  base::FilePath psi_memory("/proc/pressure/memory");
+  std::string contents;
+  if (!base::ReadFileToStringNonBlocking(base::FilePath(psi_memory),
+                                         &contents)) {
+    PLOG(ERROR) << "Unable to read file: " << psi_memory;
+    return 0;
+  }
+  return ParsePSIMemory(contents);
 }
 
 }  // namespace
@@ -132,23 +173,39 @@ uint64_t CalculateReservedFreeKB(const std::string& zoneinfo) {
   return num_reserved_pages * kPageSizeKB;
 }
 
-static uint64_t GetReservedMemoryKB() {
-  std::string file_contents;
-  if (!base::ReadFileToStringNonBlocking(base::FilePath("/proc/zoneinfo"),
-                                         &file_contents)) {
-    PLOG(ERROR) << "Couldn't get /proc/zoneinfo";
-    return 0;
+// Returns the percentage of the recent 10 seconds that some process is blocked
+// by memory.
+// Example input:
+//   some avg10=0.00 avg60=0.00 avg300=0.00 total=0
+//   full avg10=0.00 avg60=0.00 avg300=0.00 total=0
+double ParsePSIMemory(const std::string& contents) {
+  for (const base::StringPiece& line : base::SplitStringPiece(
+           contents, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    std::vector<base::StringPiece> tokens = base::SplitStringPiece(
+        line, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
+    if (tokens[0] == "some") {
+      base::StringPairs kv_pairs;
+      if (base::SplitStringIntoKeyValuePairs(line.substr(5), '=', ' ',
+                                             &kv_pairs)) {
+        double some_10seconds;
+        if (base::StringToDouble(kv_pairs[0].second, &some_10seconds)) {
+          return some_10seconds;
+        } else {
+          LOG(ERROR) << "Couldn't parse the value of the first pair";
+        }
+      } else {
+        LOG(ERROR)
+            << "Couldn't split the key-value pairs in /proc/pressure/memory";
+      }
+    }
   }
-
-  // Reserve free pages is high watermark + lowmem_reserve and extra_free_kbytes
-  // raises the high watermark.  Nullify the effect of extra_free_kbytes by
-  // excluding it from the reserved pages.  The default extra_free_kbytes value
-  // is 0 if the file couldn't be accessed.
-  return CalculateReservedFreeKB(file_contents) -
-         ReadFileToUint64(base::FilePath(kExtraFree));
+  LOG(ERROR) << "Couldn't parse /proc/pressure/memory: " << contents;
+  DCHECK(false);
+  return 0;
 }
 
-// CalculateAvailableMemoryUserSpaceKB implements the same available memory
+// CalculateAvailableMemoryUserSpaceKB implements similar available memory
 // calculation as kernel function get_available_mem_adj().  The available memory
 // consists of 3 parts: the free memory, the file cache, and the swappable
 // memory.  The available free memory is free memory minus reserved free memory.
@@ -167,25 +224,43 @@ uint64_t CalculateAvailableMemoryUserSpaceKB(
   const uint64_t anon = info.active_anon + info.inactive_anon;
   const uint64_t file = info.active_file + info.inactive_file;
   const uint64_t dirty = info.dirty;
-  const uint64_t swap_free = info.swap_free;
-
-  uint64_t available = (free > reserved_free) ? free - reserved_free : 0;
-  available += (file > dirty + min_filelist) ? file - dirty - min_filelist : 0;
-  available += std::min<uint64_t>(anon, swap_free) / ram_swap_weight;
-
-  return available;
+  const uint64_t free_component =
+      (free > reserved_free) ? free - reserved_free : 0;
+  const uint64_t cache_component =
+      (file > dirty + min_filelist) ? file - dirty - min_filelist : 0;
+  const uint64_t swappable = std::min<uint64_t>(anon, info.swap_free);
+  const uint64_t swap_component = swappable / ram_swap_weight;
+  return free_component + cache_component + swap_component;
 }
 
 uint64_t GetAvailableMemoryKB() {
   base::SystemMemoryInfoKB info;
+  uint64_t available_kb;
   if (base::GetSystemMemoryInfo(&info)) {
-    return CalculateAvailableMemoryUserSpaceKB(info, reserved_free,
-                                               min_filelist, ram_swap_weight);
+    available_kb = CalculateAvailableMemoryUserSpaceKB(
+        info, reserved_free, min_filelist, ram_swap_weight);
+  } else {
+    PLOG(ERROR)
+        << "Assume low memory pressure if opening/parsing meminfo failed";
+    LOG_IF(FATAL, base::SysInfo::IsRunningOnChromeOS())
+        << "procfs isn't mounted or unable to open /proc/meminfo";
+    available_kb = 4 * 1024;
   }
-  PLOG(ERROR) << "Assume low memory pressure if opening/parsing meminfo failed";
-  LOG_IF(FATAL, base::SysInfo::IsRunningOnChromeOS())
-      << "procfs isn't mounted or unable to open /proc/meminfo";
-  return 4 * 1024;
+
+  static bool using_psi = SupportsPSI() && base::FeatureList::IsEnabled(
+                                               kCrOSLowMemoryNotificationPSI);
+  if (using_psi) {
+    auto margins = GetMemoryMarginsKB();
+    const uint64_t critical_margin = margins.first;
+    const uint64_t moderate_margin = margins.second;
+    static double psi_threshold = kCrOSLowMemoryPSIThreshold.Get();
+    // When PSI memory pressure is high, trigger moderate memory pressure.
+    if (GetPSIMemoryPressure10Seconds() > psi_threshold) {
+      available_kb =
+          std::min(available_kb, (moderate_margin + critical_margin) / 2);
+    }
+  }
+  return available_kb;
 }
 
 std::vector<uint64_t> GetMarginFileParts(const std::string& file) {

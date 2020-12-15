@@ -28,6 +28,9 @@ namespace pressure {
 CHROMEOS_EXPORT uint64_t CalculateReservedFreeKB(const std::string& zoneinfo);
 
 // Export for unittest.
+CHROMEOS_EXPORT double ParsePSIMemory(const std::string& contents);
+
+// Export for unittest.
 CHROMEOS_EXPORT uint64_t
 CalculateAvailableMemoryUserSpaceKB(const base::SystemMemoryInfoKB& info,
                                     uint64_t reserved_free,

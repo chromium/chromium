@@ -45,6 +45,15 @@ Node 0, zone   Normal
   ASSERT_EQ(reserved, (high_watermarks + lowmem_reserves) * kPageSizeKB);
 }
 
+TEST(MemoryPressureTest, ParsePSIMemory) {
+  const std::string kMockPSIMemory(R"(
+some avg10=57.25 avg60=35.97 avg300=10.18 total=32748793
+full avg10=29.29 avg60=19.01 avg300=5.44 total=17589167)");
+  const double pressure =
+      chromeos::memory::pressure::ParsePSIMemory(kMockPSIMemory);
+  ASSERT_EQ(pressure, 57.25);
+}
+
 TEST(MemoryPressureTest, CalculateAvailableMemoryUserSpaceKB) {
   base::SystemMemoryInfoKB info;
   uint64_t available;
