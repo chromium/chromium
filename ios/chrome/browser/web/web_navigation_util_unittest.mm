@@ -7,8 +7,8 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "components/search_engines/template_url.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -22,13 +22,13 @@
 class WebNavigationUtilsTest : public PlatformTest {
  protected:
   WebNavigationUtilsTest() {
-    auto navigation_manager = std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
   }
 
-  web::TestWebState web_state_;
-  web::TestNavigationManager* navigation_manager_ = nullptr;
+  web::FakeWebState web_state_;
+  web::FakeNavigationManager* navigation_manager_ = nullptr;
   base::UserActionTester user_action_tester_;
 };
 

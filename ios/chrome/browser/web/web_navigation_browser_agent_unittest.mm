@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -58,8 +58,8 @@ class WebNavigationBrowserAgentTest : public PlatformTest {
     agent_ = WebNavigationBrowserAgent::FromBrowser(browser_.get());
     agent_->SetDelegate(delegate_);
     WebStateOpener opener;
-    auto web_state = std::make_unique<web::TestWebState>();
-    auto navigation_manager = std::make_unique<web::TestNavigationManager>();
+    auto web_state = std::make_unique<web::FakeWebState>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state->SetNavigationManager(std::move(navigation_manager));
     browser_->GetWebStateList()->InsertWebState(
@@ -75,7 +75,7 @@ class WebNavigationBrowserAgentTest : public PlatformTest {
   WebNavigationBrowserAgent* agent_;
   // Navigation manager for the web state at index 0 in |browser_|'s web state
   // list.
-  web::TestNavigationManager* navigation_manager_;
+  web::FakeNavigationManager* navigation_manager_;
 };
 
 // Tests that reloading when there is no active NTP reloads the web state, and

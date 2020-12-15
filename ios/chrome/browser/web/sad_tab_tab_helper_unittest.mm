@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/web/sad_tab_tab_helper_delegate.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -85,8 +85,7 @@ class SadTabTabHelperTest : public PlatformTest {
     OCMStub([application_ sharedApplication]).andReturn(application_);
 
     // Setup navigation manager.
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetBrowserState(browser_state_.get());
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
@@ -103,8 +102,8 @@ class SadTabTabHelperTest : public PlatformTest {
   ScopedKeyWindow scoped_key_window_;
   UIView* web_state_view_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  web::TestWebState web_state_;
-  web::TestNavigationManager* navigation_manager_;
+  web::FakeWebState web_state_;
+  web::FakeNavigationManager* navigation_manager_;
   id application_;
   SadTabTabHelperTestDelegate* sad_tab_delegate_;
 };
@@ -350,11 +349,10 @@ TEST_F(SadTabTabHelperTest, FailureInterval) {
   std::unique_ptr<ChromeBrowserState> browser_state =
       TestChromeBrowserState::Builder().Build();
 
-  std::unique_ptr<web::TestNavigationManager> navigation_manager =
-      std::make_unique<web::TestNavigationManager>();
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   navigation_manager->SetBrowserState(browser_state_.get());
 
-  web::TestWebState web_state;
+  web::FakeWebState web_state;
   web_state.SetBrowserState(browser_state.get());
   web_state.SetNavigationManager(std::move(navigation_manager));
   SadTabTabHelper::CreateForWebState(&web_state, 0.0f);

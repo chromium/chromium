@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -16,8 +16,8 @@
 // Test fixture for TabIdTabHelper class.
 class TabIdTabHelperTest : public PlatformTest {
  protected:
-  web::TestWebState first_web_state_;
-  web::TestWebState second_web_state_;
+  web::FakeWebState first_web_state_;
+  web::FakeWebState second_web_state_;
 };
 
 // Tests that a tab ID is returned for a WebState, and tab ID's are different

@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -30,7 +30,7 @@ class PagePlaceholderTabHelperTest : public PlatformTest {
  protected:
   PagePlaceholderTabHelperTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
-    web_state_ = std::make_unique<web::TestWebState>();
+    web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(browser_state_.get());
 
     CGRect frame = {CGPointZero, CGSizeMake(400, 300)};
@@ -58,7 +58,7 @@ class PagePlaceholderTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   ScopedKeyWindow scoped_key_window_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  std::unique_ptr<web::TestWebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   UIView* web_state_view_ = nil;
 };
 

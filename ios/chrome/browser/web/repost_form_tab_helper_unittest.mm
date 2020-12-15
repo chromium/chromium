@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -82,7 +82,7 @@ void IgnoreBool(bool) {}
 class RepostFormTabHelperTest : public PlatformTest {
  protected:
   RepostFormTabHelperTest()
-      : web_state_(new web::TestWebState()),
+      : web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[RepostFormTabHelperTestDelegate alloc] init]),
         location_(CGPointMake(kDialogHLocation, kDialogVLocation)) {
     RepostFormTabHelper::CreateForWebState(web_state_.get(), delegate_);
@@ -94,7 +94,7 @@ class RepostFormTabHelperTest : public PlatformTest {
   }
 
  protected:
-  std::unique_ptr<web::TestWebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   RepostFormTabHelperTestDelegate* delegate_;
   CGPoint location_;
 };
