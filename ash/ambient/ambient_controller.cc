@@ -118,15 +118,6 @@ bool IsAmbientModeEnabled() {
          pref_service->GetBoolean(ambient::prefs::kAmbientModeEnabled);
 }
 
-bool IsAmbientWidgetVisible() {
-  for (auto* controller : RootWindowController::root_window_controllers()) {
-    auto* widget = controller->ambient_widget();
-    if (widget && widget->IsVisible())
-      return true;
-  }
-  return false;
-}
-
 class AmbientWidgetDelegate : public views::WidgetDelegate {
  public:
   AmbientWidgetDelegate() { SetCanMaximize(true); }
@@ -417,10 +408,6 @@ void AmbientController::OnAuthScanDone(
 }
 
 void AmbientController::OnUserActivity(const ui::Event* event) {
-  // If ambient widget is visible, it will handle key event by OnKeyPressed().
-  if (IsAmbientWidgetVisible() && event->IsKeyEvent())
-    return;
-
   DismissUI();
 }
 
@@ -474,10 +461,6 @@ void AmbientController::ToggleInSessionUi() {
 
 bool AmbientController::IsShown() const {
   return ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kShown;
-}
-
-void AmbientController::OnViewEvents() {
-  DismissUI();
 }
 
 void AmbientController::AcquireWakeLock() {

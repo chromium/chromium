@@ -33,7 +33,7 @@ constexpr std::array<int, 11> kPreDesksActivatableContainersIds = {
 
 // List of IDs of the containers whose windows are actiavated *after* windows in
 // the desks containers.
-constexpr std::array<int, 5> kPostDesksActivatableContainersIds = {
+constexpr std::array<int, 4> kPostDesksActivatableContainersIds = {
     kShellWindowId_HomeScreenContainer,
 
     // Launcher and status are intentionally checked after other containers
@@ -42,9 +42,6 @@ constexpr std::array<int, 5> kPostDesksActivatableContainersIds = {
     kShellWindowId_PipContainer,
     kShellWindowId_ShelfContainer,
     kShellWindowId_ShelfBubbleContainer,
-
-    // Ambient mode container is fullscreen and on top of other windows.
-    kShellWindowId_AmbientModeContainer,
 };
 
 }  // namespace

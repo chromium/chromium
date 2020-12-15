@@ -23,7 +23,6 @@ class AmbientViewDelegateImpl : public AmbientViewDelegate {
 
   // AmbientViewDelegate:
   AmbientBackendModel* GetAmbientBackendModel() override;
-  void OnViewEvents() override;
   void OnPhotoTransitionAnimationCompleted() override;
 
   void AddObserver(AmbientViewDelegateObserver* observer);
