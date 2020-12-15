@@ -47,9 +47,16 @@ void IdentityDialogController::CloseIdProviderWindow() {
   if (!signin_window_)
     return;
 
-  // Note that this leads to the window closed callback being run.
+  // Note that this leads to the window closed callback being run. If the
+  // token exchange permission dialog does not need to be displayed, the
+  // identity request will be completed synchronously and this controller will
+  // be destroyed.
+  // TODO(kenrb, majidvp): Not knowing whether this object will be destroyed
+  // or not during the callback is problematic. We have to rethink the
+  // lifetimes.
   CloseWebIDSigninWindow(signin_window_);
-  signin_window_ = nullptr;
+
+  // Do not touch local state here since |this| is now destroyed.
 }
 
 void IdentityDialogController::ShowTokenExchangePermissionDialog(
