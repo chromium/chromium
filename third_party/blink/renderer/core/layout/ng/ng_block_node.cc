@@ -691,20 +691,12 @@ void NGBlockNode::FinishLayout(
     }
 
     if (has_inline_children) {
-      if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-        CopyFragmentDataToLayoutBoxForInlineChildren(
-            physical_fragment, physical_fragment.Size().width,
-            Style().IsFlippedBlocksWritingMode());
-        block_flow->SetPaintFragment(break_token, &physical_fragment);
-      } else if (items) {
+      if (items)
         CopyFragmentItemsToLayoutBox(physical_fragment, *items, break_token);
-      }
     } else {
-      // We still need to clear paint fragments in case it had inline children,
-      // and thus had NGPaintFragment.
+      // We still need to clear |NGInlineNodeData| in case it had inline
+      // children.
       block_flow->ClearNGInlineNodeData();
-      if (!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())
-        block_flow->SetPaintFragment(break_token, nullptr);
     }
   } else {
     DCHECK(!physical_fragment.HasItems());
@@ -1351,56 +1343,6 @@ void NGBlockNode::CopyChildFragmentPosition(
   LayoutPoint point = ToLayoutPoint(child_fragment, offset, container_fragment,
                                     previous_container_break_token);
   layout_box->SetLocationAndUpdateOverflowControlsIfNeeded(point);
-}
-
-// For inline children, NG painters handles fragments directly, but there are
-// some cases where we need to copy data to the LayoutObject tree. This function
-// handles such cases.
-void NGBlockNode::CopyFragmentDataToLayoutBoxForInlineChildren(
-    const NGPhysicalContainerFragment& container,
-    LayoutUnit initial_container_width,
-    bool initial_container_is_flipped,
-    PhysicalOffset offset) const {
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
-  for (const auto& child : container.Children()) {
-    if (child->IsContainer()) {
-      PhysicalOffset child_offset = offset + child.Offset();
-
-      // Replaced elements and inline blocks need Location() set relative to
-      // their block container.
-      LayoutObject* layout_object = child->GetMutableLayoutObject();
-      if (layout_object && layout_object->IsBox()) {
-        auto& layout_box = To<LayoutBox>(*layout_object);
-        PhysicalOffset maybe_flipped_offset = child_offset;
-        if (initial_container_is_flipped) {
-          maybe_flipped_offset.left = initial_container_width -
-                                      child->Size().width -
-                                      maybe_flipped_offset.left;
-        }
-        layout_box.SetLocationAndUpdateOverflowControlsIfNeeded(
-            maybe_flipped_offset.ToLayoutPoint());
-      }
-
-      // Legacy compatibility. This flag is used in paint layer for
-      // invalidation.
-      if (layout_object && layout_object->IsLayoutInline() &&
-          layout_object->StyleRef().HasOutline() &&
-          !layout_object->IsElementContinuation() &&
-          To<LayoutInline>(layout_object)->Continuation()) {
-        box_->SetContainsInlineWithOutlineAndContinuation(true);
-      }
-
-      // The Location() of inline LayoutObject is relative to the
-      // LayoutBlockFlow. If |child| establishes a new block formatting context,
-      // it also creates another inline formatting context. Do not copy to its
-      // descendants in this case.
-      if (!child->IsFormattingContextRoot()) {
-        CopyFragmentDataToLayoutBoxForInlineChildren(
-            To<NGPhysicalContainerFragment>(*child), initial_container_width,
-            initial_container_is_flipped, child_offset);
-      }
-    }
-  }
 }
 
 void NGBlockNode::CopyFragmentItemsToLayoutBox(
