@@ -555,8 +555,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MaximizedApps) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Creates a tabbed browser and popup and makes sure we restore both.
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(OS_MAC)
 // Disabled for mac-arm64 bot stabilization: https://crbug.com/1154345
+// Also disabled for Mac flakiness in general: https://crbug.com/1158715
 #define MAYBE_NormalAndPopup DISABLED_NormalAndPopup
 #else
 #define MAYBE_NormalAndPopup NormalAndPopup
