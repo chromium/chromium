@@ -97877,6 +97877,19 @@
        ],
        {}
       ]
+     ],
+     "part-nested-pseudo.html": [
+      "f1753de7752840cd2841cb8002c10ac08038cf18",
+      [
+       null,
+       [
+        [
+         "/css/css-shadow-parts/part-nested-pseudo-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-shapes": {
@@ -199646,6 +199659,10 @@
       "8e2a02fc1fe71105ace2c695b038e5857ad98db7",
       []
      ],
+     "part-nested-pseudo-ref.html": [
+      "8eee65a27045ae97d10ed22050126d94fa69ed9b",
+      []
+     ],
      "support": {
       "shadow-helper.js": [
        "94accd6b1f9b095fda0079f7b86b866d88ffee01",
@@ -247791,7 +247808,7 @@
       []
      ],
      "pr_preview.py": [
-      "5bd2365164b98ba1a8c90a8d1a987fbaf8c97c73",
+      "369abf5e0b2cfd5c1b8d814277e03159f983c92c",
       []
      ],
      "regen_certs.py": [
@@ -414381,7 +414398,7 @@
      ]
     ],
     "slotchange.html": [
-     "1f94cc7bee28a14442278aab355089abc9435a56",
+     "9c4b81a156360d95ff57045147dc7c7a747e0fd6",
      [
       null,
       {}

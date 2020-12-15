@@ -217,9 +217,9 @@ class Remote(object):
         return subprocess.check_output([
             'git',
             '-c',
-            'credential.username={}'.format(self._token),
+            'credential.username=github-actions',
             '-c',
-            'core.askPass=true',
+            'credential.password={}'.format(self._token),
         ] + command)
 
     def get_revision(self, refspec):
