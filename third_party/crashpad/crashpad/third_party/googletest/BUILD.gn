@@ -28,7 +28,6 @@ if (crashpad_is_in_chromium) {
   group("googletest") {
     testonly = true
     public_deps = [ "//third_party/googletest:gtest" ]
-    public_configs = [ "../..:disable_ubsan" ]
   }
   group("googlemock") {
     testonly = true

@@ -109,8 +109,11 @@ TEST(MinidumpSystemInfoWriter, Empty) {
   EXPECT_EQ(system_info->Cpu.X86CpuInfo.VersionInformation, 0u);
   EXPECT_EQ(system_info->Cpu.X86CpuInfo.FeatureInformation, 0u);
   EXPECT_EQ(system_info->Cpu.X86CpuInfo.AMDExtendedCpuFeatures, 0u);
-  EXPECT_EQ(system_info->Cpu.OtherCpuInfo.ProcessorFeatures[0], 0u);
-  EXPECT_EQ(system_info->Cpu.OtherCpuInfo.ProcessorFeatures[1], 0u);
+
+  CPU_INFORMATION other_cpu_info;
+  memcpy(&other_cpu_info, &system_info->Cpu, sizeof(other_cpu_info));
+  EXPECT_EQ(other_cpu_info.OtherCpuInfo.ProcessorFeatures[0], 0u);
+  EXPECT_EQ(other_cpu_info.OtherCpuInfo.ProcessorFeatures[1], 0u);
 
   EXPECT_EQ(csd_version->Buffer[0], '\0');
 }
@@ -234,10 +237,11 @@ TEST(MinidumpSystemInfoWriter, AMD64_Mac) {
   EXPECT_EQ(system_info->BuildNumber, kOSVersionBuild);
   EXPECT_EQ(system_info->PlatformId, kOS);
   EXPECT_EQ(system_info->SuiteMask, 0u);
-  EXPECT_EQ(system_info->Cpu.OtherCpuInfo.ProcessorFeatures[0],
-            kCPUFeatures[0]);
-  EXPECT_EQ(system_info->Cpu.OtherCpuInfo.ProcessorFeatures[1],
-            kCPUFeatures[1]);
+
+  CPU_INFORMATION other_cpu_info;
+  memcpy(&other_cpu_info, &system_info->Cpu, sizeof(other_cpu_info));
+  EXPECT_EQ(other_cpu_info.OtherCpuInfo.ProcessorFeatures[0], kCPUFeatures[0]);
+  EXPECT_EQ(other_cpu_info.OtherCpuInfo.ProcessorFeatures[1], kCPUFeatures[1]);
 }
 
 TEST(MinidumpSystemInfoWriter, X86_CPUVendorFromRegisters) {
@@ -457,9 +461,12 @@ TEST(MinidumpSystemInfoWriter, InitializeFromSnapshot_AMD64) {
   EXPECT_EQ(system_info->BuildNumber, expect_system_info.BuildNumber);
   EXPECT_EQ(system_info->PlatformId, expect_system_info.PlatformId);
   EXPECT_EQ(system_info->SuiteMask, expect_system_info.SuiteMask);
-  EXPECT_EQ(system_info->Cpu.OtherCpuInfo.ProcessorFeatures[0],
+
+  CPU_INFORMATION other_cpu_info;
+  memcpy(&other_cpu_info, &system_info->Cpu, sizeof(other_cpu_info));
+  EXPECT_EQ(other_cpu_info.OtherCpuInfo.ProcessorFeatures[0],
             expect_system_info.Cpu.OtherCpuInfo.ProcessorFeatures[0]);
-  EXPECT_EQ(system_info->Cpu.OtherCpuInfo.ProcessorFeatures[1],
+  EXPECT_EQ(other_cpu_info.OtherCpuInfo.ProcessorFeatures[1],
             expect_system_info.Cpu.OtherCpuInfo.ProcessorFeatures[1]);
 
   for (size_t index = 0; index < strlen(kOSVersionBuild); ++index) {

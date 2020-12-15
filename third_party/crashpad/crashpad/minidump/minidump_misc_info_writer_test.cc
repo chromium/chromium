@@ -171,20 +171,27 @@ void ExpectMiscInfoEqual<MINIDUMP_MISC_INFO_5>(
   ExpectMiscInfoEqual<MINIDUMP_MISC_INFO_4>(
       reinterpret_cast<const MINIDUMP_MISC_INFO_4*>(expected),
       reinterpret_cast<const MINIDUMP_MISC_INFO_4*>(observed));
-  EXPECT_EQ(observed->XStateData.SizeOfInfo, expected->XStateData.SizeOfInfo);
-  EXPECT_EQ(observed->XStateData.ContextSize, expected->XStateData.ContextSize);
-  EXPECT_EQ(observed->XStateData.EnabledFeatures,
-            expected->XStateData.EnabledFeatures);
+
+  MINIDUMP_MISC_INFO_5 expected_misc_info, observed_misc_info;
+  memcpy(&expected_misc_info, expected, sizeof(expected_misc_info));
+  memcpy(&observed_misc_info, observed, sizeof(observed_misc_info));
+
+  EXPECT_EQ(observed_misc_info.XStateData.SizeOfInfo,
+            expected_misc_info.XStateData.SizeOfInfo);
+  EXPECT_EQ(observed_misc_info.XStateData.ContextSize,
+            expected_misc_info.XStateData.ContextSize);
+  EXPECT_EQ(observed_misc_info.XStateData.EnabledFeatures,
+            expected_misc_info.XStateData.EnabledFeatures);
   for (size_t feature_index = 0;
-       feature_index < base::size(observed->XStateData.Features);
+       feature_index < base::size(observed_misc_info.XStateData.Features);
        ++feature_index) {
     SCOPED_TRACE(base::StringPrintf("feature_index %" PRIuS, feature_index));
-    EXPECT_EQ(observed->XStateData.Features[feature_index].Offset,
-              expected->XStateData.Features[feature_index].Offset);
-    EXPECT_EQ(observed->XStateData.Features[feature_index].Size,
-              expected->XStateData.Features[feature_index].Size);
+    EXPECT_EQ(observed_misc_info.XStateData.Features[feature_index].Offset,
+              expected_misc_info.XStateData.Features[feature_index].Offset);
+    EXPECT_EQ(observed_misc_info.XStateData.Features[feature_index].Size,
+              expected_misc_info.XStateData.Features[feature_index].Size);
   }
-  EXPECT_EQ(observed->ProcessCookie, expected->ProcessCookie);
+  EXPECT_EQ(observed_misc_info.ProcessCookie, expected_misc_info.ProcessCookie);
 }
 
 TEST(MinidumpMiscInfoWriter, Empty) {

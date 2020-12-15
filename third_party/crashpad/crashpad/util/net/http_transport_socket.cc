@@ -415,7 +415,7 @@ bool WriteRequest(Stream* stream,
         }
       }
 
-      write_start = buf.crlf - size_len;
+      write_start = static_cast<char*>(buf.crlf) - size_len;
       write_size = size_len + sizeof(buf.crlf) + data_bytes + kCRLFSize;
     } else {
       // When not using chunked encoding, only use buf.data.

@@ -22,12 +22,54 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/process/process_metrics.h"
+#include "build/build_config.h"
+
+#if defined(OS_LINUX)
+#include "third_party/lss/lss.h"
+#endif
 
 namespace {
 
-bool Munmap(uintptr_t addr, size_t len) {
-  if (munmap(reinterpret_cast<void*>(addr), len) != 0) {
-    PLOG(ERROR) << "munmap";
+#if defined(OS_LINUX)
+void* CallMmap(void* addr,
+               size_t len,
+               int prot,
+               int flags,
+               int fd,
+               off_t offset) {
+  return sys_mmap(addr, len, prot, flags, fd, offset);
+}
+
+int CallMunmap(void* addr, size_t len) {
+  return sys_munmap(addr, len);
+}
+
+int CallMprotect(void* addr, size_t len, int prot) {
+  return sys_mprotect(addr, len, prot);
+}
+#else
+void* CallMmap(void* addr,
+               size_t len,
+               int prot,
+               int flags,
+               int fd,
+               off_t offset) {
+  return mmap(addr, len, prot, flags, fd, offset);
+}
+
+int CallMunmap(void* addr, size_t len) {
+  return munmap(addr, len);
+}
+
+int CallMprotect(void* addr, size_t len, int prot) {
+  return mprotect(addr, len, prot);
+}
+#endif
+
+bool LoggingMunmap(uintptr_t addr, size_t len, bool can_log) {
+  if (CallMunmap(reinterpret_cast<void*>(addr), len) != 0) {
+    PLOG_IF(ERROR, can_log) << "munmap";
     return false;
   }
 
@@ -35,7 +77,7 @@ bool Munmap(uintptr_t addr, size_t len) {
 }
 
 size_t RoundPage(size_t size) {
-  const size_t kPageMask = base::checked_cast<size_t>(getpagesize()) - 1;
+  const size_t kPageMask = base::checked_cast<size_t>(base::GetPageSize()) - 1;
   return (size + kPageMask) & ~kPageMask;
 }
 
@@ -43,11 +85,12 @@ size_t RoundPage(size_t size) {
 
 namespace crashpad {
 
-ScopedMmap::ScopedMmap() {}
+ScopedMmap::ScopedMmap(bool can_log) : can_log_(can_log) {}
 
 ScopedMmap::~ScopedMmap() {
   if (is_valid()) {
-    Munmap(reinterpret_cast<uintptr_t>(addr_), RoundPage(len_));
+    LoggingMunmap(
+        reinterpret_cast<uintptr_t>(addr_), RoundPage(len_), can_log_);
   }
 }
 
@@ -63,7 +106,7 @@ bool ScopedMmap::ResetAddrLen(void* addr, size_t len) {
     DCHECK_EQ(len, 0u);
   } else {
     DCHECK_NE(len, 0u);
-    DCHECK_EQ(new_addr % getpagesize(), 0u);
+    DCHECK_EQ(new_addr % base::GetPageSize(), 0u);
     DCHECK((base::CheckedNumeric<uintptr_t>(new_addr) + (new_len_round - 1))
                .IsValid());
   }
@@ -74,11 +117,13 @@ bool ScopedMmap::ResetAddrLen(void* addr, size_t len) {
     const uintptr_t old_addr = reinterpret_cast<uintptr_t>(addr_);
     const size_t old_len_round = RoundPage(len_);
     if (old_addr < new_addr) {
-      result &= Munmap(old_addr, std::min(old_len_round, new_addr - old_addr));
+      result &= LoggingMunmap(
+          old_addr, std::min(old_len_round, new_addr - old_addr), can_log_);
     }
     if (old_addr + old_len_round > new_addr + new_len_round) {
       uintptr_t unmap_start = std::max(old_addr, new_addr + new_len_round);
-      result &= Munmap(unmap_start, old_addr + old_len_round - unmap_start);
+      result &= LoggingMunmap(
+          unmap_start, old_addr + old_len_round - unmap_start, can_log_);
     }
   }
 
@@ -100,9 +145,9 @@ bool ScopedMmap::ResetMmap(void* addr,
   // consider the return value from Reset().
   Reset();
 
-  void* new_addr = mmap(addr, len, prot, flags, fd, offset);
+  void* new_addr = CallMmap(addr, len, prot, flags, fd, offset);
   if (new_addr == MAP_FAILED) {
-    PLOG(ERROR) << "mmap";
+    PLOG_IF(ERROR, can_log_) << "mmap";
     return false;
   }
 
@@ -113,8 +158,8 @@ bool ScopedMmap::ResetMmap(void* addr,
 }
 
 bool ScopedMmap::Mprotect(int prot) {
-  if (mprotect(addr_, RoundPage(len_), prot) < 0) {
-    PLOG(ERROR) << "mprotect";
+  if (CallMprotect(addr_, RoundPage(len_), prot) < 0) {
+    PLOG_IF(ERROR, can_log_) << "mprotect";
     return false;
   }
 

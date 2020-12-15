@@ -69,7 +69,7 @@ struct AlignedAllocator {
   pointer address(reference x) const noexcept { return &x; }
   const_pointer address(const_reference x) const noexcept { return &x; }
 
-  pointer allocate(size_type n, std::allocator<void>::const_pointer hint = 0) {
+  pointer allocate(size_type n, const void* hint = 0) {
     return reinterpret_cast<pointer>(
         AlignedAllocate(Alignment, sizeof(value_type) * n));
   }

@@ -110,18 +110,17 @@ TEST(MinidumpHandleDataWriter, OneHandle) {
       GetHandleDataStream(string_file.string(), &handle_data_stream));
 
   EXPECT_EQ(handle_data_stream->NumberOfDescriptors, 1u);
-  const MINIDUMP_HANDLE_DESCRIPTOR* handle_descriptor =
-      reinterpret_cast<const MINIDUMP_HANDLE_DESCRIPTOR*>(
-          &handle_data_stream[1]);
-  EXPECT_EQ(handle_descriptor->Handle, handle_snapshot.handle);
+  MINIDUMP_HANDLE_DESCRIPTOR handle_descriptor;
+  memcpy(&handle_descriptor, &handle_data_stream[1], sizeof(handle_descriptor));
+  EXPECT_EQ(handle_descriptor.Handle, handle_snapshot.handle);
   EXPECT_EQ(base::UTF16ToUTF8(MinidumpStringAtRVAAsString(
-                string_file.string(), handle_descriptor->TypeNameRva)),
+                string_file.string(), handle_descriptor.TypeNameRva)),
             handle_snapshot.type_name);
-  EXPECT_EQ(handle_descriptor->ObjectNameRva, 0u);
-  EXPECT_EQ(handle_descriptor->Attributes, handle_snapshot.attributes);
-  EXPECT_EQ(handle_descriptor->GrantedAccess, handle_snapshot.granted_access);
-  EXPECT_EQ(handle_descriptor->HandleCount, handle_snapshot.handle_count);
-  EXPECT_EQ(handle_descriptor->PointerCount, handle_snapshot.pointer_count);
+  EXPECT_EQ(handle_descriptor.ObjectNameRva, 0u);
+  EXPECT_EQ(handle_descriptor.Attributes, handle_snapshot.attributes);
+  EXPECT_EQ(handle_descriptor.GrantedAccess, handle_snapshot.granted_access);
+  EXPECT_EQ(handle_descriptor.HandleCount, handle_snapshot.handle_count);
+  EXPECT_EQ(handle_descriptor.PointerCount, handle_snapshot.pointer_count);
 }
 
 TEST(MinidumpHandleDataWriter, RepeatedTypeName) {
@@ -168,34 +167,34 @@ TEST(MinidumpHandleDataWriter, RepeatedTypeName) {
       GetHandleDataStream(string_file.string(), &handle_data_stream));
 
   EXPECT_EQ(handle_data_stream->NumberOfDescriptors, 2u);
-  const MINIDUMP_HANDLE_DESCRIPTOR* handle_descriptor =
-      reinterpret_cast<const MINIDUMP_HANDLE_DESCRIPTOR*>(
-          &handle_data_stream[1]);
-  EXPECT_EQ(handle_descriptor->Handle, handle_snapshot.handle);
+  MINIDUMP_HANDLE_DESCRIPTOR handle_descriptor;
+  memcpy(&handle_descriptor, &handle_data_stream[1], sizeof(handle_descriptor));
+  EXPECT_EQ(handle_descriptor.Handle, handle_snapshot.handle);
   EXPECT_EQ(base::UTF16ToUTF8(MinidumpStringAtRVAAsString(
-                string_file.string(), handle_descriptor->TypeNameRva)),
+                string_file.string(), handle_descriptor.TypeNameRva)),
             handle_snapshot.type_name);
-  EXPECT_EQ(handle_descriptor->ObjectNameRva, 0u);
-  EXPECT_EQ(handle_descriptor->Attributes, handle_snapshot.attributes);
-  EXPECT_EQ(handle_descriptor->GrantedAccess, handle_snapshot.granted_access);
-  EXPECT_EQ(handle_descriptor->HandleCount, handle_snapshot.handle_count);
-  EXPECT_EQ(handle_descriptor->PointerCount, handle_snapshot.pointer_count);
+  EXPECT_EQ(handle_descriptor.ObjectNameRva, 0u);
+  EXPECT_EQ(handle_descriptor.Attributes, handle_snapshot.attributes);
+  EXPECT_EQ(handle_descriptor.GrantedAccess, handle_snapshot.granted_access);
+  EXPECT_EQ(handle_descriptor.HandleCount, handle_snapshot.handle_count);
+  EXPECT_EQ(handle_descriptor.PointerCount, handle_snapshot.pointer_count);
 
-  const MINIDUMP_HANDLE_DESCRIPTOR* handle_descriptor2 =
-      reinterpret_cast<const MINIDUMP_HANDLE_DESCRIPTOR*>(
-          reinterpret_cast<const unsigned char*>(&handle_data_stream[1]) +
-          sizeof(MINIDUMP_HANDLE_DESCRIPTOR));
-  EXPECT_EQ(handle_descriptor2->Handle, handle_snapshot2.handle);
+  MINIDUMP_HANDLE_DESCRIPTOR handle_descriptor2;
+  memcpy(&handle_descriptor2,
+         reinterpret_cast<const unsigned char*>(&handle_data_stream[1]) +
+             sizeof(MINIDUMP_HANDLE_DESCRIPTOR),
+         sizeof(handle_descriptor2));
+  EXPECT_EQ(handle_descriptor2.Handle, handle_snapshot2.handle);
   EXPECT_EQ(base::UTF16ToUTF8(MinidumpStringAtRVAAsString(
-                string_file.string(), handle_descriptor2->TypeNameRva)),
+                string_file.string(), handle_descriptor2.TypeNameRva)),
             handle_snapshot2.type_name);
-  EXPECT_EQ(handle_descriptor2->ObjectNameRva, 0u);
-  EXPECT_EQ(handle_descriptor2->Attributes, handle_snapshot2.attributes);
-  EXPECT_EQ(handle_descriptor2->GrantedAccess, handle_snapshot2.granted_access);
-  EXPECT_EQ(handle_descriptor2->HandleCount, handle_snapshot2.handle_count);
-  EXPECT_EQ(handle_descriptor2->PointerCount, handle_snapshot2.pointer_count);
+  EXPECT_EQ(handle_descriptor2.ObjectNameRva, 0u);
+  EXPECT_EQ(handle_descriptor2.Attributes, handle_snapshot2.attributes);
+  EXPECT_EQ(handle_descriptor2.GrantedAccess, handle_snapshot2.granted_access);
+  EXPECT_EQ(handle_descriptor2.HandleCount, handle_snapshot2.handle_count);
+  EXPECT_EQ(handle_descriptor2.PointerCount, handle_snapshot2.pointer_count);
 
-  EXPECT_EQ(handle_descriptor2->TypeNameRva, handle_descriptor->TypeNameRva);
+  EXPECT_EQ(handle_descriptor2.TypeNameRva, handle_descriptor.TypeNameRva);
 }
 
 }  // namespace

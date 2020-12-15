@@ -41,7 +41,7 @@ class DebugRendezvous {
 
     //! \brief The difference between the preferred load address in the ELF file
     //!     and the actual loaded address in memory.
-    LinuxVMOffset load_bias;
+    VMAddress load_bias;
 
     //! \brief The address of the dynamic array for this object.
     LinuxVMAddress dynamic_array;

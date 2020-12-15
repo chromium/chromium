@@ -80,6 +80,8 @@
         'linux/exception_snapshot_linux_test.cc',
         'linux/process_reader_linux_test.cc',
         'linux/system_snapshot_linux_test.cc',
+        'linux/test_modules.cc',
+        'linux/test_modules.h',
         'mac/cpu_context_mac_test.cc',
         'mac/mach_o_image_annotations_reader_test.cc',
         'mac/mach_o_image_reader_test.cc',

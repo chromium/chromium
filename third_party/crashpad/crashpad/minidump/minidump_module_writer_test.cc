@@ -213,56 +213,68 @@ void ExpectModule(const MINIDUMP_MODULE* expected,
                   const char* expected_debug_name,
                   uint32_t expected_debug_type,
                   bool expected_debug_utf16) {
-  EXPECT_EQ(observed->BaseOfImage, expected->BaseOfImage);
-  EXPECT_EQ(observed->SizeOfImage, expected->SizeOfImage);
-  EXPECT_EQ(observed->CheckSum, expected->CheckSum);
-  EXPECT_EQ(observed->TimeDateStamp, expected->TimeDateStamp);
-  EXPECT_EQ(observed->VersionInfo.dwSignature,
-            implicit_cast<uint32_t>(VS_FFI_SIGNATURE));
-  EXPECT_EQ(observed->VersionInfo.dwStrucVersion,
-            implicit_cast<uint32_t>(VS_FFI_STRUCVERSION));
-  EXPECT_EQ(observed->VersionInfo.dwFileVersionMS,
-            expected->VersionInfo.dwFileVersionMS);
-  EXPECT_EQ(observed->VersionInfo.dwFileVersionLS,
-            expected->VersionInfo.dwFileVersionLS);
-  EXPECT_EQ(observed->VersionInfo.dwProductVersionMS,
-            expected->VersionInfo.dwProductVersionMS);
-  EXPECT_EQ(observed->VersionInfo.dwProductVersionLS,
-            expected->VersionInfo.dwProductVersionLS);
-  EXPECT_EQ(observed->VersionInfo.dwFileFlagsMask,
-            expected->VersionInfo.dwFileFlagsMask);
-  EXPECT_EQ(observed->VersionInfo.dwFileFlags,
-            expected->VersionInfo.dwFileFlags);
-  EXPECT_EQ(observed->VersionInfo.dwFileOS, expected->VersionInfo.dwFileOS);
-  EXPECT_EQ(observed->VersionInfo.dwFileType, expected->VersionInfo.dwFileType);
-  EXPECT_EQ(observed->VersionInfo.dwFileSubtype,
-            expected->VersionInfo.dwFileSubtype);
-  EXPECT_EQ(observed->VersionInfo.dwFileDateMS,
-            expected->VersionInfo.dwFileDateMS);
-  EXPECT_EQ(observed->VersionInfo.dwFileDateLS,
-            expected->VersionInfo.dwFileDateLS);
-  EXPECT_EQ(observed->Reserved0, 0u);
-  EXPECT_EQ(observed->Reserved1, 0u);
+  MINIDUMP_MODULE expected_module, observed_module;
+  memcpy(&expected_module, expected, sizeof(expected_module));
+  memcpy(&observed_module, observed, sizeof(observed_module));
 
-  EXPECT_NE(observed->ModuleNameRva, 0u);
+  EXPECT_EQ(observed_module.BaseOfImage, expected_module.BaseOfImage);
+  EXPECT_EQ(observed_module.SizeOfImage, expected_module.SizeOfImage);
+  EXPECT_EQ(observed_module.CheckSum, expected_module.CheckSum);
+  EXPECT_EQ(observed_module.TimeDateStamp, expected_module.TimeDateStamp);
+  EXPECT_EQ(observed_module.VersionInfo.dwSignature,
+            implicit_cast<uint32_t>(VS_FFI_SIGNATURE));
+  EXPECT_EQ(observed_module.VersionInfo.dwStrucVersion,
+            implicit_cast<uint32_t>(VS_FFI_STRUCVERSION));
+  EXPECT_EQ(observed_module.VersionInfo.dwFileVersionMS,
+            expected_module.VersionInfo.dwFileVersionMS);
+  EXPECT_EQ(observed_module.VersionInfo.dwFileVersionLS,
+            expected_module.VersionInfo.dwFileVersionLS);
+  EXPECT_EQ(observed_module.VersionInfo.dwProductVersionMS,
+            expected_module.VersionInfo.dwProductVersionMS);
+  EXPECT_EQ(observed_module.VersionInfo.dwProductVersionLS,
+            expected_module.VersionInfo.dwProductVersionLS);
+  EXPECT_EQ(observed_module.VersionInfo.dwFileFlagsMask,
+            expected_module.VersionInfo.dwFileFlagsMask);
+  EXPECT_EQ(observed_module.VersionInfo.dwFileFlags,
+            expected_module.VersionInfo.dwFileFlags);
+  EXPECT_EQ(observed_module.VersionInfo.dwFileOS,
+            expected_module.VersionInfo.dwFileOS);
+  EXPECT_EQ(observed_module.VersionInfo.dwFileType,
+            expected_module.VersionInfo.dwFileType);
+  EXPECT_EQ(observed_module.VersionInfo.dwFileSubtype,
+            expected_module.VersionInfo.dwFileSubtype);
+  EXPECT_EQ(observed_module.VersionInfo.dwFileDateMS,
+            expected_module.VersionInfo.dwFileDateMS);
+  EXPECT_EQ(observed_module.VersionInfo.dwFileDateLS,
+            expected_module.VersionInfo.dwFileDateLS);
+
+  uint64_t reserved0, reserved1;
+  memcpy(&reserved0, &observed_module.Reserved0, sizeof(reserved0));
+  memcpy(&reserved1, &observed_module.Reserved1, sizeof(reserved1));
+
+  EXPECT_EQ(reserved0, 0u);
+  EXPECT_EQ(reserved1, 0u);
+
+  EXPECT_NE(observed_module.ModuleNameRva, 0u);
   base::string16 observed_module_name_utf16 =
-      MinidumpStringAtRVAAsString(file_contents, observed->ModuleNameRva);
+      MinidumpStringAtRVAAsString(file_contents, observed_module.ModuleNameRva);
   base::string16 expected_module_name_utf16 =
       base::UTF8ToUTF16(expected_module_name);
   EXPECT_EQ(observed_module_name_utf16, expected_module_name_utf16);
 
-  ASSERT_NO_FATAL_FAILURE(ExpectCodeViewRecord(&observed->CvRecord,
+  ASSERT_NO_FATAL_FAILURE(ExpectCodeViewRecord(&observed_module.CvRecord,
                                                file_contents,
                                                expected_pdb_name,
                                                expected_pdb_uuid,
                                                expected_pdb_timestamp,
                                                expected_pdb_age));
 
-  ASSERT_NO_FATAL_FAILURE(ExpectMiscellaneousDebugRecord(&observed->MiscRecord,
-                                                         file_contents,
-                                                         expected_debug_name,
-                                                         expected_debug_type,
-                                                         expected_debug_utf16));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMiscellaneousDebugRecord(&observed_module.MiscRecord,
+                                     file_contents,
+                                     expected_debug_name,
+                                     expected_debug_type,
+                                     expected_debug_utf16));
 }
 
 // ExpectModuleWithBuildIDCv() is like ExpectModule( but expects the module to
@@ -300,8 +312,13 @@ void ExpectModuleWithBuildIDCv(const MINIDUMP_MODULE* expected,
             expected->VersionInfo.dwFileDateMS);
   EXPECT_EQ(observed->VersionInfo.dwFileDateLS,
             expected->VersionInfo.dwFileDateLS);
-  EXPECT_EQ(observed->Reserved0, 0u);
-  EXPECT_EQ(observed->Reserved1, 0u);
+
+  uint64_t reserved0, reserved1;
+  memcpy(&reserved0, &observed->Reserved0, sizeof(reserved0));
+  memcpy(&reserved1, &observed->Reserved1, sizeof(reserved1));
+
+  EXPECT_EQ(reserved0, 0u);
+  EXPECT_EQ(reserved1, 0u);
 
   EXPECT_NE(observed->ModuleNameRva, 0u);
   base::string16 observed_module_name_utf16 =

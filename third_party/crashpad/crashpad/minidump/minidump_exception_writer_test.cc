@@ -69,22 +69,27 @@ void ExpectExceptionStream(const MINIDUMP_EXCEPTION_STREAM* expected,
                            const MinidumpContextX86** context) {
   EXPECT_EQ(observed->ThreadId, expected->ThreadId);
   EXPECT_EQ(observed->__alignment, 0u);
-  EXPECT_EQ(observed->ExceptionRecord.ExceptionCode,
-            expected->ExceptionRecord.ExceptionCode);
-  EXPECT_EQ(observed->ExceptionRecord.ExceptionFlags,
-            expected->ExceptionRecord.ExceptionFlags);
-  EXPECT_EQ(observed->ExceptionRecord.ExceptionRecord,
-            expected->ExceptionRecord.ExceptionRecord);
-  EXPECT_EQ(observed->ExceptionRecord.ExceptionAddress,
-            expected->ExceptionRecord.ExceptionAddress);
-  EXPECT_EQ(observed->ExceptionRecord.NumberParameters,
-            expected->ExceptionRecord.NumberParameters);
+
+  // Copy the ExceptionRecords so that their uint64_t members can be accessed
+  // with the proper alignment.
+  const MINIDUMP_EXCEPTION observed_exception = observed->ExceptionRecord;
+  const MINIDUMP_EXCEPTION expected_exception = expected->ExceptionRecord;
+
+  EXPECT_EQ(observed_exception.ExceptionCode, expected_exception.ExceptionCode);
+  EXPECT_EQ(observed_exception.ExceptionFlags,
+            expected_exception.ExceptionFlags);
+  EXPECT_EQ(observed_exception.ExceptionRecord,
+            expected_exception.ExceptionRecord);
+  EXPECT_EQ(observed_exception.ExceptionAddress,
+            expected_exception.ExceptionAddress);
+  EXPECT_EQ(observed_exception.NumberParameters,
+            expected_exception.NumberParameters);
   EXPECT_EQ(observed->ExceptionRecord.__unusedAlignment, 0u);
   for (size_t index = 0;
-       index < base::size(observed->ExceptionRecord.ExceptionInformation);
+       index < base::size(observed_exception.ExceptionInformation);
        ++index) {
-    EXPECT_EQ(observed->ExceptionRecord.ExceptionInformation[index],
-              expected->ExceptionRecord.ExceptionInformation[index]);
+    EXPECT_EQ(observed_exception.ExceptionInformation[index],
+              expected_exception.ExceptionInformation[index]);
   }
   *context = MinidumpWritableAtLocationDescriptor<MinidumpContextX86>(
       file_contents, observed->ThreadContext);

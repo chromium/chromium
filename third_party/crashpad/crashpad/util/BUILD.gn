@@ -565,8 +565,6 @@ crashpad_static_library("util") {
 
   public_configs = [ "..:crashpad_config" ]
 
-  configs = [ "..:disable_ubsan" ]
-
   # Include generated files starting with "util".
   if (crashpad_is_in_fuchsia) {
     include_dirs = [ "$root_gen_dir/third_party/crashpad" ]
