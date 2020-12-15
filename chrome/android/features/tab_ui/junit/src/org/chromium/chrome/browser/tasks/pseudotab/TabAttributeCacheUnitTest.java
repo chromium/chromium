@@ -45,6 +45,8 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -256,10 +258,10 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void findLastSearchTerm() {
-        String otherUrl = "https://example.com";
-        String searchUrl = "https://www.google.com/search?q=test";
+        GURL otherUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL searchUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
         String searchTerm = "test";
-        String searchUrl2 = "https://www.google.com/search?q=query";
+        GURL searchUrl2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL);
         String searchTerm2 = "query";
 
         TemplateUrlService service = Mockito.mock(TemplateUrlService.class);
@@ -279,7 +281,7 @@ public class TabAttributeCacheUnitTest {
         NavigationEntry navigationEntry0 = mock(NavigationEntry.class);
         doReturn(navigationEntry1).when(navigationHistory).getEntryAtIndex(1);
         doReturn(navigationEntry0).when(navigationHistory).getEntryAtIndex(0);
-        doReturn(otherUrl).when(mTab1).getUrlString();
+        doReturn(otherUrl).when(mTab1).getUrl();
 
         // No searches.
         doReturn(otherUrl).when(navigationEntry1).getOriginalUrl();
@@ -307,11 +309,11 @@ public class TabAttributeCacheUnitTest {
 
         // Skip if the SRP is showing.
         doReturn(2).when(navigationHistory).getCurrentEntryIndex();
-        doReturn(searchUrl).when(mTab1).getUrlString();
+        doReturn(searchUrl).when(mTab1).getUrl();
         Assert.assertNull(TabAttributeCache.findLastSearchTerm(mTab1));
 
         // Reset current SRP.
-        doReturn(otherUrl).when(mTab1).getUrlString();
+        doReturn(otherUrl).when(mTab1).getUrl();
         Assert.assertEquals(searchTerm, TabAttributeCache.findLastSearchTerm(mTab1));
 
         verify(navigationHistory, never()).getEntryAtIndex(eq(2));

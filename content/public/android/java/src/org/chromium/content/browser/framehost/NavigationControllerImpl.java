@@ -16,6 +16,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.url.GURL;
 
 /**
  * The NavigationControllerImpl Java wrapper to allow communicating with the native
@@ -306,8 +307,8 @@ import org.chromium.content_public.common.ResourceRequestBody;
     }
 
     @CalledByNative
-    private static NavigationEntry createNavigationEntry(int index, String url, String virtualUrl,
-            String originalUrl, String referrerUrl, String title, Bitmap favicon, int transition,
+    private static NavigationEntry createNavigationEntry(int index, GURL url, GURL virtualUrl,
+            GURL originalUrl, GURL referrerUrl, String title, Bitmap favicon, int transition,
             long timestamp) {
         return new NavigationEntry(index, url, virtualUrl, originalUrl, referrerUrl, title, favicon,
                 transition, timestamp);

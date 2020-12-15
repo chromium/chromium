@@ -436,7 +436,8 @@ public class NavigateTest {
                                                .getWebContents()
                                                .getNavigationController()
                                                .getEntryAtIndex(0)
-                                               .getUrl();
+                                               .getUrl()
+                                               .getSpec();
         Assert.assertEquals(NEW_TAB_PAGE, previousNavigationUrl);
     }
 

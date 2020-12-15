@@ -122,7 +122,7 @@ public class CloseButtonNavigator {
 
         NavigationHistory history = controller.getNavigationHistory();
         for (int i = history.getCurrentEntryIndex() - 1; i >= 0; i--) {
-            String url = history.getEntryAtIndex(i).getUrl();
+            String url = history.getEntryAtIndex(i).getUrl().getSpec();
             if (!isLandingPage(url)) continue;
 
             controller.goToNavigationIndex(i);

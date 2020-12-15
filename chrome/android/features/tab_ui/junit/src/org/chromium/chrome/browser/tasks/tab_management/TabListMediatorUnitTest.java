@@ -132,6 +132,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.annotation.Retention;
@@ -1949,10 +1950,10 @@ public class TabListMediatorUnitTest {
     public void navigateToLastSearchQuery() {
         initAndAssertAllProperties();
 
-        String otherUrl = "https://example.com";
-        String searchUrl = "https://www.google.com/search?q=test";
+        GURL otherUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL searchUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
         String searchTerm = "test";
-        String searchUrl2 = "https://www.google.com/search?q=query";
+        GURL searchUrl2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL);
         String searchTerm2 = "query";
         TemplateUrlService service = Mockito.mock(TemplateUrlService.class);
         doReturn(null).when(service).getSearchQueryForUrl(otherUrl);
@@ -1986,47 +1987,47 @@ public class TabListMediatorUnitTest {
         doReturn(otherUrl).when(navigationEntry0).getOriginalUrl();
         TabListMediator.SearchTermChipUtils.navigateToLastSearchQuery(mTab1);
         inOrder.verify(mTab1).loadUrl(
-                refEq(new LoadUrlParams(searchUrl, PageTransition.KEYWORD_GENERATED)));
+                refEq(new LoadUrlParams(searchUrl.getSpec(), PageTransition.KEYWORD_GENERATED)));
 
         // Has earlier SRP.
         doReturn(otherUrl).when(navigationEntry1).getOriginalUrl();
         doReturn(searchUrl2).when(navigationEntry0).getOriginalUrl();
         TabListMediator.SearchTermChipUtils.navigateToLastSearchQuery(mTab1);
         inOrder.verify(mTab1).loadUrl(
-                refEq(new LoadUrlParams(searchUrl2, PageTransition.KEYWORD_GENERATED)));
+                refEq(new LoadUrlParams(searchUrl2.getSpec(), PageTransition.KEYWORD_GENERATED)));
 
         // Latest one wins.
         doReturn(searchUrl).when(navigationEntry1).getOriginalUrl();
         doReturn(searchUrl2).when(navigationEntry0).getOriginalUrl();
         TabListMediator.SearchTermChipUtils.navigateToLastSearchQuery(mTab1);
         inOrder.verify(mTab1).loadUrl(
-                refEq(new LoadUrlParams(searchUrl, PageTransition.KEYWORD_GENERATED)));
+                refEq(new LoadUrlParams(searchUrl.getSpec(), PageTransition.KEYWORD_GENERATED)));
 
         // Rejected by canGoToOffset().
         doReturn(false).when(navigationController).canGoToOffset(eq(-1));
         TabListMediator.SearchTermChipUtils.navigateToLastSearchQuery(mTab1);
         inOrder.verify(mTab1).loadUrl(
-                refEq(new LoadUrlParams(searchUrl2, PageTransition.KEYWORD_GENERATED)));
+                refEq(new LoadUrlParams(searchUrl2.getSpec(), PageTransition.KEYWORD_GENERATED)));
 
         // Reset canGoToOffset().
         doReturn(true).when(navigationController).canGoToOffset(anyInt());
         TabListMediator.SearchTermChipUtils.navigateToLastSearchQuery(mTab1);
         inOrder.verify(mTab1).loadUrl(
-                refEq(new LoadUrlParams(searchUrl, PageTransition.KEYWORD_GENERATED)));
+                refEq(new LoadUrlParams(searchUrl.getSpec(), PageTransition.KEYWORD_GENERATED)));
 
         // Only care about previous ones.
         doReturn(1).when(navigationHistory).getCurrentEntryIndex();
         TabListMediator.SearchTermChipUtils.navigateToLastSearchQuery(mTab1);
         inOrder.verify(mTab1).loadUrl(
-                refEq(new LoadUrlParams(searchUrl2, PageTransition.KEYWORD_GENERATED)));
+                refEq(new LoadUrlParams(searchUrl2.getSpec(), PageTransition.KEYWORD_GENERATED)));
     }
 
     @Test
     public void searchListener() {
         initAndAssertAllProperties();
 
-        String otherUrl = "https://example.com";
-        String searchUrl = "https://www.google.com/search?q=test";
+        GURL otherUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL searchUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
         String searchTerm = "test";
         TemplateUrlService service = Mockito.mock(TemplateUrlService.class);
         doReturn(null).when(service).getSearchQueryForUrl(otherUrl);
@@ -2055,14 +2056,14 @@ public class TabListMediatorUnitTest {
         verify(mGridCardOnClickListenerProvider)
                 .onTabSelecting(mModel.get(0).model.get(TabProperties.TAB_ID));
         verify(mTab1).loadUrl(
-                refEq(new LoadUrlParams(searchUrl, PageTransition.KEYWORD_GENERATED)));
+                refEq(new LoadUrlParams(searchUrl.getSpec(), PageTransition.KEYWORD_GENERATED)));
     }
 
     @Test
     public void searchListener_frozenTab() {
         initAndAssertAllProperties();
 
-        String searchUrl = JUnitTestGURLs.SEARCH_URL;
+        GURL searchUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
         String searchTerm = "test";
         TemplateUrlService service = Mockito.mock(TemplateUrlService.class);
         doReturn(searchTerm).when(service).getSearchQueryForUrl(searchUrl);
@@ -2088,9 +2089,9 @@ public class TabListMediatorUnitTest {
         verify(navigationController, never()).goToOffset(0);
 
         doReturn(webContents).when(mTab1).getWebContents();
-        mTabObserverCaptor.getValue().onPageLoadStarted(mTab1, JUnitTestGURLs.getGURL(searchUrl));
+        mTabObserverCaptor.getValue().onPageLoadStarted(mTab1, searchUrl);
         verify(mTab1).loadUrl(
-                refEq(new LoadUrlParams(searchUrl, PageTransition.KEYWORD_GENERATED)));
+                refEq(new LoadUrlParams(searchUrl.getSpec(), PageTransition.KEYWORD_GENERATED)));
     }
 
     @Test

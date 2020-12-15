@@ -127,7 +127,7 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
 
         NavigationEntry entry = tab.getWebContents().getNavigationController()
                 .getPendingEntry();
-        return entry != null ? entry.getUrl() : null;
+        return entry != null ? entry.getUrl().getSpec() : null;
     }
 
     @Override

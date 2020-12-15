@@ -2538,7 +2538,7 @@ public class AwContents implements SmartClipProvider {
         NavigationHistory history = mNavigationController.getNavigationHistory();
         int currentIndex = history.getCurrentEntryIndex();
         if (currentIndex >= 0 && currentIndex < history.getEntryCount()) {
-            return history.getEntryAtIndex(currentIndex).getOriginalUrl();
+            return history.getEntryAtIndex(currentIndex).getOriginalUrl().getSpec();
         }
         return null;
     }

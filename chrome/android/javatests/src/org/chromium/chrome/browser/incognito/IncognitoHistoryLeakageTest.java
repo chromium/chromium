@@ -190,7 +190,7 @@ public class IncognitoHistoryLeakageTest {
         NavigationEntry entry1 = navigationHistory1.getEntryAtIndex(0);
         NavigationEntry entry2 = navigationHistory2.getEntryAtIndex(0);
 
-        assertEquals(entry1.getOriginalUrl(), mTestPage1);
-        assertEquals(entry2.getOriginalUrl(), mTestPage2);
+        assertEquals(mTestPage1, entry1.getOriginalUrl().getSpec());
+        assertEquals(mTestPage2, entry2.getOriginalUrl().getSpec());
     }
 }

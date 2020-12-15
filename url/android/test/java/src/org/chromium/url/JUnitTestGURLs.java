@@ -28,9 +28,17 @@ public class JUnitTestGURLs {
     public static final String URL_1_WITH_PATH = "https://www.one.com/some_path.html";
     public static final String URL_2 = "https://www.two.com";
     public static final String SEARCH_URL = "https://www.google.com/search?q=test";
+    public static final String SEARCH_2_URL = "https://www.google.com/search?q=query";
     public static final String INITIAL_URL = "https://initial.com";
     public static final String SPECULATED_URL = "https://speculated.com";
     public static final String NTP_URL = "chrome://newtab";
+    public static final String DOM_DISILLER_URL = "distiller://url";
+    public static final String RED_1 = "https://www.red.com/page1";
+    public static final String RED_2 = "https://www.red.com/page2";
+    public static final String RED_3 = "https://www.red.com/page3";
+    public static final String BLUE_1 = "https://www.blue.com/page1";
+    public static final String BLUE_2 = "https://www.blue.com/page2";
+    public static final String BLUE_3 = "https://www.blue.com/page3";
 
     // Map of URL string to GURL serialization.
     /* package */ static final Map<String, String> sGURLMap;
@@ -48,9 +56,30 @@ public class JUnitTestGURLs {
         map.put(URL_2,
                 "78,1,true,0,5,0,-1,0,-1,8,11,0,-1,19,1,0,-1,0,-1,"
                         + "false,false,https://www.two.com/");
+        map.put(RED_1,
+                "83,1,true,0,5,0,-1,0,-1,8,11,0,-1,19,6,0,-1,0,-1,"
+                        + "false,false,https://www.red.com/page1");
+        map.put(RED_2,
+                "83,1,true,0,5,0,-1,0,-1,8,11,0,-1,19,6,0,-1,0,-1,"
+                        + "false,false,https://www.red.com/page2");
+        map.put(RED_3,
+                "83,1,true,0,5,0,-1,0,-1,8,11,0,-1,19,6,0,-1,0,-1,"
+                        + "false,false,https://www.red.com/page3");
+        map.put(BLUE_1,
+                "84,1,true,0,5,0,-1,0,-1,8,12,0,-1,20,6,0,-1,0,-1,"
+                        + "false,false,https://www.blue.com/page1");
+        map.put(BLUE_2,
+                "84,1,true,0,5,0,-1,0,-1,8,12,0,-1,20,6,0,-1,0,-1,"
+                        + "false,false,https://www.blue.com/page2");
+        map.put(BLUE_3,
+                "84,1,true,0,5,0,-1,0,-1,8,12,0,-1,20,6,0,-1,0,-1,"
+                        + "false,false,https://www.blue.com/page3");
         map.put(SEARCH_URL,
                 "94,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,7,30,6,0,-1,"
                         + "false,false,https://www.google.com/search?q=test");
+        map.put(SEARCH_2_URL,
+                "95,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,7,30,7,0,-1,"
+                        + "false,false,https://www.google.com/search?q=query");
         map.put(INITIAL_URL,
                 "78,1,true,0,5,0,-1,0,-1,8,11,0,-1,19,1,0,-1,0,-1,"
                         + "false,false,https://initial.com/");
@@ -60,6 +89,10 @@ public class JUnitTestGURLs {
         map.put(NTP_URL,
                 "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,"
                         + "false,false,chrome://newtab/");
+        map.put(DOM_DISILLER_URL,
+                "73,1,true,0,9,0,-1,0,-1,0,-1,0,-1,10,5,0,-1,0,-1,"
+                        + "false,false,distiller://url");
+
         sGURLMap = Collections.unmodifiableMap(map);
     }
 

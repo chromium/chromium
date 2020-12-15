@@ -37,6 +37,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for SendTabToSelfShareActivityTest */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -101,6 +102,8 @@ public class SendTabToSelfShareActivityTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getVisibleEntry()).thenReturn(mNavigationEntry);
+        when(mNavigationEntry.getUrl())
+                .thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
 
         // Setup the mocked object for sync settings.
         when(mProfileSyncService.isSyncRequested()).thenReturn(true);

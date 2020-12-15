@@ -35,14 +35,17 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.concurrent.TimeoutException;
 
 /** This class tests the behavior of the {@link ReaderModeManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ReaderModeManagerTest {
-    private static final String MOCK_DISTILLER_URL = "distiller://url";
-    private static final String MOCK_URL = "http://url";
+    private static final GURL MOCK_DISTILLER_URL =
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.DOM_DISILLER_URL);
+    private static final GURL MOCK_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
     @Rule
     public JniMocker jniMocker = new JniMocker();
@@ -108,8 +111,8 @@ public class ReaderModeManagerTest {
         when(DomDistillerUrlUtils.isDistilledPage(MOCK_DISTILLER_URL)).thenReturn(true);
         when(DomDistillerUrlUtils.isDistilledPage(MOCK_URL)).thenReturn(false);
 
-        when(DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL))
-                .thenReturn(MOCK_URL);
+        when(DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL.getSpec()))
+                .thenReturn(MOCK_URL.getSpec());
 
         mManager = new ReaderModeManager(mTab);
 
@@ -180,7 +183,7 @@ public class ReaderModeManagerTest {
         when(mNavigationHandle.isInMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
         when(mNavigationHandle.hasCommitted()).thenReturn(true);
-        when(mNavigationHandle.getUrlString()).thenReturn(MOCK_URL);
+        when(mNavigationHandle.getUrlString()).thenReturn(MOCK_URL.getSpec());
 
         mWebContentsObserver.didStartNavigation(mNavigationHandle);
         mWebContentsObserver.didFinishNavigation(mNavigationHandle);
@@ -199,7 +202,7 @@ public class ReaderModeManagerTest {
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
         when(mNavigationHandle.isInMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
-        when(mNavigationHandle.getUrlString()).thenReturn(MOCK_DISTILLER_URL);
+        when(mNavigationHandle.getUrlString()).thenReturn(MOCK_DISTILLER_URL.getSpec());
 
         mWebContentsObserver.didStartNavigation(mNavigationHandle);
         mWebContentsObserver.didFinishNavigation(mNavigationHandle);
@@ -217,7 +220,7 @@ public class ReaderModeManagerTest {
         when(mNavController.getLastCommittedEntryIndex()).thenReturn(0);
         when(mNavigationHandle.isInMainFrame()).thenReturn(true);
         when(mNavigationHandle.isSameDocument()).thenReturn(true);
-        when(mNavigationHandle.getUrlString()).thenReturn(MOCK_URL);
+        when(mNavigationHandle.getUrlString()).thenReturn(MOCK_URL.getSpec());
 
         mWebContentsObserver.didStartNavigation(mNavigationHandle);
         mWebContentsObserver.didFinishNavigation(mNavigationHandle);
@@ -231,7 +234,7 @@ public class ReaderModeManagerTest {
      * @param url The URL the entry represents.
      * @return A new {@link NavigationEntry}.
      */
-    private NavigationEntry createNavigationEntry(int index, String url) {
+    private NavigationEntry createNavigationEntry(int index, GURL url) {
         return new NavigationEntry(index, url, url, url, url, "", null, 0, 0);
     }
 }

@@ -35,6 +35,7 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.mock.MockNavigationController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
 
@@ -61,10 +62,10 @@ public class NavigationPopupTest {
 
     // Exists solely to expose protected methods to this test.
     private static class TestNavigationEntry extends NavigationEntry {
-        public TestNavigationEntry(int index, String url, String virtualUrl, String originalUrl,
+        public TestNavigationEntry(int index, GURL url, GURL virtualUrl, GURL originalUrl,
                 String title, Bitmap favicon, int transition, long timestamp) {
-            super(index, url, virtualUrl, originalUrl, /*referrerUrl=*/null, title, favicon,
-                    transition, timestamp);
+            super(index, url, virtualUrl, originalUrl, GURL.emptyGURL(), title, favicon, transition,
+                    timestamp);
         }
     }
 
@@ -75,9 +76,10 @@ public class NavigationPopupTest {
         public TestNavigationController() {
             mHistory = new NavigationHistory();
             mHistory.addEntry(new TestNavigationEntry(
-                    1, "about:blank", null, null, "About Blank", null, 0, 0));
-            mHistory.addEntry(new TestNavigationEntry(
-                    5, UrlUtils.encodeHtmlDataUri("<html>1</html>"), null, null, null, null, 0, 0));
+                    1, new GURL("about:blank"), GURL.emptyGURL(), null, "About Blank", null, 0, 0));
+            mHistory.addEntry(new TestNavigationEntry(5,
+                    new GURL(UrlUtils.encodeHtmlDataUri("<html>1</html>")), GURL.emptyGURL(),
+                    GURL.emptyGURL(), null, null, 0, 0));
         }
 
         @Override

@@ -1844,7 +1844,7 @@ public class ExternalNavigationHandler {
         NavigationEntry entry = nController.getEntryAtIndex(index);
         if (entry == null) return null;
 
-        return entry.getUrl();
+        return entry.getUrl().getSpec();
     }
 
     /**

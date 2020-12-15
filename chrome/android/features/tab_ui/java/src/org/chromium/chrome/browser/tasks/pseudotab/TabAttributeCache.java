@@ -25,6 +25,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.url.GURL;
 
 /**
  * Cache for attributes of {@link PseudoTab} to be available before native is ready.
@@ -248,13 +249,13 @@ public class TabAttributeCache {
         NavigationHistory history = controller.getNavigationHistory();
 
         if (!TextUtils.isEmpty(
-                    TemplateUrlServiceFactory.get().getSearchQueryForUrl(tab.getUrlString()))) {
+                    TemplateUrlServiceFactory.get().getSearchQueryForUrl(tab.getUrl()))) {
             // If we are already at a search result page, do not show the last search term.
             return null;
         }
 
         for (int i = history.getCurrentEntryIndex() - 1; i >= 0; i--) {
-            String url = history.getEntryAtIndex(i).getOriginalUrl();
+            GURL url = history.getEntryAtIndex(i).getOriginalUrl();
             String query = TemplateUrlServiceFactory.get().getSearchQueryForUrl(url);
             if (!TextUtils.isEmpty(query)) {
                 return removeEscapedCodePoints(query);

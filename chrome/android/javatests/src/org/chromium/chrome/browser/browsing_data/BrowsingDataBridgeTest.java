@@ -369,7 +369,7 @@ public class BrowsingDataBridgeTest {
         while (true) {
             NavigationEntry entry = controller.getEntryAtIndex(i++);
             if (entry == null) return urls;
-            urls.add(entry.getUrl());
+            urls.add(entry.getUrl().getSpec());
         }
     }
 }

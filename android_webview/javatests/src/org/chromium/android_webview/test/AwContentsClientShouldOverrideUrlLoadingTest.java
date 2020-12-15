@@ -862,7 +862,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         NavigationHistory navHistory = mAwContents.getNavigationHistory();
         Assert.assertEquals(2, navHistory.getEntryCount());
         Assert.assertEquals(1, navHistory.getCurrentEntryIndex());
-        Assert.assertEquals(linkUrl, navHistory.getEntryAtIndex(1).getUrl());
+        Assert.assertEquals(linkUrl, navHistory.getEntryAtIndex(1).getUrl().getSpec());
 
         pageFinishedCount = onPageFinishedHelper.getCallCount();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> mAwContents.goBack());
@@ -873,7 +873,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         navHistory = mAwContents.getNavigationHistory();
         Assert.assertEquals(2, navHistory.getEntryCount());
         Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
-        Assert.assertEquals(firstUrl, navHistory.getEntryAtIndex(0).getUrl());
+        Assert.assertEquals(firstUrl, navHistory.getEntryAtIndex(0).getUrl().getSpec());
     }
 
     @Test

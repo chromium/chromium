@@ -40,8 +40,8 @@ public class SendTabToSelfShareActivity extends ChromeAccessorActivity {
                 ProfileSyncService.get() != null && ProfileSyncService.get().isSyncRequested();
         controller.requestShowContent(
                 SendTabToSelfCoordinator.createBottomSheetContent(triggeringActivity,
-                        entry.getUrl(), entry.getTitle(), entry.getTimestamp(), controller,
-                        new SettingsLauncherImpl(), isSyncEnabled),
+                        entry.getUrl().getSpec(), entry.getTitle(), entry.getTimestamp(),
+                        controller, new SettingsLauncherImpl(), isSyncEnabled),
                 true);
         // TODO(crbug.com/968246): Remove the need to call this explicitly and instead have it
         // automatically show since PeekStateEnabled is set to false.

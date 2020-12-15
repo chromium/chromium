@@ -1257,7 +1257,7 @@ public class ContextualSearchManager
         // First, check the pending navigation entry, because there might be an navigation
         // not yet committed being processed. Otherwise, get the URL from the WebContents.
         NavigationEntry entry = searchWebContents.getNavigationController().getPendingEntry();
-        return entry != null ? entry.getUrl() : searchWebContents.getLastCommittedUrl();
+        return entry != null ? entry.getUrl().getSpec() : searchWebContents.getLastCommittedUrl();
     }
 
     @Override

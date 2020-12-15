@@ -134,7 +134,7 @@ public class TabContext {
             if (lastCommittedEntry == null) {
                 return null;
             }
-            return lastCommittedEntry.getReferrerUrl();
+            return lastCommittedEntry.getReferrerUrl().getSpec();
         }
 
         @Override

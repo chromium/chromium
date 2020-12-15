@@ -107,7 +107,7 @@ class NavigationSheetMediator {
                     (view) -> { mClickListener.click(position, entry.getIndex()); });
             mModelList.add(new ListItem(NAVIGATION_LIST_ITEM_TYPE_ID, model));
             if (entry.getFavicon() != null) continue;
-            final String pageUrl = entry.getUrl();
+            final String pageUrl = entry.getUrl().getSpec();
             if (!requestedUrls.contains(pageUrl)) {
                 FaviconHelper.FaviconImageCallback imageCallback =
                         (bitmap, iconUrl) -> onFaviconAvailable(pageUrl, bitmap);
@@ -139,7 +139,7 @@ class NavigationSheetMediator {
         // Do nothing if that happens.
         if (mModelList.size() == 0) return;
         for (int i = 0; i < mHistory.getEntryCount(); i++) {
-            if (TextUtils.equals(pageUrl, mHistory.getEntryAtIndex(i).getUrl())) {
+            if (TextUtils.equals(pageUrl, mHistory.getEntryAtIndex(i).getUrl().getSpec())) {
                 Drawable drawable;
                 if (favicon == null) {
                     drawable = UrlUtilities.isNTPUrl(pageUrl)
@@ -156,8 +156,8 @@ class NavigationSheetMediator {
     private String getEntryText(NavigationEntry entry) {
         String entryText = entry.getTitle();
         if (UrlUtilities.isNTPUrl(entry.getUrl())) entryText = mNewTabText;
-        if (TextUtils.isEmpty(entryText)) entryText = entry.getVirtualUrl();
-        if (TextUtils.isEmpty(entryText)) entryText = entry.getUrl();
+        if (TextUtils.isEmpty(entryText)) entryText = entry.getVirtualUrl().getSpec();
+        if (TextUtils.isEmpty(entryText)) entryText = entry.getUrl().getSpec();
         return entryText;
     }
 }

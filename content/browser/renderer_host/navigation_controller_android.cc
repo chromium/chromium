@@ -21,12 +21,12 @@
 #include "content/public/common/resource_request_body_android.h"
 #include "net/base/data_url.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "url/android/gurl_android.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -44,16 +44,16 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
   DCHECK(entry);
 
   // Get the details of the current entry
-  ScopedJavaLocalRef<jstring> j_url(
-      ConvertUTF8ToJavaString(env, entry->GetURL().spec()));
-  ScopedJavaLocalRef<jstring> j_virtual_url(
-      ConvertUTF8ToJavaString(env, entry->GetVirtualURL().spec()));
-  ScopedJavaLocalRef<jstring> j_original_url(
-      ConvertUTF8ToJavaString(env, entry->GetOriginalRequestURL().spec()));
+  ScopedJavaLocalRef<jobject> j_url(
+      url::GURLAndroid::FromNativeGURL(env, entry->GetURL()));
+  ScopedJavaLocalRef<jobject> j_virtual_url(
+      url::GURLAndroid::FromNativeGURL(env, entry->GetVirtualURL()));
+  ScopedJavaLocalRef<jobject> j_original_url(
+      url::GURLAndroid::FromNativeGURL(env, entry->GetOriginalRequestURL()));
   ScopedJavaLocalRef<jstring> j_title(
       ConvertUTF16ToJavaString(env, entry->GetTitle()));
-  ScopedJavaLocalRef<jstring> j_referrer_url(
-      ConvertUTF8ToJavaString(env, entry->GetReferrer().url.spec()));
+  ScopedJavaLocalRef<jobject> j_referrer_url(
+      url::GURLAndroid::FromNativeGURL(env, entry->GetReferrer().url));
   ScopedJavaLocalRef<jobject> j_bitmap;
   const content::FaviconStatus& status = entry->GetFavicon();
   if (status.valid && status.image.ToSkBitmap()->computeByteSize() > 0) {

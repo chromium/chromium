@@ -65,8 +65,8 @@ public class NavigationHistoryTest {
 
     private void checkHistoryItem(NavigationEntry item, String url, String originalUrl,
             String title, boolean faviconNull) {
-        Assert.assertEquals(url, item.getUrl());
-        Assert.assertEquals(originalUrl, item.getOriginalUrl());
+        Assert.assertEquals(url, item.getUrl().getSpec());
+        Assert.assertEquals(originalUrl, item.getOriginalUrl().getSpec());
         Assert.assertEquals(title, item.getTitle());
         if (faviconNull) {
             Assert.assertNull(item.getFavicon());

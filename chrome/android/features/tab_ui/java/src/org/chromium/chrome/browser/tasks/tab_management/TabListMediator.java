@@ -1639,11 +1639,11 @@ class TabListMediator {
                 int offset = i - history.getCurrentEntryIndex();
                 if (!controller.canGoToOffset(offset)) continue;
 
-                String url = history.getEntryAtIndex(i).getOriginalUrl();
+                GURL url = history.getEntryAtIndex(i).getOriginalUrl();
                 String query = TemplateUrlServiceFactory.get().getSearchQueryForUrl(url);
                 if (TextUtils.isEmpty(query)) continue;
 
-                tab.loadUrl(new LoadUrlParams(url, PageTransition.KEYWORD_GENERATED));
+                tab.loadUrl(new LoadUrlParams(url.getSpec(), PageTransition.KEYWORD_GENERATED));
                 return;
             }
         }

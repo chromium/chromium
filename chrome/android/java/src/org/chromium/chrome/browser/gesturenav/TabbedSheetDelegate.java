@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.url.GURL;
 
 /**
  * Implementation of {@link NavigationSheet#Delegate} that works with
@@ -33,8 +34,9 @@ public class TabbedSheetDelegate implements NavigationSheet.Delegate {
         NavigationHistory history =
                 mTab.getWebContents().getNavigationController().getDirectedNavigationHistory(
                         forward, MAXIMUM_HISTORY_ITEMS);
-        history.addEntry(new NavigationEntry(FULL_HISTORY_ENTRY_INDEX, UrlConstants.HISTORY_URL,
-                null, null, null, mFullHistoryMenu, null, 0, 0));
+        history.addEntry(new NavigationEntry(FULL_HISTORY_ENTRY_INDEX,
+                new GURL(UrlConstants.HISTORY_URL), GURL.emptyGURL(), GURL.emptyGURL(),
+                GURL.emptyGURL(), mFullHistoryMenu, null, 0, 0));
         return history;
     }
 
