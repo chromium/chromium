@@ -1689,15 +1689,16 @@ TEST_F(AppListViewTest, EmptySearchTextStillPeeking) {
   ASSERT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
 }
 
-TEST_F(AppListViewTest, MouseWheelScrollTransitionsToFullscreen) {
+TEST_F(AppListViewTest, UpwardMouseWheelScrollTransitionsToFullscreen) {
   base::HistogramTester histogram_tester;
 
   Initialize(false /*is_tablet_mode*/);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
 
-  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30),
+  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, 30),
                       ui::ET_MOUSEWHEEL);
+
   EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
   // This should use animation instead of drag.
   // TODO(oshima): Test AnimationSmoothness.
@@ -1717,18 +1718,44 @@ TEST_F(AppListViewTest, MouseWheelScrollTransitionsToFullscreen) {
   ASSERT_EQ(1, delegate_->dismiss_count());
 }
 
-TEST_F(AppListViewTest, GestureScrollTransitionsToFullscreen) {
+TEST_F(AppListViewTest, DownwardMouseWheelScrollDismissesPeekingLauncher) {
+  Initialize(false /*is_tablet_mode*/);
+  delegate_->GetTestModel()->PopulateApps(kInitialItems);
+  Show();
+
+  EXPECT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
+
+  EXPECT_EQ(0, delegate_->dismiss_count());
+  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30),
+                      ui::ET_MOUSEWHEEL);
+  EXPECT_EQ(1, delegate_->dismiss_count());
+}
+
+TEST_F(AppListViewTest, UpwardGestureScrollTransitionsToFullscreen) {
   base::HistogramTester histogram_tester;
   Initialize(false /*is_tablet_mode*/);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
 
-  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30), ui::ET_SCROLL);
+  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, 30), ui::ET_SCROLL);
+
   EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
   // This should use animation instead of drag.
   // TODO(oshima): Test AnimationSmoothness.
   histogram_tester.ExpectTotalCount(
       "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 0);
+}
+
+TEST_F(AppListViewTest, DownwardGestureScrollDismissesPeekingLauncher) {
+  Initialize(false /*is_tablet_mode*/);
+  delegate_->GetTestModel()->PopulateApps(kInitialItems);
+  Show();
+
+  EXPECT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
+
+  EXPECT_EQ(0, delegate_->dismiss_count());
+  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30), ui::ET_SCROLL);
+  EXPECT_EQ(1, delegate_->dismiss_count());
 }
 
 // Tests that typing text after opening transitions from peeking to half.

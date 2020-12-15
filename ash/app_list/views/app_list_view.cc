@@ -1550,11 +1550,18 @@ bool AppListView::HandleScroll(const gfx::Point& location,
       return true;
     }
 
-    SetState(AppListViewState::kFullscreenAllApps);
-    const AppListPeekingToFullscreenSource source =
-        type == ui::ET_MOUSEWHEEL ? kMousewheelScroll : kMousepadScroll;
-    UMA_HISTOGRAM_ENUMERATION(kAppListPeekingToFullscreenHistogram, source,
-                              kMaxPeekingToFullscreen);
+    DCHECK_EQ(AppListViewState::kPeeking, app_list_state_);
+    // For upward touchpad or mousewheel scrolling, expand to full screen. For
+    // downward, dismiss the peeking launcher.
+    if (offset.y() > 0) {
+      SetState(AppListViewState::kFullscreenAllApps);
+      const AppListPeekingToFullscreenSource source =
+          type == ui::ET_MOUSEWHEEL ? kMousewheelScroll : kMousepadScroll;
+      UMA_HISTOGRAM_ENUMERATION(kAppListPeekingToFullscreenHistogram, source,
+                                kMaxPeekingToFullscreen);
+    } else {
+      Dismiss();
+    }
   }
   return true;
 }
