@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -88,7 +87,6 @@ public class ChromeCachedFlags {
         List<CachedFieldTrialParameter> fieldTrialsToCache = Arrays.asList(
                 AppMenuPropertiesDelegateImpl.ACTION_BAR_VARIATION,
                 AppMenuPropertiesDelegateImpl.THREE_BUTTON_ACTION_BAR_VARIATION,
-                ChromeStartupDelegate.ENABLED,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS,
