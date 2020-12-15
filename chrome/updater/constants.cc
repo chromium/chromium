@@ -32,8 +32,7 @@ const char kTagSwitch[] = "tag";
 
 const char kServerServiceSwitch[] = "service";
 
-// TODO(crbug.com/1151106) - consider changing the command line literal.
-const char kServerUpdateServiceInternalSwitchValue[] = "control";
+const char kServerUpdateServiceInternalSwitchValue[] = "update-internal";
 const char kServerUpdateServiceSwitchValue[] = "update";
 
 #if defined(OS_WIN)

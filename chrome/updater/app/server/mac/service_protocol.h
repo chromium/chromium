@@ -51,14 +51,14 @@
 
 @end
 
-// Protocol for the XPC control tasks of the Updater.
+// Protocol for the XPC update service internal tasks of the Updater.
 @protocol CRUUpdateServicingInternal <NSObject>
 
 // Performs the task (activate service, uninstall service, or no-op) that is
 // relevant to the state of the Updater.
 - (void)performTasksWithReply:(void (^_Nullable)(void))reply;
 
-// Performs the control task that is relevant to the state of the Updater.
+// Performs the task that is relevant to the state of the Updater.
 // Does not perform an UpdateCheck.
 - (void)performInitializeUpdateServiceWithReply:(void (^_Nullable)(void))reply;
 

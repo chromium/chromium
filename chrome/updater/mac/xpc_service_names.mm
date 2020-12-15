@@ -13,9 +13,8 @@
 namespace updater {
 
 const char kUpdateServiceInternalLaunchdName[] =
-    MAC_BUNDLE_IDENTIFIER_STRING ".control." UPDATER_VERSION_STRING;
-const char kUpdateServiceLaunchdName[] =
-    MAC_BUNDLE_IDENTIFIER_STRING ".service";
+    MAC_BUNDLE_IDENTIFIER_STRING ".update-internal." UPDATER_VERSION_STRING;
+const char kUpdateServiceLaunchdName[] = MAC_BUNDLE_IDENTIFIER_STRING ".update";
 
 base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceLaunchdName() {
   return base::SysUTF8ToCFStringRef(kUpdateServiceLaunchdName);
