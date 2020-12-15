@@ -537,10 +537,13 @@ void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
   ShowScreen(new_profile_contents_.get(), GURL(url::kAboutBlankURL),
              /*show_toolbar=*/true);
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
+  // Set up a timeout for extended account info (which cancels any existing
+  // timeout closure).
+  extended_account_info_timeout_closure_.Reset(
       base::BindOnce(&ProfilePickerView::OnExtendedAccountInfoTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), account_info.email),
+                     weak_ptr_factory_.GetWeakPtr(), account_info.email));
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, extended_account_info_timeout_closure_.callback(),
       extended_account_info_timeout_);
 
   // DiceTurnSyncOnHelper deletes itself once done.
@@ -565,6 +568,8 @@ void ProfilePickerView::OnExtendedAccountInfoUpdated(
   name_for_signed_in_profile_ =
       profiles::GetDefaultNameForNewSignedInProfile(account_info);
   OnProfileNameAvailable();
+  // Extended info arrived on time, no need for the timeout callback any more.
+  extended_account_info_timeout_closure_.Cancel();
 }
 
 void ProfilePickerView::SetExtendedAccountInfoTimeoutForTesting(

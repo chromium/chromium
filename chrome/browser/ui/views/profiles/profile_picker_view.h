@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
+#include "base/cancelable_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -173,6 +174,7 @@ class ProfilePickerView : public views::DialogDelegateView,
   base::string16 name_for_signed_in_profile_;
   base::OnceClosure on_profile_name_available_;
   base::TimeDelta extended_account_info_timeout_;
+  base::CancelableOnceClosure extended_account_info_timeout_closure_;
 
   // Not null iff switching to sign-in is in progress.
   base::OnceCallback<void(bool)> switch_finished_callback_;
