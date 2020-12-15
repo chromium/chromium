@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "components/sessions/core/sessions_export.h"
 
 namespace base {
@@ -50,7 +51,9 @@ class SESSIONS_EXPORT SessionCommand {
   // The contents of the command.
   char* contents() { return const_cast<char*>(contents_.c_str()); }
   const char* contents() const { return contents_.c_str(); }
-
+  base::StringPiece contents_as_string_piece() const {
+    return base::StringPiece(contents_);
+  }
   // Identifier for the command.
   id_type id() const { return id_; }
 

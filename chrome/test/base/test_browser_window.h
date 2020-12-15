@@ -207,6 +207,8 @@ class TestBrowserWindow : public BrowserWindow {
   FeaturePromoController* SetFeaturePromoController(
       std::unique_ptr<FeaturePromoController> feature_promo_controller);
 
+  void set_workspace(std::string workspace) { workspace_ = workspace; }
+
  protected:
   void DestroyBrowser() override {}
 
@@ -239,6 +241,8 @@ class TestBrowserWindow : public BrowserWindow {
   TestDownloadShelf download_shelf_{nullptr};
   TestLocationBar location_bar_;
   gfx::NativeWindow native_window_ = nullptr;
+
+  std::string workspace_;
 
   std::unique_ptr<FeaturePromoController> feature_promo_controller_;
 
