@@ -103,7 +103,7 @@ html[new-layout] #oobe {
   padding-top: unset;
 }
 
-#outer-container.fullscreen,
+html:not([new-layout]) #outer-container.fullscreen,
 #outer-container.fullscreen #oobe,
 #inner-container,
 #inner-container > .step {
