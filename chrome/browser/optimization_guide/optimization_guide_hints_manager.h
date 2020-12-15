@@ -68,6 +68,8 @@ class OptimizationGuideHintsManager
       public NavigationPredictorKeyedService::Observer {
  public:
   OptimizationGuideHintsManager(
+      const std::vector<optimization_guide::proto::OptimizationType>&
+          optimization_types_at_initialization,
       optimization_guide::OptimizationGuideService* optimization_guide_service,
       Profile* profile,
       const base::FilePath& profile_path,

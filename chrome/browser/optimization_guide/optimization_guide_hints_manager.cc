@@ -255,6 +255,8 @@ bool ShouldIgnoreNewlyRegisteredOptimizationType(
 }  // namespace
 
 OptimizationGuideHintsManager::OptimizationGuideHintsManager(
+    const std::vector<optimization_guide::proto::OptimizationType>&
+        optimization_types_at_initialization,
     optimization_guide::OptimizationGuideService* optimization_guide_service,
     Profile* profile,
     const base::FilePath& profile_path,
@@ -289,6 +291,8 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
               ExternalAppPackageNamesApprovedForFetch()),
       top_host_provider_(top_host_provider),
       clock_(base::DefaultClock::GetInstance()) {
+  RegisterOptimizationTypes(optimization_types_at_initialization);
+
   g_browser_process->network_quality_tracker()
       ->AddEffectiveConnectionTypeObserver(this);
 
@@ -306,12 +310,9 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
 
 OptimizationGuideHintsManager::~OptimizationGuideHintsManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
 
-void OptimizationGuideHintsManager::Shutdown() {
   if (optimization_guide_service_)
     optimization_guide_service_->RemoveObserver(this);
-
   g_browser_process->network_quality_tracker()
       ->RemoveEffectiveConnectionTypeObserver(this);
 
@@ -319,6 +320,13 @@ void OptimizationGuideHintsManager::Shutdown() {
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile_);
   if (navigation_predictor_service)
     navigation_predictor_service->RemoveObserver(this);
+}
+
+void OptimizationGuideHintsManager::Shutdown() {
+  if (optimization_guide_service_)
+    optimization_guide_service_->RemoveObserver(this);
+  g_browser_process->network_quality_tracker()
+      ->RemoveEffectiveConnectionTypeObserver(this);
 }
 
 void OptimizationGuideHintsManager::OnHintsComponentAvailable(

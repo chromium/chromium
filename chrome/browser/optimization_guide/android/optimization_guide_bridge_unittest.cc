@@ -41,7 +41,8 @@ class MockOptimizationGuideHintsManager : public OptimizationGuideHintsManager {
       base::FilePath file_path,
       leveldb_proto::ProtoDatabaseProvider* db_provider,
       PrefService* pref_service)
-      : OptimizationGuideHintsManager(optimization_guide_service,
+      : OptimizationGuideHintsManager({},
+                                      optimization_guide_service,
                                       profile,
                                       file_path,
                                       pref_service,
@@ -107,7 +108,6 @@ class OptimizationGuideBridgeTest : public testing::Test {
   }
 
   void TearDown() override {
-    optimization_guide_hints_manager_->Shutdown();
     optimization_guide_hints_manager_.reset();
     db_provider_.reset();
     optimization_guide_service_.reset();

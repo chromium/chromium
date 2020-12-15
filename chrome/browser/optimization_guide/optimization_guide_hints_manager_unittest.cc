@@ -278,8 +278,10 @@ class OptimizationGuideHintsManagerTest
 
   void SetUp() override {
     optimization_guide::ProtoDatabaseProviderTestBase::SetUp();
-    web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
-    CreateServiceAndHintsManager(/*top_host_provider=*/nullptr);
+    web_contents_factory_.reset(new content::TestWebContentsFactory);
+    CreateServiceAndHintsManager(
+        /*optimization_types_at_initialization=*/{},
+        /*top_host_provider=*/nullptr);
   }
 
   void TearDown() override {
@@ -288,6 +290,8 @@ class OptimizationGuideHintsManagerTest
   }
 
   void CreateServiceAndHintsManager(
+      const std::vector<optimization_guide::proto::OptimizationType>&
+          optimization_types_at_initialization,
       optimization_guide::TopHostProvider* top_host_provider) {
     if (hints_manager_) {
       ResetHintsManager();
@@ -303,9 +307,9 @@ class OptimizationGuideHintsManagerTest
             &test_url_loader_factory_);
 
     hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
-        optimization_guide_service_.get(), &testing_profile_, temp_dir(),
-        pref_service_.get(), db_provider_.get(), top_host_provider,
-        url_loader_factory_);
+        optimization_types_at_initialization, optimization_guide_service_.get(),
+        &testing_profile_, temp_dir(), pref_service_.get(), db_provider_.get(),
+        top_host_provider, url_loader_factory_);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Add observer is called after the HintCache is fully initialized,
@@ -317,7 +321,6 @@ class OptimizationGuideHintsManagerTest
   }
 
   void ResetHintsManager() {
-    hints_manager_->Shutdown();
     hints_manager_.reset();
     RunUntilIdle();
   }
@@ -455,6 +458,44 @@ class OptimizationGuideHintsManagerTest
 };
 
 TEST_F(OptimizationGuideHintsManagerTest,
+       OptimizationTypesProvidedAtInitializationAreRegistered) {
+  std::vector<optimization_guide::proto::OptimizationType>
+      optimization_targets =
+          std::vector<optimization_guide::proto::OptimizationType>{
+              optimization_guide::proto::DEFER_ALL_SCRIPT};
+  CreateServiceAndHintsManager(optimization_targets,
+                               /*top_host_provider=*/nullptr);
+
+  EXPECT_FALSE(hints_manager()->registered_optimization_types().empty());
+  optimization_guide::proto::Configuration config;
+  optimization_guide::BloomFilter blocklist_bloom_filter(
+      kDefaultHostBloomFilterNumHashFunctions, kDefaultHostBloomFilterNumBits);
+  PopulateBloomFilterWithDefaultHost(&blocklist_bloom_filter);
+  AddBloomFilterToConfig(
+      optimization_guide::proto::DEFER_ALL_SCRIPT, blocklist_bloom_filter,
+      kDefaultHostBloomFilterNumHashFunctions, kDefaultHostBloomFilterNumBits,
+      /*is_allowlist=*/false, &config);
+  AddBloomFilterToConfig(
+      optimization_guide::proto::NOSCRIPT, blocklist_bloom_filter,
+      kDefaultHostBloomFilterNumHashFunctions, kDefaultHostBloomFilterNumBits,
+      /*is_allowlist=*/false, &config);
+
+  base::HistogramTester histogram_tester;
+
+  ProcessHints(config, "1.0.0.0");
+
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.OptimizationFilterStatus.DeferAllScript",
+      optimization_guide::OptimizationFilterStatus::kFoundServerFilterConfig,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.OptimizationFilterStatus.DeferAllScript",
+      optimization_guide::OptimizationFilterStatus::kCreatedServerFilter, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.OptimizationFilterStatus.NoScript", 0);
+}
+
+TEST_F(OptimizationGuideHintsManagerTest,
        ProcessHintsWithValidCommandLineOverride) {
   base::HistogramTester histogram_tester;
 
@@ -485,9 +526,8 @@ TEST_F(OptimizationGuideHintsManagerTest,
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       optimization_guide::switches::kHintsProtoOverride, encoded_config);
-  CreateServiceAndHintsManager(/*top_host_provider=*/nullptr);
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::LITE_PAGE_REDIRECT});
+  CreateServiceAndHintsManager({optimization_guide::proto::LITE_PAGE_REDIRECT},
+                               /*top_host_provider=*/nullptr);
 
   // The below histogram should not be recorded since hints weren't coming
   // directly from the component.
@@ -522,7 +562,8 @@ TEST_F(OptimizationGuideHintsManagerTest,
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       optimization_guide::switches::kHintsProtoOverride, "this-is-not-a-proto");
-  CreateServiceAndHintsManager(/*top_host_provider=*/nullptr);
+  CreateServiceAndHintsManager(/*optimization_types_at_initialization=*/{},
+                               /*top_host_provider=*/nullptr);
 
   // The below histogram should not be recorded since hints weren't coming
   // directly from the component.
@@ -552,7 +593,9 @@ TEST_F(OptimizationGuideHintsManagerTest,
     base::HistogramTester histogram_tester;
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         optimization_guide::switches::kHintsProtoOverride, encoded_config);
-    CreateServiceAndHintsManager(/*top_host_provider=*/nullptr);
+    CreateServiceAndHintsManager(
+        /*optimization_types_at_initialization=*/{},
+        /*top_host_provider=*/nullptr);
     // The below histogram should not be recorded since hints weren't coming
     // directly from the component.
     histogram_tester.ExpectTotalCount("OptimizationGuide.ProcessHintsResult",
@@ -1947,7 +1990,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingDisabledTest,
       std::make_unique<FakeTopHostProvider>(
           std::vector<std::string>({"example1.com", "example2.com"}));
 
-  CreateServiceAndHintsManager(top_host_provider.get());
+  CreateServiceAndHintsManager(/*optimization_types_at_initialization=*/{},
+                               top_host_provider.get());
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch.
@@ -2036,9 +2080,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
        HintsFetchNotAllowedIfFeatureIsEnabledButUserNotAllowed) {
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
-  CreateServiceAndHintsManager(/*top_host_provider=*/nullptr);
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::DEFER_ALL_SCRIPT});
+  CreateServiceAndHintsManager({optimization_guide::proto::DEFER_ALL_SCRIPT},
+                               /*top_host_provider=*/nullptr);
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
@@ -2054,9 +2097,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
        HintsFetchNotAllowedIfFeatureIsEnabledButTopHostProviderIsNotProvided) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
-  CreateServiceAndHintsManager(/*top_host_provider=*/nullptr);
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::DEFER_ALL_SCRIPT});
+  CreateServiceAndHintsManager({optimization_guide::proto::DEFER_ALL_SCRIPT},
+                               /*top_host_provider=*/nullptr);
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
@@ -2076,7 +2118,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
-  CreateServiceAndHintsManager(top_host_provider.get());
+  CreateServiceAndHintsManager(/*optimization_types_at_initialization=*/{},
+                               top_host_provider.get());
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -2096,7 +2139,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   std::unique_ptr<FakeTopHostProvider> top_host_provider =
       std::make_unique<FakeTopHostProvider>(std::vector<std::string>({}));
-  CreateServiceAndHintsManager(top_host_provider.get());
+  CreateServiceAndHintsManager(/*optimization_types_at_initialization=*/{},
+                               top_host_provider.get());
 
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
@@ -2119,7 +2163,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   std::unique_ptr<FakeTopHostProvider> top_host_provider =
       std::make_unique<FakeTopHostProvider>(
           std::vector<std::string>({"example1.com", "example2.com"}));
-  CreateServiceAndHintsManager(top_host_provider.get());
+  CreateServiceAndHintsManager(/*optimization_types_at_initialization=*/{},
+                               top_host_provider.get());
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -2148,9 +2193,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetcherTimerRetryDelay) {
       std::make_unique<FakeTopHostProvider>(
           std::vector<std::string>({"example1.com", "example2.com"}));
 
-  CreateServiceAndHintsManager(top_host_provider.get());
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::DEFER_ALL_SCRIPT});
+  CreateServiceAndHintsManager({optimization_guide::proto::DEFER_ALL_SCRIPT},
+                               top_host_provider.get());
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory({HintsFetcherEndState::kFetchFailed}));
   InitializeWithDefaultConfig("1.0.0");
@@ -2175,7 +2219,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
           std::vector<std::string>({"example1.com", "example2.com"}));
 
   // Force hints fetch scheduling.
-  CreateServiceAndHintsManager(top_host_provider.get());
+  CreateServiceAndHintsManager(/*optimization_types_at_initialization=*/{},
+                               top_host_provider.get());
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -3762,9 +3807,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingNoBatchUpdateTest,
           std::vector<std::string>({"example1.com", "example2.com"}));
 
   // Force hints fetch scheduling.
-  CreateServiceAndHintsManager(top_host_provider.get());
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::DEFER_ALL_SCRIPT});
+  CreateServiceAndHintsManager({optimization_guide::proto::DEFER_ALL_SCRIPT},
+                               top_host_provider.get());
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
