@@ -713,6 +713,8 @@ TEST_F(AXTreeSourceArcTest, OnViewSelectedEvent) {
 }
 
 TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
+  set_full_focus_mode(true);
+
   auto event = AXEventData::New();
   event->task_id = 1;
 
@@ -805,6 +807,8 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
 }
 
 TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
+  set_full_focus_mode(true);
+
   auto event = AXEventData::New();
   event->task_id = 1;
   event->event_type = AXEventType::VIEW_FOCUSED;
@@ -858,7 +862,6 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
 
   // VIEW_ACCESSIBILITY_FOCUSED event also updates the focus in screen reader
   // mode.
-  set_full_focus_mode(true);
   SetProperty(node1, AXBooleanProperty::ACCESSIBILITY_FOCUSED, false);
   SetProperty(node2, AXBooleanProperty::ACCESSIBILITY_FOCUSED, true);
   event->event_type = AXEventType::VIEW_ACCESSIBILITY_FOCUSED;

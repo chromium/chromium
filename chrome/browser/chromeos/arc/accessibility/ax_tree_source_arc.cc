@@ -385,7 +385,8 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     if (source_node && source_node->IsVisibleToUser()) {
       // Sometimes Android sets focus on unfocusable node, e.g. ListView.
       AccessibilityInfoDataWrapper* adjusted_node =
-          FindFirstFocusableNode(source_node);
+          UseFullFocusMode() ? FindFirstFocusableNode(source_node)
+                             : source_node;
       if (IsValid(adjusted_node))
         android_focused_id_ = adjusted_node->GetId();
     }
@@ -432,7 +433,7 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
       new_focus = GetFromId(itr->second);
 
     // Otherwise, try focus on the first focusable node.
-    if (!IsValid(new_focus))
+    if (!IsValid(new_focus) && UseFullFocusMode())
       new_focus = FindFirstFocusableNode(GetFromId(event_data.source_id));
 
     if (IsValid(new_focus))
