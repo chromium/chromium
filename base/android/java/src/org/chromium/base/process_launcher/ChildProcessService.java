@@ -283,10 +283,12 @@ public class ChildProcessService {
                     // Record process startup time histograms.
                     long startTime =
                             SystemClock.uptimeMillis() - ApiHelperForN.getStartUptimeMillis();
-                    String baseHistogramName = "Android.ChildProcessStartTime";
+                    String baseHistogramName = "Android.ChildProcessStartTimeV2";
                     String suffix = ContextUtils.isIsolatedProcess() ? ".Isolated" : ".NotIsolated";
-                    RecordHistogram.recordTimesHistogram(baseHistogramName + ".All", startTime);
-                    RecordHistogram.recordTimesHistogram(baseHistogramName + suffix, startTime);
+                    RecordHistogram.recordMediumTimesHistogram(
+                            baseHistogramName + ".All", startTime);
+                    RecordHistogram.recordMediumTimesHistogram(
+                            baseHistogramName + suffix, startTime);
                 }
 
                 mDelegate.runMain();
