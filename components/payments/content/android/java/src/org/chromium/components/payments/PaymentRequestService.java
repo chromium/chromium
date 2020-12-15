@@ -1181,7 +1181,7 @@ public class PaymentRequestService
                 && mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details);
     }
 
-    private String continueShow(@Nullable PaymentDetails details) {
+    private String continueShowWithUpdatedDetails(@Nullable PaymentDetails details) {
         assert mIsShowWaitingForUpdatedDetails;
         assert mBrowserPaymentRequest != null;
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
@@ -1197,7 +1197,8 @@ public class PaymentRequestService
         mSpec.updateWith(details);
 
         mIsShowWaitingForUpdatedDetails = false;
-        String error = mBrowserPaymentRequest.continueShow(mIsFinishedQueryingPaymentApps);
+        String error = mBrowserPaymentRequest.continueShowWithUpdatedDetails(
+                mSpec.getPaymentDetails(), mIsFinishedQueryingPaymentApps);
         if (error != null) return error;
 
         if (!mIsFinishedQueryingPaymentApps) return null;
@@ -1214,7 +1215,7 @@ public class PaymentRequestService
         if (mIsShowWaitingForUpdatedDetails) {
             // Under this condition, updateWith() is called in response to the resolution of
             // show()'s PaymentDetailsUpdate promise.
-            String error = continueShow(details);
+            String error = continueShowWithUpdatedDetails(details);
             if (error != null) {
                 onShowFailed(error);
                 return;

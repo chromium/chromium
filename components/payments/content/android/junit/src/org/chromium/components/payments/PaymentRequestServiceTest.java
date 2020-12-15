@@ -285,6 +285,11 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
                 .recordTransactionAmount(Mockito.eq("CNY"), Mockito.eq("123"), Mockito.eq(false));
     }
 
+    private void verifyContinuedShowWithUpdatedDetails(int times) {
+        Mockito.verify(mBrowserPaymentRequest, Mockito.times(times))
+                .continueShowWithUpdatedDetails(Mockito.any(), Mockito.anyBoolean());
+    }
+
     @Test
     @Feature({"Payments"})
     public void testNullFrameOriginFailsCreation() {
@@ -409,7 +414,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         assertNoError();
         service.updateWith(null);
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
-        Mockito.verify(mBrowserPaymentRequest, Mockito.never()).continueShow(Mockito.anyBoolean());
+        verifyContinuedShowWithUpdatedDetails(0);
     }
 
     @Test
@@ -422,7 +427,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         details.id = "testId";
         service.updateWith(details);
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
-        Mockito.verify(mBrowserPaymentRequest, Mockito.never()).continueShow(Mockito.anyBoolean());
+        verifyContinuedShowWithUpdatedDetails(0);
     }
 
     @Test
@@ -432,7 +437,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         service.show(mIsUserGestureDefaultValue, true);
         updateWith(service);
         assertNoError();
-        Mockito.verify(mBrowserPaymentRequest, Mockito.times(1)).continueShow(Mockito.anyBoolean());
+        verifyContinuedShowWithUpdatedDetails(1);
     }
 
     @Test

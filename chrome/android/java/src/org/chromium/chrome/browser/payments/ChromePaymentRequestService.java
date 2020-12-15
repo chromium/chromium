@@ -388,18 +388,18 @@ public class ChromePaymentRequestService
 
         if (hasNotifiedInvokedPaymentApp) return;
 
-        String detailsError = mSpec.getPaymentDetails().error;
-        mPaymentUiService.showShippingAddressErrorIfApplicable(detailsError);
+        mPaymentUiService.showShippingAddressErrorIfApplicable(details.error);
         mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();
     }
 
     // Implements BrowserPaymentRequest:
     @Override
-    public String continueShow(boolean isFinishedQueryingPaymentApps) {
+    public String continueShowWithUpdatedDetails(
+            PaymentDetails details, boolean isFinishedQueryingPaymentApps) {
         Context context = mDelegate.getContext(mRenderFrameHost);
         if (context == null) return ErrorStrings.CONTEXT_NOT_FOUND;
 
-        mPaymentUiService.updateDetailsOnPaymentRequestUI(mSpec.getPaymentDetails());
+        mPaymentUiService.updateDetailsOnPaymentRequestUI(details);
 
         if (isFinishedQueryingPaymentApps && !mHasSkippedAppSelector) {
             mPaymentUiService.enableAndUpdatePaymentRequestUIWithPaymentInfo();

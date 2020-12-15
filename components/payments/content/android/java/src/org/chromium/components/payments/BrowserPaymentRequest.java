@@ -210,12 +210,14 @@ public interface BrowserPaymentRequest {
     /**
      * Continues the unfinished part of show() that was blocked for the payment details that was
      * pending to be updated.
+     * @param details The updated payment details.
      * @param isFinishedQueryingPaymentApps Whether all payment app factories have been queried for
      *         their payment apps.
      * @return The error if it fails; null otherwise.
      */
     @Nullable
-    default String continueShow(boolean isFinishedQueryingPaymentApps) {
+    default String continueShowWithUpdatedDetails(
+            PaymentDetails details, boolean isFinishedQueryingPaymentApps) {
         return null;
     }
 
