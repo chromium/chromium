@@ -1423,6 +1423,9 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
       {"ws:)W\x1eW\xef\xb9\xaa"
        "81:80/",
        "ws://%29w%1ew%81/", false},
+      // Regression test for the last_invalid_percent_index bug described in
+      // https://crbug.com/1080890#c10.
+      {R"(HTTP:S/5%\../>%41)", "http://s/%3EA", true},
   };
 
   for (size_t i = 0; i < base::size(cases); i++) {

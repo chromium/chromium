@@ -5,6 +5,7 @@
 #include <limits.h>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_parse_internal.h"
@@ -261,6 +262,7 @@ bool DoPartialPath(const CHAR* spec,
 
   bool success = true;
   for (int i = path.begin; i < end; i++) {
+    DCHECK_LT(last_invalid_percent_index, output->length());
     UCHAR uch = static_cast<UCHAR>(spec[i]);
     if (sizeof(CHAR) > 1 && uch >= 0x80) {
       // We only need to test wide input for having non-ASCII characters. For
@@ -303,6 +305,9 @@ bool DoPartialPath(const CHAR* spec,
                 break;
               case DIRECTORY_UP:
                 BackUpToPreviousSlash(path_begin_in_output, output);
+                if (last_invalid_percent_index >= output->length()) {
+                  last_invalid_percent_index = INT_MIN;
+                }
                 i += dotlen + consumed_len - 1;
                 break;
             }
