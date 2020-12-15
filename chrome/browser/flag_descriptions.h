@@ -1080,6 +1080,9 @@ extern const char kPasswordImportDescription[];
 extern const char kPasswordScriptsFetchingName[];
 extern const char kPasswordScriptsFetchingDescription[];
 
+extern const char kPdfXfaFormsName[];
+extern const char kPdfXfaFormsDescription[];
+
 extern const char kForceWebContentsDarkModeName[];
 extern const char kForceWebContentsDarkModeDescription[];
 

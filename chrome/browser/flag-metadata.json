@@ -3915,6 +3915,12 @@
     "expiry_milestone": 89
   },
   {
+    "name": "pdf-xfa-forms",
+    "owners": [ "carlosil", "tsepez" ],
+    "expiry_milestone": 94
+  },
+
+  {
     "name": "percent-based-scrolling",
     "owners": [ "dlibby@microsoft.com", "sarsha@microsoft.com" ],
     "expiry_milestone": 89

@@ -27,6 +27,9 @@ const base::Feature kPDFViewerUpdate = {"PDFViewerUpdate",
 
 const base::Feature kPdfViewerPresentationMode = {
     "PdfViewerPresentationMode", base::FEATURE_DISABLED_BY_DEFAULT};
+// Feature has no effect if Chrome is built with no XFA support.
+const base::Feature kPdfXfaSupport = {"PdfXfaSupport",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSaveEditedPDFForm = {"SaveEditedPDFForm",
 #if BUILDFLAG(IS_ASH)
