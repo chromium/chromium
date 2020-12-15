@@ -883,6 +883,7 @@ junit_binary("chrome_junit_tests") {
     "//components/embedder_support/android:context_menu_java",
     "//components/embedder_support/android:junit_test_support",
     "//components/embedder_support/android:util_java",
+    "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/externalauth/android:java",
     "//components/externalauth/android:junit",
     "//components/favicon/android:java",
@@ -1156,6 +1157,7 @@ android_library("chrome_test_java") {
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/external_intents/android:java",
     "//components/external_intents/android:javatests",
+    "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/externalauth/android:java",
     "//components/favicon/android:java",
     "//components/feature_engagement:feature_engagement_java",
@@ -1941,6 +1943,7 @@ java_group("chrome_public_base_module_java") {
   deps = [
     ":app_hooks_java",
     ":chrome_all_java",
+    "//components/externalauth/android:google_delegate_public_impl_java",
   ]
 }
 
@@ -2352,7 +2355,10 @@ template("monochrome_public_apk_or_module_tmpl") {
     if (_enable_chrome_module) {
       deps += [ "//chrome/android:chrome_base_module_resources" ]
     } else {
-      deps += [ "//chrome/android:app_hooks_java" ]
+      deps += [
+        "//chrome/android:app_hooks_java",
+        "//components/externalauth/android:google_delegate_public_impl_java",
+      ]
     }
     if (!_is_trichrome) {
       deps += [
@@ -3005,7 +3011,10 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
     module_descs = _module_descs
     version_code = _version_code
     if (enable_chrome_module) {
-      chrome_deps = [ "//chrome/android:app_hooks_java" ]
+      chrome_deps = [
+        "//chrome/android:app_hooks_java",
+        "//components/externalauth/android:google_delegate_public_impl_java",
+      ]
       if (!_is_trichrome) {
         chrome_deps += [ "//chrome/android:monochrome_java" ]
       }
