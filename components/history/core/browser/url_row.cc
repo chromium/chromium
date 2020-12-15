@@ -57,7 +57,7 @@ URLResult::URLResult(const URLResult& other) = default;
 URLResult::URLResult(URLResult&& other) noexcept
     : URLRow(std::move(other)),
       visit_time_(other.visit_time_),
-      publicly_routable_(other.publicly_routable_),
+      floc_allowed_(other.floc_allowed_),
       snippet_(std::move(other.snippet_)),
       title_match_positions_(std::move(other.title_match_positions_)),
       blocked_visit_(other.blocked_visit_) {}
@@ -70,7 +70,7 @@ URLResult& URLResult::operator=(const URLResult&) = default;
 void URLResult::SwapResult(URLResult* other) {
   URLRow::Swap(other);
   std::swap(visit_time_, other->visit_time_);
-  std::swap(publicly_routable_, other->publicly_routable_);
+  std::swap(floc_allowed_, other->floc_allowed_);
   snippet_.Swap(&other->snippet_);
   title_match_positions_.swap(other->title_match_positions_);
   std::swap(blocked_visit_, other->blocked_visit_);

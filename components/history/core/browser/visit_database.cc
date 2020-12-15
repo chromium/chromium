@@ -114,7 +114,7 @@ void VisitDatabase::FillVisitRow(const sql::Statement& statement,
   visit->visit_duration =
       base::TimeDelta::FromInternalValue(statement.ColumnInt64(6));
   visit->incremented_omnibox_typed_score = statement.ColumnBool(7);
-  visit->publicly_routable = statement.ColumnBool(8);
+  visit->floc_allowed = statement.ColumnBool(8);
 }
 
 // static
@@ -179,7 +179,7 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(4, visit->segment_id);
   statement.BindInt64(5, visit->visit_duration.ToInternalValue());
   statement.BindBool(6, visit->incremented_omnibox_typed_score);
-  statement.BindBool(7, visit->publicly_routable);
+  statement.BindBool(7, visit->floc_allowed);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -270,7 +270,7 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   statement.BindInt64(4, visit.segment_id);
   statement.BindInt64(5, visit.visit_duration.ToInternalValue());
   statement.BindBool(6, visit.incremented_omnibox_typed_score);
-  statement.BindBool(7, visit.publicly_routable);
+  statement.BindBool(7, visit.floc_allowed);
   statement.BindInt64(8, visit.visit_id);
 
   return statement.Run();

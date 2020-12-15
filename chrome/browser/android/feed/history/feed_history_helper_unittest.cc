@@ -39,7 +39,7 @@ class FeedHistoryHelperTest : public testing::Test {
         /*nav_entry_id=*/0,
         /*referrer=*/GURL(), history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
         history::SOURCE_BROWSED, /*did_replace_entry=*/false,
-        /*publicly_routable=*/false);
+        /*floc_allowed=*/false);
   }
 
   void CheckURLExist(GURL url, bool expected) {

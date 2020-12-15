@@ -70,7 +70,7 @@ class VisitRow {
            ui::PageTransition arg_transition,
            SegmentID arg_segment_id,
            bool arg_incremented_omnibox_typed_score,
-           bool publicly_routable);
+           bool floc_allowed);
   ~VisitRow();
 
   // ID of this row (visit ID, used a a referrer for other visits).
@@ -101,17 +101,29 @@ class VisitRow {
   // Records whether the visit incremented the omnibox typed score.
   bool incremented_omnibox_typed_score = false;
 
-  // Indicates whether the IP of this url visit was publicly routable. According
-  // to the IETF document RFC-1918 (https://tools.ietf.org/html/rfc1918), the IP
-  // addresses within certain ranges are reserved for "private" internets, and
-  // the remaining addresses are considered "publicly routable".
+  // Indicates whether this URL visit can be included in FLoC computation. FLoC
+  // (https://github.com/WICG/floc) is an API that intends to provide callers
+  // with coarse-grained information about the user’s browsing interests. The
+  // history URL visits is a main source of computation, but some visits are
+  // ineligible to be included, so we use this bit to represent its eligiblity.
   //
-  // It’s a property of the visit because it can change depending on the network
-  // situation at navigation time. A value of “false” can mean several things:
-  // the IP was not publicly routable; this was not a committed navigation; this
-  // runs on iOS (unimplemented for iOS at this point); or the visit was
-  // migrated.
-  bool publicly_routable = false;
+  // Currently this bit is "true" if the IP of this url visit was publicly
+  // routable, i.e. the IP is NOT within the ranges reserved for "private"
+  // internet (https://tools.ietf.org/html/rfc1918). In the future, the
+  // implication may change and may encapsulate more conditions, e.g. page level
+  // opt-in, opt-out, etc.
+  //
+  // A value of “false” can mean several things: it's not eligible; we have
+  // insufficient knowledge (i.e. not implemented for iOS yet; the visit was
+  // migrated); it's not a visit type we are interested in for FLoC (i.e.
+  // we are only interested in committed navigation).
+  //
+  // Note: Historically this field and the corresponding database column were
+  // named "publicly_routable". Now, this field takes a new meaning, but we left
+  // the schema unchanged to save the migration cost. We'll do the migration
+  // when it's absolutely necessary, or when we finalize what will be needed
+  // long-term.
+  bool floc_allowed = false;
 
   // Compares two visits based on dates, for sorting.
   bool operator<(const VisitRow& other) const {
@@ -379,7 +391,7 @@ struct HistoryAddPageArgs {
                      VisitSource source,
                      bool did_replace_entry,
                      bool consider_for_ntp_most_visited,
-                     bool publicly_routable,
+                     bool floc_allowed,
                      base::Optional<base::string16> title = base::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
   ~HistoryAddPageArgs();
@@ -399,9 +411,9 @@ struct HistoryAddPageArgs {
   // doesn't guarantee it's relevant for Most Visited, since other requirements
   // exist (e.g. certain page transition types).
   bool consider_for_ntp_most_visited;
-  // Indicates whether the IP of this URL was publicly routable. It’s a property
-  // of the visit. See VisitRow for more details.
-  bool publicly_routable;
+  // Indicates whether this URL visit can be included in FLoC computation. See
+  // VisitRow::floc_allowed for details.
+  bool floc_allowed;
   base::Optional<base::string16> title;
 };
 
