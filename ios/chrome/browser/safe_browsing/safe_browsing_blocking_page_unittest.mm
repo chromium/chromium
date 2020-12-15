@@ -13,8 +13,8 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -51,8 +51,7 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
       : browser_state_(TestChromeBrowserState::Builder().Build()),
         url_("http://www.chromium.test"),
         resource_(CreateResource(&web_state_, url_)) {
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetBrowserState(browser_state_.get());
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
@@ -75,8 +74,8 @@ class SafeBrowsingBlockingPageTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::IO_MAINLOOP};
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  web::TestWebState web_state_;
-  web::TestNavigationManager* navigation_manager_ = nullptr;
+  web::FakeWebState web_state_;
+  web::FakeNavigationManager* navigation_manager_ = nullptr;
   GURL url_;
   UnsafeResource resource_;
   std::unique_ptr<IOSSecurityInterstitialPage> page_;

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/pending_unsafe_resource_storage.h"
 
 #include "base/bind.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -44,7 +44,7 @@ class PendingUnsafeResourceStorageTest : public PlatformTest {
     resource_callback_executed_ = true;
   }
 
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   const GURL url_;
   const SBThreatType threat_type_;
   bool resource_callback_executed_ = false;

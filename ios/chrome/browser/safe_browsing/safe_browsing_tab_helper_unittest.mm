@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,8 +44,7 @@ class SafeBrowsingTabHelperTest
     SafeBrowsingTabHelper::CreateForWebState(&web_state_);
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
     SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state_);
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
     web_state_.SetBrowserState(browser_state_.get());
@@ -150,9 +149,9 @@ class SafeBrowsingTabHelperTest
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   bool is_web_state_for_prerender_ = false;
-  web::TestNavigationManager* navigation_manager_ = nullptr;
+  web::FakeNavigationManager* navigation_manager_ = nullptr;
 };
 
 // Tests the case of a single navigation request and response, for a URL that is

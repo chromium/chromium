@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "testing/platform_test.h"
@@ -56,10 +56,9 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
       : browser_state_(TestChromeBrowserState::Builder().Build()),
         delegate_(base::MakeRefCounted<UrlCheckerDelegateImpl>(nullptr)),
         item_(web::NavigationItem::Create()),
-        web_state_(std::make_unique<web::TestWebState>()) {
+        web_state_(std::make_unique<web::FakeWebState>()) {
     // Set up the WebState.
-    std::unique_ptr<web::TestNavigationManager> navigation_manager =
-        std::make_unique<web::TestNavigationManager>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetLastCommittedItem(item_.get());
     web_state_->SetNavigationManager(std::move(navigation_manager));
     web_state_->SetBrowserState(browser_state_.get());
@@ -126,7 +125,7 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
   std::unique_ptr<ChromeBrowserState> browser_state_;
   scoped_refptr<safe_browsing::UrlCheckerDelegate> delegate_;
   std::unique_ptr<web::NavigationItem> item_;
-  std::unique_ptr<web::TestWebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   bool is_web_state_for_prerender_ = false;
 };
 

@@ -8,7 +8,7 @@
 
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +76,7 @@ class SafeBrowsingQueryManagerTest
  protected:
   SafeBrowsingQueryManagerTest()
       : task_environment_(web::WebTaskEnvironment::IO_MAINLOOP),
-        web_state_(std::make_unique<web::TestWebState>()),
+        web_state_(std::make_unique<web::FakeWebState>()),
         http_method_("GET"),
         navigation_item_id_(
             GetParam() == safe_browsing::ResourceType::kMainFrame ? -1 : 0) {
@@ -149,7 +149,7 @@ class WebStateDestroyingQueryManagerObserver
     : public SafeBrowsingQueryManager::Observer {
  public:
   WebStateDestroyingQueryManagerObserver()
-      : web_state_(std::make_unique<web::TestWebState>()) {}
+      : web_state_(std::make_unique<web::FakeWebState>()) {}
   ~WebStateDestroyingQueryManagerObserver() override {}
 
   void SafeBrowsingQueryFinished(
