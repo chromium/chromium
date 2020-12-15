@@ -987,6 +987,7 @@ DisplayResourceProvider::LockSetForExternalUse::~LockSetForExternalUse() {
 ExternalUseClient::ImageContext*
 DisplayResourceProvider::LockSetForExternalUse::LockResource(
     ResourceId id,
+    bool maybe_concurrent_reads,
     bool is_video_plane,
     const gfx::ColorSpace& color_space) {
   auto it = resource_provider_->resources_.find(id);
@@ -1013,8 +1014,8 @@ DisplayResourceProvider::LockSetForExternalUse::LockResource(
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(
               resource.transferable.mailbox_holder, resource.transferable.size,
-              resource.transferable.format, resource.transferable.ycbcr_info,
-              std::move(image_color_space));
+              resource.transferable.format, maybe_concurrent_reads,
+              resource.transferable.ycbcr_info, std::move(image_color_space));
     }
     resource.locked_for_external_use = true;
 

@@ -94,10 +94,13 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     DISALLOW_COPY_AND_ASSIGN(ImageContext);
   };
 
+  // If |maybe_concurrent_reads| is true then there can be concurrent reads to
+  // the texture that modify GL texture parameters.
   virtual std::unique_ptr<ImageContext> CreateImageContext(
       const gpu::MailboxHolder& holder,
       const gfx::Size& size,
       ResourceFormat format,
+      bool maybe_concurrent_reads,
       const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space) = 0;
 

@@ -119,6 +119,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       const gpu::MailboxHolder& holder,
       const gfx::Size& size,
       ResourceFormat format,
+      bool concurrent_reads,
       const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space) override;
 

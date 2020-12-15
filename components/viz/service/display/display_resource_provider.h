@@ -265,7 +265,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // set to nullptr (to avoid LOG spam).
     ExternalUseClient::ImageContext* LockResource(
         ResourceId resource_id,
-        bool is_video_plane = false,
+        bool maybe_concurrent_reads,
+        bool is_video_plane,
         const gfx::ColorSpace& color_space = gfx::ColorSpace());
 
     // Unlock all locked resources with a |sync_token|.  The |sync_token| should

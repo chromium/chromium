@@ -232,11 +232,12 @@ class MockExternalUseClient : public ExternalUseClient {
   MOCK_METHOD1(ReleaseImageContexts,
                gpu::SyncToken(
                    std::vector<std::unique_ptr<ImageContext>> image_contexts));
-  MOCK_METHOD5(CreateImageContext,
+  MOCK_METHOD6(CreateImageContext,
                std::unique_ptr<ImageContext>(
                    const gpu::MailboxHolder&,
                    const gfx::Size&,
                    ResourceFormat,
+                   bool,
                    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                    sk_sp<SkColorSpace>));
 };
@@ -285,12 +286,12 @@ TEST_P(DisplayResourceProviderTest, LockForExternalUse) {
   DisplayResourceProvider::LockSetForExternalUse lock_set(
       resource_provider_.get(), &client);
   gpu::MailboxHolder holder;
-  EXPECT_CALL(client, CreateImageContext(_, _, _, _, _))
+  EXPECT_CALL(client, CreateImageContext(_, _, _, _, _, _))
       .WillOnce(DoAll(SaveArg<0>(&holder),
                       Return(ByMove(std::move(owned_image_context)))));
 
-  ExternalUseClient::ImageContext* locked_image_context =
-      lock_set.LockResource(parent_id, /*is_video_plane=*/false);
+  ExternalUseClient::ImageContext* locked_image_context = lock_set.LockResource(
+      parent_id, /*maybe_concurrent_reads=*/true, /*is_video_plane=*/false);
   EXPECT_EQ(image_context, locked_image_context);
   ASSERT_EQ(holder.mailbox, mailbox);
   ASSERT_TRUE(holder.sync_token.HasData());
@@ -370,12 +371,12 @@ TEST_P(DisplayResourceProviderTest, LockForExternalUseWebView) {
   DisplayResourceProvider::LockSetForExternalUse lock_set(
       resource_provider_.get(), &client);
   gpu::MailboxHolder holder;
-  EXPECT_CALL(client, CreateImageContext(_, _, _, _, _))
+  EXPECT_CALL(client, CreateImageContext(_, _, _, _, _, _))
       .WillOnce(DoAll(SaveArg<0>(&holder),
                       Return(ByMove(std::move(owned_image_context)))));
 
-  ExternalUseClient::ImageContext* locked_image_context =
-      lock_set.LockResource(parent_id, /*is_video_plane=*/false);
+  ExternalUseClient::ImageContext* locked_image_context = lock_set.LockResource(
+      parent_id, /*maybe_concurrent_reads=*/true, /*is_video_plane=*/false);
   EXPECT_EQ(image_context, locked_image_context);
   ASSERT_EQ(holder.mailbox, mailbox);
   ASSERT_TRUE(holder.sync_token.HasData());

@@ -944,7 +944,7 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
 
       // Texture parameters can be modified by concurrent reads so reset them
       // before compositing from the texture. See https://crbug.com/1092080.
-      if (is_gl) {
+      if (is_gl && context->maybe_concurrent_reads()) {
         auto* promise_texture = context->promise_image_texture();
         if (promise_texture) {
           GrBackendTexture backend_texture = promise_texture->backendTexture();

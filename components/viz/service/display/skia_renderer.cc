@@ -552,6 +552,7 @@ class SkiaRenderer::ScopedSkImageBuilder {
  public:
   ScopedSkImageBuilder(SkiaRenderer* skia_renderer,
                        ResourceId resource_id,
+                       bool maybe_concurrent_reads,
                        SkAlphaType alpha_type = kPremul_SkAlphaType,
                        GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin,
                        bool use_target_color_space = false);
@@ -568,6 +569,7 @@ class SkiaRenderer::ScopedSkImageBuilder {
 SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     SkiaRenderer* skia_renderer,
     ResourceId resource_id,
+    bool maybe_concurrent_reads,
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin,
     bool use_target_color_space) {
@@ -581,7 +583,8 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     color_space = skia_renderer->CurrentRenderPassColorSpace();
 
   auto* image_context = skia_renderer->lock_set_for_external_use_->LockResource(
-      resource_id, /*is_video_plane=*/false, color_space);
+      resource_id, maybe_concurrent_reads, /*is_video_plane=*/false,
+      color_space);
   // |ImageContext::image| provides thread safety: (a) this ImageContext is
   // only accessed by GPU thread after |image| is set and (b) the fields of
   // ImageContext that are accessed by both compositor and GPU thread are no
@@ -630,21 +633,25 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
     // Skia API ignores the color space information on the individual planes.
     // Dropping them here avoids some LOG spam.
     auto* y_context = skia_renderer->lock_set_for_external_use_->LockResource(
-        quad->y_plane_resource_id(), /*is_video_plane=*/true);
+        quad->y_plane_resource_id(), /*maybe_concurrent_reads=*/true,
+        /*is_video_plane=*/true);
     contexts.push_back(std::move(y_context));
     auto* u_context = skia_renderer->lock_set_for_external_use_->LockResource(
-        quad->u_plane_resource_id(), /*is_video_plane=*/true);
+        quad->u_plane_resource_id(), /*maybe_concurrent_reads=*/true,
+        /*is_video_plane=*/true);
     contexts.push_back(std::move(u_context));
     if (plane_config == SkYUVAInfo::PlaneConfig::kY_U_V ||
         plane_config == SkYUVAInfo::PlaneConfig::kY_U_V_A) {
       auto* v_context = skia_renderer->lock_set_for_external_use_->LockResource(
-          quad->v_plane_resource_id(), /*is_video_plane=*/true);
+          quad->v_plane_resource_id(), /*maybe_concurrent_reads=*/true,
+          /*is_video_plane=*/true);
       contexts.push_back(std::move(v_context));
     }
 
     if (SkYUVAInfo::HasAlpha(plane_config)) {
       auto* a_context = skia_renderer->lock_set_for_external_use_->LockResource(
-          quad->a_plane_resource_id(), /*is_video_plane=*/true);
+          quad->a_plane_resource_id(), /*maybe_concurrent_reads=*/true,
+          /*is_video_plane=*/true);
       contexts.push_back(std::move(a_context));
     }
 
@@ -1797,6 +1804,7 @@ void SkiaRenderer::DrawStreamVideoQuad(const StreamVideoDrawQuad* quad,
   DCHECK(!MustFlushBatchedQuads(quad, rpdq_params, *params));
 
   ScopedSkImageBuilder builder(this, quad->resource_id(),
+                               /*maybe_concurrent_reads=*/true,
                                kUnpremul_SkAlphaType);
   const SkImage* image = builder.sk_image();
   if (!image)
@@ -1832,7 +1840,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       quad->is_video_frame && src_color_space.IsHDR();
 
   ScopedSkImageBuilder builder(
-      this, quad->resource_id(),
+      this, quad->resource_id(), /*maybe_concurrent_reads=*/true,
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       quad->y_flipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
       /*use_target_color_space=*/needs_color_conversion_filter);
@@ -1980,7 +1988,7 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   // should never produce tile quads in the first place.
   DCHECK(resource_provider_);
   ScopedSkImageBuilder builder(
-      this, quad->resource_id(),
+      this, quad->resource_id(), /*maybe_concurrent_reads=*/false,
       quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
   const SkImage* image = builder.sk_image();
   if (!image)
@@ -2302,7 +2310,8 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
 
   // Prepare mask.
   ResourceId mask_resource_id = quad->mask_resource_id();
-  ScopedSkImageBuilder mask_image_builder(this, mask_resource_id);
+  ScopedSkImageBuilder mask_image_builder(this, mask_resource_id,
+                                          /*maybe_concurrent_reads=*/false);
   const SkImage* mask_image = mask_image_builder.sk_image();
   DCHECK_EQ(!!mask_resource_id, !!mask_image);
   if (mask_image) {

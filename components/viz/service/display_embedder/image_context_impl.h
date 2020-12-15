@@ -49,6 +49,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   ImageContextImpl(const gpu::MailboxHolder& mailbox_holder,
                    const gfx::Size& size,
                    ResourceFormat resource_format,
+                   bool maybe_concurrent_reads,
                    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                    sk_sp<SkColorSpace> color_space);
 
@@ -64,6 +65,9 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   ~ImageContextImpl() final;
 
   void OnContextLost() final;
+
+  // Returns true if there might be concurrent reads to the backing texture.
+  bool maybe_concurrent_reads() const { return maybe_concurrent_reads_; }
 
   AggregatedRenderPassId render_pass_id() const { return render_pass_id_; }
   GrMipMapped mipmap() const { return mipmap_; }
@@ -106,6 +110,8 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
   const AggregatedRenderPassId render_pass_id_;
   const GrMipMapped mipmap_ = GrMipMapped::kNo;
+
+  const bool maybe_concurrent_reads_ = false;
 
   // Fallback in case we cannot produce a |representation_|.
   gpu::SharedContextState* fallback_context_state_ = nullptr;

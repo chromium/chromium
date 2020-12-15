@@ -22,13 +22,15 @@ ImageContextImpl::ImageContextImpl(
     const gpu::MailboxHolder& mailbox_holder,
     const gfx::Size& size,
     ResourceFormat resource_format,
+    bool maybe_concurrent_reads,
     const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space)
     : ImageContext(mailbox_holder,
                    size,
                    resource_format,
                    ycbcr_info,
-                   color_space) {}
+                   color_space),
+      maybe_concurrent_reads_(maybe_concurrent_reads) {}
 
 ImageContextImpl::ImageContextImpl(AggregatedRenderPassId render_pass_id,
                                    const gfx::Size& size,
