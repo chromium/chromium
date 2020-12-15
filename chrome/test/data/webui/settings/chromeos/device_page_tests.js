@@ -14,6 +14,7 @@ cr.define('device_page_tests', function() {
     Power: 'power',
     Storage: 'storage',
     Stylus: 'stylus',
+    KeyboardArrangement: 'arrow key arrangement',
   };
 
   /**
@@ -1336,6 +1337,148 @@ cr.define('device_page_tests', function() {
         assertEquals(
             deepLinkElement, getDeepActiveElement(),
             'Display mirroring checkbox should be focused for settingId=428.');
+      });
+
+      test('Keyboard display arrangement diasabled test', async () => {
+        addDisplay(1);
+        addDisplay(2);
+        fakeSystemDisplay.onDisplayChanged.callListeners();
+
+        return Promise
+            .all([
+              fakeSystemDisplay.getInfoCalled.promise,
+              fakeSystemDisplay.getLayoutCalled.promise,
+            ])
+            .then(() => {
+              return new Promise(resolve => {
+                Polymer.dom.flush();
+
+                assert(displayPage);
+                assertEquals(2, displayPage.displays.length);
+                assertTrue(displayPage.shouldShowArrangementSection_());
+
+                expectTrue(!!displayPage.$$('#arrangement-section'));
+
+                expectTrue(
+                    displayPage.showMirror_(false, displayPage.displays));
+                expectFalse(displayPage.isMirrored_(displayPage.displays));
+
+                Polymer.dom.flush();
+
+                displayPage.async(resolve);
+              });
+            })
+            .then(() => {
+              const displayLayout = displayPage.$$('#displayLayout');
+              const display = displayLayout.$$('#_fakeDisplayId2');
+              const layout =
+                  displayLayout.displayLayoutMap_.get('fakeDisplayId2');
+
+              expectEquals(layout.parentId, 'fakeDisplayId1');
+              expectEquals(layout.position, 'right');
+
+              display.focus();
+
+              // All keyboard interaction should be ignored
+
+              display.dispatchEvent(new KeyboardEvent(
+                  'keydown', {key: 'ArrowUp', bubbles: true}));
+              display.dispatchEvent(
+                  new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+              expectEquals(0, layout.offset);
+
+              display.dispatchEvent(new KeyboardEvent(
+                  'keydown', {key: 'ArrowDown', bubbles: true}));
+              display.dispatchEvent(
+                  new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+              expectEquals(0, layout.offset);
+
+              display.dispatchEvent(new KeyboardEvent(
+                  'keydown', {key: 'ArrowLeft', bubbles: true}));
+              display.dispatchEvent(
+                  new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+              expectEquals(0, layout.offset);
+
+              display.dispatchEvent(new KeyboardEvent(
+                  'keydown', {key: 'ArrowRight', bubbles: true}));
+              display.dispatchEvent(
+                  new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+              expectEquals(0, layout.offset);
+            });
+      });
+    });
+
+    suite(assert(TestNames.KeyboardArrangement), function() {
+      let displayPage;
+      let browserProxy;
+
+      setup(async () => {
+        displayPage =
+            await showAndGetDeviceSubpage('display', settings.routes.DISPLAY);
+        browserProxy = settings.DevicePageBrowserProxyImpl.getInstance();
+        await fakeSystemDisplay.getInfoCalled.promise;
+      });
+
+      test('Arrow key arrangement enabled test', async () => {
+        addDisplay(1);
+        addDisplay(2);
+        fakeSystemDisplay.onDisplayChanged.callListeners();
+
+        return Promise
+            .all([
+              fakeSystemDisplay.getInfoCalled.promise,
+              fakeSystemDisplay.getLayoutCalled.promise,
+            ])
+            .then(() => {
+              return new Promise(resolve => {
+                Polymer.dom.flush();
+
+                assert(displayPage);
+                assertEquals(2, displayPage.displays.length);
+                assertTrue(displayPage.shouldShowArrangementSection_());
+
+                expectTrue(!!displayPage.$$('#arrangement-section'));
+
+                expectTrue(
+                    displayPage.showMirror_(false, displayPage.displays));
+                expectFalse(displayPage.isMirrored_(displayPage.displays));
+
+                Polymer.dom.flush();
+
+                displayPage.async(resolve);
+              });
+            })
+            .then(() => {
+              const displayLayout = displayPage.$$('#displayLayout');
+              const display = displayLayout.$$('#_fakeDisplayId2');
+              const layout =
+                  displayLayout.displayLayoutMap_.get('fakeDisplayId2');
+
+              expectEquals(layout.parentId, 'fakeDisplayId1');
+              expectEquals(layout.position, 'right');
+
+              const offset = displayLayout.keyboardDragStepSize /
+                  displayLayout.visualScale;
+
+              display.focus();
+              display.dispatchEvent(new KeyboardEvent(
+                  'keydown', {key: 'ArrowDown', bubbles: true}));
+              display.dispatchEvent(
+                  new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+              expectEquals(offset, layout.offset);
+
+              display.dispatchEvent(new KeyboardEvent(
+                  'keydown', {key: 'ArrowDown', bubbles: true}));
+              display.dispatchEvent(
+                  new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+              expectEquals(offset * 2, layout.offset);
+
+              display.dispatchEvent(new KeyboardEvent(
+                  'keydown', {key: 'ArrowUp', bubbles: true}));
+              display.dispatchEvent(
+                  new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+              expectEquals(offset, layout.offset);
+            });
       });
     });
 

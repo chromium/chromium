@@ -802,6 +802,26 @@ TEST_F('OSSettingsDevicePageTest', 'StylusTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Stylus)).run();
 });
 
+// Tests for the Device page with keyboard arrangement flag enabled.
+// eslint-disable-next-line no-var
+var OSSettingsDevicePageKeyboardArrangementTest =
+    class extends OSSettingsDevicePageTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'ash::features::kKeyboardBasedDisplayArrangementInSettings',
+      ]
+    };
+  }
+};
+
+TEST_F(
+    'OSSettingsDevicePageKeyboardArrangementTest', 'KeyboardArrangement',
+    () => {
+      mocha.grep(assert(device_page_tests.TestNames.KeyboardArrangement)).run();
+    });
+
 // Tests for the Fingerprint page.
 // eslint-disable-next-line no-var
 var OSSettingsFingerprintListTest = class extends OSSettingsBrowserTest {

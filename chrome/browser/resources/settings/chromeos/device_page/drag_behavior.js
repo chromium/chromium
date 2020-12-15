@@ -15,12 +15,51 @@
  */
 let DragPosition;
 
+/**
+ * Type of an ongoing drag.
+ * @enum {number}
+ * @private
+ */
+const DragType = {
+  NONE: 0,
+  CURSOR: 1,
+  KEYBOARD: 2,
+};
+
 /** @polymerBehavior */
 const DragBehavior = {
   properties: {
     /** Whether or not drag is enabled (e.g. not mirrored). */
     dragEnabled: Boolean,
+
+    /**
+     * Whether or not to allow keyboard dragging.  If set to false, all
+     * keystrokes will be ignored by this element.
+     * @type {boolean}
+     */
+    keyboardDragEnabled: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * The number of pixels to drag on each keypress.
+     * @type {number}
+     */
+    keyboardDragStepSize: {
+      type: Number,
+      value: 20,
+    },
   },
+
+  /**
+   * The type of the currently ongoing drag.  If a keyboard drag is ongoing and
+   * the user initiates a cursor drag, the keyboard drag should end before the
+   * cursor drag starts.  If a cursor drag is onging, keyboard dragging should
+   * be ignored.
+   * @private {DragType}
+   */
+  dragType_: DragType.NONE,
 
   /**
    * The id of the element being dragged, or empty if not dragging.
@@ -57,6 +96,9 @@ const DragBehavior = {
 
   /** @private {?function(!Event)} */
   endDragListener_: null,
+
+  /** @private {?function(!Event)} */
+  keyDownListener_: null,
 
   /**
    * @param {boolean} enabled
@@ -99,7 +141,10 @@ const DragBehavior = {
     this.touchMoveListener_ = this.onTouchMove_.bind(this);
     container.addEventListener('touchmove', this.touchMoveListener_);
 
-    this.endDragListener_ = this.endDrag_.bind(this);
+    this.keyDownListener_ = this.onKeyDown_.bind(this);
+    container.addEventListener('keydown', this.keyDownListener_);
+
+    this.endDragListener_ = this.endCursorDrag_.bind(this);
     window.addEventListener('mouseup', this.endDragListener_);
     container.addEventListener('touchend', this.endDragListener_);
   },
@@ -119,6 +164,8 @@ const DragBehavior = {
     container.removeEventListener('touchmove', this.touchMoveListener_);
     this.touchMoveListener_ = null;
     container.removeEventListener('touchend', this.endDragListener_);
+    this.keyDownListener_ = null;
+    container.removeEventListener('keydown', this.keyDownListener_);
     if (this.endDragListener_) {
       window.removeEventListener('mouseup', this.endDragListener_);
     }
@@ -136,7 +183,7 @@ const DragBehavior = {
     }
     e.preventDefault();
     const target = assertInstanceof(e.target, HTMLElement);
-    return this.startDrag_(target, {x: e.pageX, y: e.pageY});
+    return this.startCursorDrag_(target, {x: e.pageX, y: e.pageY});
   },
 
   /**
@@ -146,7 +193,7 @@ const DragBehavior = {
    */
   onMouseMove_(e) {
     e.preventDefault();
-    return this.processDrag_(e, {x: e.pageX, y: e.pageY});
+    return this.processCursorDrag_(e, {x: e.pageX, y: e.pageY});
   },
 
   /**
@@ -163,7 +210,7 @@ const DragBehavior = {
     const touch = e.touches[0];
     this.lastTouchLocation_ = {x: touch.pageX, y: touch.pageY};
     const target = assertInstanceof(e.target, HTMLElement);
-    return this.startDrag_(target, this.lastTouchLocation_);
+    return this.startCursorDrag_(target, this.lastTouchLocation_);
   },
 
   /**
@@ -190,7 +237,66 @@ const DragBehavior = {
     }
     this.lastTouchLocation_ = touchLocation;
     e.preventDefault();
-    return this.processDrag_(e, touchLocation);
+    return this.processCursorDrag_(e, touchLocation);
+  },
+
+  /**
+   * @param {!Event} e The key down event.
+   * @return {boolean} false if event is consumed; true otherwise.
+   * @private
+   */
+  onKeyDown_(e) {
+    // Ignore keystrokes if keyboard dragging is disabled.
+    if (this.keyboardDragEnabled === false) {
+      return true;
+    }
+
+    // Ignore keystrokes if the event target is not draggable.
+    if (!e.target.getAttribute('draggable')) {
+      return true;
+    }
+
+    // Keyboard drags should not interrupt cursor drags.
+    if (this.dragType_ === DragType.CURSOR) {
+      return true;
+    }
+
+    let delta;
+    switch (e.key) {
+      case 'ArrowUp':
+        delta = {x: 0, y: -this.keyboardDragStepSize};
+        break;
+      case 'ArrowDown':
+        delta = {x: 0, y: this.keyboardDragStepSize};
+        break;
+      case 'ArrowLeft':
+        delta = {x: -this.keyboardDragStepSize, y: 0};
+        break;
+      case 'ArrowRight':
+        delta = {x: this.keyboardDragStepSize, y: 0};
+        break;
+      case 'Enter':
+        e.preventDefault();
+        this.endKeyboardDrag_();
+        return false;
+      default:
+        return true;
+    }
+
+    e.preventDefault();
+
+    if (this.dragType_ === DragType.NONE) {
+      // Start drag
+      const target = assertInstanceof(e.target, HTMLElement);
+      this.startKeyboardDrag_(target);
+    }
+
+    this.dragOffset_.x += delta.x;
+    this.dragOffset_.y += delta.y;
+
+    this.processKeyboardDrag_(this.dragOffset_);
+
+    return false;
   },
 
   /**
@@ -199,46 +305,105 @@ const DragBehavior = {
    * @return {boolean}
    * @private
    */
-  startDrag_(target, eventLocation) {
+  startCursorDrag_(target, eventLocation) {
     assert(this.dragEnabled);
+    if (this.dragType_ === DragType.KEYBOARD) {
+      this.endKeyboardDrag_();
+    }
     this.dragId = target.id;
     this.dragStartLocation_ = eventLocation;
+    this.dragType_ = DragType.CURSOR;
     return false;
   },
 
   /**
-   * @param {!Event} e
    * @return {boolean}
    * @private
    */
-  endDrag_(e) {
+  endCursorDrag_() {
     assert(this.dragEnabled);
-    if (this.dragId && this.callback_) {
+    if (this.dragType_ === DragType.CURSOR && this.callback_) {
       this.callback_(this.dragId, null);
     }
-    this.dragId = '';
-    this.lastTouchLocation_ = null;
+    this.cleanupDrag_();
     return false;
   },
 
   /**
    * @param {!Event} e The event which triggers this drag.
-   * @param {DragPosition} eventLocation The location of the event.
+   * @param {!DragPosition} eventLocation The location of the event.
    * @return {boolean}
    * @private
    */
-  processDrag_(e, eventLocation) {
+  processCursorDrag_(e, eventLocation) {
     assert(this.dragEnabled);
-    if (!this.dragId) {
+    if (this.dragType_ !== DragType.CURSOR) {
       return true;
     }
+    this.executeCallback_(eventLocation);
+    return false;
+  },
+
+  /**
+   * @param {!HTMLElement} target
+   * @private
+   */
+  startKeyboardDrag_(target) {
+    assert(this.dragEnabled);
+    if (this.dragType_ === DragType.CURSOR) {
+      this.endCursorDrag_();
+    }
+    this.dragId = target.id;
+    this.dragStartLocation_ = {x: 0, y: 0};
+    this.dragOffset_ = {x: 0, y: 0};
+    this.dragType_ = DragType.KEYBOARD;
+  },
+
+  /** @private */
+  endKeyboardDrag_() {
+    assert(this.dragEnabled);
+    if (this.dragType_ === DragType.KEYBOARD && this.callback_) {
+      this.callback_(this.dragId, null);
+    }
+    this.cleanupDrag_();
+  },
+
+  /**
+   * @param {!DragPosition} dragPosition
+   * @return {boolean}
+   * @private
+   */
+  processKeyboardDrag_(dragPosition) {
+    assert(this.dragEnabled);
+    if (this.dragType_ !== DragType.KEYBOARD) {
+      return true;
+    }
+    this.executeCallback_(dragPosition);
+    return false;
+  },
+
+  /**
+   * Cleans up state for all currently ongoing drags.
+   * @private
+   */
+  cleanupDrag_() {
+    this.dragId = '';
+    this.dragStartLocation_ = {x: 0, y: 0};
+    this.lastTouchLocation_ = null;
+    this.dragType_ = DragType.NONE;
+  },
+
+  /**
+   * @param {!DragPosition} dragPosition
+   * @private
+   */
+  executeCallback_(dragPosition) {
     if (this.callback_) {
       const delta = {
-        x: eventLocation.x - this.dragStartLocation_.x,
-        y: eventLocation.y - this.dragStartLocation_.y,
+        x: dragPosition.x - this.dragStartLocation_.x,
+        y: dragPosition.y - this.dragStartLocation_.y,
       };
       this.callback_(this.dragId, delta);
     }
-    return false;
   },
 };

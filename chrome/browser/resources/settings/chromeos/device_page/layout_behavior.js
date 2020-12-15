@@ -180,12 +180,13 @@ const LayoutBehavior = {
     this.updateOrphans_(orphanIds);
 
     // Send the updated layouts.
-    chrome.system.display.setDisplayLayout(this.layouts, function() {
-      if (chrome.runtime.lastError) {
-        console.error(
-            'setDisplayLayout Error: ' + chrome.runtime.lastError.message);
-      }
-    });
+    settings.display.systemDisplayApi.setDisplayLayout(
+        this.layouts, function() {
+          if (chrome.runtime.lastError) {
+            console.error(
+                'setDisplayLayout Error: ' + chrome.runtime.lastError.message);
+          }
+        });
   },
 
   /**

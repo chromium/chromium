@@ -67,9 +67,11 @@
       </template>
       <template is="dom-repeat" items="[[displays]]">
         <div id="_[[item.id]]" class="display elevate"
-            draggable="[[dragEnabled]]" on-click="onSelectDisplayTap_"
+            draggable="[[dragEnabled]]" on-focus="onFocus_"
+            on-click="onSelectDisplayTap_" 
             style$="[[getDivStyle_(item.id, item.bounds, visualScale)]]"
-            selected$="[[isSelected_(item, selectedDisplay)]]">
+            selected$="[[isSelected_(item, selectedDisplay)]]"
+            tabindex="0">
           [[getDisplayName_(mirroring, item.name,
                             '$i18nPolymer{displayMirrorDisplayName}')]]
         </div>
