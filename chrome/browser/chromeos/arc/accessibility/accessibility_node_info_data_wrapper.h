@@ -45,8 +45,6 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   mojom::AccessibilityNodeInfoData* node() { return node_ptr_; }
 
-  void set_role(ax::mojom::Role role) { role_ = role; }
-  void set_cached_name(const std::string& name) { cached_name_ = name; }
   void set_container_live_status(mojom::AccessibilityLiveRegionType status) {
     container_live_status_ = status;
   }
@@ -85,8 +83,6 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   mojom::AccessibilityNodeInfoData* node_ptr_ = nullptr;
 
-  base::Optional<ax::mojom::Role> role_;
-  base::Optional<std::string> cached_name_;
   mojom::AccessibilityLiveRegionType container_live_status_ =
       mojom::AccessibilityLiveRegionType::NONE;
 

@@ -10,12 +10,10 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_util.h"
-#include "chrome/browser/chromeos/arc/accessibility/geometry_util.h"
+#include "chrome/browser/chromeos/arc/accessibility/drawer_layout_handler.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/wm_helper.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
@@ -33,23 +31,8 @@ using AXEventType = mojom::AccessibilityEventType;
 using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXIntListProperty = mojom::AccessibilityIntListProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
-using AXStringProperty = mojom::AccessibilityStringProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
-
-namespace {
-bool IsDrawerLayout(AXNodeInfoData* node) {
-  if (!node || !node->string_properties)
-    return false;
-
-  auto it = node->string_properties->find(AXStringProperty::CLASS_NAME);
-  if (it == node->string_properties->end())
-    return false;
-
-  return it->second == "androidx.drawerlayout.widget.DrawerLayout" ||
-         it->second == "android.support.v4.widget.DrawerLayout";
-}
-}  // namespace
 
 AXTreeSourceArc::AXTreeSourceArc(Delegate* delegate)
     : current_tree_serializer_(new AXTreeArcSerializer(this)),
@@ -152,6 +135,10 @@ void AXTreeSourceArc::SerializeNode(AccessibilityInfoDataWrapper* info_data,
     return;
 
   info_data->Serialize(out_data);
+
+  const auto& itr = hooks_.find(info_data->GetId());
+  if (itr != hooks_.end())
+    itr->second->PostSerializeNode(out_data);
 }
 
 aura::Window* AXTreeSourceArc::GetWindow() const {
@@ -249,15 +236,9 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     return;
   }
 
-  if (event_data.event_type == AXEventType::WINDOW_STATE_CHANGED &&
-      event_data.event_text) {
-    AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
-    if (IsValid(source_node))
-      UpdateAXNameCache(source_node, *event_data.event_text);
-  }
+  ProcessHooksOnEvent(event_data);
 
-  ApplyCachedProperties();
-
+  // Bundle the event and send it to automation.
   ExtensionMsg_AccessibilityEventBundleParams event_bundle;
   event_bundle.tree_id = ax_tree_id();
 
@@ -509,51 +490,16 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
   return true;
 }
 
-void AXTreeSourceArc::UpdateAXNameCache(
-    AccessibilityInfoDataWrapper* source_node,
-    const std::vector<std::string>& event_text) {
-  if (IsDrawerLayout(source_node->GetNode())) {
-    // When drawer menu opened, make the menu title announced.
-    // When focus is changed, ChromeVox computes the diff in ancestry between
-    // the previously focused and new focused node.
-    // As the DrawerLayout is LCA of them, set the new title to be the first
-    // visible child node (which is usually drawer menu).
-    std::vector<AccessibilityInfoDataWrapper*> children;
-    source_node->GetChildren(&children);
-    for (auto* child : children) {
-      if (child->IsNode() && child->IsVisibleToUser() &&
-          GetBooleanProperty(child->GetNode(), AXBooleanProperty::IMPORTANCE)) {
-        cached_roles_[child->GetId()] = ax::mojom::Role::kMenu;
-        if (!event_text.empty())
-          cached_names_[child->GetId()] = base::JoinString(event_text, " ");
-        return;
-      }
-    }
-  }
-}
+void AXTreeSourceArc::ProcessHooksOnEvent(const AXEventData& event_data) {
+  base::EraseIf(hooks_, [this](const auto& it) {
+    return this->GetFromId(it.first) == nullptr;
+  });
 
-void AXTreeSourceArc::ApplyCachedProperties() {
-  for (auto it = cached_names_.begin(); it != cached_names_.end();) {
-    AccessibilityInfoDataWrapper* node = GetFromId(it->first);
-    if (node) {
-      static_cast<AccessibilityNodeInfoDataWrapper*>(node)->set_cached_name(
-          it->second);
-      it++;
-    } else {
-      it = cached_names_.erase(it);
-    }
-  }
-
-  for (auto it = cached_roles_.begin(); it != cached_roles_.end();) {
-    AccessibilityInfoDataWrapper* node = GetFromId(it->first);
-    if (node) {
-      static_cast<AccessibilityNodeInfoDataWrapper*>(node)->set_role(
-          it->second);
-      it++;
-    } else {
-      it = cached_roles_.erase(it);
-    }
-  }
+  // Add new hook implementations if necessary.
+  auto drawer_layout_hook =
+      DrawerLayoutHandler::CreateIfNecessary(this, event_data);
+  if (drawer_layout_hook.has_value())
+    hooks_.insert(std::move(*drawer_layout_hook));
 }
 
 void AXTreeSourceArc::HandleLiveRegions(std::vector<ui::AXEvent>* events) {

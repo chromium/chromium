@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
@@ -43,6 +44,17 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
    public:
     virtual void OnAction(const ui::AXActionData& data) const = 0;
     virtual bool UseFullFocusMode() const = 0;
+  };
+
+  // The interface to hook the event handling and the node serialization.
+  class Hook {
+   public:
+    Hook() = default;
+    virtual ~Hook() = default;
+
+    // Called after the default serialization of the attaching node.
+    // Implementations can modify the serialization of given |out_data|.
+    virtual void PostSerializeNode(ui::AXNodeData* out_data) const = 0;
   };
 
   explicit AXTreeSourceArc(Delegate* delegate);
@@ -132,10 +144,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
   // event to chrome automation. Otherwise, this returns true.
   bool UpdateAndroidFocusedId(const mojom::AccessibilityEventData& event_data);
 
-  void UpdateAXNameCache(AccessibilityInfoDataWrapper* source_node,
-                         const std::vector<std::string>& event_text);
-
-  void ApplyCachedProperties();
+  void ProcessHooksOnEvent(const mojom::AccessibilityEventData& event_data);
 
   // Compare previous live region and current live region, and add event to the
   // given vector if there is any difference.
@@ -174,9 +183,6 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
 
   base::Optional<std::string> notification_key_;
 
-  std::map<int32_t, std::string> cached_names_;
-  std::map<int32_t, ax::mojom::Role> cached_roles_;
-
   // Cache of mapping from the *Android* window id to the last focused node id.
   std::map<int32_t, int32_t> window_id_to_last_focus_node_id_;
 
@@ -186,6 +192,9 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
 
   // Mapping from Chrome node ID to the previous computed name for live region.
   std::map<int32_t, std::string> previous_live_region_name_;
+
+  // Mapping from Chrome node ID to the attached hook implementations.
+  base::flat_map<int32_t, std::unique_ptr<Hook>> hooks_;
 
   // A delegate that handles accessibility actions on behalf of this tree. The
   // delegate is valid during the lifetime of this tree.
