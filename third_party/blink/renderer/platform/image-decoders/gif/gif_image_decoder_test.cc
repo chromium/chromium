@@ -289,11 +289,6 @@ TEST(GIFImageDecoderTest, randomDecodeAfterClearFrameBufferCache) {
       &CreateDecoder, kWebTestsResourcesDir, "animated-10color.gif");
 }
 
-TEST(GIFImageDecoderTest, resumePartialDecodeAfterClearFrameBufferCache) {
-  TestResumePartialDecodeAfterClearFrameBufferCache(
-      &CreateDecoder, kWebTestsResourcesDir, "animated-10color.gif");
-}
-
 // The first LZW codes in the image are invalid values that try to create a loop
 // in the dictionary. Decoding should fail, but not infinitely loop or corrupt
 // memory.

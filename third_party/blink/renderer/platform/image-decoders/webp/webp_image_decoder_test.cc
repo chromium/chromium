@@ -397,12 +397,6 @@ TEST(AnimatedWebPTests, randomDecodeAfterClearFrameBufferCache) {
       &CreateWEBPDecoder, "/images/resources/webp-animated-icc-xmp.webp");
 }
 
-TEST(AnimatedWebPTests,
-     resumePartialDecodeAfterClearFrameBufferCache) {
-  TestResumePartialDecodeAfterClearFrameBufferCache(
-      &CreateWEBPDecoder, "/images/resources/webp-animated-large.webp");
-}
-
 TEST(AnimatedWebPTests, decodeAfterReallocatingData) {
   TestDecodeAfterReallocatingData(&CreateWEBPDecoder,
                                   "/images/resources/webp-animated.webp");

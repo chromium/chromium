@@ -108,12 +108,6 @@ void TestUpdateRequiredPreviousFrameAfterFirstDecode(DecoderCreator,
 void TestUpdateRequiredPreviousFrameAfterFirstDecode(DecoderCreator,
                                                      const char* file);
 
-void TestResumePartialDecodeAfterClearFrameBufferCache(DecoderCreator,
-                                                       const char* dir,
-                                                       const char* file);
-void TestResumePartialDecodeAfterClearFrameBufferCache(DecoderCreator,
-                                                       const char* file);
-
 // Verifies that result of alpha blending is similar for AlphaPremultiplied and
 // AlphaNotPremultiplied cases.
 void TestAlphaBlending(DecoderCreatorWithAlpha, const char*);
