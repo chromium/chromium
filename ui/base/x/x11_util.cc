@@ -1019,8 +1019,8 @@ void SuspendX11ScreenSaver(bool suspend) {
   x11::Connection::Get()->screensaver().Suspend({suspend});
 }
 
-base::Value GpuExtraInfoAsListValue(unsigned long system_visual,
-                                    unsigned long rgba_visual) {
+base::Value GpuExtraInfoAsListValue(x11::VisualId system_visual,
+                                    x11::VisualId rgba_visual) {
   base::Value result(base::Value::Type::LIST);
   result.Append(
       NewDescriptionValuePair("Window manager", ui::GuessWindowManagerName()));
@@ -1037,10 +1037,12 @@ base::Value GpuExtraInfoAsListValue(unsigned long system_visual,
         "Compositing manager",
         ui::IsCompositingManagerPresent() ? "Yes" : "No"));
   }
-  result.Append(NewDescriptionValuePair("System visual ID",
-                                        base::NumberToString(system_visual)));
-  result.Append(NewDescriptionValuePair("RGBA visual ID",
-                                        base::NumberToString(rgba_visual)));
+  result.Append(NewDescriptionValuePair(
+      "System visual ID",
+      base::NumberToString(static_cast<uint32_t>(system_visual))));
+  result.Append(NewDescriptionValuePair(
+      "RGBA visual ID",
+      base::NumberToString(static_cast<uint32_t>(rgba_visual))));
   return result;
 }
 
@@ -1239,9 +1241,10 @@ bool XVisualManager::GetVisualInfo(x11::VisualId visual_id,
   return GetVisualInfoImpl(visual_id, depth, colormap, visual_has_alpha);
 }
 
-bool XVisualManager::OnGPUInfoChanged(bool software_rendering,
-                                      x11::VisualId system_visual_id,
-                                      x11::VisualId transparent_visual_id) {
+bool XVisualManager::UpdateVisualsOnGpuInfoChanged(
+    bool software_rendering,
+    x11::VisualId system_visual_id,
+    x11::VisualId transparent_visual_id) {
   base::AutoLock lock(lock_);
   // TODO(thomasanderson): Cache these visual IDs as a property of the root
   // window so that newly created browser processes can get them immediately.

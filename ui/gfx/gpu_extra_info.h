@@ -11,8 +11,15 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gfx_export.h"
 
-#if defined(USE_OZONE) || defined(USE_X11)
-typedef unsigned long VisualID;
+#if defined(USE_OZONE)
+#include "ui/ozone/buildflags.h"
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+#define USE_OZONE_PLATFORM_X11
+#endif
+#endif
+
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+#include "ui/gfx/x/xproto.h"
 #endif
 
 namespace gfx {
@@ -58,9 +65,9 @@ struct GFX_EXPORT GpuExtraInfo {
   // applicable.
   ANGLEFeatures angle_features;
 
-#if defined(USE_OZONE) || defined(USE_X11)
-  VisualID system_visual = 0;
-  VisualID rgba_visual = 0;
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+  x11::VisualId system_visual{};
+  x11::VisualId rgba_visual{};
 
   std::vector<gfx::BufferUsageAndFormat> gpu_memory_buffer_support_x11;
 #endif

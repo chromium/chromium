@@ -75,7 +75,7 @@
 namespace content {
 namespace {
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
 bool GetGmbConfigFromGpu() {
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
@@ -412,7 +412,7 @@ std::unique_ptr<base::ListValue> GpuMemoryBufferInfo(
   gpu::GpuMemoryBufferSupport gpu_memory_buffer_support;
 
   gpu::GpuMemoryBufferConfigurationSet native_config;
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
   if (GetGmbConfigFromGpu()) {
     for (const auto& config : gpu_extra_info.gpu_memory_buffer_support_x11) {
       native_config.emplace(config);

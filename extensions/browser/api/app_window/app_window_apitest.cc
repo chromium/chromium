@@ -122,7 +122,13 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, SetShapeNoPerm) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledHasPermissions) {
+// Fails on Ozone/X11.  https://crbug.com/1109112
+#if defined(USE_OZONE)
+#define MAYBE_AlphaEnabledHasPermissions DISABLED_AlphaEnabledHasPermissions
+#else
+#define MAYBE_AlphaEnabledHasPermissions AlphaEnabledHasPermissions
+#endif
+IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
   const char kNoAlphaDir[] =
       "platform_apps/windows_api_alpha_enabled/has_permissions_no_alpha";
   const char kHasAlphaDir[] =

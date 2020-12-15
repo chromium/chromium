@@ -90,6 +90,7 @@ component("ozone_base") {
     "public/ozone_switches.cc",
     "public/ozone_switches.h",
     "public/platform_clipboard.h",
+    "public/platform_gl_egl_utility.cc",
     "public/platform_gl_egl_utility.h",
     "public/platform_menu_utils.cc",
     "public/platform_menu_utils.h",
@@ -372,7 +373,7 @@ if (ozone_platform_x11) {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [ "OZONE_PLATFORM_X11=$ozone_platform_x11" ]
-  visibility += [ "//ui/gl:gl" ]
+  visibility += [ "*" ]
 }
 
 group("unittests") {

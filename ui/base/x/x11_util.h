@@ -522,8 +522,8 @@ COMPONENT_EXPORT(UI_BASE_X) void SuspendX11ScreenSaver(bool suspend);
 // Returns human readable description of the window manager, desktop, and
 // other system properties related to the compositing.
 COMPONENT_EXPORT(UI_BASE_X)
-base::Value GpuExtraInfoAsListValue(unsigned long system_visual,
-                                    unsigned long rgba_visual);
+base::Value GpuExtraInfoAsListValue(x11::VisualId system_visual,
+                                    x11::VisualId rgba_visual);
 
 // Returns true if the window manager supports the given hint.
 COMPONENT_EXPORT(UI_BASE_X) bool WmSupportsHint(x11::Atom atom);
@@ -579,9 +579,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
   // necessary for the GPU process to find out which visuals are best for GL
   // because we don't want to load GL in the browser process.  Returns false iff
   // |default_visual_id| or |transparent_visual_id| are invalid.
-  bool OnGPUInfoChanged(bool software_rendering,
-                        x11::VisualId default_visual_id,
-                        x11::VisualId transparent_visual_id);
+  bool UpdateVisualsOnGpuInfoChanged(bool software_rendering,
+                                     x11::VisualId default_visual_id,
+                                     x11::VisualId transparent_visual_id);
 
   // Are all of the system requirements met for using transparent visuals?
   bool ArgbVisualAvailable() const;

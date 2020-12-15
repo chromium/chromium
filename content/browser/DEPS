@@ -135,8 +135,15 @@ specific_include_rules = {
     # TODO(crbug.com/1049894): Remove.
     "+services/network/transitional_url_loader_factory_owner.h",
   ],
+  "browser_main_loop\.h": [
+    "+ui/ozone/buildflags.h",
+  ],
   "browsing_data_(filter_builder|remover)_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",
+  ],
+  "gpu_data_manager_visual_proxy_ozone_linux\.(cc|h)": [
+    "+ui/ozone/public/ozone_platform.h",
+    "+ui/ozone/public/platform_gl_egl_utility.h",
   ],
   "navigation_url_loader_impl_unittest\.cc": [
     "+services/network/resource_scheduler/resource_scheduler_client.h",

@@ -127,6 +127,8 @@ class OzonePlatformX11 : public OzonePlatform,
   }
 
   PlatformGLEGLUtility* GetPlatformGLEGLUtility() override {
+    if (!gl_egl_utility_)
+      gl_egl_utility_ = std::make_unique<GLEGLUtilityX11>();
     return gl_egl_utility_.get();
   }
 
@@ -245,7 +247,6 @@ class OzonePlatformX11 : public OzonePlatform,
     connection->DetachFromSequence();
     surface_factory_ozone_ =
         std::make_unique<X11SurfaceFactory>(std::move(connection));
-    gl_egl_utility_ = std::make_unique<GLEGLUtilityX11>();
   }
 
   void PostMainMessageLoopStart(

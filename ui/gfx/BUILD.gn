@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -407,7 +408,11 @@ component("gfx") {
     ]
   }
 
-  if (use_x11) {
+  if (use_ozone) {
+    deps += [ "//ui/ozone:buildflags" ]
+  }
+
+  if (ozone_platform_x11 || use_x11) {
     deps += [ "//ui/gfx/x" ]
   }
 }

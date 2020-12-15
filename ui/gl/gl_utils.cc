@@ -167,8 +167,8 @@ void CollectX11GpuExtraInfo(bool enable_native_gpu_memory_buffers,
     // singleton is busy being created on another thread.
     GLVisualPickerGLX* visual_picker = GLVisualPickerGLX::GetInstance();
 
-    info.system_visual = static_cast<uint32_t>(visual_picker->system_visual());
-    info.rgba_visual = static_cast<uint32_t>(visual_picker->rgba_visual());
+    info.system_visual = visual_picker->system_visual();
+    info.rgba_visual = visual_picker->rgba_visual();
 
     // With GLX, only BGR(A) buffer formats are supported.  EGL does not have
     // this restriction.

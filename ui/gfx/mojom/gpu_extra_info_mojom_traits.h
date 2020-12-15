@@ -10,6 +10,13 @@
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/gpu_extra_info.mojom-shared.h"
 
+#if defined(USE_OZONE)
+#include "ui/ozone/buildflags.h"
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+#define USE_OZONE_PLATFORM_X11
+#endif
+#endif
+
 namespace mojo {
 
 template <>
@@ -54,13 +61,13 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     return input.angle_features;
   }
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE_PLATFORM_X11) || defined(USE_X11)
   static uint64_t system_visual(const gfx::GpuExtraInfo& input) {
-    return input.system_visual;
+    return static_cast<uint64_t>(input.system_visual);
   }
 
   static uint64_t rgba_visual(const gfx::GpuExtraInfo& input) {
-    return input.rgba_visual;
+    return static_cast<uint64_t>(input.rgba_visual);
   }
 
   static const std::vector<gfx::BufferUsageAndFormat>&

@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chromeos/assistant/assistant.gni")
 import("//components/ui_devtools/devtools.gni")
@@ -2095,6 +2096,10 @@ source_set("browser") {
     deps += [ "//ui/base/x" ]
   }
 
+  if (use_ozone) {
+    deps += [ "//ui/ozone:buildflags" ]
+  }
+
   if (is_linux || is_chromeos) {
     sources += [
       "child_process_launcher_helper_linux.cc",
@@ -2111,6 +2116,16 @@ source_set("browser") {
       "zygote_host/zygote_host_impl_linux.cc",
       "zygote_host/zygote_host_impl_linux.h",
     ]
+
+    if (ozone_platform_x11 || use_x11) {
+      sources += [
+        "gpu_data_manager_visual_proxy_ozone_linux.cc",
+        "gpu_data_manager_visual_proxy_ozone_linux.h",
+      ]
+      if (use_x11) {
+        deps += [ "//ui/base/x:gl" ]
+      }
+    }
 
     public_deps += [ "//components/services/font/public/mojom" ]
 

@@ -103,7 +103,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
-#include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_process_host.h"
@@ -191,6 +190,10 @@
 
 #if defined(USE_GLIB)
 #include <glib-object.h>
+#endif
+
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+#include "content/browser/gpu_data_manager_visual_proxy_ozone_linux.h"
 #endif
 
 #if defined(OS_WIN)
@@ -429,51 +432,6 @@ void BindHidManager(mojo::PendingReceiver<device::mojom::HidManager> receiver) {
 }
 
 }  // namespace
-
-#if defined(USE_X11)
-namespace internal {
-
-// Forwards GPUInfo updates to ui::XVisualManager
-class GpuDataManagerVisualProxy : public GpuDataManagerObserver {
- public:
-  explicit GpuDataManagerVisualProxy(GpuDataManagerImpl* gpu_data_manager)
-      : gpu_data_manager_(gpu_data_manager) {
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
-      data_manager_observation_.Observe(gpu_data_manager_);
-  }
-
-  ~GpuDataManagerVisualProxy() override = default;
-
-  void OnGpuInfoUpdate() override { OnUpdate(); }
-  void OnGpuExtraInfoUpdate() override { OnUpdate(); }
-
- private:
-  void OnUpdate() {
-    gpu::GPUInfo gpu_info = gpu_data_manager_->GetGPUInfo();
-    gfx::GpuExtraInfo gpu_extra_info = gpu_data_manager_->GetGpuExtraInfo();
-    if (!ui::XVisualManager::GetInstance()->OnGPUInfoChanged(
-            gpu_info.software_rendering ||
-                !gpu_data_manager_->GpuAccessAllowed(nullptr),
-            static_cast<x11::VisualId>(gpu_extra_info.system_visual),
-            static_cast<x11::VisualId>(gpu_extra_info.rgba_visual))) {
-      // The GPU process sent back bad visuals, which should never happen.
-      auto* gpu_process_host =
-          GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, false);
-      if (gpu_process_host)
-        gpu_process_host->ForceShutdown();
-    }
-  }
-
-  GpuDataManagerImpl* gpu_data_manager_;
-
-  base::ScopedObservation<GpuDataManagerImpl, GpuDataManagerObserver>
-      data_manager_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuDataManagerVisualProxy);
-};
-
-}  // namespace internal
-#endif
 
 // The currently-running BrowserMainLoop.  There can be one or zero.
 BrowserMainLoop* g_current_browser_main_loop = nullptr;
@@ -827,12 +785,13 @@ int BrowserMainLoop::PreCreateThreads() {
   GpuDataManagerImpl::GetInstance();
   DCHECK(GpuDataManagerImpl::Initialized());
 
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    gpu_data_manager_visual_proxy_.reset(
-        new internal::GpuDataManagerVisualProxy(
-            GpuDataManagerImpl::GetInstance()));
-  }
+// Temporarily used by both Ozone/Linux and X11/Linux. Once X11/Linux goes
+// away, will be used only by Ozone/Linux.
+// TODO(https://crbug.com/1085700): make sure it's only used by Ozone/Linux.
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+  gpu_data_manager_visual_proxy_ =
+      std::make_unique<GpuDataManagerVisualProxyOzoneLinux>(
+          GpuDataManagerImpl::GetInstance());
 #endif
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || defined(OS_ANDROID)

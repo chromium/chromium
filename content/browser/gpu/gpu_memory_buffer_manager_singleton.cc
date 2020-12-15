@@ -33,7 +33,7 @@ viz::mojom::GpuService* GetGpuService(
   return nullptr;
 }
 
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
 bool ShouldSetBufferFormatsFromGpuExtraInfo() {
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
@@ -73,7 +73,7 @@ GpuMemoryBufferManagerSingleton::GetInstance() {
 }
 
 void GpuMemoryBufferManagerSingleton::OnGpuExtraInfoUpdate() {
-#if defined(USE_X11) || defined(USE_OZONE)
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
   // X11 and non-Ozone/X11 fetch buffer formats on gpu and pass them via gpu
   // extra info.
   if (!ShouldSetBufferFormatsFromGpuExtraInfo())

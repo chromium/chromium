@@ -38,4 +38,17 @@ bool GLEGLUtilityX11::X11DoesVisualHaveAlphaForTest() const {
   return ui::DoesVisualHaveAlphaForTest();
 }
 
+bool GLEGLUtilityX11::HasVisualManager() {
+  return true;
+}
+
+bool GLEGLUtilityX11::UpdateVisualsOnGpuInfoChanged(
+    bool software_rendering,
+    uint32_t default_visual_id,
+    uint32_t transparent_visual_id) {
+  return ui::UpdateVisualsOnGpuInfoChanged(
+      software_rendering, static_cast<x11::VisualId>(default_visual_id),
+      static_cast<x11::VisualId>(transparent_visual_id));
+}
+
 }  // namespace ui

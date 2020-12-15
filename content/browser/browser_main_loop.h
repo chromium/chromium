@@ -30,6 +30,13 @@ class Env;
 }
 #endif
 
+#if defined(USE_OZONE)
+#include "ui/ozone/buildflags.h"  // nogncheck
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+#define USE_OZONE_PLATFORM_X11
+#endif
+#endif
+
 namespace base {
 class CommandLine;
 class HighResolutionTimerManager;
@@ -102,10 +109,8 @@ class Watcher;
 class ScreenOrientationDelegate;
 #endif
 
-#if defined(USE_X11)
-namespace internal {
-class GpuDataManagerVisualProxy;
-}
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+class GpuDataManagerVisualProxyOzoneLinux;
 #endif
 
 // Implements the main browser loop stages called from BrowserMainRunner.
@@ -331,8 +336,8 @@ class CONTENT_EXPORT BrowserMainLoop {
   // Members initialized in |PreCreateThreads()| -------------------------------
   // Torn down in ShutdownThreadsAndCleanUp.
   std::unique_ptr<base::MemoryPressureMonitor> memory_pressure_monitor_;
-#if defined(USE_X11)
-  std::unique_ptr<internal::GpuDataManagerVisualProxy>
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+  std::unique_ptr<GpuDataManagerVisualProxyOzoneLinux>
       gpu_data_manager_visual_proxy_;
 #endif
 
