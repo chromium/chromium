@@ -1,0 +1,18 @@
+noparent = True
+
+include_rules = [
+  "-chrome/android/java/src/org/chromium/chrome/browser",
+  "+chrome/android/java/src/org/chromium/chrome/browser/toolbar",
+  "+chrome/android/java/src/org/chromium/chrome/browser/omnibox",
+]
+
+specific_include_rules = {
+  'ToolbarManager.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser",
+    "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  'ToolbarButtonInProductHelpController.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser",
+    "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ]
+}
