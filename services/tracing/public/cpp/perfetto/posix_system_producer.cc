@@ -243,6 +243,11 @@ void PosixSystemProducer::OnTracingSetup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Called by the IPC layer when tracing is first started and after shared
   // memory is set up.
+  DCHECK(MaybeSharedMemoryArbiter());
+  if (MaybeSharedMemoryArbiter()->EnableDirectSMBPatching()) {
+    MaybeSharedMemoryArbiter()->SetBatchCommitsDuration(
+        kShmArbiterBatchCommitDurationMs);
+  }
 }
 
 void PosixSystemProducer::SetupDataSource(perfetto::DataSourceInstanceID,
@@ -306,6 +311,11 @@ void PosixSystemProducer::StopDataSource(perfetto::DataSourceInstanceID id) {
               return;
             }
             DCHECK_CALLED_ON_VALID_SEQUENCE(weak_ptr->sequence_checker_);
+            // Flush any commits that might have been batched by
+            // SharedMemoryArbiter.
+            weak_ptr->GetService()
+                ->MaybeSharedMemoryArbiter()
+                ->FlushPendingCommitDataRequests();
             weak_ptr->GetService()->NotifyDataSourceStopped(id);
             {
               base::AutoLock lock(weak_ptr->lock_);

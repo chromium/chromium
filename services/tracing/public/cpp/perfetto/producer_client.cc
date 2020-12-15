@@ -238,10 +238,16 @@ void ProducerClient::StopDataSource(uint64_t id,
       data_source->StopTracing(base::BindOnce(
           [](base::WeakPtr<ProducerClient> weak_ptr,
              StopDataSourceCallback callback, uint64_t id) {
-            std::move(callback).Run();
-            if (!weak_ptr)
+            if (!weak_ptr) {
+              std::move(callback).Run();
               return;
+            }
             DCHECK_CALLED_ON_VALID_SEQUENCE(weak_ptr->sequence_checker_);
+            // Flush any commits that might have been batched by
+            // SharedMemoryArbiter.
+            weak_ptr->MaybeSharedMemoryArbiter()
+                ->FlushPendingCommitDataRequests();
+            std::move(callback).Run();
             base::AutoLock lock(weak_ptr->lock_);
             --weak_ptr->data_sources_tracing_;
           },
@@ -404,6 +410,10 @@ bool ProducerClient::InitSharedMemoryIfNeeded() {
 
   shared_memory_arbiter_ = perfetto::SharedMemoryArbiter::CreateUnboundInstance(
       shared_memory_.get(), kSMBPageSizeBytes);
+  shared_memory_arbiter_->SetDirectSMBPatchingSupportedByService();
+  shared_memory_arbiter_->EnableDirectSMBPatching();
+  shared_memory_arbiter_->SetBatchCommitsDuration(
+      kShmArbiterBatchCommitDurationMs);
   return true;
 }
 
