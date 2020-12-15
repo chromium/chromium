@@ -9,6 +9,10 @@
 
 #include "base/component_export.h"
 
+namespace aura {
+class Window;
+}
+
 namespace base {
 class FilePath;
 }
@@ -16,11 +20,20 @@ class FilePath;
 namespace full_restore {
 
 struct AppLaunchInfo;
+struct WindowInfo;
 
 // Saves the app launch parameters to the full restore file.
 COMPONENT_EXPORT(FULL_RESTORE)
 void SaveAppLaunchInfo(const base::FilePath& profile_dir,
                        std::unique_ptr<AppLaunchInfo> app_launch_info);
+
+// Saves the window information to the full restore file.
+COMPONENT_EXPORT(FULL_RESTORE)
+void SaveWindowInfo(std::unique_ptr<WindowInfo> window_info);
+
+// Gets the window information from the full restore file.
+COMPONENT_EXPORT(FULL_RESTORE)
+std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 
 // Returns true if we should restore apps and pages based on the restore setting
 // and the user's choice from the notification. Otherwise, returns false.

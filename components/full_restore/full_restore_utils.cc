@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_save_handler.h"
+#include "components/full_restore/window_info.h"
 
 namespace {
 
@@ -26,6 +27,25 @@ void SaveAppLaunchInfo(const base::FilePath& profile_dir,
 
   FullRestoreSaveHandler::GetInstance()->SaveAppLaunchInfo(
       profile_dir, std::move(app_launch_info));
+}
+
+void SaveWindowInfo(std::unique_ptr<WindowInfo> window_info) {
+  if (!ash::features::IsFullRestoreEnabled())
+    return;
+
+  // TODO(crbug.com/1146900): Save the window information to the full restore
+  // file.
+}
+
+std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
+  if (!ash::features::IsFullRestoreEnabled())
+    return nullptr;
+
+  auto window_info = std::make_unique<WindowInfo>();
+
+  // TODO(crbug.com/1146900): Get the window information from the full restore
+  // file.
+  return window_info;
 }
 
 bool ShouldRestore() {

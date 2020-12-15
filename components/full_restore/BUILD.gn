@@ -17,6 +17,8 @@ component("full_restore") {
     "full_restore_utils.h",
     "restore_data.cc",
     "restore_data.h",
+    "window_info.cc",
+    "window_info.h",
   ]
 
   defines = [ "IS_FULL_RESTORE_IMPL" ]
@@ -25,6 +27,7 @@ component("full_restore") {
     "//ash/public/cpp",
     "//base",
     "//components/services/app_service/public/mojom",
+    "//ui/aura",
   ]
 }
 

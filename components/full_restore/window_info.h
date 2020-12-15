@@ -1,0 +1,44 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_FULL_RESTORE_WINDOW_INFO_H_
+#define COMPONENTS_FULL_RESTORE_WINDOW_INFO_H_
+
+#include "base/optional.h"
+#include "ui/aura/window.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace full_restore {
+
+// This struct is the parameter for the interface SaveWindowInfo, to save the
+// window information.
+struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
+ public:
+  WindowInfo();
+  WindowInfo(const WindowInfo&) = delete;
+  WindowInfo& operator=(const WindowInfo&) = delete;
+  ~WindowInfo();
+
+  aura::Window* window;
+
+  // Index in MruWindowTracker to restore window stack.
+  base::Optional<int32_t> activation_index;
+
+  // Virtual desk id.
+  base::Optional<int32_t> desk_id;
+
+  // The restored bounds in screen coordinates. Empty if the window is not
+  // snapped/maximized/minimized.
+  base::Optional<gfx::Rect> restore_bounds;
+
+  // Current bounds in screen in coordinates.
+  base::Optional<gfx::Rect> current_bounds;
+
+  // Window state, minimized, maximized, inactive, etc.
+  base::Optional<int32_t> window_state_type;
+};
+
+}  // namespace full_restore
+
+#endif  // COMPONENTS_FULL_RESTORE_WINDOW_INFO_H_
