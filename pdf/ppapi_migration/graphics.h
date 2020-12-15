@@ -7,6 +7,7 @@
 
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/cpp/graphics_2d.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -78,6 +79,31 @@ class PepperGraphics final : public Graphics {
 
  private:
   pp::Graphics2D pepper_graphics_;
+};
+
+// A Skia graphics device.
+class SkiaGraphics final : public Graphics {
+ public:
+  static std::unique_ptr<SkiaGraphics> Create(const gfx::Size& size);
+
+  ~SkiaGraphics() override;
+
+  bool Flush(ResultCallback callback) override;
+
+  void PaintImage(const Image& image, const gfx::Rect& src_rect) override;
+
+  void Scroll(const gfx::Rect& clip, const gfx::Vector2d& amount) override;
+  void SetScale(float scale) override;
+  void SetLayerTransform(float scale,
+                         const gfx::Point& origin,
+                         const gfx::Vector2d& translate) override;
+
+  sk_sp<SkImage> CreateSnapshot();
+
+ private:
+  explicit SkiaGraphics(const gfx::Size& size);
+
+  sk_sp<SkSurface> skia_graphics_;
 };
 
 }  // namespace chrome_pdf

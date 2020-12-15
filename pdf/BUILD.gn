@@ -329,6 +329,7 @@ if (enable_pdf) {
       "pdfium/pdfium_test_base.cc",
       "pdfium/pdfium_test_base.h",
       "ppapi_migration/geometry_conversions_unittest.cc",
+      "ppapi_migration/graphics_unittest.cc",
       "ppapi_migration/url_loader_unittest.cc",
       "range_set_unittest.cc",
       "test/run_all_unittests.cc",

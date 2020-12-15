@@ -10,6 +10,13 @@ include_rules = [
   "+ui/events/keycodes/keyboard_codes.h",
   "+ui/gfx/geometry",
   "+ui/gfx/range/range.h",
+  "+ui/gfx/skia_util.h",
   "+ui/gfx/test/gfx_util.h",
   "+v8/include/v8.h"
 ]
+
+specific_include_rules = {
+  ".*_unittest.*\.cc": [
+    "+cc/test",
+  ],
+}
