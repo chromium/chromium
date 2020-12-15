@@ -125,7 +125,7 @@ IPC::SyncMessageFilter* MockRenderThread::GetSyncMessageFilter() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 MockRenderThread::GetIOTaskRunner() {
-  return scoped_refptr<base::SingleThreadTaskRunner>();
+  return io_task_runner_;
 }
 
 void MockRenderThread::BindHostReceiver(mojo::GenericPendingReceiver receiver) {

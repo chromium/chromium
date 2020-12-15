@@ -5,6 +5,8 @@
 #ifndef CONTENT_RENDERER_MOCK_AGENT_SCHEDULING_GROUP_H_
 #define CONTENT_RENDERER_MOCK_AGENT_SCHEDULING_GROUP_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
@@ -22,8 +24,17 @@ class RenderThread;
 // in the browser process.
 class MockAgentSchedulingGroup : public AgentSchedulingGroup {
  public:
-  explicit MockAgentSchedulingGroup(RenderThread& render_thread);
+  static std::unique_ptr<MockAgentSchedulingGroup> Create(
+      RenderThread& render_thread);
+  MockAgentSchedulingGroup(
+      RenderThread& render_thread,
+      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
+          pending_receiver);
+  MockAgentSchedulingGroup(
+      RenderThread& render_thread,
+      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> pending_receiver);
 
+ private:
   mojom::RouteProvider* GetRemoteRouteProvider() override;
 };
 

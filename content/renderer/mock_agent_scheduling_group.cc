@@ -7,12 +7,40 @@
 #include "base/no_destructor.h"
 #include "content/renderer/render_thread_impl.h"
 
+namespace {
+
+static features::MBIMode GetMBIMode() {
+  return base::FeatureList::IsEnabled(features::kMBIMode)
+             ? features::kMBIModeParam.Get()
+             : features::MBIMode::kLegacy;
+}
+
+}  // namespace
+
 namespace content {
 
-MockAgentSchedulingGroup::MockAgentSchedulingGroup(RenderThread& render_thread)
-    : AgentSchedulingGroup(
-          render_thread,
-          mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>()) {}
+// static
+std::unique_ptr<MockAgentSchedulingGroup> MockAgentSchedulingGroup::Create(
+    RenderThread& render_thread) {
+  return (GetMBIMode() == features::MBIMode::kLegacy)
+             ? std::make_unique<MockAgentSchedulingGroup>(
+                   render_thread, mojo::PendingAssociatedReceiver<
+                                      mojom::AgentSchedulingGroup>())
+             : std::make_unique<MockAgentSchedulingGroup>(
+                   render_thread,
+                   mojo::PendingReceiver<IPC::mojom::ChannelBootstrap>());
+}
+
+MockAgentSchedulingGroup::MockAgentSchedulingGroup(
+    RenderThread& render_thread,
+    mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
+        pending_receiver)
+    : AgentSchedulingGroup(render_thread, std::move(pending_receiver)) {}
+
+MockAgentSchedulingGroup::MockAgentSchedulingGroup(
+    RenderThread& render_thread,
+    mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> pending_receiver)
+    : AgentSchedulingGroup(render_thread, std::move(pending_receiver)) {}
 
 mojom::RouteProvider* MockAgentSchedulingGroup::GetRemoteRouteProvider() {
   DCHECK(!RenderThreadImpl::current());

@@ -99,9 +99,6 @@ void ChromeRenderViewTest::SetUp() {
   ChromeUnitTestSuite::InitializeProviders();
   ChromeUnitTestSuite::InitializeResourceBundle();
 
-  chrome_render_thread_ = new ChromeMockRenderThread();
-  render_thread_.reset(chrome_render_thread_);
-
   registry_ = std::make_unique<service_manager::BinderRegistry>();
 
   // TODO(crbug/862989): Before this SetUp, the test agents defined at the end

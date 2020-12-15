@@ -237,11 +237,6 @@ bool GetWindowsKeyCode(char ascii_character, int* key_code) {
   }
 }
 
-std::unique_ptr<AgentSchedulingGroup> CreateAgentSchedulingGroup(
-    RenderThread& render_thread) {
-  return std::make_unique<MockAgentSchedulingGroup>(render_thread);
-}
-
 }  // namespace
 
 class RendererBlinkPlatformImplTestOverrideImpl
@@ -426,6 +421,8 @@ void RenderViewTest::SetUp() {
   if (!render_thread_)
     render_thread_ = std::make_unique<MockRenderThread>();
 
+  render_thread_->SetIOTaskRunner(test_io_thread_->task_runner());
+
   // Blink needs to be initialized before calling CreateContentRendererClient()
   // because it uses blink internally.
   blink_platform_impl_.Initialize();
@@ -439,7 +436,7 @@ void RenderViewTest::SetUp() {
   SetBrowserClientForTesting(content_browser_client_.get());
   SetRendererClientForTesting(content_renderer_client_.get());
 
-  agent_scheduling_group_ = CreateAgentSchedulingGroup(*render_thread_);
+  agent_scheduling_group_ = MockAgentSchedulingGroup::Create(*render_thread_);
   render_widget_host_ = CreateRenderWidgetHost();
 
 #if defined(OS_WIN)

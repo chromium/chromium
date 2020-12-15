@@ -200,6 +200,8 @@ static_library("test_support") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//chrome/common/search:mojo_bindings",
+    "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//components/security_interstitials/content:security_interstitial_page",
   ]
 
@@ -215,7 +217,6 @@ static_library("test_support") {
     "//chrome/common:non_code_constants",
     "//chrome/common:test_support",
     "//chrome/renderer",
-    "//chrome/renderer:test_support",
     "//chrome/utility",
     "//components/autofill/core/browser:test_support",
     "//components/bookmarks/test",

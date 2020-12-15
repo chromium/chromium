@@ -30,15 +30,6 @@ class PrintMockRenderThread : public content::MockRenderThread {
   PrintMockRenderThread& operator=(const PrintMockRenderThread&) = delete;
   ~PrintMockRenderThread() override;
 
-  // content::RenderThread overrides.
-  scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
-
-  //////////////////////////////////////////////////////////////////////////
-  // The following functions are called by the test itself.
-
-  void set_io_task_runner(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
 #if BUILDFLAG(ENABLE_PRINTING)
   // Returns the pseudo-printer instance.
   MockPrinter* printer();
@@ -91,8 +82,6 @@ class PrintMockRenderThread : public content::MockRenderThread {
   // Vector of <page_number, content_data_size> that were previewed.
   std::vector<std::pair<uint32_t, uint32_t>> print_preview_pages_;
 #endif
-
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 };
 
 #endif  // COMPONENTS_PRINTING_TEST_PRINT_MOCK_RENDER_THREAD_H_

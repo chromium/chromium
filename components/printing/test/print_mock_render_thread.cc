@@ -28,16 +28,6 @@ PrintMockRenderThread::PrintMockRenderThread()
 
 PrintMockRenderThread::~PrintMockRenderThread() = default;
 
-scoped_refptr<base::SingleThreadTaskRunner>
-PrintMockRenderThread::GetIOTaskRunner() {
-  return io_task_runner_;
-}
-
-void PrintMockRenderThread::set_io_task_runner(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  io_task_runner_ = task_runner;
-}
-
 bool PrintMockRenderThread::OnMessageReceived(const IPC::Message& msg) {
   if (content::MockRenderThread::OnMessageReceived(msg))
     return true;

@@ -49,6 +49,11 @@ class MockRenderThread : public RenderThread {
   // Provides access to the messages that have been received by this thread.
   IPC::TestSink& sink() { return sink_; }
 
+  void SetIOTaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    io_task_runner_ = std::move(task_runner);
+  }
+
   // RenderThread implementation:
   bool Send(IPC::Message* msg) override;
   IPC::SyncChannel* GetChannel() override;
@@ -124,6 +129,8 @@ class MockRenderThread : public RenderThread {
   virtual bool OnMessageReceived(const IPC::Message& msg);
 
   IPC::TestSink sink_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // Routing ID what will be assigned to the next view, widget, or frame.
   int32_t next_routing_id_;

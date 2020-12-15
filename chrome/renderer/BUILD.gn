@@ -412,23 +412,3 @@ static_library("renderer") {
     deps += [ "//chrome/common/performance_manager/mojom" ]
   }
 }
-
-static_library("test_support") {
-  testonly = true
-  visibility = [ "//chrome/test:test_support" ]
-
-  sources = [
-    "chrome_mock_render_thread.cc",
-    "chrome_mock_render_thread.h",
-  ]
-
-  deps = [
-    ":renderer",
-    "//chrome/common/search:mojo_bindings",
-    "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
-    "//content/test:test_support",
-    "//extensions/buildflags",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
