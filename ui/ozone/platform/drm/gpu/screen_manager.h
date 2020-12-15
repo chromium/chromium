@@ -167,7 +167,8 @@ class ScreenManager {
 
   DrmOverlayPlane GetModesetBuffer(HardwareDisplayController* controller,
                                    const gfx::Rect& bounds,
-                                   const std::vector<uint64_t>& modifiers);
+                                   const std::vector<uint64_t>& modifiers,
+                                   bool is_testing);
 
   // Gets props for modesetting the |controller| using |origin| and |mode|.
   void GetModesetControllerProps(CommitRequest* commit_request,

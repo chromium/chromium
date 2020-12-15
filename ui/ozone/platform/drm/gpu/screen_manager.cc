@@ -287,7 +287,7 @@ bool ScreenManager::TestAndSetPreferredModifiers(
 
       DrmOverlayPlane primary_plane = GetModesetBuffer(
           controller, gfx::Rect(params.origin, ModeSize(*params.mode)),
-          modifiers);
+          modifiers, /*is_testing=*/true);
       if (!primary_plane.buffer) {
         return false;
       }
@@ -342,7 +342,7 @@ bool ScreenManager::TestAndSetLinearModifier(
     if (params.mode) {
       DrmOverlayPlane primary_plane = GetModesetBuffer(
           controller, gfx::Rect(params.origin, ModeSize(*params.mode)),
-          modifiers);
+          modifiers, /*is_testing=*/true);
       if (!primary_plane.buffer)
         return false;
 
@@ -407,7 +407,7 @@ base::flat_map<int64_t, bool> ScreenManager::Modeset(
 
       DrmOverlayPlane primary_plane = GetModesetBuffer(
           controller, gfx::Rect(params.origin, ModeSize(*params.mode)),
-          modifiers);
+          modifiers, /*is_testing=*/false);
       if (primary_plane.buffer) {
         SetDisplayControllerForEnableAndGetProps(
             &commit_request, params.drm, params.crtc, params.connector,
@@ -647,8 +647,8 @@ void ScreenManager::UpdateControllerToWindowMapping() {
           controller->GetSupportedModifiers(fourcc_format);
       DrmOverlayPlane primary_plane = GetModesetBuffer(
           controller,
-          gfx::Rect(controller->origin(), controller->GetModeSize()),
-          modifiers);
+          gfx::Rect(controller->origin(), controller->GetModeSize()), modifiers,
+          /*is_testing=*/false);
       DCHECK(primary_plane.buffer);
 
       CommitRequest commit_request;
@@ -662,7 +662,8 @@ void ScreenManager::UpdateControllerToWindowMapping() {
 DrmOverlayPlane ScreenManager::GetModesetBuffer(
     HardwareDisplayController* controller,
     const gfx::Rect& bounds,
-    const std::vector<uint64_t>& modifiers) {
+    const std::vector<uint64_t>& modifiers,
+    bool is_testing) {
   scoped_refptr<DrmDevice> drm = controller->GetDrmDevice();
   uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(
       display::DisplaySnapshot::PrimaryFormat());
@@ -696,13 +697,15 @@ DrmOverlayPlane ScreenManager::GetModesetBuffer(
     return DrmOverlayPlane::Error();
   }
 
-  sk_sp<SkSurface> surface = buffer->GetSurface();
-  if (!surface) {
-    VLOG(2) << "Can't get a SkSurface from the modeset gbm buffer.";
-  } else if (!FillModesetBuffer(drm, controller, surface.get(), modifiers)) {
-    // If we fail to fill the modeset buffer, clear it black to avoid displaying
-    // an uninitialized framebuffer.
-    surface->getCanvas()->clear(SK_ColorBLACK);
+  if (!is_testing) {
+    sk_sp<SkSurface> surface = buffer->GetSurface();
+    if (!surface) {
+      VLOG(2) << "Can't get a SkSurface from the modeset gbm buffer.";
+    } else if (!FillModesetBuffer(drm, controller, surface.get(), modifiers)) {
+      // If we fail to fill the modeset buffer, clear it black to avoid
+      // displaying an uninitialized framebuffer.
+      surface->getCanvas()->clear(SK_ColorBLACK);
+    }
   }
   return DrmOverlayPlane(framebuffer, nullptr);
 }
