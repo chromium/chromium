@@ -199,6 +199,8 @@ TEST_P(FrameThrottlingTest, IntersectionObservationOverridesThrottling) {
   {
     GetDocument().GetFrame()->View()->SetTargetStateForTest(
         DocumentLifecycle::kPaintClean);
+    inner_frame_document->Lifecycle().EnsureStateAtMost(
+        DocumentLifecycle::kVisualUpdatePending);
     EXPECT_FALSE(
         inner_frame_document->View()->ShouldThrottleRenderingForTest());
     GetDocument().GetFrame()->View()->SetTargetStateForTest(
@@ -233,11 +235,12 @@ TEST_P(FrameThrottlingTest, IntersectionObservationOverridesThrottling) {
   EXPECT_TRUE(inner_frame_document->View()->ShouldThrottleRenderingForTest());
 
   EXPECT_FALSE(inner_view->NeedsLayout());
-  EXPECT_TRUE(inner_frame_document->View()
-                  ->GetLayoutView()
-                  ->ShouldDoFullPaintInvalidation());
+  EXPECT_LT(inner_frame_document->Lifecycle().GetState(),
+            DocumentLifecycle::kPaintClean);
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(kCompositingUpdateRebuildTree,
+    // If IntersectionObserver is required to run, lifecycle will be updated
+    // through compositing.
+    EXPECT_EQ(kCompositingUpdateNone,
               inner_view->Compositor()->pending_update_type_);
   }
   EXPECT_TRUE(inner_view->Layer()->SelfNeedsRepaint());
@@ -357,6 +360,8 @@ TEST_P(FrameThrottlingTest,
   {
     GetDocument().GetFrame()->View()->SetTargetStateForTest(
         DocumentLifecycle::kPaintClean);
+    frame_document->Lifecycle().EnsureStateAtMost(
+        DocumentLifecycle::kVisualUpdatePending);
     EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
     GetDocument().GetFrame()->View()->SetTargetStateForTest(
         DocumentLifecycle::kUninitialized);
@@ -369,7 +374,7 @@ TEST_P(FrameThrottlingTest,
   frame_document->View()->ScheduleAnimation();
   frame_document->View()->GetLayoutView()->Layer()->SetNeedsRepaint();
   CompositeFrame();
-  EXPECT_EQ(DocumentLifecycle::kLayoutClean,
+  EXPECT_EQ(DocumentLifecycle::kCompositingAssignmentsClean,
             frame_document->Lifecycle().GetState());
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
 }
