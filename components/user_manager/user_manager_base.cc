@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -62,6 +63,11 @@ const char kLastLoggedInGaiaUser[] = "LastLoggedInRegularUser";
 // In case of browser crash, this pref will be used to set active user after
 // session restore.
 const char kLastActiveUser[] = "LastActiveUser";
+
+// Histogram for tracking the number of legacy supervised user cryptohomes
+// remaining in the wild.
+const char kHideLegacySupervisedUserHistogramName[] =
+    "ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen";
 
 // Upper bound for a histogram metric reporting the amount of time between
 // one regular user logging out and a different regular user logging in.
@@ -806,8 +812,11 @@ void UserManagerBase::EnsureUsersLoaded() {
                 &regular_users_set);
   for (std::vector<AccountId>::const_iterator it = regular_users.begin();
        it != regular_users.end(); ++it) {
-    if (IsSupervisedAccountId(*it))
+    if (IsSupervisedAccountId(*it)) {
+      base::UmaHistogramBoolean(kHideLegacySupervisedUserHistogramName, true);
       continue;
+    }
+    base::UmaHistogramBoolean(kHideLegacySupervisedUserHistogramName, false);
     User* user =
         User::CreateRegularUser(*it, GetStoredUserType(prefs_user_types, *it));
     user->set_oauth_token_status(LoadUserOAuthStatus(*it));

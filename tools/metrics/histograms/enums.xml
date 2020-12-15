@@ -8180,6 +8180,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Latched"/>
 </enum>
 
+<enum name="BooleanLegacySupervisedUserHidden">
+  <int value="0" label="Displayed on login screen"/>
+  <int value="1" label="Hidden on login screen"/>
+</enum>
+
 <enum name="BooleanLoadCollided">
   <int value="0" label="Load did not collide"/>
   <int value="1" label="Load collided"/>

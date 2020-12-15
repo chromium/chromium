@@ -2540,6 +2540,7 @@ if (!is_android) {
         "../browser/chromeos/login/login_screen_extensions_lifetime_manager_browsertest.cc",
         "../browser/chromeos/login/login_screen_policy_browsertest.cc",
         "../browser/chromeos/login/login_ui_browsertest.cc",
+        "../browser/chromeos/login/login_ui_hide_supervised_users_browsertest.cc",
         "../browser/chromeos/login/login_ui_keyboard_browsertest.cc",
         "../browser/chromeos/login/login_ui_shelf_visibility_browsertest.cc",
         "../browser/chromeos/login/login_utils_browsertest.cc",
