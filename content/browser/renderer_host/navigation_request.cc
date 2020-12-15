@@ -1079,22 +1079,29 @@ NavigationRequest::NavigationRequest(
 
   policy_container_host_ = std::make_unique<PolicyContainerHost>();
 
-  // If there is a history entry with some document policies, initialize the
-  // PolicyContainerHost with them, so that they will get applied to the
-  // document created by the navigation.
   if (frame_entry && frame_entry->document_policies()) {
+    // If there is a history entry with some document policies, initialize the
+    // PolicyContainerHost with them, so that they will get applied to the
+    // document created by the navigation.
     policy_container_host_ = std::make_unique<PolicyContainerHost>(
         *frame_entry->document_policies());
+  } else if (common_params_->url.IsAboutSrcdoc()) {
+    // Srcdoc iframes inherit their policies from their parent.
+    // If there is no parent, the navigation will be blocked in BeginNavigation.
+    if (frame_tree_node_->parent()) {
+      policy_container_host_ =
+          frame_tree_node_->parent()->policy_container_host()->Clone();
+    }
+  } else if (common_params_->url.SchemeIs(url::kAboutScheme) ||
+             common_params_->url.SchemeIs(url::kDataScheme) ||
+             common_params_->url.SchemeIs(url::kBlobScheme) ||
+             common_params_->url.SchemeIs(url::kFileSystemScheme)) {
     // Local schemes inherit the policy container  from the initiator.
     //
     // TODO(antoniosartori): Fill up the PolicyContainerHost and/or replace it
     // with a new one whenever needed (e.g. blob: or filesystem: URLs should get
     // the policy container from the document which created them and not from
     // the initiator of the navigation).
-  } else if (common_params_->url.SchemeIs(url::kAboutScheme) ||
-             common_params_->url.SchemeIs(url::kDataScheme) ||
-             common_params_->url.SchemeIs(url::kBlobScheme) ||
-             common_params_->url.SchemeIs(url::kFileSystemScheme)) {
     if (initiator_frame_token_) {
       RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
           initiator_process_id_, initiator_frame_token_.value());
