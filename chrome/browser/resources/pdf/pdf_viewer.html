@@ -117,6 +117,13 @@
   }
 
   #scroller {
+    /* TODO(crbug.com/1158670): Fix the plugin to properly support RTL painting
+     * of PDF contents, such that content is aligned to the top-right corner.
+     * Until then force LTR even in RTL languages, so scrolling of the content
+     * can originate in the top-left corner, consistent with the expectations of
+     * the plugin.
+     */
+    direction: ltr;
     height: 100%;
     overflow: auto;
     position: relative;
