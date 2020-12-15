@@ -9,6 +9,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 
 namespace chromeos {
@@ -31,7 +33,11 @@ class PinSetupScreen : public BaseScreen {
   };
 
   static std::string GetResultString(Result result);
-  static bool ShouldSkip();
+
+  // Checks whether PIN setup should be skipped because of the policies.
+  // There is an additional checkpoint that might skip the setup based on user
+  // profile and pin availability information in `MaybeSkip`.
+  static bool ShouldSkipBecauseOfPolicy();
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   PinSetupScreen(PinSetupScreenView* view,
@@ -54,8 +60,17 @@ class PinSetupScreen : public BaseScreen {
   void OnUserAction(const std::string& action_id) override;
 
  private:
+  void OnHasLoginSupport(bool has_login_support);
+
+  // Inticates whether the device supports usage of PIN for login.
+  // This information is retrived in an async way and will not be available
+  // immediately.
+  base::Optional<bool> has_login_support_;
+
   PinSetupScreenView* const view_;
   ScreenExitCallback exit_callback_;
+
+  base::WeakPtrFactory<PinSetupScreen> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PinSetupScreen);
 };

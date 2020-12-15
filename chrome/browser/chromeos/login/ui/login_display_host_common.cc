@@ -366,7 +366,7 @@ void LoginDisplayHostCommon::StartSupervisionTransition() {
 
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
-  if (PinSetupScreen::ShouldSkip())
+  if (PinSetupScreen::ShouldSkipBecauseOfPolicy())
     return;
   chromeos::DiscoverManager::Get()
       ->GetModule<chromeos::DiscoverModulePinSetup>()

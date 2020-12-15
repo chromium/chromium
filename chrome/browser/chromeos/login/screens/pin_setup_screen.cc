@@ -7,10 +7,12 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_service.h"
 
@@ -74,18 +76,12 @@ std::string PinSetupScreen::GetResultString(Result result) {
   }
 }
 
-bool PinSetupScreen::ShouldSkip() {
+// static
+bool PinSetupScreen::ShouldSkipBecauseOfPolicy() {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
-      !chromeos::quick_unlock::IsPinEnabled(prefs) ||
-      chromeos::quick_unlock::IsPinDisabledByPolicy(prefs)) {
-    return true;
-  }
-
-  // Skip the screen if the device is not in tablet mode, unless tablet mode
-  // first user run is forced on the device.
-  if (!ash::TabletMode::Get()->InTabletMode() &&
-      !chromeos::switches::ShouldOobeUseTabletModeFirstRun()) {
+      !quick_unlock::IsPinEnabled(prefs) ||
+      quick_unlock::IsPinDisabledByPolicy(prefs)) {
     return true;
   }
 
@@ -99,6 +95,9 @@ PinSetupScreen::PinSetupScreen(PinSetupScreenView* view,
       exit_callback_(exit_callback) {
   DCHECK(view_);
   view_->Bind(this);
+
+  quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
+      &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
 }
 
 PinSetupScreen::~PinSetupScreen() {
@@ -107,7 +106,23 @@ PinSetupScreen::~PinSetupScreen() {
 }
 
 bool PinSetupScreen::MaybeSkip(WizardContext* context) {
-  if (ShouldSkip()) {
+  if (ShouldSkipBecauseOfPolicy()) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  // Show setup for Family Link users on tablet and clamshell if the device
+  // supports PIN for login.
+  bool show_for_family_link_user =
+      features::IsPinSetupForFamilyLinkEnabled() &&
+      ProfileManager::GetActiveUserProfile()->IsChild() &&
+      has_login_support_.value_or(false);
+
+  // Skip the screen if the device is not in tablet mode, unless tablet mode
+  // first user run is forced on the device.
+  if (!ash::TabletMode::Get()->InTabletMode() &&
+      !switches::ShouldOobeUseTabletModeFirstRun() &&
+      !show_for_family_link_user) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
@@ -121,6 +136,10 @@ void PinSetupScreen::ShowImpl() {
 
 void PinSetupScreen::HideImpl() {
   view_->Hide();
+}
+
+void PinSetupScreen::OnHasLoginSupport(bool has_login_support) {
+  has_login_support_ = has_login_support;
 }
 
 void PinSetupScreen::OnUserAction(const std::string& action_id) {

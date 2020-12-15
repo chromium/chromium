@@ -505,6 +505,11 @@ const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kPhoneHubUseBle{"PhoneHubUseBle",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables PIN setup in OOBE for Family Link users on all devices supporting low
+// entropy credentials regardless the form factor.
+const base::Feature kPinSetupForFamilyLink{"PinSetupForFamilyLink",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether the camera permissions should be shown in the Plugin
 // VM app settings.
 const base::Feature kPluginVmShowCameraPermissions{
@@ -815,6 +820,10 @@ bool IsPhoneHubEnabled() {
 
 bool IsPhoneHubUseBleEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubUseBle) && IsPhoneHubEnabled();
+}
+
+bool IsPinSetupForFamilyLinkEnabled() {
+  return base::FeatureList::IsEnabled(kPinSetupForFamilyLink);
 }
 
 bool IsPinAutosubmitFeatureEnabled() {

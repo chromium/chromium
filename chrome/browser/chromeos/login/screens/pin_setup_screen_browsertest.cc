@@ -7,6 +7,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
@@ -19,6 +20,9 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
@@ -45,6 +49,9 @@ class PinSetupScreenTest
       public testing::WithParamInterface<user_manager::UserType> {
  public:
   PinSetupScreenTest() {
+    CryptohomeClient::InitializeFake();
+    FakeCryptohomeClient::Get()->set_supports_low_entropy_credentials(false);
+
     if (GetParam() == user_manager::USER_TYPE_CHILD) {
       fake_gaia_ =
           std::make_unique<FakeGaiaMixin>(&mixin_host_, embedded_test_server());
@@ -209,6 +216,95 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipInFlow) {
 IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, FinishedFlow) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  EnterPin();
+  test::OobeJS().TapOnPath(kNextButton);
+  test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
+
+  EnterPin();
+  test::OobeJS().TapOnPath(kNextButton);
+  test::OobeJS().CreateVisibilityWaiter(true, {kDoneButton})->Wait();
+
+  test::OobeJS().TapOnPath(kDoneButton);
+
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
+      ElementsAre(base::Bucket(
+          static_cast<int>(PinSetupScreen::UserAction::kDoneButtonClicked),
+          1)));
+}
+
+// Tests the PIN setup screen in the scenario when the device supports low
+// entropy credentials and PIN can be used for login.
+class PinForLoginSetupScreenTest : public PinSetupScreenTest {
+ protected:
+  PinForLoginSetupScreenTest() {
+    // Enable PIN for login (overrides base class setting).
+    CryptohomeClient::InitializeFake();
+    FakeCryptohomeClient::Get()->set_supports_low_entropy_credentials(true);
+    scoped_feature_list_.InitAndEnableFeature(features::kPinSetupForFamilyLink);
+  }
+
+  ~PinForLoginSetupScreenTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PinForLoginSetupScreenTest,
+                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
+                                           user_manager::USER_TYPE_CHILD));
+
+// Tests that PIN setup is shown to Family Link users (but not to regular users)
+// on clamshell devices that support low entropy credentials.
+IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, ClamshellMode) {
+  ShowPinSetupScreen();
+
+  if (GetParam() == user_manager::USER_TYPE_CHILD) {
+    WaitForScreenShown();
+
+    EnterPin();
+    test::OobeJS().TapOnPath(kNextButton);
+    test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
+
+    EnterPin();
+    test::OobeJS().TapOnPath(kNextButton);
+    test::OobeJS().CreateVisibilityWaiter(true, {kDoneButton})->Wait();
+
+    test::OobeJS().TapOnPath(kDoneButton);
+
+    WaitForScreenExit();
+    EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
+    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
+        ElementsAre(base::Bucket(
+            static_cast<int>(PinSetupScreen::UserAction::kDoneButtonClicked),
+            1)));
+  } else {
+    WaitForScreenExit();
+    EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
+    histogram_tester_.ExpectTotalCount(
+        "OOBE.StepCompletionTimeByExitReason.Discover.Next", 0);
+    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 0);
+  }
+}
+
+// Tests that PIN setup is shown to Family Link and regular users in tablet
+// mode.
+IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, TabletMode) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+  ShowPinSetupScreen();
+
   WaitForScreenShown();
 
   EnterPin();
