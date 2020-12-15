@@ -213,6 +213,19 @@ base::Optional<arc::UserInteractionType> GetUserInterationType(
   return user_interaction_type;
 }
 
+base::flat_map<std::string, std::string> CreateIntentExtras(
+    const apps::mojom::IntentPtr& intent) {
+  auto extras = base::flat_map<std::string, std::string>();
+  if (intent->share_text.has_value()) {
+    extras.insert(std::make_pair(kIntentExtraText, intent->share_text.value()));
+  }
+  if (intent->share_title.has_value()) {
+    extras.insert(
+        std::make_pair(kIntentExtraSubject, intent->share_title.value()));
+  }
+  return extras;
+}
+
 arc::mojom::IntentInfoPtr CreateArcIntent(apps::mojom::IntentPtr intent) {
   arc::mojom::IntentInfoPtr arc_intent;
   if (!intent->url.has_value() && !intent->share_text.has_value()) {
@@ -236,15 +249,7 @@ arc::mojom::IntentInfoPtr CreateArcIntent(apps::mojom::IntentPtr intent) {
     arc_intent->data = intent->url->spec();
   }
   if (intent->share_text.has_value() || intent->share_title.has_value()) {
-    arc_intent->extras = base::flat_map<std::string, std::string>();
-  }
-  if (intent->share_text.has_value()) {
-    arc_intent->extras.value().insert(
-        std::make_pair(kIntentExtraText, intent->share_text.value()));
-  }
-  if (intent->share_title.has_value()) {
-    arc_intent->extras.value().insert(
-        std::make_pair(kIntentExtraSubject, intent->share_title.value()));
+    arc_intent->extras = CreateIntentExtras(intent);
   }
   return arc_intent;
 }
@@ -536,6 +541,9 @@ arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
     url_with_type->content_url = content_url;
     url_with_type->mime_type = intent->mime_type.value();
     request->urls.push_back(std::move(url_with_type));
+  }
+  if (intent->share_text.has_value() || intent->share_title.has_value()) {
+    request->extras = CreateIntentExtras(intent);
   }
   return request;
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 17
+// Next MinVersion: 18
 
 module arc.mojom;
 
@@ -126,6 +126,11 @@ struct OpenUrlsRequest {
 
   // One or more URLs to open with the intent.
   array<ContentUrlWithMimeType> urls;
+
+  // Optional string extras. These are the key-value pairs stored in android
+  // intents to carry additional data. See:
+  // https://developer.android.com/reference/android/content/Intent#putExtra(java.lang.String,%20java.lang.String)
+  [MinVersion=17] map<string, string>? extras;
 };
 
 // Supported action types for SelectFilesRequest.
