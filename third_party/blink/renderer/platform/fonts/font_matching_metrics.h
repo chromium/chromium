@@ -198,7 +198,7 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   // name in |font_load_postscript_name_|.
   void InsertFontHashIntoMap(IdentifiableTokenKey input_key,
                              SimpleFontData* font_data,
-                             TokenToTokenHashMap hash_map);
+                             TokenToTokenHashMap& hash_map);
 
   // Reports a local font's existence was looked up by a name, but its actual
   // font data may or may not have been loaded. This only includes lookups where
