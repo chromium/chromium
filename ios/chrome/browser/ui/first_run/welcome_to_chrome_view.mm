@@ -10,6 +10,7 @@
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "ios/chrome/browser/ui/elements/text_view_selection_disabled.h"
 #include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #include "ios/chrome/browser/ui/first_run/first_run_util.h"
@@ -67,6 +68,7 @@ const CGFloat kImageTopPadding[SIZE_CLASS_COUNT] = {32.0, 50.0};
 const CGFloat kTOSTextViewTopPadding[SIZE_CLASS_COUNT] = {34.0, 40.0};
 const CGFloat kOptInLabelPadding[SIZE_CLASS_COUNT] = {10.0, 14.0};
 const CGFloat kCheckBoxPadding[SIZE_CLASS_COUNT] = {10.0, 16.0};
+const CGFloat kManagedLabelPadding[SIZE_CLASS_COUNT] = {14.0, 20.0};
 const CGFloat kOKButtonBottomPadding[SIZE_CLASS_COUNT] = {32.0, 32.0};
 const CGFloat kOKButtonHeight[SIZE_CLASS_COUNT] = {36.0, 54.0};
 // Multiplier matches that used in LaunchScreen.xib to determine size of logo.
@@ -78,6 +80,8 @@ const CGFloat kTOSTOSTextViewFontSize[SIZE_CLASS_COUNT] = {14.0, 21.0};
 const CGFloat kLegacyTOSLabelLineHeight[SIZE_CLASS_COUNT] = {20.0, 32.0};
 const CGFloat kOptInLabelFontSize[SIZE_CLASS_COUNT] = {13.0, 19.0};
 const CGFloat kOptInLabelLineHeight[SIZE_CLASS_COUNT] = {18.0, 26.0};
+const CGFloat kManagedLabelFontSize[SIZE_CLASS_COUNT] = {13.0, 19.0};
+const CGFloat kManagedLabelLineHeight[SIZE_CLASS_COUNT] = {18.0, 26.0};
 const CGFloat kOKButtonTitleLabelFontSize[SIZE_CLASS_COUNT] = {14.0, 20.0};
 
 // Animation constants
@@ -89,6 +93,7 @@ const CGFloat kAnimationDelay = .5;
 NSString* const kAppLogoImageName = @"launchscreen_app_logo";
 NSString* const kCheckBoxImageName = @"checkbox";
 NSString* const kCheckBoxCheckedImageName = @"checkbox_checked";
+NSString* const kEnterpriseIconImageName = @"enterprise_icon";
 
 // Constant for the Terms of Service URL in the first run experience.
 const char kTermsOfServiceUrl[] = "internal://terms-of-service";
@@ -101,6 +106,8 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   UIImageView* _imageView;
   UIButton* _checkBoxButton;
   UILabel* _optInLabel;
+  UILabel* _managedLabel;
+  UIImageView* _enterpriseIcon;
   PrimaryActionButton* _OKButton;
 
   // Used for iOS 12 compatibility.
@@ -130,6 +137,10 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 @property(strong, nonatomic) LabelObserver* optInObserver;
 // The stats reporting opt-in checkbox button.
 @property(strong, nonatomic, readonly) UIButton* checkBoxButton;
+// Observer for setting the size of the managedLabel with cr_lineHeight.
+@property(strong, nonatomic) LabelObserver* managedObserver;
+// The Chrome logo image view.
+@property(strong, nonatomic, readonly) UIImageView* enterpriseIcon;
 // The "Accept & Continue" button.
 @property(strong, nonatomic, readonly) PrimaryActionButton* OKButton;
 
@@ -140,6 +151,8 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 - (void)layoutTOSTextView;
 - (void)layoutOptInLabel;
 - (void)layoutCheckBoxButton;
+- (void)layoutManagedLabel;
+- (void)layoutEnterpriseIcon;
 - (void)layoutContainerView;
 - (void)layoutOKButton;
 
@@ -151,6 +164,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 - (void)configureImageView;
 - (void)configureTOSTextView;
 - (void)configureOptInLabel;
+- (void)configureManagedLabel;
 - (void)configureContainerView;
 - (void)configureOKButton;
 
@@ -182,6 +196,8 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   self.legacyTOSLabel.alpha = 0.0;
   self.optInLabel.alpha = 0.0;
   self.checkBoxButton.alpha = 0.0;
+  self.managedLabel.alpha = 0.0;
+  self.enterpriseIcon.alpha = 0.0;
   self.OKButton.alpha = 0.0;
 
   // Get final location of logo based on result from previously run
@@ -203,6 +219,8 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
                      [weakSelf TOSTextView].alpha = 1.0;
                      [weakSelf legacyTOSLabel].alpha = 1.0;
                      [weakSelf optInLabel].alpha = 1.0;
+                     [weakSelf managedLabel].alpha = 1.0;
+                     [weakSelf enterpriseIcon].alpha = 1.0;
                      [weakSelf checkBoxButton].alpha = 1.0;
                      [weakSelf OKButton].alpha = 1.0;
                    }
@@ -309,6 +327,29 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   return _checkBoxButton;
 }
 
+- (UILabel*)managedLabel {
+  if (!_managedLabel) {
+    _managedLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    // Add an observer to the label to be able to keep the cr_lineHeight.
+    self.managedObserver = [LabelObserver observerForLabel:_managedLabel];
+    [self.managedObserver startObserving];
+
+    [_managedLabel setNumberOfLines:0];
+    [_managedLabel
+        setText:l10n_util::GetNSString(IDS_IOS_FIRSTRUN_BROWSER_MANAGED)];
+    [_managedLabel setTextAlignment:NSTextAlignmentNatural];
+  }
+  return _managedLabel;
+}
+
+- (UIImageView*)enterpriseIcon {
+  if (!_enterpriseIcon) {
+    UIImage* image = [UIImage imageNamed:kEnterpriseIconImageName];
+    _enterpriseIcon = [[UIImageView alloc] initWithImage:image];
+  }
+  return _enterpriseIcon;
+}
+
 - (PrimaryActionButton*)OKButton {
   if (!_OKButton) {
     _OKButton = [[PrimaryActionButton alloc] initWithFrame:CGRectZero];
@@ -325,6 +366,11 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
         _OKButton, IDS_IOS_FIRSTRUN_OPT_IN_ACCEPT_BUTTON, @"Accept & Continue");
   }
   return _OKButton;
+}
+
+- (BOOL)isBrowserManaged {
+  return [[[NSUserDefaults standardUserDefaults]
+             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
 }
 
 #pragma mark - Layout
@@ -348,6 +394,10 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   }
   [self.containerView addSubview:self.optInLabel];
   [self.containerView addSubview:self.checkBoxButton];
+  if ([self isBrowserManaged]) {
+    [self.containerView addSubview:self.managedLabel];
+    [self.containerView addSubview:self.enterpriseIcon];
+  }
   [self addSubview:self.OKButton];
   [self configureSubviews];
 }
@@ -358,6 +408,10 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 }
 
 - (void)layoutSubviews {
+  // TODO(crbug.com/1157934): This page should support dynamic type to respect
+  // the user's chosen font size. This layout might need to be changed for
+  // smaller screen sizes and large fonts, as it might not fit a single screen,
+  // especially with the "managed by organization" enterprise notice.
   [super layoutSubviews];
   [self layoutTitleLabel];
   [self layoutImageView];
@@ -368,6 +422,10 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   }
   [self layoutOptInLabel];
   [self layoutCheckBoxButton];
+  if ([self isBrowserManaged]) {
+    [self layoutManagedLabel];
+    [self layoutEnterpriseIcon];
+  }
   [self layoutOKButtonAndContainerView];
 }
 
@@ -512,15 +570,62 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
       base::i18n::IsRTL() ? smallHorizontalInset : largeHorizontalInset);
 }
 
-- (void)layoutContainerView {
-  // The container view is resized according to the final layout of
-  // |checkBoxButton|, which is its lowest subview.  The resized view is then
-  // centered horizontally and vertically. If necessary, it is shifted up to
-  // allow |kOptInLabelPadding| between |optInLabel| and |OKButton|.
-  CGSize containerViewSize = self.containerView.bounds.size;
-  containerViewSize.height = CGRectGetMaxY(self.checkBoxButton.frame);
+- (void)layoutManagedLabel {
+  // The managed label is laid out to the right (or left in RTL) of the
+  // enterprise icon and below |optInLabel| as specified by
+  // kManagedLabelPadding. It is aligned horizontally with |optInLabel|.
+  CGSize checkBoxSize =
+      [self.checkBoxButton imageForState:self.checkBoxButton.state].size;
+  CGFloat checkBoxPadding = kCheckBoxPadding[[self widthSizeClassIdiom]];
+  CGFloat managedLabelSidePadding = checkBoxSize.width + 2.0 * checkBoxPadding;
+  CGSize managedLabelSize = [self.managedLabel
+      sizeThatFits:CGSizeMake(CGRectGetWidth(self.optInLabel.bounds),
+                              CGFLOAT_MAX)];
+  CGFloat managedLabelTopPadding =
+      kManagedLabelPadding[[self heightSizeClassIdiom]];
+  CGFloat managedLabelOriginX =
+      base::i18n::IsRTL()
+          ? self.optInLabel.bounds.size.width - managedLabelSize.width
+          : managedLabelSidePadding;
 
-  CGFloat padding = kOptInLabelPadding[[self heightSizeClassIdiom]];
+  self.managedLabel.frame = AlignRectOriginAndSizeToPixels(CGRectMake(
+      managedLabelOriginX,
+      CGRectGetMaxY(self.checkBoxButton.frame) + managedLabelTopPadding,
+      managedLabelSize.width, managedLabelSize.height));
+}
+
+- (void)layoutEnterpriseIcon {
+  // The enterprise icon is laid out to the left of and is centered vertically
+  // with |managedLabel|, and is aligned horizontally with the checkbox image
+  // inside |checkBoxButton|.
+  CGSize enterpriseIconSize = self.enterpriseIcon.bounds.size;
+  CGFloat enterpriseIconOriginX =
+      CGRectGetMidX(self.checkBoxButton.imageView.frame) -
+      enterpriseIconSize.height / 2.0;
+  CGFloat enterpriseIconOriginY =
+      CGRectGetMidY(self.managedLabel.frame) - enterpriseIconSize.height / 2.0;
+
+  self.enterpriseIcon.frame = AlignRectOriginAndSizeToPixels(
+      CGRectMake(enterpriseIconOriginX, enterpriseIconOriginY,
+                 enterpriseIconSize.width, enterpriseIconSize.height));
+}
+
+- (void)layoutContainerView {
+  // The container view is resized according to the final layout of its lowest
+  // subview, which is |managedLabel| if the browser is managed and
+  // |checkBoxButton| if not. The resized view is then centered horizontally and
+  // vertically. If necessary, it is shifted up to allow either
+  // |kmanagedLabelPadding| or |kOptInLabelPadding| (depending if the browser is
+  // managed) between |optInLabel| and |OKButton|.
+  CGSize containerViewSize = self.containerView.bounds.size;
+  containerViewSize.height = [self isBrowserManaged]
+                                 ? CGRectGetMaxY(self.managedLabel.frame)
+                                 : CGRectGetMaxY(self.checkBoxButton.frame);
+
+  CGFloat padding = [self isBrowserManaged]
+                        ? kManagedLabelPadding[[self heightSizeClassIdiom]]
+                        : kOptInLabelPadding[[self heightSizeClassIdiom]];
+
   CGFloat originY = fmin(
       (CGRectGetHeight(self.bounds) - containerViewSize.height) / 2.0,
       CGRectGetMinY(self.OKButton.frame) - padding - containerViewSize.height);
@@ -560,6 +665,9 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
     [self configureLegacyTOSLabel];
   }
   [self configureOptInLabel];
+  if ([self isBrowserManaged]) {
+    [self configureManagedLabel];
+  }
   [self configureOKButton];
   [self setNeedsLayout];
 }
@@ -627,6 +735,14 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
       regularFontOfSize:kOptInLabelFontSize[[self widthSizeClassIdiom]]];
   self.optInLabel.cr_lineHeight =
       kOptInLabelLineHeight[[self widthSizeClassIdiom]];
+}
+
+- (void)configureManagedLabel {
+  self.managedLabel.font = [[MDCTypography fontLoader]
+      regularFontOfSize:kManagedLabelFontSize[[self widthSizeClassIdiom]]];
+  self.managedLabel.cr_lineHeight =
+      kManagedLabelLineHeight[[self widthSizeClassIdiom]];
+  self.managedLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 }
 
 - (void)configureLegacyTOSLabel {
