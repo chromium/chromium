@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builders.star", "cpu", "goma", "os")
+load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
 luci.bucket(
@@ -46,7 +47,7 @@ try_.defaults.caches.set([
     ),
 ])
 
-try_.list_view(
+consoles.list_view(
     name = "tryserver.chromium.codesearch",
 )
 
