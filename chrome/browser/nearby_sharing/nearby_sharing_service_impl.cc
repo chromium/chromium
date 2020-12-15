@@ -202,14 +202,14 @@ class TransferUpdateDecorator : public TransferUpdateCallback {
 
   void OnTransferUpdate(const ShareTarget& share_target,
                         const TransferMetadata& transfer_metadata) override {
-    NS_LOG(VERBOSE) << __func__ << ": Transfer update decorator: "
-                    << "Transfer update for share target with ID "
-                    << share_target.id << ": "
-                    << TransferMetadata::StatusToString(
-                           transfer_metadata.status());
     if (got_final_status_) {
       // If we already got a final status, we can ignore any subsequent final
       // statuses caused by race conditions.
+      NS_LOG(VERBOSE)
+          << __func__ << ": Transfer update decorator swallowed "
+          << "status update because a final status was already received: "
+          << share_target.id << ": "
+          << TransferMetadata::StatusToString(transfer_metadata.status());
       return;
     }
     got_final_status_ = transfer_metadata.is_final_status();
@@ -2429,10 +2429,13 @@ void NearbySharingServiceImpl::OnIncomingAdvertisementDecoded(
 void NearbySharingServiceImpl::OnIncomingTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& metadata) {
-  NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
-                  << "Incoming transfer update for share target with ID "
-                  << share_target.id << ": "
-                  << TransferMetadata::StatusToString(metadata.status());
+  // kInProgress status is logged extensively elsewhere so avoid the spam.
+  if (metadata.status() != TransferMetadata::Status::kInProgress) {
+    NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
+                    << "Incoming transfer update for share target with ID "
+                    << share_target.id << ": "
+                    << TransferMetadata::StatusToString(metadata.status());
+  }
   if (metadata.status() != TransferMetadata::Status::kCancelled &&
       metadata.status() != TransferMetadata::Status::kRejected) {
     last_incoming_metadata_ =
@@ -2470,10 +2473,13 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
 void NearbySharingServiceImpl::OnOutgoingTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& metadata) {
-  NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
-                  << "Outgoing transfer update for share target with ID "
-                  << share_target.id << ": "
-                  << TransferMetadata::StatusToString(metadata.status());
+  // kInProgress status is logged extensively elsewhere so avoid the spam.
+  if (metadata.status() != TransferMetadata::Status::kInProgress) {
+    NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
+                    << "Outgoing transfer update for share target with ID "
+                    << share_target.id << ": "
+                    << TransferMetadata::StatusToString(metadata.status());
+  }
 
   if (metadata.is_final_status()) {
     is_connecting_ = false;
@@ -3221,10 +3227,13 @@ base::Optional<ShareTarget> NearbySharingServiceImpl::CreateShareTarget(
 void NearbySharingServiceImpl::OnPayloadTransferUpdate(
     ShareTarget share_target,
     TransferMetadata metadata) {
-  NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
-                  << "Payload transfer update for share target with ID "
-                  << share_target.id << ": "
-                  << TransferMetadata::StatusToString(metadata.status());
+  // kInProgress status is logged extensively elsewhere so avoid the spam.
+  if (metadata.status() != TransferMetadata::Status::kInProgress) {
+    NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
+                    << "Payload transfer update for share target with ID "
+                    << share_target.id << ": "
+                    << TransferMetadata::StatusToString(metadata.status());
+  }
 
   if (metadata.status() == TransferMetadata::Status::kComplete &&
       share_target.is_incoming && !OnIncomingPayloadsComplete(share_target)) {

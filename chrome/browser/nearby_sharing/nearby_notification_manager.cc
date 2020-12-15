@@ -527,12 +527,6 @@ NearbyNotificationManager::~NearbyNotificationManager() {
 void NearbyNotificationManager::OnTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  NS_LOG(VERBOSE) << __func__ << ": Nearby notification manager: "
-                  << "Transfer update for share target with ID "
-                  << share_target.id << ": "
-                  << TransferMetadata::StatusToString(
-                         transfer_metadata.status());
-
   if (!share_target_)
     share_target_ = share_target;
   DCHECK_EQ(share_target_->id, share_target.id);
