@@ -109,6 +109,7 @@ crbug.com/1115673 [ fuchsia ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLDrawImage [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLRoundedCorners [ Skip ]
 crbug.com/1115673 [ fuchsia ] Pixel_CanvasLowLatencyWebGLOccluded [ Skip ]
+crbug.com/1157136 [ fuchsia skia-renderer-vulkan ] Pixel_OffscreenCanvasWebGLDefault [ Skip ]
 
 # Tests running with SwiftShader are skipped on platforms where SwiftShader
 # isn't supported.
