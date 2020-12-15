@@ -44,16 +44,13 @@
       <div route-path="default">
         <div id="multidevice-item" class="settings-box two-line no-padding">
           <div class="link-wrapper" actionable
-               actionable$="[[doesClickOpenSubpage_(pageContentData)]]"
-               on-click="handleItemClick_">
-            <template is="dom-if" if="[[isHostSet(pageContentData)]]" restamp>
-              <iron-icon icon=
-                  "[[getIconName(MultiDeviceFeature.BETTER_TOGETHER_SUITE)]]">
-              </iron-icon>
-            </template>
-            <div class$=
-                "[[getMultiDeviceItemLabelBlockCssClass_(pageContentData)]]
-                    settings-box-text"
+              actionable$="[[doesClickOpenSubpage_(pageContentData)]]"
+              on-click="handleItemClick_">
+            <iron-icon icon=
+                "[[getIconName(MultiDeviceFeature.BETTER_TOGETHER_SUITE)]]"
+                id="betterTogetherSuiteIcon">
+            </iron-icon>
+            <div class="middle settings-box-text"
                 aria-hidden$="[[getTextAriaHidden_(pageContentData)]]">
               <div id="multidevice-label">
                 [[getLabelText_(pageContentData)]]

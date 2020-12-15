@@ -135,17 +135,6 @@ Polymer({
   },
 
   /**
-   * CSS class for the <div> containing all the text in the multidevice-item
-   * <div>, i.e. the label and sublabel. If the host is set, the Better Together
-   * icon appears so before the text (i.e. text div is 'middle' class).
-   * @return {string}
-   * @private
-   */
-  getMultiDeviceItemLabelBlockCssClass_() {
-    return this.isHostSet() ? 'middle' : 'start';
-  },
-
-  /**
    * @return {string} Translated item label.
    * @private
    */
