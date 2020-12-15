@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
@@ -190,9 +191,21 @@ EVENTS_EXPORT void ConvertEventLocationToTargetWindowLocation(
     const gfx::Point& current_window_origin,
     ui::LocatedEvent* located_event);
 
-// Returns a string description of an event type. Useful for debugging.
+// The following utilities are useful for debugging and tracing.
+
+// Returns a string description of an event type.
 EVENTS_EXPORT base::StringPiece EventTypeName(EventType type);
 
+// Returns a vector of string representations of EventFlags.
+EVENTS_EXPORT std::vector<base::StringPiece> EventFlagsNames(int event_flags);
+
+// Returns a a vector of string representations of KeyEventFlags.
+EVENTS_EXPORT std::vector<base::StringPiece> KeyEventFlagsNames(
+    int event_flags);
+
+// Returns a a vector of string representations of MouseEventFlags.
+EVENTS_EXPORT std::vector<base::StringPiece> MouseEventFlagsNames(
+    int event_flags);
 }  // namespace ui
 
 #endif  // UI_EVENTS_EVENT_UTILS_H_

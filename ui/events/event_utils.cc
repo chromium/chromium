@@ -4,6 +4,7 @@
 
 #include "ui/events/event_utils.h"
 
+#include <map>
 #include <vector>
 
 #include "base/check.h"
@@ -204,6 +205,94 @@ base::StringPiece EventTypeName(EventType type) {
 
   NOTREACHED();
   return "";
+}
+
+std::vector<base::StringPiece> EventFlagsNames(int event_flags) {
+  std::vector<base::StringPiece> names;
+  names.reserve(5);  // Seems like a good starting point.
+  if (!event_flags) {
+    names.push_back("NONE");
+    return names;
+  }
+
+  if (event_flags & EF_IS_SYNTHESIZED)
+    names.push_back("IS_SYNTHESIZED");
+  if (event_flags & EF_SHIFT_DOWN)
+    names.push_back("SHIFT_DOWN");
+  if (event_flags & EF_CONTROL_DOWN)
+    names.push_back("CONTROL_DOWN");
+  if (event_flags & EF_ALT_DOWN)
+    names.push_back("ALT_DOWN");
+  if (event_flags & EF_COMMAND_DOWN)
+    names.push_back("COMMAND_DOWN");
+  if (event_flags & EF_ALTGR_DOWN)
+    names.push_back("ALTGR_DOWN");
+  if (event_flags & EF_MOD3_DOWN)
+    names.push_back("MOD3_DOWN");
+  if (event_flags & EF_NUM_LOCK_ON)
+    names.push_back("NUM_LOCK_ON");
+  if (event_flags & EF_CAPS_LOCK_ON)
+    names.push_back("CAPS_LOCK_ON");
+  if (event_flags & EF_SCROLL_LOCK_ON)
+    names.push_back("SCROLL_LOCK_ON");
+  if (event_flags & EF_LEFT_MOUSE_BUTTON)
+    names.push_back("LEFT_MOUSE_BUTTON");
+  if (event_flags & EF_MIDDLE_MOUSE_BUTTON)
+    names.push_back("MIDDLE_MOUSE_BUTTON");
+  if (event_flags & EF_RIGHT_MOUSE_BUTTON)
+    names.push_back("RIGHT_MOUSE_BUTTON");
+  if (event_flags & EF_BACK_MOUSE_BUTTON)
+    names.push_back("BACK_MOUSE_BUTTON");
+  if (event_flags & EF_FORWARD_MOUSE_BUTTON)
+    names.push_back("FORWARD_MOUSE_BUTTON");
+
+  return names;
+}
+
+std::vector<base::StringPiece> KeyEventFlagsNames(int event_flags) {
+  std::vector<base::StringPiece> names = EventFlagsNames(event_flags);
+  if (!event_flags)
+    return names;
+
+  if (event_flags & EF_IME_FABRICATED_KEY)
+    names.push_back("IME_FABRICATED_KEY");
+  if (event_flags & EF_IS_REPEAT)
+    names.push_back("IS_REPEAT");
+  if (event_flags & EF_FINAL)
+    names.push_back("FINAL");
+  if (event_flags & EF_IS_EXTENDED_KEY)
+    names.push_back("IS_EXTENDED_KEY");
+  if (event_flags & EF_IS_STYLUS_BUTTON)
+    names.push_back("IS_STYLUS_BUTTON");
+
+  return names;
+}
+
+std::vector<base::StringPiece> MouseEventFlagsNames(int event_flags) {
+  std::vector<base::StringPiece> names = EventFlagsNames(event_flags);
+  if (!event_flags)
+    return names;
+
+  if (event_flags & EF_IS_DOUBLE_CLICK)
+    names.push_back("IS_DOUBLE_CLICK");
+  if (event_flags & EF_IS_TRIPLE_CLICK)
+    names.push_back("IS_TRIPLE_CLICK");
+  if (event_flags & EF_IS_NON_CLIENT)
+    names.push_back("IS_NON_CLIENT");
+  if (event_flags & EF_FROM_TOUCH)
+    names.push_back("FROM_TOUCH");
+  if (event_flags & EF_TOUCH_ACCESSIBILITY)
+    names.push_back("TOUCH_ACCESSIBILITY");
+  if (event_flags & EF_CURSOR_HIDE)
+    names.push_back("CURSOR_HIDE");
+  if (event_flags & EF_PRECISION_SCROLLING_DELTA)
+    names.push_back("PRECISION_SCROLLING_DELTA");
+  if (event_flags & EF_SCROLL_BY_PAGE)
+    names.push_back("SCROLL_BY_PAGE");
+  if (event_flags & EF_UNADJUSTED_MOUSE)
+    names.push_back("UNADJUSTED_MOUSE");
+
+  return names;
 }
 
 }  // namespace ui
