@@ -43,14 +43,14 @@ public class ConfirmManagedSyncDataDialogIntegrationTest extends DummyUiActivity
 
     @Test
     @LargeTest
-    public void testDialogIsDismissedWhenRecreated() {
+    public void testDialogIsDismissedWhenRecreated() throws Exception {
         ConfirmManagedSyncDataDialog dialog =
                 ConfirmManagedSyncDataDialog.create(mListenerMock, TEST_DOMAIN);
-        DummyUiActivity activity = getActivity();
-        dialog.show(activity.getSupportFragmentManager(), null);
+        dialog.show(getActivity().getSupportFragmentManager(), null);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertTrue("The dialog should be visible!", dialog.getDialog().isShowing());
-        ApplicationTestUtils.recreateActivity(activity);
+        DummyUiActivity activity = ApplicationTestUtils.recreateActivity(getActivity());
         Assert.assertNull("The dialog should be dismissed!", dialog.getDialog());
+        ApplicationTestUtils.finishActivity(activity);
     }
 }
