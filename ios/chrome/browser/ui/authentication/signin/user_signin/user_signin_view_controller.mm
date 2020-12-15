@@ -192,6 +192,7 @@ enum AuthenticationButtonType {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  DCHECK(self.unifiedConsentViewController);
   self.view.backgroundColor = self.systemBackgroundColor;
 
   self.containerView = [[UIView alloc] init];

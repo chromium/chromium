@@ -6,6 +6,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_coordinator.h"
 
 #import "base/feature_list.h"
+#import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -49,7 +50,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 @property(nonatomic, strong)
     SigninCoordinator* advancedSettingsSigninCoordinator;
 // View controller that handles the sign-in UI.
-@property(nonatomic, strong) UserSigninViewController* viewController;
+@property(nonatomic, strong, readwrite)
+    UserSigninViewController* viewController;
 // Mediator that handles the sign-in authentication state.
 @property(nonatomic, strong) UserSigninMediator* mediator;
 // Suggested identity shown at sign-in.
@@ -60,6 +62,10 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 @property(nonatomic, assign, readonly) UserSigninIntent signinIntent;
 // Whether an account has been added during sign-in flow.
 @property(nonatomic, assign) BOOL addedAccount;
+// YES if the view controller started the presenting animation.
+@property(nonatomic, assign) BOOL viewControllerPresentingAnimation;
+// Callback to be invoked when the view controller presenting animation is done.
+@property(nonatomic, copy) ProceduralBlock interruptCallback;
 
 @end
 
@@ -112,7 +118,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
          !authenticationService->IsAuthenticated() ||
          self.signinIntent == UserSigninIntentFirstRun);
   [super start];
-  self.viewController = [[UserSigninViewController alloc] init];
+  self.viewController = [self generateUserSigninViewController];
   self.viewController.delegate = self;
   self.viewController.useFirstRunSkipButton =
       self.signinIntent == UserSigninIntentFirstRun;
@@ -424,8 +430,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
       break;
     }
     case UserSigninIntentUpgrade: {
-      DCHECK(self.baseViewController);
-
       // Avoid presenting the promo if the current device orientation is not
       // supported. The promo will be presented at a later moment, when the
       // device orientation is supported.
@@ -442,21 +446,38 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                        showAdvancedSettingsSignin:NO];
         return;
       }
-
-      [self.baseViewController presentViewController:self.viewController
-                                            animated:YES
-                                          completion:nil];
+      [self presentUserViewControllerToBaseViewController];
       break;
     }
     case UserSigninIntentSignin: {
-      DCHECK(self.baseViewController);
-
-      [self.baseViewController presentViewController:self.viewController
-                                            animated:YES
-                                          completion:nil];
+      [self presentUserViewControllerToBaseViewController];
       break;
     }
   }
+}
+
+// Presents |self.viewController|. This method is only relevant when
+// |self.signinIntent| is not UserSigninIntentFirstRun.
+- (void)presentUserViewControllerToBaseViewController {
+  DCHECK_NE(UserSigninIntentFirstRun, self.signinIntent);
+  DCHECK(self.baseViewController);
+  self.viewControllerPresentingAnimation = YES;
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completion = ^{
+    weakSelf.viewControllerPresentingAnimation = NO;
+    if (weakSelf.interruptCallback) {
+      // The view controller is fully presented, the coordinator
+      // can be dismissed. UIKit doesn't allow a view controller
+      // to be dismissed during the animation.
+      // See crbug.com/1126170
+      ProceduralBlock interruptCallback = weakSelf.interruptCallback;
+      weakSelf.interruptCallback = nil;
+      interruptCallback();
+    }
+  };
+  [self.baseViewController presentViewController:self.viewController
+                                        animated:YES
+                                      completion:completion];
 }
 
 // Interrupts the sign-in when |self.viewController| is presented, by dismissing
@@ -465,6 +486,18 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 // not been stopped before.
 - (void)interruptUserSigninUIWithAction:(SigninCoordinatorInterruptAction)action
                              completion:(ProceduralBlock)completion {
+  if (self.viewControllerPresentingAnimation) {
+    // UIKit doesn't allow a view controller to be dismissed during the
+    // animation. The interruption has to be processed when the view controller
+    // will be fully presented.
+    // See crbug.com/1126170
+    DCHECK(!self.interruptCallback);
+    __weak __typeof(self) weakSelf = self;
+    self.interruptCallback = ^() {
+      [weakSelf interruptUserSigninUIWithAction:action completion:completion];
+    };
+    return;
+  }
   DCHECK(self.viewController);
   DCHECK(self.mediator);
   DCHECK(self.unifiedConsentCoordinator);
@@ -577,6 +610,14 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
       return !self.mediator.isAuthenticationInProgress;
     }
   }
+}
+
+#pragma mark - Methods for unittests
+
+// Returns a UserSigninViewController instance. This method is overriden for
+// unittests.
+- (UserSigninViewController*)generateUserSigninViewController {
+  return [[UserSigninViewController alloc] init];
 }
 
 @end
