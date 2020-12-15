@@ -61,7 +61,7 @@ symbolize the report locally to get insight into what conditions caused Chrome
 to crash.
 
 To do so, first download both the task's input isolate (this provides the
-symbols and the symbolzing tools) as well as the task's output isolate (this
+symbols and the symbolizing tools) as well as the task's output isolate (this
 provides the crash reports). See the commands listed under the *Reproducing the
 task locally* section on the task page. For example, to download them for
 [this task](https://chrome-swarming.appspot.com/task?id=506a01dd12c8a610), `cd`
