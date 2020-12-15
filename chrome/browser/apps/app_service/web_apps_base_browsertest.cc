@@ -98,7 +98,7 @@ void CheckShareFileFilter(const apps::mojom::IntentFilterPtr& intent_filter,
   EXPECT_FALSE(intent_filter->activity_name.has_value());
   EXPECT_FALSE(intent_filter->activity_label.has_value());
 
-  EXPECT_EQ(intent_filter->conditions.size(), 2U);
+  EXPECT_EQ(intent_filter->conditions.size(), filter_types.empty() ? 1U : 2U);
 
   {
     const Condition& condition = *intent_filter->conditions[0];
@@ -114,7 +114,7 @@ void CheckShareFileFilter(const apps::mojom::IntentFilterPtr& intent_filter,
     EXPECT_EQ(condition.condition_values[1]->value, "send_multiple");
   }
 
-  {
+  if (!filter_types.empty()) {
     const Condition& condition = *intent_filter->conditions[1];
     EXPECT_EQ(condition.condition_type, ConditionType::kMimeType);
     EXPECT_EQ(condition.condition_values.size(), filter_types.size());
@@ -227,6 +227,35 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, PartialWild) {
   CheckShareFileFilter(target[1], filter_types, accepted_types, rejected_types);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, ShareTargetWithoutFiles) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url(
+      embedded_test_server()->GetURL("/web_share_target/poster.html"));
+
+  std::vector<mojom::IntentFilterPtr> target;
+  {
+    const web_app::WebAppRegistrar* registrar =
+        web_app::WebAppProvider::Get(browser()->profile())
+            ->registrar()
+            .AsWebAppRegistrar();
+    const web_app::AppId app_id =
+        web_app::InstallWebAppFromManifest(browser(), app_url);
+    const web_app::WebApp* web_app = registrar->GetAppById(app_id);
+    ASSERT_TRUE(web_app);
+    PopulateIntentFilters(*web_app, target);
+  }
+
+  EXPECT_EQ(target.size(), 2U);
+
+  CheckUrlScopeFilter(target[0], app_url.GetWithoutFilename(),
+                      /*different_url=*/GURL("file:///"));
+
+  const std::vector<std::string> filter_types;  // No types are filtered.
+  const std::vector<std::string> accepted_types({"audio/mp3"});
+  const std::vector<std::string> rejected_types;  // No types are rejected.
+  CheckShareFileFilter(target[1], filter_types, accepted_types, rejected_types);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
@@ -252,6 +281,42 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
   std::vector<std::string> content_types({"text/csv"});
   apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
       profile, std::move(file_paths), std::move(content_types));
+  const int32_t event_flags =
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                          WindowOpenDisposition::NEW_WINDOW,
+                          /*prefer_container=*/true);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+      app_id, event_flags, std::move(intent),
+      apps::mojom::LaunchSource::kFromSharesheet, display::kDefaultDisplayId);
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, IntentWithoutFiles) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url(
+      embedded_test_server()->GetURL("/web_share_target/poster.html"));
+  Profile* const profile = browser()->profile();
+  const web_app::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
+
+  base::RunLoop run_loop;
+  web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
+            EXPECT_EQ(*params.intent->action,
+                      apps_util::kIntentActionSendMultiple);
+            EXPECT_EQ(*params.intent->mime_type, "*/*");
+            EXPECT_EQ(params.intent->file_urls->size(), 0U);
+            run_loop.Quit();
+            return nullptr;
+          }));
+
+  apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
+      profile, /*file_paths=*/std::vector<base::FilePath>(),
+      /*mime_types=*/std::vector<std::string>(),
+      /*share_text=*/"Message",
+      /*share_title=*/"Subject");
+
   const int32_t event_flags =
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
                           WindowOpenDisposition::NEW_WINDOW,

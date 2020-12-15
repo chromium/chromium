@@ -586,13 +586,6 @@ void PopulateIntentFilters(const web_app::WebApp& web_app,
 
   const apps::ShareTarget& share_target = web_app.share_target().value();
 
-  // TODO(crbug.com/1127670): Support title/text/url sharing on ChromeOS
-  if (share_target.params.files.empty() ||
-      share_target.method != apps::ShareTarget::Method::kPost ||
-      share_target.enctype != apps::ShareTarget::Enctype::kMultipartFormData) {
-    return;
-  }
-
   std::vector<std::string> content_types;
   for (const auto& files_entry : share_target.params.files) {
     for (const auto& file_type : files_entry.accept) {
@@ -605,9 +598,6 @@ void PopulateIntentFilters(const web_app::WebApp& web_app,
       content_types.push_back(file_type);
     }
   }
-
-  if (content_types.empty())
-    return;
 
   const std::vector<std::string> intent_actions(
       {apps_util::kIntentActionSend, apps_util::kIntentActionSendMultiple});
