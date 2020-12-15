@@ -72,6 +72,10 @@ void NearbyShareDelegateImpl::EnableHighVisibility() {
   if (!nearby_share_service_)
     return;
 
+  // Automatically enable the feature if onboarding is already completed.
+  if (nearby_share_service_->GetSettings()->IsOnboardingComplete())
+    nearby_share_service_->GetSettings()->SetEnabled(true);
+
   settings_opener_->ShowSettingsPage(kStartReceivingQueryParam);
 
   if (!nearby_share_service_->GetSettings()->GetEnabled()) {
