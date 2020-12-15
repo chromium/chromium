@@ -351,6 +351,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
 
       // The rest of the ops should only affect our state canvas.
       case PaintOpType::Concat:
+      case PaintOpType::Concat44:
       case PaintOpType::Scale:
       case PaintOpType::SetMatrix:
       case PaintOpType::SetMatrix44:

@@ -67,6 +67,7 @@ SkRect MapRect(const SkMatrix& matrix, const SkRect& src) {
   M(ClipRectOp)       \
   M(ClipRRectOp)      \
   M(ConcatOp)         \
+  M(Concat44Op)       \
   M(CustomDataOp)     \
   M(DrawColorOp)      \
   M(DrawDRRectOp)     \
@@ -256,6 +257,8 @@ std::string PaintOpTypeToString(PaintOpType type) {
       return "ClipRRect";
     case PaintOpType::Concat:
       return "Concat";
+    case PaintOpType::Concat44:
+      return "Concat44";
     case PaintOpType::CustomData:
       return "CustomData";
     case PaintOpType::DrawColor:
@@ -429,6 +432,16 @@ size_t ConcatOp::Serialize(const PaintOp* base_op,
                            size_t size,
                            const SerializeOptions& options) {
   auto* op = static_cast<const ConcatOp*>(base_op);
+  PaintOpWriter helper(memory, size, options);
+  helper.Write(op->matrix);
+  return helper.size();
+}
+
+size_t Concat44Op::Serialize(const PaintOp* base_op,
+                             void* memory,
+                             size_t size,
+                             const SerializeOptions& options) {
+  auto* op = static_cast<const Concat44Op*>(base_op);
   PaintOpWriter helper(memory, size, options);
   helper.Write(op->matrix);
   return helper.size();
@@ -893,6 +906,25 @@ PaintOp* ConcatOp::Deserialize(const volatile void* input,
 
   UpdateTypeAndSkip(op);
   PaintOpReader::FixupMatrixPostSerialization(&op->matrix);
+  return op;
+}
+
+PaintOp* Concat44Op::Deserialize(const volatile void* input,
+                                 size_t input_size,
+                                 void* output,
+                                 size_t output_size,
+                                 const DeserializeOptions& options) {
+  DCHECK_GE(output_size, sizeof(Concat44Op));
+  Concat44Op* op = new (output) Concat44Op;
+
+  PaintOpReader helper(input, input_size, options);
+  helper.Read(&op->matrix);
+  if (!helper.valid() || !op->IsValid()) {
+    op->~Concat44Op();
+    return nullptr;
+  }
+
+  UpdateTypeAndSkip(op);
   return op;
 }
 
@@ -1441,6 +1473,12 @@ void ConcatOp::Raster(const ConcatOp* op,
   canvas->concat(op->matrix);
 }
 
+void Concat44Op::Raster(const Concat44Op* op,
+                        SkCanvas* canvas,
+                        const PlaybackParams& params) {
+  canvas->concat(op->matrix);
+}
+
 void CustomDataOp::Raster(const CustomDataOp* op,
                           SkCanvas* canvas,
                           const PlaybackParams& params) {
@@ -1926,6 +1964,14 @@ bool ConcatOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
   DCHECK(left->IsValid());
   DCHECK(right->IsValid());
   return AreSkMatricesEqual(left->matrix, right->matrix);
+}
+
+bool Concat44Op::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
+  auto* left = static_cast<const Concat44Op*>(base_left);
+  auto* right = static_cast<const Concat44Op*>(base_right);
+  DCHECK(left->IsValid());
+  DCHECK(right->IsValid());
+  return AreSkM44sEqual(left->matrix, right->matrix);
 }
 
 bool CustomDataOp::AreEqual(const PaintOp* base_left,

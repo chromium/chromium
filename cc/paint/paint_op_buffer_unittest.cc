@@ -1472,6 +1472,12 @@ void PushConcatOps(PaintOpBuffer* buffer) {
   ValidateOps<ConcatOp>(buffer);
 }
 
+void PushConcat44Ops(PaintOpBuffer* buffer) {
+  for (auto& test_matrix44 : test_matrix44s)
+    buffer->push<Concat44Op>(test_matrix44);
+  ValidateOps<ConcatOp>(buffer);
+}
+
 void PushCustomDataOps(PaintOpBuffer* buffer) {
   for (size_t i = 0; i < test_ids.size(); ++i)
     buffer->push<CustomDataOp>(test_ids[i]);
@@ -1743,6 +1749,9 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
         break;
       case PaintOpType::Concat:
         PushConcatOps(&buffer_);
+        break;
+      case PaintOpType::Concat44:
+        PushConcat44Ops(&buffer_);
         break;
       case PaintOpType::CustomData:
         PushCustomDataOps(&buffer_);

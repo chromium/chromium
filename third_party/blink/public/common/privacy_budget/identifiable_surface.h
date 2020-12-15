@@ -119,7 +119,9 @@ class IdentifiableSurface {
 
     // Represents a readback of a canvas. Input is the
     // CanvasRenderingContextType.
-    kCanvasReadback = 2,
+    //
+    // Was 2 before change to paint op serialization.
+    kCanvasReadback = 33,
 
     // Represents loading a font locally based on a name lookup that is allowed
     // to match either a unique name or a family name. This occurs when a

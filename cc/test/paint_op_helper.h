@@ -60,6 +60,12 @@ class PaintOpHelper {
             << ")";
         break;
       }
+      case PaintOpType::Concat44: {
+        const auto* op = static_cast<const Concat44Op*>(base_op);
+        str << "Concat44Op(matrix="
+            << PaintOpHelper::SkiaTypeToString(op->matrix) << ")";
+        break;
+      }
       case PaintOpType::CustomData: {
         const auto* op = static_cast<const CustomDataOp*>(base_op);
         str << "CustomDataOp(id=" << PaintOpHelper::SkiaTypeToString(op->id)

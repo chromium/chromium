@@ -88,6 +88,7 @@ enum class PaintOpType : uint8_t {
   ClipRect,
   ClipRRect,
   Concat,
+  Concat44,
   CustomData,
   DrawColor,
   DrawDRRect,
@@ -474,6 +475,23 @@ class CC_PAINT_EXPORT ConcatOp final : public PaintOp {
 
  private:
   ConcatOp() : PaintOp(kType) {}
+};
+
+class CC_PAINT_EXPORT Concat44Op final : public PaintOp {
+ public:
+  static constexpr PaintOpType kType = PaintOpType::Concat44;
+  explicit Concat44Op(const SkM44& matrix) : PaintOp(kType), matrix(matrix) {}
+  static void Raster(const Concat44Op* op,
+                     SkCanvas* canvas,
+                     const PlaybackParams& params);
+  bool IsValid() const { return true; }
+  static bool AreEqual(const PaintOp* left, const PaintOp* right);
+  HAS_SERIALIZATION_FUNCTIONS();
+
+  SkM44 matrix;
+
+ private:
+  Concat44Op() : PaintOp(kType) {}
 };
 
 class CC_PAINT_EXPORT CustomDataOp final : public PaintOp {

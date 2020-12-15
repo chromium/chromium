@@ -97,6 +97,10 @@ void SkiaPaintCanvas::setMatrix(const SkM44& matrix) {
   canvas_->setMatrix(matrix);
 }
 
+void SkiaPaintCanvas::concat(const SkM44& matrix) {
+  canvas_->concat(matrix);
+}
+
 void SkiaPaintCanvas::concat(const SkMatrix& matrix) {
   canvas_->concat(matrix);
 }

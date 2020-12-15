@@ -176,7 +176,7 @@ TEST_F(IdentifiabilityStudyStateTest, ReconcileBlockedTypes) {
             settings->active_surfaces());
   EXPECT_EQ((IdentifiableSurfaceSet{kBlockedTypeSurface1}),
             settings->retired_surfaces());
-  EXPECT_EQ("258",
+  EXPECT_EQ("289",
             pref_service()->GetString(prefs::kPrivacyBudgetRetiredSurfaces));
 }
 
