@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
 // overrides an X-Frame-Options header on a PDF response.
 // Regression test for https://crbug.com/1107535.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
-                       CSPFrameAncestorsOverridesXFrameOptions) {
+                       DISABLED_CSPFrameAncestorsOverridesXFrameOptions) {
   GURL main_url(
       embedded_test_server()->GetURL("/pdf/frame-test-csp-and-xfo.html"));
   ui_test_utils::NavigateToURL(browser(), main_url);
