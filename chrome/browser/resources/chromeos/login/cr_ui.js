@@ -391,6 +391,15 @@ cr.define('cr.ui', function() {
   };
 
   /**
+   * Sets the required size of the oobe dialog.
+   * @param {number} width oobe dialog width
+   * @param {number} height oobe dialog height
+   */
+  Oobe.setDialogSize = function(width, height) {
+    Oobe.getInstance().setDialogSize(width, height);
+  };
+
+  /**
    * Sets the hint for calculating OOBE dialog margins.
    * @param {OobeTypes.DialogPaddingMode} mode.
    */

@@ -19,8 +19,6 @@
 
 html[new-layout] #outer-container {
   height: 100%;
-  margin-inline-end: var(--oobe-dialog-side-margin);
-  margin-inline-start: var(--oobe-dialog-side-margin);
   z-index: 1;
 }
 

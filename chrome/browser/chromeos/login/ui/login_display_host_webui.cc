@@ -796,10 +796,8 @@ void LoginDisplayHostWebUI::OnDisplayMetricsChanged(
   }
 
   if (GetOobeUI()) {
-    const gfx::Size& size = primary_display.size();
-    GetOobeUI()->GetCoreOobeView()->SetClientAreaSize(size.width(),
-                                                      size.height());
-
+    GetOobeUI()->GetCoreOobeView()->UpdateClientAreaSize(
+        primary_display.size());
     if (changed_metrics & DISPLAY_METRIC_PRIMARY)
       GetOobeUI()->OnDisplayConfigurationChanged();
   }

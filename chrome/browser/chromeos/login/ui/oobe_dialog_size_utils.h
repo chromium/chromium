@@ -26,12 +26,25 @@ enum class OobeDialogPaddingMode {
 extern const gfx::Size kMaxDialogSize;
 extern const gfx::Size kMinDialogSize;
 extern const gfx::Insets kMinMargins;
+extern const gfx::Size kMaxLandscapeDialogSize;
+extern const gfx::Size kMinLandscapeDialogSize;
+extern const gfx::Size kMaxPortraitDialogSize;
+extern const gfx::Size kMinPortraitDialogSize;
+
+// Calculated the size of OOBE dialog for particular host_size. It is expected
+// that `host_size` is the hosting display size for fullscreen OOBE dialog and
+// available remainig size for on-login OOBE.
+gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
+                                  int shelf_height,
+                                  bool is_horizontal);
 
 // Position OOBE dialog according to specs inside `host_bounds` excluding shelf.
 // `host_bounds` is in coordinates of oobe dialog widget. `result` is
 // in the same coordinates of `host_bounds`.
 void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                int shelf_height,
+                               bool is_horizontal,
+                               bool is_new_oobe_layout_enabled,
                                gfx::Rect* result,
                                OobeDialogPaddingMode* result_padding);
 

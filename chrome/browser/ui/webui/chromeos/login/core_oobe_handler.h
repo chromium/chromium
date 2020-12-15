@@ -68,6 +68,8 @@ class CoreOobeView {
   virtual void UpdateKeyboardState() = 0;
   virtual void FocusReturned(bool reverse) = 0;
   virtual void SetOrientation(bool is_horizontal) = 0;
+  virtual void SetDialogSize(int width, int height) = 0;
+  virtual void UpdateClientAreaSize(const gfx::Size& size) = 0;
 };
 
 // The core handler for Javascript messages related to the "oobe" view.
@@ -140,6 +142,9 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void ShowDeviceResetScreen() override;
   void FocusReturned(bool reverse) override;
   void SetOrientation(bool is_horizontal) override;
+  void SetDialogSize(int width, int height) override;
+  // Updates client area size based on the primary screen size.
+  void UpdateClientAreaSize(const gfx::Size& size) override;
 
   void UpdateKeyboardState() override;
 
@@ -183,9 +188,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // Updates label with specified id with specified text.
   void UpdateLabel(const std::string& id, const std::string& text);
-
-  // Updates client area size based on the primary screen size.
-  void UpdateClientAreaSize();
 
   // True if we should show OOBE instead of login.
   bool show_oobe_ui_ = false;

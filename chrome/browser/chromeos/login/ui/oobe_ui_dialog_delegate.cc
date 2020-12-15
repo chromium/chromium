@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
@@ -154,7 +155,11 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
     gfx::Rect bounds;
     const int shelf_height =
         has_shelf_ ? ash::ShelfConfig::Get()->shelf_size() : 0;
-    CalculateOobeDialogBounds(GetContentsBounds(), shelf_height, &bounds,
+    const gfx::Size display_size =
+        display::Screen::GetScreen()->GetPrimaryDisplay().size();
+    const bool is_horizontal = display_size.width() > display_size.height();
+    CalculateOobeDialogBounds(GetContentsBounds(), shelf_height, is_horizontal,
+                              features::IsNewOobeLayoutEnabled(), &bounds,
                               &padding_);
 
     for (views::View* child : children()) {
@@ -505,6 +510,8 @@ void OobeUIDialogDelegate::OnViewBoundsChanged(views::View* observed_view) {
     return;
   GetOobeUI()->GetCoreOobeView()->SetDialogPaddingMode(
       ConvertDialogPaddingMode(layout_view_->padding()));
+  GetOobeUI()->GetCoreOobeView()->UpdateClientAreaSize(
+      layout_view_->GetContentsBounds().size());
 }
 
 void OobeUIDialogDelegate::OnKeyboardVisibilityChanged(bool visible) {

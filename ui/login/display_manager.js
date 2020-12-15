@@ -294,6 +294,13 @@ cr.define('cr.ui.login', function() {
       }
     },
 
+    setDialogSize: function(width, height) {
+      document.documentElement.style.setProperty(
+        '--oobe-oobe-dialog-height-base', height + 'px');
+      document.documentElement.style.setProperty(
+        '--oobe-oobe-dialog-width-base', width + 'px');
+    },
+
     /**
      * Sets the hint for calculating OOBE dialog inner padding.
      * @param {OobeTypes.DialogPaddingMode} mode.

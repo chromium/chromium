@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
 #include "chrome/browser/chromeos/login/screens/reset_screen.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/chromeos/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/system/input_device_settings.h"
 #include "chrome/browser/ui/ash/ash_util.h"
@@ -124,7 +125,8 @@ void CoreOobeHandler::Initialize() {
   version_info_updater_.StartUpdate(false);
 #endif
   UpdateKeyboardState();
-  UpdateClientAreaSize();
+  UpdateClientAreaSize(
+      display::Screen::GetScreen()->GetPrimaryDisplay().size());
 }
 
 void CoreOobeHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
@@ -217,6 +219,10 @@ void CoreOobeHandler::SetShelfHeight(int height) {
 
 void CoreOobeHandler::SetOrientation(bool is_horizontal) {
   CallJS("cr.ui.Oobe.setOrientation", is_horizontal);
+}
+
+void CoreOobeHandler::SetDialogSize(int width, int height) {
+  CallJS("cr.ui.Oobe.setDialogSize", width, height);
 }
 
 void CoreOobeHandler::HandleInitialized() {
@@ -353,13 +359,18 @@ void CoreOobeHandler::OnTabletModeEnded() {
   CallJS("cr.ui.Oobe.setTabletModeState", false);
 }
 
-void CoreOobeHandler::UpdateClientAreaSize() {
-  const gfx::Size size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+void CoreOobeHandler::UpdateClientAreaSize(const gfx::Size& size) {
   SetClientAreaSize(size.width(), size.height());
   SetShelfHeight(ash::ShelfConfig::Get()->shelf_size());
-  if (features::IsNewOobeLayoutEnabled())
-    SetOrientation(/*is_horizontal= */ size.width() > size.height());
+  if (features::IsNewOobeLayoutEnabled()) {
+    const gfx::Size display_size =
+        display::Screen::GetScreen()->GetPrimaryDisplay().size();
+    const bool is_horizontal = display_size.width() > display_size.height();
+    SetOrientation(is_horizontal);
+    const gfx::Size dialog_size = CalculateOobeDialogSize(
+        size, ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
+    SetDialogSize(dialog_size.width(), dialog_size.height());
+  }
 }
 
 void CoreOobeHandler::SetDialogPaddingMode(

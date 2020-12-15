@@ -7,22 +7,33 @@
 
 namespace chromeos {
 
+namespace {
+
+constexpr int kDialogHeightForWidePadding = 640;
+constexpr double kEightPrecent = 0.08;
+
+}  // namespace
+
 constexpr gfx::Size kMaxDialogSize{768, 768};
 // Min height should match --oobe-dialog-min-height;
 constexpr gfx::Size kMinDialogSize{464, 384};
 constexpr gfx::Insets kMinMargins{48, 48};
 
-namespace {
+// Sizes come from specs except min widths which are taken as maximal zoomed
+// display widths of smallest device ChromeTab (960x600).
+constexpr gfx::Size kMaxLandscapeDialogSize{1040, 680};
+constexpr gfx::Size kMinLandscapeDialogSize{738, 504};
+constexpr gfx::Size kMaxPortraitDialogSize{680, 1040};
+constexpr gfx::Size kMinPortraitDialogSize{461, 704};
 
-constexpr int kDialogHeightForWidePadding = 640;
-
-}  // namespace
-
-void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
-                               int shelf_height,
-                               gfx::Rect* result,
-                               OobeDialogPaddingMode* result_padding) {
-  // Area to position dialog.
+gfx::Size CalculateOobeDialogSizeForWebDialog(const gfx::Rect& host_bounds,
+                                              int shelf_height,
+                                              bool is_horizontal,
+                                              bool is_new_oobe_layout_enabled) {
+  if (is_new_oobe_layout_enabled) {
+    return CalculateOobeDialogSize(host_bounds.size(), shelf_height,
+                                   is_horizontal);
+  }
   gfx::Rect available_area = host_bounds;
   available_area.Inset(0, 0, 0, shelf_height);
 
@@ -37,9 +48,40 @@ void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
   // Still, dialog should fit into available area.
   dialog_size.SetToMin(available_area.size());
 
+  return dialog_size;
+}
+
+gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
+                                  int shelf_height,
+                                  bool is_horizontal) {
+  gfx::Size margin = ScaleToCeiledSize(host_size, kEightPrecent);
+  gfx::Size margins = margin + margin;
+  margins.SetToMax(kMinMargins.size());
+  margins.Enlarge(0, shelf_height);
+  gfx::Size result = host_size - margins;
+  if (is_horizontal) {
+    result.SetToMin(kMaxLandscapeDialogSize);
+    result.SetToMax(kMinLandscapeDialogSize);
+  } else {
+    result.SetToMin(kMaxPortraitDialogSize);
+    result.SetToMax(kMinPortraitDialogSize);
+  }
+  return result;
+}
+
+void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
+                               int shelf_height,
+                               bool is_horizontal,
+                               bool is_new_oobe_layout_enabled,
+                               gfx::Rect* result,
+                               OobeDialogPaddingMode* result_padding) {
+  // Area to position dialog.
+  *result = host_bounds;
+  result->Inset(0, 0, 0, shelf_height);
+
   // Center dialog within an available area.
-  *result = available_area;
-  result->ClampToCenteredSize(dialog_size);
+  result->ClampToCenteredSize(CalculateOobeDialogSizeForWebDialog(
+      host_bounds, shelf_height, is_horizontal, is_new_oobe_layout_enabled));
   if (!result_padding)
     return;
   if ((result->width() >= kMaxDialogSize.width()) &&
