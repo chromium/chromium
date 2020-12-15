@@ -5787,6 +5787,7 @@ crbug.com/1152082 http/tests/devtools/bindings/blackboxed-sourcemap-detach.js [ 
 crbug.com/1152082 http/tests/devtools/console/console-linkify-message-location.js [ Pass Failure Timeout ]
 crbug.com/1152082 http/tests/devtools/sources/debugger-frameworks/frameworks-blackbox-by-source-code.js [ Pass Failure Timeout ]
 crbug.com/1152082 http/tests/devtools/sources/debugger-frameworks/frameworks-blackbox-patterns.js [ Pass Failure Timeout ]
+crbug.com/1152082 http/tests/devtools/tracing/timeline-js/timeline-js-ignore-list.js [ Pass Failure Timeout ]
 
 # Sheriff 2020-10-09
 crbug.com/1136687 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_supercedes_capture.html [ Pass Failure ]
