@@ -11,13 +11,13 @@
 
   ::slotted([slot=label]),
   ::slotted([slot=settings]) {
-    @apply --scanning-select-font;
-    color: var(--scanning-select-text-color);
     display: flex;
     flex-direction: column;
   }
 
   ::slotted([slot=label]) {
+    @apply --scanning-select-font;
+    color: var(--scanning-select-text-color);
     flex: none;
     flex-basis: 68px;
     flex-grow: 0;

@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="chrome://resources/cr_elements/md_select_css.html">
 
 <template>
-  <style include="cr-shared-style md-select">
+  <style include="cr-shared-style md-select scanning-fonts">
     html {
       background-color: var(--cros-bg-color);
     }
@@ -14,6 +14,13 @@
       height: 32px;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    select.md-select {
+      @apply --scanning-select-font;
+      background-position-x: calc(100% - 12px);
+      color: var(--scanning-select-text-color);
+      padding-inline-start: 16px;
     }
 
     @media (min-width: 600px) {
