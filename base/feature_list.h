@@ -277,6 +277,12 @@ class BASE_EXPORT FeatureList {
   // to support base::test::ScopedFeatureList helper class.
   static void RestoreInstanceForTesting(std::unique_ptr<FeatureList> instance);
 
+  // On some platforms, the base::FeatureList singleton might be duplicated to
+  // more than one module. If this function is called, then using base::Feature
+  // API will result in DCHECK if accessed from the same module as the callee.
+  // Has no effect if DCHECKs are not enabled.
+  static void ForbidUseForCurrentModule();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FeatureListTest, CheckFeatureIdentity);
   FRIEND_TEST_ALL_PREFIXES(FeatureListTest,

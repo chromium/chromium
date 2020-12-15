@@ -11,8 +11,10 @@
 #include <string>
 
 #include "base/at_exit.h"
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -266,6 +268,13 @@ int main() {
 
   const std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
+
+  // In non-component mode, chrome.exe contains a separate instance of
+  // base::FeatureList. Prevent accidental use of this here by forbidding use of
+  // the one that's linked with chrome.exe.
+#if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
+  base::FeatureList::ForbidUseForCurrentModule();
+#endif
 
   // Confirm that an explicit prefetch profile is used for all process types
   // except for the browser process. Any new process type will have to assign

@@ -9,12 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/path_service.h"
 #include "base/pickle.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -35,6 +37,10 @@ FeatureList* g_feature_list_instance = nullptr;
 const Feature* g_initialized_from_accessor = nullptr;
 
 #if DCHECK_IS_ON()
+// Tracks whether the use of base::Feature is allowed for this module.
+// See ForbidUseForCurrentModule().
+bool g_use_allowed = true;
+
 const char* g_reason_overrides_disallowed = nullptr;
 
 void DCheckOverridesAllowed() {
@@ -357,6 +363,9 @@ void FeatureList::GetCommandLineFeatureOverrides(
 
 // static
 bool FeatureList::IsEnabled(const Feature& feature) {
+#if DCHECK_IS_ON()
+  CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
+#endif
   if (!g_feature_list_instance) {
     g_initialized_from_accessor = &feature;
     return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
@@ -366,6 +375,10 @@ bool FeatureList::IsEnabled(const Feature& feature) {
 
 // static
 FieldTrial* FeatureList::GetFieldTrial(const Feature& feature) {
+#if DCHECK_IS_ON()
+  // See documentation for ForbidUseForCurrentModule.
+  CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
+#endif
   if (!g_feature_list_instance) {
     g_initialized_from_accessor = &feature;
     return nullptr;
@@ -468,6 +481,15 @@ void FeatureList::RestoreInstanceForTesting(
   DCHECK(!g_feature_list_instance);
   // Note: Intentional leak of global singleton.
   g_feature_list_instance = instance.release();
+}
+
+// static
+void FeatureList::ForbidUseForCurrentModule() {
+#if DCHECK_IS_ON()
+  // Verify there hasn't been any use prior to being called.
+  DCHECK(!g_initialized_from_accessor);
+  g_use_allowed = false;
+#endif  // DCHECK_IS_ON()
 }
 
 void FeatureList::FinalizeInitialization() {
