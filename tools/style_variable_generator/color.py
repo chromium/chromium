@@ -21,7 +21,7 @@ class Color:
     with '_rgb'.
     '''
 
-    def __init__(self, value_str):
+    def __init__(self, value_str=None):
         # TODO(calamity): Add opacity-only values
         self.var = None
         self.rgb_var = None
@@ -29,7 +29,8 @@ class Color:
         self.g = -1
         self.b = -1
         self.a = 1
-        self.Parse(value_str)
+        if value_str is not None:
+            self.Parse(value_str)
 
     def _AssignRGB(self, rgb):
         for v in rgb:

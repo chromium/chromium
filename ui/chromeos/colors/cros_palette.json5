@@ -9,6 +9,12 @@
  * here.
  */
 {
+  options: {
+    proto: {
+      field_name: 'palette_colors',
+      field_id: 1,
+    },
+  },
   colors: {
     google_blue_50: "#e8f0fe",
     google_blue_100: "#d2e3fc",

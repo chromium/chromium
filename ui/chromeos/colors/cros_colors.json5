@@ -13,6 +13,10 @@
     CSS: {
       prefix: 'cros',
     },
+    proto: {
+      field_name: 'cros_colors',
+      field_id: 2,
+    },
   },
   colors: {
     /*

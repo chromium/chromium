@@ -5,6 +5,7 @@
 import argparse
 import sys
 from css_generator import CSSStyleGenerator
+from proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
 from views_generator import ViewsStyleGenerator
 from base_generator import Modes
 
@@ -13,7 +14,10 @@ def main():
     parser = argparse.ArgumentParser(
         description='Generate style variables from JSON5 color file.')
 
-    generators = [CSSStyleGenerator, ViewsStyleGenerator]
+    generators = [
+        CSSStyleGenerator, ViewsStyleGenerator, ProtoStyleGenerator,
+        ProtoJSONStyleGenerator
+    ]
 
     parser.add_argument('--generator',
                         choices=[g.GetName() for g in generators],

@@ -9,6 +9,7 @@ import re
 import textwrap
 import path_overrides
 from color import Color
+import copy
 
 _FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -55,6 +56,21 @@ class ModeVariables:
             return self.variables[name][mode]
 
         return self.variables[name][self._default_mode]
+
+    # Returns a Color that is the final RGBA value for |name| in |mode|.
+    def ResolveToRGBA(self, name, mode):
+        c = self.Resolve(name, mode)
+
+        if c.rgb_var:
+            result = Color()
+            result.a = c.a
+            rgb = self.ResolveToRGBA(c.RGBVarToVar(), mode)
+            (result.r, result.g, result.b) = (rgb.r, rgb.g, rgb.b)
+            return result
+        elif c.var:
+            return self.ResolveToRGBA(c.var, mode)
+        else:
+            return c
 
     def keys(self):
         return self.variables.keys()
@@ -109,6 +125,9 @@ class BaseGenerator:
             raise ValueError('Variable name "%s" is reused' % name)
         self.context_map[name] = context or {}
 
+    def GetContextKey(self):
+        return self.GetName()
+
     def AddColor(self, name, value_obj, context=None):
         self._SetVariableContext(name, context)
         try:
@@ -146,7 +165,8 @@ class BaseGenerator:
                            object_pairs_hook=collections.OrderedDict)
         # Use the generator's name to get the generator-specific context from
         # the input.
-        generator_context = data.get('options', {}).get(self.GetName(), None)
+        generator_context = data.get('options',
+                                     {}).get(self.GetContextKey(), None)
         self.in_file_to_context[in_file] = generator_context
 
         for name, value in data['colors'].items():

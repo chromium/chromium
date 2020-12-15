@@ -2,7 +2,11 @@
   options: {
     CSS: {
       prefix: 'cros'
-    }
+    },
+    proto: {
+      field_name: 'test_colors',
+      field_id: 2,
+    },
   },
   colors: {
     text_color_primary: {
