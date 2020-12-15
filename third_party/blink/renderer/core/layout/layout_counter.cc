@@ -765,6 +765,8 @@ void LayoutCounter::LayoutObjectSubtreeAttached(LayoutObject* layout_object) {
 void LayoutCounter::LayoutObjectStyleChanged(LayoutObject& layout_object,
                                              const ComputedStyle* old_style,
                                              const ComputedStyle& new_style) {
+  if (layout_object.IsListItemIncludingNG())
+    ListItemOrdinal::ItemCounterStyleUpdated(layout_object);
   Node* node = layout_object.GeneratingNode();
   if (!node || node->NeedsReattachLayoutTree())
     return;  // cannot have generated content or if it can have, it will be

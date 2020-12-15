@@ -258,8 +258,8 @@ void ListItemOrdinal::InvalidateAllItemsForOrderedList(
 // TODO(layout-dev): We should use layout tree traversal instead of flat tree
 // traversal to invalidate ordinal number cache since lite items in unassigned
 // slots don't have cached value. See http://crbug.com/844277 for details.
-void ListItemOrdinal::ItemInsertedOrRemoved(
-    const LayoutObject* layout_list_item) {
+void ListItemOrdinal::ItemUpdated(const LayoutObject* layout_list_item,
+                                  UpdateType type) {
   // If distribution recalc is needed, updateListMarkerNumber will be re-invoked
   // after distribution is calculated.
   const Node* item_node = layout_list_item->GetNode();
@@ -273,7 +273,8 @@ void ListItemOrdinal::ItemInsertedOrRemoved(
 
   bool is_list_reversed = false;
   if (auto* o_list_element = DynamicTo<HTMLOListElement>(list_node)) {
-    o_list_element->ItemCountChanged();
+    if (type == kInsertedOrRemoved)
+      o_list_element->ItemCountChanged();
     is_list_reversed = o_list_element->IsReversed();
   }
 
@@ -285,7 +286,22 @@ void ListItemOrdinal::ItemInsertedOrRemoved(
   if (list_node->NeedsReattachLayoutTree())
     return;
 
+  if (type == kCounterStyle) {
+    ListItemOrdinal* ordinal = Get(*item_node);
+    DCHECK(ordinal);
+    ordinal->InvalidateSelf(*item_node);
+  }
   InvalidateOrdinalsAfter(is_list_reversed, list_node, item_node);
+}
+
+void ListItemOrdinal::ItemInsertedOrRemoved(
+    const LayoutObject* layout_list_item) {
+  ItemUpdated(layout_list_item, kInsertedOrRemoved);
+}
+
+void ListItemOrdinal::ItemCounterStyleUpdated(
+    const LayoutObject& layout_list_item) {
+  ItemUpdated(&layout_list_item, kCounterStyle);
 }
 
 }  // namespace blink
