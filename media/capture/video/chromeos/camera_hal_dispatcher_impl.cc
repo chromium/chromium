@@ -657,6 +657,7 @@ void CameraHalDispatcherImpl::StopOnProxyThread() {
   // Close |cancel_pipe_| to quit the loop in WaitForIncomingConnection.
   cancel_pipe_.reset();
   client_observers_.clear();
+  camera_hal_server_callbacks_.reset();
   camera_hal_server_.reset();
   receiver_set_.Clear();
 }
