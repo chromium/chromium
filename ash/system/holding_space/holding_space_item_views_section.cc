@@ -10,6 +10,7 @@
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/style/platform_style.h"
 
 namespace ash {
 
@@ -24,6 +25,14 @@ constexpr bool kDeleteObserver = true;
 class HoldingSpaceScrollView : public views::ScrollView,
                                public views::ViewObserver {
  public:
+  HoldingSpaceScrollView() {
+    // `HoldingSpaceItemView`s draw a focus ring outside of their view bounds.
+    // `HoldingSpaceScrollView` needs to paint to a layer to avoid clipping
+    // these focus rings.
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+  }
+
   views::View* SetContents(std::unique_ptr<views::View> view) {
     views::View* contents = views::ScrollView::SetContents(std::move(view));
     view_observer_.Observe(contents);
@@ -31,6 +40,21 @@ class HoldingSpaceScrollView : public views::ScrollView,
   }
 
  private:
+  // views::ScrollView:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    // The focus ring for `HoldingSpaceItemView`s is painted just outside of
+    // their view bounds. The clip rect for this view should be expanded to
+    // avoid clipping of these focus rings. Note that a clip rect *does* need to
+    // be applied to prevent this view from painting its contents outside of its
+    // viewport.
+    const float kFocusInsets =
+        kHoldingSpaceFocusInsets -
+        (views::PlatformStyle::kFocusHaloThickness / 2.f);
+    gfx::Rect bounds = GetLocalBounds();
+    bounds.Inset(gfx::Insets(kFocusInsets));
+    layer()->SetClipRect(bounds);
+  }
+
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(View* observed_view) override {
     PreferredSizeChanged();
@@ -91,8 +115,6 @@ void HoldingSpaceItemViewsSection::Init() {
     scroll->SetBackgroundColor(base::nullopt);
     scroll->ClipHeightTo(0, INT_MAX);
     scroll->SetDrawOverflowIndicator(false);
-    scroll->SetPaintToLayer();
-    scroll->layer()->SetFillsBoundsOpaquely(false);
     container_ = scroll->SetContents(CreateContainer());
     container_->SetVisible(false);
   }

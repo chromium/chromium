@@ -29,6 +29,7 @@ constexpr int kHoldingSpaceContextMenuMargin = 8;
 constexpr int kHoldingSpaceCornerRadius = 8;
 constexpr int kHoldingSpaceDownloadsChevronIconSize = 20;
 constexpr int kHoldingSpaceDownloadsHeaderSpacing = 16;
+constexpr int kHoldingSpaceFocusInsets = -2;
 constexpr int kHoldingSpaceIconSize = 20;
 constexpr int kHoldingSpaceRowSpacing = 8;
 constexpr gfx::Insets kHoldingSpaceScreenCapturePadding(8);

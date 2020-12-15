@@ -211,8 +211,8 @@ void HoldingSpaceItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   InvalidateLayer(selected_layer_owner_->layer());
 
   // The focus ring is painted just outside the bounds for this view.
-  const float kFocusInsets =
-      -2.f - (views::PlatformStyle::kFocusHaloThickness / 2.f);
+  const float kFocusInsets = kHoldingSpaceFocusInsets -
+                             (views::PlatformStyle::kFocusHaloThickness / 2.f);
 
   bounds.Inset(gfx::Insets(kFocusInsets));
   focused_layer_owner_->layer()->SetBounds(bounds);
