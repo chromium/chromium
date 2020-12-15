@@ -562,7 +562,6 @@ void AddDeviceStylusStrings(content::WebUIDataSource* html_source) {
 void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kDisplayStrings[] = {
       {"displayTitle", IDS_SETTINGS_DISPLAY_TITLE},
-      {"displayArrangementText", IDS_SETTINGS_DISPLAY_ARRANGEMENT_TEXT},
       {"displayArrangementTitle", IDS_SETTINGS_DISPLAY_ARRANGEMENT_TITLE},
       {"displayMirror", IDS_SETTINGS_DISPLAY_MIRROR},
       {"displayMirrorDisplayName", IDS_SETTINGS_DISPLAY_MIRROR_DISPLAY_NAME},
@@ -644,6 +643,13 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
       {"displayTouchCalibrationText",
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT}};
   AddLocalizedStringsBulk(html_source, kDisplayStrings);
+
+  html_source->AddLocalizedString(
+      "displayArrangementText",
+      base::FeatureList::IsEnabled(
+          ash::features::kKeyboardBasedDisplayArrangementInSettings)
+          ? IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT
+          : IDS_SETTINGS_DISPLAY_ARRANGEMENT_TEXT);
 
   html_source->AddBoolean("unifiedDesktopAvailable",
                           IsUnifiedDesktopAvailable());
