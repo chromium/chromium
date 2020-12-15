@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.os.Build;
 import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
@@ -239,7 +240,6 @@ import java.util.List;
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/849876")
     @Feature({"Downloads"})
     public void testDuplicateHttpPostDownload_Download() throws Exception {
         // Snackbar overlaps the infobar which is clicked in this test.
@@ -259,16 +259,19 @@ import java.util.List;
         currentView = mDownloadTestRule.getActivity().getActivityTab().getView();
         callCount = mDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
-        assertPollForInfoBarSize(1);
+        waitForDuplicateInfobar();
+
         Assert.assertTrue("Download button wasn't found",
-                InfoBarUtil.clickPrimaryButton(mDownloadTestRule.getInfoBars().get(0)));
+                InfoBarUtil.clickPrimaryButton(findDuplicateDownloadInfoBar()));
         Assert.assertTrue("Failed to finish downloading file for the second time.",
                 mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
 
-        Assert.assertTrue("Missing first download",
-                mDownloadTestRule.hasDownload(FILENAME_TEXT, SUPERBO_CONTENTS));
-        Assert.assertTrue("Missing second download",
-                mDownloadTestRule.hasDownload(FILENAME_TEXT_1, SUPERBO_CONTENTS));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            Assert.assertTrue("Missing first download",
+                    mDownloadTestRule.hasDownload(FILENAME_TEXT, SUPERBO_CONTENTS));
+            Assert.assertTrue("Missing second download",
+                    mDownloadTestRule.hasDownload(FILENAME_TEXT_1, SUPERBO_CONTENTS));
+        }
     }
 
     @Test
