@@ -53,12 +53,6 @@ void ShowAppInfoInAppList(gfx::NativeWindow parent,
                           const extensions::Extension* app);
 #endif
 
-// Shows the chrome app information in an independent dialog box and runs
-// close_callback when the app info window is closed.
-void ShowAppInfo(Profile* profile,
-                 const extensions::Extension* app,
-                 const base::Closure& close_callback);
-
 // Shows the chrome app information in a native dialog box.
 void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
                                Profile* profile,
