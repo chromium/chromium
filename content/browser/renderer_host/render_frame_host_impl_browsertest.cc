@@ -5254,6 +5254,169 @@ IN_PROC_BROWSER_TEST_F(
             security_state->ip_address_space);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForAboutBlankFromSecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForAboutBlankFromInsecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForAboutSrcdocFromSecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForAboutSrcdocFromInsecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromSrcdoc(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForDataURLFromSecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  // TODO(https://crbug.com/1126856): Expect true once inheritance is fixed.
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForDataURLFromInsecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForBlobURLFromSecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForBlobURLFromInsecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromBlob(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForFilesystemURLFromSecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_TRUE(security_state->is_web_secure_context);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeInheritsSecureContextForFilesystemURLFromInsecure) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromFilesystem(root_frame_host());
+  ASSERT_NE(nullptr, child_frame);
+
+  const network::mojom::ClientSecurityStatePtr& security_state =
+      child_frame->last_committed_client_security_state();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+}
+
 // This test verifies that even with the blocking feature disabled, an insecure
 // page in the `local` address space cannot fetch a `file:` URL.
 //
