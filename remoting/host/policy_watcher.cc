@@ -159,8 +159,12 @@ void PolicyWatcher::StartWatching(
   }
 }
 
-std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetCurrentPolicies() {
-  return old_policies_->CreateDeepCopy();
+std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetEffectivePolicies() {
+  return effective_policies_->CreateDeepCopy();
+}
+
+std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetPlatformPolicies() {
+  return platform_policies_->CreateDeepCopy();
 }
 
 std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
@@ -191,7 +195,8 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
 }
 
 void PolicyWatcher::SignalPolicyError() {
-  old_policies_->Clear();
+  effective_policies_->Clear();
+  platform_policies_->Clear();
   policy_error_callback_.Run();
 }
 
@@ -200,7 +205,8 @@ PolicyWatcher::PolicyWatcher(
     std::unique_ptr<policy::PolicyService> owned_policy_service,
     std::unique_ptr<policy::ConfigurationPolicyProvider> owned_policy_provider,
     std::unique_ptr<policy::SchemaRegistry> owned_schema_registry)
-    : old_policies_(new base::DictionaryValue()),
+    : effective_policies_(new base::DictionaryValue()),
+      platform_policies_(new base::DictionaryValue()),
       default_values_(GetDefaultPolicies()),
       policy_service_(policy_service),
       owned_schema_registry_(std::move(owned_schema_registry)),
@@ -303,7 +309,7 @@ PolicyWatcher::StoreNewAndReturnChangedPolicies(
   base::DictionaryValue::Iterator iter(*new_policies);
   while (!iter.IsAtEnd()) {
     base::Value* old_policy;
-    if (!(old_policies_->Get(iter.key(), &old_policy) &&
+    if (!(effective_policies_->Get(iter.key(), &old_policy) &&
           old_policy->Equals(&iter.value()))) {
       changed_policies->Set(iter.key(), iter.value().CreateDeepCopy());
     }
@@ -324,7 +330,7 @@ PolicyWatcher::StoreNewAndReturnChangedPolicies(
   }
 
   // Save the new policies.
-  old_policies_.swap(new_policies);
+  effective_policies_.swap(new_policies);
 
   return changed_policies;
 }
@@ -340,6 +346,8 @@ void PolicyWatcher::OnPolicyUpdated(const policy::PolicyNamespace& ns,
     SignalPolicyError();
     return;
   }
+
+  platform_policies_ = new_policies->CreateDeepCopy();
 
   // Use default values for any missing policies.
   std::unique_ptr<base::DictionaryValue> filled_policies =

@@ -76,6 +76,8 @@ class PolicyWatcherTest : public testing::Test {
     policy_watcher_ = PolicyWatcher::CreateFromPolicyLoaderForTesting(
         base::WrapUnique(policy_loader_));
 
+    policy_watcher_default_values_ = PolicyWatcher::GetDefaultPolicies();
+
     base::ListValue host_domain;
     host_domain.AppendString(kHostDomain);
     base::ListValue client_domain;
@@ -240,9 +242,8 @@ class PolicyWatcherTest : public testing::Test {
     return policy_watcher_->GetPolicySchema();
   }
 
-  // TODO(jamiewalch): Update this to use PolicyWatcher::GetDefaultValues()
   const base::DictionaryValue& GetDefaultValues() {
-    return *(policy_watcher_->default_values_);
+    return *policy_watcher_default_values_;
   }
 
   MOCK_METHOD0(PostPolicyWatcherShutdown, void());
@@ -329,6 +330,8 @@ class PolicyWatcherTest : public testing::Test {
         << "Sanity check that defaults expected by the test code "
         << "match what is stored in PolicyWatcher::default_values_";
   }
+
+  std::unique_ptr<base::DictionaryValue> policy_watcher_default_values_;
 };
 
 const char* PolicyWatcherTest::kHostDomain = "google.com";
@@ -777,7 +780,7 @@ TEST_F(PolicyWatcherTest, DeprecatedEmpty) {
   StartWatching();
 }
 
-TEST_F(PolicyWatcherTest, GetCurrentPolicies) {
+TEST_F(PolicyWatcherTest, GetEffectivePolicies) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
               OnPolicyUpdatePtr(IsPolicies(&nat_true_others_default_)));
@@ -786,19 +789,61 @@ TEST_F(PolicyWatcherTest, GetCurrentPolicies) {
 
   StartWatching();
   SetPolicies(nat_false_);
-  std::unique_ptr<base::DictionaryValue> current_policies =
-      policy_watcher_->GetCurrentPolicies();
-  ASSERT_TRUE(*current_policies == nat_false_others_default_);
+  std::unique_ptr<base::DictionaryValue> effective_policies =
+      policy_watcher_->GetEffectivePolicies();
+  ASSERT_TRUE(*effective_policies == nat_false_others_default_);
 }
 
-TEST_F(PolicyWatcherTest, GetCurrentPoliciesError) {
+TEST_F(PolicyWatcherTest, GetEffectivePoliciesError) {
   EXPECT_CALL(mock_policy_callback_, OnPolicyError());
 
   SetPolicies(nat_one_);
   StartWatching();
-  std::unique_ptr<base::DictionaryValue> current_policies =
-      policy_watcher_->GetCurrentPolicies();
-  ASSERT_EQ(0u, current_policies->size());
+  std::unique_ptr<base::DictionaryValue> effective_policies =
+      policy_watcher_->GetEffectivePolicies();
+  ASSERT_EQ(0u, effective_policies->size());
+}
+
+TEST_F(PolicyWatcherTest, GetPlatformPolicies) {
+  testing::InSequence sequence;
+  EXPECT_CALL(mock_policy_callback_,
+              OnPolicyUpdatePtr(IsPolicies(&GetDefaultValues())));
+  EXPECT_CALL(mock_policy_callback_,
+              OnPolicyUpdatePtr(IsPolicies(&nat_false_)));
+
+  StartWatching();
+  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies()->size());
+  SetPolicies(nat_false_);
+  ASSERT_EQ(1u, policy_watcher_->GetPlatformPolicies()->size());
+}
+
+TEST_F(PolicyWatcherTest, GetPlatformPoliciesMultipleOverrides) {
+  testing::InSequence sequence;
+  EXPECT_CALL(mock_policy_callback_,
+              OnPolicyUpdatePtr(IsPolicies(&GetDefaultValues())));
+  EXPECT_CALL(mock_policy_callback_,
+              OnPolicyUpdatePtr(IsPolicies(&domain_full_)));
+  EXPECT_CALL(mock_policy_callback_,
+              OnPolicyUpdatePtr(IsPolicies(&nat_false_)));
+  EXPECT_CALL(mock_policy_callback_,
+              OnPolicyUpdatePtr(IsPolicies(&nat_true_domain_empty_)));
+
+  StartWatching();
+  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies()->size());
+  SetPolicies(domain_full_);
+  ASSERT_EQ(1u, policy_watcher_->GetPlatformPolicies()->size());
+  SetPolicies(nat_false_domain_full_);
+  ASSERT_EQ(2u, policy_watcher_->GetPlatformPolicies()->size());
+  SetPolicies(nat_true_domain_empty_);
+  ASSERT_EQ(2u, policy_watcher_->GetPlatformPolicies()->size());
+}
+
+TEST_F(PolicyWatcherTest, GetPlatformPoliciesError) {
+  EXPECT_CALL(mock_policy_callback_, OnPolicyError());
+
+  SetPolicies(nat_one_);
+  StartWatching();
+  ASSERT_EQ(0u, policy_watcher_->GetPlatformPolicies()->size());
 }
 
 }  // namespace remoting

@@ -59,10 +59,16 @@ class PolicyWatcher : public policy::PolicyService::Observer {
       const PolicyErrorCallback& policy_error_callback);
 
   // Return the current policies. If the policies have not yet been read, or if
-  // an error occurred, the returned dictionary will be empty.
-  std::unique_ptr<base::DictionaryValue> GetCurrentPolicies();
+  // an error occurred, the returned dictionary will be empty.  The dictionary
+  // returned is the union of |platform_policies_| and |default_values_|.
+  std::unique_ptr<base::DictionaryValue> GetEffectivePolicies();
 
-  // Return the default policies.
+  // Return the set of policies which have been explicitly set on the machine.
+  // If the policies have not yet been read, no policies have been set, or if
+  // an error occurred, the returned dictionary will be empty.
+  std::unique_ptr<base::DictionaryValue> GetPlatformPolicies();
+
+  // Return the default policy values.
   static std::unique_ptr<base::DictionaryValue> GetDefaultPolicies();
 
   // Specify a |policy_service| to borrow (on Chrome OS, from the browser
@@ -100,8 +106,7 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   // Normalizes policies using Schema::Normalize and converts deprecated
   // policies.
   //
-  // - Returns false if |dict| is invalid (i.e. contains mistyped policy
-  // values).
+  // - Returns false if |dict| is invalid, e.g. contains mistyped policy values.
   // - Returns true if |dict| was valid or got normalized.
   bool NormalizePolicies(base::DictionaryValue* dict);
 
@@ -109,8 +114,9 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   // replacement policy is not set, and removes deprecated policied from dict.
   void HandleDeprecatedPolicies(base::DictionaryValue* dict);
 
-  // Stores |new_policies| into |old_policies_|.  Returns dictionary with items
-  // from |new_policies| that are different from the old |old_policies_|.
+  // Stores |new_policies| into |effective_policies_|.  Returns dictionary with
+  // items from |new_policies| that are different from the old
+  // |effective_policies_|.
   std::unique_ptr<base::DictionaryValue> StoreNewAndReturnChangedPolicies(
       std::unique_ptr<base::DictionaryValue> new_policies);
 
@@ -143,7 +149,14 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   PolicyUpdatedCallback policy_updated_callback_;
   PolicyErrorCallback policy_error_callback_;
 
-  std::unique_ptr<base::DictionaryValue> old_policies_;
+  // The combined set of policies (|platform_policies_| + |default_values_|)
+  // which define the effective policy set.
+  std::unique_ptr<base::DictionaryValue> effective_policies_;
+
+  // The policies which have had their values explicitly set via a policy entry.
+  std::unique_ptr<base::DictionaryValue> platform_policies_;
+
+  // The set of policy values to use if a policy has not been explicitly set.
   std::unique_ptr<base::DictionaryValue> default_values_;
 
   policy::PolicyService* policy_service_;
