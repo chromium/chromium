@@ -58,10 +58,8 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
       block_flow->Style()->GetWritingDirection());
   NGFragmentItemsBuilder items_builder(inline_node,
                                        container_builder.GetWritingDirection());
-  if (RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
-    container_builder.SetItemsBuilder(&items_builder);
-    context.SetItemsBuilder(&items_builder);
-  }
+  container_builder.SetItemsBuilder(&items_builder);
+  context.SetItemsBuilder(&items_builder);
   scoped_refptr<const NGLayoutResult> layout_result =
       inline_node.Layout(constraint_space, nullptr, &context);
   const auto& line1 = layout_result->PhysicalFragment();
