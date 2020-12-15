@@ -301,6 +301,12 @@ static void PartitionDumpBucketStats(
   }
 }
 
+#if DCHECK_IS_ON()
+void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr) {
+  PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr));
+}
+#endif
+
 }  // namespace internal
 
 template <bool thread_safe>

@@ -116,8 +116,9 @@ struct BackupRefPtrImpl {
     void* ptr = const_cast<void*>(cv_ptr);
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
-    if (LIKELY(IsManagedByPartitionAllocNormalBuckets(ptr)))
-      PartitionRefCountPointer(ptr)->AddRef();
+    // This check already covers the nullptr case.
+    if (IsManagedByPartitionAllocNormalBuckets(ptr))
+      AcquireInternal(ptr);
 
     return addr;
   }
@@ -127,8 +128,8 @@ struct BackupRefPtrImpl {
     void* ptr = reinterpret_cast<void*>(wrapped_ptr);
 
     // This check already covers the nullptr case.
-    if (LIKELY(IsManagedByPartitionAllocNormalBuckets(ptr)))
-      PartitionRefCountPointer(ptr)->Release();
+    if (IsManagedByPartitionAllocNormalBuckets(ptr))
+      ReleaseInternal(ptr);
   }
 
   // Returns equivalent of |WrapRawPtr(nullptr)|. Separated out to make it a
@@ -143,6 +144,11 @@ struct BackupRefPtrImpl {
   // hasn't been freed. The function is allowed to crash on nullptr.
   static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(
       uintptr_t wrapped_ptr) {
+#if DCHECK_IS_ON()
+    void* ptr = reinterpret_cast<void*>(wrapped_ptr);
+    if (IsManagedByPartitionAllocNormalBuckets(ptr))
+      DCHECK(IsPointeeAlive(ptr));
+#endif
     return reinterpret_cast<void*>(wrapped_ptr);
   }
 
@@ -183,6 +189,17 @@ struct BackupRefPtrImpl {
 
   // This is for accounting only, used by unit tests.
   static ALWAYS_INLINE void IncrementSwapCountForTest() {}
+
+ private:
+  // We've evaluated several strategies (inline nothing, various parts, or
+  // everything in |Wrap()| and |Release()|) using the Speedometer2 benchmark
+  // to measure performance. The best results were obtained when only the
+  // lightweight |IsManagedByPartitionAllocNormalBuckets()| check was inlined.
+  // Therefore, we've extracted the rest into the functions below and marked
+  // them as NOINLINE to prevent unintended LTO effects.
+  static BASE_EXPORT NOINLINE void AcquireInternal(void* ptr);
+  static BASE_EXPORT NOINLINE void ReleaseInternal(void* ptr);
+  static BASE_EXPORT NOINLINE bool IsPointeeAlive(void* ptr);
 };
 
 #endif  // ENABLE_BACKUP_REF_PTR_IMPL

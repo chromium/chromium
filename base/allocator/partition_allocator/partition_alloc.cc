@@ -107,38 +107,10 @@ template void PartitionAllocator<internal::NotThreadSafe>::init(
     PartitionOptions);
 
 #if DCHECK_IS_ON()
-void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr) {
-  PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr));
+void DCheckGetSlotOffsetIsZero(void* ptr) {
+  PA_DCHECK(PartitionAllocGetSlotOffset(ptr) == 0);
 }
 #endif
-
-// Gets the offset from the beginning of the allocated slot, adjusted for cookie
-// (if any).
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
-//
-// This function is not a template, and can be used on either variant
-// (thread-safe or not) of the allocator. This relies on the two PartitionRoot<>
-// having the same layout, which is enforced by static_assert().
-BASE_EXPORT size_t PartitionAllocGetSlotOffset(void* ptr) {
-  internal::DCheckIfManagedByPartitionAllocNormalBuckets(ptr);
-  auto* slot_span =
-      internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
-          ptr);
-  auto* root = PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span);
-  // The only allocations that don't use ref-count are allocated outside of
-  // GigaCage, hence we'd never get here in the `allow_extras = false` case.
-  PA_DCHECK(root->allow_extras);
-  ptr = root->AdjustPointerForExtrasSubtract(ptr);
-
-  // Get the offset from the beginning of the slot span.
-  uintptr_t ptr_addr = reinterpret_cast<uintptr_t>(ptr);
-  uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
-      internal::SlotSpanMetadata<internal::ThreadSafe>::ToPointer(slot_span));
-  size_t offset_in_slot_span = ptr_addr - slot_span_start;
-
-  return slot_span->bucket->GetSlotOffset(offset_in_slot_span);
-}
 
 }  // namespace internal
 

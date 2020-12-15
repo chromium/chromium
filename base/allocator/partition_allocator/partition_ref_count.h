@@ -22,12 +22,20 @@ namespace internal {
 
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
 
+// Special-purpose atomic reference count class used by BackupRefPtrImpl.
+// The least significant bit of the count is reserved for tracking the liveness
+// state of an allocation: it's set when the allocation is created and cleared
+// on free(). So the count can be:
+//
+// 1 for an allocation that is just returned from Alloc()
+// 2 * k + 1 for a "live" allocation with k references
+// 2 * k for an allocation with k dangling references after Free()
+//
+// This protects against double-free's, as we check whether the reference count
+// is odd in |ReleaseFromAllocator()|, and if not we have a double-free.
 class BASE_EXPORT PartitionRefCount {
  public:
-  // PartitionRefCount should never be constructed directly.
-  PartitionRefCount() = delete;
-
-  ALWAYS_INLINE void Init() { count_.store(1, std::memory_order_relaxed); }
+  PartitionRefCount();
 
   // Incrementing the counter doesn't imply any visibility about modified
   // memory, hence relaxed atomics. For decrement, visibility is required before
@@ -36,31 +44,51 @@ class BASE_EXPORT PartitionRefCount {
 
   // For details, see base::AtomicRefCount, which has the same constraints and
   // characteristics.
-  ALWAYS_INLINE void AddRef() {
-    CHECK_GT(count_.fetch_add(1, std::memory_order_relaxed), 0);
+  ALWAYS_INLINE void Acquire() {
+    PA_CHECK(count_.fetch_add(2, std::memory_order_relaxed) > 0);
   }
 
-  ALWAYS_INLINE void Release() {
-    if (count_.fetch_sub(1, std::memory_order_release) == 1) {
+  // Returns true if the allocation should be reclaimed.
+  ALWAYS_INLINE bool Release() {
+    if (count_.fetch_sub(2, std::memory_order_release) == 2) {
       // In most thread-safe reference count implementations, an acquire
       // barrier is required so that all changes made to an object from other
       // threads are visible to its destructor. In our case, the destructor
       // finishes before the final `Release` call, so it shouldn't be a problem.
       // However, we will keep it as a precautionary measure.
       std::atomic_thread_fence(std::memory_order_acquire);
-      Free();
+      return true;
     }
+
+    return false;
+  }
+
+  // Returns true if the allocation should be reclaimed.
+  // This function should be called by the allocator during Free().
+  ALWAYS_INLINE bool ReleaseFromAllocator() {
+    int32_t old_count = count_.fetch_sub(1, std::memory_order_release);
+    PA_CHECK(old_count & 1);  // double-free detection
+    if (old_count == 1) {
+      std::atomic_thread_fence(std::memory_order_acquire);
+      return true;
+    }
+
+    return false;
   }
 
   ALWAYS_INLINE bool HasOneRef() {
     return count_.load(std::memory_order_acquire) == 1;
   }
 
- private:
-  void Free();
+  ALWAYS_INLINE bool IsAlive() {
+    return count_.load(std::memory_order_relaxed) & 1;
+  }
 
-  std::atomic<int32_t> count_;
+ private:
+  std::atomic<int32_t> count_{1};
 };
+
+ALWAYS_INLINE PartitionRefCount::PartitionRefCount() = default;
 
 // Allocate extra space for the reference count to satisfy the alignment
 // requirement.
@@ -77,14 +105,7 @@ static constexpr size_t kPartitionRefCountOffset = kInSlotRefCountBufferSize;
 
 
 ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* ptr) {
-  return reinterpret_cast<PartitionRefCount*>(reinterpret_cast<char*>(ptr) -
-                                              PartitionAllocGetSlotOffset(ptr) -
-                                              kPartitionRefCountOffset);
-}
-
-// This function can only be used when we are certain that `ptr` points to the
-// beginning of the allocation slot.
-ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointerNoOffset(void* ptr) {
+  DCheckGetSlotOffsetIsZero(ptr);
   return reinterpret_cast<PartitionRefCount*>(reinterpret_cast<char*>(ptr) -
                                               kPartitionRefCountOffset);
 }

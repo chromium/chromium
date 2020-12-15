@@ -6,6 +6,8 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_FORWARD_H_
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 
 namespace base {
 namespace internal {
@@ -13,11 +15,14 @@ namespace internal {
 template <bool thread_safe>
 struct SlotSpanMetadata;
 
-BASE_EXPORT size_t PartitionAllocGetSlotOffset(void* ptr);
-
 constexpr bool ThreadSafe = true;
 constexpr bool NotThreadSafe = false;
 
+#if DCHECK_IS_ON()
+BASE_EXPORT void DCheckGetSlotOffsetIsZero(void* ptr);
+#else
+ALWAYS_INLINE void DCheckGetSlotOffsetIsZero(void*) {}
+#endif
 }  // namespace internal
 
 template <bool thread_safe>

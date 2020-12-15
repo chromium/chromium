@@ -852,7 +852,7 @@ TEST_F(PartitionAllocTest, AllocSizes) {
 }
 
 // Test that we can fetch the real allocated size after an allocation.
-TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
+TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   void* ptr;
   size_t requested_size, actual_size, predicted_size;
 
@@ -869,6 +869,8 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
     for (size_t offset = 0; offset < requested_size; ++offset) {
       EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
                 offset);
+      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
+                ptr);
     }
   }
 #endif
@@ -888,6 +890,8 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
     for (size_t offset = 0; offset < requested_size; offset += 877) {
       EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
                 offset);
+      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
+                ptr);
     }
   }
 #endif
@@ -911,6 +915,8 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
     for (size_t offset = 0; offset < requested_size; offset += 4999) {
       EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
                 offset);
+      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
+                ptr);
     }
   }
 #endif
@@ -928,6 +934,8 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
     for (size_t offset = 0; offset < requested_size; offset += 4999) {
       EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
                 offset);
+      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
+                ptr);
     }
   }
 #endif
@@ -1632,9 +1640,6 @@ TEST_F(PartitionAllocDeathTest, LargeAllocs) {
   EXPECT_DEATH(allocator.root()->Alloc(MaxDirectMapped() + 1, type_name), "");
 }
 
-// TODO(glazunov): make BackupRefPtr compatible with the double-free detection.
-#if !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
-
 // Check that our immediate double-free detection works.
 TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -1656,8 +1661,6 @@ TEST_F(PartitionAllocDeathTest, RefcountDoubleFree) {
   // and should be trapped.
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
 }
-
-#endif  // !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
 
 // Check that guard pages are present where expected.
 TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
@@ -2713,6 +2716,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
 
 TEST_F(PartitionAllocTest, RefCountBasic) {
   constexpr uint64_t kCookie = 0x1234567890ABCDEF;
+  constexpr uint64_t kQuarantined = 0xEFEFEFEFEFEFEFEF;
 
   size_t alloc_size = 64 - kExtraAllocSize;
   uint64_t* ptr1 = reinterpret_cast<uint64_t*>(
@@ -2722,17 +2726,20 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
   *ptr1 = kCookie;
 
   auto* ref_count = PartitionRefCountPointer(ptr1);
+  EXPECT_TRUE(ref_count->HasOneRef());
 
-  ref_count->AddRef();
-  ref_count->Release();
+  ref_count->Acquire();
+  EXPECT_FALSE(ref_count->Release());
   EXPECT_TRUE(ref_count->HasOneRef());
   EXPECT_EQ(*ptr1, kCookie);
 
-  ref_count->AddRef();
+  ref_count->Acquire();
   EXPECT_FALSE(ref_count->HasOneRef());
 
   allocator.root()->Free(ptr1);
+  // The allocation shouldn't be reclaimed, and its contents should be zapped.
   EXPECT_NE(*ptr1, kCookie);
+  EXPECT_EQ(*ptr1, kQuarantined);
 
   // The allocator should not reuse the original slot since its reference count
   // doesn't equal zero.
@@ -2742,7 +2749,8 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
   allocator.root()->Free(ptr2);
 
   // When the last reference is released, the slot should become reusable.
-  ref_count->Release();
+  EXPECT_TRUE(ref_count->Release());
+  PartitionAllocFreeForRefCounting(ptr1);
   uint64_t* ptr3 = reinterpret_cast<uint64_t*>(
       allocator.root()->Alloc(alloc_size, type_name));
   EXPECT_EQ(ptr1, ptr3);

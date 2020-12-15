@@ -735,8 +735,12 @@ TEST(BackupRefPtrImpl, Basic) {
   *raw_ptr1 = 42;
   EXPECT_EQ(*raw_ptr1, *checked_ptr1);
 
-  // The allocation should be poisoned since there's a CheckedPtr alive.
   allocator.root()->Free(raw_ptr1);
+#if DCHECK_IS_ON()
+  // In debug builds, the use-after-free should be caught immediately.
+  EXPECT_DEATH_IF_SUPPORTED(if (*checked_ptr1 == 42) return, "");
+#else   // DCHECK_IS_ON()
+  // The allocation should be poisoned since there's a CheckedPtr alive.
   EXPECT_NE(*checked_ptr1, 42ul);
 
   // The allocator should not be able to reuse the slot at this point.
@@ -749,6 +753,7 @@ TEST(BackupRefPtrImpl, Basic) {
   void* raw_ptr3 = allocator.root()->Alloc(sizeof(uint64_t), "");
   EXPECT_EQ(raw_ptr1, raw_ptr3);
   allocator.root()->Free(raw_ptr3);
+#endif  // DCHECK_IS_ON()
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_BACKUP_REF_PTR_IMPL &&

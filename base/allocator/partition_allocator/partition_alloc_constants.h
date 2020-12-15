@@ -269,6 +269,8 @@ static const size_t kReasonableSizeOfUnusedPages = 1024 * 1024 * 1024;  // 1 GiB
 static const unsigned char kUninitializedByte = 0xAB;
 static const unsigned char kFreedByte = 0xCD;
 
+static const unsigned char kQuarantinedByte = 0xEF;
+
 // Flags for `PartitionAllocFlags`.
 enum PartitionAllocFlags {
   PartitionAllocReturnNull = 1 << 0,
