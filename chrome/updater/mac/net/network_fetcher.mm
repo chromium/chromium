@@ -248,16 +248,24 @@ using DownloadToFileCompleteCallback =
     didCompleteWithError:(NSError*)error {
   [super URLSession:session task:task didCompleteWithError:error];
 
-  // TODO(crbug.com/1157996): Add handling for NSError.
+  NSInteger result;
 
-  NSHTTPURLResponse* response = (NSHTTPURLResponse*)task.response;
-  NSInteger result = response.statusCode == 200 ? 0 : response.statusCode;
+  if (error) {
+    result = [error code];
+    DLOG(ERROR) << "NSError code: " << result << ". NSErrorDomain: "
+                << base::SysNSStringToUTF8([error domain])
+                << ". NSError description: "
+                << base::SysNSStringToUTF8([error description]);
+  } else {
+    NSHTTPURLResponse* response = (NSHTTPURLResponse*)task.response;
+    result = response.statusCode == 200 ? 0 : response.statusCode;
 
-  if (!_moveTempFileSuccessful) {
-    DLOG(ERROR) << "File not moved. Original status code: "
-                << response.statusCode;
-    result = updater::kErrorFailedToMoveDownloadedFile;
+    if (!result && !_moveTempFileSuccessful) {
+      DLOG(ERROR) << "File downloaded successfully. Moving temp file failed.";
+      result = updater::kErrorFailedToMoveDownloadedFile;
+    }
   }
+
   _callbackRunner->PostTask(
       FROM_HERE, base::BindOnce(std::move(_downloadToFileCompleteCallback),
                                 result, [task countOfBytesReceived]));
