@@ -32,6 +32,10 @@ ImageSkiaRep::ImageSkiaRep(const SkBitmap& src, float scale)
       pixel_size_(gfx::Size(src.width(), src.height())),
       bitmap_(src),
       scale_(scale) {
+  // If the bitmap has been initialized then it must be in N32 format.
+  if (!(bitmap_.isNull() && bitmap_.colorType() == kUnknown_SkColorType &&
+        bitmap_.alphaType() == kUnknown_SkAlphaType))
+    CHECK_EQ(bitmap_.colorType(), kN32_SkColorType);
   bitmap_.setImmutable();
   paint_image_ = cc::PaintImage::CreateFromBitmap(src);
 }
