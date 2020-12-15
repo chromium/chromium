@@ -178,9 +178,14 @@ uint64_t CalculateAvailableMemoryUserSpaceKB(
 
 uint64_t GetAvailableMemoryKB() {
   base::SystemMemoryInfoKB info;
-  CHECK(base::GetSystemMemoryInfo(&info));
-  return CalculateAvailableMemoryUserSpaceKB(info, reserved_free, min_filelist,
-                                             ram_swap_weight);
+  if (base::GetSystemMemoryInfo(&info)) {
+    return CalculateAvailableMemoryUserSpaceKB(info, reserved_free,
+                                               min_filelist, ram_swap_weight);
+  }
+  PLOG(ERROR) << "Assume low memory pressure if opening/parsing meminfo failed";
+  LOG_IF(FATAL, base::SysInfo::IsRunningOnChromeOS())
+      << "procfs isn't mounted or unable to open /proc/meminfo";
+  return 4 * 1024;
 }
 
 std::vector<uint64_t> GetMarginFileParts(const std::string& file) {
@@ -222,8 +227,16 @@ std::pair<uint64_t, uint64_t> GetMemoryMarginsKBImpl() {
   // Critical margin is 5.2% of total memory, moderate margin is 40% of total
   // memory. See also /usr/share/cros/init/swap.sh on DUT.
   base::SystemMemoryInfoKB info;
-  CHECK(base::GetSystemMemoryInfo(&info));
-  return {info.total * 13 / 250, info.total * 2 / 5};
+  int total_memory_kb = 2 * 1024;
+  if (base::GetSystemMemoryInfo(&info)) {
+    total_memory_kb = info.total;
+  } else {
+    PLOG(ERROR)
+        << "Assume 2 GiB total memory if opening/parsing meminfo failed";
+    LOG_IF(FATAL, base::SysInfo::IsRunningOnChromeOS())
+        << "procfs isn't mounted or unable to open /proc/meminfo";
+  }
+  return {total_memory_kb * 13 / 250, total_memory_kb * 2 / 5};
 }
 
 }  // namespace
