@@ -1419,12 +1419,13 @@ void BookmarkBarView::Init() {
   profile_pref_registrar_.Init(browser_->profile()->GetPrefs());
   profile_pref_registrar_.Add(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
-      base::Bind(&BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged,
+          base::Unretained(this)));
   profile_pref_registrar_.Add(
       bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
-      base::Bind(&BookmarkBarView::OnShowManagedBookmarksPrefChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&BookmarkBarView::OnShowManagedBookmarksPrefChanged,
+                          base::Unretained(this)));
   apps_page_shortcut_->SetVisible(
       chrome::ShouldShowAppsShortcutInBookmarkBar(browser_->profile()));
 

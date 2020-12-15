@@ -57,7 +57,7 @@ class TestExtensionUninstallDialogDelegate
     : public extensions::ExtensionUninstallDialog::Delegate {
  public:
   explicit TestExtensionUninstallDialogDelegate(
-      const base::Closure& quit_closure)
+      base::RepeatingClosure quit_closure)
       : quit_closure_(quit_closure), canceled_(false) {}
 
   ~TestExtensionUninstallDialogDelegate() override {}
@@ -71,7 +71,7 @@ class TestExtensionUninstallDialogDelegate
     quit_closure_.Run();
   }
 
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
   bool canceled_;
 
   DISALLOW_COPY_AND_ASSIGN(TestExtensionUninstallDialogDelegate);

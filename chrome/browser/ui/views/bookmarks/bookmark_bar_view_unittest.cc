@@ -137,7 +137,7 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
         static_cast<Profile*>(profile)->GetPrefs(),
         std::make_unique<SearchTermsData>(),
         nullptr /* KeywordWebDataService */,
-        nullptr /* TemplateURLServiceClient */, base::Closure());
+        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
   }
 };
 

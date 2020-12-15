@@ -125,7 +125,7 @@ class DialogWaiter : public aura::EnvObserver,
 
   bool dialog_created_ = false;
   views::Widget* dialog_ = nullptr;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(DialogWaiter);
 };
@@ -160,7 +160,7 @@ class DialogCloseWaiter : public views::WidgetObserver {
   }
 
   bool dialog_closed_;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(DialogCloseWaiter);
 };
@@ -199,7 +199,7 @@ class TabKeyWaiter : public ui::EventHandler {
 
   views::Widget* widget_;
   bool received_tab_;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(TabKeyWaiter);
 };
