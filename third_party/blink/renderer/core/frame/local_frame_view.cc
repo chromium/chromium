@@ -2785,11 +2785,6 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
             }
             if (layout_view->ShouldCheckForPaintInvalidation()) {
               owner->SetShouldCheckForPaintInvalidation();
-            } else {
-              // TODO(szager): Remove these after diagnosing crash
-              CHECK(!layout_view->ShouldCheckGeometryForPaintInvalidation());
-              CHECK(!layout_view
-                         ->DescendantShouldCheckGeometryForPaintInvalidation());
             }
             if (layout_view->EffectiveAllowedTouchActionChanged() ||
                 layout_view->DescendantEffectiveAllowedTouchActionChanged()) {
