@@ -404,6 +404,14 @@ class CORE_EXPORT NGFragmentItem {
                  const String& text_content,
                  const PhysicalSize& size,
                  bool is_hidden_for_paint);
+  NGFragmentItem(const LayoutObject& layout_object,
+                 NGTextType text_type,
+                 NGStyleVariant style_variant,
+                 TextDirection direction,
+                 scoped_refptr<const ShapeResultView> shape_result,
+                 const String& text_content,
+                 const PhysicalSize& size,
+                 bool is_hidden_for_paint);
 
   NGInkOverflow::Type InkOverflowType() const {
     return static_cast<NGInkOverflow::Type>(ink_overflow_type_);

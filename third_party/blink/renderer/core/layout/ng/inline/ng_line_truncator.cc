@@ -63,7 +63,7 @@ LayoutUnit NGLineTruncator::PlaceEllipsisNextTo(
     NGLogicalLineItem* ellipsized_child) {
   // Create the ellipsis, associating it with the ellipsized child.
   DCHECK(ellipsized_child->HasInFlowFragment());
-  LayoutObject* ellipsized_layout_object =
+  const LayoutObject* ellipsized_layout_object =
       ellipsized_child->GetMutableLayoutObject();
   DCHECK(ellipsized_layout_object);
   DCHECK(ellipsized_layout_object->IsInline());
@@ -85,14 +85,12 @@ LayoutUnit NGLineTruncator::PlaceEllipsisNextTo(
 
   DCHECK(ellipsis_text_);
   DCHECK(ellipsis_shape_result_.get());
-  NGTextFragmentBuilder builder(line_style_->GetWritingMode());
-  builder.SetText(ellipsized_layout_object, ellipsis_text_, &EllipsisStyle(),
-                  NGStyleVariant::kEllipsis, std::move(ellipsis_shape_result_),
-                  {ellipsis_width_, ellipsis_metrics.LineHeight()});
   line_box->AddChild(
-      builder.ToTextFragment(),
-      LogicalOffset{ellipsis_inline_offset, -ellipsis_metrics.ascent},
-      ellipsis_width_, 0);
+      *ellipsized_layout_object, NGStyleVariant::kEllipsis,
+      std::move(ellipsis_shape_result_), ellipsis_text_,
+      LogicalRect(ellipsis_inline_offset, -ellipsis_metrics.ascent,
+                  ellipsis_width_, ellipsis_metrics.LineHeight()),
+      /* bidi_level */ 0);
   return ellipsis_inline_offset;
 }
 

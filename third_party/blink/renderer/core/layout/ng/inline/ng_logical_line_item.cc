@@ -26,8 +26,8 @@ LayoutObject* NGLogicalLineItem::GetMutableLayoutObject() const {
 }
 
 const Node* NGLogicalLineItem::GetNode() const {
-  if (const LayoutObject* layout_object = GetLayoutObject())
-    return layout_object->GetNode();
+  if (const LayoutObject* object = GetLayoutObject())
+    return object->GetNode();
   return nullptr;
 }
 
