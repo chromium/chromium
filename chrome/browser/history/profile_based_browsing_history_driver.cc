@@ -34,8 +34,8 @@ void ProfileBasedBrowsingHistoryDriver::OnRemoveVisits(
 #endif
 
   for (const history::ExpireHistoryArgs& expire_entry : expire_list) {
-    AppBannerSettingsHelper::ClearHistoryForURLs(GetProfile(),
-                                                 expire_entry.urls);
+    webapps::AppBannerSettingsHelper::ClearHistoryForURLs(GetProfile(),
+                                                          expire_entry.urls);
   }
 }
 

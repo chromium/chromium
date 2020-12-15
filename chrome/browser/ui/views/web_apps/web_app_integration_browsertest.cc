@@ -30,7 +30,7 @@ namespace web_app {
 
 struct NavigateToSiteResult {
   content::WebContents* web_contents;
-  banners::TestAppBannerManagerDesktop* app_banner_manager;
+  webapps::TestAppBannerManagerDesktop* app_banner_manager;
   bool installable;
 };
 
@@ -49,7 +49,7 @@ class WebAppIntegrationBrowserTest : public InProcessBrowserTest {
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
 
-    banners::TestAppBannerManagerDesktop::SetUp();
+    webapps::TestAppBannerManagerDesktop::SetUp();
 
     InProcessBrowserTest::SetUp();
   }
@@ -73,7 +73,7 @@ class WebAppIntegrationBrowserTest : public InProcessBrowserTest {
   NavigateToSiteResult NavigateToSite(Browser* browser, const GURL& url) {
     content::WebContents* web_contents = GetCurrentTab(browser);
     auto* app_banner_manager =
-        banners::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+        webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
     DCHECK(!app_banner_manager->WaitForInstallableCheck());
 
     ui_test_utils::NavigateToURL(browser, url);

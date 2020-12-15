@@ -36,9 +36,6 @@ namespace webapps {
 class InstallableManager;
 enum class WebappInstallSource;
 struct InstallableData;
-}  // namespace webapps
-
-namespace banners {
 
 // Coordinates the creation of an app banner, from detecting eligibility to
 // fetching data and creating the infobar. Sites declare that they want an app
@@ -254,16 +251,15 @@ class AppBannerManager : public content::WebContentsObserver,
   // Possibly retries the installable manager request given the current state
   // and the result. Returns |true| if the request was restarted.
   // Currently only called during requests to InstallationManager
-  bool DidRetryInstallableManagerRequest(
-      const webapps::InstallableData& result);
+  bool DidRetryInstallableManagerRequest(const InstallableData& result);
 
   // Callback invoked by the InstallableManager once it has fetched the page's
   // manifest.
-  virtual void OnDidGetManifest(const webapps::InstallableData& result);
+  virtual void OnDidGetManifest(const InstallableData& result);
 
-  // Returns an webapps::InstallableParams object that requests all checks
+  // Returns an InstallableParams object that requests all checks
   // necessary for a web app banner.
-  virtual webapps::InstallableParams ParamsToPerformInstallableWebAppCheck();
+  virtual InstallableParams ParamsToPerformInstallableWebAppCheck();
 
   // Run at the conclusion of OnDidGetManifest. For web app banners, this calls
   // back to the InstallableManager to continue checking criteria. For native
@@ -277,13 +273,13 @@ class AppBannerManager : public content::WebContentsObserver,
   // Callback invoked by the InstallableManager once it has finished checking
   // all other installable properties.
   virtual void OnDidPerformInstallableWebAppCheck(
-      const webapps::InstallableData& result);
+      const InstallableData& result);
 
   // Records that a banner was shown.
   void RecordDidShowBanner();
 
   // Reports |code| via a UMA histogram or logs it to the console.
-  void ReportStatus(webapps::InstallableStatusCode code);
+  void ReportStatus(InstallableStatusCode code);
 
   // Voids all outstanding service pointers.
   void ResetBindings();
@@ -297,7 +293,7 @@ class AppBannerManager : public content::WebContentsObserver,
   // Stops the banner pipeline, preventing any outstanding callbacks from
   // running and resetting the manager state. This method is virtual to allow
   // tests to intercept it and verify correct behaviour.
-  virtual void Stop(webapps::InstallableStatusCode code);
+  virtual void Stop(InstallableStatusCode code);
 
   // Sends a message to the renderer that the page has met the requirements to
   // show a banner. The page can respond to cancel the banner (and possibly
@@ -338,7 +334,7 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Subclass accessors for private fields which should not be changed outside
   // this class.
-  webapps::InstallableManager* manager() const { return manager_; }
+  InstallableManager* manager() const { return manager_; }
   State state() const { return state_; }
   bool IsRunning() const;
 
@@ -374,7 +370,7 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Creates the app banner UI. Overridden by subclasses as the infobar is
   // platform-specific.
-  virtual void ShowBannerUi(webapps::WebappInstallSource install_source) = 0;
+  virtual void ShowBannerUi(WebappInstallSource install_source) = 0;
 
   // Called after the manager sends a message to the renderer regarding its
   // intention to show a prompt. The renderer will send a message back with the
@@ -392,13 +388,13 @@ class AppBannerManager : public content::WebContentsObserver,
   void DisplayAppBanner() override;
 
   // Returns a status code indicating whether a banner should be shown.
-  webapps::InstallableStatusCode ShouldShowBannerCode();
+  InstallableStatusCode ShouldShowBannerCode();
 
   // Returns a status code based on the current state, to log when terminating.
-  webapps::InstallableStatusCode TerminationCode() const;
+  InstallableStatusCode TerminationCode() const;
 
   // Fetches the data required to display a banner for the current page.
-  webapps::InstallableManager* manager_;
+  InstallableManager* manager_;
 
   // We do not want to trigger a banner when the manager is attached to
   // a WebContents that is playing video. Banners triggering on a site in the
@@ -429,6 +425,6 @@ class AppBannerManager : public content::WebContentsObserver,
   DISALLOW_COPY_AND_ASSIGN(AppBannerManager);
 };
 
-}  // namespace banners
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_BANNERS_APP_BANNER_MANAGER_H_

@@ -118,7 +118,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(https_server_.Start());
 
-    banners::TestAppBannerManagerDesktop::SetUp();
+    webapps::TestAppBannerManagerDesktop::SetUp();
     extensions::ExtensionBrowserTest::SetUp();
   }
 
@@ -154,7 +154,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     web_contents_ = GetCurrentTab();
     app_banner_manager_ =
-        banners::TestAppBannerManagerDesktop::FromWebContents(web_contents_);
+        webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents_);
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestInterceptor(
@@ -174,7 +174,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
   struct OpenTabResult {
     content::WebContents* web_contents;
-    banners::TestAppBannerManagerDesktop* app_banner_manager;
+    webapps::TestAppBannerManagerDesktop* app_banner_manager;
     bool installable;
   };
 
@@ -182,7 +182,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     chrome::NewTab(browser());
     content::WebContents* web_contents = GetCurrentTab();
     auto* app_banner_manager =
-        banners::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+        webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
     DCHECK(!app_banner_manager->WaitForInstallableCheck());
 
     ui_test_utils::NavigateToURL(browser(), url);
@@ -276,7 +276,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
   PageActionIconView* pwa_install_view_ = nullptr;
   content::WebContents* web_contents_ = nullptr;
-  banners::TestAppBannerManagerDesktop* app_banner_manager_ = nullptr;
+  webapps::TestAppBannerManagerDesktop* app_banner_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PwaInstallViewBrowserTest);
 
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
   EXPECT_EQ(
       result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      banners::AppBannerManager::InstallableWebAppCheckResult::
+      webapps::AppBannerManager::InstallableWebAppCheckResult::
           kNoAlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   // The nested PWA should now not be installable.
   EXPECT_EQ(
       result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      banners::AppBannerManager::InstallableWebAppCheckResult::
+      webapps::AppBannerManager::InstallableWebAppCheckResult::
           kNoAlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
   EXPECT_EQ(
       result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      banners::AppBannerManager::InstallableWebAppCheckResult::kPromotable);
+      webapps::AppBannerManager::InstallableWebAppCheckResult::kPromotable);
   EXPECT_TRUE(pwa_install_view_->GetVisible());
 }
 
@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, AnimationSuppression) {
   for (size_t day = 0; day < animation_shown_for_day.size(); ++day) {
     SCOPED_TRACE(testing::Message() << "day: " << day);
 
-    banners::AppBannerManager::SetTimeDeltaForTesting(day);
+    webapps::AppBannerManager::SetTimeDeltaForTesting(day);
 
     StartNavigateToUrl(GetInstallableAppURL());
     ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PreferRelatedChromeApp) {
 
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   EXPECT_TRUE(base::EqualsASCII(
-      banners::AppBannerManager::GetInstallableWebAppName(web_contents_),
+      webapps::AppBannerManager::GetInstallableWebAppName(web_contents_),
       "Manifest prefer related chrome app"));
 }
 
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   EXPECT_TRUE(base::EqualsASCII(
-      banners::AppBannerManager::GetInstallableWebAppName(web_contents_),
+      webapps::AppBannerManager::GetInstallableWebAppName(web_contents_),
       "Manifest listing related chrome app"));
 }
 
@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   EXPECT_TRUE(base::EqualsASCII(
-      banners::AppBannerManager::GetInstallableWebAppName(web_contents_),
+      webapps::AppBannerManager::GetInstallableWebAppName(web_contents_),
       "Manifest listing related android app"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

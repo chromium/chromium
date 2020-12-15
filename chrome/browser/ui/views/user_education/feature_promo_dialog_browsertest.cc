@@ -46,7 +46,7 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
     set_should_verify_dialog_bounds(false);
   }
   void SetUp() override {
-    banners::TestAppBannerManagerDesktop::SetUp();
+    webapps::TestAppBannerManagerDesktop::SetUp();
     DialogBrowserTest::SetUp();
   }
 
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto* app_banner_manager =
-      banners::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+      webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
   app_banner_manager->WaitForInstallableCheck();
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
                   ->toolbar()

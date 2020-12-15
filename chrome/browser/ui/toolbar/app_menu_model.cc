@@ -135,7 +135,7 @@ base::Optional<base::string16> GetInstallPWAAppMenuItemName(Browser* browser) {
   if (!web_contents)
     return base::nullopt;
   base::string16 app_name =
-      banners::AppBannerManager::GetInstallableWebAppName(web_contents);
+      webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
   if (app_name.empty())
     return base::nullopt;
   return l10n_util::GetStringFUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE,

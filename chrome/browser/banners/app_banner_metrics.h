@@ -8,7 +8,7 @@
 #include "components/webapps/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
-namespace banners {
+namespace webapps {
 
 // This enum backs a UMA histogram, so it should be treated as append-only.
 enum DisplayEvent {
@@ -91,9 +91,9 @@ void TrackInstallEvent(int event);
 void TrackMinutesFromFirstVisitToBannerShown(int minutes);
 void TrackUserResponse(int event);
 void TrackBeforeInstallEvent(int event);
-void TrackInstallableStatusCode(webapps::InstallableStatusCode code);
+void TrackInstallableStatusCode(InstallableStatusCode code);
 void TrackInstallDisplayMode(blink::mojom::DisplayMode display);
 
-}  // namespace banners
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_BANNERS_APP_BANNER_METRICS_H_

@@ -19,6 +19,8 @@ class WebContents;
 class GURL;
 class Profile;
 
+namespace webapps {
+
 // Utility class to record banner events for the given package or start url.
 //
 // These events are used to decide when banners should be shown, using a
@@ -192,5 +194,7 @@ class AppBannerSettingsHelper {
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(AppBannerSettingsHelper);
 };
+
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_BANNERS_APP_BANNER_SETTINGS_HELPER_H_

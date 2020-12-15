@@ -54,9 +54,10 @@ static void JNI_LaunchMetrics_RecordLaunch(
     // What a user has installed on the Home screen can become disconnected from
     // what Chrome believes is on the Home screen if the user clears their data.
     // Use the launch as a signal that the shortcut still exists.
-    AppBannerSettingsHelper::RecordBannerEvent(
+    webapps::AppBannerSettingsHelper::RecordBannerEvent(
         web_contents, url, url.spec(),
-        AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
+        webapps::AppBannerSettingsHelper::
+            APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
         base::Time::Now());
 
     // Tell the Site Engagement Service about this launch as sites recently

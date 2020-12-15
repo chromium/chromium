@@ -397,9 +397,9 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
 }
 
 void RecordAppBanner(content::WebContents* contents, const GURL& app_url) {
-  AppBannerSettingsHelper::RecordBannerEvent(
+  webapps::AppBannerSettingsHelper::RecordBannerEvent(
       contents, app_url, app_url.spec(),
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
+      webapps::AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
       base::Time::Now());
 }
 

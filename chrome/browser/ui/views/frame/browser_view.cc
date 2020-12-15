@@ -1133,7 +1133,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       InfoBarService::FromWebContents(new_contents));
 
   ObserveAppBannerManager(
-      banners::AppBannerManager::FromWebContents(new_contents));
+      webapps::AppBannerManager::FromWebContents(new_contents));
 
   UpdateUIForContents(new_contents);
   RevealTabStripIfNeeded();
@@ -3535,7 +3535,7 @@ bool BrowserView::FindCommandIdForAccelerator(
 }
 
 void BrowserView::ObserveAppBannerManager(
-    banners::AppBannerManager* new_manager) {
+    webapps::AppBannerManager* new_manager) {
   app_banner_manager_observation_.Reset();
   app_banner_manager_observation_.Observe(new_manager);
 }
@@ -3653,7 +3653,7 @@ void BrowserView::OnImmersiveModeControllerDestroyed() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserView, banners::AppBannerManager::Observer implementation:
+// BrowserView, webapps::AppBannerManager::Observer implementation:
 void BrowserView::OnInstallableWebAppStatusUpdated() {
   UpdatePageActionIcon(PageActionIconType::kPwaInstall);
 }

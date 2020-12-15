@@ -34,19 +34,98 @@
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+namespace webapps {
+
+class AppBannerManager::StatusReporter {
+ public:
+  virtual ~StatusReporter() = default;
+
+  // Reports |code| (via a mechanism which depends on the implementation).
+  virtual void ReportStatus(InstallableStatusCode code) = 0;
+
+  // Returns the WebappInstallSource to be used for this installation.
+  virtual WebappInstallSource GetInstallSource(
+      content::WebContents* web_contents,
+      InstallTrigger trigger) = 0;
+};
+
 namespace {
 
 int gTimeDeltaInDaysForTesting = 0;
 
-webapps::InstallableParams ParamsToGetManifest() {
-  webapps::InstallableParams params;
+InstallableParams ParamsToGetManifest() {
+  InstallableParams params;
   params.check_eligibility = true;
   return params;
 }
 
-}  // anonymous namespace
+// Logs installable status codes to the console.
+class ConsoleStatusReporter : public AppBannerManager::StatusReporter {
+ public:
+  // Constructs a ConsoleStatusReporter which logs to the devtools console
+  // attached to |web_contents|.
+  explicit ConsoleStatusReporter(content::WebContents* web_contents)
+      : web_contents_(web_contents) {}
 
-namespace banners {
+  // Logs an error message corresponding to |code| to the devtools console.
+  void ReportStatus(InstallableStatusCode code) override {
+    LogToConsole(web_contents_, code,
+                 blink::mojom::ConsoleMessageLevel::kError);
+  }
+
+  WebappInstallSource GetInstallSource(content::WebContents* web_contents,
+                                       InstallTrigger trigger) override {
+    return WebappInstallSource::DEVTOOLS;
+  }
+
+ private:
+  content::WebContents* web_contents_;
+};
+
+// Tracks installable status codes via an UMA histogram.
+class TrackingStatusReporter : public AppBannerManager::StatusReporter {
+ public:
+  TrackingStatusReporter() = default;
+  ~TrackingStatusReporter() override = default;
+
+  // Records code via an UMA histogram.
+  void ReportStatus(InstallableStatusCode code) override {
+    // We only increment the histogram once per page load (and only if the
+    // banner pipeline is triggered).
+    if (!done_ && code != NO_ERROR_DETECTED)
+      TrackInstallableStatusCode(code);
+
+    done_ = true;
+  }
+
+  WebappInstallSource GetInstallSource(content::WebContents* web_contents,
+                                       InstallTrigger trigger) override {
+    return InstallableMetrics::GetInstallSource(web_contents, trigger);
+  }
+
+ private:
+  bool done_ = false;
+};
+
+class NullStatusReporter : public AppBannerManager::StatusReporter {
+ public:
+  void ReportStatus(InstallableStatusCode code) override {
+    // In general, NullStatusReporter::ReportStatus should not be called.
+    // However, it may be called in cases where Stop is called without a
+    // preceding call to RequestAppBanner e.g. because the WebContents is being
+    // destroyed. In that case, code should always be
+    // NO_ERROR_DETECTED.
+    DCHECK(code == NO_ERROR_DETECTED);
+  }
+
+  WebappInstallSource GetInstallSource(content::WebContents* web_contents,
+                                       InstallTrigger trigger) override {
+    NOTREACHED();
+    return WebappInstallSource::COUNT;
+  }
+};
+
+}  // anonymous namespace
 
 // static
 base::Time AppBannerManager::GetCurrentTime() {
@@ -63,97 +142,6 @@ void AppBannerManager::SetTimeDeltaForTesting(int days) {
 void AppBannerManager::SetTotalEngagementToTrigger(double engagement) {
   AppBannerSettingsHelper::SetTotalEngagementToTrigger(engagement);
 }
-
-class AppBannerManager::StatusReporter {
- public:
-  virtual ~StatusReporter() {}
-
-  // Reports |code| (via a mechanism which depends on the implementation).
-  virtual void ReportStatus(webapps::InstallableStatusCode code) = 0;
-
-  // Returns the webapps::WebappInstallSource to be used for this installation.
-  virtual webapps::WebappInstallSource GetInstallSource(
-      content::WebContents* web_contents,
-      webapps::InstallTrigger trigger) = 0;
-};
-
-}  // namespace banners
-
-namespace {
-
-// Logs installable status codes to the console.
-class ConsoleStatusReporter : public banners::AppBannerManager::StatusReporter {
- public:
-  // Constructs a ConsoleStatusReporter which logs to the devtools console
-  // attached to |web_contents|.
-  explicit ConsoleStatusReporter(content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
-
-  // Logs an error message corresponding to |code| to the devtools console.
-  void ReportStatus(webapps::InstallableStatusCode code) override {
-    LogToConsole(web_contents_, code,
-                 blink::mojom::ConsoleMessageLevel::kError);
-  }
-
-  webapps::WebappInstallSource GetInstallSource(
-      content::WebContents* web_contents,
-      webapps::InstallTrigger trigger) override {
-    return webapps::WebappInstallSource::DEVTOOLS;
-  }
-
- private:
-  content::WebContents* web_contents_;
-};
-
-// Tracks installable status codes via an UMA histogram.
-class TrackingStatusReporter
-    : public banners::AppBannerManager::StatusReporter {
- public:
-  TrackingStatusReporter() : done_(false) {}
-  ~TrackingStatusReporter() override {}
-
-  // Records code via an UMA histogram.
-  void ReportStatus(webapps::InstallableStatusCode code) override {
-    // We only increment the histogram once per page load (and only if the
-    // banner pipeline is triggered).
-    if (!done_ && code != webapps::NO_ERROR_DETECTED)
-      banners::TrackInstallableStatusCode(code);
-
-    done_ = true;
-  }
-
-  webapps::WebappInstallSource GetInstallSource(
-      content::WebContents* web_contents,
-      webapps::InstallTrigger trigger) override {
-    return webapps::InstallableMetrics::GetInstallSource(web_contents, trigger);
-  }
-
- private:
-  bool done_;
-};
-
-class NullStatusReporter : public banners::AppBannerManager::StatusReporter {
- public:
-  void ReportStatus(webapps::InstallableStatusCode code) override {
-    // In general, NullStatusReporter::ReportStatus should not be called.
-    // However, it may be called in cases where Stop is called without a
-    // preceding call to RequestAppBanner e.g. because the WebContents is being
-    // destroyed. In that case, code should always be
-    // webapps::NO_ERROR_DETECTED.
-    DCHECK(code == webapps::NO_ERROR_DETECTED);
-  }
-
-  webapps::WebappInstallSource GetInstallSource(
-      content::WebContents* web_contents,
-      webapps::InstallTrigger trigger) override {
-    NOTREACHED();
-    return webapps::WebappInstallSource::COUNT;
-  }
-};
-
-}  // anonymous namespace
-
-namespace banners {
 
 void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
   DCHECK_EQ(State::INACTIVE, state_);
@@ -222,7 +210,7 @@ AppBannerManager::AppBannerManager(content::WebContents* web_contents)
       SiteEngagementObserver(site_engagement::SiteEngagementService::Get(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       state_(State::INACTIVE),
-      manager_(webapps::InstallableManager::FromWebContents(web_contents)),
+      manager_(InstallableManager::FromWebContents(web_contents)),
       has_sufficient_engagement_(false),
       load_finished_(false),
       status_reporter_(std::make_unique<NullStatusReporter>()),
@@ -240,17 +228,17 @@ bool AppBannerManager::CheckIfShouldShowBanner() {
   if (ShouldBypassEngagementChecks())
     return true;
 
-  webapps::InstallableStatusCode code = ShouldShowBannerCode();
+  InstallableStatusCode code = ShouldShowBannerCode();
   switch (code) {
-    case webapps::NO_ERROR_DETECTED:
+    case NO_ERROR_DETECTED:
       return true;
-    case webapps::PREVIOUSLY_BLOCKED:
-      banners::TrackDisplayEvent(banners::DISPLAY_EVENT_BLOCKED_PREVIOUSLY);
+    case PREVIOUSLY_BLOCKED:
+      TrackDisplayEvent(DISPLAY_EVENT_BLOCKED_PREVIOUSLY);
       break;
-    case webapps::PREVIOUSLY_IGNORED:
-      banners::TrackDisplayEvent(banners::DISPLAY_EVENT_IGNORED_PREVIOUSLY);
+    case PREVIOUSLY_IGNORED:
+      TrackDisplayEvent(DISPLAY_EVENT_IGNORED_PREVIOUSLY);
       break;
-    case webapps::PACKAGE_NAME_OR_START_URL_EMPTY:
+    case PACKAGE_NAME_OR_START_URL_EMPTY:
       break;
     default:
       NOTREACHED();
@@ -303,12 +291,12 @@ bool AppBannerManager::ShouldAllowWebAppReplacementInstall() {
 }
 
 bool AppBannerManager::DidRetryInstallableManagerRequest(
-    const webapps::InstallableData& result) {
+    const InstallableData& result) {
   if (result.errors.empty())
     return false;
-  if (result.errors[0] != webapps::MANIFEST_URL_CHANGED)
+  if (result.errors[0] != MANIFEST_URL_CHANGED)
     return false;
-  ReportStatus(webapps::MANIFEST_URL_CHANGED);
+  ReportStatus(MANIFEST_URL_CHANGED);
   switch (state_) {
     case State::FETCHING_MANIFEST:
     case State::PENDING_INSTALLABLE_CHECK:
@@ -328,7 +316,7 @@ bool AppBannerManager::DidRetryInstallableManagerRequest(
   }
 }
 
-void AppBannerManager::OnDidGetManifest(const webapps::InstallableData& data) {
+void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   if (DidRetryInstallableManagerRequest(data))
     return;
   UpdateState(State::ACTIVE);
@@ -346,9 +334,8 @@ void AppBannerManager::OnDidGetManifest(const webapps::InstallableData& data) {
   PerformInstallableChecks();
 }
 
-webapps::InstallableParams
-AppBannerManager::ParamsToPerformInstallableWebAppCheck() {
-  webapps::InstallableParams params;
+InstallableParams AppBannerManager::ParamsToPerformInstallableWebAppCheck() {
+  InstallableParams params;
   params.valid_primary_icon = true;
   params.valid_manifest = true;
   params.has_worker = true;
@@ -374,21 +361,19 @@ void AppBannerManager::PerformInstallableWebAppCheck() {
 }
 
 void AppBannerManager::OnDidPerformInstallableWebAppCheck(
-    const webapps::InstallableData& data) {
+    const InstallableData& data) {
   if (DidRetryInstallableManagerRequest(data))
     return;
   UpdateState(State::ACTIVE);
   if (data.has_worker && data.valid_manifest)
     TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_REQUESTED);
 
-  auto error =
-      data.errors.empty() ? webapps::NO_ERROR_DETECTED : data.errors[0];
+  auto error = data.errors.empty() ? NO_ERROR_DETECTED : data.errors[0];
   // TODO(https://crbug.com/965802): Remove `WARN_NOT_OFFLINE_CAPABLE` once the
   // CheckOfflineCapability feature is enabled with 'enforce' mode by default in
   // M93.
-  if (error != webapps::NO_ERROR_DETECTED &&
-      error != webapps::WARN_NOT_OFFLINE_CAPABLE) {
-    if (error == webapps::NO_MATCHING_SERVICE_WORKER)
+  if (error != NO_ERROR_DETECTED && error != WARN_NOT_OFFLINE_CAPABLE) {
+    if (error == NO_MATCHING_SERVICE_WORKER)
       TrackDisplayEvent(DISPLAY_EVENT_LACKS_SERVICE_WORKER);
 
     SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kNo);
@@ -397,17 +382,17 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   }
 
   if (IsWebAppConsideredInstalled() && !ShouldAllowWebAppReplacementInstall()) {
-    banners::TrackDisplayEvent(banners::DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
+    TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kNoAlreadyInstalled);
-    Stop(webapps::ALREADY_INSTALLED);
+    Stop(ALREADY_INSTALLED);
     return;
   }
 
   if (ShouldDeferToRelatedNonWebApp()) {
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kByUserRequest);
-    Stop(webapps::PREFER_RELATED_APPLICATIONS);
+    Stop(PREFER_RELATED_APPLICATIONS);
     return;
   }
 
@@ -443,7 +428,7 @@ void AppBannerManager::RecordDidShowBanner() {
       GetCurrentTime());
 }
 
-void AppBannerManager::ReportStatus(webapps::InstallableStatusCode code) {
+void AppBannerManager::ReportStatus(InstallableStatusCode code) {
   DCHECK(status_reporter_);
   status_reporter_->ReportStatus(code);
 }
@@ -476,19 +461,19 @@ void AppBannerManager::Terminate() {
   Stop(TerminationCode());
 }
 
-webapps::InstallableStatusCode AppBannerManager::TerminationCode() const {
+InstallableStatusCode AppBannerManager::TerminationCode() const {
   switch (state_) {
     case State::PENDING_PROMPT:
-      return webapps::RENDERER_CANCELLED;
+      return RENDERER_CANCELLED;
     case State::PENDING_ENGAGEMENT:
-      return has_sufficient_engagement_ ? webapps::NO_ERROR_DETECTED
-                                        : webapps::INSUFFICIENT_ENGAGEMENT;
+      return has_sufficient_engagement_ ? NO_ERROR_DETECTED
+                                        : INSUFFICIENT_ENGAGEMENT;
     case State::FETCHING_MANIFEST:
-      return webapps::WAITING_FOR_MANIFEST;
+      return WAITING_FOR_MANIFEST;
     case State::FETCHING_NATIVE_DATA:
-      return webapps::WAITING_FOR_NATIVE_DATA;
+      return WAITING_FOR_NATIVE_DATA;
     case State::PENDING_INSTALLABLE_CHECK:
-      return webapps::WAITING_FOR_INSTALLABLE_CHECK;
+      return WAITING_FOR_INSTALLABLE_CHECK;
     case State::ACTIVE:
     case State::SENDING_EVENT:
     case State::SENDING_EVENT_GOT_EARLY_PROMPT:
@@ -496,7 +481,7 @@ webapps::InstallableStatusCode AppBannerManager::TerminationCode() const {
     case State::COMPLETE:
       break;
   }
-  return webapps::NO_ERROR_DETECTED;
+  return NO_ERROR_DETECTED;
 }
 
 void AppBannerManager::SetInstallableWebAppCheckResult(
@@ -535,7 +520,7 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
     observer.OnInstallableWebAppStatusUpdated();
 }
 
-void AppBannerManager::Stop(webapps::InstallableStatusCode code) {
+void AppBannerManager::Stop(InstallableStatusCode code) {
   ReportStatus(code);
 
   if (installable_web_app_check_result_ ==
@@ -585,9 +570,8 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   // If the page gets stored in the back-forward cache we will not trigger the
   // pipeline again when navigating back (DidFinishLoad will not trigger). So
   // only allow the page to enter the cache if we know for sure that no
-  // installation is needed.
-  // Note: this check must happen before calling Terminate as it might set the
-  // installable_web_app_check_result_ to kNo.
+  // installation is needed. Note: this check must happen before calling
+  // Terminate as it might set the installable_web_app_check_result_ to kNo.
   if (installable_web_app_check_result_ != InstallableWebAppCheckResult::kNo &&
       state_ != State::INACTIVE) {
     content::BackForwardCache::DisableForRenderFrameHost(
@@ -809,10 +793,10 @@ void AppBannerManager::RecordCouldShowBanner() {
       AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW, GetCurrentTime());
 }
 
-webapps::InstallableStatusCode AppBannerManager::ShouldShowBannerCode() {
+InstallableStatusCode AppBannerManager::ShouldShowBannerCode() {
   if (GetAppIdentifier().empty())
-    return webapps::PACKAGE_NAME_OR_START_URL_EMPTY;
-  return webapps::NO_ERROR_DETECTED;
+    return PACKAGE_NAME_OR_START_URL_EMPTY;
+  return NO_ERROR_DETECTED;
 }
 
 void AppBannerManager::OnBannerPromptReply(
@@ -859,12 +843,12 @@ void AppBannerManager::ShowBanner() {
   DCHECK_NE(State::SENDING_EVENT, state_);
 
   content::WebContents* contents = web_contents();
-  webapps::WebappInstallSource install_source;
+  WebappInstallSource install_source;
 
   TrackBeforeInstallEvent(
       BEFORE_INSTALL_EVENT_PROMPT_CALLED_AFTER_PREVENT_DEFAULT);
-  install_source = status_reporter_->GetInstallSource(
-      contents, webapps::InstallTrigger::API);
+  install_source =
+      status_reporter_->GetInstallSource(contents, InstallTrigger::API);
 
   // If this is the first time that we are showing the banner for this site,
   // record how long it's been since the first visit.
@@ -899,4 +883,4 @@ void AppBannerManager::DisplayAppBanner() {
   }
 }
 
-}  // namespace banners
+}  // namespace webapps

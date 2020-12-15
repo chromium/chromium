@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.text.AccessibleTextView;
@@ -25,6 +26,7 @@ import org.chromium.components.webapps.WebappsIconUtils;
 /**
  * An ambient infobar to tell the user that the current site they are visiting is a PWA.
  */
+@JNINamespace("webapps")
 public class InstallableAmbientBadgeInfoBar extends InfoBar implements View.OnClickListener {
     private String mMessageText;
     private String mUrl;

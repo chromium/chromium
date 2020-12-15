@@ -85,8 +85,8 @@ bool CanCreateWebApp(const Browser* browser) {
     return false;
 
   // Check whether the app is externally installed.
-  banners::AppBannerManager* app_banner_manager =
-      banners::AppBannerManager::FromWebContents(web_contents);
+  webapps::AppBannerManager* app_banner_manager =
+      webapps::AppBannerManager::FromWebContents(web_contents);
 
   if (app_banner_manager && app_banner_manager->IsExternallyInstalledWebApp())
     return false;

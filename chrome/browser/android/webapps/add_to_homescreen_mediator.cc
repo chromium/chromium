@@ -59,7 +59,7 @@ AddToHomescreenMediator::AddToHomescreenMediator(
 }
 
 void AddToHomescreenMediator::StartForAppBanner(
-    base::WeakPtr<banners::AppBannerManager> weak_manager,
+    base::WeakPtr<webapps::AppBannerManager> weak_manager,
     std::unique_ptr<AddToHomescreenParams> params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>
@@ -196,17 +196,17 @@ void AddToHomescreenMediator::OnDataAvailable(const webapps::ShortcutInfo& info,
 
   DCHECK_NE(-1, title_id_);
   switch (title_id_) {
-    case AppBannerSettingsHelper::APP_MENU_OPTION_UNKNOWN: {
+    case webapps::AppBannerSettingsHelper::APP_MENU_OPTION_UNKNOWN: {
       entry = is_webapk ? AppTypeToMenuEntry::kUnknownMenuEntryForWebApp
                         : AppTypeToMenuEntry::kUnknownMenuEntryForShortcut;
       break;
     }
-    case AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN: {
+    case webapps::AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN: {
       entry = is_webapk ? AppTypeToMenuEntry::kAddToHomeScreenShownForWebApp
                         : AppTypeToMenuEntry::kAddToHomeScreenShownForShortcut;
       break;
     }
-    case AppBannerSettingsHelper::APP_MENU_OPTION_INSTALL: {
+    case webapps::AppBannerSettingsHelper::APP_MENU_OPTION_INSTALL: {
       entry = is_webapk ? AppTypeToMenuEntry::kInstallShownForWebApp
                         : AppTypeToMenuEntry::kInstallShownForShortcut;
       break;
@@ -234,15 +234,16 @@ void AddToHomescreenMediator::RecordEventForAppMenu(
   DCHECK_NE(a2hs_params.app_type, AddToHomescreenParams::AppType::NATIVE);
   switch (event) {
     case AddToHomescreenInstaller::Event::INSTALL_STARTED:
-      AppBannerSettingsHelper::RecordBannerEvent(
+      webapps::AppBannerSettingsHelper::RecordBannerEvent(
           web_contents, web_contents->GetVisibleURL(),
           a2hs_params.shortcut_info->url.spec(),
-          AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
+          webapps::AppBannerSettingsHelper::
+              APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
           base::Time::Now());
       break;
     case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED: {
-      banners::AppBannerManagerAndroid* app_banner_manager =
-          banners::AppBannerManagerAndroid::FromWebContents(web_contents);
+      webapps::AppBannerManagerAndroid* app_banner_manager =
+          webapps::AppBannerManagerAndroid::FromWebContents(web_contents);
       // Fire the appinstalled event and do install time logging.
       if (app_banner_manager)
         app_banner_manager->OnInstall(a2hs_params.shortcut_info->display);

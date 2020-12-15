@@ -31,7 +31,7 @@ class WebAppMetrics : public KeyedService,
                       public site_engagement::SiteEngagementObserver,
                       public BrowserListObserver,
                       public TabStripModelObserver,
-                      public banners::AppBannerManager::Observer,
+                      public webapps::AppBannerManager::Observer,
                       public base::PowerObserver {
  public:
   static WebAppMetrics* Get(Profile* profile);
@@ -66,7 +66,7 @@ class WebAppMetrics : public KeyedService,
                                     const AppId& previous_app_id,
                                     const AppId& new_app_id);
 
-  // banners::AppBannerManager::Observer:
+  // webapps::AppBannerManager::Observer:
   void OnInstallableWebAppStatusUpdated() override;
 
   // Browser activation causes flaky tests. Call observer methods directly.
@@ -91,7 +91,7 @@ class WebAppMetrics : public KeyedService,
   Profile* const profile_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
-  ScopedObserver<banners::AppBannerManager, banners::AppBannerManager::Observer>
+  ScopedObserver<webapps::AppBannerManager, webapps::AppBannerManager::Observer>
       app_banner_manager_observer_{this};
 
   base::WeakPtrFactory<WebAppMetrics> weak_ptr_factory_{this};

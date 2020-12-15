@@ -19,6 +19,8 @@ namespace infobars {
 class ContentInfoBarManager;
 }
 
+namespace webapps {
+
 // Delegate for a infobar shown to users when they visit a progressive web app.
 // Tapping the infobar triggers the add to home screen flow.
 class InstallableAmbientBadgeInfoBarDelegate
@@ -75,5 +77,7 @@ class InstallableAmbientBadgeInfoBarDelegate
 
   DISALLOW_COPY_AND_ASSIGN(InstallableAmbientBadgeInfoBarDelegate);
 };
+
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE_H_

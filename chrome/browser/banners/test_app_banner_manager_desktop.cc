@@ -12,7 +12,7 @@
 #include "components/webapps/installable/installable_data.h"
 #include "content/public/browser/web_contents.h"
 
-namespace banners {
+namespace webapps {
 
 TestAppBannerManagerDesktop::TestAppBannerManagerDesktop(
     content::WebContents* web_contents)
@@ -77,7 +77,7 @@ void TestAppBannerManagerDesktop::AwaitAppInstall() {
 }
 
 void TestAppBannerManagerDesktop::OnDidGetManifest(
-    const webapps::InstallableData& result) {
+    const InstallableData& result) {
   AppBannerManagerDesktop::OnDidGetManifest(result);
 
   // AppBannerManagerDesktop does not call |OnDidPerformInstallableCheck| to
@@ -87,7 +87,7 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
     SetInstallable(false);
 }
 void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
-    const webapps::InstallableData& result) {
+    const InstallableData& result) {
   AppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(result);
   SetInstallable(result.errors.empty());
 }
@@ -141,4 +141,4 @@ void TestAppBannerManagerDesktop::OnFinished() {
   }
 }
 
-}  // namespace banners
+}  // namespace webapps

@@ -15,6 +15,8 @@
 #include "components/webapps/webapps_client.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace webapps {
+
 InstallableAmbientBadgeInfoBarDelegate::
     ~InstallableAmbientBadgeInfoBarDelegate() = default;
 
@@ -42,8 +44,7 @@ void InstallableAmbientBadgeInfoBarDelegate::Create(
     const bool is_primary_icon_maskable,
     const GURL& start_url) {
   auto* infobar_manager =
-      webapps::WebappsClient::Get()->GetInfoBarManagerForWebContents(
-          web_contents);
+      WebappsClient::Get()->GetInfoBarManagerForWebContents(web_contents);
   if (infobar_manager == nullptr)
     return;
 
@@ -108,3 +109,5 @@ void InstallableAmbientBadgeInfoBarDelegate::InfoBarDismissed() {
 
   weak_client_->BadgeDismissed();
 }
+
+}  // namespace webapps

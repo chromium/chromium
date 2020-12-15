@@ -17,7 +17,7 @@
 
 // static
 bool AddToHomescreenCoordinator::ShowForAppBanner(
-    base::WeakPtr<banners::AppBannerManager> weak_manager,
+    base::WeakPtr<webapps::AppBannerManager> weak_manager,
     std::unique_ptr<AddToHomescreenParams> params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>

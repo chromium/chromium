@@ -8,6 +8,8 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 
+namespace webapps {
+
 namespace {
 
 const char kTestURL[] = "https://www.google.com";
@@ -367,3 +369,5 @@ TEST_F(AppBannerSettingsHelperTest, NulloptSingleBannerEvent) {
   EXPECT_TRUE(AppBannerSettingsHelper::WasBannerRecentlyBlocked(
       web_contents(), url, url_same_origin3, reference_time));
 }
+
+}  // namespace webapps

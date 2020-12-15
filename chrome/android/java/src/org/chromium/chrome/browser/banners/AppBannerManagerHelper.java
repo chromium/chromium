@@ -17,7 +17,7 @@ import org.chromium.components.webapps.WebappsUtils;
  * been modularized. TODO(estade): That's now done, so this functionality can move back into
  * AppBannerManager.
  */
-@JNINamespace("banners")
+@JNINamespace("webapps")
 public class AppBannerManagerHelper {
     /** Whether add to home screen is permitted by the system. */
     private static Boolean sIsSupported;

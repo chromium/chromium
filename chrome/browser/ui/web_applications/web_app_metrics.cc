@@ -251,7 +251,7 @@ void WebAppMetrics::OnInstallableWebAppStatusUpdated() {
   // or on a previous navigation that triggered this event). Otherwise we would
   // count navigations within a web app as sessions.
   auto* app_banner_manager =
-      banners::AppBannerManager::FromWebContents(foreground_web_contents_);
+      webapps::AppBannerManager::FromWebContents(foreground_web_contents_);
   DCHECK(app_banner_manager);
   if (!app_banner_manager->GetManifestStartUrl().is_valid())
     return;
@@ -288,7 +288,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
   if (!web_contents)
     return;
   auto* app_banner_manager =
-      banners::AppBannerManager::FromWebContents(web_contents);
+      webapps::AppBannerManager::FromWebContents(web_contents);
   DCHECK(app_banner_manager);
   WebAppProvider* provider = WebAppProvider::Get(profile_);
   // WebAppProvider not available in kiosk mode.
@@ -361,7 +361,7 @@ void WebAppMetrics::UpdateForegroundWebContents(WebContents* web_contents) {
   foreground_web_contents_ = web_contents;
   if (web_contents) {
     auto* app_banner_manager =
-        banners::AppBannerManager::FromWebContents(web_contents);
+        webapps::AppBannerManager::FromWebContents(web_contents);
     DCHECK(app_banner_manager);
     app_banner_manager_observer_.Add(app_banner_manager);
   }

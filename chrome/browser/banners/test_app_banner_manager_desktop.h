@@ -14,7 +14,7 @@ namespace content {
 class WebContents;
 }
 
-namespace banners {
+namespace webapps {
 
 // Provides the ability to await the results of the installability check that
 // happens for every page load.
@@ -47,9 +47,9 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void AwaitAppInstall();
 
   // AppBannerManager:
-  void OnDidGetManifest(const webapps::InstallableData& result) override;
+  void OnDidGetManifest(const InstallableData& result) override;
   void OnDidPerformInstallableWebAppCheck(
-      const webapps::InstallableData& result) override;
+      const InstallableData& result) override;
   void ResetCurrentPageData() override;
 
   // AppBannerManagerDesktop:
@@ -76,6 +76,6 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   DISALLOW_COPY_AND_ASSIGN(TestAppBannerManagerDesktop);
 };
 
-}  // namespace banners
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_BANNERS_TEST_APP_BANNER_MANAGER_DESKTOP_H_

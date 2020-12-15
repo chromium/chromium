@@ -24,7 +24,7 @@ namespace web_app {
 enum class InstallResultCode;
 }
 
-namespace banners {
+namespace webapps {
 class TestAppBannerManagerDesktop;
 
 // Manages web app banners for desktop platforms.
@@ -76,7 +76,7 @@ class AppBannerManagerDesktop
 
   // AppBannerManager overrides.
   bool ShouldAllowWebAppReplacementInstall() override;
-  void ShowBannerUi(webapps::WebappInstallSource install_source) override;
+  void ShowBannerUi(WebappInstallSource install_source) override;
 
   // content::WebContentsObserver override.
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -93,7 +93,7 @@ class AppBannerManagerDesktop
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
-  void CreateWebApp(webapps::WebappInstallSource install_source);
+  void CreateWebApp(WebappInstallSource install_source);
 
   extensions::ExtensionRegistry* extension_registry_;
 
@@ -107,6 +107,6 @@ class AppBannerManagerDesktop
   DISALLOW_COPY_AND_ASSIGN(AppBannerManagerDesktop);
 };
 
-}  // namespace banners
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_BANNERS_APP_BANNER_MANAGER_DESKTOP_H_

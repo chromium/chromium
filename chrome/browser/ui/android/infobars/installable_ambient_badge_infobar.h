@@ -11,6 +11,8 @@
 #include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 
+namespace webapps {
+
 class InstallableAmbientBadgeInfoBarDelegate;
 
 // An infobar shown to users when they visit a progressive web app.
@@ -34,5 +36,7 @@ class InstallableAmbientBadgeInfoBar : public infobars::InfoBarAndroid {
 
   DISALLOW_COPY_AND_ASSIGN(InstallableAmbientBadgeInfoBar);
 };
+
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_INSTALLABLE_AMBIENT_BADGE_INFOBAR_H_

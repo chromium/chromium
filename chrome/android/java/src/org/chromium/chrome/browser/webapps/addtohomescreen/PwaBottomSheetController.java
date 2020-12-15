@@ -33,7 +33,7 @@ import java.util.ArrayList;
 /**
  * This class controls the Bottom Sheet PWA install functionality.
  */
-@JNINamespace("banners")
+@JNINamespace("webapps")
 public class PwaBottomSheetController
         implements UnownedUserData, AddToHomescreenViewDelegate, View.OnClickListener {
     private final Activity mActivity;

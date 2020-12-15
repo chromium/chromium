@@ -9,7 +9,7 @@
 #include "components/webapps/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
-namespace banners {
+namespace webapps {
 
 const char kDismissEventHistogram[] = "AppBanners.DismissEvent";
 const char kDisplayEventHistogram[] = "AppBanners.DisplayEvent";
@@ -60,10 +60,10 @@ void TrackBeforeInstallEvent(int event) {
   base::UmaHistogramSparse(kBeforeInstallEventHistogram, event);
 }
 
-void TrackInstallableStatusCode(webapps::InstallableStatusCode code) {
-  DCHECK_LE(webapps::NO_ERROR_DETECTED, code);
-  DCHECK_LT(code, webapps::MAX_ERROR_CODE);
-  if (code != webapps::IN_INCOGNITO) {
+void TrackInstallableStatusCode(InstallableStatusCode code) {
+  DCHECK_LE(NO_ERROR_DETECTED, code);
+  DCHECK_LT(code, MAX_ERROR_CODE);
+  if (code != IN_INCOGNITO) {
     // Do not log that we are in incognito to UMA.
     base::UmaHistogramSparse(kInstallableStatusCodeHistogram, code);
   }
@@ -75,4 +75,4 @@ void TrackInstallDisplayMode(blink::mojom::DisplayMode display) {
   UMA_HISTOGRAM_ENUMERATION(kInstallDisplayModeHistogram, display);
 }
 
-}  // namespace banners
+}  // namespace webapps

@@ -387,9 +387,10 @@ WebContents* OpenEnabledApplication(Profile* profile,
     // Refresh the app banner added to homescreen event. The user may have
     // cleared their browsing data since installing the app, which removes the
     // event and will potentially permit a banner to be shown for the site.
-    AppBannerSettingsHelper::RecordBannerEvent(
+    webapps::AppBannerSettingsHelper::RecordBannerEvent(
         tab, url, url.spec(),
-        AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
+        webapps::AppBannerSettingsHelper::
+            APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
         base::Time::Now());
   }
   return tab;

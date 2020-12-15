@@ -40,7 +40,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 
-namespace banners {
+namespace webapps {
 
 using State = AppBannerManager::State;
 
@@ -451,4 +451,4 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest_DisplayOverride,
   EXPECT_FALSE(manager->IsPromptAvailableForTesting());
 }
 
-}  // namespace banners
+}  // namespace webapps

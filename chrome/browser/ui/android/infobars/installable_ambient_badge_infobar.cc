@@ -12,6 +12,8 @@
 #include "chrome/browser/installable/installable_ambient_badge_infobar_delegate.h"
 #include "ui/gfx/android/java_bitmap.h"
 
+namespace webapps {
+
 InstallableAmbientBadgeInfoBar::InstallableAmbientBadgeInfoBar(
     std::unique_ptr<InstallableAmbientBadgeInfoBarDelegate> delegate)
     : infobars::InfoBarAndroid(std::move(delegate)) {}
@@ -52,3 +54,5 @@ InstallableAmbientBadgeInfoBar::CreateRenderInfoBar(
 }
 
 void InstallableAmbientBadgeInfoBar::ProcessButton(int action) {}
+
+}  // namespace webapps

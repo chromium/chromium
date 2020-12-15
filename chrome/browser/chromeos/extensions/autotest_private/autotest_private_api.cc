@@ -3839,9 +3839,9 @@ ExtensionFunction::ResponseAction AutotestPrivateCloseAppWindowFunction::Run() {
 
 // Used to notify when when a certain URL contains a WPA.
 class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
-    : public banners::AppBannerManager::Observer {
+    : public webapps::AppBannerManager::Observer {
  public:
-  PWABannerObserver(banners::AppBannerManager* manager,
+  PWABannerObserver(webapps::AppBannerManager* manager,
                     base::OnceCallback<void()> callback)
       : callback_(std::move(callback)), app_banner_manager_(manager) {
     DCHECK(manager);
@@ -3881,12 +3881,12 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
   }
 
  private:
-  using Installable = banners::AppBannerManager::InstallableWebAppCheckResult;
+  using Installable = webapps::AppBannerManager::InstallableWebAppCheckResult;
 
-  ScopedObserver<banners::AppBannerManager, banners::AppBannerManager::Observer>
+  ScopedObserver<webapps::AppBannerManager, webapps::AppBannerManager::Observer>
       observer_{this};
   base::OnceCallback<void()> callback_;
-  banners::AppBannerManager* app_banner_manager_;
+  webapps::AppBannerManager* app_banner_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(PWABannerObserver);
 };
@@ -3937,8 +3937,8 @@ AutotestPrivateInstallPWAForCurrentURLFunction::Run() {
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  banners::AppBannerManager* app_banner_manager =
-      banners::AppBannerManagerDesktop::FromWebContents(web_contents);
+  webapps::AppBannerManager* app_banner_manager =
+      webapps::AppBannerManagerDesktop::FromWebContents(web_contents);
   if (!app_banner_manager) {
     return RespondNow(Error("Failed to create AppBannerManager"));
   }

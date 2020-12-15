@@ -112,7 +112,7 @@ class BrowserView : public BrowserWindow,
                     public ExclusiveAccessBubbleViewsContext,
                     public extensions::ExtensionKeybindingRegistry::Delegate,
                     public ImmersiveModeController::Observer,
-                    public banners::AppBannerManager::Observer {
+                    public webapps::AppBannerManager::Observer {
  public:
   // The browser view's class name.
   static const char kViewClassName[];
@@ -589,7 +589,7 @@ class BrowserView : public BrowserWindow,
   void OnImmersiveFullscreenExited() override;
   void OnImmersiveModeControllerDestroyed() override;
 
-  // banners::AppBannerManager::Observer:
+  // webapps::AppBannerManager::Observer:
   void OnInstallableWebAppStatusUpdated() override;
 
   // Creates an accessible tab label for screen readers that includes the tab
@@ -732,7 +732,7 @@ class BrowserView : public BrowserWindow,
                                    int* command_id) const;
 
   // Updates AppBannerManager::Observer to observe |new_manager| exclusively.
-  void ObserveAppBannerManager(banners::AppBannerManager* new_manager);
+  void ObserveAppBannerManager(webapps::AppBannerManager* new_manager);
 
   // Called by GetAccessibleWindowTitle, split out to make it testable.
   base::string16 GetAccessibleWindowTitleForChannelAndProfile(
@@ -949,8 +949,8 @@ class BrowserView : public BrowserWindow,
   // exited to restore the original pre-fullscreen bounds of the window.
   base::OnceClosure restore_pre_fullscreen_bounds_callback_;
 
-  base::ScopedObservation<banners::AppBannerManager,
-                          banners::AppBannerManager::Observer>
+  base::ScopedObservation<webapps::AppBannerManager,
+                          webapps::AppBannerManager::Observer>
       app_banner_manager_observation_{this};
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>

@@ -18,7 +18,7 @@ namespace content {
 class WebContents;
 }
 
-namespace banners {
+namespace webapps {
 
 // A Controller for the BottomSheet install UI for progressive web apps.
 // If successfully created, the lifetime of this object is tied to the lifetime
@@ -83,6 +83,6 @@ class PwaBottomSheetController {
   bool show_expanded_;
 };
 
-}  // namespace banners
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_PWA_BOTTOM_SHEET_CONTROLLER_H_

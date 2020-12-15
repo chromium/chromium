@@ -41,7 +41,7 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
       const base::android::JavaParamRef<jobject>& java_ref);
 
   void StartForAppBanner(
-      base::WeakPtr<banners::AppBannerManager> weak_manager,
+      base::WeakPtr<webapps::AppBannerManager> weak_manager,
       std::unique_ptr<AddToHomescreenParams> params,
       base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                    const AddToHomescreenParams&)>
@@ -95,7 +95,7 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
   // Points to the Java reference.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
-  base::WeakPtr<banners::AppBannerManager> weak_app_banner_manager_;
+  base::WeakPtr<webapps::AppBannerManager> weak_app_banner_manager_;
 
   // Fetches data required to add a shortcut.
   std::unique_ptr<AddToHomescreenDataFetcher> data_fetcher_;

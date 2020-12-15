@@ -41,7 +41,7 @@ bool CanShowBottomSheet(content::WebContents* web_contents,
 
 }  // anonymous namespace
 
-namespace banners {
+namespace webapps {
 
 PwaBottomSheetController::~PwaBottomSheetController() = default;
 
@@ -171,4 +171,4 @@ void PwaBottomSheetController::UpdateScreenshot(
       env, java_screenshot, web_contents->GetJavaWebContents());
 }
 
-}  // namespace banners
+}  // namespace webapps

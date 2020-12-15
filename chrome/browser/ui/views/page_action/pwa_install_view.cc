@@ -79,7 +79,7 @@ void PwaInstallView::UpdateImpl() {
     return;
   }
 
-  auto* manager = banners::AppBannerManager::FromWebContents(web_contents);
+  auto* manager = webapps::AppBannerManager::FromWebContents(web_contents);
   // May not be present e.g. in incognito mode.
   if (!manager)
     return;
@@ -99,7 +99,7 @@ void PwaInstallView::UpdateImpl() {
       controller->MaybeShowPromoWithTextReplacements(
           feature_engagement::kIPHDesktopPwaInstallFeature,
           FeaturePromoTextReplacements::WithString(
-              banners::AppBannerManager::GetInstallableWebAppName(
+              webapps::AppBannerManager::GetInstallableWebAppName(
                   web_contents)),
           base::Bind(&PwaInstallView::OnIphClosed,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -118,7 +118,7 @@ void PwaInstallView::OnIphClosed() {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return;
-  auto* manager = banners::AppBannerManager::FromWebContents(web_contents);
+  auto* manager = webapps::AppBannerManager::FromWebContents(web_contents);
   if (!manager)
     return;
   auto start_url = manager->GetManifestStartUrl();
@@ -181,7 +181,7 @@ base::string16 PwaInstallView::GetTextForTooltipAndAccessibleName() const {
     return base::string16();
   return l10n_util::GetStringFUTF16(
       IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
-      banners::AppBannerManager::GetInstallableWebAppName(web_contents));
+      webapps::AppBannerManager::GetInstallableWebAppName(web_contents));
 }
 
 const char* PwaInstallView::GetClassName() const {
@@ -189,7 +189,7 @@ const char* PwaInstallView::GetClassName() const {
 }
 
 bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
-                                   banners::AppBannerManager* manager) {
+                                   webapps::AppBannerManager* manager) {
   auto start_url = manager->GetManifestStartUrl();
   if (start_url.is_empty())
     return false;

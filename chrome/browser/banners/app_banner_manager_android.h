@@ -22,7 +22,7 @@
 
 struct AddToHomescreenParams;
 
-namespace banners {
+namespace webapps {
 
 // Extends the AppBannerManager to support native Android apps. This class owns
 // a Java-side AppBannerManager which interfaces with the Java runtime to fetch
@@ -97,12 +97,12 @@ class AppBannerManagerAndroid
   std::string GetAppIdentifier() override;
   std::string GetBannerType() override;
   void PerformInstallableChecks() override;
-  webapps::InstallableParams ParamsToPerformInstallableWebAppCheck() override;
+  InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   void PerformInstallableWebAppCheck() override;
   void OnDidPerformInstallableWebAppCheck(
-      const webapps::InstallableData& result) override;
+      const InstallableData& result) override;
   void ResetCurrentPageData() override;
-  void ShowBannerUi(webapps::WebappInstallSource install_source) override;
+  void ShowBannerUi(WebappInstallSource install_source) override;
   void MaybeShowAmbientBadge() override;
   base::WeakPtr<AppBannerManager> GetWeakPtr() override;
   void InvalidateWeakPtrs() override;
@@ -125,15 +125,15 @@ class AppBannerManagerAndroid
   bool ShouldPerformInstallableNativeAppCheck();
   void PerformInstallableNativeAppCheck();
 
-  // Returns webapps::NO_ERROR_DETECTED if |platform|, |url|, and |id| are
+  // Returns NO_ERROR_DETECTED if |platform|, |url|, and |id| are
   // consistent and can be used to query the Play Store for a native app.
   // Otherwise returns the error which prevents querying from taking place. The
   // query may not necessarily succeed (e.g. |id| doesn't map to anything), but
-  // if this method returns webapps::NO_ERROR_DETECTED, only a native app banner
+  // if this method returns NO_ERROR_DETECTED, only a native app banner
   // may be shown, and the web app banner flow will not be run.
-  webapps::InstallableStatusCode QueryNativeApp(const base::string16& platform,
-                                                const GURL& url,
-                                                const std::string& id);
+  InstallableStatusCode QueryNativeApp(const base::string16& platform,
+                                       const GURL& url,
+                                       const std::string& id);
 
   // Called when the download of a native app's icon is complete, as native
   // banners use an icon provided from the Play Store rather than the web
@@ -178,6 +178,6 @@ class AppBannerManagerAndroid
   DISALLOW_COPY_AND_ASSIGN(AppBannerManagerAndroid);
 };
 
-}  // namespace banners
+}  // namespace webapps
 
 #endif  // CHROME_BROWSER_BANNERS_APP_BANNER_MANAGER_ANDROID_H_

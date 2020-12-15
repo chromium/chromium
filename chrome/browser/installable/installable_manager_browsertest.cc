@@ -245,7 +245,7 @@ class InstallableManagerBrowserTest : public InProcessBrowserTest {
 
     // Make sure app banners are disabled in the browser so they do not
     // interfere with the test.
-    banners::AppBannerManagerDesktop::DisableTriggeringForTesting();
+    AppBannerManagerDesktop::DisableTriggeringForTesting();
   }
 
   // Returns a test server URL to a page controlled by a service worker with

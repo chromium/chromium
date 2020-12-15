@@ -44,7 +44,7 @@ bool gDisableTriggeringForTesting = false;
 
 }  // namespace
 
-namespace banners {
+namespace webapps {
 
 AppBannerManagerDesktop::CreateAppBannerManagerForTesting
     AppBannerManagerDesktop::override_app_banner_manager_desktop_for_testing_ =
@@ -200,11 +200,10 @@ bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
   return display_mode == blink::mojom::DisplayMode::kBrowser;
 }
 
-void AppBannerManagerDesktop::ShowBannerUi(
-    webapps::WebappInstallSource install_source) {
+void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source) {
   RecordDidShowBanner();
   TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
-  ReportStatus(webapps::SHOWING_APP_INSTALLATION_DIALOG);
+  ReportStatus(SHOWING_APP_INSTALLATION_DIALOG);
   CreateWebApp(install_source);
 }
 
@@ -244,8 +243,7 @@ void AppBannerManagerDesktop::OnAppRegistrarDestroyed() {
   registrar_observer_.RemoveAll();
 }
 
-void AppBannerManagerDesktop::CreateWebApp(
-    webapps::WebappInstallSource install_source) {
+void AppBannerManagerDesktop::CreateWebApp(WebappInstallSource install_source) {
   content::WebContents* contents = web_contents();
   DCHECK(contents);
 
@@ -280,4 +278,4 @@ void AppBannerManagerDesktop::DidFinishCreatingWebApp(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AppBannerManagerDesktop)
 
-}  // namespace banners
+}  // namespace webapps

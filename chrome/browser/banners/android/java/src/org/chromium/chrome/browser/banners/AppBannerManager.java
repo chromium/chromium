@@ -24,7 +24,7 @@ import org.chromium.content_public.browser.WebContents;
  * banner. The actual observation of the WebContents (which triggers the automatic creation and
  * removal of banners, among other things) is done by the native-side AppBannerManagerAndroid.
  */
-@JNINamespace("banners")
+@JNINamespace("webapps")
 public class AppBannerManager {
     /**
      * A struct containing the string resources IDs for the strings to show in the install
