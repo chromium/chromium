@@ -26,8 +26,14 @@ def main():
   # which might be already loaded due to Google App Engine
   # TODO(crbug.com/764314): find better solution how to import protobuf.
   import google.protobuf
-  reload(google)
-  reload(google.protobuf)
+  # Python 3 doesn't expose a global `reload`.
+  if sys.version_info.major == 2:
+    reload(google)
+    reload(google.protobuf)
+  else:
+    import importlib
+    importlib.reload(google)
+    importlib.reload(google.protobuf)
   from chrome_device_policy_pb2 import ChromeDeviceSettingsProto
   with open(off_hours_cleaner_path, 'wt') as file:
     file.write('//\n'
