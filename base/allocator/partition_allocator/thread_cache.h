@@ -73,6 +73,7 @@ class BASE_EXPORT ThreadCacheRegistry {
   static PartitionLock& GetLock() { return Instance().lock_; }
 
   bool has_pending_purge_task() const { return has_pending_purge_task_; }
+  void ResetForTesting();
 
   static constexpr TimeDelta kPurgeInterval = TimeDelta::FromSeconds(1);
   static constexpr int kMinMainThreadAllocationsForPurging = 1000;
@@ -228,6 +229,7 @@ class BASE_EXPORT ThreadCache {
   void ClearBucket(Bucket& bucket, size_t limit);
   ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* ptr);
   void HandleNonNormalMode();
+  void ResetForTesting();
 
   // TODO(lizeb): Optimize the threshold.
   static constexpr size_t kSizeThreshold = 512;
@@ -254,6 +256,7 @@ class BASE_EXPORT ThreadCache {
   ThreadCache* prev_ GUARDED_BY(ThreadCacheRegistry::GetLock());
 
   friend class ThreadCacheRegistry;
+  friend class ThreadCacheTest;
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, LargeAllocationsAreNotCached);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, MultipleThreadCaches);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, RecordStats);

@@ -274,8 +274,13 @@ enum PartitionAllocFlags {
   PartitionAllocReturnNull = 1 << 0,
   PartitionAllocZeroFill = 1 << 1,
   PartitionAllocNoHooks = 1 << 2,  // Internal only.
+  // If the allocation requires a "slow path" (such as allocating/committing a
+  // new slot span), return nullptr instead. Note this makes all large
+  // allocations return nullptr, such as direct-mapped ones, and even for
+  // smaller ones, a nullptr value is common.
+  PartitionAllocFastPathOrReturnNull = 1 << 3,  // Internal only.
 
-  PartitionAllocLastFlag = PartitionAllocNoHooks
+  PartitionAllocLastFlag = PartitionAllocFastPathOrReturnNull
 };
 
 }  // namespace base

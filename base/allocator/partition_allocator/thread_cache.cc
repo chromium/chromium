@@ -173,6 +173,12 @@ void ThreadCacheRegistry::OnDeallocation() {
   }
 }
 
+void ThreadCacheRegistry::ResetForTesting() {
+  PA_CHECK(!has_pending_purge_task_);
+  allocations_at_last_purge_ = 0;
+  deallocations_ = 0;
+}
+
 // static
 void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
   PA_CHECK(root->buckets[kBucketCount - 1].slot_size == kSizeThreshold);
@@ -307,18 +313,26 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   // Same as calling RawAlloc() |count| times, but acquires the lock only once.
   internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
   for (int i = 0; i < count; i++) {
-    // We allow the allocator to return nullptr, since filling the cache may
-    // safely fail, and the proper flag will be handled by the central
-    // allocator.
+    // Thread cache fill should not trigger expensive operations, to not grab
+    // the lock for a long time needlessly, but also to not inflate memory
+    // usage. Indeed, without PartitionAllocFastPathOrReturnNull, cache fill may
+    // activate a new PartitionPage, or even a new SuperPage, which is clearly
+    // not desirable.
     //
     // |raw_size| is set to the slot size, as we don't know it. However, it is
     // only used for direct-mapped allocations and single-slot ones anyway,
     // which are not handled here.
     void* ptr = root_->AllocFromBucket(
-        &root_->buckets[bucket_index], PartitionAllocReturnNull,
+        &root_->buckets[bucket_index],
+        PartitionAllocFastPathOrReturnNull | PartitionAllocReturnNull,
         root_->buckets[bucket_index].slot_size /* raw_size */,
         &utilized_slot_size, &is_already_zeroed);
-    // Central allocator is out of memory.
+
+    // Either the previous allocation would require a slow path allocation, or
+    // the central allocator is out of memory. If the bucket was filled with
+    // some objects, then the allocation will be handled normally. Otherwise,
+    // this goes to the central allocator, which will service the allocation,
+    // return nullptr or crash.
     if (!ptr)
       break;
 
@@ -360,6 +374,25 @@ void ThreadCache::HandleNonNormalMode() {
     default:
       break;
   }
+}
+
+void ThreadCache::ResetForTesting() {
+  stats_.alloc_count = 0;
+  stats_.alloc_hits = 0;
+  stats_.alloc_misses = 0;
+
+  stats_.alloc_miss_empty = 0;
+  stats_.alloc_miss_too_large = 0;
+
+  stats_.cache_fill_count = 0;
+  stats_.cache_fill_hits = 0;
+  stats_.cache_fill_misses = 0;
+
+  stats_.bucket_total_memory = 0;
+  stats_.metadata_overhead = 0;
+
+  Purge();
+  mode_.store(Mode::kNormal, std::memory_order_relaxed);
 }
 
 void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {

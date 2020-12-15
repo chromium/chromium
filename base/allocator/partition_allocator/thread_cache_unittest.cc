@@ -94,17 +94,25 @@ size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
 class ThreadCacheTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    // Make sure there is a thread cache.
-    void* data = g_root->Alloc(1, "");
-    g_root->Free(data);
+    // Make sure that enough slot spans have been touched, otherwise cache fill
+    // becomes unpredictable (because it doesn't take slow paths in the
+    // allocator), which is an issue for tests.
+    FillThreadCacheAndReturnIndex(kSmallSize, 1000);
+    FillThreadCacheAndReturnIndex(kMediumSize, 1000);
 
+    // There are allocations, a thread cache is created.
     auto* tcache = g_root->thread_cache_for_testing();
     ASSERT_TRUE(tcache);
-    tcache->Purge();
+
+    task_env_.FastForwardBy(2 * ThreadCacheRegistry::kPurgeInterval);
+    EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+
+    ThreadCacheRegistry::Instance().ResetForTesting();
+    tcache->ResetForTesting();
   }
 
   void TearDown() override {
-    task_env_.FastForwardUntilNoTasksRemain();
+    task_env_.FastForwardBy(2 * ThreadCacheRegistry::kPurgeInterval);
     ASSERT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
   }
 
@@ -471,6 +479,7 @@ TEST_F(ThreadCacheTest, PeriodicPurge) {
   EXPECT_EQ(kFillCountForMediumBucket,
             other_thread_tcache->bucket_count_for_testing(bucket_index));
 
+  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
   task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
   // Not enough allocations since last purge, don't reschedule it.
   EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
@@ -486,11 +495,10 @@ TEST_F(ThreadCacheTest, PeriodicPurge) {
 }
 
 TEST_F(ThreadCacheTest, PeriodicPurgeStopsAndRestarts) {
-  const size_t kTestSize = 100;
   ThreadCacheRegistry::Instance().StartPeriodicPurge();
   EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
 
-  size_t bucket_index = FillThreadCacheAndReturnIndex(kTestSize);
+  size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
   auto* tcache = ThreadCache::Get();
   EXPECT_GT(tcache->bucket_count_for_testing(bucket_index), 0u);
 
@@ -502,12 +510,12 @@ TEST_F(ThreadCacheTest, PeriodicPurgeStopsAndRestarts) {
   EXPECT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
 
   // 1 allocation is not enough to restart it.
-  FillThreadCacheAndReturnIndex(kTestSize);
+  FillThreadCacheAndReturnIndex(kSmallSize);
   EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
 
   for (int i = 0; i < ThreadCacheRegistry::kMinMainThreadAllocationsForPurging;
        i++) {
-    FillThreadCacheAndReturnIndex(kTestSize);
+    FillThreadCacheAndReturnIndex(kSmallSize);
   }
   EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
   EXPECT_GT(tcache->bucket_count_for_testing(bucket_index), 0u);
@@ -517,7 +525,7 @@ TEST_F(ThreadCacheTest, PeriodicPurgeStopsAndRestarts) {
   // Since there were enough allocations, another task is posted.
   EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
 
-  FillThreadCacheAndReturnIndex(kTestSize);
+  FillThreadCacheAndReturnIndex(kSmallSize);
   task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
   EXPECT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
   // Not enough this time.

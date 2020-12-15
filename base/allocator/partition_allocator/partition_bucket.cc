@@ -500,6 +500,11 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PA_DCHECK(this == &root->sentinel_bucket);
     PA_DCHECK(active_slot_spans_head ==
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
+
+    // No fast path for direct-mapped allocations.
+    if (flags & PartitionAllocFastPathOrReturnNull)
+      return nullptr;
+
     if (raw_size > MaxDirectMapped()) {
       if (return_null)
         return nullptr;
@@ -557,6 +562,10 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     }
     if (UNLIKELY(!new_slot_span) &&
         LIKELY(decommitted_slot_spans_head != nullptr)) {
+      // Commit can be expensive, don't do it.
+      if (flags & PartitionAllocFastPathOrReturnNull)
+        return nullptr;
+
       new_slot_span = decommitted_slot_spans_head;
       PA_DCHECK(new_slot_span->bucket == this);
       PA_DCHECK(new_slot_span->is_decommitted());
@@ -574,6 +583,10 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     }
     PA_DCHECK(new_slot_span);
   } else {
+    // Getting a new slot span is expensive, don't do it.
+    if (flags & PartitionAllocFastPathOrReturnNull)
+      return nullptr;
+
     // Third. If we get here, we need a brand new slot span.
     // TODO(bartekn): For single-slot slot spans, we can use rounded raw_size
     // as slot_span_committed_size.
