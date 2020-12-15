@@ -459,9 +459,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 }
 
+// Flaky: crbug.com/1155831.
 // Tab focus should not be stolen by the omnibox - https://crbug.com/1127220.
 IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
-                       TabFocusStealingFromMainFrame) {
+                       DISABLED_TabFocusStealingFromMainFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open the new tab, focus should be on the location bar.
