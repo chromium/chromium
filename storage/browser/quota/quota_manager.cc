@@ -386,7 +386,6 @@ class QuotaManager::UsageAndQuotaInfoGatherer : public QuotaTask {
 
   // Weak pointers are used to support cancelling work.
   base::WeakPtrFactory<UsageAndQuotaInfoGatherer> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UsageAndQuotaInfoGatherer);
 };
 
 class QuotaManager::EvictionRoundInfoHelper : public QuotaTask {
@@ -475,7 +474,6 @@ class QuotaManager::EvictionRoundInfoHelper : public QuotaTask {
   int64_t global_usage_ = 0;
   bool global_usage_is_complete_ = false;
   base::WeakPtrFactory<EvictionRoundInfoHelper> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(EvictionRoundInfoHelper);
 };
 
 class QuotaManager::GetUsageInfoTask : public QuotaTask {
@@ -539,7 +537,6 @@ class QuotaManager::GetUsageInfoTask : public QuotaTask {
   int remaining_trackers_;
   base::WeakPtrFactory<GetUsageInfoTask> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(GetUsageInfoTask);
 };
 
 class QuotaManager::OriginDataDeleter : public QuotaTask {
@@ -633,7 +630,6 @@ class QuotaManager::OriginDataDeleter : public QuotaTask {
   StatusCallback callback_;
 
   base::WeakPtrFactory<OriginDataDeleter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(OriginDataDeleter);
 };
 
 class QuotaManager::HostDataDeleter : public QuotaTask {
@@ -730,7 +726,6 @@ class QuotaManager::HostDataDeleter : public QuotaTask {
   StatusCallback callback_;
 
   base::WeakPtrFactory<HostDataDeleter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(HostDataDeleter);
 };
 
 class QuotaManager::StorageCleanupHelper : public QuotaTask {
@@ -788,7 +783,6 @@ class QuotaManager::StorageCleanupHelper : public QuotaTask {
   const QuotaClientTypes quota_client_types_;
   base::OnceClosure callback_;
   base::WeakPtrFactory<StorageCleanupHelper> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(StorageCleanupHelper);
 };
 
 // Fetch origins that have been modified since the specified time. This is used

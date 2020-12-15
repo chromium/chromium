@@ -30,6 +30,9 @@ class QuotaTaskObserver;
 // TODO(kinuko): Revise this using base::OnceCallback.
 class QuotaTask {
  public:
+  QuotaTask(const QuotaTask&) = delete;
+  QuotaTask& operator=(const QuotaTask&) = delete;
+
   void Start();
 
  protected:
