@@ -49,8 +49,6 @@ struct DOMAIN_RELIABILITY_EXPORT DomainReliabilityBeacon {
   // also be used to upload any report. This field does not appear in the
   // uploaded report.
   net::NetworkIsolationKey network_isolation_key;
-  // The resource name that the beacon is reporting on, if included.
-  std::string resource;
   // Status string (e.g. "ok", "dns.nxdomain", "http.403").
   std::string status;
   // Granular QUIC error string (e.g. "quic.peer_going_away").

@@ -58,6 +58,8 @@ component("domain_reliability") {
     "dispatcher.cc",
     "dispatcher.h",
     "domain_reliability_export.h",
+    "features.cc",
+    "features.h",
     "google_configs.cc",
     "google_configs.h",
     "monitor.cc",

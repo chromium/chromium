@@ -10,12 +10,16 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/domain_reliability/baked_in_configs.h"
+#include "components/domain_reliability/features.h"
 #include "components/domain_reliability/google_configs.h"
 #include "components/domain_reliability/quic_error_mapping.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -186,6 +190,7 @@ DomainReliabilityMonitor::RequestInfo::RequestInfo(
     const net::URLRequest& request,
     int net_error)
     : url(request.url()),
+      network_isolation_key(request.isolation_info().network_isolation_key()),
       net_error(net_error),
       response_info(request.response_info()),
       // This ignores cookie blocking by the NetworkDelegate, but probably
@@ -267,6 +272,10 @@ void DomainReliabilityMonitor::OnRequestLegComplete(
   beacon_template.elapsed = time_->NowTicks() - beacon_template.start_time;
   beacon_template.was_proxied = request.response_info.was_fetched_via_proxy;
   beacon_template.url = request.url;
+  if (base::FeatureList::IsEnabled(
+          features::kPartitionDomainReliabilityByNetworkIsolationKey)) {
+    beacon_template.network_isolation_key = request.network_isolation_key;
+  }
   beacon_template.upload_depth = request.upload_depth;
   beacon_template.details = request.details;
 
