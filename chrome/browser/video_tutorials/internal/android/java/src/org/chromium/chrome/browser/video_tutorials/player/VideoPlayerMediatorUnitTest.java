@@ -101,6 +101,18 @@ public class VideoPlayerMediatorUnitTest {
     }
 
     @Test
+    public void languagePickerNotShownIfOnlyOneLanguage() {
+        mTestVideoTutorialService.setPreferredLocale(null);
+        mTestVideoTutorialService.initializeTestLanguages(new String[] {"hi"});
+        Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
+        mMediator.playVideoTutorial(tutorial);
+
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_LANGUAGE_PICKER), equalTo(false));
+        Mockito.verify(mLanguagePicker, Mockito.times(0))
+                .showLanguagePicker(mLanguagePickerCallback.capture(), any());
+    }
+
+    @Test
     public void languagePickerNotShownIfPreferredLocaleSetAlready() {
         mTestVideoTutorialService.setPreferredLocale("en");
         Tutorial tutorial = mTestVideoTutorialService.getTestTutorials().get(0);
