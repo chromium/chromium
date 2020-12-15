@@ -79,11 +79,6 @@ bool IsRegularUserOrSupervisedChild(user_manager::UserManager* user_manager) {
 // accounts.
 bool ShouldShowGetStarted(Profile* profile,
                           user_manager::UserManager* user_manager) {
-  // If we are disabling the first run experience, we don't show the getting
-  // started module.
-  if (!base::FeatureList::IsEnabled(chromeos::features::kHelpAppFirstRun))
-    return false;
-
   // Child users return true for IsManaged. These are not EDU accounts though,
   // should still see the getting started module.
   if (profile->IsChild())
@@ -168,9 +163,6 @@ bool ShouldLaunchHelpApp(Profile* profile) {
   if (command_line->HasSwitch(switches::kForceFirstRunUI)) {
     return true;
   }
-
-  if (!base::FeatureList::IsEnabled(chromeos::features::kHelpAppFirstRun))
-    return false;
 
   // ash::TabletMode does not exist in some tests.
   if (ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode())

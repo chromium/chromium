@@ -29,7 +29,6 @@
 #include "chrome/browser/chromeos/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
-#include "chrome/browser/chromeos/first_run/help_app_first_run_field_trial.h"
 #include "chrome/browser/chromeos/input_method/input_method_persistence.h"
 #include "chrome/browser/chromeos/input_method/input_method_syncer.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
@@ -178,7 +177,6 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
 
   ash::RegisterLocalStatePrefs(registry);
   split_settings_sync_field_trial::RegisterLocalStatePrefs(registry);
-  help_app_first_run_field_trial::RegisterLocalStatePrefs(registry);
 }
 
 // static

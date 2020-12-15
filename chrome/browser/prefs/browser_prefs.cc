@@ -465,6 +465,9 @@ const char kRegisteredSupervisedUserAllowlists[] =
 
 // Deprecated 11/2020
 const char kSupervisedUserAllowlists[] = "profile.managed.whitelists";
+
+// Deprecated 12/2020
+const char kFirstRunTrialGroup[] = "help_app_first_run.trial_group";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 6/2020
@@ -527,6 +530,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kRegisteredSupervisedUserAllowlists);
   registry->RegisterIntegerPref(kSupervisedUsersNextId, 0);
+  registry->RegisterStringPref(kFirstRunTrialGroup, std::string());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)
@@ -1130,6 +1134,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 11/2020.
   local_state->ClearPref(kRegisteredSupervisedUserAllowlists);
+
+  // Added 12/2020.
+  local_state->ClearPref(kFirstRunTrialGroup);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)

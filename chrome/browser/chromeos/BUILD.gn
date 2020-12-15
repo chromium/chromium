@@ -1445,8 +1445,6 @@ source_set("chromeos") {
     "first_run/drive_first_run_controller.h",
     "first_run/first_run.cc",
     "first_run/first_run.h",
-    "first_run/help_app_first_run_field_trial.cc",
-    "first_run/help_app_first_run_field_trial.h",
     "full_restore/full_restore_prefs.cc",
     "full_restore/full_restore_prefs.h",
     "full_restore/full_restore_service.cc",

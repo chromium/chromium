@@ -37,7 +37,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/first_run/help_app_first_run_field_trial.h"
 #include "chrome/browser/chromeos/sync/split_settings_sync_field_trial.h"
 #include "chromeos/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 #endif
@@ -98,10 +97,9 @@ void ChromeBrowserFieldTrials::SetupFeatureControllingFieldTrials(
 #endif
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // These trials are fully client controlled and must be configured whether or
+  // This trial is fully client controlled and must be configured whether or
   // not a seed is available.
   split_settings_sync_field_trial::Create(feature_list, local_state_);
-  help_app_first_run_field_trial::Create(feature_list, local_state_);
 #endif
 }
 
