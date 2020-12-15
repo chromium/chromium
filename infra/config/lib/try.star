@@ -116,7 +116,7 @@ def try_builder(
     # Enable "chromium.resultdb.result_sink" on try builders.
     experiments = experiments or {}
     experiments.setdefault("chromium.resultdb.result_sink", 100)
-    experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 30)
+    experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
 
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
