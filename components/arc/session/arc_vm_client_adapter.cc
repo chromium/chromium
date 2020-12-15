@@ -675,6 +675,32 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
 
+    // Stop the existing VM if any (e.g. in case of a chrome crash).
+    VLOG(1) << "Stopping the existing VM if any.";
+    vm_tools::concierge::StopVmRequest request;
+    request.set_name(kArcVmName);
+    request.set_owner_id(user_id_hash_);
+    GetConciergeClient()->StopVm(
+        request,
+        base::BindOnce(&ArcVmClientAdapter::OnExistingVmStopped,
+                       weak_factory_.GetWeakPtr(), std::move(params),
+                       std::move(file_system_status), std::move(callback)));
+  }
+
+  void OnExistingVmStopped(
+      UpgradeParams params,
+      FileSystemStatus file_system_status,
+      chromeos::VoidDBusMethodCallback callback,
+      base::Optional<vm_tools::concierge::StopVmResponse> reply) {
+    // reply->success() returns true even when there was no VM running.
+    if (!reply.has_value() || !reply->success()) {
+      LOG(ERROR) << "StopVm failed: "
+                 << (reply.has_value() ? reply->failure_reason()
+                                       : "No D-Bus response.");
+      std::move(callback).Run(false);
+      return;
+    }
+
     const int32_t cpus =
         base::SysInfo::NumberOfProcessors() - start_params_.num_cores_disabled;
     DCHECK_LT(0, cpus);
