@@ -19182,6 +19182,44 @@
       Leaving the policy unset means the behavior defaults to off for managed users and on for other users.''',
     },
     {
+      'name': 'ManagedConfigurationPerOrigin',
+      'owners': ['file://chrome/browser/device_api/OWNERS'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'origin': { 'type': 'string' },
+            'managed_configuration_url': { 'type': 'string' },
+            'managed_configuration_hash': { 'type': 'string' },
+          },
+          'required': ['origin', 'managed_configuration_url', 'managed_configuration_hash']
+        }
+      },
+      'supported_on': ['chrome.*:89-', 'chrome_os:89-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': [{
+        'origin': 'https://www.google.com',
+        'managed_configuration_url' : 'https://gstatic.google.com/configuration.json',
+        'managed_configuration_hash' : 'asd891jedasd12ue9h'
+      }, {
+        'origin': 'https://www.example.com',
+        'managed_configuration_url' : 'https://gstatic.google.com/configuration2.json',
+        'managed_configuration_hash' : 'djio12easd89u12aws'
+      }],
+      'id': 813,
+      'caption': '''Sets managed configuration values to websites to specific origins''',
+      'tags': [],
+      'desc': '''Setting the policy defines the return value of Managed Configuration API for given origin.
+
+      Managed configuration API is a key-value configuration that can be accessed via navigator.device.getManagedConfiguration() javascript call. This API is only available to origins which correspond to force-installed web applications via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph>.
+     '''
+    },
+    {
       'name': 'WebAppInstallForceList',
       'owners': ['file://chrome/browser/web_applications/OWNERS'],
       'type': 'dict',
@@ -25085,6 +25123,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 812,
+  'highest_id_currently_used': 813,
   'highest_atomic_group_id_currently_used': 40
 }

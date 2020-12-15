@@ -1924,6 +1924,16 @@ const char kWebAppCreateInQuickLaunchBar[] =
 // will be launched.
 const char kWebAppInstallForceList[] = "profile.web_app.install.forcelist";
 
+// A list of dictionaries for managed configurations. Each dictionary contains
+// 3 strings -- origin to be configured, link to the configuration, and the
+// hashed value to that configuration.
+const char kManagedConfigurationPerOrigin[] =
+    "profile.managed_configuration.list";
+// Dictionary that maps the hash of the last downloded managed configuration for
+// a particular origin.
+const char kLastManagedConfigurationHashForOrigin[] =
+    "profile.managed_configuration.last_hash";
+
 // Dictionary that maps web app ids to installation metrics used by UMA.
 const char kWebAppInstallMetrics[] = "web_app_install_metrics";
 

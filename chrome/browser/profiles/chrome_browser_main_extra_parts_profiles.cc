@@ -25,6 +25,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -311,6 +312,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #if !defined(OS_ANDROID)
   LoginUIServiceFactory::GetInstance();
+  ManagedConfigurationAPIFactory::GetInstance();
 #endif
 #if defined(OS_ANDROID)
   MediaDrmOriginIdManagerFactory::GetInstance();

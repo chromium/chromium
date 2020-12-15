@@ -642,10 +642,12 @@ extern const char kDevToolsTCPDiscoveryConfig[];
 extern const char kDiceSigninUserMenuPromoCount[];
 #endif
 
+extern const char kManagedConfigurationPerOrigin[];
+extern const char kLastManagedConfigurationHashForOrigin[];
+
 extern const char kWebAppCreateOnDesktop[];
 extern const char kWebAppCreateInAppsMenu[];
 extern const char kWebAppCreateInQuickLaunchBar[];
-
 extern const char kWebAppInstallForceList[];
 extern const char kWebAppInstallMetrics[];
 extern const char kWebAppsDailyMetrics[];
