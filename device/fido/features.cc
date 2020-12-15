@@ -37,7 +37,7 @@ const base::Feature kWebAuthCableLowLatency{"WebAuthenticationCableLowLatency",
 #if BUILDFLAG(IS_ASH)
 const base::Feature kWebAuthCrosPlatformAuthenticator{
     "WebAuthenticationCrosPlatformAuthenticator",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_ASH)
 
 extern const base::Feature kWebAuthAttestationBlockList{
