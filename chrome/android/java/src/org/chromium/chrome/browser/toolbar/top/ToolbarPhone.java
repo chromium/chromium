@@ -2831,9 +2831,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         float translation =
                 urlExpansionPercent * statusCoordinator.getEndPaddingPixelSizeOnFocusDelta();
 
-        boolean scrollingOnNtp =
-                getToolbarDataProvider().getNewTabPageDelegate().isCurrentlyVisible() && !hasFocus
-                && statusCoordinator.isSearchEngineStatusIconVisible();
+        boolean scrollingOnNtp = !hasFocus && statusCoordinator.isSearchEngineStatusIconVisible()
+                && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentUrl());
         if (scrollingOnNtp) {
             // When:
             // 1. unfocusing the LocationBar on the NTP.
