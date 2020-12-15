@@ -467,9 +467,7 @@ Bluetooth::Bluetooth(Navigator& navigator)
       client_receivers_(this, navigator.DomWindow()),
       service_(navigator.DomWindow()) {}
 
-Bluetooth::~Bluetooth() {
-  DCHECK(client_receivers_.empty());
-}
+Bluetooth::~Bluetooth() = default;
 
 BluetoothDevice* Bluetooth::GetBluetoothDeviceRepresentingDevice(
     mojom::blink::WebBluetoothDevicePtr device_ptr,
