@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -39,11 +39,11 @@ class WebUsageEnablerBrowserAgentTest : public PlatformTest {
   WebStateList* web_state_list_;
   WebUsageEnablerBrowserAgent* enabler_;
 
-  std::unique_ptr<web::TestWebState> CreateWebState(const char* url) {
-    auto test_web_state = std::make_unique<web::TestWebState>();
+  std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
+    auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(GURL(url));
     test_web_state->SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
     return test_web_state;
   }
 
@@ -62,8 +62,8 @@ class WebUsageEnablerBrowserAgentTest : public PlatformTest {
       return false;
     web::WebState* last_web_state =
         web_state_list_->GetWebStateAt(web_state_list_->count() - 1);
-    web::TestNavigationManager* navigation_manager =
-        static_cast<web::TestNavigationManager*>(
+    web::FakeNavigationManager* navigation_manager =
+        static_cast<web::FakeNavigationManager*>(
             last_web_state->GetNavigationManager());
     return navigation_manager->LoadIfNecessaryWasCalled();
   }

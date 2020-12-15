@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -24,7 +24,7 @@
 namespace {
 
 std::unique_ptr<web::WebState> CreateWebState() {
-  return std::make_unique<web::TestWebState>();
+  return std::make_unique<web::FakeWebState>();
 }
 
 std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(

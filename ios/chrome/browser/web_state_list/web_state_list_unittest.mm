@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -126,7 +126,7 @@ class WebStateListTestObserver : public WebStateListObserver {
 
 // A fake NavigationManager used to test opener-opened relationship in the
 // WebStateList.
-class FakeNavigationManager : public web::TestNavigationManager {
+class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
 
@@ -173,12 +173,12 @@ class WebStateListTest : public PlatformTest {
   WebStateList web_state_list_;
   WebStateListTestObserver observer_;
 
-  std::unique_ptr<web::TestWebState> CreateWebState(const char* url) {
-    auto test_web_state = std::make_unique<web::TestWebState>();
-    test_web_state->SetCurrentURL(GURL(url));
-    test_web_state->SetNavigationManager(
+  std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
+    auto fake_web_state = std::make_unique<web::FakeWebState>();
+    fake_web_state->SetCurrentURL(GURL(url));
+    fake_web_state->SetNavigationManager(
         std::make_unique<FakeNavigationManager>());
-    return test_web_state;
+    return fake_web_state;
   }
 
   void AppendNewWebState(const char* url) {
@@ -191,7 +191,7 @@ class WebStateListTest : public PlatformTest {
                                    WebStateList::INSERT_NO_FLAGS, opener);
   }
 
-  void AppendNewWebState(std::unique_ptr<web::TestWebState> web_state) {
+  void AppendNewWebState(std::unique_ptr<web::FakeWebState> web_state) {
     web_state_list_.InsertWebState(
         WebStateList::kInvalidIndex, std::move(web_state),
         WebStateList::INSERT_NO_FLAGS, WebStateOpener());
@@ -269,9 +269,9 @@ TEST_F(WebStateListTest, InsertActivate) {
 
 // Tests finding a known webstate.
 TEST_F(WebStateListTest, GetIndexOfWebState) {
-  std::unique_ptr<web::TestWebState> web_state_0 = CreateWebState(kURL0);
+  auto web_state_0 = CreateWebState(kURL0);
   web::WebState* target_web_state = web_state_0.get();
-  std::unique_ptr<web::TestWebState> other_web_state = CreateWebState(kURL1);
+  auto other_web_state = CreateWebState(kURL1);
 
   // Target not yet in list.
   EXPECT_EQ(WebStateList::kInvalidIndex,

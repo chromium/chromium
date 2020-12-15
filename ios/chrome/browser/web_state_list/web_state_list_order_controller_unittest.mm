@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -24,7 +24,7 @@ const char kURL[] = "https://chromium.org/";
 
 // A fake NavigationManager used to test opener-opened relationship in the
 // WebStateList.
-class FakeNavigationManager : public web::TestNavigationManager {
+class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
 
@@ -48,7 +48,7 @@ class WebStateListOrderControllerTest : public PlatformTest {
   WebStateListOrderController order_controller_;
 
   void InsertNewWebState(int index, WebStateOpener opener) {
-    auto test_web_state = std::make_unique<web::TestWebState>();
+    auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(GURL(kURL));
     test_web_state->SetNavigationManager(
         std::make_unique<FakeNavigationManager>());
