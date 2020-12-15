@@ -612,6 +612,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky - https://crbug.com/1157339")
     // Restricted to phones due to https://crbug.com/429671
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void newTabButtonHidesAndRecoversOnboarding() {
