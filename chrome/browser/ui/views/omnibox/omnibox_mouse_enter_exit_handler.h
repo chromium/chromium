@@ -24,7 +24,8 @@ class OmniboxMouseEnterExitHandler : public ui::EventHandler {
  public:
   // |enter_exit_callback| is called whenever one of the observed Views get a
   // mouse-enter or mouse-exit event.
-  explicit OmniboxMouseEnterExitHandler(base::Closure enter_exit_callback);
+  explicit OmniboxMouseEnterExitHandler(
+      base::RepeatingClosure enter_exit_callback);
   OmniboxMouseEnterExitHandler(const OmniboxMouseEnterExitHandler&) = delete;
   OmniboxMouseEnterExitHandler& operator=(const OmniboxMouseEnterExitHandler&) =
       delete;
@@ -38,7 +39,7 @@ class OmniboxMouseEnterExitHandler : public ui::EventHandler {
 
   // This is called whenever one of the |observed_views_| has a mouse-enter or
   // mouse-exit event.
-  const base::Closure enter_exit_callback_;
+  const base::RepeatingClosure enter_exit_callback_;
 
   // These are the Views for which we are observing mouse-enter or mouse-exit
   // events. This instance must outlive all of these Views, since these are

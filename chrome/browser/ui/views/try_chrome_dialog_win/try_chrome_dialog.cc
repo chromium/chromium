@@ -918,7 +918,7 @@ class TryChromeDialog::ModalShowDelegate : public TryChromeDialog::Delegate {
  public:
   // Constructs the updater with a closure to be run after the dialog is closed
   // to break out of the modal run loop.
-  explicit ModalShowDelegate(base::Closure quit_closure)
+  explicit ModalShowDelegate(base::RepeatingClosure quit_closure)
       : quit_closure_(std::move(quit_closure)) {}
   ~ModalShowDelegate() override = default;
 
@@ -930,7 +930,7 @@ class TryChromeDialog::ModalShowDelegate : public TryChromeDialog::Delegate {
   void InteractionComplete() override;
 
  private:
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
   installer::ExperimentStorage storage_;
 
   // The time at which the toast was shown; used for computing the action delay.
@@ -1014,8 +1014,9 @@ TryChromeDialog::~TryChromeDialog() {
 void TryChromeDialog::ShowDialogAsync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-  endsession_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
-      base::Bind(&TryChromeDialog::OnWindowMessage, base::Unretained(this)));
+  endsession_observer_ =
+      std::make_unique<gfx::SingletonHwndObserver>(base::BindRepeating(
+          &TryChromeDialog::OnWindowMessage, base::Unretained(this)));
 
   context_->Initialize(base::BindOnce(&TryChromeDialog::OnContextInitialized,
                                       base::Unretained(this)));

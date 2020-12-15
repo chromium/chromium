@@ -8,7 +8,7 @@
 #include "ui/views/view.h"
 
 OmniboxMouseEnterExitHandler::OmniboxMouseEnterExitHandler(
-    base::Closure enter_exit_callback)
+    base::RepeatingClosure enter_exit_callback)
     : enter_exit_callback_(enter_exit_callback) {}
 
 OmniboxMouseEnterExitHandler::~OmniboxMouseEnterExitHandler() {

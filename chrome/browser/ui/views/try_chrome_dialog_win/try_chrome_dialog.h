@@ -145,9 +145,6 @@ class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
 
   std::unique_ptr<Context> context_;
 
-  // A closure to run when the interaction has completed.
-  base::Closure on_complete_;
-
   // The pessimistic result that will prevent launching Chrome.
   Result result_ = NOT_NOW;
 

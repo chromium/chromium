@@ -156,7 +156,7 @@ class TryChromeDialogBrowserTestBase : public InProcessBrowserTest {
   const int group_;
   ::testing::NiceMock<MockDelegate> delegate_;
   std::unique_ptr<TryChromeDialog> dialog_;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(TryChromeDialogBrowserTestBase);
 };
