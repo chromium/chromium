@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+FAIL Modifying selectionStart value of the textarea element assert_equals: expected 1 but got 0
+FAIL Modifying selectionEnd value of the textarea element assert_equals: expected 1 but got 0
+FAIL Calling setSelectionRange() on the textarea element assert_equals: expected 1 but got 0
+FAIL Calling select() on the input element assert_equals: expected 1 but got 0
+FAIL Calling select() on the textarea element assert_equals: expected 1 but got 0
+PASS Setting initial zero selectionStart value on the input element
+PASS Setting initial zero selectionEnd value on the input element
+PASS Setting initial zero selectionStart value on the textarea element
+FAIL Setting the same selectionStart value twice on the textarea element assert_equals: expected 1 but got 0
+PASS Setting initial zero selectionEnd value on the textarea element
+FAIL Setting the same selectionEnd value twice on the textarea element assert_equals: expected 1 but got 0
+PASS Setting initial zero selection range on the textarea element
+FAIL Setting the same selection range twice on the textarea element assert_equals: expected 1 but got 0
+FAIL Calling select() twice on the input element assert_equals: expected 1 but got 0
+FAIL Calling select() twice on the textarea element assert_equals: expected 1 but got 0
+Harness: the test ran to completion.
+
