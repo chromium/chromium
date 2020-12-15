@@ -541,8 +541,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    @DisableIf.Build(message = "Fails on Lollipop Tablet Tester, see https://crbug.com/1158435",
-            sdk_is_less_than = VERSION_CODES.M)
+    @DisableIf.
+    Build(message = "Fails on Lollipop and Marshmallow Tablet Tester, https://crbug.com/1158435",
+            sdk_is_less_than = VERSION_CODES.N)
     public void switchToNewTabAndThenBack() {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
