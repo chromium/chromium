@@ -165,8 +165,6 @@ namespace {
 using ::testing::Optional;
 
 constexpr char kMockHost[] = "mock.host";
-constexpr char kCustomProxyResponse[] = "CustomProxyResponse";
-constexpr int kProcessId = 11;
 constexpr int kRouteId = 12;
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -252,13 +250,6 @@ std::unique_ptr<TestURLLoaderClient> FetchRequest(
 
   client->RunUntilComplete();
   return client;
-}
-
-std::unique_ptr<net::test_server::HttpResponse> CustomProxyResponse(
-    const net::test_server::HttpRequest& request) {
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_content(kCustomProxyResponse);
-  return std::move(response);
 }
 
 // proxy_resolver::mojom::ProxyResolverFactory that captures the most recent PAC
@@ -5740,70 +5731,6 @@ TEST_F(NetworkContextMockHostTest, MAYBE_CustomProxyUsesSpecifiedProxyList) {
   EXPECT_EQ(response, "Echo");
   EXPECT_EQ(client->response_head()->proxy_server,
             ConvertToProxyServer(proxy_test_server));
-}
-
-// Verifies that custom proxy is used only for requests with process id and
-// render frame id.
-// TODO(https://crbug.com/991035): Crash flakes due to NetworkService'
-// UploadLoadInfo() timer firing during FetchRequest().
-TEST_F(NetworkContextMockHostTest,
-       DISABLED_UseCustomProxyForNavigationAndRenderFrameRequest) {
-  net::EmbeddedTestServer test_server;
-  net::test_server::RegisterDefaultHandlers(&test_server);
-  ASSERT_TRUE(test_server.Start());
-
-  net::EmbeddedTestServer proxy_test_server;
-  proxy_test_server.RegisterRequestHandler(
-      base::BindRepeating(&CustomProxyResponse));
-  ASSERT_TRUE(proxy_test_server.Start());
-
-  struct TestCase {
-    int process_id;
-    int render_frame_id;
-    bool expected_custom_proxy_used;
-  };
-  const TestCase test_cases[] = {
-      // When process id and renderer id are invalid, custom proxy is not used.
-      {0, MSG_ROUTING_NONE, false},
-
-      {kProcessId, kRouteId, true},
-      {0, kRouteId, true},
-      {kProcessId, MSG_ROUTING_NONE, true},
-
-      // render_frame_id = MSG_ROUTING_CONTROL provides a temporary way to use
-      // the custom proxy for specific requests.
-      {0, MSG_ROUTING_CONTROL, true},
-  };
-
-  for (const TestCase& test_case : test_cases) {
-    mojo::Remote<mojom::CustomProxyConfigClient> proxy_config_client;
-    mojom::NetworkContextParamsPtr context_params = CreateContextParams();
-    context_params->custom_proxy_config_client_receiver =
-        proxy_config_client.BindNewPipeAndPassReceiver();
-    std::unique_ptr<NetworkContext> network_context =
-        CreateContextWithParams(std::move(context_params));
-    auto config = mojom::CustomProxyConfig::New();
-    net::ProxyServer proxy_server = ConvertToProxyServer(proxy_test_server);
-    config->rules.ParseFromString("http=" + proxy_server.ToURI());
-    proxy_config_client->OnCustomProxyConfigUpdated(std::move(config));
-    task_environment_.RunUntilIdle();
-
-    ResourceRequest request;
-    request.url = GetURLWithMockHost(test_server, "/echo");
-    request.render_frame_id = test_case.render_frame_id;
-    std::unique_ptr<TestURLLoaderClient> client =
-        FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
-                     test_case.process_id);
-    task_environment_.RunUntilIdle();
-    std::string response;
-    EXPECT_TRUE(
-        mojo::BlockingCopyToString(client->response_body_release(), &response));
-
-    if (test_case.expected_custom_proxy_used)
-      EXPECT_EQ(kCustomProxyResponse, response);
-    else
-      EXPECT_EQ("Echo", response);
-  }
 }
 
 TEST_F(NetworkContextTest, MaximumCount) {
